@@ -1,0 +1,76 @@
+<!-- START of: finna - content/help-basic_en.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="basicsearch" class="content-section">
+      <h2><i class="fa fa-search"></i> Free word search</h2>
+      <p>Enter your search terms in the search box. In the drop-down menu at the end of the search box, you can choose to search by title, author or subject.</p>
+      <p>Search terms separated by spaces use the AND search logic and will return results containing all of your search terms.<p>
+      <p>For example:</p>
+      <pre class="code">mannerheim carl</pre>
+      <p>produces the same search results as</p>
+      <pre class="code">mannerheim AND carl</pre>
+      <p>After starting your search, you can for example narrow your search results by permissible uses, type of material or date of manufacture.</p>
+      <pre class="code">child</pre>
+      <p>The search results return material related to children</p>
+      <pre class="code">"children"</pre>
+      <p>This is a targeted search in which the quotes limit the search results to those that contain the word ”children.”</p>
+      <pre class="code">"University of Helsinki"</pre>
+      <p>It’s always a good idea to put phrases like these in quotes so that Finna doesn’t interpret your search as separate words</p>
+      <pre class="code">children summer</pre>
+      <p>This search is the same as entering children AND summer; the search will include all results related to children and summer</p>
+      <pre class="code">countryside OR farm</pre> 
+      <p>The search results will include results related to the countryside or to farms</p>
+      <pre class="code">"kivi aleksis"</pre> 
+      <p>The author’s name should be in quotes, and ideally the last name should be entered first</p>
+      <pre class="code">know*</pre> 
+      <p>The asterisk truncates words so that the search may return results with a number of different endings, e.g. knowledge and know-how</p>
+      <p>If, for example, you enter the name of a book in the search box, Finna predicts your search terms by offering results that may allow you to find your book directly.</p>
+      <p><strong>You can find more instructions on forming search phrases in  <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">the Search syntax section</a>.</strong></p>
+    </div>
+    <div id="narrowsearch" class="content-section">
+      <h2>Narrowing your search</h2>
+      <p>The search results page displays the best results at the top based on the relevance of the match. You can change the order of the results by, for example, changing the date of manufacture to view from oldest to newest. Additionally you can view the search results as a summary list or in gallery format.</p>
+       <ul class="list-bullets">
+        <li><strong>Free use</strong></li>
+        <li><strong>Can be edited</strong>
+          <ul class="list-bullets">
+            <li>Not for commercial use</li>
+            <li>Also for commercial use</li>
+          </ul>
+        </li>
+        <li><strong>Cannot be edited</strong>
+          <ul class="list-bullets">
+            <li>Not for commercial use</li>
+            <li>Also for commercial use</li>
+            <li>Authorised use only/unknown</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>Type of material</strong>: includes different options based on the materials available in the collections, for example, pictures, objects, books, etc.</p>
+      <p><strong>Author</strong>: the creator(s) of the work or the rights holder(s)</p>
+      <p><strong>Subject</strong>: ready subject headings to help filter your search</p>
+      <p><strong>Place</strong>: where the desired material is from</p>
+      <p><strong>Date of manufacture</strong>: You can use the date of manufacture to display materials from a specific time period, for example, the 1980s-1990s. The bars in the chart will display the time periods in which materials are available.</p>
+      <ul class="list-bullets">
+        <li>All results</li>
+        <li>Results restricted to the indicated time period</li>
+        <li>Filter the results by date of publication, manufacture and creation</li>
+      </ul>
+      <p><strong>Language</strong>: displays the language(s) in which the search results appear.</p>
+      <p><strong>Included in a publication</strong>: will provide the name of the journal, if, for example, the results include articles.</p>
+      <p><strong>Sector</strong>: the type of organisation – either a museum, archive or library.</p>
+      <p><strong>Organisation</strong>: displays all of the archives, libraries and museums whose collections appear in the results.</p>
+      <p><strong>New on Finna</strong>: Displays the collections which have most recently been added to Finna.</p>
+      <h3>Once you’ve selected your filters…</h3>
+      <p>Finna saves your selected filters and displays them below the search box. You can remove a single filter by simply clicking on the X by the filter in question. You can remove all filters by clicking and undoing the check mark by Save filters and starting a new search.</p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help-basic_en.phtml -->

@@ -1,0 +1,31 @@
+<!-- START of: finna - content/help_advanced_fi.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+      <p><a href="<?=$this->url('search-advanced')?>">Tarkennetussa haussa</a> kohdassa <strong>Hakuehdot</strong> on useita <strong>hakukenttiä</strong>, joihin voi kirjoittaa hakusanoja ja hakulausekkeita.</p>
+      <p>Voit kohdistaa haun kaikkiin hakukenttiin tai täsmentää kohdistusta yhteen hakukenttään (esim. nimeke, tekijä ja rooli tai aihe). Tekijä ja rooli -kohdistuskenttään voit kirjoittaa tekijän nimen ja tekijäroolin, esimerkiksi <i>Jörn Donner</i> kirjoittaja, mikäli haluaa etsiä vain <i>Donnerin</i> kirjoittamia kirjoja, mutta ei hänen ohjaamiaan elokuvia. Myös organisaatioilla voi olla aineiston tekemiseen liittyvä rooli, esimerkiksi arkistonmuodostajana.</p>
+      <p>Useita hakusanoja yhdistelevä haku onnistuu käyttämällä useampaa hakukenttää tai hakuryhmää samanaikaisesti. Hakuryhmän sisällä oleviin hakusanoihin sovelletaan aina samaa boolen operaattoria (AND, OR, NOT). Hakukenttien vieressä oleva Hae-alasvetovalikko määrittelee, miten useita hakukenttiä sisältävä kysely käsitellään kyseisen hakuryhmän sisällä:</p>
+      <p><strong>Kaikilla hakusanoilla (AND)</strong> — Tuottaa hakutuloksia, jotka täsmäävät kaikkien hakukenttien sisältöön.</p> 
+      <p><strong>Millä tahansa hakusanalla (OR)</strong> — Tuottaa hakutuloksia, jotka täsmäävät yhden tai useamman hakukentän sisältöön.</p>
+      <p><strong>Ei millään hakusanoista (NOT)</strong> — Tuottaa hakutuloksia, joissa ei esiinny yhdenkään hakukentän sisältöä. Tätä kannattaa käyttää, jos ei halua jonkin tietyn hakusanan sisältyvän lainkaan hakuun. Huomaa, että tämän käyttöön tarvitsee erillisen hakuryhmän, jos haluaa määritellä myös aineistoon sisältyviä kuvailutietoja.</p>
+      <p><strong>Lisää hakukenttä</strong> –painikkeella lomakkeelle pystyy lisäämään uuden hakukentän.</p>
+      <p><strong>Lisää hakuryhmä</strong> –painike lisää uuden ryhmän hakukenttiä. <strong>Poista hakuryhmä</strong> –painikkeella kyseisiä ryhmiä voidaan poistaa.</p>
+      <p>Hakuryhmien välisiä suhteita määritellään käyttäen <strong>Kaikki ryhmät (AND)</strong> ja <strong>Mitkä tahansa ryhmät (OR)</strong> –hakuoperaattoreita.</p>
+    <div id="filters" class="content-section">
+      <h2>Rajaukset</h2>
+      <p>Tarkennettua hakua voi rajata sisältämään aineistoa tietyllä kielellä, aineistotyypin sekä valmistusvuoden mukaan.</p>
+      <p>Kieliä ja aineistotyyppejä voi olla useampia samassa haussa.</p>
+    </div>
+    <div id="geographical-area" class="content-section">
+      <h2>Maantieteellinen alue</h2>
+      <p>Suomen kartalta voi valita tietyn alueen, miltä aineistoa haluaa hakuun tulevan. Karttaa voi lähentää tai loitontaa sen mukaan, kuinka laajalle alueelle haluaa laittaa rajauksen. Huomaa, että vain osa aineistosta on löydettävissä sijainnin perusteella.</p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help_advanced_fi.phtml -->

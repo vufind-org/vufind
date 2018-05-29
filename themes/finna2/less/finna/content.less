@@ -50,7 +50,7 @@
         color: @link-color;
         margin-bottom: 25px;
     }
-    & ul li {
+    & ul:not(.nav-tabs.help-tabs) li {
         margin-bottom: 3px;
     }
     .organisation-list-item {
@@ -95,4 +95,16 @@
 .content-section {
     padding-bottom: 20px;
     border-bottom: 1px solid @gray-lighter;
+}
+
+ul.nav-tabs.help-tabs {
+    margin-top: 3em;
+    & li>a {
+        font-size: 24px;
+        font-weight: 500;
+        padding: 10px 15px;
+        @media(max-width: @screen-lg){
+            font-size: 20px;
+        }
+    }
 }

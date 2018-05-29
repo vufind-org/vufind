@@ -1,0 +1,121 @@
+<!-- START of: finna - content/help-syntax_sv.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-syntax'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="booleanoperators" class="content-section">
+      <h2>Sökoperatorer</h2>
+      <p>Du kan kombinera söktermer med hjälp av Booleska sökoperatorer. Följande operatorer kan användas: AND, +, OR, NOT och -.
+      </p>
+      <p>Obs! De Booleska sökoperatorerna skrivs med VERSALER.
+      </p>
+      <h4 title="AND">AND</h4>
+      <p><strong>AND</strong> är standardoperatorn för sökningar med flera söktermer, om inga andra operatorer används. När man använder operatorn <strong>AND</strong> visas de poster som innehåller alla söktermer som använts.  Till exempel: du söker poster som innehåller både ”economics” och ”Keynes”:
+      </p>
+      <pre class="code">economics Keynes</pre>
+      <p>eller</p>
+      <pre class="code">economics AND Keynes</pre>
+      <h3 title="+">+</h3>
+      <p>Med +-tecknet kan man definiera att termen måste finnas i varje sökträff.
+      </p>
+      <p>Till exempel: du söker poster som måste innehålla söktermen ”economics” och som också kan innehålla söktermen ”Keynes”:
+      </p>
+      <pre class="code">+economics Keynes</pre>
+      <h4 title="OR">OR</h4>
+      <p>Om man använder operatorn <strong>OR</strong> visas de poster som innehåller en eller flera av de termer som operatorn kombinerar.
+      </p>
+      <p> Till exempel: du söker poster som innehåller antingen ”economics Keynes” eller bara ”Keynes”:
+      </p>
+      <pre class="code">"economics Keynes" OR Keynes</pre>
+      <h4 title="!-">!-</h4>
+      <p>Operatoren avlägsnar de poster från sökresultaten, vilka innehåller termen efter den.
+      </p>
+      <p>Exempel: sökes poster med termen "economics" men inte termen "Keynes":
+      </p>
+      <pre class="code">economics !-Keynes</pre>
+      <p>Obs! Denna operator kan inte användas i sökningar med en enda sökterm.
+      </p>
+      <p>Exempel: följande sökning ger inga resultat:</p>
+      <pre class="code">!-economics</pre>
+      <p>Obs! Om någon av söktermerna börjar med denna operator, fås strecket med i sökningen med ett bakstreck (\):
+      </p>
+      <p>Exempel: sökningen <i>!-merkki hakuehtona</i> (på finska):<p>
+      <pre class="code">\!-huutomerkki hakuehtona</pre>
+      <p>Obs! <strong>NOT</strong>-operatorn kan användas på motsvarande sätt som denna operator. <strong>NOT</strong>-operatorn kan dock ge mera resultat som ändå innehåller söktermen som skulle uteslutas.
+      </p>
+      <h4 title="Phrase searches">Frassökning</h4>
+      <p>Du kan göra en exakt frassökning genom att skriva dina sökord inom citationstecken.
+      </p>
+      <p>Till exempel: du söker poster som innehåller frasen ”medeltidens historia”, inte t.ex. ”medeltidens kulturhistoria”:
+      </p>
+      <pre class="code">"medeltidens historia"</pre>
+      <p>Man kan också använda frassökning för enskilda söktermer, då visas bara poster som innehåller sökordet exakt så som det är skrivet, och inte t.ex. böjt på olika sätt.
+      </p>
+    </div>
+    <div id="wildcardsearches" class="content-section">
+      <h2>Jokertecken</h2>
+      <p><strong class="helpTerm">?</strong> ersätter ett tecken i sökordet.</p>
+      <p>Till exempel: du kan söka både ”text” och ”test” med samma sökord:</p>
+      <pre class="code">te?t</pre>
+      <p><strong class="helpTerm">*</strong> ersätter 0, 1 eller flera tecken i sökordet.
+      </p>
+      <p>Till exempel: du kan söka både ”test”, ”tests” och ”tester” med samma sökord:
+      </p>
+      <pre class="code">test*</pre>
+      <p>Jokertecknen kan också användas inne i sökordet:
+      </p>
+      <pre class="code">te*t</pre>
+      <p>Obs! Jokertecknen ? och * kan inte vara det första tecknet i ett ord.
+      </p>
+    </div>
+    <div id="fuzzysearches" class="content-section">
+      <h2>Oskarp sökning</h2>
+      <p>Om man gör en oskarp sökning visas också poster som innehåller ord som liknar sökordet.
+      </p>
+      <p>Du kan göra en oskarp sökning genom att lägga till tecknet ~ i slutet av ett ord.
+      </p>
+      <p>Till exempel: oskarp sökning med sökordet ”roam”:
+      </p>
+      <pre class="code">roam~</pre>
+      <p>Den här sökningen hittar poster som innehåller t.ex. orden ”foam” och ”roams”. Man kan ställa in hur lika sökordet träffarna ska vara med en parameter mellan 0 och 1. Ju närmare 1 den här parametern är, desto mer lika måste träffarna vara sökordet.
+      </p>
+      <pre class="code">roam~0.8</pre>
+      <p>Standardparametern är 0,5 om man inte anger ett annat värde.
+      </p>
+    </div>
+    <div id="proxitimitysearches" class="content-section">
+      <h2>Avståndssökning</h2>
+      <p>Genom att göra en avståndssökning får man träffar där sökorden är nära varandra, men inte nödvändigtvis intill varandra.
+      </p>
+      <p>Du kan göra en avståndssökning genom att lägga till tecknet ~ och ett avståndsvärde efter en sökfras med flera sökord.
+      </p>
+      <p>Till exempel: du söker på orden ”economics” och ”keynes” och vill att de ska förekomma på högst 10 ords avstånd från varandra:
+      </p>
+      <pre class="code">"economics Keynes"~10</pre>
+    </div>
+    <div id="rangesearches"class="content-section">
+      <h2>Intervallsökning</h2>
+      <p>För att söka inom intervallet mellan två värden kan man använda klammerparenteser { } eller hakparenteser [ ]. Om man använder klammerparenteserna görs sökningen mellan värdena, värdena inom klammerparenteserna utesluts. Om man använder hakparenteser inkluderas värdena inom parentes i sökningen.
+      </p>
+      <p>Till exempel: om du söker en term som börjar på bokstaven B eller C kan du söka på:
+      </p>
+      <pre class="code">{A TO D}</pre>
+      <p>Till exempel: om du söker ett värde mellan 2002 och 2003 kan du söka på:
+      </p>
+      <pre class="code">[2002 TO 2003]</pre>
+      <p>Obs! Operatorn TO ska skrivas med VERSALER.</p>
+    </div>
+    <div id="boostingaterm" class="content-section">
+      <h2>Att vikta sökord</h2>
+      <p>Tecknet ^ ger mer vikt åt sökordet. Till exempel: i sökningen är sökordet ”Keynes” viktat:
+      </p>
+      <pre class="code">economics Keynes^5</pre>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help-syntax_sv.phtml -->

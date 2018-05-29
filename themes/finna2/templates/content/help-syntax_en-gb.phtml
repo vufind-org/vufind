@@ -1,0 +1,122 @@
+<!-- START of: finna - content/help-syntax_en-gb.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-syntax'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="booleanoperators" class="content-section">
+      <h2>Logical search operators</h2>
+      <p>You can combine terms into complex queries with Boolean operators. The following operators can be used: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>,<strong> NOT</strong>, and <strong>-</strong>.
+      </p>
+      <p><strong>NB!</strong> Boolean operators must be typed in CAPITAL LETTERS.
+      </p>
+      <h4 title="AND">AND</h4>
+      <p><strong>AND</strong>, the conjunction operator, is the system’s default operator for multi-term queries that do not include an operator. When using the <strong>AND</strong> operator, the records included in the search results feature each of the terms in the search fields.
+      </p>
+      <p>For example, to search for records that include “economics” and “Keynes”:
+      </p>
+      <pre class="code">economics Keynes</pre>
+      <p>or</p>
+      <pre class="code">economics AND Keynes</pre>
+      <h3 title="+">+</h3>
+      <p>The + sign can be used to indicate that the term must appear in each search result.
+      </p>
+      <p>For example, to search for records that must include “economics” and may include “Keynes”:
+      </p>
+      <pre class="code">+economics Keynes</pre>
+      <h4 title="OR">OR</h4>
+      <p>The OR operator links two terms and finds a matching record if either of the terms exist in a record.
+      </p>
+      <p>To search for documents that contain either "economics Keynes" or just "Keynes" use the query:
+      </p>
+      <pre class="code">"economics Keynes" OR Keynes</pre>
+      <h3 title="!-">!-</h3>
+      <p>The "!-" operator excludes records that contain the following term.</p>
+      <p>To search for documents that contain "economics" but not "Keynes" use the query:
+      </p>
+      <pre class="code">economics !-Keynes</pre>
+      <p>Note: The operator cannot be used with just one term. For example, the following search will return no results:
+      </p>
+      <pre class="code">!-economics</pre>
+      <p>Note: If the term begins with the operator, it can be included by using the backslash (\). For example: to search for <i>!-merkki hakuehtona</i> (in Finnish) use the query:
+      </p>
+      <pre class="code">\!-merkki hakuehtona</pre>
+      <p>Note: The <strong>NOT</strong> operator can be used similarly with this operator. However, the <strong>NOT</strong> operator returns more results, some of which may contain the term following <strong>NOT</strong>.
+      </p>
+      <h3 title="Phrase searches">Phrase searches</h3>
+      <p>You can search for an exact phrase by putting your search terms in quotation marks.
+      </p>
+      <p> For example, to search only for records which include the phrase “mediaeval history”, not “mediaeval cultural history” or similar phrases:
+      </p>
+      <pre class="code">"mediaeval history"</pre>
+      <p>You can also use phrase search for single words. Your search will then produce an exact match to your search term without any other conjugations.
+      </p>
+    </div>
+    <div id="wildcardsearches" class="content-section">
+      <h2>Wildcard characters</h2>
+      <p><strong class="helpTerm">?</strong> replaces one character in your search term.
+      </p>
+      <p>For example, the terms “text” and “test” can be searched for using the same query:
+      </p>
+      <pre class="code">te?t</pre>
+      <p><strong class="helpTerm">*</strong>replaces no, one or more characters in a search term.
+      </p>
+      <p>For example, the terms “test”, “tests” and “tester” can be searched for using the query:
+      </p>
+      <pre class="code">test*</pre>
+      <p>You can also use the asterisk in the middle of a search term:</p>
+      <pre class="code">te*t</pre>
+      <p>NB! The wildcards ? and * cannot replace the first character in a search term.
+      </p>
+    </div>
+    <div id="fuzzysearches" class="content-section">
+      <h2>Fuzzy searches</h2>
+      <p>A fuzzy search generates results in which words similar to the actual search word also appear. 
+      </p>
+      <p>~ carries out a fuzzy search when used as the last character in a single-term search.
+      </p>
+      <p>For example, a fuzzy search for the term “roam”:</p>
+      <pre class="code">roam~</pre>
+      <p>This search finds such terms as “foam” and “roams”. The similarity of the search to the original term can be regulated with a parameter between zero and one.
+      </p>
+      <p>The closer the value is to one, the more similar the term will be to the original term.  roam~0.8
+      </p>
+      <pre class="code">roam~0.8</pre>
+      <p>The default value of the parameter is 0.5 if it is not separately defined for a fuzzy search. 
+      </p>
+    </div>
+
+    <div id="proxitimitysearches" class="content-section"><h2>Proximity searches</h2>
+      <p>Proximity searches look for documents in which the search terms are within a specified distance, but not necessarily one after the other.
+      </p>
+      <p>~ performs a proximity search at the end of a multi-term search when combined with a proximity value.
+      </p>
+      <p>For example, to search for the terms “economics” and “Keynes” when they appear within a distance of no more than ten terms from each other:
+      </p>
+      <pre class="code">"economics Keynes"~10</pre>
+    </div>
+    <div id="rangesearches"class="content-section">
+      <h2>Range searches</h2>
+      <p>Range searches can be conducted using either curvy brackets { } or square brackets [ ]. When using curvy brackets, the search takes into account only the values between the terms entered, excluding the terms themselves. Square brackets, in contrast, also include the terms entered in the range searched for.
+      </p>
+      <p>For example, to search for a term that begins with the letter B or C using the query:
+      </p>
+      <pre class="code">{A TO D}</pre>
+      <p>For example, to search for the values 2002–2003:
+      </p>
+      <pre class="code">[2002 TO 2003]</pre>
+      <p>NB! The word TO between the values must be typed in CAPITAL LETTERS.</p>
+    </div>
+    <div id="boostingaterm" class="content-section">
+      <h2>Weighted search terms</h2>
+      <p>^ assigns a weight to the search term in a query.</p>
+      <p>For example, to assign added weight to the search term “Keynes”:</p>
+      <pre class="code">economics Keynes^5</pre>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help-syntax_en-gb.phtml -->
