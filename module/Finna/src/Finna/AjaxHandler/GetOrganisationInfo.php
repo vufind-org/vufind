@@ -43,9 +43,10 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
-    implements TranslatorAwareInterface
+    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Cookie manager
@@ -165,5 +166,23 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
         }
 
         return $this->formatResponse($response, self::STATUS_OK);
+    }
+
+    /**
+     * Return an error response in JSON format and log the error message.
+     *
+     * @param string $outputMsg  Message to include in the JSON response.
+     * @param string $logMsg     Message to output to the error log.
+     * @param int    $httpStatus HTTPs status of the JSOn response.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function handleError($outputMsg, $logMsg = '', $httpStatus = 400)
+    {
+        $this->logError(
+            $outputMsg . ($logMsg ? " ({$logMsg})" : null)
+        );
+
+        return $this->formatResponse($outputMsg, self::STATUS_ERROR, $httpStatus);
     }
 }

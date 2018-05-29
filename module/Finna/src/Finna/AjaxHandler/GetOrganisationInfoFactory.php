@@ -63,10 +63,12 @@ class GetOrganisationInfoFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
+        $result = new $requestedName(
             $container->get('VuFind\Session\Settings'),
             $container->get('VuFind\Cookie\CookieManager'),
             $container->get('Finna\OrganisationInfo\OrganisationInfo')
         );
+        $result->setLogger($container->get('VuFind\Logger'));
+        return $result;
     }
 }

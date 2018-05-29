@@ -657,6 +657,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     protected function fetchData($action, $params, $museum = false)
     {
         if ($museum) {
+            if (empty($this->config->MuseumAPI->url)) {
+                return false;
+            }
             $url = $this->config->MuseumAPI->url . '/finna_org_perustiedot.php'
                 . '?finna_org_id=' . urlencode($params['id']);
         } else {
