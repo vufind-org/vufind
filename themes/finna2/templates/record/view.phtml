@@ -124,7 +124,8 @@
           <? foreach ($this->tabs as $tab => $obj): ?>
             <? // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tab_classes = [];
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabClasses = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                     $tab_classes[] = 'active';
@@ -137,13 +138,13 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
               if (strtolower($tab) == 'details') { $tab_classes[] = 'hidden-xs tab-right'; }
             ?>
-            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>" aria-label="<?=$this->escapeHtmlAttr($tab)?>"
-              href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
-              data-background<? endif ?>>
-              <? if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><? endif; ?>
-              <? if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><? endif; ?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?>
-            </a>
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
+              <a class="<?=strtolower($tab) ?>" aria-label="<?=$this->escapeHtmlAttr($tab)?>"
+                href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
+                data-background<? endif ?>>
+                <? if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><? endif; ?>
+                <? if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><? endif; ?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?>
+              </a>
             </li>
           <? endforeach; ?>
         </ul>
