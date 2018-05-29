@@ -294,6 +294,8 @@ $config = [
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
                         'Finna\AjaxHandler\EditListResourceFactory',
+                    'Finna\AjaxHandler\GetDateRangeVisual' =>
+                        'Finna\AjaxHandler\GetDateRangeVisualFactory',
                     'Finna\AjaxHandler\GetDescription' =>
                         'Finna\AjaxHandler\GetDescriptionFactory',
                     'Finna\AjaxHandler\GetOrganisationInfo' =>
@@ -313,6 +315,7 @@ $config = [
                     'editList' => 'Finna\AjaxHandler\EditList',
                     'editListResource' => 'Finna\AjaxHandler\EditListResource',
                     'getDescription' => 'Finna\AjaxHandler\GetDescription',
+                    'getDateRangeVisual' => 'Finna\AjaxHandler\GetDateRangeVisual',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
