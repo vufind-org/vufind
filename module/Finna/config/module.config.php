@@ -288,6 +288,8 @@ $config = [
                         'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
                     'Finna\AjaxHandler\CommentRecord' =>
                         'Finna\AjaxHandler\CommentRecordFactory',
+                    'Finna\AjaxHandler\DeleteRecordComment' =>
+                        'VuFind\AjaxHandler\DeleteRecordCommentFactory',
                     'Finna\AjaxHandler\EditList' =>
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
@@ -308,14 +310,17 @@ $config = [
                     'changePickupLocation' => 'Finna\AjaxHandler\ChangePickupLocation',
                     'changeRequestStatus' => 'Finna\AjaxHandler\ChangeRequestStatus',
                     'checkRequestsAreValid' => 'Finna\AjaxHandler\CheckRequestsAreValid',
-                    'commentRecord' => 'Finna\AjaxHandler\CommentRecord',
                     'editList' => 'Finna\AjaxHandler\EditList',
                     'editListResource' => 'Finna\AjaxHandler\EditListResource',
                     'getDescription' => 'Finna\AjaxHandler\GetDescription',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
-                    'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords'
+                    'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
+
+                    // Overrides:
+                    'VuFind\AjaxHandler\CommentRecord' => 'Finna\AjaxHandler\CommentRecord',
+                    'VuFind\AjaxHandler\DeleteRecordComment' => 'Finna\AjaxHandler\DeleteRecordComment',
                 ]
             ],
             'auth' => [

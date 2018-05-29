@@ -25,8 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\AjaxHandler;
+namespace Finna\AjaxHandler;
 
+use Finna\Db\Table\CommentsRecord;
 use VuFind\Controller\Plugin\Recaptcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Comments;
@@ -84,8 +85,8 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
         SearchRunner $searchRunner = null
     ) {
         parent::__construct($table, $recaptcha, $user, $enabled);
-        $this->comments = $comments;
-        $this->commentsRecord = $commentsRecord;
+        $this->commentsTable = $comments;
+        $this->commentsRecordTable = $commentsRecord;
         $this->searchRunner = $searchRunner;
     }
 
@@ -117,7 +118,6 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
 
         $type = $params->fromPost('type');
         $id = $params->fromPost('id');
-        $table = $this->getTable('Comments');
         if ($commentId = $params->fromPost('commentId')) {
             // Edit existing comment
             $comment = $params->fromPost('comment');
@@ -129,11 +129,12 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
                 );
             }
             $rating = $params->fromPost('rating');
-            $this->commentsTable->edit($user->id, $commentId, $comment, $rating);
+            $this->commentsTable
+                ->edit($this->user->id, $commentId, $comment, $rating);
 
             $output = ['id' => $commentId];
             if ($rating) {
-                $average = $this->table->getAverageRatingForResource($id);
+                $average = $this->commentsTable->getAverageRatingForResource($id);
                 $output['rating'] = $average;
             }
             return $this->formatResponse($output, self::STATUS_OK);
@@ -141,7 +142,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
 
         if ($type === '1') {
             // Allow only 1 rating/record for each user
-            $comments = $this->table->getForResourceByUser($id, $user->id);
+            $comments = $this->commentsTable->getForResourceByUser($id, $this->user->id);
             if (count($comments)) {
                 return $this->formatResponse(
                     $this->translate('An error has occurred'),
@@ -152,23 +153,22 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
         }
 
         $output = parent::handleRequest($params);
-        $data = json_decode($output->getContent(), true);
 
-        if ($data['status'] != 'OK' || !isset($data['data'])) {
+        if ('OK' !== $output[1]) {
             return $output;
         }
 
-        $commentId = $data['data'];
+        $commentId = $output[0];
         $output = ['id' => $commentId];
 
         // Update type
-        $this->table->setType($user->id, $commentId, $type);
+        $this->commentsTable->setType($this->user->id, $commentId, $type);
 
         // Update rating
         $rating = $params->fromPost('rating');
         $updateRating = $rating !== null && $rating > 0 && $rating <= 5;
         if ($updateRating) {
-            $this->commentsTable->setRating($user->id, $commentId, $rating);
+            $this->commentsTable->setRating($this->user->id, $commentId, $rating);
         }
 
         // Add comment to deduplicated records
@@ -196,7 +196,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
         $this->commentsRecordTable->addLinks($commentId, $ids);
 
         if ($updateRating) {
-            $average = $this->commentsRecordTable->getAverageRatingForResource($id);
+            $average = $this->commentsTable->getAverageRatingForResource($id);
             $output['rating'] = $average;
         }
 

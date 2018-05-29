@@ -74,7 +74,7 @@ class CommentRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterf
             $container->get('VuFind\Auth\Manager')->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled',
             $tablePluginManager->get('VuFind\Db\Table\Comments'),
-            $tablePluginManager->get('VuFind\Db\Table\CommentsRecord'),
+            $tablePluginManager->get('Finna\Db\Table\CommentsRecord'),
             $container->get('VuFind\Search\SearchRunner')
         );
     }
