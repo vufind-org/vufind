@@ -302,6 +302,8 @@ $config = [
                         'Finna\AjaxHandler\GetDescriptionFactory',
                     'Finna\AjaxHandler\GetFeed' =>
                         'Finna\AjaxHandler\GetFeedFactory',
+                    'Finna\AjaxHandler\GetImagePopup' =>
+                        'Finna\AjaxHandler\GetImagePopupFactory',
                     'Finna\AjaxHandler\GetOrganisationInfo' =>
                         'Finna\AjaxHandler\GetOrganisationInfoFactory',
                     'Finna\AjaxHandler\GetOrganisationPageFeed' =>
@@ -324,6 +326,7 @@ $config = [
                     'getDescription' => 'Finna\AjaxHandler\GetDescription',
                     'getDateRangeVisual' => 'Finna\AjaxHandler\GetDateRangeVisual',
                     'getFeed' => 'Finna\AjaxHandler\GetFeed',
+                    'getImagePopup' => 'Finna\AjaxHandler\GetImagePopup',
                     'getOrganisationPageFeed' => 'Finna\AjaxHandler\GetOrganisationPageFeed',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
