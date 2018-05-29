@@ -317,14 +317,13 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         if (!empty($items)) {
             // sort the items by shelving key in descending order, then ascending by
-            // copy number; use create_function to create anonymous comparison
-            // function for php 5.2 compatibility
-            $cmp = create_function(
-                '$a,$b',
-                'if ($a["shelving_key"] == $b["shelving_key"]) '
-                . 'return $a["number"] - $b["number"];'
-                . 'return $a["shelving_key"] < $b["shelving_key"] ? 1 : -1;'
-            );
+            // copy number
+            $cmp = function ($a, $b) {
+                if ($a['shelving_key'] == $b['shelving_key']) {
+                    return $a['number'] - $b['number'];
+                }
+                return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
+            };
             usort($items, $cmp);
         }
         return $items;
@@ -817,14 +816,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         if (!empty($items)) {
             // sort the items by due date
-            // use create_function to create anonymous comparison
-            // function for php 5.2 compatibility
-            $cmp = create_function(
-                '$a,$b',
-                'if ($a["duedate_raw"] == $b["duedate_raw"]) '
-                . 'return $a["id"] < $b["id"] ? -1 : 1;'
-                . 'return $a["duedate_raw"] < $b["duedate_raw"] ? -1 : 1;'
-            );
+            $cmp = function ($a, $b) {
+                if ($a['duedate_raw'] == $b['duedate_raw']) {
+                    return $a['id'] < $b['id'] ? -1 : 1;
+                }
+                return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
+            };
             usort($items, $cmp);
         }
 
@@ -1081,7 +1078,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ) {
             $availability = 0;
             $status = $this->config['UnavailableItemTypes'][$item_type];
-        } else if (isset($this->config['UnavailableLocations'])
+        } elseif (isset($this->config['UnavailableLocations'])
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
@@ -1117,7 +1114,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'format' => $format
             ];
 
-            return $item;
+        return $item;
     }
 
     /**
@@ -1381,7 +1378,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             $linking = $linking[0];
 
-            if (array_key_exists((int) $linking, $textuals)) {
+            if (array_key_exists((int)$linking, $textuals)) {
                 // Skip coded holdings overridden by textual
                 // holdings
                 continue;
@@ -1395,7 +1392,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $decoded_holding .= ' ' . $subfield->getData();
             }
 
-            $ndx = (int) ($linking
+            $ndx = (int)($linking
                           . sprintf("%0{$link_digits}u", $sequence));
             $holdings[$ndx] = trim($decoded_holding);
         }
@@ -1406,7 +1403,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $textual_holding .= ' ' . $note->getData();
             }
 
-            $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));
+            $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
             $holdings[$ndx] = trim($textual_holding);
         }
 
