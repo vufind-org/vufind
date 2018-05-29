@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for GetDateRangeVisual AJAX handler.
+ * Factory for GetFeed AJAX handler.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,16 +30,15 @@ namespace Finna\AjaxHandler;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for GetFacetData AJAX handler.
+ * Factory for GetFeed AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetDateRangeVisualFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetFeedFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -65,8 +64,10 @@ class GetDateRangeVisualFactory
         }
         $result = new $requestedName(
             $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Search\Results\PluginManager')
+            $container->get('VuFind\Config\PluginManager')->get('rss'),
+            $container->get('Finna\Feed\Feed'),
+            $container->get('ViewRenderer'),
+            $container->get('ControllerPluginManager')->get('url')
         );
         return $result;
     }

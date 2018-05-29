@@ -65,7 +65,7 @@ $config = [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*'
                     ],
                     'defaults' => [
-                        'controller' => 'Feedcontentpage',
+                        'controller' => 'FeedContent',
                         'action'     => 'Content',
                     ]
                 ],
@@ -165,7 +165,7 @@ $config = [
             'Finna\Controller\ErrorController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\ExternalAuthController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
-            'Finna\Controller\FeedContentPageController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\FeedContentController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\LocationServiceController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\MetaLibController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -186,8 +186,8 @@ $config = [
             'cache' => 'Finna\Controller\CacheController',
             'Comments' => 'Finna\Controller\CommentsController',
             'comments' => 'Finna\Controller\CommentsController',
-            'FeedContentPage' => 'Finna\Controller\FeedContentController',
-            'feedcontentpage' => 'Finna\Controller\FeedContentController',
+            'FeedContent' => 'Finna\Controller\FeedContentController',
+            'feedcontent' => 'Finna\Controller\FeedContentController',
             'LocationService' => 'Finna\Controller\LocationServiceController',
             'locationservice' => 'Finna\Controller\LocationServiceController',
             'MetaLib' => 'Finna\Controller\MetaLibController',
@@ -237,7 +237,7 @@ $config = [
             'Finna\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'Finna\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'Finna\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
-            'Finna\Feed' => 'Finna\Service\Factory::getFeed',
+            'Finna\Feed\Feed' => 'Finna\Service\Factory::getFeed',
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
@@ -294,12 +294,18 @@ $config = [
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
                         'Finna\AjaxHandler\EditListResourceFactory',
+                    'Finna\AjaxHandler\GetContentFeed' =>
+                        'Finna\AjaxHandler\GetContentFeedFactory',
                     'Finna\AjaxHandler\GetDateRangeVisual' =>
                         'Finna\AjaxHandler\GetDateRangeVisualFactory',
                     'Finna\AjaxHandler\GetDescription' =>
                         'Finna\AjaxHandler\GetDescriptionFactory',
+                    'Finna\AjaxHandler\GetFeed' =>
+                        'Finna\AjaxHandler\GetFeedFactory',
                     'Finna\AjaxHandler\GetOrganisationInfo' =>
                         'Finna\AjaxHandler\GetOrganisationInfoFactory',
+                    'Finna\AjaxHandler\GetOrganisationPageFeed' =>
+                        'Finna\AjaxHandler\GetOrganisationPageFeedFactory',
                     'Finna\AjaxHandler\GetSideFacets' =>
                         'Finna\AjaxHandler\GetSideFacetsFactory',
                     'Finna\AjaxHandler\GetSimilarRecords' =>
@@ -314,8 +320,11 @@ $config = [
                     'checkRequestsAreValid' => 'Finna\AjaxHandler\CheckRequestsAreValid',
                     'editList' => 'Finna\AjaxHandler\EditList',
                     'editListResource' => 'Finna\AjaxHandler\EditListResource',
+                    'getContentFeed' => 'Finna\AjaxHandler\GetContentFeed',
                     'getDescription' => 'Finna\AjaxHandler\GetDescription',
                     'getDateRangeVisual' => 'Finna\AjaxHandler\GetDateRangeVisual',
+                    'getFeed' => 'Finna\AjaxHandler\GetFeed',
+                    'getOrganisationPageFeed' => 'Finna\AjaxHandler\GetOrganisationPageFeed',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',

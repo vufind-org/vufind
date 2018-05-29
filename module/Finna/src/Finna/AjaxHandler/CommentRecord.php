@@ -142,7 +142,8 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
 
         if ($type === '1') {
             // Allow only 1 rating/record for each user
-            $comments = $this->commentsTable->getForResourceByUser($id, $this->user->id);
+            $comments = $this->commentsTable
+                ->getForResourceByUser($id, $this->user->id);
             if (count($comments)) {
                 return $this->formatResponse(
                     $this->translate('An error has occurred'),

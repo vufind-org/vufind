@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX handler to delete record comment.
+ * AJAX handler to delete a record comment.
  *
  * PHP version 7
  *
@@ -29,6 +29,15 @@ namespace Finna\AjaxHandler;
 
 use Zend\Mvc\Controller\Plugin\Params;
 
+/**
+ * AJAX handler to delete a record comment.
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 class DeleteRecordComment extends \VuFind\AjaxHandler\DeleteRecordComment
 {
     /**
