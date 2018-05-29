@@ -210,7 +210,9 @@ table.content-table {
       }
     }
   }
-  table-layout: fixed;
+  @media (min-width: @screen-sm-min) {
+    table-layout: fixed;
+  }
 }
 .table.citation {
   table-layout: fixed;
