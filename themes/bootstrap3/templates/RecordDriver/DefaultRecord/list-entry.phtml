@@ -113,9 +113,23 @@
               <br/>
           <?php endif; ?>
 
-
-
-
+          <div class="callnumAndLocation ajax-availability hidden">
+            <?php if ($this->driver->supportsAjaxStatus()): ?>
+              <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+              <span class="callnumber ajax-availability hidden">
+                <?=$this->transEsc('Loading')?>...<br/>
+              </span>
+              <strong><?=$this->transEsc('Located')?>:</strong>
+              <span class="location ajax-availability hidden">
+                <?=$this->transEsc('Loading')?>...
+              </span>
+              <div class="locationDetails"></div>
+            <?php else: ?>
+              <?php $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+                <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+              <?php endif; ?>
+            <?php endif; ?>
+          </div>
            
           <?php /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
                 but even if we don't plan to display the link, we still want to get the $openUrl
