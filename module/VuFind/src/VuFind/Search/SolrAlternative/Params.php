@@ -51,8 +51,6 @@ class Params extends \VuFind\Search\Solr\Params
         return parent::getBackendParameters();
     }
 
-
-
     /**
      * Load all available facet settings.  This is mainly useful for showing
      * appropriate labels when an existing search has multiple filters associated
