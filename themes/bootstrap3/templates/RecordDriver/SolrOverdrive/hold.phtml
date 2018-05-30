@@ -1,51 +1,92 @@
-<? if($action=="checkout"){ ?>
-    <h1><? echo $this->transEsc("od_checkout"); ?></h1>
-    <h2><div class="title"><?=$this->escapeHtml($title)?></div></h2>
+<?php if($action=="checkout"): ?>
+    <h1><?php echo $this->transEsc("od_checkout"); ?></h1>
+    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
 
 <div class="media">
-    <div class="pull-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-        <? /* Display thumbnail if appropriate: */ ?>
-        <? if($cover): ?>
-            <img alt="Cover Image"  class="recordcover" src="<?=$cover?>">
-        <? endif; ?>
+    <div class="pull-left <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+        <?php /* Display thumbnail if appropriate: */ ?>
+        <?php if($cover): ?>
+            <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+        <?php endif; ?>
     </div>
 
     <div class="">
-        <h3><? echo $this->transEsc("od_dl_formats"); ?></h3>
-        <? foreach($formats as $key=>$format):?>
-        <ul><li><?=$key?></li></ul>
-        <? endforeach;?>
-
-
+        <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+        <?php foreach($formats as $key=>$format):?>
+        <ul><li><?php echo $key?></li></ul>
+        <?php endforeach;?>
     </div>
-    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <? //TODO FIX THIS URL!!!! ?>
-    <a class='btn btn-primary' href='/odtest/overdrive/hold?od_id=$od_id&rec_id=$rec_id&action=doCheckout'>
-        <?=$this->transEsc("od_but_checkout_s"); ?>
+    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    
+    <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=doCheckout"?>'>
+        <?php echo $this->transEsc("od_but_checkout_s"); ?>
     </a>
 </div>
-<? }elseif($action=="hold"){    ?> 
-    <h1><? echo $this->transEsc("od_hold"); ?></h1>
+<?php elseif($action=="hold"):    ?> 
+    <h1><?php echo $this->transEsc("od_hold"); ?></h1>
     <div class="title"></div>
     <form class="form-record-hold" method="post" name="placeHold">
-
-  
       <div class="form-group hold-required-by">
       <label class="control-label">email</label>
       <input id="email" name="email" value="" size="" class="form-control" type="text">
     </div>
         <div class="form-group">
-            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+            <input name="action" value="placeHold" type="hidden">
             <input class="btn btn-primary" name="placeHold" value="Place Hold" type="submit">
-
   </div>
 </form>
+
+<?php elseif($action=="cancelHoldConfirm"):    ?> 
+    <h1><?php echo $this->transEsc("od_cancel_hold"); ?></h1>
+    <div class="title"></div>
+    <form class="form-record-hold" method="post" name="cancelHold">
+
+            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=cancelHold"?>'>
+        <?php echo $this->transEsc("od_but_cancel_hold"); ?>
+    </a>
+</form>
  
-<? }elseif($action=="doCheckout" || $action =='placeHold'){ ?>
-    <div>(result)</div>
-    <?php $type = !$result['result']?"danger":"success";?>
-    <div class="alert alert-<?= $type?>"><i class='fa fa-exclamation-triangle'></i><?=$result['message']?></div>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</button>
-<? } ?>
+<?php elseif($action =='placeHold'): ?>
+    <?php  if($result['result']):?>
+      <div class="alert alert-success"><i class='fa fa-check'></i>
+        <?php echo $this->transEsc("od_hold_place_success", ["%%holdListPosition%%"=>$result['data']['holdListPosition']]); ?>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php else: ?>
+      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <?php echo $this->transEsc("od_hold_place_failure") ?>
+        <div class="moreInfo"><?php echo $result['data']['moreInfo'] ?></div>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+     <?php endif;
+   elseif($action =='cancelHold'): ?>
+    <?php  if($result->status):?>
+      <div class="alert alert-success"><i class='fa fa-check'></i>
+        <?php echo $this->transEsc("od_hold_cancel_success"); ?>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php else: ?>
+      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <?php echo $this->transEsc("od_hold_cancel_failure") ?>
+        <div class="moreInfo"><?php echo $result->msg?></div>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+<?php    endif;
+   elseif($action=="doCheckout"): ?>
+    <?php  if($result['result']):?>
+      <div class="alert alert-success"><i class='fa fa-check'></i>
+        <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%'=>$result['data']['expires']]); ?>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php else: ?>
+      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <?php echo $this->transEsc("od_docheckout_failure"); ?>
+         <div class="moreInfo"><?php echo $result['data']['moreInfo'] ?></div>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php endif;?>
+ <?php endif; ?>
 
 

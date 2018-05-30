@@ -79,14 +79,14 @@
 
       <?php if($this->driver->supportsAjaxStatus()):?>
                <div class="status callnumAndLocation hidden">Status</div>
-      <?php elseif($avail = $this->driver->getOverdriveAvailability()):
-                 echo "<p><div class='copies'><strong>Total Copies</strong> ".$avail->copiesOwned."</div>
-                        <div class='avail'><strong>Available</strong> ".$avail->copiesAvailable."</div>
-                        <div class='holds'><strong>Holds</strong> ".$avail->numberOfHolds."</div></p>";
+      <?php elseif($avail = $this->driver->getOverdriveAvailability()): ?>
+            <div class="availability">
+             <div class='copies'><strong><?php echo $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
+             <div class='avail'><strong><?php echo $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
+             <div class='holds'><strong><?php echo $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
+            </div>
            
-           
-           endif;
-           ?>
+       <?php endif; ?>
            <div class="callnumAndLocation ajax-availability hidden"></div>
            
            <div class="result-formats">
@@ -98,7 +98,7 @@
       <?php /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          */
+          
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
@@ -115,7 +115,8 @@
               <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
           <?php endforeach; ?>
         <?php endif; ?>
-      <?php endif; ?>
+      <?php endif; 
+      */?>
 
 
 
@@ -171,7 +172,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+      <? //$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':'' ?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

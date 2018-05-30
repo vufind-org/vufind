@@ -1,6 +1,6 @@
 <?php
 /**
- * Digital Contente Connector Factory Class
+ * Digital Content Connector Factory Class
  *
  * PHP version 7
  *
@@ -20,10 +20,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brent Palmer <brent-palmer@icpl.org> 
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
+ * @link     (Fixme)
  */
 namespace VuFind\DigitalContent;
 
@@ -37,6 +38,7 @@ use Zend\Session\SessionManager;
  * @category VuFind
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  *
@@ -47,7 +49,10 @@ class Factory
     /**
      * Factory for OverdriveConnector.
      *
-     * @param ServiceManager $sm Service manager.
+     * @param Fixme Main Config     
+     * @param Fixme Record Config
+     * @param SessionManager Session Manager
+     * @param FIxme ILS Authenticator   
      *
      * @return OverdriveConnector
      */
@@ -57,7 +62,8 @@ class Factory
         return new OverdriveConnector(
             $sm->get('VuFind\Config\PluginManager')->get('config'),
             $sm->get('VuFind\Config\PluginManager')->get('Overdrive'),
-           $sm->get('Zend\Session\SessionManager')
+            $sm->get('Zend\Session\SessionManager'),
+            $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
 

@@ -1,45 +1,125 @@
 <?php
   // Set up page title:
-  $this->headTitle($this->translate('Overdrive Content'));
+  $this->headTitle($this->translate('od_content'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Overdrive Content') . '</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('od_content') . '</li>';
 ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Overdrive Content')?></h2>
-  <?=$this->flashmessages()?>
+<div class="<?php echo $this->layoutClass('mainbody')?>">
+  <h2><?php echo $this->transEsc('od_content')?></h2>
+  <?php echo $this->flashmessages()?>
 
-  <h3><?=$this->transEsc('Overdrive Loans')?></h3>
+  <h3><?php echo $this->transEsc('od_loans')?></h3>
   
-  <?php $i = 0; foreach ($this->checkouts as $resource): ?>
-  <h4 property="name"><?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle())?></h4>
-    <div>Checkout expires on: <?php echo $resource['checkout']->expires; ?> </div>
-            <?php $listAuthors = $resource['record']->getPrimaryAuthors(); 
+  <?php $i = 0; foreach ($this->checkouts as $resource):
+          $od_id = $resource['record']->getOverdriveID();
+          $rec_id = $resource['record']->getUniqueID();
+          $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource['record']));
+          $cover = $coverDetails['html'];
+          $thumbnail = false;
+          $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
+          if ($cover):
+            ob_start(); ?>
+            <div class="media-<?php echo $thumbnailAlignment ?> <?php echo $this->escapeHtmlAttr($coverDetails['size'])?>">
+              <?php echo $cover ?>
+            </div>
+            <?php $thumbnail = ob_get_contents(); ?>
+          <?php ob_end_clean(); ?>
+        <?php endif; ?>
+        <div class="media">
+          <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+            <?php echo $thumbnail ?>
+          <?php endif ?>
+          <div class="media-body">
+  
+          <h4 property="name">      
+            <a href="<?php echo $this->recordLink()->getUrl($resource['record'])?>" class="title">
+             <?php echo  $this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
+            </a>
+          </h4>
+                    <?php $listAuthors = $resource['record']->getPrimaryAuthors(); 
+                         if (!empty($listAuthors)): ?>
+                          <?php echo $this->transEsc('by')?>:
+                           <a href="<?php echo $this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?php echo $this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?php echo $this->transEsc('more_authors_abbrev')?>
+                         <?php endif; ?><br/>
+                         <?php endif; ?>
+                 <div><?php echo $this->transEsc('od_expires_on',['%%due_date%%'=>$resource['checkout']->expires])?></div> 
+                 <div class="pull-right">
+                     <a class="btn btn-primary returnTitle" 
+                      data-lightbox title="<?php echo $this->transEsc('od_but_return')?>" 
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitle"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
+                      <?php echo $this->transEsc('od_but_return')?></a>
+
+                     <a class="btn btn-primary downloadTitle" 
+                      data-lightbox title="<?php echo $this->transEsc('od_but_download')?>" 
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=download"; ?>"><i class="fa fa-fw fa-download" aria-hidden="true"></i>
+                      <?php echo $this->transEsc('od_but_download')?></a>
+                 </div>
+           </div>
+        </div>
+ 
+           
+           
+           <?php endforeach;?>
+            
+           
+            
+  <h3><?php echo $this->transEsc('od_holds')?></h3>
+  <?php $i = 0; foreach ($this->holds as $resource): 
+          $od_id = $resource['record']->getOverdriveID();
+          $rec_id = $resource['record']->getUniqueID();
+          $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource['record']));
+          $cover = $coverDetails['html'];
+          $thumbnail = false;
+          $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
+          if ($cover):
+            ob_start(); ?>
+            <div class="media-<?php echo $thumbnailAlignment ?> <?php echo $this->escapeHtmlAttr($coverDetails['size'])?>">
+              <?php echo $cover ?>
+            </div>
+            <?php $thumbnail = ob_get_contents(); ?>
+          <?php ob_end_clean(); ?>
+        <?php endif; ?>
+        <div class="media">
+          <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+            <?php echo $thumbnail ?>
+          <?php endif ?>
+          <div class="media-body">
+              <h4 property="name">
+                  <a href="<?php echo $this->recordLink()->getUrl($resource['record'])?>" class="title">
+                     <?php echo  $this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
+                  </a>
+              </h4>
+              <?php $listAuthors = $resource['record']->getPrimaryAuthors(); 
                  if (!empty($listAuthors)): ?>
-                  <?=$this->transEsc('by')?>:
-                   <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?>
+                  <?php echo $this->transEsc('by')?>:
+                   <a href="<?php echo $this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?php echo $this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?php echo $this->transEsc('more_authors_abbrev')?>
                  <?php endif; ?><br/>
                  <?php endif; ?>
-   <? endforeach;?>
-            
-
-  <h3><?=$this->transEsc('Overdrive Holds')?></h3>
-  <?php $i = 0; foreach ($this->holds as $resource): ?>
-
-  <h4 property="name"><? $this->escapeHtml($resource['record']->getShortTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?></h4>
-  Hold placed on <? echo $resource['hold']->holdPlacedDate ?>
-  Position <?= $resource['hold']->holdListPosition?> of <?= $resource['hold']->numberOfHolds ?> in holds queue
-  Email Address for hold notification: <?=$resource['hold']->emailAddress ?>
-  <button class="btn btn-primary">Cancel Hold</button>
-  <? endforeach;?>
+                 
+                <?php echo $this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%'=>$resource['hold']->holdPlacedDate]);?>
+                <?php echo $this->transEsc('od_hold_queue', ['%%holdPosition%%'=>$resource['hold']->holdListPosition, '%%numberOfHolds%%'=>$resource['hold']->numberOfHolds]);?>
+                <?php echo $this->transEsc('od_hold_email', ['%%holdEmailAddress%%'=>$resource['hold']->emailAddress]);?>
+ 
+                <div class="pull-right">
+                     <a class="btn btn-primary placehold" 
+                      data-lightbox title="<?php echo $this->transEsc('request_place_text')?>" 
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                      <?php echo $this->transEsc('od_but_cancel_hold')?></a>
+                </div>
+             </div>
+           </div>
+  <?php endforeach;?>
   
   
-  <h3><?=$this->transEsc('Overdrive History')?></h3>
-
+  <h3><?php echo $this->transEsc('od_history')?></h3>
+       <div class="alert alert-info"><i class='fa fa-exclamation-triangle'></i>
+        Coming Soon.
+      </div>
  
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'dgcontent'])?>
+<div class="<?php echo $this->layoutClass('sidebar')?>">
+  <?php echo $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'dgcontent'])?>
 </div>
