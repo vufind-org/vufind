@@ -97,8 +97,8 @@ class Params extends \VuFind\Search\Solr\Params
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
         if (!$this->initFacetList(
-            'HomePage', 
-            'HomePage_Settings', 
+            'HomePage',
+            'HomePage_Settings',
             'SolrAlternative'
         )
         ) {

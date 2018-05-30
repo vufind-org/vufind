@@ -85,7 +85,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Search\Pazpar2\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\Primo\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\Solr\Results' => 'VuFind\Search\Solr\ResultsFactory',
-        'VuFind\Search\SolrAlternative\Results' => 
+        'VuFind\Search\SolrAlternative\Results' =>
             'VuFind\Search\SolrAlternative\ResultsFactory',
         'VuFind\Search\SolrAuth\Results' => 'VuFind\Search\Results\ResultsFactory',
         'VuFind\Search\SolrAuthor\Results' => 'VuFind\Search\Results\ResultsFactory',

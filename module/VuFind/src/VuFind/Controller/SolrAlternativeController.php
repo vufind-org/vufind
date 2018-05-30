@@ -75,4 +75,3 @@ class SolrAlternativeController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

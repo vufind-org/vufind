@@ -84,7 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Search\Pazpar2\Params' => 'VuFind\Search\Params\ParamsFactory',
         'VuFind\Search\Primo\Params' => 'VuFind\Search\Params\ParamsFactory',
         'VuFind\Search\Solr\Params' => 'VuFind\Search\Solr\ParamsFactory',
-        'VuFind\Search\SolrAlternative\Params' => 
+        'VuFind\Search\SolrAlternative\Params' =>
             'VuFind\Search\Params\ParamsFactory',
         'VuFind\Search\SolrAuth\Params' => 'VuFind\Search\Params\ParamsFactory',
         'VuFind\Search\SolrAuthor\Params' => 'VuFind\Search\Params\ParamsFactory',
