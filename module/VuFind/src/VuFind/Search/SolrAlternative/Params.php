@@ -31,14 +31,14 @@ namespace VuFind\Search\SolrAlternative;
 use VuFindSearch\ParamBag;
 
 /**
-  * Search Params for second Solr index
+ * Search Params for second Solr index
  *
  * @category VuFind
  * @package  Search_SolrAlternative
  * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
-*/
+ */
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
@@ -98,16 +98,18 @@ class Params extends \VuFind\Search\Solr\Params
     public function initHomePageFacets()
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
-        if (!$this->initFacetList('HomePage', 
-            'HomePage_Settings', 'SolrAlternative')) {
+        if (!$this->initFacetList(
+            'HomePage', 
+            'HomePage_Settings', 
+            'SolrAlternative'
+            )
+        ) {
             $this->initAdvancedFacets();
         }
     }
 
     /**
      * Initialize facet settings for the standard search screen.
-     *
-     * @param string name of the facet config file
      *
      * @return void
      */
