@@ -52,6 +52,18 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
 
+
+    /**
+     * Load all available facet settings.  This is mainly useful for showing
+     * appropriate labels when an existing search has multiple filters associated
+     * with it.
+     *
+     * @param string $preferredSection Section to favor when loading settings; if
+     * multiple sections contain the same facet, this section's description will
+     * be favored.
+     *
+     * @return void
+     */
     public function activateAllFacets($preferredSection = false)
     {
         // Based on preference, change the order of initialization to make sure
@@ -71,11 +83,8 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize facet settings for the advanced search screen.
      *
-     * @param string name of the facet config file
-     *
      * @return void
      */
-
     public function initAdvancedFacets()
     {
         $this->initFacetList('Advanced', 'Advanced_Settings', 'SolrAlternative');
@@ -84,15 +93,13 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize facet settings for the home page.
      *
-     * @param string name of the facet config file
-     *
      * @return void
      */
-
     public function initHomePageFacets()
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
-        if (!$this->initFacetList('HomePage', 'HomePage_Settings', 'SolrAlternative')) {
+        if (!$this->initFacetList('HomePage', 
+            'HomePage_Settings', 'SolrAlternative')) {
             $this->initAdvancedFacets();
         }
     }

@@ -45,7 +45,6 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();

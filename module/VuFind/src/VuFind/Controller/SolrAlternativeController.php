@@ -68,7 +68,8 @@ class SolrAlternativeController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('SolrAlternative');
+        $config = $this->serviceLocator->get('VuFind\Config')
+            ->get('SolrAlternative');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
