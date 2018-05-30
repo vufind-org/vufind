@@ -102,8 +102,7 @@ class Params extends \VuFind\Search\Solr\Params
             'HomePage', 
             'HomePage_Settings', 
             'SolrAlternative'
-            )
-        ) {
+        )) {
             $this->initAdvancedFacets();
         }
     }
