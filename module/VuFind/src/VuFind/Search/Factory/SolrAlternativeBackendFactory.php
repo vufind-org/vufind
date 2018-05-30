@@ -83,16 +83,6 @@ class SolrAlternativeBackendFactory extends SolrDefaultBackendFactory
      */
     protected function getSolrUrl()
     {
-        $url = $this->config->get($this->searchConfig)->General->url;
-        $core = $this->getSolrCore();
-        if (is_object($url)) {
-            return array_map(
-                function ($value) use ($core) {
-                    return "$value/$core";
-                },
-                $url->toArray()
-            );
-        }
-        return "$url/$core";
+        return parent::getSolrUrl($this->searchConfig);
     }
 }

@@ -266,9 +266,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get the Solr URL.
      *
+     * @param string $config name of configuration file
+     *
      * @return string|array
      */
-    protected function getSolrUrl()
+    protected function getSolrUrl($config = 'config')
     {
         $url = $this->config->get('config')->Index->url;
         $core = $this->getSolrCore();
