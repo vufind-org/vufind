@@ -47,18 +47,7 @@ class Results extends \VuFind\Search\Solr\Results
      */
     protected function performSearch()
     {
-        $query  = $this->getParams()->getQuery();
-        $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
-            'SolrAlternative', $query, $offset, $limit, $params
-        );
-
-        $this->responseFacets = $collection->getFacets();
-        $this->resultTotal = $collection->getTotal();
-
-        // Construct record drivers for all the items in the response:
-        $this->results = $collection->getRecords();
+        $this->backendId = 'SolrAlternative';
+        parent::performSearch();
     }
 }
