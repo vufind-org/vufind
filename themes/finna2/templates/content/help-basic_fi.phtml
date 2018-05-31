@@ -1,0 +1,82 @@
+<!-- START of: finna - content/help-basic_fi.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="basicsearch" class="content-section">
+      <h2><i class="fa fa-search"></i> Vapaa sanahaku</h2>
+      <p>Syötä hakukenttään hakusanat.</p>
+      <p>Hakukentän pudotusvalikosta valitsemalla voit kohdistaa haun otsikkoon, tekijään tai aiheeseen.</p>
+      <p>Pelkällä välilyönnillä erotetut hakusanat käyttäytyvät AND-hakulogiikalla eli hakutuloksien tulee sisältää kaikki antamasi hakusanat.</p>
+      <p>Esimerkiksi:</p>
+      <pre class="code">mannerheim carl</pre>
+      <p>on sama haku kuin</p>
+      <pre class="code">mannerheim AND carl</pre>
+      <p>Haun käynnistämisen jälkeen voit rajata hakutuloksia esimerkiksi käyttöoikeuksien, aineiston sisältötyypin tai valmistusvuoden mukaan.</p>
+      <h3>Hakulause esimerkkejä:</h3>
+      <pre class="code">lapsi</pre>
+      <p>hakutuloksiin tulee aineistoa liittyen lapsiin</p>
+      <pre class="code">"lapset"</pre>
+      <p>tarkempi hakutulos, heittomerkit rajaavat sanamuodon niin, että hakutuloksissa esiintyy sana "lapset"</p>
+      <pre class="code">"Helsingin yliopisto"</pre>
+      <p>fraasi on hyvä laittaa aina lainausmerkkeihin, jotta haku ei tulkitse sanoja erillisiksi</p>
+      <pre class="code">lapset kesä</pre>
+      <p>sama kuin kirjoittaisi lapset AND kesä, haku antaa aineistoja liittyen sekä lapsiin että kesään</p>
+      <pre class="code">maaseutu OR maatila</pre> 
+      <p>haussa ilmenee tuloksia liittyen maaseutuun tai maatiloihin</p>
+      <pre class="code">"kivi aleksis"</pre> 
+      <p>tekijä lainausmerkkeihin, sukunimi mielellään ensin</p>
+      <pre class="code">tieto*</pre> 
+      <p>tähtimerkki katkaisee sanan, jolloin hakutuloksiin voi tulla useita päätteitä: tietokone, tiedot, tietojenkäsittely</p>
+      <p>Kun kirjoitat hakupalkkiin esimerkiksi kirjan nimeä, järjestelmä ennakoi hakemaasi sanaa tarjoamalla vaihtoehtoja, joista saatat myös löytää etsimäsi suoraan.</p>
+      <p><strong>Lisäohjeita hakulauseen muodostamisesta löytyy <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">hakulauseen muotoilu</a> -osiosta.</strong></p>
+    </div>
+    <div id="narrowsearch" class="content-section">
+      <h2>Hakutulosten rajaaminen</h2>
+      <p>Hakutulossivu näyttää oletusarvoisesti parhaiten hakuun täsmänneet tulokset ylimmäisenä (täsmäävyys, relevanssi). Hakutulosten järjestyksen voi muuttaa myös esimerkiksi vanhimmasta uusimpaan valmistusvuoden mukaan. Lisäksi näkymästä saa galleriamuotoisen tai tiivistetyn listan.</p>
+      <p><strong>Rajaa hakua</strong> -valikon avulla saat rajattua hakutuloksia suppeammaksi käyttämällä jopa useita rajauksia samanaikaisesti. Vaihtoehdot ovat oletuksena kiinni, mutta ne saa auki alasvetovalikko-nuolesta.</p>
+      <p><strong>Verkossa saatavilla</strong>: rajaa tulokset aineistoon, johon on pääsy Finnan kautta.</p>
+      <p><strong>Sallitut käyttötavat</strong>: toimii verkossa saatavilla olevilla aineistoilla. Tutustu aineistojen yhteydessä esitettyihin käyttöoikeustietoihin. Aineistojen käyttäjällä on vastuu tekijänoikeuksien ja yksityisyydensuojan kunnioittamisesta. Lähde ja tekijä on nimettävä, jos rajausvaihtoehto on jokin muu kuin vapaa käyttö.</p>
+      <ul class="list-bullets">
+        <li><strong>Vapaa käyttö</strong></li>
+        <li><strong>Saa muokata</strong>
+          <ul class="list-bullets">
+            <li>Ei kaupalliseen käyttöön</li>
+            <li>Myös kaupalliseen käyttöön</li>
+          </ul>
+        </li>
+        <li><strong>Muokkauksia tekemättä</strong>
+          <ul class="list-bullets">
+            <li>Ei kaupalliseen käyttöön</li>
+            <li>Myös kaupalliseen käyttöön</li>
+            <li>Luvanvarainen käyttö / ei tiedossa</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>Aineistotyyppi</strong>: sisältää erilaisia vaihtoehtoja sen mukaan minkä tyyppistä aineistoa on saatavilla, esimerkiksi kuvia, esineitä, kirjoja jne.</p>
+      <p><strong>Tekijä</strong>: kuka aineiston on tuottanut tai kuka oikeuksia hallinnoi</p>
+      <p><strong>Aihe</strong>: valmiita aiheita helpottamaan haun rajaamista</p>
+      <p><strong>Alue</strong>: miltä alueelta aineisto on</p>
+      <p><strong>Valmistusvuosi</strong>: valmistusvuodesta voi määrittää minkä aikavälin aineistoa näytetään, esimerkiksi 1920–1980-luvut. Palkin pylväät näyttävät, miltä ajalta aineistoa on tarjolla.</p>
+      <ul class="list-bullets">
+        <li>Kaikki tulokset</li>
+        <li>Aikavälille kokonaan sisältyvät tulokset</li>
+        <li>Rajaa hakutuloksia julkaisuvuoden, valmistuvuoden ja luontivuoden mukaan.</li>
+      </ul>
+      <p><strong>Aiheen aika</strong>: tarjoaa valmiita vuosilukuja ja vuosikymmeniä. Haku valikoi tiettyjä kokonaisuuksia ja sulkee toiset vaihtoehdot pois. Esimerkiksi 1930-luku ei erittele vuoden 1933 tuloksia, vaan hakee tietoja, jotka on merkattu nimenomaan 1930-luvulle.</p>
+      <p><strong>Kieli</strong>: näyttää, minkä kielistä aineistoa hakutulokseen sisältyy.</p>
+      <p><strong>Sisältyy julkaisuun</strong>: ilmoittaa esimerkiksi lehden nimen, jos hakutuloksissa on artikkeleita.</p>
+      <p><strong>Toimiala</strong>: organisaation tyyppi – museo, arkisto tai kirjasto.</p>
+      <p><strong>Organisaatio</strong>: näyttää kaikki arkistot, kirjastot ja museot, joiden aineistoja hakutulokseen sisältyy.</p>
+      <p><strong>Uutta Finnassa</strong>: näyttää, mitä aineistoa Finnaan on viimeksi lisätty.</p>
+      <h3>Kun rajaukset on tehty...</h3>
+      <p>Finna säilyttää tekemäsi rajaukset ja näyttää ne hakukentän alapuolella. Yksittäisen rajauksen voi poistaa klikkaamalla kyseisen rajauksen poistopainiketta: <i class="fa fa-lg fa-window-close" aria-hidden="true"></i>. Kaikki rajaukset voi poistaa hakupalkin alta poistamalla valinta kohdasta <i>Säilytä rajaukset</i> ja tekemällä uuden haun.</p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help-basic_fi.phtml -->

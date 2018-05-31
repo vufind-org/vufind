@@ -1,0 +1,81 @@
+<!-- START of: finna - content/help-basic_sv.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="basicsearch" class="content-section">
+      <h2><i class="fa fa-search"></i> Fri ordsökning</h2>
+      <p>Skriv in sökorden i sökrutan.</p>
+      <p>I rullgardinsmenyn till höger i sökrutan kan du välja att söka på titel, upphovsman eller ämne.<p>
+      <p>Sökord åtskilda med mellanslag följer samma söklogik som om de skulle åtskiljas av ett AND, dvs. sökresultaten ska innehålla alla sökord.</p>
+      <p>Till exempel:</p>
+      <pre class="code">mannerheim carl</pre>
+      <p>är i praktiken samma sökning som</p>
+      <pre class="code">mannerheim AND carl</pre>
+      <p>Efter att du gjort en sökning kan du begränsa sökresultaten till exempel enligt användningsrättigheter, innehållstyp eller produktionsår.</p>
+      <pre class="code">barn</pre>
+      <p>sökresultaten innehåller material med anknytning till barn</p>
+      <pre class="code">"barn"</pre>
+      <p>exaktare sökresultat, citationstecknen begränsar ordformen så att ordet ”barn” finns i sökresultatet</p>
+      <pre class="code">"Helsingfors universitet"</pre>
+      <p>liknande fraser är alltid bra att skriva inom citationstecken, så att sökningen inte tolkar orden separat</p>
+      <pre class="code">barn sommar</pre>
+      <p>samma som barn AND sommar; sökningen tar fram material som anknyter både till barn och till sommar</p>
+      <pre class="code">landsbygd OR bondgård</pre> 
+      <p>sökningen ger resultat som anknyter till landsbygden eller bondgårdar</p>
+      <pre class="code">"kivi aleksis"</pre> 
+      <p>upphovsmän skrivs inom citationstecken, helst med tillnamnet först</p>
+      <pre class="code">data*</pre> 
+      <p>asterisken bryter av ordet och sökresultaten kan innehålla flera olika ändelser: t.ex. databas, databehandling, dataskydd</p>
+      <p>När du i sökrutan skriver in t.ex. en boktitel, förutser systemet ordet som du söker genom att föreslå alternativ, bland vilka du kanske direkt hittar det du söker.</p>
+      <p><strong>Närmare anvisningar för formulering av sökfraser finns i delen <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">söksyntax</a>.</strong></p>
+    </div>
+    <div id="narrowsearch" class="content-section">
+      <h2>Begränsa sökresultaten</h2>
+      <p>Standardinställningen för sökresultaten är att de som bäst motsvarar sökningen visas först (relevans). Ordningen på sökresultaten kan också ändras t.ex. så att de äldsta (enligt produktionsår) visas först. Därtill kan resultaten visas som bildgalleri eller som en förkortad lista.</p>
+      <p>I menyn <strong>Begränsa sökningen</strong> kan du avgränsa sökresultaten genom att använda ett eller flera filter samtidigt. Alternativen är stängda, men du kan öppna dem med pilen för rullgardinsmenyn.</p>
+      <p><strong>Tillgänglig på nätet</strong>: begränsar resultaten till material som är tillgängligt via Finna.</p>
+      <p><strong>Tillåtna användningssyften</strong>: tfungerar för material tillgängligt på nätet. Läs informationen om användarrättigheterna som finns i samband med materialet. Den som använder materialet har ansvar för att respektera upphovsrätten och dataskyddet. Källa och upphovsman måste anges om avgränsningen är annan än fri användning.</p>
+      <ul class="list-bullets">
+        <li><strong>Fri användning</strong></li>
+        <li><strong>Får redigeras</strong>
+          <ul class="list-bullets">
+            <li>Inte för kommersiell användning</li>
+            <li>Även för kommersiell användning</li>
+          </ul>
+        </li>
+        <li><strong>Utan redigering</strong>
+          <ul class="list-bullets">
+            <li>Inte för kommersiell användning</li>
+            <li>Även för kommersiell användning</li>
+            <li>nvändning kräver tillstånd/okänd</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>Materialtyp</strong>: olika alternativ för typ av material som är tillgängligt, t.ex. bilder, föremål, böcker.</p>
+      <p><strong>Upphovsman</strong>: vem har producerat materialet eller vem administrerar rättigheterna.</p>
+      <p><strong>Tema</strong>: föreslagna teman för att begränsa sökningen.</p>
+      <p><strong>Region</strong>: vilken region handlar materialet om.</p>
+      <p><strong>Produktionsår</strong>: välj tidsintervall för materialets produktionsår, t.ex. 1920–1980-talet. Staplarna i tidslinjen visar från vilken tidsperiod det finns material.</p>
+      <ul class="list-bullets">
+        <li>Alla resultat</li>
+        <li>Resultat som helt ingår i tidsintervallet</li>
+        <li>Begränsa sökresultaten enligt publikationsår, tillverkningsår och produktionsår</li>
+      </ul>
+      <p><strong>Tidsperiod</strong>: erbjuder årtal och årtionden som materialet handlar om. Sökningen väljer vissa helheter och utesluter andra alternativ. T.ex. 1930-talet specificerar inte resultat om 1933, utan söker uppgifter som uttryckligen är märkta att gälla 1930-talet.</p>
+      <p><strong>Språk</strong>: visar på vilka språk det finns material i sökresultaten.</p>
+      <p><strong>Ingår i publikationen</strong>: ger namnet på t.ex. tidningen som det finns artiklar i sökresultaten.</p>
+      <p><strong>Sektor</strong>: organisationstyp – museum, arkiv eller bibliotek.</p>
+      <p><strong>Organisation</strong>: visar alla arkiv, bibliotek och museer från vilka det finns material i sökresultaten.</p>
+      <p><strong>Nytt i Finna</strong>: visar vilket material som senast har lagts till i Finna.</p>
+      <h3>När du har valt begränsningarna...</h3>
+      <p>Finna sparar dina valda begränsningar och visar dem nedanför sökrutan. Du kan ta bort en begränsning genom att klicka på krysset vid den (bild). Du kan ta bort alla begränsningar genom att avkryssa rutan Spara tidigare begränsningar nedanför sökrutan och göra en nya sökning.</p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help-basic_sv.phtml -->

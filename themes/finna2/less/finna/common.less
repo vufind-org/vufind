@@ -210,7 +210,9 @@ table.content-table {
       }
     }
   }
-  table-layout: fixed;
+  @media (min-width: @screen-sm-min) {
+    table-layout: fixed;
+  }
 }
 .table.citation {
   table-layout: fixed;
@@ -270,5 +272,17 @@ ol {
 
   > li {
     list-style-type: disc;
+  }
+}
+
+// Numbered list
+.list-numbers {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 1.2em;
+  padding-bottom: 0.9em;
+
+  > li {
+    list-style-type: decimal;
   }
 }

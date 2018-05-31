@@ -1,0 +1,168 @@
+<!-- START of: finna - content/help_syntax_fi.phtml -->
+<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-syntax'])?>
+<? endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="merging" class="content-section">
+      <h2>Hakusanojen yhdistäminen</h2>
+      <p>Hakupalkkiin peräkkäin kirjoitetut sanat yhdistyvät AND-hakulogiikalla. Jos haluat käyttää haussa muita kuin AND-operaattoria, operaattori (OR, NOT) on kirjoitettava ISOIN KIRJAIMIN hakusanojen väliin. Jos käytät hakulausekkeessa kahta tai useampaa eri operaattoria käytä sulkumerkkejä ( ) eri tavoilla yhdistettyjen hakusanojen välillä.</p>
+      <p>Esimerkki:</p>
+      <pre class="code">ruokavalio AND (dieetti OR elämäntapa)</pre>
+      <h3>AND</h3>
+      <p>Jos käytät AND-operaattoria saat kyselyn tuloksena hakutulokset, joissa esiintyvät kaikki hakukenttiin kirjoitetut termit.</p> 
+      <p>Esimerkki:</p>
+      <pre class="code">Karisto Seppälä</pre>
+      <h3>OR</h3>
+      <p>OR-operaattori laajentaa hakutulosta. Tulokseksi saat sellaista aineistoa, joissa esiintyy ainakin jokin käyttämistäsi hakusanoista. Jos vaikkapa etsit henkilöhistoriallista kirjallisuutta muotoilet hakulausekkeen:</p>
+      <pre class="code">henkilöhistor* OR biograf*</pre>
+      <p>tai tietoa Krimin sodasta:</p>
+      <pre class="code">"Itämainen sota" OR "Oolannin sota" OR "Krimin sota"</pre>
+      <h3>NOT</h3>
+      <p>NOT-operaattori sulkee pois hakutuloksista tietueet, joissa esiintyy NOT-operaattoria seuraava termi. Jos vaikkapa haet tietoa surrealismista mutta et haluta viitteitä, jotka käsittelevät sitä kuvataiteen suuntauksena:</p>
+      <pre class="code">surrealismi NOT (kuvataide OR maalaustaide)</pre>
+      <p>NOT-operaattoria ei voi käyttää yksitermisissä hauissa. Esimerkiksi seuraava haku ei tuota lainkaan tuloksia:</p>
+      <pre class="code">NOT surrealismi</pre>
+    </div>
+    <div id="wildcardsearch" class="content-section">
+      <h2>Hakusanan katkaisu tai kirjaimen korvaaminen jokerimerkillä</h2>
+      <p>Hakusanan voi katkaista sanan lopusta tähtimerkillä: 
+      <pre class="code">kilpail*</pre>
+      <p>(haku hakee silloin mm. muodot: kilpailu, kilpailut, kilpailun)</p>
+      <p>Hakusanan keskellä * korvaa yhden tai useamman merkin:
+      <pre class="code">colo*r</i></pre>
+      <p>(color, colour)</p>
+      <p>Hakusanaa ei voi katkaista alusta.</p>
+      <p>Kysymysmerkki korvaa yhden merkin hakusanasta, mikä mahdollistaa useammat sanamuodot:</p>
+      <pre class="code">wom?n</pre>
+      <p>(woman, women)</p>
+    </div>
+    <div id="phrasesearch" class="content-section">
+      <h2>Fraasihaku</h2>
+      <p>Jos haluat hakutulokseen vain tietyn sanan tai sanaliiton sisältävät viitteet, kirjoita sana/sanaliitto lainausmerkkeihin:</p>
+      <pre class="code">”Helsingin yliopisto”</pre>
+      <p>Hakusana lainausmerkeissä:</p>
+      <pre class="code">"taulu"</pre>
+      <p>hakee vain ne viitteet, joissa on sana taulu eikä viitteitä, joissa on sana liitutaulu, valkotaulu jne.</p>
+    </div>
+    <div id="booksearch" class="content-section">
+      <h2>Haku teoksen nimellä</h2>
+      <p>Kirjoita hakulomakkeelle teoksen nimen alku:</p>
+      <pre class="code">”Muumilaakson”</pre>
+      <p>Tai käytä katkaisumerkkiä:</p>
+      <pre class="code">Muumilaaks*</pre>
+      <p>Lainausmerkkejä käyttäen hakusi tarkentuu:</p>
+      <pre class="code">"Muumilaakson tarinoita"</pre>
+      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin Rajaa hakua -suodattimilla.</p>
+    </div>
+    <div id="authorsearch" class="content-section">
+      <h2>Haku tekijän nimellä</h2>
+      <p>Kirjoita hakulomakkeelle tekijän nimi:</p>
+      <pre class="code">sukunimi etunimi</pre>
+      <p>tai</p>
+      <pre class="code">etunimi sukunimi</pre>
+      <p>Jos haluat hakutulokseen vain tietyn tekijän teokset kirjoita tekijän nimi lainausmerkkeihin:</p>
+      <pre class="code">”sukunimi etunimi”</pre>
+      <p>Tarkennetussa haussa voit kohdistaa haun suoraan <strong>Tekijä</strong>-kenttään, kirjoita myös silloin nimi muodossa: <i>”sukunimi etunimi”</i>.
+      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>      
+    </div>
+    <div id="isbn-issn-search" class="content-section">
+      <h2>ISBN/ISSN -haku</h2>
+      <p>Hakeakseni kirjan ISBN-numerolla kirjoita numerosarja joko väliviivoilla tai ilman:</p>
+      <pre class="code">978-951-31-6583-3</pre>
+      <p>tai</p>
+      <pre class="code">9789513165833</pre>
+      <p>Hae aikakauslehteä tai sarjaa ISSN-numerolla:</p>
+      <pre class="code">0782-8195</pre>
+      <p>tai</p>
+      <pre class="code">07828195</pre>
+      <p>Tarkennetussa haussa voit kohdistaa haun ISBN/ISSN-kenttään.</p>
+      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>    
+    </div>
+    <div id="additionaloperators" class="content-section">
+      <h2>Edistyneet lisäoperaattorit</h2>
+      <h3>+-merkki ja !-merkki</h3
+      <p><strong>+</strong></p>
+      <p>Merkillä + voidaan ilmaista vaatimusta siitä, että termin on esiinnyttävä jokaisessa hakutuloksessa.</p>
+      <p>Esimerkki: etsitään aineistoa, joissa esiintyy ehdottomasti "economics" ja joissa voi lisäksi esiintyä sana "Keynes":</p>
+      <pre class="code">+economics Keynes</pre>
+      <p><strong>!-</strong></p>
+      <p>Merkkiyhdistelmällä !- voidaan poistaa hakutuloksista tietueet, joissa esiintyy kyselyssä merkkiä seuraava termi.</p>
+      <p>Esimerkki: etsitään aineistoa, joissa on termi "economics" mutta ei termiä "Keynes"</p>
+      <pre class="code">economics !-Keynes</pre>
+      <p>Merkkiyhdistelmää ei voi käyttää yksitermisissä kyselyissä.</p>
+      <p>Jos jokin hakutermeistä alkaa huutomerkillä, saadaan se otettua mukaan kyselyyn käyttämällä kenoviivaa (\).</p>
+      <p>Esimerkki: etsitään hakusanoilla !-merkki hakuehtona</p>
+      <pre class="code">\!-merkki hakuehtona</pre>
+      <p><strong>NOT</strong>-operaattoria voidaan käyttää samaan tapaan tämän merkkiyhdistelmän kanssa. <strong>NOT</strong>-operaattori antaa kuitenkin yhdysmerkkiä enemmän hakutuloksia, joissa osassa saattaa esiintyä pois suljettava hakutermi.</p>
+      <h3>Sumea haku</h3>
+      <p>Sumea haku hakee myös sellaisia tuloksia, joissa on mainittuna hakusanan kaltainen sana.</p>
+      <p>~ toteuttaa sumean haun yksisanaisen haun viimeisenä merkkinä.</p>
+      <p>Esimerkki: sumea haku hakusanalle: "roam"</p>
+      <pre class="code">roam~</pre>
+      <p>Tämä haku löytää esimerkiksi termit "foam" ja "roams".</p>
+      <p>Haun samankaltaisuutta kantatermiin voidaan säädellä parametrilla, jonka arvo on välillä 0 ja 1. Mitä lähempänä annettu arvo on lukua 1, sen samankaltaisempi termin on oltava kantatermin kanssa.</p>
+      <p>Oletusarvona parametrille on 0.5, jos arvoa ei sumeassa haussa erikseen määritetä.</p>
+      <h3>Etäisyyshaku</h3>
+      <p>Etäisyyshaulla saadaan tuloksia, joissa hakusanat ovat lähekkäin mutta niiden ei tarvitse olla välttämättä peräkkäin</p>
+      <p>~ toteuttaa etäisyyshaun monitermisen hakulausekkeen lopussa etäisyysarvon kanssa.</p>
+      <p>Esimerkki: etsitään hakusanoja "economics" ja "keynes" niiden esiintyessä korkeintaan 10 termin etäisyydellä toisistaan</p>
+      <pre class="code">"economics Keynes"~10</pre>
+      <h3>Arvovälihaut</h3>
+      <p>Arvovälihaut tehdään käyttämällä joko aaltosulkeita { } tai hakasulkeita [ ]. Aaltosulkeita käytettäessä huomioidaan vain arvot annettujen termien välillä pois lukien kyseiset termit. Hakasulkeet puolestaan sisällyttävät myös annetut termit etsittävälle arvovälille.</p>
+      <p>Esimerkki: etsittäessä termiä, joka alkaa kirjaimella B tai C, voidaan käyttää kyselyä</p>
+      <pre class="code">{A TO D}</pre>
+      <p>Esimerkki: etsittäessä arvoja 1920—1950 voidaan haku tehdä seuraavasti:</p>
+      <pre class="code">[1920 TO 1950]</pre>
+      <p>Sana TO arvojen välillä kirjoitetaan ISOIN KIRJAIMIN.</p>
+      <h3>Termin painottaminen</h3>
+      <p>^ nostaa termin painoarvoa kyselyssä.</p>
+      <p>Esimerkki: haussa termin "Koivisto" painoarvoa on nostettu</p>
+      <pre class="code">economics Koivisto^5}</pre>
+      <h3>Haku tietyn organisaation aineistoista</h3>
+      <p>Haun voi kohdistaa building tai datasource_str_mv-kenttiin, buildingin tapauksessa pitää hakulausekkeessa olla lainausmerkit mukana. Kenttiin voi katsoa sopivia arvoja henkilökuntanäytöltä.</p>
+      <pre class="code">"metsäkukkia" AND datasource_str_mv:viola</pre>
+      <pre class="code">"metsäkukkia" AND building:"1/NLF/viola/"</pre>
+    </div>
+    <div id="orgsearch" class="content-section">
+      <h2>Kyrillisen aineiston haku</h2>
+      <h3>Miten kyrillisiä merkkejä voi hakea?</h3>
+      <p>Kyrillinen aineisto on tallennettu tietokantaan kyrillistä merkistöä käyttäen. Vanha ortografia ja kielioppimuodot on säilytetty.</p>
+      <p>Kyrillisessä haussa voit käyttää Windowsin kyrillisiä nykyvenäjän, ukrainan, valkovenäjän, makedonian, bulgarian ja serbian merkkivalikoimia.</p>
+      <p>Kyrillisessä hakusanassa yksittäisen merkin voi korvata kahdella prosenttimerkillä (%%).</p>
+      <p>Kattavimman hakutuloksen saa translitteroidulla haulla.</p>
+      <h3>Haku translitteroiden</h3>
+      <p>Haku tehdään normaalia latinalaista näppäimistöä käyttäen. Yhtä kyrillistä merkkiä vastaa yksi latinalaisen kirjaimiston merkki. Translitterointi on ISO 9-standardin mukainen, mutta diakriittejä ei tarvitse käyttää.</p>
+      <h3>Poikkeavuudet kansallisista translitteroinneista:</h3>
+      <p>
+      е = e Ельцин = El'cin<br>
+      ж = z жизнь = zizn'<br>
+      з = z Заварзин = Zavarzin<br>
+      й = j Толстой = Tolstoj<br>
+      х = h Хармс = Harms<br>
+      ц = c Цветаева = Cvetaeva<br>
+      ч = c Чехов = Cehov<br>
+      ш = s Шолохов = Solohov<br>
+      щ = s Щедрин = Sedrin<br>
+      ъ = " объект = ob ekt (haussa " on korvattava välilyönnillä!)<br>
+      ы = y Лыков = Lykov<br>
+      ь = ' Гоголь = Gogol' tai Gogol<br>
+      ю = u юность = unost' tai unost<br>
+      я =a Яков = Akov<br>
+      њ = n Његош = Negos<br>
+      љ = l љубав = lubav<br>
+      ђ = d Ђинђић = Dindic<br>
+      ћ = c ћуприја = cuprija<br>
+      џ = d Караџић = Karadic<br>
+      Ѣ = e мѢра = mera<br>
+      Ѳ = f Ѳетъ = Fet"<br>
+      ѵ = i Сѵнодъ = Sinod"<br>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help_syntax_fi.phtml -->

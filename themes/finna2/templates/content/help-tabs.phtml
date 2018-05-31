@@ -1,0 +1,40 @@
+<!-- START of: finna - search/helpTabs.phtml -->
+<div class="finna-main-tabs">
+    <ul class="nav nav-tabs help-tabs hidden-xs">
+        <li <? if($activeTab == "help"): ?> class="active"<? endif; ?> >
+            <a href="<?=$this->url('content-page', ['page' => 'help'])?>"><?=$this->translate('tabs_help');?></a>
+        </li>
+        <li <? if($activeTab == "help-basic"): ?> class="active" <? endif; ?>>
+            <a href="<?=$this->url('content-page', ['page' => 'help-basic'])?>"><?=$this->translate('tabs_help-basic');?></a>
+        </li>
+        <li<? if($activeTab == "help-advanced"): ?> class="active" <? endif; ?>>
+            <a href="<?=$this->url('content-page', ['page' => 'help-advanced'])?>"><?=$this->translate('tabs_help-advanced');?></a>
+        </li>
+        <li<? if($activeTab == "help-syntax"): ?> class="active" <? endif; ?>>
+            <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>"><?=$this->translate('tabs_help-syntax');?></a>
+        </li>
+    </ul>
+    <div class="mobile-main-tabs visible-xs">
+        <div class="dropdown visible-xs">
+            <div class="dropdown-toggle clearfix" data-toggle="dropdown">
+                <div class="tab-title"><?=$this->translate('tabs_' . $activeTab);?></div>
+                <div class="more"><?=$this->transEsc("More");?><b class="caret"></b></div>
+            </div>
+            <ul class="dropdown-menu" role="menu">
+                <li role="menuitem" <? if($activeTab == "help"): ?> class="active" <? endif; ?> >
+                    <a href="<?=$this->url('content-page', ['page' => 'help'])?>"><?=$this->translate('tabs_help');?></a>
+                </li>
+                <li role="menuitem" <? if($activeTab == "help-basic"): ?> class="active" <? endif; ?>>
+                    <a href="<?=$this->url('content-page', ['page' => 'help-basic'])?>"><?=$this->translate('tabs_help-basic');?></a>
+                </li>
+                <li role="menuitem" <? if($activeTab == "help-advanced"): ?> class="active" <? endif; ?>>
+                    <a href="<?=$this->url('content-page', ['page' => 'help-advanced'])?>"><?=$this->translate('tabs_help-advanced');?></a>
+                </li>
+                <li role="menuitem" <? if($activeTab == "help-syntax"): ?> class="active" <? endif; ?>>
+                    <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>"><?=$this->translate('tabs_help-syntax');?></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- END of: finna - search/helpTabs.phtml -->
