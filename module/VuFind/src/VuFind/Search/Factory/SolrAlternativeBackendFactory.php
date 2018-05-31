@@ -73,9 +73,6 @@ class SolrAlternativeBackendFactory extends SolrDefaultBackendFactory
      */
     protected function getSolrUrl($config = '')
     {
-        if (empty($config)) {
-            $config = $this->searchConfig;
-        }
-        return parent::getSolrUrl($config);
+        return parent::getSolrUrl(empty($config) ? $this->searchConfig : $config);
     }
 }
