@@ -21,7 +21,7 @@ finna.favorites = (function finnaFavorites() {
   function showInfo(response) {
     dialog.siblings('h1').remove();
     form.remove();
-    dialog.append(response.data);
+    dialog.append(response.data.html);
   }
 
   function upload() {

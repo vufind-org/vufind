@@ -93,6 +93,7 @@ class Search extends \VuFind\Db\Table\Search
     {
         $callback = function ($select) use ($uid) {
             $select->where->equalTo('user_id', $uid);
+            $select->where->equalTo('saved', 1);
             $select->order('id');
         };
         return $this->select($callback);
