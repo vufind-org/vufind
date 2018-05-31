@@ -65,17 +65,6 @@ class SolrAlternativeBackendFactory extends SolrDefaultBackendFactory
     }
 
     /**
-     * Get the Solr core.
-     *
-     * @return string
-     */
-    protected function getSolrCore()
-    {
-        $core = $this->config->get($this->searchConfig)->General->default_core;
-        return $core ?? 'biblio';
-    }
-
-    /**
      * Get the Solr URL.
      *
      * @param string $config name of configuration file
