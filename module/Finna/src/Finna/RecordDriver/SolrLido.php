@@ -59,23 +59,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Attach date converter
      *
-     * @param \Zend\Config\Config    $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Zend\Config\Config    $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config    $searchSettings Search-specific configuration
-     * file
-     * @param \VuFind\Date\Converter $dateConverter  Date Converter
+     * @param \VuFind\Date\Converter $dateConverter Date Converter
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $dateConverter = null
-    ) {
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-
+    public function attachDateConverter($dateConverter)
+    {
         $this->dateConverter = $dateConverter;
-        $this->searchSettings = $searchSettings;
     }
 
     /**

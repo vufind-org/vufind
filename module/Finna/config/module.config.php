@@ -547,14 +547,22 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
-                    'Finna\RecordDriver\EDS' => 'Finna\RecordDriver\Factory::getEDS',
-                    'Finna\RecordDriver\SolrDefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
-                    'Finna\RecordDriver\SolrMarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
-                    'Finna\RecordDriver\SolrEad' => 'Finna\RecordDriver\Factory::getSolrEad',
-                    'Finna\RecordDriver\SolrForward' => 'Finna\RecordDriver\Factory::getSolrForward',
-                    'Finna\RecordDriver\SolrLido' => 'Finna\RecordDriver\Factory::getSolrLido',
-                    'Finna\RecordDriver\SolrQdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
-                    'Finna\RecordDriver\Primo' => 'Finna\RecordDriver\Factory::getPrimo',
+                    'Finna\RecordDriver\EDS' =>
+                        'VuFind\RecordDriver\NameBasedConfigFactory',
+                    'Finna\RecordDriver\SolrDefault' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrMarc' =>
+                        'VuFind\RecordDriver\SolrMarcFactory',
+                    'Finna\RecordDriver\SolrEad' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrForward' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrLido'
+                        => 'Finna\RecordDriver\SolrLidoFactory',
+                    'Finna\RecordDriver\SolrQdc' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\Primo' =>
+                        'VuFind\RecordDriver\NameBasedConfigFactory',
                 ],
                 'aliases' => [
                     'SolrEad' => 'Finna\RecordDriver\SolrEad',

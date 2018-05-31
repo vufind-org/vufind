@@ -737,17 +737,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Check if a datasource has patron functions in order to show or hide the
-     * patron login
-     *
-     * @return bool
-     */
-    public function hasPatronFunctions()
-    {
-        return false;
-    }
-
-    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model

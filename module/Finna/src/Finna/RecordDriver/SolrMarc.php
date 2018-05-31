@@ -67,29 +67,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     ];
 
     /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config $mainConfig       VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Zend\Config\Config $recordConfig     Record-specific configuration
-     * file (omit to use $mainConfig as  $recordConfig)
-     * @param \Zend\Config\Config $searchSettings   Search-specific configuration
-     * file
-     * @param PluginManager       $results          Results plugin manager
-     * @param \Zend\Config\Config $datasourceConfig Datasource configuration
-     */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null,
-        \VuFind\Search\Results\PluginManager $results = null,
-        \Zend\Config\Config $datasourceConfig = null
-    ) {
-        parent::__construct($mainConfig, $recordConfig, $searchSettings, $results);
-
-        $this->datasourceConfig = $datasourceConfig;
-        $this->searchSettings = $searchSettings;
-    }
-
-    /**
      * Return access restriction notes for the record.
      *
      * @return array
@@ -1188,24 +1165,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
         return false;
-    }
-
-    /**
-     * Check if a datasource has patron functions in order to show or hide the
-     * patron login
-     *
-     * @return bool
-     */
-    public function hasPatronFunctions()
-    {
-        $details = $this->getInstitutionDetails();
-        $datasource = $details['datasource'];
-        if (isset($this->datasourceConfig->$datasource->disablePatronFunctions)
-            && $datasourceConfig->$datasource->disablePatronFunctions
-        ) {
-            return false;
-        }
-        return true;
     }
 
     /**
