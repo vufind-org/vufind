@@ -113,9 +113,9 @@ class ExpireUsers extends AbstractService
 
         return $this->table->select(
             function (Select $select) use ($expireDate) {
-                $select->where->lessThan('finna_last_login', $expireDate);
+                $select->where->lessThan('last_login', $expireDate);
                 $select->where->notEqualTo(
-                    'finna_last_login',
+                    'last_login',
                     '2000-01-01 00:00:00'
                 );
             }

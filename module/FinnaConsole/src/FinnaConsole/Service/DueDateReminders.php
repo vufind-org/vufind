@@ -474,7 +474,7 @@ class DueDateReminders extends AbstractService
             $baseUrl .= "/$urlView";
         }
         $serviceName = $urlInstitution . '.finna.fi';
-        $lastLogin = new \DateTime($user->finna_last_login);
+        $lastLogin = new \DateTime($user->last_login);
         $loginMethod = strtolower($user->finna_auth_method);
         $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
             ? $this->currentSiteConfig['Site']['displayDateFormat']
