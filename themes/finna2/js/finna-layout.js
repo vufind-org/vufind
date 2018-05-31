@@ -642,7 +642,7 @@ finna.layout = (function finnaLayout() {
     $container.find('.load-indicator').removeClass('hidden');
     $.getJSON(VuFind.path + '/AJAX/JSON?method=getPiwikPopularSearches')
       .done(function onGetPiwikSearchesDone(response) {
-        $container.html(response.data);
+        $container.html(response.data.html);
       })
       .fail(function onGetPiwikSearchesFail() {
         $container.find('.load-indicator').addClass('hidden');
