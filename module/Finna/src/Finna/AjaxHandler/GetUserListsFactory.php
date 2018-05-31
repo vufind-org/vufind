@@ -62,7 +62,6 @@ class GetUserListsFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
         $capabilities = $container->get('VuFind\Config\AccountCapabilities');
         return new $requestedName(
             $container->get('VuFind\Auth\Manager')->isLoggedIn(),
