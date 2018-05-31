@@ -64,16 +64,4 @@ class SolrAlternativeController extends AbstractSearch
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
-
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-/*
-    public function searchAction()
-    {
-        return $this->resultsAction();
-    }
-*/
 }
