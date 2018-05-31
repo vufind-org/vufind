@@ -57,7 +57,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getSearchAction()
     {
-        return 'solralternative-search';
+        return 'solralternative-results';
     }
 
     /**

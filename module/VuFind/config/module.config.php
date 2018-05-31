@@ -670,7 +670,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
-    'SolrAlternative/Advanced', 'SolrAlternative/Home', 'SolrAlternative/Search',
+    'SolrAlternative/Advanced', 'SolrAlternative/Home', 'SolrAlternative/Results',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',

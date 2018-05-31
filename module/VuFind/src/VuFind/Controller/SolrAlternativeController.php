@@ -70,8 +70,10 @@ class SolrAlternativeController extends AbstractSearch
      *
      * @return mixed
      */
+/*
     public function searchAction()
     {
         return $this->resultsAction();
     }
+*/
 }
