@@ -241,7 +241,8 @@ $config = [
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
-            'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
+            'Finna\OnlinePayment\OnlinePayment' => 'Finna\Service\Factory::getOnlinePaymentManager',
+            'Finna\OnlinePayment\Session' => 'Finna\Service\Factory::getOnlinePaymentSession',
             'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
             'Finna\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -316,6 +317,10 @@ $config = [
                         'Finna\AjaxHandler\GetSimilarRecordsFactory',
                     'Finna\AjaxHandler\GetUserLists' =>
                         'Finna\AjaxHandler\GetUserListsFactory',
+                    'Finna\AjaxHandler\OnlinePaymentNotify' =>
+                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
+                    'Finna\AjaxHandler\RegisterOnlinePayment' =>
+                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
                 ],
                 'aliases' => [
                     'addToList' => 'Finna\AjaxHandler\AddToList',
@@ -335,6 +340,8 @@ $config = [
                     'getSearchTabsRecommendations' => 'Finna\AjaxHandler\GetSearchTabsRecommendations',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
                     'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
+                    'onlinePaymentNotify' => 'Finna\AjaxHandler\OnlinePaymentNotify',
+                    'registerOnlinePayment' => 'Finna\AjaxHandler\RegisterOnlinePayment',
 
                     // Overrides:
                     'VuFind\AjaxHandler\CommentRecord' => 'Finna\AjaxHandler\CommentRecord',
@@ -368,6 +375,7 @@ $config = [
                     'Finna\Db\Row\Search' => 'VuFind\Db\Row\RowGatewayFactory',
                     'Finna\Db\Row\Transaction' => 'VuFind\Db\Row\RowGatewayFactory',
                     'Finna\Db\Row\User' => 'VuFind\Db\Row\UserFactory',
+                    'Finna\Db\Row\UserCard' => 'Finna\Db\Row\UserCardFactory',
                     'Finna\Db\Row\UserList' => 'VuFind\Db\Row\RowGatewayFactory',
                 ],
                 'aliases' => [
@@ -376,6 +384,7 @@ $config = [
                     'VuFind\Db\Row\Search' => 'Finna\Db\Row\Search',
                     'VuFind\Db\Row\Transaction' => 'Finna\Db\Row\Transaction',
                     'VuFind\Db\Row\User' => 'Finna\Db\Row\User',
+                    'VuFind\Db\Row\UserCard' => 'Finna\Db\Row\UserCard',
                     'VuFind\Db\Row\UserList' => 'Finna\Db\Row\UserList',
 
                     // Aliases for table classes without a row class counterpart

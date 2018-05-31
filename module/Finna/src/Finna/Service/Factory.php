@@ -29,6 +29,7 @@
 namespace Finna\Service;
 
 use Zend\ServiceManager\ServiceManager;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Factory for various top-level VuFind services.
@@ -99,7 +100,7 @@ class Factory extends \VuFind\Service\Factory
      *
      * @return \Finna\OnlinePayment\OnlinePayment
      */
-    public static function getOnlinePayment(ServiceManager $sm)
+    public static function getOnlinePaymentManager(ServiceManager $sm)
     {
         return new \Finna\OnlinePayment\OnlinePayment(
             $sm->get('VuFind\Http'),
@@ -107,6 +108,21 @@ class Factory extends \VuFind\Service\Factory
             $sm->get('VuFind\Logger'),
             $sm->get('VuFind\Config')->get('datasources'),
             $sm->get('VuFind\Translator')
+        );
+    }
+
+    /**
+     * Construct the online payment session.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SessionContainer
+     */
+    public static function getOnlinePaymentSession(ServiceManager $sm)
+    {
+        return new SessionContainer(
+            'OnlinePayment',
+            $sm->get('VuFind\SessionManager')
         );
     }
 }

@@ -29,7 +29,6 @@
 namespace Finna\Controller;
 
 use Zend\Console\Console;
-use Zend\Session\Container as SessionContainer;
 
 /**
  * Online payment controller trait.
@@ -84,7 +83,8 @@ trait OnlinePaymentControllerTrait
      */
     protected function getOnlinePaymentHandler($driver)
     {
-        $onlinePayment = $this->serviceLocator->get('Finna\OnlinePayment');
+        $onlinePayment = $this->serviceLocator
+            ->get('Finna\OnlinePayment\OnlinePayment');
         if (!$onlinePayment->isEnabled($driver)) {
             return false;
         }
@@ -107,10 +107,7 @@ trait OnlinePaymentControllerTrait
      */
     protected function getOnlinePaymentSession()
     {
-        return new SessionContainer(
-            'OnlinePayment',
-            $this->serviceLocator->get('VuFind\SessionManager')
-        );
+        return $this->serviceLocator->get('Finna\OnlinePayment\Session');
     }
 
     /**
@@ -136,7 +133,8 @@ trait OnlinePaymentControllerTrait
         }
 
         // Check if payment handler is configured in datasources.ini
-        $onlinePayment = $this->serviceLocator->get('Finna\OnlinePayment');
+        $onlinePayment = $this->serviceLocator
+            ->get('Finna\OnlinePayment\OnlinePayment');
         if (!$onlinePayment->isEnabled($patron['source'])) {
             return;
         }
@@ -292,156 +290,6 @@ trait OnlinePaymentControllerTrait
                 }
             }
         }
-    }
-
-    /**
-     * Process payment request.
-     *
-     * @param Zend\Http\Request $request Request
-     *
-     * @return array Associative array with keys
-     *   - 'success' (boolean)
-     *   - 'msg' (string) error message if payment could not be processed.
-     */
-    protected function processPayment($request)
-    {
-        $params = array_merge(
-            $request->getQuery()->toArray(), $request->getPost()->toArray()
-        );
-
-        if (!isset($params['driver'])) {
-            $this->handleError(
-                'Error processing payment: missing parameter "driver" in response.'
-            );
-            return ['success' => false];
-        }
-
-        $driver = $params['driver'];
-
-        $handler = $this->getOnlinePaymentHandler($driver);
-        if (!$handler) {
-            $this->handleError(
-                'Error processing payment: could not initialize payment'
-                . " handler $handlerName"
-            );
-            return ['success' => false];
-        }
-
-        $params = $handler->getPaymentResponseParams($request);
-        $transactionId = $params['transaction'];
-
-        $tr = $this->getTable('transaction');
-        if (!$t = $tr->getTransaction($transactionId)) {
-            $this->handleError(
-                "Error processing payment: transaction $transactionId not found"
-            );
-            return ['success' => false];
-        }
-
-        if (!$tr->isTransactionInProgress($transactionId)) {
-            $this->handleError(
-                'Error processing payment: '
-                . "transaction $transactionId already processed."
-            );
-            return ['success' => false];
-        }
-
-        $driver = $t['driver'];
-        $patronId = $t->cat_username;
-        $catalog = $this->getILS();
-
-        if (!is_array($patron = $this->catalogLogin())) {
-            $userTable = $this->getTable('User');
-            $user
-                = $userTable->select(
-                    ['cat_username' => $t['cat_username'], 'id' => $t['user_id']]
-                )->current();
-
-            try {
-                $patron = $catalog->patronLogin(
-                    $user['cat_username'], $user->getCatPassword()
-                );
-            } catch (\Exception $e) {
-                $this->handleException($e);
-            }
-        }
-
-        $res = $handler->processResponse($request);
-        $transactionTable = $this->getTable('transaction');
-
-        if (!$patron) {
-            $this->handleError(
-                'Error processing transaction id ' . $t['id']
-                . ': patronLogin error (cat_username: ' . $user['cat_username']
-                . ', user id: ' . $t['user_id'] . ')'
-            );
-
-            $transactionTable->setTransactionRegistrationFailed(
-                $t['transaction_id'], 'patronLogin error'
-            );
-            return ['success' => false];
-        }
-
-        if (!is_array($res) || empty($res['markFeesAsPaid'])) {
-            return ['success' => false, 'msg' => $res];
-        }
-
-        $tId = $res['transactionId'];
-        try {
-            $fines = $catalog->getMyFines($patron);
-            $finesAmount = $catalog->getOnlinePayableAmount($patron, $fines);
-        } catch (\Exception $e) {
-            $this->handleException($e);
-            return ['success' => false];
-        }
-
-        // Check that payable sum has not been updated
-        if ($finesAmount['payable']
-            && !empty($finesAmount['amount']) && !empty($res['amount'])
-            && $finesAmount['amount'] != $res['amount']
-        ) {
-            // Payable sum updated. Skip registration and inform user
-            // that payment processing has been delayed.
-            if (!$transactionTable->setTransactionFinesUpdated($tId)) {
-                $this->handleError(
-                    "Error updating transaction $transactionId"
-                    . " status: payable sum updated"
-                );
-            }
-            return [
-                'success' => false,
-                'msg' => 'online_payment_registration_failed'
-            ];
-        }
-
-        try {
-            $catalog->markFeesAsPaid($patron, $res['amount'], $tId, $t['id']);
-            if (!$transactionTable->setTransactionRegistered($tId)) {
-                $this->handleError(
-                    "Error updating transaction $transactionId status: registered"
-                );
-            }
-            $session = $this->getOnlinePaymentSession();
-            $session->paymentOk = true;
-        } catch (\Exception $e) {
-            $this->handleError(
-                'Payment registration error (patron ' . $patron['id'] . '): '
-                . $e->getMessage()
-            );
-            $this->handleException($e);
-
-            $result = $transactionTable->setTransactionRegistrationFailed(
-                $tId, $e->getMessage()
-            );
-            if (!$result) {
-                $this->handleError(
-                    "Error updating transaction $transactionId status: "
-                    . 'registering failed'
-                );
-            }
-            return ['success' => false, 'msg' => $e->getMessage()];
-        }
-        return ['success' => true];
     }
 
     /**

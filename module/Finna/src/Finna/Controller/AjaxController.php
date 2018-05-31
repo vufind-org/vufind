@@ -49,85 +49,18 @@ class AjaxController extends \VuFind\Controller\AjaxController
         SearchControllerTrait,
         CatalogLoginTrait;
 
+
     /**
-     * Check status and return a status message for e.g. a load balancer.
+     * Handle online payment notification callback.
      *
-     * A simple OK as text/plain is returned if everything works properly.
+     * An empty response with HTTP code 200 is returned
      *
      * @return \Zend\Http\Response
      */
-    public function systemStatusAjax()
+    public function onlinePaymentNotifyAction()
     {
-        $this->outputMode = 'plaintext';
-
-        // Check system status
-        $config = $this->getConfig();
-        if (!empty($config->System->healthCheckFile)
-            && file_exists($config->System->healthCheckFile)
-        ) {
-            return $this->output(
-                'Health check file exists', self::STATUS_ERROR, 503
-            );
-        }
-
-        // Test search index
-        if ($this->getRequest()->getQuery('index', 1)) {
-            try {
-                $results = $this->getResultsManager()->get('Solr');
-                $params = $results->getParams();
-                $params->setQueryIDs(['healthcheck']);
-                $results->performAndProcessSearch();
-            } catch (\Exception $e) {
-                return $this->output(
-                    'Search index error: ' . $e->getMessage(),
-                    self::STATUS_ERROR,
-                    500
-                );
-            }
-        }
-
-        // Test database connection
-        try {
-            $sessionTable = $this->getTable('Session');
-            $sessionTable->getBySessionId('healthcheck', false);
-        } catch (\Exception $e) {
-            return $this->output(
-                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
-            );
-        }
-
-        // This may be called frequently, don't leave sessions dangling
-        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
-
-        return $this->output('', self::STATUS_OK);
-    }
-
-    /**
-     * Register online paid fines to the ILS.
-     *
-     * @return \Zend\Http\Response
-     */
-    public function registerOnlinePaymentAjax()
-    {
-        $this->outputMode = 'json';
-        $res = $this->processPayment($this->getRequest());
-        $returnUrl = $this->url()->fromRoute('myresearch-fines');
-        return $res['success']
-            ? $this->output($returnUrl, self::STATUS_OK)
-            : $this->output($returnUrl, self::STATUS_ERROR, 500);
-    }
-
-    /**
-     * Handle online payment handler notification request.
-     *
-     * @return void
-     */
-    public function onlinePaymentNotifyAjax()
-    {
-        $this->outputMode = 'json';
-        $this->processPayment($this->getRequest());
-        // This action does not return anything but a HTTP 200 status.
-        exit();
+        // Use text/html to avoid any output
+        return $this->callAjaxMethod('onlinePaymentNotify', 'text/html');
     }
 
     /**
