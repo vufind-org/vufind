@@ -30,7 +30,7 @@ namespace Finna\AjaxHandler;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for GetFacetData AJAX handler.
+ * Factory for GetSideFacets AJAX handler.
  *
  * @category VuFind
  * @package  AJAX

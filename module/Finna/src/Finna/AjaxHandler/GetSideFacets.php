@@ -38,8 +38,6 @@ use Zend\View\Renderer\RendererInterface;
 /**
  * "Get Side Facets" AJAX handler
  *
- * Get side facets
- *
  * @category VuFind
  * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
