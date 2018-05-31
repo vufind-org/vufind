@@ -31,7 +31,7 @@ use Zend\Config\Config;
 use Zend\View\Renderer\RendererInterface;
 
 /**
- * Feed helper trait
+ * Feed support trait
  *
  * @category VuFind
  * @package  AJAX

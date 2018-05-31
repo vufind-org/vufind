@@ -295,12 +295,16 @@ $config = [
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
                         'Finna\AjaxHandler\EditListResourceFactory',
+                    'Finna\AjaxHandler\GetACSuggestions' =>
+                        'VuFind\AjaxHandler\GetACSuggestionsFactory',
                     'Finna\AjaxHandler\GetContentFeed' =>
                         'Finna\AjaxHandler\GetContentFeedFactory',
                     'Finna\AjaxHandler\GetDateRangeVisual' =>
                         'Finna\AjaxHandler\GetDateRangeVisualFactory',
                     'Finna\AjaxHandler\GetDescription' =>
                         'Finna\AjaxHandler\GetDescriptionFactory',
+                    'Finna\AjaxHandler\GetFacetData' =>
+                        'Finna\AjaxHandler\GetFacetDataFactory',
                     'Finna\AjaxHandler\GetFeed' =>
                         'Finna\AjaxHandler\GetFeedFactory',
                     'Finna\AjaxHandler\GetImagePopup' =>
@@ -352,6 +356,8 @@ $config = [
                     // Overrides:
                     'VuFind\AjaxHandler\CommentRecord' => 'Finna\AjaxHandler\CommentRecord',
                     'VuFind\AjaxHandler\DeleteRecordComment' => 'Finna\AjaxHandler\DeleteRecordComment',
+                    'VuFind\AjaxHandler\GetACSuggestions' => 'Finna\AjaxHandler\GetACSuggestions',
+                    'VuFind\AjaxHandler\GetFacetData' => 'Finna\AjaxHandler\GetFacetData',
                 ]
             ],
             'auth' => [
