@@ -93,13 +93,13 @@ class GetImagePopup extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
-     * @param SessionSettings   $ss        Session settings
-     * @param Config            $config    Main configuration
-     * @param Loader            $loader    Record loader
-     * @param UserTable         $userTable User table
-     * @param UserList          $userList  UserList table
-     * @param User|bool         $user      Logged in user (or false)
-     * @param RendererInterface $record    Record view plugin
+     * @param SessionSettings $ss        Session settings
+     * @param Config          $config    Main configuration
+     * @param Loader          $loader    Record loader
+     * @param UserTable       $userTable User table
+     * @param UserList        $userList  UserList table
+     * @param User|bool       $user      Logged in user (or false)
+     * @param Record          $rp        Record plugin
      */
     public function __construct(SessionSettings $ss,
         Config $config, Loader $loader, UserTable $userTable, UserList $userList,
