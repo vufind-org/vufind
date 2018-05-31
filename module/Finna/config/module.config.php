@@ -308,6 +308,8 @@ $config = [
                         'Finna\AjaxHandler\GetOrganisationInfoFactory',
                     'Finna\AjaxHandler\GetOrganisationPageFeed' =>
                         'Finna\AjaxHandler\GetOrganisationPageFeedFactory',
+                    'Finna\AjaxHandler\GetSearchTabsRecommendations' =>
+                        'Finna\AjaxHandler\GetSearchTabsRecommendationsFactory',
                     'Finna\AjaxHandler\GetSideFacets' =>
                         'Finna\AjaxHandler\GetSideFacetsFactory',
                     'Finna\AjaxHandler\GetSimilarRecords' =>
@@ -330,6 +332,7 @@ $config = [
                     'getOrganisationPageFeed' => 'Finna\AjaxHandler\GetOrganisationPageFeed',
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
+                    'getSearchTabsRecommendations' => 'Finna\AjaxHandler\GetSearchTabsRecommendations',
                     'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
                     'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
 
