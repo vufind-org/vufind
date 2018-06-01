@@ -2,7 +2,7 @@
 /**
  * GetFeed AJAX handler
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2018.
  *

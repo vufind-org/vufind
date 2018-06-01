@@ -2,7 +2,7 @@
 /**
  * Get record counts for checkbox filters.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *

@@ -3,7 +3,7 @@
  * Default model for Solr records -- used when a more specific model based on
  * the recordtype field cannot be found.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2013-2015.
  *

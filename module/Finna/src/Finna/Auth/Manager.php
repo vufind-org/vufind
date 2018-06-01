@@ -2,7 +2,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
