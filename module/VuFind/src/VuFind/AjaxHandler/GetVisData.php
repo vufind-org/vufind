@@ -152,6 +152,7 @@ class GetVisData extends AbstractBase
         $rawDateFacets = $params->fromQuery('facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
         $fields = $this->processDateFacets($filters, $dateFacets);
-        return $this->formatResponse($this->processFacetValues($filters, $fields));
+        $facets = $this->processFacetValues($filters, $fields);
+        return $this->formatResponse(compact('facets'));
     }
 }

@@ -73,6 +73,7 @@ class GetACSuggestions extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = new Parameters($params->fromQuery());
-        return $this->formatResponse($this->suggester->getSuggestions($query));
+        $suggestions = $this->suggester->getSuggestions($query);
+        return $this->formatResponse(compact('suggestions'));
     }
 }

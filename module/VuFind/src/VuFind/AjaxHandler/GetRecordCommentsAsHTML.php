@@ -81,8 +81,8 @@ class GetRecordCommentsAsHTML extends AbstractBase
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
-        return $this->formatResponse(
-            $this->renderer->render('record/comments-list.phtml', compact('driver'))
-        );
+        $html = $this->renderer
+            ->render('record/comments-list.phtml', compact('driver'));
+        return $this->formatResponse(compact('html'));
     }
 }

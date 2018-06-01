@@ -56,7 +56,7 @@ class RelaisAvailability extends AbstractRelaisAction
         $authorizationId = $this->relais->authenticatePatron();
         if ($authorizationId === null) {
             return $this->formatResponse(
-                $this->translate('Failed'), self::STATUS_ERROR
+                $this->translate('Failed'), self::STATUS_HTTP_FORBIDDEN
             );
         }
 
@@ -66,8 +66,10 @@ class RelaisAvailability extends AbstractRelaisAction
             || strpos($responseText, 'ErrorMessage') !== false
             || strpos($responseText, 'false') !== false
         ) {
-            return $this->formatResponse('no');
+            $result = 'no';
+        } else {
+            $result = 'ok';
         }
-        return $this->formatResponse('ok');
+        return $this->formatResponse(compact('result'));
     }
 }

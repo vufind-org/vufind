@@ -71,7 +71,7 @@ function refreshCommentList($target, recordId, recordSource) {
     // Update HTML
     var $commentList = $target.find('.comment-list');
     $commentList.empty();
-    $commentList.append(response.data);
+    $commentList.append(response.data.html);
     $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
       var commentId = $(this).attr('id').substr('recordComment'.length);
       deleteRecordComment(this, recordId, recordSource, commentId);
@@ -203,7 +203,7 @@ function refreshTagList(_target, _loggedin) {
     })
     .done(function getRecordTagsDone(response) {
       $tagList.empty();
-      $tagList.replaceWith(response.data);
+      $tagList.replaceWith(response.data.html);
       if (loggedin) {
         $tagList.addClass('loggedin');
       } else {

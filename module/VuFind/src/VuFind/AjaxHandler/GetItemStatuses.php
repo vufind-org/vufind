@@ -486,6 +486,6 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         }
 
         // Done
-        return $this->formatResponse($statuses);
+        return $this->formatResponse(compact('statuses'));
     }
 }

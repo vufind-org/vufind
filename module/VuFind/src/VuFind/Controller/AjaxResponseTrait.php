@@ -66,22 +66,23 @@ trait AjaxResponseTrait
      *
      * @param string $type   Content-type of output
      * @param mixed  $data   The response data
-     * @param string $status Status of the request
+     * @param int    $httpCode A custom HTTP Status Code
      *
      * @return string
      * @throws \Exception
      */
-    protected function formatContent($type, $data, $status)
+    protected function formatContent($type, $data, $httpCode)
     {
         switch ($type) {
         case 'application/javascript':
-            $output = compact('data', 'status');
+            $output = ['data' => $data];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
             }
             return json_encode($output);
         case 'text/plain':
-            return $data ? $status . " $data" : $status;
+            return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ')
+                . $data;
         case 'text/html':
             return $data ?: '';
         default:
@@ -94,15 +95,13 @@ trait AjaxResponseTrait
      *
      * @param string $type     Content type to output
      * @param mixed  $data     The response data
-     * @param string $status   Status of the request
      * @param int    $httpCode A custom HTTP Status Code
      *
      * @return \Zend\Http\Response
      * @throws \Exception
      */
-    protected function getAjaxResponse($type, $data, $status = Ajax::STATUS_OK,
-        $httpCode = null
-    ) {
+    protected function getAjaxResponse($type, $data, $httpCode = null)
+    {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', $type);
@@ -111,7 +110,7 @@ trait AjaxResponseTrait
         if ($httpCode !== null) {
             $response->setStatusCode($httpCode);
         }
-        $response->setContent($this->formatContent($type, $data, $status));
+        $response->setContent($this->formatContent($type, $data, $httpCode));
         return $response;
     }
 

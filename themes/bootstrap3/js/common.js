@@ -286,10 +286,10 @@ function setupAutocomplete() {
         },
         dataType: 'json',
         success: function autocompleteJSON(json) {
-          if (json.data.length > 0) {
+          if (json.data.suggestions.length > 0) {
             var datums = [];
-            for (var j = 0; j < json.data.length; j++) {
-              datums.push(json.data[j]);
+            for (var j = 0; j < json.data.suggestions.length; j++) {
+              datums.push(json.data.suggestions[j]);
             }
             cb(datums);
           } else {

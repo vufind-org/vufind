@@ -133,6 +133,6 @@ class GetRecordDetails extends AbstractBase
                 )
             ]
         );
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }

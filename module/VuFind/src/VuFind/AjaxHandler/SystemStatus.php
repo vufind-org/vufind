@@ -108,7 +108,7 @@ class SystemStatus extends AbstractBase
             && file_exists($this->config->System->healthCheckFile)
         ) {
             return $this->formatResponse(
-                'Health check file exists', self::STATUS_ERROR, 503
+                'Health check file exists', self::STATUS_HTTP_UNAVAILABLE
             );
         }
 
@@ -120,7 +120,7 @@ class SystemStatus extends AbstractBase
             $results->performAndProcessSearch();
         } catch (\Exception $e) {
             return $this->formatResponse(
-                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR, 500
+                'Search index error: ' . $e->getMessage(), self::STATUS_HTTP_ERROR
             );
         }
 
@@ -129,7 +129,7 @@ class SystemStatus extends AbstractBase
             $this->sessionTable->getBySessionId('healthcheck', false);
         } catch (\Exception $e) {
             return $this->formatResponse(
-                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
+                'Database error: ' . $e->getMessage(), self::STATUS_HTTP_ERROR
             );
         }
 

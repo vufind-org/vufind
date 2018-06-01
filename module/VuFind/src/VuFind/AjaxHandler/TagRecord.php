@@ -93,8 +93,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_AUTH
             );
         }
 
@@ -109,6 +108,6 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
                 : $driver->deleteTags($this->user, $this->tagParser->parse($tag));
         }
 
-        return $this->formatResponse($this->translate('Done'));
+        return $this->formatResponse('');
     }
 }

@@ -108,6 +108,6 @@ class GetRecordTags extends AbstractBase
 
         $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user];
         $html = $this->renderer->render('record/taglist', $viewParams);
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }
