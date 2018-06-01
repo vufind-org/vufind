@@ -53,11 +53,12 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Constructor
      *
+     * @param \Zend\Config\Config   $config VuFind configuration
      * @param \VuFind\Record\Loader $loader Record loader
-     * @param \Zend\Config\Config  $config VuFind configuration
      */
-    public function __construct(\VuFind\Record\Loader $loader, $config = null)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        \VuFind\Record\Loader $loader
+    ) {
         parent::__construct($config);
         $this->loader = $loader;
     }

@@ -66,7 +66,7 @@ class Factory extends \VuFind\Service\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Finna\LocationService
+     * @return \Finna\OrganisationInfo\OrganisationInfo
      */
     public static function getOrganisationInfo(ServiceManager $sm)
     {
@@ -84,7 +84,7 @@ class Factory extends \VuFind\Service\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Finna\LocationService
+     * @return \Finna\LocationService\LocationService
      */
     public static function getLocationService(ServiceManager $sm)
     {

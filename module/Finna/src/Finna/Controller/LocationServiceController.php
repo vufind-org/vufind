@@ -62,7 +62,7 @@ class LocationServiceController extends \Finna\Controller\AjaxController
         $title = $request['title'];
 
         $locationService
-            = $this->serviceLocator->get('Finna\LocationService');
+            = $this->serviceLocator->get('Finna\LocationService\LocationService');
         $language
             = $this->serviceLocator->get('VuFind\Translator')->getLocale();
 
