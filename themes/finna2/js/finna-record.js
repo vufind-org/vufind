@@ -224,8 +224,7 @@ finna.record = (function finnaRecord() {
       VuFind.path + '/AJAX/JSON',
       {
         method: 'getSimilarRecords',
-        id: $('.similar-records').data('id'),
-
+        id: $('.similar-records').data('id')
       }
     )
       .done(function onGetSimilarRecordsDone(response) {
