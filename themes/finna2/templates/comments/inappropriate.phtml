@@ -1,6 +1,6 @@
 <h2><?=$this->transEsc('Report inappropriate') ?></h2>
 
-<?=$this->flashMessages() ?>
+<?=$this->flashmessages() ?>
 
 <form class="comment-inappropriate-form" method="post" name="commentInappropriateForm"  data-lightbox-onclose="finna.comments.requestRefreshComments">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->id)?>"/>
