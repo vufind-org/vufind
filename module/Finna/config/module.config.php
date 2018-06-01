@@ -214,7 +214,7 @@ $config = [
             'VuFind\Controller\LibraryCardsController' => 'Finna\Controller\LibraryCardsController',
             'VuFind\Controller\MyResearchController' => 'Finna\Controller\MyResearchController',
             'VuFind\Controller\PrimoController' => 'Finna\Controller\PrimoController',
-            'VuFind\Controller\PrimorecordController' => 'Finna\Controller\PrimorecordController',
+            'VuFind\Controller\PrimoRecordController' => 'Finna\Controller\PrimoRecordController',
             'VuFind\Controller\RecordController' => 'Finna\Controller\RecordController',
             'VuFind\Controller\SearchController' => 'Finna\Controller\SearchController',
 
