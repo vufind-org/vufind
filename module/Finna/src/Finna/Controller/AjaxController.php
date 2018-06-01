@@ -45,11 +45,6 @@ use VuFindSearch\Query\Query as Query;
  */
 class AjaxController extends \VuFind\Controller\AjaxController
 {
-    use OnlinePaymentControllerTrait,
-        SearchControllerTrait,
-        CatalogLoginTrait;
-
-
     /**
      * Handle online payment notification callback.
      *
