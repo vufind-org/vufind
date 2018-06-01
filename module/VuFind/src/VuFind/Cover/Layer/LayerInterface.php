@@ -1,10 +1,10 @@
 <?php
 /**
- * Date Exception
+ * Cover layer interface
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,22 +20,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Exceptions
+ * @package  Cover_Generator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Exception;
+namespace VuFind\Cover\Layer;
 
 /**
- * Date Exception
+ * Cover layer interface
  *
  * @category VuFind
- * @package  Exceptions
+ * @package  Cover_Generator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class Date extends \Exception
+interface LayerInterface
 {
+    /**
+     * Render the layer
+     *
+     * @param resource $im       Image resource to draw on
+     * @param array    $details  Cover details array (with title/author/call_number)
+     * @param object   $settings Settings object
+     *
+     * @return void
+     */
+    public function render($im, $details, $settings);
 }
