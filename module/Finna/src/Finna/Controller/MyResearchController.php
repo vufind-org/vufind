@@ -42,7 +42,7 @@ namespace Finna\Controller;
  */
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
-    use FinnaPaymentControllerTrait;
+    use FinnaOnlinePaymentControllerTrait;
     use CatalogLoginTrait;
 
     /**
