@@ -11,18 +11,19 @@
  * @link     https://vufind.org Main Site
  */
  namespace VuFind\Controller;
- use Zend\ServiceManager\ServiceLocatorInterface;
+
+use Zend\ServiceManager\ServiceLocatorInterface;
  use Zend\Log\LoggerAwareInterface;
- 
-/**
- * Overdrive Controller supports action for Overdrive Integration
- *
- * @category VuFind
- * @package  Controller
- * @author   Brent Palmer <brent-palmer@ipcl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
- */ 
+
+ /**
+  * Overdrive Controller supports action for Overdrive Integration
+  *
+  * @category VuFind
+  * @package  Controller
+  * @author   Brent Palmer <brent-palmer@ipcl.org>
+  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+  */
 class OverdriveController extends AbstractBase implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
@@ -46,15 +47,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
     
   
-     /**
-      * My Content Action
-      * Prepares the view for the Overdrive MyContent template.
-      *
-      * @return array|bool|\Zend\View\Model\ViewModel
-      */
+    /**
+     * My Content Action
+     * Prepares the view for the Overdrive MyContent template.
+     *
+     * @return array|bool|\Zend\View\Model\ViewModel
+     */
     public function mycontentAction()
     {
-        
         $this->debug("ODC mycontent action");
         
         //force login
@@ -63,7 +63,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         }
         
         $overdriveIDs = array();
-        //get the current Overdrive checkouts 
+        //get the current Overdrive checkouts
         //for this user and add to our array of IDS
         $checkouts = $this->connector->getCheckouts($patron, true);
 
@@ -74,11 +74,11 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $mycheckouts = array();
         
         foreach ($checkouts->data as $checkout) {
-                $mycheckout['checkout'] = $checkout;
-                $mycheckout['record'] 
-                    = $this->serviceLocator->get('VuFind\Record\Loader')
-                        ->load(strtolower($checkout->reserveId));
-                $mycheckouts[] = $mycheckout;
+            $mycheckout['checkout'] = $checkout;
+            $mycheckout['record']
+                = $this->serviceLocator->get('VuFind\Record\Loader')
+                    ->load(strtolower($checkout->reserveId));
+            $mycheckouts[] = $mycheckout;
         }
         
         $myholds = array();
@@ -88,18 +88,17 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 = $this->serviceLocator->get('VuFind\Record\Loader')
                     ->load(strtolower($hold->reserveId));
             $myholds[] = $myhold;
-           
         }
         $this->debug("view model");
         $view = $this->createViewModel(
             [
               'checkouts' => $mycheckouts,
-              'holds' => $myholds,                
+              'holds' => $myholds,
             ]
         );
 
         $view->setTemplate('myresearch/odmycontent');
-        return $view;   
+        return $view;
     }
   
     /**
@@ -120,7 +119,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         
         $view = $this->createViewModel(
             [
-              //'layout' => 'simple',
               'ids' => $ids,
               'action' => $action,
               'result' => $result,
@@ -129,17 +127,17 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view->setTemplate('RecordDriver/SolrOverdrive/status-full');
         $this->layout()->setTemplate('layout/lightbox');
-        return $view;  
+        return $view;
     }
 
     /**
      * Hold Action
-     * 
+     *
      * Hold Action handles all of the actions involving
      * Overdrive content including checkout, hold, cancel hold etc.
      *
      * @return array|bool|\Zend\View\Model\ViewModel
-     * @todo Deal with situation that an unlogged in user requests
+     * @todo   Deal with situation that an unlogged in user requests
      *     an action but the action is no longer valid since they
      *     already have the content on hold/checked out or do not have acceess
      */
@@ -171,7 +169,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $cover = $driver->getThumbnail('small');
         
         if (!$action) {
-            //double check the availability in case it 
+            //double check the availability in case it
             //has changed since the page was loaded.
             $avail = $driver->getOverdriveAvailability();
             //if($avail->copiesOwned >0){
@@ -215,6 +213,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         );
 
         $view->setTemplate('RecordDriver/SolrOverdrive/hold');
-        return $view;   
+        return $view;
     }
 }
