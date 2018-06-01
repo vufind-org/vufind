@@ -368,7 +368,7 @@ class AccountExpirationReminders extends AbstractService
             $this->currentSiteConfig = parse_ini_file($siteConfig, true);
         }
 
-        $expirationDatetime = new DateTime($user->finna_last_login);
+        $expirationDatetime = new DateTime($user->last_login);
         $expirationDatetime->add(new DateInterval('P' . $expirationDays . 'D'));
 
         $language = isset($this->currentSiteConfig['Site']['language'])
