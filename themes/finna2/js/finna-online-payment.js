@@ -9,11 +9,11 @@ finna.onlinePayment = (function finnaOnlinePayment() {
       data: jQuery.parseJSON(params),
       dataType: 'json'
     })
-      .done(function onRegisterPaymentDone(response) {
+      .done(function onRegisterPaymentDone() {
         // Reload current page without parameters
         location.href = window.location.href.split('?')[0];
       })
-      .fail(function onRegisterPaymentFail(response/*, textStatus*/) {
+      .fail(function onRegisterPaymentFail() {
         // Reload current page without parameters
         location.href = window.location.href.split('?')[0];
       });
