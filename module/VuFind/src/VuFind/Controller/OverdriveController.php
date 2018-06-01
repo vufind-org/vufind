@@ -120,7 +120,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         
         $view = $this->createViewModel(
             [
-              'layout' => 'simple',
+              //'layout' => 'simple',
               'ids' => $ids,
               'action' => $action,
               'result' => $result,
@@ -128,16 +128,20 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         );
 
         $view->setTemplate('RecordDriver/SolrOverdrive/status-full');
+        $this->layout()->setTemplate('layout/lightbox');
         return $view;  
     }
 
     /**
+     * Hold Action
      * 
-     * holdAction
-     * Hold Action handles all of the actions coming from the lightbox on the
-     * overdrive content page.  Including checkout, hold, cancel hold etc.
+     * Hold Action handles all of the actions involving
+     * Overdrive content including checkout, hold, cancel hold etc.
      *
      * @return array|bool|\Zend\View\Model\ViewModel
+     * @todo Deal with situation that an unlogged in user requests
+     *     an action but the action is no longer valid since they
+     *     already have the content on hold/checked out or do not have acceess
      */
     public function holdAction()
     {
@@ -162,9 +166,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
         //load the Record Driver.  Should be a SolrOverdrive  driver.
         $driver = $this->serviceLocator->get('VuFind\Record\Loader')->load($rec_id);
-                    $formats = $driver->getDigitalFormats();
-            $title = $driver->getTitle();
-            $cover = $driver->getThumbnail('medium');
+        $formats = $driver->getDigitalFormats();
+        $title = $driver->getTitle();
+        $cover = $driver->getThumbnail('small');
+        
         if (!$action) {
             //double check the availability in case it 
             //has changed since the page was loaded.
@@ -178,7 +183,11 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             //}else{
                 //create some kind of notification to user that something went wrong
             //}
-
+        } elseif ($action=="returnTitleConfirm") {
+            $this->debug("confirming return title");
+        } elseif ($action=="returnTitle") {
+            $this->debug("returning title using OD connector");
+            $result = $this->connector->returnResource($od_id);
         } elseif ($action=="placeHold") {
             $email = $this->params()->fromPost('email');
             $this->debug("placing Hold through OD now using email: $email");

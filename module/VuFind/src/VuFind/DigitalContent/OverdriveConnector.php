@@ -53,7 +53,6 @@ use ZfcRbac\Service\AuthorizationServiceAwareTrait;
  *       provide config options for how to handle patrons with no access to OD
  *       look into storing collection token in application (object) cache
  *         instead of the users session.
- 
  */
 class OverdriveConnector implements LoggerAwareInterface, 
      AuthorizationServiceAwareInterface
@@ -72,6 +71,7 @@ class OverdriveConnector implements LoggerAwareInterface,
 
     /**
      * desc
+     *
      * @var string
      */
     protected $recordConfig;
@@ -390,6 +390,42 @@ class OverdriveConnector implements LoggerAwareInterface,
         return $holdResult;
     }
 
+    
+    /**
+     *
+     * Return Resource
+     *
+     * @param $resourceID
+     * @param bool       $user
+     * @param $email
+     *
+     * @return array
+     *
+     * DELETE https://patron.api.overdrive.com/v1/patrons/me/checkouts/08F7D7E6-423F-45A6-9A1E-5AE9122C82E7
+     */
+    public function returnResource($resourceID)
+    {
+        $result = new OverdriveResult();
+        $this->debug("OverdriveConnector: returnResource");
+        //$this->debug(print_r($user,true));
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in", false, true);
+            return $result;
+        }
+        if ($config=$this->getConfig()) {
+            $url = $config->circURL . "/v1/patrons/me/checkouts/$resourceID";
+            $response = $this->_callPatronUrl($user["cat_username"], $user["cat_password"], $url, null, "DELETE");
+
+            //because this is a DELETE Call, we are just looking for a boolean
+            if ($response) {
+                $result->status = true;
+            } else {
+                $result->msg = $response->message;
+            }
+        }
+        return $result;
+    }
+    
 
     /**
      * @return bool|\stdClass
@@ -469,11 +505,15 @@ class OverdriveConnector implements LoggerAwareInterface,
     {
 
         //the checkouts are cached in the session, but we can force a refresh
-        //
         $this->debug("get Overdrive Checkouts");
         // $this->debug(print_r($user,true));
         $result = new OverdriveResult();
-
+        
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in");
+            return $result;
+        }
+        
         $checkouts = $this->sessionContainer->checkouts;
         if (!$checkouts || $refresh) {
             if ($config=$this->getConfig()) {
@@ -482,7 +522,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $response = $this->_callPatronUrl($user["cat_username"], 
                    $user["cat_password"], $url, false);
 
-                
                 if (!empty($response)) {
                     $result->status = true;
                     $result->message = '';
@@ -490,9 +529,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                     //Convert dates to desired format
                     foreach ($response->checkouts as $key=>$checkout) {
                         $coExpires = new \DateTime($checkout->expires);
-                        //$this->debug(print_r($this->mainConfig ,true));
                         $result->data[$key]->expires = $coExpires->format($config->displayDateFormat);
-                        //$this->debug("expire:".$coExpires->format($config->displayDateFormat));
+                        $result->data[$key]->isReturnable = !$checkout->isFormatLockedIn;
                     }
                         
                     $this->sessionContainer->checkouts = $response->checkouts;
@@ -569,7 +607,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @param bool force a new connection (get a new token)
      * @return string token for the session
      */
-    private function _connectToAPI($forceNewConnection = false)
+    protected function _connectToAPI($forceNewConnection = false)
     {
         $conf = $this->getConfig();
         $tokenData = $this->sessionContainer->tokenData;
@@ -615,7 +653,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @param bool force a new connection (get a new token)
      * @return string token for the session
      */
-    private function _connectToPatronAPI($patronBarcode, $patronPin = 1234, $forceNewConnection = false)
+    protected function _connectToPatronAPI($patronBarcode, $patronPin = 1234, $forceNewConnection = false)
     {
         $patronTokenData = $this->sessionContainer->patronTokenData;
         $config = $this->getConfig();
@@ -675,7 +713,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @return string token for the session
      */
-    private function _callUrl($url)
+    protected function _callUrl($url)
     {
         if ($this->_connectToAPI()) {
             $tokenData = $this->sessionContainer->tokenData;
@@ -712,7 +750,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         }//if this didn't work, it should have generated an error in the logs above
         return false;
     }
-    private function _callPatronUrl($patronBarcode, $patronPin, $url, $params = null, $requestType = null)
+    protected function _callPatronUrl($patronBarcode, $patronPin, $url, $params = null, $requestType = null)
     {
         $this->debug("calling patronURL: $url");
         if ($this->_connectToPatronAPI($patronBarcode, $patronPin, false)) {
@@ -756,9 +794,14 @@ class OverdriveConnector implements LoggerAwareInterface,
             
             $this->debug("curl Info: ".print_r($curlInfo, true));
             //if all goes well for DELETE, the code will be 204 and response is empty.
-            if ($requestType=="DELETE" &&  $curlInfo['http_code'] == 204) {
-                $this->debug("DELETE Patron call appears to have worked.");
-                return true;
+            if ($requestType=="DELETE") { 
+                if($curlInfo['http_code'] == 204) {
+                    $this->debug("DELETE Patron call appears to have worked.");
+                    return true;
+                } else {
+                    $this->error("DELETE Patron call failed. HTTP return code: ".$curlInfo['http_code']);
+                    return false;
+                }
             }
             
             $returnVal = json_decode($return);

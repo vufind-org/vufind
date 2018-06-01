@@ -339,6 +339,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * isCheckedOut   Is this resource already checked out to the user?
      *
      * @param $user
+     * @return Returns the checkout information if currently checked out
+     *    by this user or false if not.
      */
     public function isCheckedOut($user)
     {
@@ -377,11 +379,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
-                $this->debug(
-                    strtolower($hold->reserveId) . " == " . $overDriveId
-                );
                 if (strtolower($hold->reserveId) == $overDriveId) {
-                    $this->debug("overdrive hold found");
                     return $hold;
                 }
             }
@@ -391,11 +389,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * summary
+     * Overdrvie Checkout.
      *
-     * Description.
-     *
-     * @since x.x.x
+     * Passthru to the connector for checking out the current record.
+     * NoteToSelf: Do we need ID? Don't we know the id?
+     * 
+     * @since 5.0
      *
      * @see   Function/method/class relied on
      * @link  URL
@@ -486,21 +485,23 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Description.
      * @param type  $var     Optional. Description. Default.
      *
+     * thumbnail:200
+     * cover150Wide:150
+     * cover:100
+     * cover300Wide:300
      * @return type Description.
      */ 
     public
-    function getThumbnail(
-        $size = 'small'
-    )
+    function getThumbnail($size = 'small')
     {
         if ($size == 'large') {
             $cover = "cover300Wide";
         } elseif ($size == 'medium') {
-            $cover = "thumbnail";
+            $cover = "cover150Wide";
         } elseif ($size == 'small') {
-            $cover = 'cover150Wide';
+            $cover = 'thumbnail';
         } else {
-            $cover = "thumbnail";
+            $cover = "cover";
         }
         $result = false;
         $jsonData = $this->fields['fullrecord'];
@@ -565,8 +566,22 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * @return mixed
-     */
+     * summary
+     *
+     * Description.
+     *
+     * @since x.x.x
+     *
+     * @see   Function/method/class relied on
+     * @link  URL
+     * @global type $varname Description.
+     * @global type $varname Description.
+     *
+     * @param type  $var     Description.
+     * @param type  $var     Optional. Description. Default.
+     *
+     * @return type Description.
+     */  
     public
     function getFormattedRawData()
     {

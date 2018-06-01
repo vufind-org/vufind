@@ -44,23 +44,28 @@
            
            <?php 
            $avail = $this->driver->getOverdriveAvailability();
-           $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold');
-           $isCheckedOut = $isOnHold = false;
-           if($user = $this->auth()->isLoggedIn()):
+           //$holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold');
+           $checkedOut = $isOnHold = false;
+           //if($user = $this->auth()->isLoggedIn()):
                $checkedOut = $this->driver->isCheckedOut($user);
-               if(!$isCheckedOut){
+               if(!$checkedOut){
                    $hold = $this->driver->isHeld($user);
                }
-           endif; ?>
+           //endif; ?>
            
            <div class="hold pull-right">
            <?php 
              if($checkedOut):?>
            
                 <div class="od_status checkedout alert alert-info">
-                  <?php 
-                  echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$checkedOut->expires]); ?>
+                  <?php echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$checkedOut->expires]); ?>
                 </div>
+                <?php if($checkedOut->isReturnable): ?>
+                     <a class="btn btn-primary returnTitle" 
+                      data-lightbox title="<?php echo $this->transEsc('od_but_return')?>" 
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
+                      <?php echo $this->transEsc('od_but_return')?></a>
+                <?php endif;?>
            <?php elseif($hold): ?>
            
                <div class="od_status onhold  alert alert-info">
@@ -102,6 +107,9 @@
            
        <?php if($avail):        ?>
            <div class="availability">
+             <div class="odbrand pull-left">
+               <img class="" src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_42x42_rgb.jpg">
+             </div>
              <div class='copies'><strong><?php echo $this->transEsc("od_avail_total")?></strong> <?php echo $avail->copiesOwned ?></div>
              <div class='avail'><strong><?php echo $this->transEsc("od_avail_avail")?></strong> <?php echo $avail->copiesAvailable ?></div>
              <div class='holds'><strong><?php echo $this->transEsc("od_avail_holds")?></strong> <?php echo $avail->numberOfHolds ?></div>

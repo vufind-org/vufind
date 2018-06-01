@@ -210,21 +210,4 @@ class Factory
             $sm->get('Zend\Session\SessionManager')
         );
     }
-    
-        /**
-     * Construct the StorageRetrievalRequests plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return StorageRetrievalRequests
-     */
-    public static function getOverdriveConnector(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        return new OverdriveConnector(
-            $config,
-            $sm->get('Zend\Session\SessionManager')
-        );
-    }
-    
 }

@@ -45,12 +45,14 @@
                          <?php endif; ?><br/>
                          <?php endif; ?>
                  <div><?php echo $this->transEsc('od_expires_on',['%%due_date%%'=>$resource['checkout']->expires])?></div> 
+                 
                  <div class="pull-right">
+                   <?php if($resource['checkout']->isReturnable): ?>
                      <a class="btn btn-primary returnTitle" 
                       data-lightbox title="<?php echo $this->transEsc('od_but_return')?>" 
-                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitle"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
                       <?php echo $this->transEsc('od_but_return')?></a>
-
+                   <?php endif;?>
                      <a class="btn btn-primary downloadTitle" 
                       data-lightbox title="<?php echo $this->transEsc('od_but_download')?>" 
                       href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=download"; ?>"><i class="fa fa-fw fa-download" aria-hidden="true"></i>

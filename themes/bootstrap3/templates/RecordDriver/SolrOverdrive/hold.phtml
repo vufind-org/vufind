@@ -1,53 +1,126 @@
 <?php if($action=="checkout"): ?>
-    <h1><?php echo $this->transEsc("od_checkout"); ?></h1>
+
+
+    <div class="media">
+        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+            <?php /* Display thumbnail if appropriate: */ ?>
+            <?php if($cover): ?>
+                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+            <?php endif; ?>
+        </div>
+    <h1>
+    <div class="odbrand">
+      <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+    </div>
+    <?php echo $this->transEsc("od_checkout"); ?></h1>
     <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-
-<div class="media">
-    <div class="pull-left <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-        <?php /* Display thumbnail if appropriate: */ ?>
-        <?php if($cover): ?>
-            <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-        <?php endif; ?>
+        <div class="">
+            <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+            <?php foreach($formats as $key=>$format):?>
+            <ul><li><?php echo $key?></li></ul>
+            <?php endforeach;?>
+        </div>
+        <div class="pull-right">
+        <button type="button" class="btn btn-default " data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        
+        <a class='btn btn-primary btn-lg' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=doCheckout"?>'>
+            <?php echo $this->transEsc("od_but_checkout_s"); ?>
+        </a>
+        </div>
     </div>
 
-    <div class="">
-        <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-        <?php foreach($formats as $key=>$format):?>
-        <ul><li><?php echo $key?></li></ul>
-        <?php endforeach;?>
-    </div>
-    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-    
-    <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=doCheckout"?>'>
-        <?php echo $this->transEsc("od_but_checkout_s"); ?>
-    </a>
-</div>
 <?php elseif($action=="hold"):    ?> 
-    <h1><?php echo $this->transEsc("od_hold"); ?></h1>
-    <div class="title"></div>
-    <form class="form-record-hold" method="post" name="placeHold">
-      <div class="form-group hold-required-by">
-      <label class="control-label">email</label>
-      <input id="email" name="email" value="" size="" class="form-control" type="text">
+
+
+    <div class="media">
+        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+            <?php /* Display thumbnail if appropriate: */ ?>
+            <?php if($cover): ?>
+                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+            <?php endif; ?>
+        </div>
+    
+    <h1>
+        <div class="odbrand">
+          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+        </div>
+        <?php echo $this->transEsc("od_hold"); ?>
+    </h1>
+    
+    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
+        <div class="">
+            <form class="form-record-hold" method="post" name="placeHold">
+              <div class="form-group hold-required-by">
+              <label class="control-label">email</label>
+              <input id="email" name="email" value="" size="" class="form-control" type="text">
+              </div>
+                <div class="form-group pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+                    <input name="action" value="placeHold" type="hidden">
+                    <input class="btn btn-primary" name="placeHold" value="Place Hold" type="submit">
+                 </div>
+            </form>
+        </div>
     </div>
-        <div class="form-group">
-            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-            <input name="action" value="placeHold" type="hidden">
-            <input class="btn btn-primary" name="placeHold" value="Place Hold" type="submit">
-  </div>
-</form>
 
-<?php elseif($action=="cancelHoldConfirm"):    ?> 
-    <h1><?php echo $this->transEsc("od_cancel_hold"); ?></h1>
-    <div class="title"></div>
-    <form class="form-record-hold" method="post" name="cancelHold">
 
-            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-    <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=cancelHold"?>'>
-        <?php echo $this->transEsc("od_but_cancel_hold"); ?>
-    </a>
-</form>
- 
+<?php elseif($action=="cancelHoldConfirm"):    ?>
+    <div class="media">
+        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+            <?php /* Display thumbnail if appropriate: */ ?>
+            <?php if($cover): ?>
+                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+            <?php endif; ?>
+        </div>
+    
+    <h1>
+        <div class="odbrand">
+          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+        </div>
+        <?php echo $this->transEsc("od_cancel_hold"); ?>
+    </h1>
+    
+    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
+        <div class="">
+            <form class="form-record-hold" method="post" name="cancelHold">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+            <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=cancelHold"?>'>
+                <?php echo $this->transEsc("od_but_cancel_hold"); ?>
+            </a>
+            </form>
+        </div>
+    </div>
+
+
+<?php elseif($action=="returnTitleConfirm"):    ?>
+    <div class="media">
+        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+            <?php /* Display thumbnail if appropriate: */ ?>
+            <?php if($cover): ?>
+                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+            <?php endif; ?>
+        </div>
+    
+    <h1>
+        <div class="odbrand">
+          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+        </div>
+        <?php echo $this->transEsc("od_early_return"); ?>
+    </h1>
+    
+    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
+    <div class="pull-right">
+         <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        <a class='btn btn-primary btn-lg' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitle"?>'>
+            <?php echo $this->transEsc("od_but_return"); ?>
+        </a>
+    </div>
+    </div>
+
+
+
+    
 <?php elseif($action =='placeHold'): ?>
     <?php  if($result['result']):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
@@ -75,6 +148,23 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
 <?php    endif;
    elseif($action=="doCheckout"): ?>
+       <div class="media">
+        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+            <?php /* Display thumbnail if appropriate: */ ?>
+            <?php if($cover): ?>
+                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+            <?php endif; ?>
+        </div>
+    
+    <h1>
+        <div class="odbrand">
+          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+        </div>
+        <?php echo $this->transEsc("od_checkout"); ?>
+    </h1>
+    
+    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
+   
     <?php  if($result['result']):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
         <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%'=>$result['data']['expires']]); ?>
@@ -87,6 +177,23 @@
       </div>
       <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
     <?php endif;?>
+    </div>
+   
+   
+
+ <?php    elseif($action=="returnTitle"): ?>
+    <?php  if($result->status):?>
+      <div class="alert alert-success"><i class='fa fa-check'></i>
+        <?php echo $this->transEsc("od_return_success"); ?>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php else: ?>
+      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <?php echo $this->transEsc("od_return_failure"); ?>
+         <div class="moreInfo"><?php echo $result->msg ?></div>
+      </div>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+    <?php endif;?>   
  <?php endif; ?>
 
 
