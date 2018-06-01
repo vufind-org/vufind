@@ -65,7 +65,7 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Record loader
      *
-     * @var Loader
+     * @var VuFind\Record\Loader
      */
     protected $recordLoader;
 

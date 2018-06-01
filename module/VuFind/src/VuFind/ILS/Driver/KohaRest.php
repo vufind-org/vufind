@@ -27,7 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**

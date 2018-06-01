@@ -30,7 +30,9 @@
  */
 namespace Finna\Controller;
 
-use Finna\Cover\Loader;
+use VuFind\Cover\CachingProxy;
+use VuFind\Cover\Loader;
+use VuFind\Session\Settings as SessionSettings;
 use VuFindCode\ISBN;
 
 /**
@@ -47,30 +49,65 @@ use VuFindCode\ISBN;
 class CoverController extends \VuFind\Controller\CoverController
 {
     /**
+     * Data source configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $datasourceConfig;
+
+    /**
+     * Record loader
+     *
+     * @var VuFind\Record\Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Loader          $loader Cover loader
+     * @param CachingProxy    $proxy  Proxy loader
+     * @param SessionSettings $ss     Session settings
+     */
+    public function __construct(Loader $loader, CachingProxy $proxy,
+        SessionSettings $ss, \Zend\Config\Config $datasources,
+        \VuFind\Record\Loader $recordLoader
+    ) {
+        parent::__construct($loader, $proxy, $ss);
+        $this->datasourceConfig = $datasources;
+        $this->recordLoader = $recordLoader;
+    }
+
+    /**
      * Send image data for display in the view
      *
      * @return \Zend\Http\Response
      */
     public function showAction()
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $width = $this->params()->fromQuery('w');
-        $height = $this->params()->fromQuery('h');
-        $size = $this->params()->fromQuery('size');
-        // Support for legacy fullres parameter
-        $fullRes = $this->params()->fromQuery('fullres');
-        if ($fullRes) {
-            $size = 'large';
-        }
+        $this->sessionSettings->disableWrite(); // avoid session write timing bug
 
-        $loader = $this->getLoader();
-        $loader->setParams($width, $height, $size);
+        $params = $this->params();
 
-        if ($id = $this->params()->fromQuery('id')) {
-            $driver = $this->getRecordLoader()->load($id, 'Solr');
-            $index = $this->params()->fromQuery('index');
+        $width = $params->fromQuery('w');
+        $height = $params->fromQuery('h');
+        $size = $params->fromQuery('fullres')
+            ? 'large' : $params->fromQuery('size');
+        $this->loader->setParams($width, $height, $size);
 
-            $this->getLoader()->loadRecordImage($driver, $index ? $index : 0);
+        // Cover image configuration for current datasource
+        $recordId = $params->fromQuery('recordid');
+        $datasourceId = strtok($recordId, '.');
+        $datasourceCovers
+            = isset($this->datasourceConfig->$datasourceId->coverimages)
+                ? $this->datasourceConfig->$datasourceId->coverimages
+                : null;
+        $this->loader->setDatasourceConfig($datasourceCovers);
+
+        if ($id = $params->fromQuery('id')) {
+            $driver = $this->recordLoader->load($id, 'Solr');
+            $index = $params->fromQuery('index');
+            $this->loader->loadRecordImage($driver, $index);
             $response = parent::displayImage();
         } else {
             // Redirect book covers to VuFind's cover controller
@@ -151,14 +188,6 @@ class CoverController extends \VuFind\Controller\CoverController
                 $cacheDir
             );
 
-            // Cover image configuration for current datasource
-            $recordId = $this->params()->fromQuery('recordid');
-            $datasourceId = strtok($recordId, '.');
-            $datasourceCovers
-                = isset($this->getConfig('datasources')->$datasourceId->coverimages)
-                    ? $this->getConfig('datasources')->$datasourceId->coverimages
-                        : null;
-            $this->loader->setDatasourceConfig($datasourceCovers);
 
             $initializer = new \VuFind\ServiceManager\ServiceInitializer();
             $initializer($this->serviceLocator, $this->loader);
