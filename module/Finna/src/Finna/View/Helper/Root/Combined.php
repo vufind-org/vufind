@@ -39,11 +39,18 @@ namespace Finna\View\Helper\Root;
 class Combined extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Combined search configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $config Combined configuration
+     * @param \Zend\Config\Config $config Combined configuration
      */
-    public function __construct($config)
+    public function __construct(\Zend\Config\Config $config)
     {
         $this->config = $config;
     }

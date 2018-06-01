@@ -68,8 +68,7 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
      * @param \Zend\Config\Config $permissions Permissions configuration
      * @param \Zend\Config\Config $config      VuFind configuration
      */
-    public function __construct(
-        ipAddressUtils $ipUtils, $permissions, $config = null
+    public function __construct(ipAddressUtils $ipUtils, $permissions, $config = null
     ) {
         parent::__construct($config);
 

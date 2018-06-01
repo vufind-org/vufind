@@ -77,12 +77,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param Zend\Config\Config $config           Menu configuration
-     * custom variables
-     * custom variables
      * @param OrganisationInfo   $organisationInfo Organisation info
      */
-    public function __construct(
-        \Zend\Config\Config $config,
+    public function __construct(\Zend\Config\Config $config,
         \Finna\OrganisationInfo\OrganisationInfo $organisationInfo
     ) {
         $this->config = $config;

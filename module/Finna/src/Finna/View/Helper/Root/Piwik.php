@@ -39,13 +39,9 @@ namespace Finna\View\Helper\Root;
  * @link     http://vufind.org   Main Site
  */
 class Piwik extends \VuFind\View\Helper\Root\Piwik
+    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
-    /**
-     * Translator
-     *
-     * @var \VuFind\Translator
-     */
-    protected $translator;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Current results, if any
@@ -53,25 +49,6 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
      * @var \VuFind\Search\Base\Results
      */
     protected $results = null;
-
-    /**
-     * Constructor
-     *
-     * @param string|bool                      $url        Piwik address
-     * (false if disabled)
-     * @param int                              $siteId     Piwik site ID
-     * @param bool                             $customVars Whether to track
-     * additional information in custom variables
-     * @param Zend\Router\Http\RouteMatch      $router     Request
-     * @param Zend\Http\PhpEnvironment\Request $request    Request
-     * @param \VuFind\Translator               $translator Translator
-     */
-    public function __construct(
-        $url, $siteId, $customVars, $router, $request, $translator
-    ) {
-        parent::__construct($url, $siteId, $customVars, $router, $request);
-        $this->translator = $translator;
-    }
 
     /**
      * Returns Piwik code (if active) or empty string if not.

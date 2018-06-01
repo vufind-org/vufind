@@ -73,8 +73,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param PluginManager    $table   Database manager
      */
     public function __construct(PluginManager $results, Url $url,
-        SearchTabsHelper $helper,
-        \Zend\Session\SessionManager $session,
+        SearchTabsHelper $helper, \Zend\Session\SessionManager $session,
         \VuFind\Db\Table\PluginManager $table
     ) {
         parent::__construct($results, $url, $helper);

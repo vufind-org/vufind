@@ -28,6 +28,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use Zend\Config\Config;
+
 /**
  * Helper class for system messages
  *
@@ -46,24 +48,24 @@ class SystemMessages extends \Zend\View\Helper\AbstractHelper
     /**
      * Core configuration
      *
-     * @var array
+     * @var Config
      */
     protected $coreConfig;
 
     /**
      * Local system configuration
      *
-     * @var array
+     * @var Config
      */
     protected $localConfig;
 
     /**
      * Constructor
      *
-     * @param array $coreConfig  Configuration
-     * @param array $localConfig Local configuration
+     * @param Config $coreConfig  Configuration
+     * @param Config $localConfig Local configuration
      */
-    public function __construct($coreConfig, $localConfig)
+    public function __construct(Config $coreConfig, Config $localConfig)
     {
         $this->coreConfig = $coreConfig;
         $this->localConfig = $localConfig;

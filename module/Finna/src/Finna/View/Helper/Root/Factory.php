@@ -742,8 +742,10 @@ class Factory
      */
     public static function getTotalIndexed(ServiceManager $sm)
     {
-        $locator = $sm;
-        return new TotalIndexed($locator);
+        return new TotalIndexed(
+            $sm->get('VuFind\Cache\Manager'),
+            $sm->get('VuFind\Search\Results\PluginManager')
+        );
     }
 
     /**

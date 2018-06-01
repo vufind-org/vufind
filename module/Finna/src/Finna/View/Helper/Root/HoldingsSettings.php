@@ -54,7 +54,7 @@ class HoldingsSettings extends AbstractHelper
      *
      * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct($config = null)
+    public function __construct(\Zend\Config\Config $config = null)
     {
         $this->config = $config;
     }

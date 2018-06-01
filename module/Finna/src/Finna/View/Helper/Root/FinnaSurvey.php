@@ -41,16 +41,16 @@ class FinnaSurvey extends \Zend\View\Helper\AbstractHelper
     /**
      * Configuration
      *
-     * @var array
+     * @var \Zend\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param array $config Configuration
+     * @param \Zend\Config\Config $config Configuration
      */
-    public function __construct($config)
+    public function __construct(\Zend\Config\Config $config)
     {
         $this->config = $config;
     }

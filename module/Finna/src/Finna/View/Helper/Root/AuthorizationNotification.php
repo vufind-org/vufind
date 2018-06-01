@@ -52,7 +52,7 @@ class AuthorizationNotification extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Zend\Service\AuthorizationService $authService Authorization service
+     * @param AuthorizationService $authService Authorization service
      */
     public function __construct(AuthorizationService $authService)
     {

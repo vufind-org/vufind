@@ -50,7 +50,7 @@ class Autocomplete extends \Zend\View\Helper\AbstractHelper
      *
      * @param \Zend\Config\Config $searchConfig Search configiration.
      */
-    public function __construct($searchConfig)
+    public function __construct(\Zend\Config\Config $searchConfig)
     {
         $this->searchConfig = $searchConfig;
     }
