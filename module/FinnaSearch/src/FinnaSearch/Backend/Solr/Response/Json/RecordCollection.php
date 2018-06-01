@@ -61,9 +61,8 @@ class RecordCollection
     protected function getSpellcheckQuery()
     {
         $params = $this->getSolrParameters();
-        return isset($params['spellcheck.q'])
-            ? $params['spellcheck.q']
-            : (isset($params['q']) ? $params['q'] : '');
+        return $params['spellcheck.q']
+            ?? ($params['q'] ?? '');
     }
 
     /**

@@ -158,9 +158,8 @@ trait FinnaOnlinePaymentControllerTrait
         // Check if there is a payment in progress
         // or if the user has unregistered payments
         $transactionMaxDuration
-            = isset($paymentConfig['transactionMaxDuration'])
-            ? $paymentConfig['transactionMaxDuration']
-            : 30
+            = $paymentConfig['transactionMaxDuration']
+            ?? 30
         ;
 
         $tr = $this->getTable('transaction');
@@ -179,10 +178,8 @@ trait FinnaOnlinePaymentControllerTrait
 
         $view->onlinePayment = true;
         $view->paymentHandler = $onlinePayment->getHandlerName($patron['source']);
-        $view->transactionFee = isset($paymentConfig['transactionFee'])
-            ? $paymentConfig['transactionFee'] : 0;
-        $view->minimumFee = isset($paymentConfig['minimumFee'])
-            ? $paymentConfig['minimumFee'] : 0;
+        $view->transactionFee = $paymentConfig['transactionFee'] ?? 0;
+        $view->minimumFee = $paymentConfig['minimumFee'] ?? 0;
         $view->payableOnline = $payableOnline['amount'];
         $view->payableTotal = $payableOnline['amount'] + $view->transactionFee;
         $view->payableOnlineCnt = count($payableFines);

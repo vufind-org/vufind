@@ -119,7 +119,7 @@ class Results extends \VuFind\Search\Favorites\Results
     protected function getTagFilters()
     {
         $filters = $this->getParams()->getFilters();
-        return isset($filters['tags']) ? $filters['tags'] : [];
+        return $filters['tags'] ?? [];
     }
 
     /**
@@ -135,7 +135,7 @@ class Results extends \VuFind\Search\Favorites\Results
             // Check the filters for a list ID, and load the corresponding object
             // if one is found:
             $filters = $this->getParams()->getFilters();
-            $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
+            $listId = $filters['lists'][0] ?? null;
 
             if (null === $listId) {
                 $this->list = null;

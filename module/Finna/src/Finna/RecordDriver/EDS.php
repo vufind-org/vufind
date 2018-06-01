@@ -122,7 +122,7 @@ class EDS extends \VuFind\RecordDriver\EDS
         $pagination = $this->getField(
             'RecordInfo/BibRecord/BibEntity/PhysicalDescription/Pagination'
         );
-        return isset($pagination['StartPage']) ? $pagination['StartPage'] : '';
+        return $pagination['StartPage'] ?? '';
     }
 
     /**

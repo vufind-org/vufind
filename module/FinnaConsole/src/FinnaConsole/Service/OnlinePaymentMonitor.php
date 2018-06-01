@@ -439,7 +439,7 @@ class OnlinePaymentMonitor extends AbstractService
         $this->expireHours = $arguments[0];
         $this->fromEmail = $arguments[1];
         $this->reportIntervalHours = $arguments[2];
-        $this->minimumPaidAge = isset($arguments[3]) ? $arguments[3] : 120;
+        $this->minimumPaidAge = $arguments[3] ?? 120;
     }
 
     /**

@@ -156,8 +156,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
 
         $config = isset($this->config['OnlinePayment'])
             ? $this->config['OnlinePayment'] : [];
-        $nonPayable = isset($config['nonPayable'])
-            ? $config['nonPayable'] : []
+        $nonPayable = $config['nonPayable'] ?? []
         ;
         $nonPayable[] = $accruedType;
         foreach ($fines as &$fine) {

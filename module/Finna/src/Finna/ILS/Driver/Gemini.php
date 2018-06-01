@@ -373,7 +373,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         $names = explode(', ', (string)$info->Name, 2);
         $lastname = $names[0];
-        $firstname = isset($names[1]) ? $names[1] : '';
+        $firstname = $names[1] ?? '';
 
         $activatedServices = [
             'pickUpNotice' => (int)$info->SendRes,
@@ -1075,7 +1075,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $addressFields = array_map(
             function ($item) {
                 $parts = explode(':', $item, 2);
-                return isset($parts[1]) ? $parts[1] : '';
+                return $parts[1] ?? '';
             },
             $addressFields
         );

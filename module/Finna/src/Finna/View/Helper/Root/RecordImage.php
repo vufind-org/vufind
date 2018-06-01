@@ -91,8 +91,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             return false;
         }
         $urlHelper = $this->getView()->plugin('url');
-        $imageParams = isset($images[$index]['urls']['large'])
-            ? $images[$index]['urls']['large'] : $images[$index]['urls']['medium'];
+        $imageParams = $images[$index]['urls']['large'] ?? $images[$index]['urls']['medium'];
         $imageParams = array_merge($imageParams, $params);
 
         return $urlHelper(

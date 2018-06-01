@@ -1011,7 +1011,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         // Get video URLs, if any
         $source = $this->getSource();
-        $source = isset($source[0]) ? $source[0] : '';
+        $source = $source[0] ?? '';
         if (empty($this->recordConfig->Record->video_sources)) {
             return [];
         }
@@ -1407,6 +1407,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 }
             }
         }
-        return isset($agerestriction) ? $agerestriction : null;
+        return $agerestriction ?? null;
     }
 }

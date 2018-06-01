@@ -167,8 +167,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $date = $this->serviceLocator->get('VuFind\DateConverter');
         $sortFunc = function ($a, $b) use ($currentSort, $date) {
             if ($currentSort == 'title') {
-                $aTitle = isset($a['title']) ? $a['title'] : '';
-                $bTitle = isset($b['title']) ? $b['title'] : '';
+                $aTitle = $a['title'] ?? '';
+                $bTitle = $b['title'] ?? '';
                 $result = strcmp($aTitle, $bTitle);
                 if ($result != 0) {
                     return $result;
@@ -1000,7 +1000,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $table = $this->getTable('UserResource');
 
         $sortOptions = self::getFavoritesSortList();
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
+        $sort = $_GET['sort'] ?? false;
         if (!$sort) {
             reset($sortOptions);
             $sort = key($sortOptions);
@@ -1211,11 +1211,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         list($library, $username) = explode('.', $patron['cat_username']);
         $library = $this->translate("source_$library", null, $library);
         $name = trim(
-            (isset($patron['firstname']) ? $patron['firstname'] : '')
+            ($patron['firstname'] ?? '')
             . ' '
-            . (isset($patron['lastname']) ? $patron['lastname'] : '')
+            . ($patron['lastname'] ?? '')
         );
-        $email = isset($patron['email']) ? $patron['email'] : '';
+        $email = $patron['email'] ?? '';
         if (!$email) {
             $user = $this->getUser();
             if (!empty($user['email'])) {
@@ -1330,9 +1330,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         try {
             return parent::getDriverForILSRecord($current);
         } catch (\Exception $e) {
-            $id = isset($current['id']) ? $current['id'] : null;
-            $source = isset($current['source'])
-                ? $current['source'] : DEFAULT_SEARCH_BACKEND;
+            $id = $current['id'] ?? null;
+            $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
             $recordFactory = $this->serviceLocator
                 ->get('VuFind\RecordDriverPluginManager');
             $record = $recordFactory->get('Missing');

@@ -474,10 +474,10 @@ EOT;
     protected function collectScriptArguments($arguments)
     {
         // Current view local configuration directory
-        $this->baseDir = isset($arguments[0]) ? $arguments[0] : false;
+        $this->baseDir = $arguments[0] ?? false;
 
         // Current view local basedir
-        $this->viewBaseDir = isset($arguments[1]) ? $arguments[1] : false;
+        $this->viewBaseDir = $arguments[1] ?? false;
 
         // Inactive user account will expire in expirationDays days
         $this->expirationDays = (isset($arguments[2]) && $arguments[2] >= 180)

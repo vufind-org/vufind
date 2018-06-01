@@ -171,7 +171,7 @@ class Primo extends \VuFind\RecordDriver\Primo
                 $urlParts = parse_url($url);
                 $urls[] = [
                    'url' => $url,
-                   'urlShort' => isset($urlParts['host']) ? $urlParts['host'] : $url,
+                   'urlShort' => $urlParts['host'] ?? $url,
                    'citation' => $citation
                 ];
                 break;

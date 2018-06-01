@@ -172,7 +172,7 @@ class Record extends \VuFind\View\Helper\Root\Record
             ? 'browse-' . $this->getView()->browse
             : 'search-results'
         ;
-        $params = isset($params) ? $params : [];
+        $params = $params ?? [];
         $params = array_merge(
             $params,
             ['lookfor' => $lookfor,

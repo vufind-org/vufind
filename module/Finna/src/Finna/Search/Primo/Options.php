@@ -88,6 +88,6 @@ class Options extends \VuFind\Search\Primo\Options
     public function getDateRangeVisualizationField()
     {
         $fields = explode(':', $this->dateRangeVis);
-        return isset($fields[1]) ? $fields[1] : '';
+        return $fields[1] ?? '';
     }
 }

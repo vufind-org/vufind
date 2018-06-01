@@ -70,8 +70,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $dataSources = $this->serviceLocator->get('VuFind\Config')
                 ->get('datasources');
 
-            $inst = isset($dataSources->$dataSource) ?
-                $dataSources->$dataSource : null;
+            $inst = $dataSources->$dataSource ?? null;
             $recipientEmail = isset($inst->feedbackEmail) ?
                 $inst->feedbackEmail : null;
             if ($recipientEmail == null) {
@@ -493,10 +492,8 @@ class RecordController extends \VuFind\Controller\RecordController
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => isset($checkHolds['helpText'])
-                    ? $checkHolds['helpText'] : null,
-                'acceptTermsText' => isset($checkHolds['acceptTermsText'])
-                    ? $checkHolds['acceptTermsText'] : null
+                'helpText' => $checkHolds['helpText'] ?? null,
+                'acceptTermsText' => $checkHolds['acceptTermsText'] ?? null
             ]
         );
         $view->setTemplate('record/hold');
@@ -624,10 +621,8 @@ class RecordController extends \VuFind\Controller\RecordController
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null,
-                'acceptTermsText' => isset($checkRequests['acceptTermsText'])
-                    ? $checkRequests['acceptTermsText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null,
+                'acceptTermsText' => $checkRequests['acceptTermsText'] ?? null
             ]
         );
         $view->setTemplate('record/storageretrievalrequest');
@@ -757,10 +752,8 @@ class RecordController extends \VuFind\Controller\RecordController
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null,
-                'acceptTermsText' => isset($checkRequests['acceptTermsText'])
-                    ? $checkRequests['acceptTermsText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null,
+                'acceptTermsText' => $checkRequests['acceptTermsText'] ?? null
             ]
         );
         $view->setTemplate('record/illrequest');

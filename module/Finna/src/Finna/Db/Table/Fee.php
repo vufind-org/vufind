@@ -72,7 +72,7 @@ class Fee extends \VuFind\Db\Table\Gateway
         $fee = $this->createRow();
         $fee->user_id = $userId;
         $fee->transaction_id = $transactionId;
-        $fee->title = isset($fine['title']) ? $fine['title'] : '';
+        $fee->title = $fine['title'] ?? '';
         $fee->type = $fine['fine'];
         $fee->amount = $fine['balance'];
         $fee->currency = $currency;

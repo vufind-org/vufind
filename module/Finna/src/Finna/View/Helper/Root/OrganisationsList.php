@@ -123,8 +123,7 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
                     $params->setFacetLimit('-1');
 
                     $facetList = $results->getFacetList();
-                    $collection = isset($facetList['building']['list'])
-                        ? $facetList['building']['list'] : [];
+                    $collection = $facetList['building']['list'] ?? [];
 
                     foreach ($collection as $item) {
                         $link = $emptyResults->getUrlQuery()

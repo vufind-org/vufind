@@ -70,7 +70,7 @@ class SideFacets extends \VuFind\Recommend\SideFacets
 
         // Parse the additional settings:
         $settings = explode(':', $settings);
-        $iniName = isset($settings[2]) ? $settings[2] : 'facets';
+        $iniName = $settings[2] ?? 'facets';
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);

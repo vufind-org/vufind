@@ -168,12 +168,12 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             }
 
             if (!isset($urls['small'])) {
-                $urls['small'] = isset($urls['medium']) ? $urls['medium']
-                    : $urls['large'];
+                $urls['small'] = $urls['medium']
+                    ?? $urls['large'];
             }
             if (!isset($urls['medium'])) {
-                $urls['medium'] = isset($urls['large']) ? $urls['large']
-                    : $urls['small'];
+                $urls['medium'] = $urls['large']
+                    ?? $urls['small'];
             }
 
             $description = isset($daogrp->daodesc->p) ? $daogrp->daodesc->p

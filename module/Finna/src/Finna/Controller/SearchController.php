@@ -357,7 +357,7 @@ class SearchController extends \VuFind\Controller\SearchController
                 && $request['rft_val_fmt'] == 'info:ofi/fmt:kev:mtx:book'
             ) {
                 // Book format
-                $isbn = isset($request['rft_isbn']) ? $request['rft_isbn'] : '';
+                $isbn = $request['rft_isbn'] ?? '';
                 if (isset($request['rft_btitle'])) {
                     $title = $request['rft_btitle'];
                 } elseif (isset($request['rft_title'])) {
@@ -366,9 +366,8 @@ class SearchController extends \VuFind\Controller\SearchController
             } else {
                 // Journal / Article / something
                 $journal = true;
-                $eissn = isset($request['rft_eissn']) ? $request['rft_eissn'] : '';
-                $atitle = isset($request['rft_atitle'])
-                    ? $request['rft_atitle'] : '';
+                $eissn = $request['rft_eissn'] ?? '';
+                $atitle = $request['rft_atitle'] ?? '';
                 if (isset($request['rft_jtitle'])) {
                     $title = $request['rft_jtitle'];
                 } elseif (isset($request['rft_title'])) {
@@ -383,20 +382,20 @@ class SearchController extends \VuFind\Controller\SearchController
             } elseif (isset($request['rft_auinit'])) {
                 $author .= ' ' . $request['rft_auinit'];
             }
-            $issn = isset($request['rft_issn']) ? $request['rft_issn'] : '';
-            $date = isset($request['rft_date']) ? $request['rft_date'] : '';
-            $volume = isset($request['rft_volume']) ? $request['rft_volume'] : '';
-            $issue = isset($request['rft_issue']) ? $request['rft_issue'] : '';
-            $spage = isset($request['rft_spage']) ? $request['rft_spage'] : '';
+            $issn = $request['rft_issn'] ?? '';
+            $date = $request['rft_date'] ?? '';
+            $volume = $request['rft_volume'] ?? '';
+            $issue = $request['rft_issue'] ?? '';
+            $spage = $request['rft_spage'] ?? '';
         } else {
             // OpenURL 0.1
-            $issn = isset($request['issn']) ? $request['issn'] : '';
-            $date = isset($request['date']) ? $request['date'] : '';
-            $volume = isset($request['volume']) ? $request['volume'] : '';
-            $issue = isset($request['issue']) ? $request['issue'] : '';
-            $spage = isset($request['spage']) ? $request['spage'] : '';
-            $isbn = isset($request['isbn']) ? $request['isbn'] : '';
-            $atitle = isset($request['atitle']) ? $request['atitle'] : '';
+            $issn = $request['issn'] ?? '';
+            $date = $request['date'] ?? '';
+            $volume = $request['volume'] ?? '';
+            $issue = $request['issue'] ?? '';
+            $spage = $request['spage'] ?? '';
+            $isbn = $request['isbn'] ?? '';
+            $atitle = $request['atitle'] ?? '';
             if (isset($request['jtitle'])) {
                 $title = $request['jtitle'];
             } elseif (isset($request['btitle'])) {

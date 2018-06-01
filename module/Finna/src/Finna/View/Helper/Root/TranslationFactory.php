@@ -63,7 +63,7 @@ class TranslationFactory implements FactoryInterface
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         return new $requestedName(
-            isset($config['Site']['language']) ? $config['Site']['language'] : 'en'
+            $config['Site']['language'] ?? 'en'
         );
     }
 }

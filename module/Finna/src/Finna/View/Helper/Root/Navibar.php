@@ -137,7 +137,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     public function getMenuItemUrl(array $data)
     {
         $action = $data['action'];
-        $target = isset($action['target']) ? $action['target'] : null;
+        $target = $action['target'] ?? null;
         if (!$action || empty($action['url'])) {
             return null;
         }
@@ -257,7 +257,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             $options = [];
             foreach ($items as $itemKey => $action) {
                 if (!is_string($action)) {
-                    $action = isset($action[$lng]) ? $action[$lng] : null;
+                    $action = $action[$lng] ?? null;
                 }
 
                 if (strncmp($action, 'metalib-', 8) === 0) {

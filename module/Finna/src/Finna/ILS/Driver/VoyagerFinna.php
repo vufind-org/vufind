@@ -69,7 +69,7 @@ trait VoyagerFinna
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -330,8 +330,7 @@ trait VoyagerFinna
     {
         $data = parent::processHoldingRow($sqlRow);
 
-        $data['collection'] = isset($sqlRow['LOCATION_CODE'])
-            ? $sqlRow['LOCATION_CODE'] : '';
+        $data['collection'] = $sqlRow['LOCATION_CODE'] ?? '';
 
         // Get purchase order information for holdings that don't have items
         if ($data['status'] == 'No information available'
@@ -927,8 +926,7 @@ trait VoyagerFinna
         $accruedType = 'Accrued Fine';
 
         $config = $this->config['OnlinePayment'];
-        $nonPayable = isset($config['nonPayable'])
-            ? $config['nonPayable'] : []
+        $nonPayable = $config['nonPayable'] ?? []
         ;
         $nonPayable[] = $accruedType;
         foreach ($fines as &$fine) {

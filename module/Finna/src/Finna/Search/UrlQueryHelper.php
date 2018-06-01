@@ -133,7 +133,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     public function setSearchId($class, $id, $output = true)
     {
         $params = $this->getParamArray();
-        $searches = isset($params['search']) ? $params['search'] : [];
+        $searches = $params['search'] ?? [];
 
         $res = [];
         if ($id !== null) {

@@ -128,7 +128,7 @@ class Params extends \VuFind\Search\Solr\Params
                 if ($range = $this->parseDateRangeFilter($filter)) {
                     $from = $range['from'];
                     $to = $range['to'];
-                    $type = isset($range['type']) ? $range['type'] : 'overlap';
+                    $type = $range['type'] ?? 'overlap';
                     $filter = "$dateRangeField:$type|[$from TO $to]";
                     parent::addFilter($filter);
                 }

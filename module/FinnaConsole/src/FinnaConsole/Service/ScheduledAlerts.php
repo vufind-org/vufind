@@ -201,11 +201,11 @@ class ScheduledAlerts extends AbstractService
     protected function collectScriptArguments($argv)
     {
         // Base directory for all views.
-        $this->viewBaseDir = isset($argv[0]) ? $argv[0] : '..';
+        $this->viewBaseDir = $argv[0] ?? '..';
         // Current view local configuration directory
-        $this->baseDir = isset($argv[1]) ? $argv[1] : false;
+        $this->baseDir = $argv[1] ?? false;
         // Schedule base url for alerts to send
-        $this->scheduleBaseUrl = isset($argv[2]) ? $argv[2] : false;
+        $this->scheduleBaseUrl = $argv[2] ?? false;
 
         if (!$this->viewBaseDir || !$this->baseDir) {
             echo $this->usage();

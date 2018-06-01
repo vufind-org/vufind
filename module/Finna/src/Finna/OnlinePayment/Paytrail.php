@@ -168,7 +168,7 @@ class Paytrail extends BaseHandler
             }
 
             foreach ($fines as $fine) {
-                $fineType = isset($fine['fine']) ? $fine['fine'] : '';
+                $fineType = $fine['fine'] ?? '';
 
                 if (isset($productCodeMappings[$fineType])) {
                     $code = $productCodeMappings[$fineType];

@@ -113,7 +113,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
             = ['Solr' => 'Local', 'Primo' => 'PCI'];
 
         $vars['RecordIndex']
-            = isset($sourceMap[$source]) ? $sourceMap[$source] : $source;
+            = $sourceMap[$source] ?? $source;
 
         $vars['Language'] = $this->translator->getLocale();
 
