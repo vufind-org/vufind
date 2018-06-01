@@ -28,9 +28,8 @@
  */
 namespace Finna\AjaxHandler;
 
-use Finna\OnlinePayment\OnlinePayment;
 use Finna\Db\Table\Transaction as TransactionTable;
-use VuFind\Auth\ILSAuthenticator;
+use Finna\OnlinePayment\OnlinePayment;
 use VuFind\Db\Table\UserCard as UserCardTable;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;

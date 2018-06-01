@@ -31,9 +31,9 @@ use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
+use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
-use Zend\Config\Config;
 
 /**
  * "Get Search Tabs Recommendations" AJAX handler

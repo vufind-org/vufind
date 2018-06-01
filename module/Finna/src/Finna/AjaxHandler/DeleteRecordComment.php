@@ -60,4 +60,3 @@ class DeleteRecordComment extends \VuFind\AjaxHandler\DeleteRecordComment
         return $result;
     }
 }
-

@@ -30,11 +30,7 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
-use VuFind\Cache\Manager as CacheManager;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;
-use VuFindHttp\HttpService;
 use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\Mvc\Controller\Plugin\Url;

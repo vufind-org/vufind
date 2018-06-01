@@ -29,8 +29,6 @@ namespace Finna\Auth;
 
 use Finna\Db\Row\User;
 use VuFind\Auth\AbstractBase;
-use VuFind\Auth\ChoiceAuth;
-use VuFind\Exception\Auth as AuthException;
 
 /**
  * Wrapper class for handling logged-in user in session.

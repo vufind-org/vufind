@@ -28,15 +28,14 @@
  */
 namespace Finna\AjaxHandler;
 
+use VuFind\Db\Row\User;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Db\Table\UserList as UserListTable;
 use VuFind\Db\Table\UserResource as UserResourceTable;
-use VuFind\Db\Row\User;
 use VuFind\Favorites\FavoritesService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
 

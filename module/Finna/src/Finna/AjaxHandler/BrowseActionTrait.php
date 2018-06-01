@@ -27,9 +27,6 @@
  */
 namespace Finna\AjaxHandler;
 
-use Zend\Config\Config;
-use Zend\View\Renderer\RendererInterface;
-
 /**
  * Browse action support trait
  *

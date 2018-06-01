@@ -36,7 +36,6 @@ use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
 use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * GetImagePopup AJAX handler

@@ -28,11 +28,6 @@
  */
 namespace Finna\Controller;
 
-use Finna\Search\Solr\Params;
-use VuFind\RecordDriver\Missing;
-use VuFind\Search\RecommendListener;
-use VuFindSearch\Query\Query as Query;
-
 /**
  * This controller handles Finna AJAX functionality
  *
