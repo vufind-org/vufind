@@ -1,5 +1,5 @@
-<? //Don't add START and END comments ?>
-<? if (!empty($data)):?>
-  <? $soundSystem = $this->driver->getSoundSystem(); ?>
-    <?=$this->escapeHtml($data) ?><? if ($soundSystem): ?>, <?=$this->escapeHtml($soundSystem) ?><? endif; ?>
-<? endif; ?>
+<?php //Don't add START and END comments ?>
+<?php if (!empty($data)):?>
+  <?php $soundSystem = $this->driver->getSoundSystem(); ?>
+    <?=$this->escapeHtml($data) ?><?php if ($soundSystem): ?>, <?=$this->escapeHtml($soundSystem) ?><?php endif; ?>
+<?php endif; ?>

@@ -1,12 +1,12 @@
-<? //Don't add START and END comments ?>
+<?php //Don't add START and END comments ?>
 <?if (!empty($data)): ?>
-    <? if (is_array($data)): ?>
+    <?php if (is_array($data)): ?>
       <div class="truncate-field" data-rows="5">
-        <? foreach ($data as $field): ?>
+        <?php foreach ($data as $field): ?>
         <?= $this->escapeHtml($field) ?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </div>
-    <? else: ?>
+    <?php else: ?>
       <?= $this->escapeHtml($data) ?><br/>
-    <? endif; ?>
-<? endif; ?>
+    <?php endif; ?>
+<?php endif; ?>

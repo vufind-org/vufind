@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/format-list.phtml -->
-<?
+<?php
   $formatMap = [];
   $formats = (array)$this->driver->tryMethod('getFormats');
   if ($formats) {
@@ -14,7 +14,7 @@
     }
   }
 ?>
-<? foreach ($formatMap as $format): ?>
+<?php foreach ($formatMap as $format): ?>
   <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
-<? endforeach; ?>
+<?php endforeach; ?>
 <!-- END of: finna - RecordDriver/DefaultRecord/format-list.phtml -->

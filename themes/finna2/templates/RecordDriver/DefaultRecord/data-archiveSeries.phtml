@@ -1,10 +1,10 @@
-<? //Don't add START and END comments ?>
-<? if ($data == true && !$fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats())
+<?php //Don't add START and END comments ?>
+<?php if ($data == true && !$fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats())
 ): ?>
-    <? $parentSource = $this->driver->getSourceIdentifier(); ?>
-    <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
-    <? foreach ($parentIds as $index => $parentId): ?>
-      <?
+    <?php $parentSource = $this->driver->getSourceIdentifier(); ?>
+    <?php $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
+    <?php foreach ($parentIds as $index => $parentId): ?>
+      <?php
         try {
           $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
         } catch (\Exception $e) {
@@ -12,5 +12,5 @@
         }
       ?>
       <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
-    <? endforeach; ?>
-<? endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>

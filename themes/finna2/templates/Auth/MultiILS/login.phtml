@@ -1,7 +1,7 @@
 <!-- START of: finna - Auth/MultiILS/login.phtml -->
-<? $account = $this->auth()->getManager(); ?>
-<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
-<? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+<?php $account = $this->auth()->getManager(); ?>
+<?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
 <div class="login-col">
   <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
@@ -9,14 +9,14 @@
     <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
     <div class="clearfix"></div>
     <div class="form-group">
-        <? if ($account->supportsCreation()): ?>
+        <?php if ($account->supportsCreation()): ?>
           <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
-        <? endif; ?>
+        <?php endif; ?>
         <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
-        <? if ($account->supportsRecovery()): ?>
+        <?php if ($account->supportsRecovery()): ?>
           <br/>
           <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
-        <? endif; ?>
+        <?php endif; ?>
         <a id="login_library_card_recovery" class="btn btn-link" href="<?=$this->url('librarycards-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
     </div>
   </form>
@@ -29,7 +29,7 @@
     </p>
   </div>
   <div class="clearfix"></div>
-  <?
+  <?php
     $language = $this->layout()->userLang;
     if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
       $language = 'en-gb';
@@ -38,11 +38,11 @@
   <?=$this->partial("Auth/MultiILS/terms_$language.phtml") ?>
 </div>
   <div class="clearfix"></div>
-<? else: ?>
+<?php else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore><?=$this->transEsc("Institutional Login")?></a>
-<? endif; ?>
+<?php endif; ?>
 
-<?
+<?php
   $recovery = [];
   foreach ($this->auth()->getManager()->getLoginTargets() as $target) {
     $recovery[$target] = $this->auth()->getManager()->ilsSupportsPasswordRecovery($target)

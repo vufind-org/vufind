@@ -1,18 +1,18 @@
 <?= $this->translate('New results found for search') ?>:
   <?= empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
 
-<? if (count($info['filters'])): ?>
+<?php if (count($info['filters'])): ?>
 
 <?= $this->translate('Limits') ?>:
-<? foreach ($info['filters'] as $format => $filters): ?>
+<?php foreach ($info['filters'] as $format => $filters): ?>
   <?= $this->translate($format) . ': ' ?>
-<? $index = 0; ?>
-<? foreach ($filters as $f): ?>
+<?php $index = 0; ?>
+<?php foreach ($filters as $f): ?>
 <?= ($index++ > 0 ? ' ' . $this->translate($f['operator']) . ' ' : '') . $this->translate($f['value']); ?>
-<? endforeach; ?>
+<?php endforeach; ?>
 
-<? endforeach; ?>
-<? endif; ?>
+<?php endforeach; ?>
+<?php endif; ?>
 
 <?= $this->translate('Link to full results') ?>:
 <?= $info['url'] ?>
@@ -21,9 +21,9 @@
 
 <?= $info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
 
-<? foreach ($records as $result): ?>
+<?php foreach ($records as $result): ?>
 <?= $this->record($result)->getSearchResult('email') . PHP_EOL; ?>
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 <?= $this->translate('unsubscribe_description') ?>:

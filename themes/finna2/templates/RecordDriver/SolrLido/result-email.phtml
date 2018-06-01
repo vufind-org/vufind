@@ -1,4 +1,4 @@
-<?
+<?php
   $authors = $this->driver->getPrimaryAuthors();
   $title = $this->driver->getTitle();
   $dates = $this->driver->getResultDateRange();
@@ -12,14 +12,14 @@
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? if (!empty($authors)): ?>
-<?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
-<? endif; ?>
-<? if (!empty($dates)) : ?>
-<?= PHP_EOL . $this->translate('Main Year') . ': ' . $this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>–<?=$this->escapeHtml($dates[1])?><? endif; ?>
-<? endif; ?>
-<? if (!empty($format)) : ?>
+<?php if (!empty($authors)): ?>
+<?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+<?php endif; ?>
+<?php if (!empty($dates)) : ?>
+<?= PHP_EOL . $this->translate('Main Year') . ': ' . $this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>–<?=$this->escapeHtml($dates[1])?><?php endif; ?>
+<?php endif; ?>
+<?php if (!empty($format)) : ?>
 <?= PHP_EOL . $this->translate($format) ?>
-<? endif; ?>
+<?php endif; ?>
 
 <?= $this->translate('View Full Record') . ": $url"; ?>

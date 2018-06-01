@@ -1,5 +1,5 @@
 <!-- START of: finna - combined/results-list.phtml -->
-<?
+<?php
   $view = $currentSearch['view'];
   $results = $view->results;
   $params = $results->getParams();
@@ -32,39 +32,39 @@
   }
 ?>
 <div class="combined-titles">
-  <? if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
+  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
     <a href="<?=$moreUrl?>">
       <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
     </a>
-  <? else: ?>
+  <?php else: ?>
     <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (isset($currentSearch['sublabel'])): ?>
+  <?php if (isset($currentSearch['sublabel'])): ?>
     <p class="show-list-details pull-right" onclick="$(this).next().toggleClass('hidden');$('i', this).toggleClass('fa-arrow-up');"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
     <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 <div class="clearfix">
-  <? if ($recordTotal > 0): ?>
+  <?php if ($recordTotal > 0): ?>
   <div class="combined-search-results">
     <h4>
     <?=$this->transEsc('Search Results')?>
     <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-    <? if (!isset($view->skipTotalCount)): ?>
+    <?php if (!isset($view->skipTotalCount)): ?>
       / <strong><?=$this->localizedNumber($recordTotal)?></strong>
-    <? endif; ?>
+    <?php endif; ?>
     </h4>
-    <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+    <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
       <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
-<? /* End Listing Options */ ?>
+<?php /* End Listing Options */ ?>
 
-<? if ($filtersActive): ?>
-  <?
+<?php if ($filtersActive): ?>
+  <?php
     $resultsClone = clone $results;
     $resultsClone->getParams()->removeAllFilters();
     $removeFiltersUrl = $this->url('combined-results') . $resultsClone->getUrlQuery()->setPage(1);
@@ -73,29 +73,29 @@
   <a href="<?= $moreUrl ?>"><?= $this->transEsc('Active filters') ?></a>
   <a href="<?= $removeFiltersUrl ?>" title="<?= $this->transEsc('Remove filters') ?>"><i class="fa fa-times"></i></a>
 </div>
-<? endif ?>
+<?php endif ?>
 
-<? if ($recordTotal < 1): ?>
+<?php if ($recordTotal < 1): ?>
   <p class="alert alert-danger">
-    <? if (isset($view->overrideEmptyMessage)): ?>
+    <?php if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
-    <? else: ?>
+    <?php else: ?>
       <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
-    <? endif; ?>
+    <?php endif; ?>
   </p>
-  <? if (isset($view->parseError)): ?>
+  <?php if (isset($view->parseError)): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
-  <? endif; ?>
-  <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
+  <?php endif; ?>
+  <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
-  <? foreach ($results->getRecommendations('noresults') as $current): ?>
-    <? if (!in_array($current, $top)): ?>
+  <?php endforeach; ?>
+  <?php foreach ($results->getRecommendations('noresults') as $current): ?>
+    <?php if (!in_array($current, $top)): ?>
       <?=$this->recommend($current)?>
-    <? endif; ?>
-  <? endforeach; ?>
-<? else: ?>
-  <?
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?php
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
     $viewParams = [
@@ -111,20 +111,20 @@
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
 
   <div class="clearfix">
-    <? if ($recordTotal > 0): ?>
+    <?php if ($recordTotal > 0): ?>
       <div class="combined-search-results">
         <h4>
         <?=$this->transEsc('Search Results')?>
         <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-        <? if (!isset($view->skipTotalCount)): ?>
+        <?php if (!isset($view->skipTotalCount)): ?>
           / <strong><?=$this->localizedNumber($recordTotal)?></strong>
-        <? endif; ?>
+        <?php endif; ?>
         </h4>
-        <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+        <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
           <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - combined/results-list.phtml -->

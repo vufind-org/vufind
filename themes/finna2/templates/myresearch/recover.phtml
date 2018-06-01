@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/recover.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('recovery_title'));
     $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('recovery_title') . '</h3></div>';
@@ -10,11 +10,11 @@
 ?>
 <h2><?=$this->transEsc('recovery_title') ?></h2>
 <?=$this->flashmessages()?>
-<? if (!$this->auth()->getManager()->supportsRecovery()): ?>
+<?php if (!$this->auth()->getManager()->supportsRecovery()): ?>
   <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
-<? else: ?>
+<?php else: ?>
   <form class="form-vertical" method="post">
     <?=$this->auth()->getPasswordRecoveryForm() ?>
   </form>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - myresearch/recover.phtml -->

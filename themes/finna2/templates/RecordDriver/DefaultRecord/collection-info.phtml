@@ -1,7 +1,7 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/collection-info.phtml -->
-<? $this->headScript()->appendFile('collection_record.js'); ?>
+<?php $this->headScript()->appendFile('collection_record.js'); ?>
 <div>
-    <? // if you have a preview tab but want to move or remove the preview link
+    <?php // if you have a preview tab but want to move or remove the preview link
        // from this area of the record view, this can be split into
        // getPreviewData() (should stay here) and
        // getPreviewLink() (can go in your desired tab) ?>
@@ -10,16 +10,16 @@
 
   <div class="record-information">
     <h2 class="collection-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
-    <? if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
+    <?php if ($summary): ?>
       <p><?=$this->escapeHtml($summary)?></p>
-    <? endif; ?>
-          <? /* Display qrcode if appropriate: */ ?>
-      <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-      <? if ($QRCode): ?>
+    <?php endif; ?>
+          <?php /* Display qrcode if appropriate: */ ?>
+      <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+      <?php if ($QRCode): ?>
         <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-      <? endif; ?>
-    <? /* Display the lists that this record is saved to */ ?>
+      <?php endif; ?>
+    <?php /* Display the lists that this record is saved to */ ?>
     <div class="savedLists" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>

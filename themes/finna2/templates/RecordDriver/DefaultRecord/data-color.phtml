@@ -1,5 +1,5 @@
-<? //Don't add START and END comments ?>
-<? if (!empty($data)):?>
-  <? $colorSystem = $this->driver->getColorSystem(); ?>
-  <?=$this->escapeHtml($data) ?><? if ($colorSystem): ?>, <?=$this->escapeHtml($colorSystem) ?><? endif; ?>
-<? endif; ?>
+<?php //Don't add START and END comments ?>
+<?php if (!empty($data)):?>
+  <?php $colorSystem = $this->driver->getColorSystem(); ?>
+  <?=$this->escapeHtml($data) ?><?php if ($colorSystem): ?>, <?=$this->escapeHtml($colorSystem) ?><?php endif; ?>
+<?php endif; ?>

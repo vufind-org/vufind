@@ -1,5 +1,5 @@
 <!-- START of: finna - organisationInfo/home.phtml -->
-<?
+<?php
   $this->headTitle($this->title);
   $this->layout()->finnaMainHeader = '<div><h3>' . $this->title . '</h3></div>';
 
@@ -42,11 +42,11 @@ JS;
    $this->headScript()->appendScript($setupJS);
 ?>
 
-<? if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-start')): ?>
+<?php if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-start')): ?>
    <?=$this->render($template);?>
-<? endif; ?>
+<?php endif; ?>
 
-<?
+<?php
 
 ?>
 <div class="organisation-info-page loading organisation-page-information-wrapper <?= !($this->consortiumInfo) ? 'last-section' : '';?>">
@@ -54,8 +54,8 @@ JS;
     <i class="fa fa-spinner fa-spin" style="text-align: center;"></i>
   </div>
 
-  <? if ($this->consortiumInfo): ?>
-    <? $building = "0/{$this->id}/"; ?>
+  <?php if ($this->consortiumInfo): ?>
+    <?php $building = "0/{$this->id}/"; ?>
     <div class="consortium-navigation hide">
       <ul class="consortium-navigation-list" data-spy="affix" data-offset-top="310">
         <li class="scroll building hide"></li>
@@ -63,9 +63,9 @@ JS;
         <li class="scroll service hide"><?=$this->transEsc('organisation_info_navi_service')?></li>
       </ul>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if ($this->consortiumInfo): ?>
+  <?php if ($this->consortiumInfo): ?>
     <div class="consortium-info hide navi-section" id="consortium-info-section">
       <div>
         <h1 class="name"></h1>
@@ -125,12 +125,12 @@ JS;
 
 <div class="last-section">
   <div class="container organisation-info-page loading organisation-page-information-wrapper">
-  <? endif; ?>
+  <?php endif; ?>
 
   <div class="office-search navi-section map-ui" id="consortium-service-point-section">
-    <? if ($this->consortiumInfo): ?>
+    <?php if ($this->consortiumInfo): ?>
       <div><h3><?=$this->transEsc('organisation_info_navi_service')?></h3></div>
-    <? endif; ?>
+    <?php endif; ?>
     <div><p class="consortium-notification hide"></p></div>
     <div class="map-control-bar">
       <div class="flex-item">
@@ -255,11 +255,11 @@ JS;
   </div>
 </div>
 <!-- open closed tags to make valid html, if consortiumInfo -->
-<? if ($this->consortiumInfo): ?>
+<?php if ($this->consortiumInfo): ?>
    <div class="container">
-<? endif; ?>
+<?php endif; ?>
 </div>
-<? if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-end')): ?>
+<?php if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-end')): ?>
    <?=$this->render('content/Additions/organisation-page-end.phtml')?>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - organisationInfo/home.phtml -->

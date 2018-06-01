@@ -1,5 +1,5 @@
 <!-- START of: finna - librarycards/home.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Library Cards'));
 
@@ -14,43 +14,43 @@
 ?>
 <div class="my-research-content">
     <?=$this->flashmessages()?>
-    <? if (!$this->translationEmpty('library_cards_instructions_html')): ?><p class="no-content-message"><?=$this->translate('library_cards_instructions_html')?></p><? endif; ?>
+    <?php if (!$this->translationEmpty('library_cards_instructions_html')): ?><p class="no-content-message"><?=$this->translate('library_cards_instructions_html')?></p><?php endif; ?>
     <h2><?=$this->transEsc('Library Cards Connected To My Account')?></h2>
-    <? if ($this->libraryCards->count() == 0): ?>
+    <?php if ($this->libraryCards->count() == 0): ?>
       <h4><?=$this->transEsc('You do not have any library cards')?></h4>
-    <? else: ?>
+    <?php else: ?>
       <table class="table table-striped useraccount-table library-cards mobile-table">
       <tr class="headers">
         <th><?=$this->transEsc('Library Card Name')?></th>
-        <? if ($this->multipleTargets): ?>
+        <?php if ($this->multipleTargets): ?>
         <th><?=$this->transEsc('login_target')?></th>
-        <? endif; ?>
+        <?php endif; ?>
         <th><?=$this->transEsc('Username')?></th>
         <th class="library-card-actions"><?=$this->transEsc('Actions')?></th>
       </tr>
-      <? foreach ($this->libraryCards as $record): ?>
-        <? $username = $record['cat_username']; ?>
-        <? $target = ''; ?>
-        <? if ($this->multipleTargets): ?>
-          <? if (strstr($username, '.')): ?>
-            <? list($target, $username) = explode('.', $username, 2); ?>
-          <? endif; ?>
-        <? endif; ?>
+      <?php foreach ($this->libraryCards as $record): ?>
+        <?php $username = $record['cat_username']; ?>
+        <?php $target = ''; ?>
+        <?php if ($this->multipleTargets): ?>
+          <?php if (strstr($username, '.')): ?>
+            <?php list($target, $username) = explode('.', $username, 2); ?>
+          <?php endif; ?>
+        <?php endif; ?>
         <tr>
           <td data-label="<?=$this->transEsc('Library Card Name')?>">
-            <? $libraryCardName = $record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name']) ?>
-            <? if ($libraryCardName): ?>
+            <?php $libraryCardName = $record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name']) ?>
+            <?php if ($libraryCardName): ?>
               <span><?=$libraryCardName?></span>
-            <? else: ?>
+            <?php else: ?>
               <span>
                 <?=$this->transEsc("Library Card name missing")?>
                 <a class="btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Edit Library Card')?>"> <?=$this->transEsc("Add name")?></a>
               </span>
-            <? endif; ?>
+            <?php endif; ?>
           </td>
-          <? if ($this->multipleTargets): ?>
+          <?php if ($this->multipleTargets): ?>
             <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
-          <? endif; ?>
+          <?php endif; ?>
           <td data-label="<?=$this->transEsc('Username')?>">
             <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
               <div class="librarycard-barcode">
@@ -76,9 +76,9 @@
             </div>
           </td>
         </tr>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </table>
-    <? endif; ?>
+    <?php endif; ?>
 
     <div>
       <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-primary" title="<?=$this->transEsc('Connect Library Card')?>"><i class="fa fa-link" aria-hidden="true"></i> <?=$this->transEsc('Connect Library Card')?>...</a>

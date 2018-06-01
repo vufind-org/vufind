@@ -1,16 +1,16 @@
 <!-- START of: finna - content/help_en-gb.phtml -->
-<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
   <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help'])?>
-<? endif; ?>
+<?php endif; ?>
 <div>
   <div class="sidebar left">
     <div class="content-navigation-menu">
     </div>
   </div>
   <div class="mainbody right">
-    <? if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
       <?=$this->render('Content/Additions/helpBegin.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
     <div id="begin1" class="content-section">
       <h2>How do I start a search on Finna?</h2>
       <p>You have several options:</p>
@@ -34,9 +34,9 @@
       <p>There is an option to download some of the materials on Finna. Please remember to check the permissible uses information provided with each result.</p>
       <p>Many of the available materials can, for example, be used for educational purposes or for hobbies.</p>
     </div>
-    <? if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
       <?=$this->render('Content/Additions/helpEnd.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - content/help_en-gb.phtml -->

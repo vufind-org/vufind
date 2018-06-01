@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/account.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Create New Account'));
     $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc('Create New Account') . '</h3></div>';
@@ -21,7 +21,7 @@
   </div>
 </form>
 
-<?
+<?php
 // Set up validation; we do this inline instead of in the header for lightbox compatibility:
 $js = <<<JS
   if ($.isReady) {

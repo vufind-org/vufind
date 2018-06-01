@@ -1,12 +1,12 @@
 <!-- START of: finna - record/feedback.phtml -->
-<?
+<?php
   $user = $this->auth()->isLoggedIn();
 ?>
 <h2><?= $this->transEsc('Send feedback on record'); ?></h2>
 
-<? if (!$this->translationEmpty('record_feedback_instructions')): ?>
+<?php if (!$this->translationEmpty('record_feedback_instructions')): ?>
   <p><?=$this->transEsc("record_feedback_instructions"); ?></p>
-<? endif; ?>
+<?php endif; ?>
 
 <?=$this->flashmessages()?>
 

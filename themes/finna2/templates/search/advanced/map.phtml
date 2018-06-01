@@ -1,5 +1,5 @@
 <!-- START of: finna - search/advanced/map.phtml -->
-<?
+<?php
   $this->jsTranslations()->addStrings(
     [
       'radiusPrefix' => 'Radius',
@@ -17,13 +17,13 @@ $(document).ready(function() {
     var options = {
       items: []
     };
-    <? if ($saved && ($filters = $saved->getParams()->getGeographicFilters($saved->getParams()->getFilterList()))): ?>
-      <? foreach ($filters as $filter): ?>
-        <? foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
+    <?php if ($saved && ($filters = $saved->getParams()->getGeographicFilters($saved->getParams()->getFilterList()))): ?>
+      <?php foreach ($filters as $filter): ?>
+        <?php foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
           options.items.push('<?=$this->escapeJs($item) ?>');
-        <? endforeach; ?>
-      <? endforeach; ?>
-    <? endif; ?>
+        <?php endforeach; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
     finna.advSearch.initMap(options);
 });
 </script>

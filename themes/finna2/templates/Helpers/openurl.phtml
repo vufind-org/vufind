@@ -1,5 +1,5 @@
 <!-- START of: finna - Helpers/openurl.phtml -->
-<?
+<?php
   echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
   $classes = '';
   if ($this->openUrlEmbed) {
@@ -15,13 +15,13 @@
   }
 ?>
 
-<span class="openUrlControls<? if ($this->openUrlEmbed): ?> openUrlEmbed<? if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<? endif; ?><? endif; ?>">
-  <? if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
+<span class="openUrlControls<?php if ($this->openUrlEmbed): ?> openUrlEmbed<?php if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<?php endif; ?><?php endif; ?>">
+  <?php if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
   <a href="<?=$this->escapeHtmlAttr($this->resolverUrl)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
-    <? /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
+    <?php /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
     <span title="<?=$this->escapeHtmlAttr($this->openUrl)?>" class="openUrl"></span>
-    <? if ($this->openUrlGraphic): ?>
-      <?
+    <?php if ($this->openUrlGraphic): ?>
+      <?php
         $style = '';
         if ($this->openUrlGraphicWidth) {
           $style .= 'width:' . $this->escapeHtmlAttr($this->openUrlGraphicWidth) . 'px;';
@@ -31,22 +31,22 @@
         }
       ?>
       <img src="<?=$this->escapeHtmlAttr($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
-    <? else: ?>
+    <?php else: ?>
       <?=$this->transEsc('Get full text')?>
-    <? endif; ?>
+    <?php endif; ?>
   </a>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if ($this->openUrlImageBasedSrc): ?>
-    <? $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
+  <?php if ($this->openUrlImageBasedSrc): ?>
+    <?php $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
     <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
       <span title="<?=$this->escapeHtmlAttr($ibOpenUrl)?>" class="openUrl"></span>
       <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEsc('Get full text')?>" />
     </a>
-  <? endif; ?>
+  <?php endif; ?>
 </span>
 
-<? if ($this->openUrlEmbed): ?>
+<?php if ($this->openUrlEmbed): ?>
   <div class="resolver hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - Helpers/openurl.phtml -->

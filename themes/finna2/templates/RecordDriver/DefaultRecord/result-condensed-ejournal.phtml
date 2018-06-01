@@ -3,67 +3,67 @@
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
   <table class="table table-condensed">
-  <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
+  <?php $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
     <tr class="recordLanguage">
       <th><?=$this->transEsc('Language')?>: </th>
-      <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
+      <td><?php foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><?php endforeach; ?></td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+  <?php $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
     <tr class="recordPublications">
       <th><?=$this->transEsc('Publisher')?>: </th>
       <td>
-      <? foreach ($publications as $field): ?>
+      <?php foreach ($publications as $field): ?>
         <span property="publisher" typeof="Organization">
-          <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+          <?php $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
           <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-          <? endif; ?>
-          <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+          <?php endif; ?>
+          <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
           <span property="name"><?=$this->escapeHtml($pubName)?></span>
-          <? endif; ?>
-          <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+          <?php endif; ?>
+          <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
           <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-          <? endif; ?>
+          <?php endif; ?>
         </span>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
-    <? $contentDisplayed = true; ?>
+  <?php $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
+    <?php $contentDisplayed = true; ?>
     <tr>
       <th><?=$this->transEsc('ISSN')?>: </th>
       <td>
-        <? foreach ($issns as $field): ?>
+        <?php foreach ($issns as $field): ?>
           <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
+  <?php $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
     <tr>
       <th><?=$this->transEsc('Subjects')?>:</th>
       <td>
-      <? foreach ($subjects as $field): ?>
+      <?php foreach ($subjects as $field): ?>
       <div class="subjectLine" property="keywords">
-        <? $subject = ''; ?>
-        <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
-          <? $i = 0; foreach ($field as $subfield): ?>
+        <?php $subject = ''; ?>
+        <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
+          <?php $i = 0; foreach ($field as $subfield): ?>
             <?=($i++ == 0) ? '' : ' &#8594; '?>
-            <? $subject = trim($subject . ' ' . $subfield); ?>
+            <?php $subject = trim($subject . ' ' . $subfield); ?>
             <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
-          <? endforeach; ?>
+          <?php endforeach; ?>
       </div>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <? /* Saved lists */ ?>
+  <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <?php /* Saved lists */ ?>
     <tr class="savedLists">
       <th><?=$this->transEsc("Saved in")?>:</th>
       <td>
@@ -73,7 +73,7 @@
         </div>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
   </table>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/result-condensed-ejournal.phtml -->

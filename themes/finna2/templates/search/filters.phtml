@@ -1,51 +1,51 @@
 <!-- START of: finna - search/filters.phtml -->
-<? $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
-<? $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList); ?>
-<? ob_start(); ?>
-  <? foreach ($checkboxFilters as $filter): ?>
-    <? if ($filter['selected']): ?>
+<?php $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
+<?php $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList); ?>
+<?php ob_start(); ?>
+  <?php foreach ($checkboxFilters as $filter): ?>
+    <?php if ($filter['selected']): ?>
       <span class="filter-value">
-        <? $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : ''; ?>
+        <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : ''; ?>
         <?=$this->translate($filter['desc']) ?>
-        <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+        <?php if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
       </span>
-    <? endif ?>
-  <? endforeach; ?>
+    <?php endif ?>
+  <?php endforeach; ?>
 
-  <? foreach ($filterList as $field => $data): ?>
-    <? if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
+  <?php foreach ($filterList as $field => $data): ?>
+    <?php if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
       <span class="filter-value">
-        <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
+        <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
         <?=$this->transEsc($field)?>
-        <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+        <?php if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
       </span>
-    <? else: ?>
+    <?php else: ?>
       <div class="title-value-pair">
         <span class="filters-title"><?=$this->transEsc($field)?>:</span>
-        <? foreach ($data as $index => $value): ?>
-          <? $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
-          <span class="filters-term filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>"><? if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
-          <? $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';?>
+        <?php foreach ($data as $index => $value): ?>
+          <?php $operatorChar = ($value['operator'] == 'NOT') ? '-' : ($value['operator'] == 'OR' ? '~' : ''); ?>
+          <span class="filters-term filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>"><?php if ($value['operator'] == 'NOT') echo $this->transEsc('NOT'); if ($value['operator'] == 'OR' && $index > 0) echo $this->transEsc('OR'); ?></span>
+          <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';?>
           <span class="filter-value filters-<?=$this->escapeHtmlAttr(strtolower($value['operator']))?>">
-            <? // Always handle online_boolean and free_online_boolean even if not configured ?>
-            <? if ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean'])): ?>
+            <?php // Always handle online_boolean and free_online_boolean even if not configured ?>
+            <?php if ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean'])): ?>
               <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
-            <? else: ?>
+            <?php else: ?>
               <?=$this->escapeHtml($value['displayText'])?>
-            <? endif; ?>
-            <? if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><? endif; ?>
+            <?php endif; ?>
+            <?php if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
           </span>
-          <? if ($index == 0): ?></div><? endif; ?>
-        <? endforeach; ?>
-    <? endif; ?>
-  <? endforeach; ?>
-<? $filters = ob_get_contents(); ?>
-<? ob_end_clean(); ?>
+          <?php if ($index == 0): ?></div><?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php $filters = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
 
 <div class="finna-filters hidden-xs">
-  <? if (!isset($isCollectionTab) || !$isCollectionTab): ?>
+  <?php if (!isset($isCollectionTab) || !$isCollectionTab): ?>
     <div class="retain-filters">
-      <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+      <?php $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
       <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
         <label>
           <input onChange="$('.finna-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
@@ -53,7 +53,7 @@
         </label>
       </span>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="filters">
     <?=$filters ?>
   </div>
@@ -66,9 +66,9 @@
       <?=$this->transEsc("show_filters")?>
       <span class="active-filter-count">(<?=$filterCount?>)</span><i class="fa fa-arrow-down"></i>
     </div>
-    <? if (!isset($isCollectionTab) || !$isCollectionTab): ?>
+    <?php if (!isset($isCollectionTab) || !$isCollectionTab): ?>
       <div class="retain-filters">
-        <? $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+        <?php $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
         <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
           <label>
             <input onChange="$('.finna-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
@@ -76,7 +76,7 @@
           </label>
         </span>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="clearfix"></div>
   </div>
   <div class="filters filters-bar hidden">

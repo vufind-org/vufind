@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/toolbar.phtml -->
-<?
+<?php
   if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
       $shareUrl = $this->serverUrl($this->recordLink()->getUrl($this->driver));
       $shareUrl .= (strpos($shareUrl, '?') ? '&' : '?') . 'lng=' . urlencode($this->layout()->userLang);
@@ -10,27 +10,27 @@
 ?>
 <div class="hidden-xs">
   <ul class="nav nav-pills hidden-print">
-  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+  <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
     <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
-  <? endif; ?>
+  <?php endif; ?>
     <li><a class="mail-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
-  <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
-  <? if(count($exportFormats) > 0): ?>
+  <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
+  <?php if(count($exportFormats) > 0): ?>
     <li class="dropdown">
       <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" rel="nofollow"><i class="fa fa-list-alt" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Export Record') ?></span></a>
       <ul class="dropdown-menu" role="menu">
-        <? foreach ($exportFormats as $exportFormat): ?>
-          <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
-        <? endforeach; ?>
+        <?php foreach ($exportFormats as $exportFormat): ?>
+          <li><a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
+        <?php endforeach; ?>
       </ul>
     </li>
-  <? endif; ?>
-  <? if (count($this->driver->getCitationFormats()) > 0): ?>
+  <?php endif; ?>
+  <?php if (count($this->driver->getCitationFormats()) > 0): ?>
     <li><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite') ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
-  <? endif; ?>
+  <?php endif; ?>
   <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()" rel="nofollow"><i class="fa fa-print" aria-hidden="true"></i> <?=$this->transEsc('Print')?></a></span></li>
-  <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-  <? if($QRCode): ?>
+  <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+  <?php if($QRCode): ?>
   <li class="dropdown">
     <a class="dropdown-toggle finnaQrcodeLinkRecord" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
     <ul class="dropdown-menu" role="menu">
@@ -41,13 +41,13 @@
       </li>
     </ul>
   </li>
-  <? endif; ?>
+  <?php endif; ?>
   <li>
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </li>
-  <? if (!empty($shareUrl)): ?>
+  <?php if (!empty($shareUrl)): ?>
     <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
-  <? endif; ?>
+  <?php endif; ?>
   </ul>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/toolbar.phtml -->

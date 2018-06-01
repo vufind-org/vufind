@@ -1,6 +1,6 @@
 <!-- START of: finna - ajax/resolverLinksCoverage.phtml -->
-<? if (isset($this->link['coverage_details'])): ?>
-<?
+<?php if (isset($this->link['coverage_details'])): ?>
+<?php
     $details = $this->link['coverage_details'];
     $from = ''; $to = ''; $embargo = '';
     if (isset($details['from'])) {
@@ -36,22 +36,22 @@
         }
     }
 ?>
-<? endif; ?>
+<?php endif; ?>
 
-<? if (!empty($from) || !empty($to) || !empty($embargo)): ?>
+<?php if (!empty($from) || !empty($to) || !empty($embargo)): ?>
   <span class="coverage">
-  <? if (!$this->translationEmpty('openurl_coverage_prefix')): ?>
+  <?php if (!$this->translationEmpty('openurl_coverage_prefix')): ?>
     <?=$this->transEsc('openurl_coverage_prefix') ?>
-  <? endif; ?>
+  <?php endif; ?>
   <?=$from ?> <?=$to ?>
-  <? if (!empty($embargo)): ?>
-    <? if (!empty($from) || !empty($to)): ?> &ndash; <? endif; ?>
+  <?php if (!empty($embargo)): ?>
+    <?php if (!empty($from) || !empty($to)): ?> &ndash; <?php endif; ?>
     <?=$embargo ?>
-  <? endif; ?>
+  <?php endif; ?>
   </span>
-<? else: ?>
-  <? if (isset($this->link['coverage'])): ?>
+<?php else: ?>
+  <?php if (isset($this->link['coverage'])): ?>
     <span class="coverage"><?=$this->escapeHtml($this->link['coverage']); ?></span>
-  <? endif; ?>
-<? endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
 <!-- END of: finna - ajax/resolverLinksCoverage.phtml -->

@@ -1,15 +1,15 @@
 <!-- START of: finna - RecordTab/collectionlist.phtml -->
-<?
+<?php
   // Get search results
   $results = $this->tab->getResults();
   $params = $this->tab->getParams();
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1, 'isCollection' => $this->driver->isCollection()];
 ?>
 <div class="mainbody left">
-<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-  <? foreach ($results->getRecommendations('top') as $current): ?>
+<?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <?php foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 
   <div class="collection-list-controls">
     <div class="filter-input">
@@ -17,11 +17,11 @@
       <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
         <div class="input-group">
           <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEsc('Search from collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control"/>
-            <? foreach ($params->getFilterList(true) as $field => $filters): ?>
-              <? foreach ($filters as $filter): ?>
+            <?php foreach ($params->getFilterList(true) as $field => $filters): ?>
+              <?php foreach ($filters as $filter): ?>
                 <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
-              <? endforeach; ?>
-            <? endforeach; ?>
+              <?php endforeach; ?>
+            <?php endforeach; ?>
             <input type="hidden" name="view" value="<?=$params->getView() ?>" />
             <input type="hidden" name="sort" value="<?=$params->getSort() ?>" />
           <span class="input-group-btn"><button class="btn btn-primary" type="submit" name="submit"><span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i></button></span>
@@ -32,7 +32,7 @@
     <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
   </div>
 
-  <?
+  <?php
     $filterList = $params->getFilterList(true);
     $checkboxFilters = $params->getCheckboxFacets();
     $options = $this->searchOptions($this->searchClassId);
@@ -42,7 +42,7 @@
 
     $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList);
   ?>
-  <? if (!empty($params->getFilterList(false))): ?>
+  <?php if (!empty($params->getFilterList(false))): ?>
     <?=$this->render('search/filters.phtml',
       [
         'filterList' => $filterList,
@@ -54,7 +54,7 @@
         'isCollectionTab' => true
       ]
     ); ?>
-  <? endif; ?>
+  <?php endif; ?>
 
   <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
 
@@ -68,25 +68,25 @@
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
     </div>
 
-  <? else: ?>
+  <?php else: ?>
     <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 <div class="sidebar right">
-  <? foreach ($results->getRecommendations('side') as $current): ?>
+  <?php foreach ($results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </div>
 <div class="clearfix"></div>
 <div class="mobile-navigation visible-xs hidden-print">
   <ul>
     <li class="sidebar-navigation">
       <i class="fa fa-arrow-up"></i> <?=$this->transEsc('Filter Collection')?>
-      <? if (!empty($filterCount)): ?>
+      <?php if (!empty($filterCount)): ?>
         <span class="active-filters">
           <?=$this->transEsc('Active filters')?>: <span class='active-filter-count'><?=$filterCount?></span>
         </span>
-      <? endif; ?>
+      <?php endif; ?>
     </li>
   </ul>
 </div>

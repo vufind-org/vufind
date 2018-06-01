@@ -1,10 +1,10 @@
 <!-- START of: finna - search/pagination_simple.phtml -->
-<? if ($this->pageCount): ?>
+<?php if ($this->pageCount): ?>
   <ul class="paginationSimple">
     <li>
-    <? if (isset($this->previous)): ?>
+    <?php if (isset($this->previous)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i></a></li>
-    <? endif; ?>
+    <?php endif; ?>
     <li>
       <?=$this->label ?: $this->translate(
         'showing_results_of_html', [
@@ -14,9 +14,9 @@
         ]
       );?>
     </li>
-    <? if (isset($this->next)): ?>
+    <?php if (isset($this->next)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-alt-right"></i></a></li>
-    <? endif; ?>
+    <?php endif; ?>
   </ul>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - search/pagination_simple.phtml -->

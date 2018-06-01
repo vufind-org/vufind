@@ -1,5 +1,5 @@
 <!-- START of: finna - search/home.phtml -->
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Search Home'));
 
@@ -27,15 +27,15 @@
   </div>
 </div>
 <!-- Create different sections for home page (home-1 - home-10) -->
-<? for ($i = 1; $i <= 10; $i++): ?>
-<? if ($template = $this->content()->findTemplateForLng("search/home/home-$i")): ?>
+<?php for ($i = 1; $i <= 10; $i++): ?>
+<?php if ($template = $this->content()->findTemplateForLng("search/home/home-$i")): ?>
 <div class="container-fluid home-<?=$i; ?>">
   <div class="container">
     <?=$this->render($template)?>
   </div>
 </div>
-<? endif; ?>
-<? endfor; ?>
+<?php endif; ?>
+<?php endfor; ?>
 <!-- reopen container -->
 <div class="container">
 <!-- END of: finna - search/home.phtml -->

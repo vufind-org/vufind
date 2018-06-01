@@ -1,8 +1,8 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-image-navi.phtml -->
 <div class="<?= $type === 'record' ? 'truncate-field ' : ''?> recordcovers <?=$type ?><?=count($images) == 1 ? ' hidden' : ''?> <?=$type === 'list' ? ' hidden-xs hidden-sm' : ''?>"<?= $type === 'record' ? ' data-rows="2" data-row-height="35"' : ''?>>
-<? $ind = 0; ?>
-<? foreach ($images as $img): ?>
-  <?
+<?php $ind = 0; ?>
+<?php foreach ($images as $img): ?>
+  <?php
     $content = null;
     if ($type === 'list' || $type === 'list grid') {
       $content = $ind === 4 ? '&hellip;' : $ind + 1;
@@ -12,10 +12,10 @@
     $largeImg = isset($img['urls']['large']) && is_string($img['urls']['large']);
   ?>
   <a href="<?= $this->escapeHtmlAttr($img['urls']['medium']) ?>" class="image-popup image-popup-navi<?=(($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print" data-img-index="<?=$ind ?>"><?=$content ?></a>
-  <? if ($largeImg): ?>
-    <a href="<?=$this->escapeHtmlAttr(isset($img['urls']['large']) ? $img['urls']['large'] : $img['urls']['medium']) ?>" class="hide"><?=$content ?></a>
-  <? endif; ?>
-  <? $ind++; ?>
-<? endforeach; ?>
+  <?php if ($largeImg): ?>
+    <a href="<?=$this->escapeHtmlAttr($img['urls']['large'] ?? $img['urls']['medium']) ?>" class="hide"><?=$content ?></a>
+  <?php endif; ?>
+  <?php $ind++; ?>
+<?php endforeach; ?>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/record-image-navi.phtml -->

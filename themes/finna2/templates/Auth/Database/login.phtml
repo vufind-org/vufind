@@ -1,5 +1,5 @@
 <!-- START of: finna - Auth/Database/login.phtml -->
-<? $account = $this->auth()->getManager(); ?>
+<?php $account = $this->auth()->getManager(); ?>
 <div>
   <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm">
     <div class="login-col">
@@ -10,12 +10,12 @@
         <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
       </div>
       <div class="form-group">
-        <? if ($account->supportsCreation()): ?>
+        <?php if ($account->supportsCreation()): ?>
           <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
-        <? endif; ?>
-        <? if ($account->supportsRecovery()): ?>
+        <?php endif; ?>
+        <?php if ($account->supportsRecovery()): ?>
           <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
   </form>
@@ -27,7 +27,7 @@
       </p>
     </div>
     <div class="clearfix"></div>
-    <?
+    <?php
       $language = $this->layout()->userLang;
       if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
         $language = 'en-gb';

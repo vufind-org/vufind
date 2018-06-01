@@ -1,12 +1,12 @@
 <!-- START of: finna - myresearch/profile-my-information.phtml -->
-<? if ($user): ?>
+<?php if ($user): ?>
 <div class="my-profile">
   <div class="myresearch-profile-list">
     <div>
       <h2><?=$this->transEsc('my_profile')?></h2>
     </div>
     <form name="my_profile_form" class="inline" method="post">
-      <? if (!$this->hideProfileEmailAddress): ?>
+      <?php if (!$this->hideProfileEmailAddress): ?>
           <div class="my-profile-col">
             <label for="email"><?=$this->transEsc("Email") ?>:</label>
           </div>
@@ -21,14 +21,14 @@
           <div>
               <input id="save-user-profile" name="saveUserProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
           </div>
-      <? endif; ?>
+      <?php endif; ?>
     </form>
   </div>
   <div class="myresearch-profile-list">
-    <? if ($this->auth()->isLoggedIn() && !in_array($this->auth()->getManager()->getAuthClassForTemplateRendering(), ['Finna\Auth\ILS', 'Finna\Auth\MultiILS']) && $this->auth()->getManager()->supportsPasswordChange()): ?>
+    <?php if ($this->auth()->isLoggedIn() && !in_array($this->auth()->getManager()->getAuthClassForTemplateRendering(), ['Finna\Auth\ILS', 'Finna\Auth\MultiILS']) && $this->auth()->getManager()->supportsPasswordChange()): ?>
       <a href="<?=$this->url('myresearch-changepassword') ?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('Change Password') ?></a>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - myresearch/profile-my-information.phtml -->

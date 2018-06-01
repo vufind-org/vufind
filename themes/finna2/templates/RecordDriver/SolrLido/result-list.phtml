@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/SolrLido/result-list.phtml -->
-<?
+<?php
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
@@ -8,23 +8,23 @@
 if ($img):
     ob_start(); ?>
     <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
-    <? $thumbnail = ob_get_contents(); ?>
-  <? ob_end_clean(); ?>
-<? endif;?>
+    <?php $thumbnail = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+<?php endif;?>
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
   <div class="media">
-    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
           <?=$thumbnail ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="media-body">
       <div class="result-body">
         <div class="title-container">
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?
+          <?php
             $summHighlightedTitle = $this->driver->getHighlightedTitle();
             $summTitle = $this->driver->getTitle();
             if (!empty($summHighlightedTitle)) {
@@ -40,47 +40,47 @@ if ($img):
 
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
-          <? if ($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
-          <? else: ?>
-            <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+          <?php else: ?>
+            <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
               <div class="truncate-field" data-rows="1">
-                <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+                <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
                   <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ' ; ' : ''?>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($dates = $this->driver->getResultDateRange()): ?>
-              <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
-            <? endif; ?>
-          <? endif; ?>
+            <?php if ($dates = $this->driver->getResultDateRange()): ?>
+              <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
         </div>
 
-        <? if(!$this->driver->isCollection()): ?>
-          <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-            <? if (!empty($snippet['caption'])): ?>
+        <?php if(!$this->driver->isCollection()): ?>
+          <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+            <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
-            <? endif; ?>
-            <? if (!empty($snippet['snippet'])): ?>
+            <?php endif; ?>
+            <?php if (!empty($snippet['snippet'])): ?>
               <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
-            <? endif; ?>
-          <? endif; ?>
-        <? endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
         <?=$this->record($this->driver)->getPreviews()?>
-        <? if ($this->layout()->templateDir === 'list'): ?>
+        <?php if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>
-        <? endif; ?>
+        <?php endif; ?>
 
-        <? /* Saved lists */ ?>
+        <?php /* Saved lists */ ?>
         <div class="savedLists">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
         <div class="hidden-print add-to-favorite-col">
-            <? /* Display qrcode if appropriate: */ ?>
-            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-                <?
+            <?php /* Display qrcode if appropriate: */ ?>
+            <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?php
                 // Add JS Variables for QrCode
                 $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
                 ?>
@@ -94,31 +94,31 @@ if ($img):
                   </script>
                 </div>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-                <? /* Add to favorites */ ?>
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <?php /* Add to favorites */ ?>
               <div>
                 <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+            <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? $openUrl = $this->driver->getOpenURL(); ?>
+            <?php $openUrl = $this->driver->getOpenURL(); ?>
             <?=$openUrl?'<span class="Z3988" title="' . $this->escapeHtmlAttr($openUrl) . '"></span>':''?>
         </div>
       </div>
     </div>
-    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
         <?=$thumbnail ?>
     </div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrLido/result-list.phtml -->

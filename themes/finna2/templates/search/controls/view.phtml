@@ -1,44 +1,44 @@
 <!-- START of: finna - search/controls/view.phtml -->
-<?
+<?php
   $viewList = $this->params->getViewList();
   if (!isset($isCollection) || !$isCollection){
       $viewOptionsIcons = is_callable([$this->params, 'getViewOptionListType'])
           ? $this->params->getViewOptionListType() : null;
   }
 ?>
-<? if (count($viewList) > 1): ?>
+<?php if (count($viewList) > 1): ?>
 <div class="view-option-container text-right">
-    <? if (isset($viewOptionsIcons) && $viewOptionsIcons == true): ?>
+    <?php if (isset($viewOptionsIcons) && $viewOptionsIcons == true): ?>
     <span class="hidden-sm hidden-xs hidden-md button-label"><?=$this->transEsc('show_as')?></span>
     <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('show_as')?></span>
     <div class="view-options">
-      <? foreach ($viewList as $viewType => $viewData): ?>
+      <?php foreach ($viewList as $viewType => $viewData): ?>
         <div class="view-button <?= $viewData['selected'] ? 'selected' : '' ?>">
           <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Show As ' . $viewData['desc'])?>" aria-label="<?=$this->transEsc('Show As ' . $viewData['desc'])?>"><i class="fa fa-<?=$viewType ?>"></i></a>
         </div>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? else: ?>
+  <?php else: ?>
     <span class="hidden-sm hidden-xs hidden-md button-label"><?=$this->transEsc('show_as')?></span>
     <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('show_as')?></span>
     <div class="view-dropdown">
       <div class="dropdown">
-        <? foreach ($viewList as $viewType => $viewData): ?>
-          <? if ($viewData['selected']): ?>
+        <?php foreach ($viewList as $viewType => $viewData): ?>
+          <?php if ($viewData['selected']): ?>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-<?=$viewType ?>"></i><span class="<?=isset($isCollection) && $isCollection ? 'hidden-xs hidden-sm' : '' ?>"><?=$this->transEsc('Show As ' . $viewData['desc'])?></span> <i class="fa fa-arrow-down"></i></a>
-          <? endif; ?>
-        <? endforeach; ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
 
         <ul class="dropdown-menu" role="menu">
-          <? foreach ($viewList as $viewType => $viewData): ?>
+          <?php foreach ($viewList as $viewType => $viewData): ?>
             <li role="menuitem">
-              <a href="<? if (!$viewData['selected']): ?> <?=$this->results->getUrlQuery()->setViewParam($viewType)?><? else: ?>#<? endif; ?>" title="<?=$this->transEsc($viewData['desc'])?>" ><i class="fa fa-<?=$viewType ?>"></i> <?=$this->transEsc('Show As ' . $viewData['desc'])?></a>
+              <a href="<?php if (!$viewData['selected']): ?> <?=$this->results->getUrlQuery()->setViewParam($viewType)?><?php else: ?>#<?php endif; ?>" title="<?=$this->transEsc($viewData['desc'])?>" ><i class="fa fa-<?=$viewType ?>"></i> <?=$this->transEsc('Show As ' . $viewData['desc'])?></a>
             </li>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </ul>
       </div>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - search/controls/view.phtml -->

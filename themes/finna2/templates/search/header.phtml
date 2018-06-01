@@ -1,5 +1,5 @@
 <!-- START of: finna - search/header.phtml -->
-<?
+<?php
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
         $this->searchClassId = 'Solr';
@@ -20,22 +20,22 @@
     $searchType = !empty($this->params) ? $this->params->getSearchType() : $searchType;
     $searchId = !empty($this->results) ? $this->results->getSearchId() : $searchId;
 ?>
-<? if ($searchType == 'advanced'): ?>
+<?php if ($searchType == 'advanced'): ?>
   <div class="adv-search-header">
     <div class="container">
       <div class="searchbox-flex">
-        <? if ($this->layout()->templateDir === 'record'): ?>
+        <?php if ($this->layout()->templateDir === 'record'): ?>
           <div class="record-back hidden-print">
-            <?
+            <?php
             $html = '<span><i class="fa fa-arrow-alt-left"></i></span>';
             $html .= '<span class="back-to-search-text hidden-xs hidden-sm">' . $this->transEsc('Back to search results') . '</span>';
             $previousSearch = $this->searchMemory()->getLastSearchLink($html);
             if ($previousSearch !== ''):
                 ?>
               <div class="back-to-search"><?=$previousSearch?></div>
-            <? endif; ?>
+            <?php endif; ?>
           </div>
-        <? endif; ?>
+        <?php endif; ?>
         <div id="searchForm" class="hidden-print">
           <div class="adv_search_links">
             <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($searchId)?>"><i class="fa fa-lg fa-pen"></i> <?=$this->transEsc("Edit this search")?></a>
@@ -46,85 +46,85 @@
             <span class="visible-xs adv-search-menu-toggle"><?=$this->transEsc("adv_search_menu")?> <b class="caret"></b></span>
           </div>
         </div>
-        <? if ($this->layout()->templateDir === 'record'): ?>
+        <?php if ($this->layout()->templateDir === 'record'): ?>
         <div class="pager-container">
-            <?  $this->scrollData = $this->searchMemory()->getLastScrollData() ?>
-            <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+            <?php  $this->scrollData = $this->searchMemory()->getLastScrollData() ?>
+            <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
               <ul class="pager hidden-print" id="view-pager">
-                  <? if ($this->scrollData['previousRecord']): ?>
-                      <? if ($this->scrollData['firstRecord']): ?>
+                  <?php if ($this->scrollData['previousRecord']): ?>
+                      <?php if ($this->scrollData['firstRecord']): ?>
                       <li>
                         <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" rel="nofollow"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First Record')?></span></a>
                       </li>
-                      <? endif; ?>
+                      <?php endif; ?>
                     <li class="pager-previous-record">
                       <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" rel="nofollow"><i class="fa fa-arrow-alt-left"></i><span class="sr-only"><?=$this->transEsc('Previous Record')?></span></a>
                     </li>
-                  <? else: ?>
-                      <? if ($this->scrollData['firstRecord']): ?>
+                  <?php else: ?>
+                      <?php if ($this->scrollData['firstRecord']): ?>
                       <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a><i class="fa fa-first-page"></i></a></li>
-                      <? endif; ?>
+                      <?php endif; ?>
                     <li class="disabled" title="<?=$this->transEsc('Previous Record')?>"><a><i class="fa fa-arrow-alt-left"></i></a></li>
-                  <? endif; ?>
+                  <?php endif; ?>
                 <li class="pager-text">
                     <?=$this->transEsc('of_num_results', [
                         '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
                         '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
                     ]) ?>
                 </li>
-                  <? if ($this->scrollData['nextRecord']): ?>
+                  <?php if ($this->scrollData['nextRecord']): ?>
                     <li class="pager-next-record">
                       <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" rel="nofollow"><i class="fa fa-arrow-alt-right"></i><span class="sr-only"><?=$this->transEsc('Next Record')?></span></a>
                     </li>
-                      <? if ($this->scrollData['lastRecord']): ?>
+                      <?php if ($this->scrollData['lastRecord']): ?>
                       <li>
                         <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" rel="nofollow"><i class="fa fa-last-page"></i><span class="sr-only"><?=$this->transEsc('Last Record')?></span></a>
                       </li>
-                      <? endif; ?>
-                  <? else: ?>
+                      <?php endif; ?>
+                  <?php else: ?>
                     <li class="disabled" title="<?=$this->transEsc('Next Record')?>"><a><i class="fa fa-arrow-alt-right"></i></a></li>
-                      <? if ($this->scrollData['lastRecord']): ?>
+                      <?php if ($this->scrollData['lastRecord']): ?>
                       <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a><i class="fa fa-last-page"></i></a></li>
-                      <? endif; ?>
-                  <? endif; ?>
+                      <?php endif; ?>
+                  <?php endif; ?>
               </ul>
-            <? endif; ?>
+            <?php endif; ?>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
   </div>
-<? endif; ?>
+<?php endif; ?>
 
-<? if ($this->fromStreetSearch): ?>
-    <? $filters = isset($this->params) ? $this->params->getFilters() : ''; ?>
+<?php if ($this->fromStreetSearch): ?>
+    <?php $filters = isset($this->params) ? $this->params->getFilters() : ''; ?>
   <div>
     <div id="searchForm" class="hidden-print">
       <?=$this->render('search/street-search-header.phtml', ['urlParams' => $this->results->getUrlQuery()->getParams(false)]);?>
     </div>
   </div>
-<? else: ?>
+<?php else: ?>
   <div class="container <?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
     <div class="finna-main-header">
       <h1 class="search-result-header">
-      <? if ($this->recordsFound || isset($onRecordPage)): ?>
-        <? if (isset($this->overrideSearchHeading)): ?>
+      <?php if ($this->recordsFound || isset($onRecordPage)): ?>
+        <?php if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
-        <? elseif ($searchType == 'basic'): ?>
-          <? if (empty($lookfor)): ?>
+        <?php elseif ($searchType == 'basic'): ?>
+          <?php if (empty($lookfor)): ?>
             <?=$this->transEsc('history_empty_search');?>
-          <? else: ?>
+          <?php else: ?>
             <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
-          <? endif; ?>
-        <? elseif ($searchType == 'advanced'): ?>
+          <?php endif; ?>
+        <?php elseif ($searchType == 'advanced'): ?>
           <span class="adv_search_terms"><strong><?=$this->transEsc("Your search terms")?>:</strong> <?=$this->escapeHtml($this->lookfor)?></span>
-        <? endif; ?>
-        <? else: ?>
+        <?php endif; ?>
+        <?php else: ?>
           <?=$this->transEsc('nohit_heading')?>
-      <? endif; ?>
+      <?php endif; ?>
       </h1>
     </div>
   </div>
-<? endif; ?>
+<?php endif; ?>
 
 <!-- END of: finna - search/header.phtml -->

@@ -1,5 +1,5 @@
 <!-- START of: finna - librarycards/editcard.phtml -->
-<?
+<?php
   // Set up page title:
   $pageTitle = empty($this->card->id) ? 'Connect Library Card' : "Update Card Details";
   $this->headTitle($this->translate($pageTitle));
@@ -19,35 +19,35 @@
 <form class="edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off">
   <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
   <div class="form-group">
-    <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>: <? if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transEsc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><? endif; ?></label>
+    <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>: <?php if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transEsc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><?php endif; ?></label>
     <input id="card_name" class="form-control" type="text" placeholder="<?=$this->transEsc('library_card_name_placeholder'); ?>" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
   </div>
-  <? if ($this->targets !== null): ?>
+  <?php if ($this->targets !== null): ?>
   <div class="form-group">
     <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-    <? if (count($this->targets) > 1): ?>
+    <?php if (count($this->targets) > 1): ?>
       <select id="login_target" name="target" class="form-control">
-      <? foreach ($this->targets as $target): ?>
+      <?php foreach ($this->targets as $target): ?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
       </select>
-    <? endif; ?>
-    <? if (count($this->targets) == 1): ?>
+    <?php endif; ?>
+    <?php if (count($this->targets) == 1): ?>
       <input type="hidden" id="login_target" name="target" class="form-control" value="<?=$this->escapeHtmlAttr($target)?>" />
       <p style="padding-top:7px;"><?=$this->transEsc("source_$target", null, $target)?></p>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="form-group">
     <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
     <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
   </div>
-  <? if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
+  <?php if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
   <div class="form-group">
     <label class="control-label" for="login_secondary_username"><?=$this->transEsc($this->secondaryLoginFieldLabel) ?>:</label>
     <input id="login_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->secondaryUsername)?>" class="form-control"/>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="form-group">
     <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
     <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="form-control"/>
@@ -55,23 +55,23 @@
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
   </div>
-  <? if (empty($this->card->id)): ?>
-    <?
+  <?php if (empty($this->card->id)): ?>
+    <?php
       $language = $this->layout()->userLang;
       if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
         $language = 'en-gb';
       }
     ?>
     <?=$this->partial("librarycards/library_card_terms_$language.phtml"); ?>
-  <? endif; ?>
+  <?php endif; ?>
 </form>
-<? if (!$this->translationEmpty('login_desc_add_library_card_html') && empty($this->card->id)): ?>
+<?php if (!$this->translationEmpty('login_desc_add_library_card_html') && empty($this->card->id)): ?>
 <div class="login-description">
   <p class="login-info"><?=$this->translate('login_desc_add_library_card_html');?></p>
 </div>
-<? endif; ?>
+<?php endif; ?>
 
-<?
+<?php
   if ($this->targets !== null) {
       $labels = [];
       foreach ($this->secondaryLoginFieldLabels as $target => $label) {

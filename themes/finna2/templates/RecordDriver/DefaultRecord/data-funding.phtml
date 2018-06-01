@@ -1,8 +1,8 @@
-<? //Don't add START and END comments ?>
-<? if(!empty($data)): ?>
+<?php //Don't add START and END comments ?>
+<?php if(!empty($data)): ?>
 <div class="truncate-field">
-  <? foreach ($data as $index => $item): ?>
-    <?
+  <?php foreach ($data as $index => $item): ?>
+    <?php
       $additional = [];
       if (!empty($item['type'])) {
         $additional[] = $this->escapeHtml($item['type']);
@@ -11,7 +11,7 @@
         $additional[] = $this->escapeHtml($item['amount']);
       }
     ?>
-    <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><? if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><? endif; ?>
-  <? endforeach; ?>
+    <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><?php if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><?php endif; ?>
+  <?php endforeach; ?>
 </div>
-<? endif; ?>
+<?php endif; ?>

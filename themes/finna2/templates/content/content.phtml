@@ -3,7 +3,7 @@
   <div>
       <?= $this->context($this)->renderInContext('content/' . $page . '.phtml', []); ?>
   </div>
-  <?
+  <?php
     if ($this->content()->getHeading()) {
         $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
             'content/header.phtml',

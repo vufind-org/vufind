@@ -1,5 +1,5 @@
 <!-- START of: finna - list/list-notes.phtml -->
-<?
+<?php
   $list = $this->results->getListObject();
   $notes = $this->driver->getListNotes($list->id); if (!empty($notes)): ?>
   <div class="notes">
@@ -8,7 +8,7 @@
       (<?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?>):
     </p>
     <div class="note-rows">
-      <?
+      <?php
       $note = implode('', $notes);
       if ($this->params->getView() == 'list') {
         $note = $this->markdown()->toHtml($note);
@@ -17,5 +17,5 @@
       ?>
     </div>
   </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - list/list-notes.phtml -->

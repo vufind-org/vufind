@@ -2,17 +2,17 @@
 <div>
   <div class="form-group">
     <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
-    <? if (count($this->auth()->getManager()->getLoginTargets()) > 1): ?>
+    <?php if (count($this->auth()->getManager()->getLoginTargets()) > 1): ?>
       <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <select id="login_target" name="target" class="form-control">
-        <? foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
+        <?php foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
           <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-        <? endforeach ?>
+        <?php endforeach ?>
       </select>
-    <? else: ?>
+    <?php else: ?>
       <input type="hidden" id="login_target" name="target" value="<?=$this->escapeHtmlAttr($currentTarget)?>">
       <div><strong><?=$this->transEsc("source_$currentTarget", null, $currentTarget)?></strong></div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
   <div class="form-group">
     <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username"></label>
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<?
+<?php
   $labels = [];
   foreach ($this->auth()->getManager()->getLoginTargets() as $target) {
     $label = $this->auth()->getManager()->getSecondaryLoginFieldLabel($target);

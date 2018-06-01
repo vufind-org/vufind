@@ -1,5 +1,5 @@
 <!-- START of: finna - primo/home.phtml -->
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Primo Search'));
   $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->translate('Primo Search') . '</h1></div>';
@@ -24,24 +24,24 @@
 <div class="container-fluid">
   <div class="container">
     <div class="row">
-      <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+      <?php if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
       <div class="alert alert-warning">
         <h2><?=$this->transEsc('ils_offline_title')?></h2>
         <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
         <p><?=$this->transEsc('ils_offline_home_message')?></p>
-        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
         <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
       </div>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
   </div>
 </div>
 <div class="container-fluid primo-home">
   <div class="container">
     <div>
-      <? if ($template = $this->content()->findTemplateForLng('primo/home-1')): ?>
+      <?php if ($template = $this->content()->findTemplateForLng('primo/home-1')): ?>
       <?=$this->render($template)?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
   </div>
 </div>

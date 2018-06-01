@@ -1,6 +1,6 @@
 <!-- START of: finna - search/list-list.phtml -->
-<?
-  $browse = isset($browse) ? $browse : false;
+<?php
+  $browse = $browse ?? false;
   $this->filterList = $this->params->getFilters();
 
   if (!isset($this->indexStart)) {
@@ -11,28 +11,28 @@
   $needRecommendationHolder = !$browse && $this->results->getStartRecord() == 1 && !empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]);
   $haveRecommendationHolder = false;
 ?>
-<? $i = $this->indexStart; ?>
-<? foreach ($this->results->getResults() as $current): ?>
-  <? $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
-  <? if ($needRecommendationHolder && ($recordNumber == (isset($recommendationConfig['position']) ? $recommendationConfig['position'] : 4) || $recordNumber == $resultCount)): ?>
+<?php $i = $this->indexStart; ?>
+<?php foreach ($this->results->getResults() as $current): ?>
+  <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+  <?php if ($needRecommendationHolder && ($recordNumber == ($recommendationConfig['position'] ?? 4) || $recordNumber == $resultCount)): ?>
     <div id="search-tabs-recommendations-holder" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
-    <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
-    <? $this->headScript()->appendFile("openurl.js"); ?>
-    <? $haveRecommendationHolder = true; ?>
-  <? endif; ?>
+    <?php // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
+    <?php $this->headScript()->appendFile("openurl.js"); ?>
+    <?php $haveRecommendationHolder = true; ?>
+  <?php endif; ?>
   <div id="result<?=$i++ ?>" class="result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
-      <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+      <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
         <div class="record-checkbox">
           <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
         </div>
-      <? endif; ?>
+      <?php endif; ?>
       <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
-<? endforeach; ?>
-<? if ($needRecommendationHolder && !$haveRecommendationHolder): ?>
+<?php endforeach; ?>
+<?php if ($needRecommendationHolder && !$haveRecommendationHolder): ?>
   <div id="search-tabs-recommendations-holder" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
-  <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
-  <? $this->headScript()->appendFile("openurl.js"); ?>
-<? endif; ?>
+  <?php // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
+  <?php $this->headScript()->appendFile("openurl.js"); ?>
+<?php endif; ?>
 <!-- END of: finna - search/list-list.phtml -->

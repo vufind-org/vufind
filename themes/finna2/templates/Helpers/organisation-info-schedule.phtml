@@ -1,7 +1,7 @@
 <table class="opening-times-week info-element" data-period-start="<?=$this->escapeHtmlAttr($this->periodStart)?>">
   <tbody>
-    <? foreach ($this->schedules as $day): ?>
-      <?
+    <?php foreach ($this->schedules as $day): ?>
+      <?php
         $openNow = false;
         $staffTimes = false;
         $selfServiceTimes = [];
@@ -27,34 +27,34 @@
       <td><?= date('d.m', $day['date'])?></td>
       <td>
         <ul>
-        <?
+        <?php
         if (empty($day['times'])): ?>
           <li>
             <span class="day"><?=$this->translate('day-name-short-' . $day['dayName'])?></span>
             <span class="time"><?=$this->translate('organisation_info_is_closed')?></span>
           </li>
-        <? else:
+        <?php else:
           $cnt = 0;
           foreach ($day['times'] as $time):
         ?>
-        <? $selfServiceTime = $time['selfservice']; ?>
+        <?php $selfServiceTime = $time['selfservice']; ?>
           <li<?=$staffTimes && !$selfServiceTime ? ' class="staff"' : ''?>>
             <span class="day">
-            <? if ($cnt++ == 0): ?>
+            <?php if ($cnt++ == 0): ?>
                <?= $this->translate(!$staffTimes || $selfServiceTime ? ('day-name-short-' . $day['dayName']) : 'organisation_info_schedule_staff');?>
-            <? elseif (!$selfServiceTime && $staffTimes): ?>
+            <?php elseif (!$selfServiceTime && $staffTimes): ?>
                 <?= $this->translate('organisation_info-schedule_staff');?>
-            <? else: ?>
+            <?php else: ?>
                &nbsp;
-            <? endif; ?>
+            <?php endif; ?>
             </span>
             <span class="time"><?= $time['opens']?> - <?= $time['closes']?></span>
           </li>
-          <? endforeach; ?>
-        <? endif; ?>
+          <?php endforeach; ?>
+        <?php endif; ?>
         </ul>
       </td>
     </tr>
-    <? endforeach ?>
+    <?php endforeach ?>
   </tbody>
 </table>

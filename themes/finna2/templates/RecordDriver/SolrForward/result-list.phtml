@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/SolrForward/result-list.phtml -->
-<?
+<?php
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
@@ -8,10 +8,10 @@
 if ($img):
     ob_start(); ?>
     <?=$img->render('list', ['medium' => ['w' => 250, 'h' => 250]]) ?>
-    <? $thumbnail = ob_get_contents(); ?>
-    <? ob_end_clean(); ?>
-  <? endif; ?>
-<?
+    <?php $thumbnail = ob_get_contents(); ?>
+    <?php ob_end_clean(); ?>
+  <?php endif; ?>
+<?php
   $primaryRoles = ['drt'];
   $nonPresenterAuthors = $this->driver->getNonPresenterAuthors();
   $primaryAuthors = [];
@@ -26,13 +26,13 @@ if ($img):
 ?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
-    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
           <?=$thumbnail ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="media-body">
       <div class="result-body">
         <div class="title-container">
@@ -44,51 +44,51 @@ if ($img):
         <div class="dateyeartype">
           <div class="resultItemFormat">
             <?=$this->record($this->driver)->getFormatList() ?>
-            <? $type = $this->driver->getType(); ?>
-            <? $country = $this->driver->getCountry(); ?>
-            <? if ($type && $country): ?>
+            <?php $type = $this->driver->getType(); ?>
+            <?php $country = $this->driver->getCountry(); ?>
+            <?php if ($type && $country): ?>
               <?=$this->escapeHtml($type) ?>, <?=$this->escapeHtml($country) ?>
-            <? else: ?>
+            <?php else: ?>
               <?=$this->escapeHtml($type) ?><?=$this->escapeHtml($country) ?>
-            <? endif; ?>
+            <?php endif; ?>
           </div>
 
-          <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
+          <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
             <div class="resultOtherLinks">
-              <? $prevOtherLinkHeading = ''; ?>
-              <? foreach ($results as $result): ?>
+              <?php $prevOtherLinkHeading = ''; ?>
+              <?php foreach ($results as $result): ?>
                 <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('default::link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
-                <? if (!empty($result['isn'])): ?>
-                  <? $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+                <?php if (!empty($result['isn'])): ?>
+                  <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
                   <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
                     <?=$this->escapeHtml($otherLinkTitle); ?>
                   </a>
-                <? elseif (!empty($result['title'])): ?>
+                <?php elseif (!empty($result['title'])): ?>
                   <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
                     <?=$this->escapeHtml($result['title']); ?>
                   </a>
-                <? endif; ?>
-                <? if (!empty($result['author'])): ?>
+                <?php endif; ?>
+                <?php if (!empty($result['author'])): ?>
                   (<?=$this->escapeHtml($result['author']); ?>)
-                <? endif; ?>
-              <? endforeach; ?>
+                <?php endif; ?>
+              <?php endforeach; ?>
             </div>
-          <? endif; ?>
+          <?php endif; ?>
 
-          <? if ($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', $this->driver->getSummary()); ?>
-          <? else: ?>
-            <? if (!empty($primaryAuthors)): ?>
+          <?php else: ?>
+            <?php if (!empty($primaryAuthors)): ?>
               <div class="truncate-field" data-rows="1">
-                <? foreach($primaryAuthors as $index => $author): ?>
-                  <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><? endif; ?>
-                <? endforeach; ?>
+                <?php foreach($primaryAuthors as $index => $author): ?>
+                  <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?>
+                <?php endforeach; ?>
               </div>
-            <? endif; ?>
-            <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
-            <? if (!empty($journalTitle)): ?>
+            <?php endif; ?>
+            <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+            <?php if (!empty($journalTitle)): ?>
               <?=!empty($summAuthor) ? '' : ' '?>
-              <?
+              <?php
               $parentSource = $this->driver->getSourceIdentifier();
               $parentId = $this->driver->getHierarchyParentId();
               $parentLink = false;
@@ -104,15 +104,15 @@ if ($img):
               }
               ?>
               <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
-              <? $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
+              <?php $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
                 <?=$this->escapeHtml($ref); ?>
-              <? else: ?>
+              <?php else: ?>
                 <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
-              <? endif; ?>
-            <? endif; ?>
-            <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+              <?php endif; ?>
+            <?php endif; ?>
+            <?php $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
               <div class="resultClassification">
-                <?
+                <?php
                   $result = '';
                   $i = 0;
                   foreach ($classifications as $class => $field) {
@@ -121,57 +121,57 @@ if ($img):
                       $result = $class . ' ' . $subfield;
                       $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
                       ?>
-                      <? if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br/><? endif; ?>
-                  <?
+                      <?php if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br/><?php endif; ?>
+                  <?php
                     }
                   }
                   ?>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
-              <? foreach ($summInCollection as $collId => $collText): ?>
+            <?php $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+              <?php foreach ($summInCollection as $collId => $collText): ?>
                 <div>
                   <b><?=$this->transEsc("in_collection_label")?></b>
                   <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                     <?=$this->escapeHtml($collText)?>
                   </a>
                 </div>
-              <? endforeach; ?>
-            <? endif; ?>
-          <? endif; ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          <?php endif; ?>
         </div>
-        <? if (!$this->driver->isCollection()): ?>
-          <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-            <? if (!empty($snippet['caption'])): ?>
+        <?php if (!$this->driver->isCollection()): ?>
+          <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+            <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
-            <? endif; ?>
-            <? if (!empty($snippet['snippet'])): ?>
+            <?php endif; ?>
+            <?php if (!empty($snippet['snippet'])): ?>
               <span class="quotestart">&#8220;</span>...<?=$this->highlight(strip_tags($snippet['snippet'])); ?>...</i><span class="quoteend">&#8221;</span><br/>
-            <? endif; ?>
-          <? endif; ?>
-        <? endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
 
-        <? $recordHelper = $this->record($this->driver); ?>
+        <?php $recordHelper = $this->record($this->driver); ?>
         <?=$recordHelper->renderTemplate('holdings.phtml');?>
         <?=$recordHelper->getOnlineUrls('results');?>
         <?=$recordHelper->getPreviews();?>
 
-        <? if ($this->layout()->templateDir === 'list'): ?>
+        <?php if ($this->layout()->templateDir === 'list'): ?>
             <?=$this->render('list/list-notes.phtml')?>
-        <? endif; ?>
+        <?php endif; ?>
 
         <div class="clearfix"></div>
-        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-            <? /* Saved lists */ ?>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <?php /* Saved lists */ ?>
           <div class="savedLists">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
-        <? endif; ?>
+        <?php endif; ?>
         <div class="hidden-print add-to-favorite-col">
-            <? /* Display qrcode if appropriate: */ ?>
-            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-                <?
+            <?php /* Display qrcode if appropriate: */ ?>
+            <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?php
                 // Add JS Variables for QrCode
                 $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
                 ?>
@@ -185,42 +185,42 @@ if ($img):
                   </script>
                 </div>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-                <? /* Add to favorites */ ?>
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <?php /* Add to favorites */ ?>
             <div>
               <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart" aria-hidden="true"></i><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="sr-only hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a>
             </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+            <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-            <? endif; ?>
+            <?php endif; ?>
 
             <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
         </div>
-          <? /* Hierarchy tree link */ ?>
-          <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-              <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+          <?php /* Hierarchy tree link */ ?>
+          <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+              <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
               <div class="hierarchyTreeLink">
                 <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
                 <i class="fa fa-sitemap" aria-hidden="true"></i>
                 <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
-                    <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+                    <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
                 </a>
               </div>
-              <? endforeach; ?>
-          <? endif; ?>
+              <?php endforeach; ?>
+          <?php endif; ?>
       </div>
     </div>
-    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$thumbnail ?>
     </div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrForward/result-list.phtml -->

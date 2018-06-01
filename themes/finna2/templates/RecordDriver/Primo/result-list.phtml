@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/Primo/result-list.phtml -->
-<?
+<?php
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
 ?>
 <div class="record-container list-view<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?>">
@@ -12,7 +12,7 @@
         </div>
         <div class="title-container">
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?
+          <?php
             $summHighlightedTitle = $this->driver->getHighlightedTitle();
             $summTitle = $this->driver->getTitle();
             if (!empty($summHighlightedTitle)) {
@@ -28,10 +28,10 @@
         </div>
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
-          <? if($this->driver->isCollection()): ?>
+          <?php if($this->driver->isCollection()): ?>
             <?=implode('<br>', $this->driver->getSummary()); ?>
-          <? else: ?>
-            <?
+          <?php else: ?>
+            <?php
               $highlight = true;
               $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting();
               if (empty($summAuthors)) {
@@ -39,75 +39,75 @@
                   $highlight = false;
               }
             ?>
-            <? if (!empty($summAuthors)): ?>
+            <?php if (!empty($summAuthors)): ?>
               <div class="truncate-field" data-rows="1">
-                <? foreach ($summAuthors as $i => $summAuthor): ?>
+                <?php foreach ($summAuthors as $i => $summAuthor): ?>
                   <?= $i > 0 ? '; ' : '' ?>
-                  <? $cleanAuthor = str_replace('{{{{END_HILITE}}}}', '', str_replace('{{{{START_HILITE}}}}', '', $summAuthor)); ?>
+                  <?php $cleanAuthor = str_replace('{{{{END_HILITE}}}}', '', str_replace('{{{{START_HILITE}}}}', '', $summAuthor)); ?>
                   <a href="<?=$this->record($this->driver)->getLink('author', $cleanAuthor)?>"><?=$highlight ? $this->highlight($summAuthor) : $this->escapeHtml($summAuthor); ?></a>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </div>
-            <? endif; ?>
-            <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
-            <? if (!empty($journalTitle)): ?>
+            <?php endif; ?>
+            <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+            <?php if (!empty($journalTitle)): ?>
               <?=!empty($summAuthors) ? '' : ' '?>
               <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle) . '">' . $journalTitle . '</a>';?>
-              <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } elseif (!empty($summDate)) { echo $this->escapeHtml($summDate[0]); } ?>
-            <? elseif (!empty($summDate)): ?>
+              <?php $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } elseif (!empty($summDate)) { echo $this->escapeHtml($summDate[0]); } ?>
+            <?php elseif (!empty($summDate)): ?>
               <?=!empty($summAuthors) ? '' : ' '?>
               <?=$this->escapeHtml($summDate[0])?>
-            <? endif; ?>
-            <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
-              <? foreach ($summInCollection as $collId => $collText): ?>
+            <?php endif; ?>
+            <?php $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+              <?php foreach ($summInCollection as $collId => $collText): ?>
                 <div>
                   <b><?=$this->transEsc("in_collection_label")?></b>
                   <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                     <?=$this->escapeHtml($collText)?>
                   </a>
                 </div>
-              <? endforeach; ?>
-            <? endif; ?>
-          <? endif; ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          <?php endif; ?>
         </div>
 
-        <? if(!$this->driver->isCollection()): ?>
-          <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-            <? if (!empty($snippet['caption'])): ?>
+        <?php if(!$this->driver->isCollection()): ?>
+          <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+            <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
-            <? endif; ?>
-            <? if (!empty($snippet['snippet'])): ?>
+            <?php endif; ?>
+            <?php if (!empty($snippet['snippet'])): ?>
               <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
-            <? endif; ?>
-          <? endif; ?>
-        <? endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
 
-        <?
+        <?php
         /* Display information on duplicate records if available */
         $dedupData = $this->driver->getDedupData();
         if ($dedupData): ?>
         <div class="dedupInformation">
-        <?
+        <?php
           $i = 0;
           foreach ($dedupData as $source => $current) {
             if (++$i == 1) {
-              ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?
+              ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?php
             } else {
               if ($i == 2) {
-                ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
+                ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?php
               } else {
-                ?>, <?
+                ?>, <?php
               }
-              ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", [], $source)?></a><?
+              ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", [], $source)?></a><?php
             }
           }
           if ($i > 1) {
-            ?>)</span><?
+            ?>)</span><?php
           }?>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
 
         <div class="callnumAndLocation ajax-availability hidden">
-          <? if ($this->driver->supportsAjaxStatus()): ?>
+          <?php if ($this->driver->supportsAjaxStatus()): ?>
             <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
             <span class="callnumber ajax-availability hidden">
               <?=$this->transEsc('Loading')?>...<br/>
@@ -117,14 +117,14 @@
               <?=$this->transEsc('Loading')?>...
             </span>
             <div class="locationDetails clearfix"></div>
-          <? else: ?>
-            <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+          <?php else: ?>
+            <?php $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
               <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-            <? endif; ?>
-          <? endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
         </div>
         <?=$this->record($this->driver)->getPreviews()?>
-        <?
+        <?php
           $summary = false;
           $highlightedSummary = $this->driver->getHighlightedSummary();
           if (isset($highlightedSummary[0])) {
@@ -136,12 +136,12 @@
              }
           }
         ?>
-        <? if ($summary): ?>
+        <?php if ($summary): ?>
           <div class="truncate-field">
             <p class="summary"><?=$summary;?></p>
           </div>
-        <? endif; ?>
-        <?
+        <?php endif; ?>
+        <?php
         $openUrl = $this->openUrl($driver, 'results');
         $openUrlActive = $openUrl->isActive();
         ?>
@@ -149,9 +149,9 @@
             <?=$this->record($this->driver)->getOnlineUrls('results')?>
         </div>
         <div class="hidden-print add-to-favorite-col">
-            <? /* Display qrcode if appropriate: */ ?>
-            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-                <?
+            <?php /* Display qrcode if appropriate: */ ?>
+            <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?php
                 // Add JS Variables for QrCode
                 $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
                 ?>
@@ -165,10 +165,10 @@
                   </script>
                 </div>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-                <? /* Add to favorites */ ?>
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <?php /* Add to favorites */ ?>
               <div>
                 <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record hidden-print" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>">
                   <i class="fa fa-heart"></i>
@@ -176,39 +176,39 @@
                   <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span>
                 </a>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+            <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? /* Hierarchy tree link */ ?>
-            <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-                <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+            <?php /* Hierarchy tree link */ ?>
+            <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+                <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
                 <div class="hierarchyTreeLink hidden-print">
                   <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
                   <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
                     <i class="fa fa-sitemap"></i>
-                      <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+                      <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
                   </a>
                 </div>
-                <? endforeach; ?>
-            <? endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <div class="clearfix visible-xs"></div>
-        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-            <? /* Saved lists */ ?>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <?php /* Saved lists */ ?>
             <div class="savedLists">
               <strong><?=$this->transEsc("Saved in")?>:</strong>
             </div>
-        <? endif; ?>
-        <? if ($this->layout()->templateDir === 'list'): ?>
+        <?php endif; ?>
+        <?php if ($this->layout()->templateDir === 'list'): ?>
         <div class="">
           <div class="">
             <?=$this->render('list/list-notes.phtml')?>
           </div>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
         <div class="clearfix visible-xs"></div>
       </div>
     </div>
