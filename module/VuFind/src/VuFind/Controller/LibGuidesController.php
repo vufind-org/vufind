@@ -52,16 +52,6 @@ class LibGuidesController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel();
-    }
-
-    /**
      * Is the result scroller active?
      *
      * @return bool

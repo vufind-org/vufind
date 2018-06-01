@@ -67,7 +67,7 @@ class DateTime extends \Zend\View\Helper\AbstractHelper
     {
         try {
             return $this->converter->convertFromDisplayDate('Y', $date);
-        } catch (\VuFind\Exception\Date $e) {
+        } catch (\VuFind\Date\DateException $e) {
             // bad date? just ignore it!
             return false;
         }
