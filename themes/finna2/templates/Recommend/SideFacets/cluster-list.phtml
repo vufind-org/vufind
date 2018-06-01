@@ -27,14 +27,14 @@
       : $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], $thisFacet['operator']);
   ?>
   <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-    <div class="facet excludable facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?endif ?>">
+    <div class="facet excludable facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif ?>">
       <?php $excludeURL = $thisFacet['isApplied']
         ? $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])->addFacet($this->title, $thisFacet['value'], 'NOT')
         : $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], 'NOT');
       ?>
       <a href="<?=$excludeURL ?>" title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
   <?php else: ?>
-    <a href="<?=$affectiveURL ?>" class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?endif ?>">
+    <a href="<?=$affectiveURL ?>" class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif ?>">
   <?php endif; ?>
 
   <?php if ($thisFacet['isApplied']): ?>

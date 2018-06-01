@@ -62,7 +62,7 @@
         <?php endif; ?>
       </a>
       <?php if($viewRecord): ?>
-        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<?php if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&filter[]=', urlencode($secondary['value'])) ?><?php endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<?php if($this->dewey_flag):?>&amp;sort=dewey-sort<?endif;?>"><?=$this->transEsc('View Records') ?></a>
+        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<?php if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&filter[]=', urlencode($secondary['value'])) ?><?php endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<?php if($this->dewey_flag):?>&amp;sort=dewey-sort<?php endif;?>"><?=$this->transEsc('View Records') ?></a>
       <?php endif; ?>
        <?php if ($this->findby != 'alphabetical'):?> </div><?php endif; ?>
     <?php endforeach; ?>

@@ -13,5 +13,5 @@
   ?>
   <li><?= !$selected ? ('<a href="' . $this->escapeHtmlAttr($link) . '">' . $this->escapeHtml($item['title']) . '</a>') : $this->escapeHtml($item['title']) ?></li>
   <?php $cnt++; ?>
-<?endforeach;?>
+<?php endforeach;?>
 </ul>

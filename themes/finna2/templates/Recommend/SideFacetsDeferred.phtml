@@ -38,7 +38,7 @@
       }
     }
   ?>
-  <?if ($checkboxesShown):?>
+  <?php if ($checkboxesShown): ?>
     <div class="checkboxFilter">
       <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'counts' => false]); ?>
     </div>
