@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class CombinedController extends \VuFind\Controller\CombinedController
 {
-    use SearchControllerTrait;
+    use FinnaSearchControllerTrait;
 
     /**
      * Handle onDispatch event

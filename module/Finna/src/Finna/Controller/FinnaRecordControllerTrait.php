@@ -38,7 +38,7 @@ use Zend\Escaper\Escaper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-trait RecordControllerTrait
+trait FinnaRecordControllerTrait
 {
     /**
      * Create a new ViewModel.

@@ -40,7 +40,7 @@ use Zend\Mail as Mail;
  */
 class RecordController extends \VuFind\Controller\RecordController
 {
-    use RecordControllerTrait;
+    use FinnaRecordControllerTrait;
     use CatalogLoginTrait;
 
     /**

@@ -40,7 +40,7 @@ use Zend\Console\Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-trait OnlinePaymentControllerTrait
+trait FinnaOnlinePaymentControllerTrait
 {
     use \VuFind\Log\LoggerAwareTrait;
 

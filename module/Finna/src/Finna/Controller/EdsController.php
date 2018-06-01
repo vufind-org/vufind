@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class EdsController extends \VuFind\Controller\EdsController
 {
-    use SearchControllerTrait;
+    use FinnaSearchControllerTrait;
 
     /**
      * Save a search to the history in the database.

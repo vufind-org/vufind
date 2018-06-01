@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class PrimoController extends \VuFind\Controller\PrimoController
 {
-    use SearchControllerTrait;
+    use FinnaSearchControllerTrait;
 
     /**
      * Search class family to use.

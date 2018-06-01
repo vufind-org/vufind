@@ -41,7 +41,7 @@ use VuFindCode\ISBN;
  */
 class SearchController extends \VuFind\Controller\SearchController
 {
-    use SearchControllerTrait;
+    use FinnaSearchControllerTrait;
     use CatalogLoginTrait;
 
     /**

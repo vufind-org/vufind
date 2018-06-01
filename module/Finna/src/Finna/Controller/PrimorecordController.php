@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class PrimorecordController extends \VuFind\Controller\PrimorecordController
 {
-    use RecordControllerTrait;
+    use FinnaRecordControllerTrait;
 
     /**
      * Handle onDispatch event
