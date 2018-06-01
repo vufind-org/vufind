@@ -115,9 +115,14 @@ class ImportFavorites extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
-     * @param User|bool         $user     Logged in user (or false)
-     * @param RendererInterface $renderer View renderer
-     * @param bool              $enabled  Are lists enabled?
+     * @param User|bool         $user      Logged in user (or false)
+     * @param RendererInterface $renderer  View renderer
+     * @param SearchTable       $st        Search table
+     * @param UserListTable     $ult       UserList table
+     * @param UserResourceTable $urt       UserResource table
+     * @param ResultsManager    $rm        Results manager
+     * @param Loader            $rl        Record loader
+     * @param FavoritesService  $favorites Favorites service
      */
     public function __construct($user, RendererInterface $renderer,
         SearchTable $st, UserListTable $ult,
@@ -235,7 +240,7 @@ class ImportFavorites extends \VuFind\AjaxHandler\AbstractBase
      *     ]
      *   ]
      *
-     * @param array $lists  User lists
+     * @param array $lists User lists
      *
      * @return array [userLists => int, userResources => int], number of new user
      * lists created and number of records to saved into user lists.

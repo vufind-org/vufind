@@ -93,7 +93,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
      * @param TransactionTable $tt  Transaction table
      * @param UserCardTable    $uc  UserCard table
      * @param OnlinePayment    $op  Online payment manager
-     * @param SessionContainer $os Online payment session
+     * @param SessionContainer $os  Online payment session
      */
     public function __construct(SessionSettings $ss, Connection $ils,
         TransactionTable $tt, UserCardTable $uc, OnlinePayment $op,

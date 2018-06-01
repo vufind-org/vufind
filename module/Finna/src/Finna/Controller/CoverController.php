@@ -65,9 +65,11 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Constructor
      *
-     * @param Loader          $loader Cover loader
-     * @param CachingProxy    $proxy  Proxy loader
-     * @param SessionSettings $ss     Session settings
+     * @param Loader                $loader       Cover loader
+     * @param CachingProxy          $proxy        Proxy loader
+     * @param SessionSettings       $ss           Session settings
+     * @param \Zend\Config\Config   $datasources  Data source settings
+     * @param \VuFind\Record\Loader $recordLoader Record loader
      */
     public function __construct(Loader $loader, CachingProxy $proxy,
         SessionSettings $ss, \Zend\Config\Config $datasources,

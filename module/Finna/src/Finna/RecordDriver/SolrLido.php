@@ -62,6 +62,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      * Attach date converter
      *
      * @param \VuFind\Date\Converter $dateConverter Date Converter
+     *
+     * @return void
      */
     public function attachDateConverter($dateConverter)
     {
