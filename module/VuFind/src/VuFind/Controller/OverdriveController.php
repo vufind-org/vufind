@@ -92,8 +92,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $this->debug("view model");
         $view = $this->createViewModel(
             [
-              'checkouts' => $mycheckouts,
-              'holds' => $myholds,
+            'checkouts' => $mycheckouts,
+            'holds' => $myholds,
             ]
         );
 
@@ -117,13 +117,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $this->debug("ODRC availability for :".print_r($ids, true));
         $result = $this->connector->getAvailabilityBulk($ids);
         
-        $view = $this->createViewModel(
-            [
-              'ids' => $ids,
-              'action' => $action,
-              'result' => $result,
-            ]
-        );
+        $view = $this->createViewModel(compact('ids', 'action', 'result'));
 
         $view->setTemplate('RecordDriver/SolrOverdrive/status-full');
         $this->layout()->setTemplate('layout/lightbox');
@@ -201,15 +195,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         }
         
         $view = $this->createViewModel(
-            [
-                'od_id' => $od_id,
-                'rec_id' => $rec_id,
-                'action' => $action,
-                'result' => $result,
-                'formats' => $formats,
-                'cover' => $cover,
-                'title' => $title
-            ]
+            compact(
+                'od_id', 'rec_id', 'action',
+                'result', 'formats', 'cover', 'title'
+            )
         );
 
         $view->setTemplate('RecordDriver/SolrOverdrive/hold');
