@@ -102,7 +102,6 @@ class OverdriveConnector implements LoggerAwareInterface,
     public function __construct(
         $mainConfig = null,
         $recordConfig = null,
-        $sessManager,
         $ilsAuth
     ) {
         $this->debug("SolrOverdrive Connector");
@@ -560,7 +559,12 @@ class OverdriveConnector implements LoggerAwareInterface,
         //the checkouts are cached in the session, but we can force a refresh
         //
         $this->debug("get Overdrive Holds");
-        // $this->debug(print_r($user,true));
+
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in");
+            return $result;
+        }
+        
         $result = new OverdriveResult();
         $holds = $this->sessionContainer->holds;
         if (!$holds || $refresh) {
