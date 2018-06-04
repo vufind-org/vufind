@@ -17,14 +17,12 @@ function channelAddLinkButtons(elem) {
 }
 
 function setupChannelSlider(i, op) {
-  $(".channel").slick({
+  $(op).slick({
     slidesToShow: 6,
-    slidesToScroll: 6,
+    slidesToScroll: 6
   });
-  $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {
-    var img = $(thumb).find('img');
-    $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
-    img.remove();
+  $(op).on('swipe', function channelDrag() {
+    $('[aria-describedby]').popover('hide');
   });
   // truncate long titles and add hover
   $(op).find('.channel-record').dotdotdot({
@@ -34,7 +32,7 @@ function setupChannelSlider(i, op) {
       }
     }
   });
-  $('.channel-record').unbind('click').click(function channelRecord(event) {
+  $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
     var record = $(event.delegateTarget);
     if (record.data('popover')) {
       if (record.attr('aria-describedby')) {
@@ -121,10 +119,8 @@ function bindChannelAddMenu(iteration, scope) {
   });
 }
 
+var justSwiped = false;
 $(document).ready(function channelReady() {
   $('.channel').each(setupChannelSlider);
   $('.channel').each(bindChannelAddMenu);
-  $('.channel').on('dragStart', function channelDrag() {
-    $('[aria-describedby]').popover('hide');
-  });
 });
