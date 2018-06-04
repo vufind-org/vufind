@@ -94,41 +94,46 @@ function setupChannelSlider(i, op) {
   channelAddLinkButtons(op);
   $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
     .clone()
-    .addClass('pull-right')
     .removeClass('hidden')
-    .appendTo($(op).find('.slider-menu'));
+    .prependTo($(op).parent(".channel-wrapper"));
 }
 
-function bindChannelAddMenu(iteration, scope) {
-  $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
-    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
-      var list = $(e.target).closest('.dropdown-menu');
-      var $testEls = $('<div>' + data + '</div>').find('.channel-wrapper');
-      $testEls.each(function addRetrievedNonEmptyChannels(i, element) {
-        var $testEl = $(element);
-        // Make sure the channel has content
-        if ($testEl.find('.channel-record').length === 0) {
-          $(e.target).closest('.channel').after(
-            '<div class="channel-title no-results">'
-            + '<h2>' + $testEl.find('h2').html() + '</h2>'
-            + VuFind.translate('nohit_heading')
-            + '</div>'
-          );
-        } else {
-          $(e.target).closest('.channel').after($testEl);
-          $('.channel').each(setupChannelSlider);
-          $('.channel').each(bindChannelAddMenu);
-        }
-        // Remove dropdown link
-        $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
+function selectAddedChannel(e) {
+  $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
+    var list = $(e.target).closest('.dropdown-menu');
+    var $testEls = $('<div>' + data + '</div>').find('.channel-wrapper');
+    var $dest = $(e.target).closest('.channel-wrapper');
+    // Remove dropdown link
+    $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
+    // Insert new channels
+    $testEls.each(function addRetrievedNonEmptyChannels(i, element) {
+      var $testEl = $(element);
+      // Make sure the channel has content
+      if ($testEl.find('.channel-record').length === 0) {
+        $dest.after(
+          '<div class="channel-wrapper">'
+          + '<div class="channel-title no-results">'
+          + '<h2>' + $testEl.find('h2').html() + '</h2>'
+          + VuFind.translate('nohit_heading')
+          + '</div></div>'
+        );
+      } else {
+        $dest.after($testEl);
+        $testEl.find('.channel').each(setupChannelSlider);
+        $testEl.find('.channel').each(bindChannelAddMenu);
+      }
 
-        if (list.children().length === 0) {
-          $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
-        }
-      });
+      if (list.children().length === 0) {
+        $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
+      }
     });
-    return false;
   });
+  return false;
+}
+
+function bindChannelAddMenu(iteration, channel) {
+  var scope = $(channel).parent(".channel-wrapper");
+  $(scope).find('.channel-add-menu .dropdown-menu a').click(selectAddedChannel);
   $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
     var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
     for (var i = 0; i < links.length && i < 2; i++) {
