@@ -1,5 +1,13 @@
 // Finna Facet styling
 
+// No inverse active items
+.facet-group .active,
+.jstree-facet .active,
+.jstree-facet .active a.jstree-anchor {
+  background: @list-group-bg;
+  color: @action-link-color;
+}
+
 .list-group.filters {
   background: @list-group-bg;
   padding: 10px 0px;
@@ -311,12 +319,15 @@ span.badge.cb-facet {
 }
 .full-facet-list {
   margin-bottom: 0;
-}
-.full-facet-list .active .fa {
-  float: right;
-  margin-top: .25rem;
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
+  .active .fa {
+    float: right;
+    margin-top: .25rem;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+  }
+  .facet {
+    display: inherit;
+  }
 }
 
 .sidebar {
