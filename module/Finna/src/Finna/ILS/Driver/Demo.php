@@ -220,7 +220,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
     {
         if ($method == 'markFeesAsPaid') {
             $required = [
-                'currency', 'enabled', 'registrationMethod'
+                'currency', 'enabled'
             ];
 
             foreach ($required as $req) {
