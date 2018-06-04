@@ -40,14 +40,9 @@ namespace VuFind\Search\SolrAlternative;
 class Results extends \VuFind\Search\Solr\Results
 {
     /**
-     * Support method for performAndProcessSearch -- perform a search based on the
-     * parameters passed to the object.
+     * Backend ID
      *
-     * @return void
+     * @var string
      */
-    protected function performSearch()
-    {
-        $this->backendId = 'SolrAlternative';
-        parent::performSearch();
-    }
+    protected $backendId = 'SolrAlternative';
 }
