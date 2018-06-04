@@ -66,8 +66,8 @@ abstract class AbstractBase implements AjaxHandlerInterface
     /**
      * Format a response array.
      *
-     * @param mixed  $response Response data
-     * @param int    $httpCode HTTP status code (omit for default)
+     * @param mixed $response Response data
+     * @param int   $httpCode HTTP status code (omit for default)
      *
      * @return array
      */
