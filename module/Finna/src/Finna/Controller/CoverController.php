@@ -109,7 +109,7 @@ class CoverController extends \VuFind\Controller\CoverController
         if ($id = $params->fromQuery('id')) {
             $driver = $this->recordLoader->load($id, 'Solr');
             $index = $params->fromQuery('index');
-            $this->loader->loadRecordImage($driver, $index);
+            $this->loader->loadRecordImage($driver, $index, $size);
             $response = parent::displayImage();
         } else {
             // Redirect book covers to VuFind's cover controller
