@@ -19,7 +19,8 @@ function channelAddLinkButtons(elem) {
 function setupChannelSlider(i, op) {
   $(op).slick({
     slidesToShow: 6,
-    slidesToScroll: 6
+    slidesToScroll: 6,
+    rtl: $(document.body).hasClass("rtl")
   });
   $(op).on('swipe', function channelDrag() {
     $('[aria-describedby]').popover('hide');
