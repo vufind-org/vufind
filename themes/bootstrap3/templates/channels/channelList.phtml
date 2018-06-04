@@ -44,9 +44,11 @@
     </div>
     <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : json_encode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
-      <?php foreach ($channel['contents'] as $item): ?>
+      <?php foreach ($channel['contents'] as $index=>$item): ?>
         <a href="<?=empty($item['routeDetails']) ? $this->recordLink()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params'])?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-          <div class="thumb"><img src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/></div>
+          <div class="thumb">
+            <img <?=$index < 6 ? "src" : "data-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/>
+          </div>
           <?=$this->escapeHtml($item['title'])?>
         </a>
       <?php endforeach; ?>

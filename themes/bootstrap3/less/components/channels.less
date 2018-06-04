@@ -21,11 +21,16 @@
 }
 .channel .channel-record.is-selected { &:extend(a:hover); }
 .channel .channel-record .thumb {
+  display: flex;
   height: 200px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  align-items: center;
+  justify-content: center;
 }
+.channel .channel-record .thumb img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .channel .popover {
   width: 500px;
   max-width: none;
@@ -40,3 +45,8 @@
   vertical-align: top;
 }
 .channel-title .placeholder { width: 25px; }
+
+.channel .slick-prev::before,
+.channel .slick-next::before {
+  color: #555;
+}
