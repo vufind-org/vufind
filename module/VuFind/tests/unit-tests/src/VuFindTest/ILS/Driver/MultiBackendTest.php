@@ -2,7 +2,7 @@
 /**
  * ILS driver test
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -48,12 +48,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\ILS
      */
     public function testMissingConfiguration()
     {
-        $this->setExpectedException('VuFind\Exception\ILS');
         $test = new MultiBackend(
-            new \VuFind\Config\PluginManager(), $this->getMockILSAuthenticator(),
+            new \VuFind\Config\PluginManager($this->getServiceManager()),
+            $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
         $test->init();
@@ -890,7 +892,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $patron['cat_username']
         );
 
-        $this->setExpectedException('VuFind\Exception\ILS');
+        $this->expectException('VuFind\Exception\ILS');
         $driver->patronLogin("bad", "info");
     }
 
@@ -918,9 +920,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getMyTransactions($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyTransactions(
             $this->getPatron('username', 'invalid')
         );
@@ -958,9 +959,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getRenewDetails(
             [
                 'id' => 'invalid.loanid'
@@ -1002,9 +1002,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->renewMyItems(
             ['patron' => $this->getPatron('username', 'invalid')]
         );
@@ -1034,9 +1033,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getMyFines($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyFines($this->getPatron('username', 'invalid'));
     }
 
@@ -1064,9 +1062,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getMyHolds($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyHolds($this->getPatron('username', 'invalid'));
     }
 
@@ -1104,9 +1101,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyStorageRetrievalRequests(
             $this->getPatron('username', 'invalid')
         );
@@ -1282,9 +1278,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getPickUpLocations(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
@@ -1331,9 +1326,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertFalse($result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getDefaultPickUpLocation(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
@@ -1380,9 +1374,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([], $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getRequestGroups(
             '1',
             $this->getPatron('username', 'invalid')
@@ -1429,9 +1422,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertFalse($result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getDefaultRequestGroup(
             $this->getPatron('username', 'invalid'),
             ['id' => '1']
@@ -1490,9 +1482,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $result
         );
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeHold(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -1549,9 +1540,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelHolds(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -1587,9 +1577,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelHoldDetails(
             ['id' => 'invalid.1', 'item_id' => 2]
         );
@@ -1647,9 +1636,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $result
         );
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeStorageRetrievalRequest(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -1706,9 +1694,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelStorageRetrievalRequests(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -1744,9 +1731,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelStorageRetrievalRequestDetails(
             ['id' => 'invalid.1', 'item_id' => 2]
         );
@@ -1799,9 +1785,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(true, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->checkILLRequestIsValid(
             'invalid.bibid',
             ['id' => 'invalid.itemid'],
@@ -1846,9 +1831,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getILLPickupLibraries(
             '1',
             $this->getPatron('username', 'invalid')
@@ -1894,9 +1878,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getILLPickupLocations(
             '1',
             '2',
@@ -1955,9 +1938,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected2, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->placeILLRequest(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -1994,9 +1976,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getMyILLRequests($this->getPatron('username', 'd3'));
         $this->assertEquals([], $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyILLRequests(
             $this->getPatron('username', 'invalid')
         );
@@ -2050,9 +2031,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->cancelILLRequests(
             [
                 'patron' => $this->getPatron('username', 'invalid'),
@@ -2088,9 +2068,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals($expected, $result);
 
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelILLRequestDetails(
             ['id' => 'invalid.1', 'item_id' => 2]
         );

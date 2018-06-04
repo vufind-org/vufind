@@ -2,7 +2,7 @@
 /**
  * Factory for authentication services.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -52,9 +52,11 @@ class Factory
     public static function getChoiceAuth(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            'ChoiceAuth', $sm->get('Zend\Session\SessionManager')
         );
-        return new ChoiceAuth($container);
+        $auth = new ChoiceAuth($container);
+        $auth->setPluginManager($sm->get('VuFind\Auth\PluginManager'));
+        return $auth;
     }
 
     /**
@@ -67,7 +69,7 @@ class Factory
     public static function getFacebook(ServiceManager $sm)
     {
         $container = new \Zend\Session\Container(
-            'Facebook', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            'Facebook', $sm->get('Zend\Session\SessionManager')
         );
         return new Facebook($container);
     }
@@ -82,76 +84,23 @@ class Factory
     public static function getILS(ServiceManager $sm)
     {
         return new ILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILS\Connection'),
+            $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
 
     /**
-     * Construct the ILS authenticator.
+     * Construct the MultiAuth plugin.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return ILSAuthenticator
+     * @return MultiAuth
      */
-    public static function getILSAuthenticator(ServiceManager $sm)
+    public static function getMultiAuth(ServiceManager $sm)
     {
-        // Construct the ILS authenticator as a lazy loading value holder so that
-        // the object is not instantiated until it is called. This helps break a
-        // potential circular dependency with the MultiBackend driver as well as
-        // saving on initialization costs in cases where the authenticator is not
-        // actually utilized.
-        $callback = function (& $wrapped, $proxy) use ($sm) {
-            // Generate wrapped object:
-            $auth = $sm->get('VuFind\AuthManager');
-            $catalog = $sm->get('VuFind\ILSConnection');
-            $wrapped = new ILSAuthenticator($auth, $catalog);
-
-            // Indicate that initialization is complete to avoid reinitialization:
-            $proxy->setProxyInitializer(null);
-        };
-        $cfg = $sm->get('VuFind\ProxyConfig');
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
-    }
-
-    /**
-     * Construct the authentication manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Manager
-     */
-    public static function getManager(ServiceManager $sm)
-    {
-        // Set up configuration:
-        $config = $sm->get('VuFind\Config')->get('config');
-        try {
-            // Check if the catalog wants to hide the login link, and override
-            // the configuration if necessary.
-            $catalog = $sm->get('VuFind\ILSConnection');
-            if ($catalog->loginIsHidden()) {
-                $config = new \Zend\Config\Config($config->toArray(), true);
-                $config->Authentication->hideLogin = true;
-                $config->setReadOnly();
-            }
-        } catch (\Exception $e) {
-            // Ignore exceptions; if the catalog is broken, throwing an exception
-            // here may interfere with UI rendering. If we ignore it now, it will
-            // still get handled appropriately later in processing.
-            error_log($e->getMessage());
-        }
-
-        // Load remaining dependencies:
-        $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
-        $sessionManager = $sm->get('VuFind\SessionManager');
-        $pm = $sm->get('VuFind\AuthPluginManager');
-        $cookies = $sm->get('VuFind\CookieManager');
-
-        // Build the object and make sure account credentials haven't expired:
-        $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
-        $manager->checkForExpiredCredentials();
-        return $manager;
+        $auth = new MultiAuth();
+        $auth->setPluginManager($sm->get('VuFind\Auth\PluginManager'));
+        return $auth;
     }
 
     /**
@@ -164,8 +113,8 @@ class Factory
     public static function getMultiILS(ServiceManager $sm)
     {
         return new MultiILS(
-            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+            $sm->get('VuFind\ILS\Connection'),
+            $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
 
@@ -179,7 +128,7 @@ class Factory
     public static function getShibboleth(ServiceManager $sm)
     {
         return new Shibboleth(
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 }

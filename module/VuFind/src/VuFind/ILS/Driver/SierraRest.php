@@ -2,7 +2,7 @@
 /**
  * III Sierra REST API driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -45,6 +45,7 @@ use Zend\Log\LoggerAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
@@ -632,7 +633,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getMyTransactionHistory($patron, $params)
     {
-        $pageSize = isset($params['limit']) ? $params['limit'] : 50;
+        $pageSize = $params['limit'] ?? 50;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
         $sortOrder = isset($params['sort']) && 'checkout asc' === $params['sort']
             ? 'asc' : 'desc';
@@ -691,7 +692,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         return [
-            'count' => isset($result['total']) ? $result['total'] : 0,
+            'count' => $result['total'] ?? 0,
             'transactions' => $transactions
         ];
     }
@@ -749,9 +750,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!empty($bibId)) {
                 // Fetch bib information
                 $bib = $this->getBibRecord($bibId, 'title,publishYear', $patron);
-                $title = isset($bib['title']) ? $bib['title'] : '';
-                $publicationYear = isset($bib['publishYear']) ? $bib['publishYear']
-                    : '';
+                $title = $bib['title'] ?? '';
+                $publicationYear = $bib['publishYear'] ?? '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
             if ($entry['priority'] >= $entry['priorityQueueLength']) {
@@ -951,8 +951,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if ($this->getPatronBlocks($patron)) {
             return false;
         }
-        $level = isset($data['level']) ? $data['level'] : 'copy';
-        if ('title' == $data['level']) {
+        $level = $data['level'] ?? 'copy';
+        if ('title' === $level) {
             $bib = $this->getBibRecord($id, 'bibLevel', $patron);
             if (!isset($bib['bibLevel']['code'])
                 || !in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
@@ -983,8 +983,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ? $holdDetails['level'] : 'copy';
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
-        $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
-        $comment = isset($holdDetails['comment']) ? $holdDetails['comment'] : '';
+        $itemId = $holdDetails['item_id'] ?? false;
+        $comment = $holdDetails['comment'] ?? '';
         $bibId = $holdDetails['id'];
 
         // Convert last interest date from Display Format to Sierra's required format
@@ -1026,9 +1026,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'recordType' => $level == 'copy' ? 'i' : 'b',
             'recordNumber' => (int)($level == 'copy' ? $itemId : $bibId),
             'pickupLocation' => $pickUpLocation,
-            'neededBy' => $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            )
+            'neededBy' => $lastInterestDate
         ];
         if ($comment) {
             $request['note'] = $comment;
@@ -1111,7 +1109,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $bibId = $item['bibIds'][0];
                     // Fetch bib information
                     $bib = $this->getBibRecord($bibId, 'title,publishYear', $patron);
-                    $title = isset($bib['title']) ? $bib['title'] : '';
+                    $title = $bib['title'] ?? '';
                 }
             }
 
@@ -1750,7 +1748,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function isHoldable($item)
     {
         if (!empty($this->validHoldStatuses)) {
-            list($status, $duedate, $notes) = $this->getItemStatus($item);
+            list($status) = $this->getItemStatus($item);
             if (!in_array($status, $this->validHoldStatuses)) {
                 return false;
             }

@@ -2,7 +2,7 @@
 /**
  * VuFind Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -168,7 +168,7 @@ class AbstractRecord extends AbstractBase
         }
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
-        if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
+        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
@@ -289,7 +289,7 @@ class AbstractRecord extends AbstractBase
         $post = $this->getRequest()->getPost()->toArray();
         $tagParser = $this->serviceLocator->get('VuFind\Tags');
         $post['mytags']
-            = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
+            = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator
             ->get('VuFind\Favorites\FavoritesService');
         $results = $favorites->save($post, $user, $driver);
@@ -415,7 +415,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $mailer = $this->serviceLocator->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
         $view = $this->createEmailViewModel(
             null, $mailer->getDefaultRecordSubject($driver)
         );
@@ -452,7 +452,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function smsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
         return $check->getSmsSetting() !== 'disabled';
     }
 
@@ -472,7 +472,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->serviceLocator->get('VuFind\SMS');
+        $sms = $this->serviceLocator->get('VuFind\SMS\SMSInterface');
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
@@ -650,7 +650,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Support method to load tab information from the RecordTabPluginManager.
+     * Support method to load tab information from the RecordTab PluginManager.
      *
      * @return void
      */
@@ -658,7 +658,7 @@ class AbstractRecord extends AbstractBase
     {
         $driver = $this->loadRecord();
         $request = $this->getRequest();
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
         $details = $rtpm->getTabDetailsForRecord(
             $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab

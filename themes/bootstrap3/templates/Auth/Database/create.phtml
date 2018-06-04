@@ -1,4 +1,4 @@
-<?
+<?php
   $pattern = '';
   if (isset($this->passwordPolicy['pattern'])) {
     if ($this->passwordPolicy['pattern'] == 'numeric') {
@@ -35,9 +35,9 @@
     <?=isset($this->passwordPolicy['maxLength']) ? ' maxlength="' . $this->passwordPolicy['maxLength'] . '"' : ''?>
     <?=$pattern ? ' pattern="' . $pattern . '"' : '' ?>
   />
-  <? if ($this->passwordPolicy['hint']): ?>
+  <?php if ($this->passwordPolicy['hint']): ?>
     <div class="help-block"><?=$this->transEsc($this->passwordPolicy['hint']) ?></div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">

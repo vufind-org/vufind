@@ -1,0 +1,19 @@
+<?php //Don't add START and END comments ?>
+<?php
+  $formatFn = function ($field) {
+    return '<a href="' . $this->escapeHtmlAttr($field) . '" title="' . $this->escapeHtmlAttr($field) . '" target="_blank">'
+      . $this->escapeHtml(!empty($this->truncateUrl) ? $this->truncateUrl($field) : $field)
+      . '</a>';
+  };
+?>
+<?php if (!empty($data)): ?>
+    <?php if (is_array($data)): ?>
+      <div class="truncate-field" data-rows="5">
+        <?php foreach ($data as $field): ?>
+          <?= $formatFn($data) ?><br/>
+        <?php endforeach; ?>
+      </div>
+    <?php else: ?>
+      <?= $formatFn($data) ?><br/>
+    <?php endif; ?>
+<?php endif; ?>

@@ -1,5 +1,5 @@
 <!-- START of: finna - browse/home.phtml -->
-<?
+<?php
   $this->headTitle($this->translate('Browse the Catalog'));
   $this->layout()->finnaMainHeader = '<div><h3>' . $this->transEsc('Browse the Catalog') . '</h3></div>';
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a></li>';
@@ -8,40 +8,40 @@
   $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
 ?>
 
-<? if (!isset($this->currentAction)): ?>
+<?php if (!isset($this->currentAction)): ?>
   <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
-<? endif; ?>
+<?php endif; ?>
 
 <div class="page-content">
-  <div class="browse list-group<? if (!empty($this->categoryList)): ?> hidden-xs<? endif ?>" id="list1">
-    <? foreach ($this->browseOptions as $item => $currentOption): ?>
-      <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
+  <div class="browse list-group<?php if (!empty($this->categoryList)): ?> hidden-xs<?php endif ?>" id="list1">
+    <?php foreach ($this->browseOptions as $item => $currentOption): ?>
+      <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<?php if($currentOption['action'] == $this->currentAction): ?> active<?php endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
-        <i class="fa fa-arrow-right<? if($currentOption['action'] == $this->currentAction): ?> fa-arrow-down<? endif; ?>"></i>
+        <i class="fa fa-arrow-right<?php if($currentOption['action'] == $this->currentAction): ?> fa-arrow-down<?php endif; ?>"></i>
       </a>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </div>
 
-  <? if (!empty($this->categoryList)): ?>
-    <div class="browse list-group<? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list2">
-      <? foreach($this->categoryList as $findby => $category): ?>
-        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="list-group-item clearfix<? if ($this->findby == $findby): ?> active<? endif; ?>">
-          <? if(is_string($category)): ?>
+  <?php if (!empty($this->categoryList)): ?>
+    <div class="browse list-group<?php if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<?php endif ?>" id="list2">
+      <?php foreach($this->categoryList as $findby => $category): ?>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="list-group-item clearfix<?php if ($this->findby == $findby): ?> active<?php endif; ?>">
+          <?php if(is_string($category)): ?>
             <?=$this->transEsc($category)?>
-            <i class="fa fa-arrow-right<? if ($this->findby == $findby): ?> fa-arrow-down<? endif; ?>"></i>
-          <? else: ?>
+            <i class="fa fa-arrow-right<?php if ($this->findby == $findby): ?> fa-arrow-down<?php endif; ?>"></i>
+          <?php else: ?>
             <?=$this->transEsc($category['text'])?>
             <span class="badge"><?=number_format($category['count'])?></span>
-          <? endif; ?>
+          <?php endif; ?>
         </a>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (!empty($this->secondaryList)): ?>
-    <div class="browse list-group<? if (!empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list3">
-    <? foreach($this->secondaryList as $secondary): ?>
-      <? $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
+  <?php if (!empty($this->secondaryList)): ?>
+    <div class="browse list-group<?php if (!empty($this->resultList)): ?> hidden-xs<?php endif ?>" id="list3">
+    <?php foreach($this->secondaryList as $secondary): ?>
+      <?php $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
           . '&amp;category=' . urlencode($this->category)
           . '&amp;query=' . urlencode($secondary['value']);
         if ($this->facetPrefix) {
@@ -54,34 +54,34 @@
         }
         $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
       ?>
-      <? if ($this->findby != 'alphabetical'):?> <div class="widen"><? endif; ?>
-      <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<? endif; ?>">
+      <?php if ($this->findby != 'alphabetical'):?> <div class="widen"><?php endif; ?>
+      <a href="<?=$url ?>" class="list-group-item clearfix<?php if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<?php endif; ?>">
         <?=$this->escapeHtml($secondary['displayText']) ?>
-        <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
+        <?php if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
           <span> (<?=number_format($secondary['count']) ?>)</span>
-        <? endif; ?>
+        <?php endif; ?>
       </a>
-      <? if($viewRecord): ?>
-        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<? if($this->dewey_flag):?>&amp;sort=dewey-sort<?endif;?>"><?=$this->transEsc('View Records') ?></a>
-      <? endif; ?>
-       <? if ($this->findby != 'alphabetical'):?> </div><? endif; ?>
-    <? endforeach; ?>
+      <?php if($viewRecord): ?>
+        <a class="list-group-item view-record pull-right" href="<?=$SEARCH_BASE ?>?lookfor=<?php if ($this->filter): ?>&amp;filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+', '&filter[]=', urlencode($secondary['value'])) ?><?php endif; ?>&amp;filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<?php if($this->dewey_flag):?>&amp;sort=dewey-sort<?php endif;?>"><?=$this->transEsc('View Records') ?></a>
+      <?php endif; ?>
+       <?php if ($this->findby != 'alphabetical'):?> </div><?php endif; ?>
+    <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (!empty($this->resultList)): ?>
+  <?php if (!empty($this->resultList)): ?>
     <div class="browse list-group" id="list4">
-    <? foreach($this->resultList as $result): ?>
-        <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var => $val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
+    <?php foreach($this->resultList as $result): ?>
+        <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><?php if ($this->searchParams): foreach($this->searchParams as $var => $val): ?>&<?=$var ?>=<?=urlencode($val) ?><?php endforeach;endif; ?>">
           <?=$this->escapeHtml($result['displayText'])?>
           <span> (<?=number_format($result['count']) ?>)</span>
         </a>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     </div>
-  <? elseif (isset($this->query)): ?>
+  <?php elseif (isset($this->query)): ?>
     <ul class="browse list-group" id="list4">
       <li class="list-group-item"><?=$this->transEsc('nohit_heading') ?></li>
     </ul>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 <!-- END of: finna - browse/home.phtml -->

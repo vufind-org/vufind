@@ -1,16 +1,16 @@
 <!-- START of: finna - content/about_finna-login.phtml -->
-<?
+<?php
 $loginTargets = [];
 $catalog = $this->ils();
 if ($catalog->checkCapability('getLoginDrivers')) {
   $loginTargets = $catalog->getLoginDrivers();
 }
 ?>
-<? if ($loginTargets): ?>
+<?php if ($loginTargets): ?>
 <ul class="about-login-targets">
-  <? foreach ($loginTargets as $target): ?>
+  <?php foreach ($loginTargets as $target): ?>
   <li><?=$this->transEsc("source_$target", null, $target)?></li>
-  <? endforeach ?>
+  <?php endforeach ?>
 </ul>
-<? endif ?>
+<?php endif ?>
 <!-- END of: finna - content/about_finna-login.phtml -->

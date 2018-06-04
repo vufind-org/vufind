@@ -1,0 +1,14 @@
+<?php //Don't add START and END comments ?>
+<?php if(!empty($data)): ?>
+    <div class="truncate-field">
+      <?php foreach ($data as $index => $item): ?>
+        <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?>
+      <?php endforeach; ?>
+      <?php $cost = $this->driver->getProductionCost(); if (!empty($cost)): ?><br/>
+        <tr>
+          <th><?=$this->transEsc('Production Costs') ?>:</th>
+          <td> <?= $cost; ?></td>
+        </tr>
+      <?php endif; ?>
+    </div>
+<?php endif; ?>

@@ -2,7 +2,7 @@
 /**
  * Dynamic Role Provider Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -101,7 +101,7 @@ class DynamicRoleProviderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getFakePluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         foreach (['a', 'b', 'c'] as $name) {
             $pm->setService($name, $this->createMock('VuFind\Role\PermissionProvider\PermissionProviderInterface'));
         }

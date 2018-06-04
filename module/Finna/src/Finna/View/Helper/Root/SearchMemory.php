@@ -2,7 +2,7 @@
 /**
  * View helper for remembering recent user searches/parameters.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -94,7 +94,7 @@ class SearchMemory extends \VuFind\View\Helper\Root\SearchMemory
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
         $request = new \Zend\StdLib\Parameters();
         $request->fromString($queryParams);
-        $paramsPlugin = $this->getView()->plugin('SearchParams');
+        $paramsPlugin = $this->getView()->plugin('searchParams');
         $params = $paramsPlugin($searchClassId);
         $params->initFromRequest($request);
         return $params;

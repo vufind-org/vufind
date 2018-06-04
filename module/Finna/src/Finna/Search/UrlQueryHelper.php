@@ -2,7 +2,7 @@
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -133,7 +133,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     public function setSearchId($class, $id, $output = true)
     {
         $params = $this->getParamArray();
-        $searches = isset($params['search']) ? $params['search'] : [];
+        $searches = $params['search'] ?? [];
 
         $res = [];
         if ($id !== null) {

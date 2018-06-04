@@ -2,7 +2,7 @@
 /**
  * SwitchType Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -81,7 +81,7 @@ class SwitchType implements RecommendInterface
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';
-        $this->newHandlerName = isset($params[1]) ? $params[1] : 'All Fields';
+        $this->newHandlerName = $params[1] ?? 'All Fields';
     }
 
     /**
@@ -119,7 +119,7 @@ class SwitchType implements RecommendInterface
         // anything!  We should only show recommendations if we know what handler is
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
-        $this->active = (!is_null($handler) && $handler != $this->newHandler);
+        $this->active = (null !== $handler && $handler != $this->newHandler);
     }
 
     /**

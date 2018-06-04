@@ -2,7 +2,7 @@
 /**
  * Authentication strategy permission provider for VuFind.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -31,6 +31,7 @@ namespace Finna\Role\PermissionProvider;
 use Finna\Auth\Manager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Authentication strategy permission provider for VuFind.
@@ -45,20 +46,20 @@ use VuFind\Role\PermissionProvider\PermissionProviderInterface;
 class AuthenticationStrategy implements PermissionProviderInterface
 {
     /**
-     * Authentication manager
+     * Service manager
      *
-     * @var Manager
+     * @var ServiceManager
      */
     protected $serviceLocator;
 
     /**
      * Constructor
      *
-     * @param ServiceLocator $serviceLocator ServiceLocator object
+     * @param ServiceManager $sm ServiceManager
      */
-    public function __construct($serviceLocator)
+    public function __construct(ServiceManager $sm)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->serviceLocator = $sm;
     }
 
     /**

@@ -1,0 +1,35 @@
+<?php //Don't add START and END comments ?>
+<?php if (!empty($data)): ?>
+  <?php foreach ($data as $field): ?>
+    <?php
+      $terms = [];
+      if (!empty($field['name'])) {
+          $terms[] = $field['name'];
+      }
+      if (!empty($field['partNumber'])) {
+          $terms[] = $field['partNumber'];
+      }
+      if (!empty($field['partName'])) {
+          $terms[] = $field['partName'];
+      }
+      $lookfor = implode(', ', $terms);
+    ?>
+    <?/* Depending on the record driver, $field may either be an array with
+       "name" and "number" keys or a flat string containing only the series
+       name.  We should account for both cases to maximize compatibility. */?>
+    <?php if (is_array($field)): ?>
+      <?php if (!empty($lookfor)): ?>
+          <a href="<?=$this->record($this->driver)->getLink('series', $lookfor)?>"><?=$this->escapeHtml($lookfor)?></a><?php if (!empty($field['issn']) || !empty($field['additional'])): ?>, <?php endif; ?>
+        <?php if (!empty($field['issn'])): ?>
+          ISSN <?=$this->escapeHtml($field['issn'])?><?php if (!empty($field['additional'])): ?>; <?php endif; ?>
+        <?php endif; ?>
+        <?php if (!empty($field['additional'])): ?>
+          <?=$this->escapeHtml($field['additional'])?>
+        <?php endif; ?>
+        <br/>
+      <?php endif; ?>
+    <?php else: ?>
+      <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>

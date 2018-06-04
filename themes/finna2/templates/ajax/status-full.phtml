@@ -1,5 +1,5 @@
 <!-- START of: finna - ajax/status-full.phtml -->
-<?
+<?php
 $id = $this->statusItems[0]['id'];
 $driver = $this->record($id)->getDriver();
 $source = $driver->tryMethod('getDataSource');
@@ -12,9 +12,9 @@ if (isset($summary['total'])) {
   $itemsTotal = $summary['total'];
   $availableTotal = $summary['available'];
   $reservationsTotal
-     = isset($summary['reservations']) ? $summary['reservations'] : null;
+     = $summary['reservations'] ?? null;
   $orderedTotal
-     = isset($summary['ordered']) ? $summary['ordered'] : null;
+     = $summary['ordered'] ?? null;
   $locations = $summary['locations'];
 } else {
   $holdings[] = $summary;
@@ -107,57 +107,57 @@ if ($groupBranches) {
 }
 ?>
 
-<? if ($groupBranches): ?>
+<?php if ($groupBranches): ?>
   <div class="holdings-container root <?=$collapseLocations ? ' collapsible' : ''?>">
     <div class="header<?=!empty($availableTotal) ? ' available' : ''?> clearfix">
       <i class="fa fa-<?=!empty($availableTotal) ? 'ok' : 'remove'?>"></i>
       <span>
-        <? if (!empty($availableTotal)): ?>
+        <?php if (!empty($availableTotal)): ?>
           <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-        <? elseif (!empty($closestDueDate)): ?>
+        <?php elseif (!empty($closestDueDate)): ?>
           <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
-        <? elseif ($orderedTotal): ?>
+        <?php elseif ($orderedTotal): ?>
           <?=$this->transEsc('status_Ordered')?>
-        <? else: ?>
+        <?php else: ?>
           <?=$this->transEsc('status_Charged')?>
-        <? endif; ?>
+        <?php endif; ?>
       </span>
-      <? if ($collapseLocations): ?><i class="fa fa-arrow-down arrow down"></i><? endif; ?>
-      <? if (!$journal): ?>
+      <?php if ($collapseLocations): ?><i class="fa fa-arrow-down arrow down"></i><?php endif; ?>
+      <?php if (!$journal): ?>
         <span class="info">
-          <? if (!empty($reservationsTotal)): ?>
+          <?php if (!empty($reservationsTotal)): ?>
             <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
-          <? endif; ?>
-          <? if (!empty($itemsTotal) && (!isset($holdingsConfig['display_total_item_count_in_results']) || $holdingsConfig['display_total_item_count_in_results'])): ?>
+          <?php endif; ?>
+          <?php if (!empty($itemsTotal) && (!isset($holdingsConfig['display_total_item_count_in_results']) || $holdingsConfig['display_total_item_count_in_results'])): ?>
             <span class="total"><?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?></span>
-          <? endif; ?>
+          <?php endif; ?>
         </span>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
     <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
-<? else: ?>
+<?php else: ?>
   <div class="header holdings<?=!empty($availableTotal) ? ' available' : ''?> clearfix">
     <div>
-    <? if (!empty($availableTotal)): ?>
+    <?php if (!empty($availableTotal)): ?>
       <span class="available-total">
         <i class="fa fa-ok"></i> <span><?=$this->translate('status_items_available_html', ['%%count%%' => $availableTotal])?></span>
       </span>
-    <? endif; ?>
+    <?php endif; ?>
     <span class="info">
-      <? if (!empty($reservationsTotal)): ?>
+      <?php if (!empty($reservationsTotal)): ?>
         <span class="reservations"><?=$this->translate('status_requests_html', ['%%count%%' => $reservationsTotal]);?></span>
-      <? endif; ?>
-      <? if (!empty($itemsTotal) && !empty($holdingsConfig['display_total_item_count_in_results'])): ?>
+      <?php endif; ?>
+      <?php if (!empty($itemsTotal) && !empty($holdingsConfig['display_total_item_count_in_results'])): ?>
         <span class="total"><?=$this->translate('status_items_total_html', ['%%count%%' => $itemsTotal]);?></span>
-      <? endif; ?>
+      <?php endif; ?>
     </span>
     </div>
   </div>
-  <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
+  <?php $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
   <div class="holdings<?=!empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit) : ''?>">
-<? endif; ?>
+<?php endif; ?>
 
-<?
+<?php
 $currentLocation = $prevLocation = $currentOrganisation = $prevOrganisation = null;
 $currentRow = 0;
 foreach ($this->statusItems as $item):
@@ -180,28 +180,28 @@ foreach ($this->statusItems as $item):
 
   if ($groupBranches && $newLocation && $prevLocation): ?>
     </div></div>
-  <? endif; ?>
-  <? if ($groupBranches && $newLocation): ?>
+  <?php endif; ?>
+  <?php if ($groupBranches && $newLocation): ?>
     <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?> clearfix">
       <div class="header">
-        <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><? endif; ?>
+        <?php if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><?php endif; ?>
         <?=$currentLocation?>
-        <? if ($collapseBranches): ?>
+        <?php if ($collapseBranches): ?>
           <span>
-            <? if (!empty($availableLocations[$item['location']])): ?>
+            <?php if (!empty($availableLocations[$item['location']])): ?>
               <?=sprintf('(%s %d %s)', $this->transEsc('axiell_available'), $availableLocations[$item['location']], $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-            <? elseif (!empty($closestDueDateInLocation[$item['location']])): ?>
+            <?php elseif (!empty($closestDueDateInLocation[$item['location']])): ?>
               (<?= str_replace('%%date%%', $closestDueDateInLocation[$item['location']], $this->transEsc('closest_due_date')); ?>)
-            <? else: ?>
+            <?php else: ?>
               (<?=$this->transEsc('status_' . $item['status'])?>)
-            <? endif; ?>
+            <?php endif; ?>
           </span>
-        <? endif; ?>
-        <span class="info text-right"><?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?></span>
+        <?php endif; ?>
+        <span class="info text-right"><?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], $item['collection'] ?? null, $item['location'] ?? null, $this->layout()->userLang, 'results')?></span>
       </div>
     <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
-  <? endif; ?>
-  <?
+  <?php endif; ?>
+  <?php
     $classes = null;
     if (!empty($item['availability'])) {
       $classes = ['ok', 'success'];
@@ -222,40 +222,40 @@ foreach ($this->statusItems as $item):
         <div class="groupLocation <?= $prevOrganisation && $newOrganisation ? ' new-organisation' : ''; ?>">
           <i class="fa fa-<?=$classes[0]?> text-<?=$classes[1]?>"></i> <span class="text-<?=$classes[0]?>"><?=$location?></span>
         </div>
-      <? if ($groupBranches): ?>
+      <?php if ($groupBranches): ?>
       </div>
       <div class="group-branches">
           <span class="branchInfo">
-          <? if ($item['availability'] && !empty($item['availabilityInfo']['available'])): ?>
+          <?php if ($item['availability'] && !empty($item['availabilityInfo']['available'])): ?>
             <?= sprintf('%s: %d', $this->transEsc('Available items'), $item['availabilityInfo']['available']); ?>
-          <? elseif (!empty($item['duedate']) && !$item['availability']): ?>
+          <?php elseif (!empty($item['duedate']) && !$item['availability']): ?>
             <?= str_replace('%%date%%', $item['duedate'], $this->transEsc('closest_due_date')); ?>
-          <? elseif ($item['availabilityInfo']['ordered'] > 0): ?>
+          <?php elseif ($item['availabilityInfo']['ordered'] > 0): ?>
             <?= sprintf('%s: %d', $this->transEsc('status_Ordered'), $item['availabilityInfo']['ordered']); ?>
-          <? else: ?>
+          <?php else: ?>
             <?= $this->transEsc('status_' . $item['availabilityInfo']['displayText']); ?></span>
-          <? endif; ?>
-        <? else: ?>
+          <?php endif; ?>
+        <?php else: ?>
           <div class="groupCallnumber">
-            <? if (!empty($item['callnumbers'])): ?>
+            <?php if (!empty($item['callnumbers'])): ?>
               (<?=$this->transEsc($item['callnumbers'])?>)
-            <? elseif (!empty($item['callnumber'])): ?>
-              <?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?>
-            <? endif; ?>
+            <?php elseif (!empty($item['callnumber'])): ?>
+              <?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], $item['collection'] ?? null, $item['location'] ?? null, $this->layout()->userLang, 'results')?>
+            <?php endif; ?>
           </div>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
-<? endforeach; ?>
+<?php endforeach; ?>
   </div>
 
-<? if ($groupBranches): ?>
+<?php if ($groupBranches): ?>
 </div>
-<? endif; ?>
+<?php endif; ?>
 </div>
 
 <div class="actions">
-<?
+<?php
 $holdingsLink = $this->recordLink()->getUrl($driver);
 $disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
@@ -268,7 +268,7 @@ if (!$disableTitleHold
     $ilsLoginAvailable = $this->ils()->loginAvailable();
 ?>
     <div class="title-hold">
-<?
+<?php
     if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable) {
       $logged = $account->isLoggedIn();
       $link = null;
@@ -286,23 +286,23 @@ if (!$disableTitleHold
         if ($logged) {
 ?>
       <a href="<?=$link?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" data-lightbox><?=$this->transEsc('title_hold_place')?></a>
-<?
+<?php
         } else {
 ?>
       <a href="<?=$link?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?></a>
-<?
+<?php
         }
       }
     }
 ?>
     </div>
-<?
+<?php
 }
 ?>
-<? if ($this->holdingsSettings()->showLinkToRecordPage()): ?>
+<?php if ($this->holdingsSettings()->showLinkToRecordPage()): ?>
   <div class="all-holdings">
     <a href="<?=$holdingsLink;?>"><?=$this->transEsc('See all holdings')?></a>
   </div>
-<? endif; ?>
+<?php endif; ?>
 </div>
 <!-- END of: finna - ajax/status-full.phtml -->

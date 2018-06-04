@@ -2,7 +2,7 @@
 /**
  * CPU payment handler
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -132,7 +132,7 @@ class CPU extends BaseHandler
         }
 
         foreach ($fines as $fine) {
-            $fineType = isset($fine['fine']) ? $fine['fine'] : '';
+            $fineType = $fine['fine'] ?? '';
             $fineDesc = '';
             if (!empty($fineType)) {
                 $fineDesc = $this->translator->translate("fine_status_$fineType");
@@ -154,8 +154,7 @@ class CPU extends BaseHandler
                     . substr($title, 0, 100 - 4 - strlen($fineDesc))
                 . ')';
             }
-            $code = isset($productCodeMappings[$fineType])
-                ? $productCodeMappings[$fineType] : $productCode;
+            $code = $productCodeMappings[$fineType] ?? $productCode;
             $product = new \Cpu_Client_Product(
                 $code, 1, $fine['balance'], $fineDesc ?: null
             );

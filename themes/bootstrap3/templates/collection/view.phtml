@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -24,60 +24,60 @@
      . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
 ?>
 
-<? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+<?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
   <ul class="pager">
-    <? if ($this->scrollData['previousRecord']): ?>
-      <? if ($this->scrollData['firstRecord']): ?>
+    <?php if ($this->scrollData['previousRecord']): ?>
+      <?php if ($this->scrollData['firstRecord']): ?>
         <li>
           <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('First')?></a>
         </li>
-      <? endif; ?>
+      <?php endif; ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('Prev')?></a>
       </li>
-    <? else: ?>
-      <? if ($this->scrollData['firstRecord']): ?>
+    <?php else: ?>
+      <?php if ($this->scrollData['firstRecord']): ?>
         <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('First')?></a></li>
-      <? endif; ?>
+      <?php endif; ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
-    <? endif; ?>
+    <?php endif; ?>
     <?=$this->transEsc('of_num_results', [
       '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
       '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
     ]) ?>
-    <? if ($this->scrollData['nextRecord']): ?>
+    <?php if ($this->scrollData['nextRecord']): ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> &raquo;</a>
       </li>
-      <? if ($this->scrollData['lastRecord']): ?>
+      <?php if ($this->scrollData['lastRecord']): ?>
         <li>
           <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> &raquo;</a>
         </li>
-      <? endif; ?>
-     <? else: ?>
+      <?php endif; ?>
+     <?php else: ?>
       <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
-      <? if ($this->scrollData['lastRecord']): ?>
+      <?php if ($this->scrollData['lastRecord']): ?>
         <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> &raquo;</a></li>
-      <? endif; ?>
-    <? endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
   </ul>
-<? endif; ?>
+<?php endif; ?>
 
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="record">
-  <div<? if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?>"<? endif; ?>>
+  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?>"<?php endif; ?>>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCollectionMetadata()?>
 
-    <? if (count($this->tabs) > 0): ?>
+    <?php if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
       <div class="record-tabs">
         <ul class="nav nav-tabs">
-          <? foreach ($this->tabs as $tab => $obj): ?>
-            <? // add current tab to breadcrumbs if applicable:
+          <?php foreach ($this->tabs as $tab => $obj): ?>
+            <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
               $tab_classes = [];
               if (0 === strcasecmp($this->activeTab, $tab)) {
@@ -92,30 +92,30 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><?=$this->transEsc($desc)?></a>
+              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
             </li>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </ul>
 
         <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
-          <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
             <div class="tab-pane active <?=$this->activeTab ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
-          <? endif; ?>
+          <?php endif; ?>
         </div>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
 
-  <? if (isset($activeTabObj) && is_callable([$activeTabObj, 'getSideRecommendations'])): ?>
+  <?php if (isset($activeTabObj) && is_callable([$activeTabObj, 'getSideRecommendations'])): ?>
     <div class="<?=$this->layoutClass('sidebar')?>">
-      <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+      <?php foreach ($activeTabObj->getSideRecommendations() as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

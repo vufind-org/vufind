@@ -2,7 +2,7 @@
 /**
  * Record driver view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2017.
@@ -46,18 +46,19 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Record loader
      *
-     * @var \VuFind\RecordLoader
+     * @var \VuFind\Record\Loader
      */
     protected $loader;
 
     /**
      * Constructor
      *
-     * @param \VuFind\RecordLoader $loader Record loader
-     * @param \Zend\Config\Config  $config VuFind configuration
+     * @param \Zend\Config\Config   $config VuFind configuration
+     * @param \VuFind\Record\Loader $loader Record loader
      */
-    public function __construct($loader, $config = null)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        \VuFind\Record\Loader $loader
+    ) {
         parent::__construct($config);
         $this->loader = $loader;
     }
@@ -171,7 +172,7 @@ class Record extends \VuFind\View\Helper\Root\Record
             ? 'browse-' . $this->getView()->browse
             : 'search-results'
         ;
-        $params = isset($params) ? $params : [];
+        $params = $params ?? [];
         $params = array_merge(
             $params,
             ['lookfor' => $lookfor,

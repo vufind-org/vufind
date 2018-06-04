@@ -1,5 +1,5 @@
 <!-- START of: finna - Recommend/SideFacetsDeferred.phtml -->
-<?
+<?php
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
   switch ($this->layout()->userLang) {
@@ -23,14 +23,14 @@
   $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js');
   $this->headScript()->appendFile('finna-daterange-vis.js');
 ?>
-<? $results = $this->recommend->getResults(); ?>
-<? if ($results->getResultTotal() > 0): ?>
+<?php $results = $this->recommend->getResults(); ?>
+<?php if ($results->getResultTotal() > 0): ?>
 <div class="side-facets-container-ajax">
-  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
-<? endif; ?>
-<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
-<? $checkboxesShown = false; ?>
-<? if (count($checkboxFilters) > 0):
+  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><?php if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h4>
+<?php endif; ?>
+<?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<?php $checkboxesShown = false; ?>
+<?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
         $checkboxesShown = true;
@@ -38,19 +38,19 @@
       }
     }
   ?>
-  <?if ($checkboxesShown):?>
+  <?php if ($checkboxesShown): ?>
     <div class="checkboxFilter">
       <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'counts' => false]); ?>
     </div>
-  <? endif; ?>
-<? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
-<? $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
-<? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
-<? $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
-<? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<? $module = $this->layout()->templateDir; ?>
-<?
+  <?php endif; ?>
+<?php endif; ?>
+<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
+<?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
+<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
+<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
+<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<?php $module = $this->layout()->templateDir; ?>
+<?php
   $plotFrom = null;
   $daterangeFacetField = null;
   if (null === $module || in_array($module, ['search', 'primo'])) {
@@ -67,9 +67,9 @@
     'filterList' => $filterList,
     'results' => $results,
     'browse' => !empty($browse),
-    'defaultBrowseHandler' => isset($defaultBrowseHandler) ? $defaultBrowseHandler : ''
+    'defaultBrowseHandler' => $defaultBrowseHandler ?? ''
 ]); ?>
-<?
+<?php
 if ($this->fromStreetSearch) {
   $geographicFacets = $this->recommend->getGeographicFacets();
   foreach ($collapsedFacets as $index => $facet){
@@ -80,32 +80,32 @@ if ($this->fromStreetSearch) {
 }
 ?>
 <?=isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
-<? $activeFacets = $this->recommend->getActiveFacets();
+<?php $activeFacets = $this->recommend->getActiveFacets();
 $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
-<? if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
-  <? foreach ($activeFacets as $title => $facetName): ?>
-    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <? $daterangeFacet = $title == $daterangeFacetField; ?>
+<?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($activeFacets as $title => $facetName): ?>
+    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <?php $daterangeFacet = $title == $daterangeFacetField; ?>
     <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="list-group-item title<? if (in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" onclick="return false;"><?=$this->transEsc($facetName)?></button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
+      <button class="list-group-item title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" onclick="return false;"><?=$this->transEsc($facetName)?></button>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
         <span class="facet-load-indicator"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
-        <? if (in_array($title, $hierarchicalFacets)): ?>
+        <?php if (in_array($title, $hierarchicalFacets)): ?>
           <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
               data-facet="<?=$this->escapeHtmlAttr($title)?>"
               data-path=""
               data-exclude="<?=$allowExclude?>"
               data-operator="<?=$this->recommend->getFacetOperator($title)?>"
               data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
+              data-sort="<?=$hierarchicalFacetSortOptions[$title] ?? ''?>">
           </div>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
-  <? endforeach; ?>
-<? endif; ?>
-<? if ($results->getResultTotal() > 0): ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?php if ($results->getResultTotal() > 0): ?>
 </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->

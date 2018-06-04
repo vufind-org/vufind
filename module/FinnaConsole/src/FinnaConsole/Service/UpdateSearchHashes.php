@@ -2,7 +2,7 @@
 /**
  * Console service for updating search hashes.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -28,7 +28,7 @@
 namespace FinnaConsole\Service;
 
 /**
- * Console service for anonymizing expired user accounts.
+ * Console service for updating search hashes.
  *
  * @category VuFind
  * @package  Service

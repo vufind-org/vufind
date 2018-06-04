@@ -1,0 +1,79 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/result-condensed-ejournal.phtml -->
+<div>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+  <table class="table table-condensed">
+  <?php $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
+    <tr class="recordLanguage">
+      <th><?=$this->transEsc('Language')?>: </th>
+      <td><?php foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><?php endforeach; ?></td>
+    </tr>
+  <?php endif; ?>
+
+  <?php $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+    <tr class="recordPublications">
+      <th><?=$this->transEsc('Publisher')?>: </th>
+      <td>
+      <?php foreach ($publications as $field): ?>
+        <span property="publisher" typeof="Organization">
+          <?php $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+          <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+          <?php endif; ?>
+          <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
+          <span property="name"><?=$this->escapeHtml($pubName)?></span>
+          <?php endif; ?>
+          <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+          <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+          <?php endif; ?>
+        </span>
+      <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endif; ?>
+
+  <?php $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
+    <?php $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('ISSN')?>: </th>
+      <td>
+        <?php foreach ($issns as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endif; ?>
+
+  <?php $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
+    <tr>
+      <th><?=$this->transEsc('Subjects')?>:</th>
+      <td>
+      <?php foreach ($subjects as $field): ?>
+      <div class="subjectLine" property="keywords">
+        <?php $subject = ''; ?>
+        <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
+          <?php $i = 0; foreach ($field as $subfield): ?>
+            <?=($i++ == 0) ? '' : ' &#8594; '?>
+            <?php $subject = trim($subject . ' ' . $subfield); ?>
+            <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+          <?php endforeach; ?>
+      </div>
+      <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endif; ?>
+
+  <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <?php /* Saved lists */ ?>
+    <tr class="savedLists">
+      <th><?=$this->transEsc("Saved in")?>:</th>
+      <td>
+        <div class="alert alert-info">
+          <ul>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  <?php endif; ?>
+  </table>
+</div>
+<!-- END of: finna - RecordDriver/DefaultRecord/result-condensed-ejournal.phtml -->

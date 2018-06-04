@@ -1,5 +1,5 @@
 <!-- START of: finna - feedcontent/content.phtml -->
-<?
+<?php
   $this->headScript()->appendFile('finna-content-feed.js');
   $this->headTitle($this->translate(''));
   $this->content()->setHeading($this->translate(''));
@@ -25,12 +25,12 @@ JS;
 <div>
   <div class="<?= $this->modal ? '' : 'page-content'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
 
-  <? if ($this->modal): ?>
+  <?php if ($this->modal): ?>
     <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
     <div class="holder"></div>
   </div>
 
-  <? else: ?>
+  <?php else: ?>
     <div>
       <div class="mainbody left">
         <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
@@ -42,7 +42,7 @@ JS;
     <div><h3 class="article-navigation-header"><?=$this->translate('content-feed-navigation')?></h3></div>
     <div class="article-navigation-wrapper"></div>
   </div>
-  <? endif; ?>
+  <?php endif; ?>
 
 </div>
 <!-- END of: finna - feedcontent/content.phtml -->

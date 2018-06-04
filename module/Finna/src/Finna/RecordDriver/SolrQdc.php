@@ -2,7 +2,7 @@
 /**
  * Model for Qualified Dublin Core records in Solr.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2013-2017.
  *
@@ -253,7 +253,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
         $urls = [];
         foreach (parent::getURLs() as $url) {
             $blacklisted = $this->urlBlacklisted(
-                isset($url['url']) ? $url['url'] : ''
+                $url['url'] ?? ''
             );
             if (!$blacklisted) {
                 $urls[] = $url;

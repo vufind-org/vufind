@@ -2,7 +2,7 @@
 /**
  * Table Definition for online payment fee
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -72,7 +72,7 @@ class Fee extends \VuFind\Db\Table\Gateway
         $fee = $this->createRow();
         $fee->user_id = $userId;
         $fee->transaction_id = $transactionId;
-        $fee->title = isset($fine['title']) ? $fine['title'] : '';
+        $fee->title = $fine['title'] ?? '';
         $fee->type = $fine['fine'];
         $fee->amount = $fine['balance'];
         $fee->currency = $currency;

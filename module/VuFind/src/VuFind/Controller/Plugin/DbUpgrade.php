@@ -2,7 +2,7 @@
 /**
  * VuFind Action Helper - Database upgrade tools
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,6 +38,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -400,7 +402,11 @@ class DbUpgrade extends AbstractPlugin
         $constraints = isset($info[$table]) ? $info[$table]->getConstraints() : [];
         $retVal = [];
         foreach ($constraints as $current) {
-            $fields = ['fields' => $current->getColumns()];
+            $fields = [
+                'fields' => $current->getColumns(),
+                'deleteRule' => $current->getDeleteRule(),
+                'updateRule' => $current->getUpdateRule()
+            ];
             switch ($current->getType()) {
             case 'FOREIGN KEY':
                 $retVal['foreign'][$current->getName()] = $fields;
@@ -622,6 +628,131 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Compare expected vs. actual constraint actions and return an array of SQL
+     * clauses required to create the modified constraints.
+     *
+     * @param array $expected Expected constraints (based on mysql.sql)
+     * @param array $actual   Actual constraints (pulled from database metadata)
+     *
+     * @return array
+     */
+    protected function compareConstraintActions($expected, $actual)
+    {
+        $modified = [];
+        foreach ($expected as $type => $constraints) {
+            foreach ($constraints as $name => $constraint) {
+                if (!isset($actual[$type][$name])) {
+                    throw new \Exception(
+                        "Could not find constraint '$name' in actual constraints"
+                    );
+                }
+                $actualConstr = $actual[$type][$name];
+                if ($constraint['deleteRule'] !== $actualConstr['deleteRule']
+                    || $constraint['updateRule'] !== $actualConstr['updateRule']
+                ) {
+                    $modified[$name] = $constraint;
+                }
+            }
+        }
+        return $modified;
+    }
+
+    /**
+     * Support method for getModifiedConstraints() -- check if the current constraint
+     * is in the missing constraint list so we can avoid modifying something that
+     * does not exist.
+     *
+     * @param string $constraint Column to check
+     * @param array  $missing    Missing constraint list for constraint's table.
+     *
+     * @return bool
+     */
+    public function constraintIsMissing($constraint, $missing)
+    {
+        foreach ($missing as $current) {
+            preg_match('/^\s*CONSTRAINT\s*`([^`]*)`.*$/', $current, $matches);
+            if ($constraint == $matches[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get a list of modified constraints in the database tables (associative array,
+     * key = table name, value = array of modified constraint definitions).
+     *
+     * @param array $missingTables      List of missing tables
+     * @param array $missingConstraints List of missing constraints
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getModifiedConstraints($missingTables = [],
+        $missingConstraints = []
+    ) {
+        $modified = [];
+        foreach ($this->dbCommands as $table => $sql) {
+            // Skip missing tables if we're logging
+            if (in_array($table, $missingTables)) {
+                continue;
+            }
+
+            $expectedConstraints = [];
+
+            // Parse column names out of the CREATE TABLE SQL, which will always be
+            // the first entry in the array; we assume the standard mysqldump
+            // formatting is used here.
+            preg_match_all(
+                '/^\s*CONSTRAINT `([^`]+)` FOREIGN KEY \(`([^)]*)`\)(.*)$/m',
+                $sql[0], $foreignKeyMatches
+            );
+            foreach ($foreignKeyMatches[0] as $i => $sql) {
+                $fkName = $foreignKeyMatches[1][$i];
+                // Skip constraint if we're logging and it's missing
+                if (isset($missingConstraints[$table])
+                    && $this->constraintIsMissing(
+                        $fkName, $missingConstraints[$table]
+                    )
+                ) {
+                    continue;
+                }
+
+                $deleteRule = 'RESTRICT';
+                $updateRule = 'RESTRICT';
+                $options = 'RESTRICT|CASCADE|SET NULL|NO ACTION|SET DEFAULT';
+                $actions = $foreignKeyMatches[3][$i] ?? '';
+                if (preg_match("/ON DELETE ($options)/", $actions, $matches)) {
+                    $deleteRule = $matches[1];
+                }
+                if (preg_match("/ON UPDATE ($options)/", $actions, $matches)) {
+                    $updateRule = $matches[1];
+                }
+
+                // Fix trailing whitespace/punctuation:
+                $sql = trim(trim($sql), ',;');
+
+                $expectedConstraints['foreign'][$fkName] = [
+                    'sql' => $sql,
+                    'fields' => $this->explodeFields($foreignKeyMatches[2][$i]),
+                    'deleteRule' => $deleteRule,
+                    'updateRule' => $updateRule
+                ];
+            }
+
+            // Now check for missing columns and build our return array:
+            $actualConstraints = $this->getTableConstraints($table);
+
+            $mismatches = $this
+                ->compareConstraintActions($expectedConstraints, $actualConstraints);
+            if (!empty($mismatches)) {
+                $modified[$table]['foreign'] = $mismatches;
+            }
+        }
+        return $modified;
+    }
+
+    /**
      * Given a current row default, return true if the current default matches the
      * one found in the SQL provided as the $sql parameter. Return false if there
      * is a mismatch that will require table structure updates.
@@ -634,7 +765,7 @@ class DbUpgrade extends AbstractPlugin
     protected function defaultMatches($currentDefault, $sql)
     {
         preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
-        $expectedDefault = isset($matches[1]) ? $matches[1] : null;
+        $expectedDefault = $matches[1] ?? null;
         if (null !== $expectedDefault) {
             $expectedDefault = trim(rtrim($expectedDefault, ','), "'");
             $expectedDefault = (strtoupper($expectedDefault) == 'NULL')
@@ -686,7 +817,7 @@ class DbUpgrade extends AbstractPlugin
      * not exist.
      *
      * @param string $column  Column to check
-     * @param string $missing Missing column list for column's table.
+     * @param array  $missing Missing column list for column's table.
      *
      * @return bool
      */
@@ -832,6 +963,39 @@ class DbUpgrade extends AbstractPlugin
                 $sqlcommands .= $this->query(
                     "ALTER TABLE `{$table}` MODIFY COLUMN {$column}", $logsql
                 );
+            }
+        }
+        return $sqlcommands;
+    }
+
+    /**
+     * Modify constraints based on the output of getModifiedConstraints().
+     *
+     * @param array $constraints Output of getModifiedConstraints()
+     * @param bool  $logsql      Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string            SQL if $logsql is true, empty string otherwise
+     */
+    public function updateModifiedConstraints($constraints, $logsql = false)
+    {
+        $sqlcommands = '';
+        foreach ($constraints as $table => $constraintTypeList) {
+            foreach ($constraintTypeList as $type => $constraintList) {
+                if ('foreign' !== $type) {
+                    throw new \Exception(
+                        "Unable to handle modification of constraint type '$type'"
+                    );
+                }
+                foreach ($constraintList as $name => $constraint) {
+                    $sqlcommands .= $this->query(
+                        "ALTER TABLE `{$table}` DROP FOREIGN KEY `{$name}`", $logsql
+                    );
+                    $sqlcommands .= $this->query(
+                        "ALTER TABLE $table ADD {$constraint['sql']}", $logsql
+                    );
+                }
             }
         }
         return $sqlcommands;

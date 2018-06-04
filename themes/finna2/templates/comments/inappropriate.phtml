@@ -1,16 +1,16 @@
 <h2><?=$this->transEsc('Report inappropriate') ?></h2>
 
-<?=$this->flashMessages() ?>
+<?=$this->flashmessages() ?>
 
 <form class="comment-inappropriate-form" method="post" name="commentInappropriateForm"  data-lightbox-onclose="finna.comments.requestRefreshComments">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->id)?>"/>
   <div class="form-group">
     <p><?=$this->transEsc('Select') ?>:</p>
     <ul>
-      <? $reasons = [1, 2, 3, 4, 6, 5]; ?>
-      <? foreach ($reasons as $i): ?>
+      <?php $reasons = [1, 2, 3, 4, 6, 5]; ?>
+      <?php foreach ($reasons as $i): ?>
       <li><label for="inapp<?=$i?>"><input id="inapp<?=$i?>" type="radio" name="reason" <?= $i == 1 ? 'checked="checked"' : ''?> value="<?=$this->escapeHtmlAttr($this->translate('inappropriate_reason_' . $i))?>" /> <?=$this->translate('inappropriate_reason_' . $i)?></label></li>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </ul>
   </div>
   <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>" />

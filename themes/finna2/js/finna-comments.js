@@ -110,7 +110,13 @@ finna.comments = (function finnaComments() {
           $(form).find('textarea[name="comment"]').val('');
         })
         .fail(function onCommentSubmitFail(response/*, textStatus*/) {
-          alert(response.responseJSON.data);
+          if (typeof response.responseJSON !== 'undefined') {
+            alert(response.responseJSON.data);
+          } else {
+            alert(VuFind.translate('error_occurred'));
+          }
+          $(form).find('input.cancel').toggleClass('hide', false);
+          $(form).find('input[type="submit"]').attr('disabled', false).button('reset');
         });
       return false;
     });

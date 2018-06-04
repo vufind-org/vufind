@@ -1,78 +1,78 @@
-<? if (!empty($cluster['list'])): ?>
-<? $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle less-narrow-toggle"'; ?>
-<? $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . ' hidden'; ?>
-<? foreach ($this->cluster['list'] as $i => $thisFacet): ?>
-  <?
+<?php if (!empty($cluster['list'])): ?>
+<?php $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle less-narrow-toggle"'; ?>
+<?php $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . ' hidden'; ?>
+<?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
+  <?php
     if(empty($thisFacet['displayText'])) {
       $thisFacet['displayText'] = "-";
     }
   ?>
-  <? /* MORE link */ ?>
-  <? if ($i == $this->facets_before_more): ?>
-    <? if ($facetLightbox = $this->options->getFacetListAction()): ?>
-      <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0); ?>
-    <? else: ?>
-      <? $moreUrl = '#'; ?>
-    <? endif; ?>
-    <? if (($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox): ?>
+  <?php /* MORE link */ ?>
+  <?php if ($i == $this->facets_before_more): ?>
+    <?php if ($facetLightbox = $this->options->getFacetListAction()): ?>
+      <?php $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0); ?>
+    <?php else: ?>
+      <?php $moreUrl = '#'; ?>
+    <?php endif; ?>
+    <?php if (($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox): ?>
       <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?>... <i class="fa fa-handle-open"></a>
-      <? break; ?>
-    <? endif; ?>
+      <?php break; ?>
+    <?php endif; ?>
     <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow"><?=$this->transEsc('more')?>... <i class="fa fa-handle-open"></i></a>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <?
+  <?php
     $affectiveURL = $thisFacet['isApplied']
       ? $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])
       : $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], $thisFacet['operator']);
   ?>
-  <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-    <div class="facet excludable facet<?=$thisFacet['operator'] ?><? if ($thisFacet['isApplied']): ?> active<? endif; ?><? if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?endif ?>">
-      <? $excludeURL = $thisFacet['isApplied']
+  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
+    <div class="facet excludable facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif ?>">
+      <?php $excludeURL = $thisFacet['isApplied']
         ? $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])->addFacet($this->title, $thisFacet['value'], 'NOT')
         : $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], 'NOT');
       ?>
       <a href="<?=$excludeURL ?>" title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
-  <? else: ?>
-    <a href="<?=$affectiveURL ?>" class="facet facet<?=$thisFacet['operator'] ?><? if ($thisFacet['isApplied']): ?> active<? endif; ?><? if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?endif ?>">
-  <? endif; ?>
+  <?php else: ?>
+    <a href="<?=$affectiveURL ?>" class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif ?>">
+  <?php endif; ?>
 
-  <? if ($thisFacet['isApplied']): ?>
+  <?php if ($thisFacet['isApplied']): ?>
     <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
-  <? else: ?>
+  <?php else: ?>
     <span class="badge"><?=$this->localizedNumber($thisFacet['count'])?></span>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
+  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
     <a href="<?=$affectiveURL ?>" class="text">
-  <? else: ?>
+  <?php else: ?>
     <span class="text">
-  <? endif; ?>
+  <?php endif; ?>
 
   <?=$this->escapeHtml($thisFacet['displayText'])?>
 
-  <? if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
+  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
       </a>
     </div>
-  <? else: ?>
+  <?php else: ?>
       </span>
     </a>
-  <? endif; ?>
-<? endforeach; ?>
+  <?php endif; ?>
+<?php endforeach; ?>
 
-<? /* LESS and SEE MORE links */ ?>
-<? if (isset($i) && $i >= $this->facets_before_more): ?>
-  <? if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
-    <?
+<?php /* LESS and SEE MORE links */ ?>
+<?php if (isset($i) && $i >= $this->facets_before_more): ?>
+  <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
+    <?php
       $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
       if (!empty($this->baseUriExtra)) {
         $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
       }
     ?>
     <a class="facet narrow-toggle <?=$moreClass ?> less-narrow-toggle" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?>... <i class="fa fa-list"></i></a>
-  <? endif; ?>
+  <?php endif; ?>
   <a class="facet narrow-toggle <?=$moreClass ?> less-narrow-toggle" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')"><?=$this->transEsc('less')?>... <i class="fa fa-handle-close"></i></a>
-<? endif; ?>
-<? else: ?>
+<?php endif; ?>
+<?php else: ?>
   <div class="list-group-item"><?=$this->transEsc('facet_list_empty')?></div>
-<? endif; ?>
+<?php endif; ?>

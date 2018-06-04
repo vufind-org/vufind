@@ -2,7 +2,7 @@
 /**
  * Autocomplete view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -50,7 +50,7 @@ class Autocomplete extends \Zend\View\Helper\AbstractHelper
      *
      * @param \Zend\Config\Config $searchConfig Search configiration.
      */
-    public function __construct($searchConfig)
+    public function __construct(\Zend\Config\Config $searchConfig)
     {
         $this->searchConfig = $searchConfig;
     }

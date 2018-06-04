@@ -2,7 +2,7 @@
 /**
  * "Results as feed" view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,7 @@ use DateTime;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Zend\Feed\Writer\Feed;
 use Zend\Feed\Writer\Writer as FeedWriter;
+use Zend\ServiceManager\ServiceManager;
 use Zend\View\Helper\AbstractHelper;
 
 /**
@@ -66,26 +67,28 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     }
 
     /**
-     * Set up custom extensions.
+     * Set up custom extensions (should be called by factory).
+     *
+     * @param ServiceManager $sm Service manager.
      *
      * @return void
      */
-    protected function registerExtensions()
+    public function registerExtensions(ServiceManager $sm)
     {
-        $manager = new \Zend\Feed\Writer\ExtensionPluginManager();
+        $manager = new \Zend\Feed\Writer\ExtensionPluginManager($sm);
         $manager->setInvokableClass(
-            'dublincorerendererentry',
+            'DublinCore\Renderer\Entry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
         );
         $manager->setInvokableClass(
-            'dublincoreentry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
+            'DublinCore\Entry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
         $manager->setInvokableClass(
-            'opensearchrendererfeed',
+            'OpenSearch\Renderer\Feed',
             'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
         );
         $manager->setInvokableClass(
-            'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            'OpenSearch\Feed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
@@ -103,11 +106,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     public function __invoke($results, $currentPath = null)
     {
-        $this->registerExtensions();
-
         // Determine base URL if not already provided:
-        if (is_null($currentPath)) {
-            $currentPath = $this->getView()->plugin('currentpath')->__invoke();
+        if (null === $currentPath) {
+            $currentPath = $this->getView()->plugin('currentPath')->__invoke();
         }
         $serverUrl = $this->getView()->plugin('serverurl');
         $baseUrl = $serverUrl($currentPath);
@@ -237,10 +238,10 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordlink');
+        $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
-        } catch (\Zend\Mvc\Router\Exception\RuntimeException $e) {
+        } catch (\Zend\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');

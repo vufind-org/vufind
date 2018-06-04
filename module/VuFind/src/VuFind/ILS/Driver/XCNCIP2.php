@@ -2,7 +2,7 @@
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -348,7 +348,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $agencyList = [];
 
-        if (is_null($agency)) {
+        if (null === $agency) {
             $keys = array_keys($this->agency);
             $agencyList[] = $keys[0];
         }
@@ -489,7 +489,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron Patron data
      * @param array  $ids    The (consortial) source records for the record id
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -504,7 +504,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $agencyList = [];
         $idList = [];
-        if (! is_null($ids)) {
+        if (null !== $ids) {
             foreach ($ids as $_id) {
                 // Need to parse out the 035$a format, e.g., "(Agency) 123"
                 if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
@@ -568,7 +568,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -672,7 +672,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -732,7 +732,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -794,7 +794,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -896,10 +896,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return [
             'firstname' => (string)$first[0],
             'lastname' => (string)$last[0],
-            'address1' => isset($address[0]) ? $address[0] : '',
-            'address2' => (isset($address[1]) ? $address[1] : '') .
+            'address1' => $address[0] ?? '',
+            'address2' => ($address[1] ?? '') .
                 (isset($address[2]) ? ', ' . $address[2] : ''),
-            'zip' => isset($address[3]) ? $address[3] : '',
+            'zip' => $address[3] ?? '',
             'phone' => '',  // TODO: phone number support
             'group' => ''
         ];
@@ -1485,7 +1485,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if ($dueDate) {
                 $tmp = $dueDate;
                 $newDueDate = (string)$tmp[0];
-                $tmp = split("T", $newDueDate);
+                $tmp = explode('T', $newDueDate);
                 $splitDate = $tmp[0];
                 $splitTime = $tmp[1];
                 $details[$renewId] = [
@@ -1750,7 +1750,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'xsd/ncip_v2_0.xsd">' .
                 '<ns1:LookupUser>';
 
-        if (!is_null($patron_agency_id)) {
+        if (null !== $patron_agency_id) {
             $ret .=
                    '<ns1:InitiationHeader>' .
                         '<ns1:FromAgencyId>' .

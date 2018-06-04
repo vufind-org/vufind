@@ -2,7 +2,7 @@
 /**
  * Default Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -51,9 +51,10 @@ class SearchController extends AbstractSearch
         $view = parent::advancedAction();
 
         // Set up facet information:
-        $view->facetList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(), $view->saved
-        );
+        $facets = $this->serviceLocator
+            ->get('VuFind\Search\FacetCache\PluginManager')->get('Solr')
+            ->getList('Advanced');
+        $view->facetList = $this->processAdvancedFacets($facets, $view->saved);
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
         );
@@ -92,7 +93,7 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up reCaptcha
@@ -197,7 +198,7 @@ class SearchController extends AbstractSearch
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\HierarchicalFacetHelper');
+                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
@@ -259,24 +260,6 @@ class SearchController extends AbstractSearch
         }
         $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
         return $this->createViewModel($lastSearches);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel(
-            [
-                'results' => $this->getResultsObjectWithHiddenFilters('Solr'),
-                'facetList' => $this->getHomePageFacets(),
-                'hierarchicalFacets' => $this->getHierarchicalFacets(),
-                'hierarchicalFacetSortOptions'
-                    => $this->getHierarchicalFacetSortSettings()
-            ]
-        );
     }
 
     /**
@@ -421,7 +404,7 @@ class SearchController extends AbstractSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
@@ -517,110 +500,6 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Get active hidden filter settings.
-     *
-     * @return array
-     */
-    protected function getActiveHiddenFilters()
-    {
-        return $this->serviceLocator->get('VuFind\SearchTabsHelper')
-            ->getHiddenFilters($this->searchClassId);
-    }
-
-    /**
-     * Create a results object with hidden filters pre-populated.
-     *
-     * @param string $backend ID of results object to create
-     * @param array  $filters Hidden filter settings (null for defaults)
-     *
-     * @return \VuFind\Search\Base\Results
-     */
-    protected function getResultsObjectWithHiddenFilters($backend, $filters = null)
-    {
-        if (null === $filters) {
-            $filters = $this->getActiveHiddenFilters();
-        }
-        $results = $this->getResultsManager()->get($backend);
-        $params = $results->getParams();
-        foreach ($filters as $key => $subFilters) {
-            foreach ($subFilters as $filter) {
-                $params->addHiddenFilter("$key:$filter");
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * Return a Search Results object containing requested facet information.  This
-     * data may come from the cache.
-     *
-     * @param string $initMethod Name of params method to use to request facets
-     * @param string $cacheName  Cache key for facet data
-     *
-     * @return array
-     */
-    protected function getFacetResults($initMethod, $cacheName)
-    {
-        // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->serviceLocator->get('VuFind\CacheManager')
-            ->getCache('object');
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
-        $hiddenFilters = $this->getActiveHiddenFilters();
-        $hiddenFiltersHash = md5(json_encode($hiddenFilters));
-        $cacheName .= "List-$hiddenFiltersHash-$language";
-        if (!($list = $cache->getItem($cacheName))) {
-            // Use advanced facet settings to get summary facets on the front page;
-            // we may want to make this more flexible later.  Also keep in mind that
-            // the template is currently looking for certain hard-coded fields; this
-            // should also be made smarter.
-            $results = $this->getResultsObjectWithHiddenFilters(
-                'Solr', $hiddenFilters
-            );
-            $params = $results->getParams();
-            $params->$initMethod();
-
-            // Avoid a backend request if there are no facets configured by the given
-            // init method.
-            if (!empty($params->getFacetConfig())) {
-                // We only care about facet lists, so don't get any results (this
-                // helps prevent problems with serialized File_MARC objects in the
-                // cache):
-                $params->setLimit(0);
-                $list = $results->getFacetList();
-            } else {
-                $list = [];
-            }
-            $cache->setItem($cacheName, $list);
-        }
-
-        return $list;
-    }
-
-    /**
-     * Return a Search Results object containing advanced facet information.  This
-     * data may come from the cache.
-     *
-     * @return array
-     */
-    protected function getAdvancedFacets()
-    {
-        return $this->getFacetResults(
-            'initAdvancedFacets', 'solrSearchAdvancedFacets'
-        );
-    }
-
-    /**
-     * Return a Search Results object containing homepage facet information.  This
-     * data may come from the cache.
-     *
-     * @return array
-     */
-    protected function getHomePageFacets()
-    {
-        return $this->getFacetResults('initHomePageFacets', 'solrSearchHomeFacets');
-    }
-
-    /**
      * Handle OpenSearch.
      *
      * @return \Zend\Http\Response
@@ -660,11 +539,8 @@ class SearchController extends AbstractSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $autocompleteManager = $this->serviceLocator
-            ->get('VuFind\AutocompletePluginManager');
-        $suggestions = $autocompleteManager->getSuggestions(
-            $query, 'type', 'lookfor'
-        );
+        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
         $response = $this->getResponse();
@@ -683,7 +559,8 @@ class SearchController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
@@ -698,19 +575,6 @@ class SearchController extends AbstractSearch
         $facetConfig = $this->getConfig('facets');
         return isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
-    }
-
-    /**
-     * Get hierarchical facet sort settings
-     *
-     * @return array Array of sort settings keyed by facet
-     */
-    protected function getHierarchicalFacetSortSettings()
-    {
-        $facetConfig = $this->getConfig('facets');
-        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
-            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
     }
 }

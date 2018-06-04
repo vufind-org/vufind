@@ -3,7 +3,7 @@
 /**
  * Simple JSON-based record collection.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -61,9 +61,8 @@ class RecordCollection
     protected function getSpellcheckQuery()
     {
         $params = $this->getSolrParameters();
-        return isset($params['spellcheck.q'])
-            ? $params['spellcheck.q']
-            : (isset($params['q']) ? $params['q'] : '');
+        return $params['spellcheck.q']
+            ?? ($params['q'] ?? '');
     }
 
     /**

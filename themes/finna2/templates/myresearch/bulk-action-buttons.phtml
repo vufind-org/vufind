@@ -1,42 +1,42 @@
 <!-- START of: finna - myresearch/bulk-action-buttons.phtml -->
-<? if (isset($list)): ?>
+<?php if (isset($list)): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <input type="hidden" name="listDescription" value="<?=$this->escapeHtmlAttr($list->description)?>" />
-<? endif; ?>
-<? $user = $this->auth()->isLoggedIn(); ?>
+<?php endif; ?>
+<?php $user = $this->auth()->isLoggedIn(); ?>
 <div class="bulk-action-buttons-row hidden-print">
   <div class="bulkActionButtons bulk-action-buttons-col">
     <div class="checkboxFilter mylist-select-all">
       <div class="checkbox">
         <label>
-          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>/>
+          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>/>
           <span class="hidden-xs"><?=$this->transEsc('select_page')?></span>
         </label>
       </div>
       <span class="my-list-functions-label"><?=ucfirst($this->transEsc('with_selected'))?>:</span>
     </div>
     <div class="mylist-functions btn-group">
-      <button class="btn btn-primary" type="submit" name="email" value="<?=$this->transEsc('Email')?>" title="<?=$this->transEsc('bookbag_email_selected')?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>><?=$this->transEsc('Email')?></button>
-      <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-        <button class="btn btn-primary" type="submit" name="export" value="<?=$this->transEsc('Export')?>" title="<?=$this->transEsc('bookbag_export_selected')?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>><?=$this->transEsc('Export')?></button>
-      <? endif; ?>
-      <? if ((null !== $this->list && $this->list->editAllowed($user)) || (null === $this->list && $user)): ?>
-        <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>><?=$this->transEsc('Delete')?></button>
-      <? endif; ?>
-        <? if ($lists): ?>
-        <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>>
+      <button class="btn btn-primary" type="submit" name="email" value="<?=$this->transEsc('Email')?>" title="<?=$this->transEsc('bookbag_email_selected')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button>
+      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+        <button class="btn btn-primary" type="submit" name="export" value="<?=$this->transEsc('Export')?>" title="<?=$this->transEsc('bookbag_export_selected')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Export')?></button>
+      <?php endif; ?>
+      <?php if ((null !== $this->list && $this->list->editAllowed($user)) || (null === $this->list && $user)): ?>
+        <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Delete')?></button>
+      <?php endif; ?>
+        <?php if ($lists): ?>
+        <select id="add-to-list" class="btn btn-primary form-control" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
-          <? foreach ($lists as $l): ?>
-          <? if ($list && $list->id == $l->id) { continue; } ?>
+          <?php foreach ($lists as $l): ?>
+          <?php if ($list && $list->id == $l->id) { continue; } ?>
           <option value="<?= $l->id; ?>"><?= $this->escapeHtml($l->title); ?></option>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </select>
         <i id="add-to-list-spinner" class="fa fa-spinner fa-spin hidden"></i>
-      <? endif; ?>
-      <? if ($this->cart()->isActive()): ?>
-        <button class="btn btn-primary" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" title="<?=$this->transEsc('Add to Book Bag')?>" disabled<?if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<? endif; ?>><?=$this->transEsc('Bag') ?></button>
-      <? endif; ?>
+      <?php endif; ?>
+      <?php if ($this->cart()->isActive()): ?>
+        <button class="btn btn-primary" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" title="<?=$this->transEsc('Add to Book Bag')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Bag') ?></button>
+      <?php endif; ?>
     </div>
   </div>
   <div class="clearfix"></div>

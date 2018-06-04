@@ -2,24 +2,20 @@
 finna.onlinePayment = (function finnaOnlinePayment() {
 
   function registerPayment(params) {
-    var url = VuFind.path + '/AJAX/registerOnlinePayment';
+    var url = VuFind.path + '/AJAX/JSON?method=registerOnlinePayment';
     $.ajax({
       type: 'POST',
       url: url,
       data: jQuery.parseJSON(params),
       dataType: 'json'
     })
-      .done(function onRegisterPaymentDone(response) {
-        location.href = response.data;
+      .done(function onRegisterPaymentDone() {
+        // Reload current page without parameters
+        location.href = window.location.href.split('?')[0];
       })
-      .fail(function onRegisterPaymentFail(response/*, textStatus*/) {
-        var redirect = '';
-        if (typeof response.responseJSON === 'undefined') {
-          redirect = window.location.href.split('?')[0];
-        } else {
-          redirect = response.responseJSON.data;
-        }
-        location.href = redirect;
+      .fail(function onRegisterPaymentFail() {
+        // Reload current page without parameters
+        location.href = window.location.href.split('?')[0];
       });
 
     return false;

@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordTab/hierarchytree.phtml -->
-<?
+<?php
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
 
@@ -18,21 +18,21 @@
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
-<? if ($this->layout()->getTemplate() == 'layout/lightbox'): ?>
+<?php if ($this->layout()->getTemplate() == 'layout/lightbox'): ?>
   <h2><?=$this->transEsc('hierarchy_tree') ?></h2>
-<? endif; ?>
-<? if (count($hierarchyTreeList) > 1): ?>
+<?php endif; ?>
+<?php if (count($hierarchyTreeList) > 1): ?>
   <div id="treeSelector">
-    <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
-      <? if($activeTree == $hierarchy): ?>
+    <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
+      <?php if($activeTree == $hierarchy): ?>
         <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
-      <? else: ?>
+      <?php else: ?>
         <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
-      <? endif; ?>
-    <? endforeach; ?>
+      <?php endif; ?>
+    <?php endforeach; ?>
   </div>
-<? endif; ?>
-<? if ($activeTree): ?>
+<?php endif; ?>
+<?php if ($activeTree): ?>
   <div id="hierarchyTreeHolder">
     <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</div>
     <div id="hierarchyTree" class="hierarchy-tree">
@@ -42,5 +42,5 @@
     </div>
     <div class="back-to-up hidden"><?=$this->transEsc("Back to top")?> <i class="fa fa-arrow-up"></i></div>
   </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - RecordTab/hierarchytree.phtml -->

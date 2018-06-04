@@ -2,7 +2,7 @@
 /**
  * Axiell Web Services ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -32,8 +32,7 @@ namespace Finna\ILS\Driver;
 use DOMDocument;
 use SoapClient;
 use VuFind\Config\Locator;
-use VuFind\Exception\Date;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
 use Zend\Db\Sql\Ddl\Column\Boolean;
@@ -58,6 +57,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
+    use \VuFind\ILS\Driver\CacheTrait;
 
     /**
      * Date formatting object
@@ -965,10 +965,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
                         // Group journals by issue number
                         if ($journalInfo) {
-                            $year = isset($journalInfo['year'])
-                                ? $journalInfo['year'] : '';
-                            $edition = isset($journalInfo['edition'])
-                                ? $journalInfo['edition'] : '';
+                            $year = $journalInfo['year'] ?? '';
+                            $edition = $journalInfo['edition'] ?? '';
                             if ($year !== '' && $edition !== '') {
                                 if (strncmp($year, $edition, strlen($year)) == 0) {
                                     $group = $edition;
@@ -1872,8 +1870,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'user'         => $username,
             'password'     => $password,
             'areaCode'     => '',
-            'country'      => isset($user['phoneCountry'])
-                ? $user['phoneCountry'] : 'FI',
+            'country'      => $user['phoneCountry'] ?? 'FI',
             'localCode'    => $phone,
             'useForSms'    => 'yes'
         ];
@@ -2307,8 +2304,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 = $b['location'] . ' ' . $b['branch'] . ' ' . $b['department'];
         }
 
-        $orderA = isset($sortOrder[$a[$key]]) ? $sortOrder[$a[$key]] : null;
-        $orderB = isset($sortOrder[$b[$key]]) ? $sortOrder[$b[$key]] : null;
+        $orderA = $sortOrder[$a[$key]] ?? null;
+        $orderB = $sortOrder[$b[$key]] ?? null;
 
         if ($orderA !== null) {
             if ($orderB !== null) {

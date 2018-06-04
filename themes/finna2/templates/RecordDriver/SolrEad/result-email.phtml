@@ -1,4 +1,4 @@
-<?
+<?php
   $title = $this->driver->getTitle();
   $date = substr($title, strpos($title, '('), strpos($title, ')'));
   $formats = $this->driver->getFormats();
@@ -11,27 +11,27 @@
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? if (!$this->translationEmpty('Archive Repository')): ?><?= $this->transEsc('Archive Repository')?>:<? endif; ?>
+<?php if (!$this->translationEmpty('Archive Repository')): ?><?= $this->transEsc('Archive Repository')?>:<?php endif; ?>
 <?= PHP_EOL . $this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
-<? if ($origination = $this->driver->getOrigination()): ?>
+<?php if ($origination = $this->driver->getOrigination()): ?>
 <?= PHP_EOL . $this->transEsc('Archive Origination')?>: <?=$this->escapeHtml($origination)?>
-<? endif; ?>
-<? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $formats) || in_array('Document/ArchiveCollection', $formats))): ?>
-  <? if ($this->driver->isPartOfArchiveSeries()): ?>
-    <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
-  <? else: ?>
-     <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
-  <? endif; ?>
-<?= PHP_EOL . $this->transEsc('Archive')?>: <? foreach($topIds as $index => $parentId): ?><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?><? endforeach; ?>
-<? endif; ?>
-<? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
-<?= PHP_EOL . $this->transEsc('Archive Series')?>: <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?><? foreach ($parentIds as $index => $parentId): ?><?= isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?><?=($index < count($parentIds) - 1 ? ', ' : '')?><? endforeach; ?>
-<? endif; ?>
-<? if (!empty($dates)) : ?>
+<?php endif; ?>
+<?php if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $formats) || in_array('Document/ArchiveCollection', $formats))): ?>
+  <?php if ($this->driver->isPartOfArchiveSeries()): ?>
+    <?php $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
+  <?php else: ?>
+     <?php $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
+  <?php endif; ?>
+<?= PHP_EOL . $this->transEsc('Archive')?>: <?php foreach($topIds as $index => $parentId): ?><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?><?php endforeach; ?>
+<?php endif; ?>
+<?php if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
+<?= PHP_EOL . $this->transEsc('Archive Series')?>: <?php $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?><?php foreach ($parentIds as $index => $parentId): ?><?= isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?><?=($index < count($parentIds) - 1 ? ', ' : '')?><?php endforeach; ?>
+<?php endif; ?>
+<?php if (!empty($dates)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $this->escapeHtml($dates);?>
-<? endif; ?>
-<? if (!empty($format)) : ?>
+<?php endif; ?>
+<?php if (!empty($format)) : ?>
 <?= PHP_EOL . $this->translate($format) ?>
-<? endif; ?>
+<?php endif; ?>
 
 <?= $this->translate('View Full Record') . ": $url"; ?>

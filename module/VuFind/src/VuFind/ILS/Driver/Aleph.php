@@ -2,7 +2,7 @@
 /**
  * Aleph ILS driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) UB/FU Berlin
  *
@@ -37,7 +37,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -719,7 +719,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -847,7 +847,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @param array $user   The patron array from patronLogin
      * @param array $params Parameters
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array      Array of the patron's historic loans on success.
      */
@@ -952,7 +952,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @param array $user The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -1067,7 +1067,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @param array $user The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array      Array of the patron's holds on success.
      */
@@ -1198,7 +1198,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @param array $user The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return mixed      Array of the patron's fines on success.
      */

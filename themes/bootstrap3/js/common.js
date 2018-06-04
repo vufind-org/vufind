@@ -1,4 +1,4 @@
-/*global grecaptcha, isPhoneNumberValid */
+/*global Event, grecaptcha, isPhoneNumberValid */
 /*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill

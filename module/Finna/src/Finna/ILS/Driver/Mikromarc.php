@@ -2,7 +2,7 @@
 /**
  * Mikromarc ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2017-2018.
  *
@@ -30,7 +30,7 @@
  */
 namespace Finna\ILS\Driver;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -54,6 +54,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
+    use \VuFind\ILS\Driver\CacheTrait;
 
     /**
      * Date converter object
@@ -91,8 +92,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateConverter = $dateConverter;
     }
 
@@ -340,15 +341,14 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 $type = $this->feeTypeMappings[$type];
             }
             $amount = $entry['Remainder'] * 100;
-            $fineId = isset($entry['Id']) ? $entry['Id'] : null;
+            $fineId = $entry['Id'] ?? null;
             $fine = [
                 'amount' => $amount,
                 'balance' => $amount,
                 'fine' => $type,
                 'createdate' => $createDate,
                 'checkout' => '',
-                'id' => isset($entry['MarcRecordId'])
-                   ? $entry['MarcRecordId'] : null,
+                'id' => $entry['MarcRecordId'] ?? null,
                 'item_id' => $entry['ItemId'],
                 // Append payment information
                 'payableOnline' => $fineId && in_array($fineId, $payableIds),
@@ -556,9 +556,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             );
             if ($code != 200 || $result['ServiceCode'] != 'LoanRenewed') {
                 $map = ['ReservedForOtherBorrower' => 'renew_item_requested'];
-                $errorCode = isset($result['error']['code'])
-                    ? $result['error']['code'] : null;
-                $sysMsg = isset($map[$errorCode]) ? $map[$errorCode] : null;
+                $errorCode = $result['error']['code'] ?? null;
+                $sysMsg = $map[$errorCode] ?? null;
                 $finalResult['details'][$checkedOutId] = [
                     'item_id' => $checkedOutId,
                     'success' => false,
@@ -719,7 +718,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $patron = $holdDetails['patron'];
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
-        $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
+        $itemId = $holdDetails['item_id'] ?? false;
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
@@ -1334,8 +1333,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
 
         $paymentConfig = $this->getOnlinePaymentConfig();
         $params
-            = isset($paymentConfig['registrationParams'])
-            ? $paymentConfig['registrationParams'] : []
+            = $paymentConfig['registrationParams'] ?? []
         ;
         $currency = $paymentConfig['currency'];
         $userId = $patron['id'];
@@ -1629,8 +1627,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
            'ToAcquisition' => 'In Process',
         ];
 
-        return isset($map[$item['ItemStatus']])
-            ? $map[$item['ItemStatus']] : 'No information available';
+        return $map[$item['ItemStatus']] ?? 'No information available';
     }
 
     /**
@@ -1712,7 +1709,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getLibraryUnit($id)
     {
         $units = $this->getLibraryUnits();
-        return isset($units[$id]) ? $units[$id] : null;
+        return $units[$id] ?? null;
     }
 
     /**

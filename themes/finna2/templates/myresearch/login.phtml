@@ -1,5 +1,5 @@
 <!-- START of: finna - Auth/myresearch/login.phtml -->
-<?
+<?php
   // Set up page title:
   $this->headTitle($this->translate('Login'));
 
@@ -12,29 +12,29 @@
   $offlineMode = $this->ils()->getOfflineMode();
 ?>
 
-<? if ($offlineMode == "ils-offline"): ?>
+<?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
-<? endif; ?>
+<?php endif; ?>
 
 <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
 <?=$this->flashmessages()?>
-<? if ($template = $this->content()->findTemplateForLng("content/Additions/login-pre")): ?>
+<?php if ($template = $this->content()->findTemplateForLng("content/Additions/login-pre")): ?>
   <div>
     <?=$this->render($template)?>
   </div>
-<? endif; ?>
-<? if ($hideLogin): ?>
+<?php endif; ?>
+<?php if ($hideLogin): ?>
   <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
-<? else: ?>
-  <? if ($this->fromTermsPage): ?>
-    <? // Force lightbox login to display ?>
+<?php else: ?>
+  <?php if ($this->fromTermsPage): ?>
+    <?php // Force lightbox login to display ?>
     <div class="flash-message alert-danger hidden"></div>
-  <? endif; ?>
+  <?php endif; ?>
   <?=$this->auth()->getLogin()?>
-<? endif; ?>
-<? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
+<?php endif; ?>
+<?php if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
   <div>
     <?=$this->render($template)?>
   </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - Auth/myresearch/login.phtml -->

@@ -1,7 +1,7 @@
 <!-- START of: finna - RecordTab/holdings-details.phtml -->
-<? if (isset($holding['textfields'])): ?>
-  <? foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
-    <?
+<?php if (isset($holding['textfields'])): ?>
+  <?php foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <?php
     // For purchase history, check if there's something for this holding
     if ($textFieldName == 'purchase_history') {
         $found = false;
@@ -19,8 +19,8 @@
     }
     ?>
   <div class="copy-details <?=isset($heading) ? 'group-heading' : "$mode"?>">
-    <? // Translation for summary is a special case for backwards-compatibility and purchase_history a special case ?>
-    <?
+    <?php // Translation for summary is a special case for backwards-compatibility and purchase_history a special case ?>
+    <?php
     if ($textFieldName == 'summary') {
         $title = 'Volume Holdings';
     } elseif ($textFieldName == 'purchase_history') {
@@ -29,15 +29,15 @@
         $title = ucfirst($textFieldName);
     }
     ?>
-    <? if (isset($mode)): ?>
+    <?php if (isset($mode)): ?>
       <div class="details-title"><?=$this->transEsc($title)?>:</div>
-    <? endif;?>
+    <?php endif;?>
     <div <?= !isset($heading) ? ' class="details-info"' : ''?>>
-    <? foreach ($textFields as $current): ?>
+    <?php foreach ($textFields as $current): ?>
       <?=$this->escapeHtml($current)?><br/>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     </div>
   </div>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>
 <!-- END of: finna - RecordTab/holdings-details.phtml -->

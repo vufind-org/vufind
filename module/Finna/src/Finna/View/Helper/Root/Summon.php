@@ -2,7 +2,7 @@
 /**
  * Summon view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2017.
  *
@@ -39,11 +39,18 @@ namespace Finna\View\Helper\Root;
 class Summon extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Summon configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $config Primo configuration
+     * @param \Zend\Config\Config $config Summon configuration
      */
-    public function __construct($config)
+    public function __construct(\Zend\Config\Config $config)
     {
         $this->config = $config;
     }

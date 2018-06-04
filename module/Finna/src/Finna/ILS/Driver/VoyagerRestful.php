@@ -2,7 +2,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -447,8 +447,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             if ($this->checkItemsExist) {
                 $exist = $this->itemsExist(
                     $id,
-                    isset($holdDetails['requestGroupId'])
-                    ? $holdDetails['requestGroupId'] : null
+                    $holdDetails['requestGroupId'] ?? null
                 );
                 if (!$exist) {
                     return false;
@@ -468,8 +467,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                 ) {
                     $available = $this->itemsAvailable(
                         $id,
-                        isset($data['requestGroupId'])
-                        ? $data['requestGroupId'] : null
+                        $data['requestGroupId'] ?? null
                     );
                     if ($available) {
                         return false;

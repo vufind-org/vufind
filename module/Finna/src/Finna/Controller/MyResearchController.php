@@ -2,9 +2,9 @@
 /**
  * MyResearch Controller
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,9 +29,6 @@
  */
 namespace Finna\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\SessionManager;
-
 /**
  * Controller for the user account area.
  *
@@ -45,28 +42,8 @@ use Zend\Session\SessionManager;
  */
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
-    use OnlinePaymentControllerTrait;
+    use FinnaOnlinePaymentControllerTrait;
     use CatalogLoginTrait;
-
-    /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface $sm             Service manager
-     * @param SessionManager          $sessionManager Session manager
-     */
-    public function __construct(ServiceLocatorInterface $sm,
-        SessionManager $sessionManager
-    ) {
-        parent::__construct($sm);
-        $this->sessionManager = $sessionManager;
-    }
 
     /**
      * Catalog Login Action
@@ -190,8 +167,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $date = $this->serviceLocator->get('VuFind\DateConverter');
         $sortFunc = function ($a, $b) use ($currentSort, $date) {
             if ($currentSort == 'title') {
-                $aTitle = isset($a['title']) ? $a['title'] : '';
-                $bTitle = isset($b['title']) ? $b['title'] : '';
+                $aTitle = $a['title'] ?? '';
+                $bTitle = $b['title'] ?? '';
                 $result = strcmp($aTitle, $bTitle);
                 if ($result != 0) {
                     return $result;
@@ -295,10 +272,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         // Set up CSRF:
+        $sessionManager = $this->serviceLocator->get('Zend\Session\SessionManager');
         $this->csrf = new \Zend\Validator\Csrf(
             [
                 'session' => new \Zend\Session\Container(
-                    'csrf', $this->sessionManager
+                    'csrf', $sessionManager
                 ),
                 'salt' => isset($this->config->Security->HMACkey)
                     ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
@@ -927,7 +905,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 if (!$user) {
                     throw new \Exception('Invalid parameters.');
                 }
-                $dueDateTable = $this->getTable('due-date-reminder');
+                $dueDateTable = $this->getTable('duedatereminder');
                 $secret = $dueDateTable->getUnsubscribeSecret(
                     $this->serviceLocator->get('VuFind\HMAC'), $user, $user->id
                 );
@@ -1022,7 +1000,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $table = $this->getTable('UserResource');
 
         $sortOptions = self::getFavoritesSortList();
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
+        $sort = $_GET['sort'] ?? false;
         if (!$sort) {
             reset($sortOptions);
             $sort = key($sortOptions);
@@ -1233,11 +1211,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         list($library, $username) = explode('.', $patron['cat_username']);
         $library = $this->translate("source_$library", null, $library);
         $name = trim(
-            (isset($patron['firstname']) ? $patron['firstname'] : '')
+            ($patron['firstname'] ?? '')
             . ' '
-            . (isset($patron['lastname']) ? $patron['lastname'] : '')
+            . ($patron['lastname'] ?? '')
         );
-        $email = isset($patron['email']) ? $patron['email'] : '';
+        $email = $patron['email'] ?? '';
         if (!$email) {
             $user = $this->getUser();
             if (!empty($user['email'])) {
@@ -1352,9 +1330,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         try {
             return parent::getDriverForILSRecord($current);
         } catch (\Exception $e) {
-            $id = isset($current['id']) ? $current['id'] : null;
-            $source = isset($current['source'])
-                ? $current['source'] : DEFAULT_SEARCH_BACKEND;
+            $id = $current['id'] ?? null;
+            $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
             $recordFactory = $this->serviceLocator
                 ->get('VuFind\RecordDriverPluginManager');
             $record = $recordFactory->get('Missing');

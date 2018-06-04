@@ -2,16 +2,16 @@
 <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'))?>
 <hr>
 <table class="citation table table-striped">
-  <? foreach ($this->driver->getRawData() as $field => $values): ?>
+  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
       <td>
-        <? if (!is_array($values)) { $values = [$values]; } ?>
-        <? foreach ($values as $value): ?>
+        <?php if (!is_array($values)) { $values = [$values]; } ?>
+        <?php foreach ($values as $value): ?>
           <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </table>
 <!-- END of: finna - RecordTab/staffviewmarc.phtml -->

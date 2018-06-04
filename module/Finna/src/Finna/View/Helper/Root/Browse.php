@@ -2,7 +2,7 @@
 /**
  * Browse database/journal view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -39,11 +39,18 @@ namespace Finna\View\Helper\Root;
 class Browse extends \VuFind\View\Helper\Root\Browse
 {
     /**
+     * Browser configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $config Browse configuration
+     * @param \Zend\Config\Config $config Browse configuration
      */
-    public function __construct($config)
+    public function __construct(\Zend\Config\Config $config)
     {
         $this->config = $config;
     }

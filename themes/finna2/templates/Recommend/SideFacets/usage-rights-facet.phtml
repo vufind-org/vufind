@@ -1,70 +1,70 @@
 <!-- START of: finna2 - Recommend/SideFacets/usage-rights-facet.phtml -->
-<? $usageOptions = []; ?>
-<? foreach ($cluster['list'] as $i => $thisFacet): ?>
-  <?
+<?php $usageOptions = []; ?>
+<?php foreach ($cluster['list'] as $i => $thisFacet): ?>
+  <?php
     $usageOptions[$thisFacet['value']] = $thisFacet;
     ob_start();
   ?>
-  <? if ($thisFacet['isApplied']): ?>
-    <a class="list-group-item active<? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
-      <? if ($thisFacet['operator'] == 'OR'): ?>
+  <?php if ($thisFacet['isApplied']): ?>
+    <a class="list-group-item active<?php if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<?php endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
+      <?php if ($thisFacet['operator'] == 'OR'): ?>
         <i class="fa fa-check-square-o" aria-hidden="true"></i>
-      <? else: ?>
+      <?php else: ?>
         <span class="pull-right"><i class="fa fa-check" aria-hidden="true"></i></span>
-      <? endif; ?>
+      <?php endif; ?>
       <?=$this->transEsc($thisFacet['value'] . '_facet')?>
     </a>
-  <? else: ?>
-    <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
-    <? if ($allowExclude): ?>
+  <?php else: ?>
+    <?php $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
+    <?php if ($allowExclude): ?>
       <div class="list-group-item facet facet<?=$thisFacet['operator'] ?> excludable">
         <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-    <? else: ?>
+    <?php else: ?>
       <div class="list-group-item facet">
-    <? endif; ?>
+    <?php endif; ?>
     <span class="badge">
       <?=$this->localizedNumber($thisFacet['count'])?>
     </span>
     <a class="text" href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
-    <? if ($thisFacet['operator'] == 'OR'): ?>
+    <?php if ($thisFacet['operator'] == 'OR'): ?>
       <i class="fa fa-square-o" aria-hidden="true"></i>
-    <? endif; ?>
+    <?php endif; ?>
     <?=$this->transEsc($thisFacet['value'] . '_facet')?>
-    <? if ($allowExclude): ?>
+    <?php if ($allowExclude): ?>
         </a>
       </div>
-    <? else: ?>
+    <?php else: ?>
       </a>
       </div>
-    <? endif; ?>
-  <? endif; ?>
-  <? $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
-  <? ob_end_clean(); ?>
-<? endforeach; ?>
+    <?php endif; ?>
+  <?php endif; ?>
+  <?php $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+<?php endforeach; ?>
 
 <?=!empty($usageOptions['usage_A']) ? $usageOptions['usage_A']['html'] : ''?>
-<? if (!empty($usageOptions['usage_B']) || !empty($usageOptions['usage_D'])): ?>
-  <div class="usage-right-group<? if ($allowExclude): ?> usage-rights-excludable<? endif ?>">
+<?php if (!empty($usageOptions['usage_B']) || !empty($usageOptions['usage_D'])): ?>
+  <div class="usage-right-group<?php if ($allowExclude): ?> usage-rights-excludable<?php endif ?>">
     <span><?=$this->transEsc('usage_title_derivates')?></span>
     <?=!empty($usageOptions['usage_D']) ? $usageOptions['usage_D']['html'] : '' ?>
     <?=!empty($usageOptions['usage_B']) ? $usageOptions['usage_B']['html'] : '' ?>
   </div>
-<? endif; ?>
-<? if (!empty($usageOptions['usage_E']) || !empty($usageOptions['usage_C'])): ?>
-  <div class="usage-right-group<? if ($allowExclude): ?> usage-rights-excludable<? endif ?>">
+<?php endif; ?>
+<?php if (!empty($usageOptions['usage_E']) || !empty($usageOptions['usage_C'])): ?>
+  <div class="usage-right-group<?php if ($allowExclude): ?> usage-rights-excludable<?php endif ?>">
     <span><?=$this->transEsc('usage_title_no_derivates')?></span>
     <?=!empty($usageOptions['usage_E']) ? $usageOptions['usage_E']['html'] : '' ?>
     <?=!empty($usageOptions['usage_C']) ? $usageOptions['usage_C']['html'] : '' ?>
   </div>
-<? endif; ?>
+<?php endif; ?>
 <?=!empty($usageOptions['usage_F']) ? $usageOptions['usage_F']['html'] : '' ?>
 
 <div class="list-group-item facet-info">
   <i class="fa fa-info3"></i><div class="info"><?=$this->transEsc('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms'])?>#terms"><?=$this->transEsc('usage_rights_info_more')?></a>
 </div>
-<? if (!$this->translationEmpty('usage_rights_details')): ?>
+<?php if (!$this->translationEmpty('usage_rights_details')): ?>
 <div class="list-group-item facet-info">
   <i class="fa fa-info3"></i><div class="info"><?=$this->transEsc('usage_rights_details')?></div>
 </div>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna2 - Recommend/SideFacets/usage-rights-facet.phtml -->

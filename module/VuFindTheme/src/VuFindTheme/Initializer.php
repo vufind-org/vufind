@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,7 @@
 namespace VuFindTheme;
 
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -216,6 +217,9 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
+        if (Console::isConsole()) {
+            return $standardTheme;
+        }
         $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 
@@ -269,10 +273,12 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('viewmanager')->getViewModel();
+        if (!Console::isConsole()) {
+            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
-        // Send down the view options:
-        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            // Send down the view options:
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+        }
     }
 
     /**
@@ -412,11 +418,11 @@ class Initializer
 
         if (!empty($pathStack)) {
             try {
-                $translator = $this->serviceManager->get('VuFind\Translator');
+                $translator = $this->serviceManager->get('Zend\Mvc\I18n\Translator');
 
                 $pm = $translator->getPluginManager();
-                $pm->get('extendedini')->addToPathStack($pathStack);
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                $pm->get('ExtendedIni')->addToPathStack($pathStack);
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
                 return;
@@ -425,13 +431,13 @@ class Initializer
             // Override the default cache with a theme-specific cache to avoid
             // key collisions in a multi-theme environment.
             try {
-                $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
+                $cacheManager = $this->serviceManager->get('VuFind\Cache\Manager');
                 $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
                 $translator->setCache($cacheManager->getCache($cacheName));
             } catch (\Exception $e) {
                 // Don't let a cache failure kill the whole application, but make
                 // note of it:
-                $logger = $this->serviceManager->get('VuFind\Logger');
+                $logger = $this->serviceManager->get('VuFind\Log\Logger');
                 $logger->debug(
                     'Problem loading cache: ' . get_class($e) . ' exception: '
                     . $e->getMessage()

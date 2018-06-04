@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/sortlist.phtml -->
-<?
+<?php
   $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
   $this->headScript()->appendFile('finna-mylist.js');
   $list = $this->results->getListObject();
@@ -31,12 +31,12 @@
   </div>
 </form>
 <ol id="sortable" class="sortable-favorite-list">
-  <? foreach ($this->results->getResults() as $i => $current): ?>
+  <?php foreach ($this->results->getResults() as $i => $current): ?>
     <li id="<?=$this->escapeHtmlAttr($current->getUniqueID()) ?>"><h4><?=$this->escapeHtml($current->getTitle()) ?><i class="fa fa-arrow-down"></i><i class="fa fa-arrow-up"></i></h4><p><?=$this->record($current)->getFormatList() ?></p></li>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </ol>
 
-<?
+<?php
 $script = <<<EOT
 if ($.isReady) {
   finna.myList.initFavoriteOrderingFunctionality();

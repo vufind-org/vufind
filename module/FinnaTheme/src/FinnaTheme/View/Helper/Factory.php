@@ -2,9 +2,9 @@
 /**
  * Factory for FinnaTheme view helpers.
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -51,13 +51,12 @@ class Factory extends \VuFindTheme\View\Helper\Factory
      */
     public static function getHeadLink(ServiceManager $sm)
     {
-        $locator = $sm->getServiceLocator();
         return new HeadLink(
-            $locator->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
-            $locator->get('Request'),
-            $locator->get('VuFind\Cache\Manager'),
-            $locator->get('VuFind\DbTablePluginManager')->get('FinnaCache')
+            $sm->get('Request'),
+            $sm->get('VuFind\Cache\Manager'),
+            $sm->get('VuFind\DbTablePluginManager')->get('FinnaCache')
         );
     }
 
@@ -70,12 +69,11 @@ class Factory extends \VuFindTheme\View\Helper\Factory
      */
     public static function getHeadScript(ServiceManager $sm)
     {
-        $locator = $sm->getServiceLocator();
         return new HeadScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
-            $locator->get('Request'),
-            $locator->get('VuFind\DbTablePluginManager')->get('FinnaCache')
+            $sm->get('Request'),
+            $sm->get('VuFind\DbTablePluginManager')->get('FinnaCache')
         );
     }
 
@@ -89,7 +87,7 @@ class Factory extends \VuFindTheme\View\Helper\Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm)
         );
     }

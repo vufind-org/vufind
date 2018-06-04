@@ -1,17 +1,17 @@
 <!-- START of: finna - myresearch/profile-messaging.phtml -->
-<?
+<?php
 if (!isset($capabilityParams)) {
     $patron = $user ? $this->auth()->getILSPatron() : false;
     $capabilityParams = $patron ? ['patron' => $patron] : [];
 }
 ?>
-<? $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', $capabilityParams); ?>
+<?php $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', $capabilityParams); ?>
 <form method="post" class="inline" id="messaging-form">
     <div>
         <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
     </div>
-    <? foreach ($profile['messagingServices'] as $service): ?>
-            <?
+    <?php foreach ($profile['messagingServices'] as $service): ?>
+            <?php
             echo '<div class="my-profile-col profile-title">' . $this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type']) . ':</div>';
             echo '<div class="profile-text-value">';
             if (isset($service['sendMethods'])) {
@@ -54,7 +54,7 @@ if (!isset($capabilityParams)) {
                     } else {
                         foreach ($setting['options'] as $optionId => $option) {
                             if ($option['active']) {
-                                $name = isset($option['name']) ? $option['name'] : $optionId;
+                                $name = $option['name'] ?? $optionId;
                                 $activeOptions[] = $this->transEsc("messaging_settings_option_$name", null, $name);
                             }
                         }
@@ -72,16 +72,16 @@ if (!isset($capabilityParams)) {
             }
             ?>
         </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <div class="clearfix"></div>
-    <? if ($updateSettings): ?>
+    <?php if ($updateSettings): ?>
       <div class="messaging-last">
-        <? if (in_array($updateSettings['method'], ['email', 'driver'])): ?>
+        <?php if (in_array($updateSettings['method'], ['email', 'driver'])): ?>
           <i class="fa fa-pen"></i> <a class="profile-messaging-update" data-lightbox href="<?=$this->escapeHtmlAttr($this->url('myresearch-changemessagingsettings')) ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
-        <? else: ?>
+        <?php else: ?>
           <i class="fa fa-external-link"></i> <a class="profile-messaging-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateSettings['url'])) ?>" target="_blank"><?= $this->transEsc('request_messaging_settings_change') ?></a>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
 </form>
 <!-- END of: finna - myresearch/profile-messaging.phtml -->

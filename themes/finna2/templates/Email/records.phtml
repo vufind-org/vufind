@@ -1,0 +1,15 @@
+<?php // This is a text-only email template; do not include HTML! ?>
+<?=$this->translate('This email was sent from')?>: <?=$this->from?>
+
+<?php if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
+<?=$this->message?>
+<?php endif; ?>
+
+<?php foreach ($this->drivers as $record): ?>
+
+------------------------------------------------------------
+<?=$this->record($record)->getEmail() ?>
+
+<?php endforeach; ?>
+
+------------------------------------------------------------

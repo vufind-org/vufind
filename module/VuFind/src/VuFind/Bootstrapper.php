@@ -2,7 +2,7 @@
 /**
  * VuFind Bootstrapper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,7 +29,7 @@ namespace VuFind;
 
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -99,8 +99,8 @@ class Bootstrapper
     {
         // Create the configuration manager:
         $app = $this->event->getApplication();
-        $serviceManager = $app->getServiceManager();
-        $this->config = $serviceManager->get('VuFind\Config')->get('config');
+        $sm = $app->getServiceManager();
+        $this->config = $sm->get('VuFind\Config\PluginManager')->get('config');
     }
 
     /**
@@ -121,7 +121,7 @@ class Bootstrapper
         if ($debugOverride) {
             $auth = $sm->get('ZfcRbac\Service\AuthorizationService');
             if ($auth->isGranted('access.DebugMode')) {
-                $logger = $sm->get('VuFind\Logger');
+                $logger = $sm->get('VuFind\Log\Logger');
                 $logger->addDebugWriter($debugOverride);
             }
         }
@@ -179,17 +179,20 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            if (!Console::isConsole()) {
+                $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
-            // Grab the template name from the first child -- we can use this to
-            // figure out the current template context.
-            $children = $viewModel->getChildren();
-            if (!empty($children)) {
-                $parts = explode('/', $children[0]->getTemplate());
-                $viewModel->setVariable('templateDir', $parts[0]);
-                $viewModel->setVariable(
-                    'templateName', isset($parts[1]) ? $parts[1] : null
-                );
+                // Grab the template name from the first child -- we can use this to
+                // figure out the current template context.
+                $children = $viewModel->getChildren();
+                if (!empty($children)) {
+                    $parts = explode('/', $children[0]->getTemplate());
+                    $viewModel->setVariable('templateDir', $parts[0]);
+                    $viewModel->setVariable(
+                        'templateName',
+                        $parts[1] ?? null
+                    );
+                }
             }
         };
         $this->events->attach('dispatch', $callback);
@@ -318,7 +321,7 @@ class Bootstrapper
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
-                $cookieManager = $sm->get('VuFind\CookieManager');
+                $cookieManager = $sm->get('VuFind\Cookie\CookieManager');
                 $cookieManager->set('language', $language);
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
@@ -332,7 +335,7 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get('VuFind\Translator');
+                $translator = $sm->get('Zend\Mvc\I18n\Translator');
                 $translator->setLocale($language)
                     ->addTranslationFile('ExtendedIni', null, 'default', $language);
                 foreach ($this->getTextDomains() as $domain) {
@@ -343,7 +346,7 @@ class Bootstrapper
                         'ExtendedIni', $domain, $domain, $language
                     );
                 }
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
@@ -352,7 +355,7 @@ class Bootstrapper
                 }
             }
             // Send key values to view:
-            $viewModel = $sm->get('viewmanager')->getViewModel();
+            $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
             $rtlLangs = isset($config->LanguageSettings->rtl_langs)
@@ -441,8 +444,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has('VuFind\Logger')) {
-                $log = $sm->get('VuFind\Logger');
+            if ($sm->has('VuFind\Log\Logger')) {
+                $log = $sm->get('VuFind\Log\Logger');
                 if (is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
@@ -473,7 +476,7 @@ class Bootstrapper
         // a user-friendly message instead of a fatal error.
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);

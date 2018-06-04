@@ -2,7 +2,7 @@
 /**
  * OpenUrl Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -298,7 +298,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
             $mockContext = $this->getMockContext();
         }
         $mockPm = $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')
-            ->getMock();
+            ->disableOriginalConstructor()->getMock();
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;

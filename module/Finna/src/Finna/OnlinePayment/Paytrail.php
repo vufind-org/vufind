@@ -2,7 +2,7 @@
 /**
  * Paytrail payment handler
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2014-2018.
  *
@@ -168,7 +168,7 @@ class Paytrail extends BaseHandler
             }
 
             foreach ($fines as $fine) {
-                $fineType = isset($fine['fine']) ? $fine['fine'] : '';
+                $fineType = $fine['fine'] ?? '';
 
                 if (isset($productCodeMappings[$fineType])) {
                     $code = $productCodeMappings[$fineType];

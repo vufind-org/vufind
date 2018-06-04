@@ -8,7 +8,7 @@
     </div>
   </div>
   <input name="transactionId" type="hidden" value="<?=$this->transactionId?>">
-  <? // Need a hidden input for lightbox compatibility ?>
+  <?php // Need a hidden input for lightbox compatibility ?>
   <input name="pay-confirm" type="hidden" value="1">
   <input type="submit" name="reset" class="btn btn-primary" data-dismiss="modal" value="<?=$this->transEsc('online_payment_cancel'); ?>"/>
   <input type="submit" name="pay-confirm" class="btn btn-primary" value="<?=$this->transEsc('online_payment_accept_terms')?>" />

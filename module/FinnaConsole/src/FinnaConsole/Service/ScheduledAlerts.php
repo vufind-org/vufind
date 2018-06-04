@@ -2,7 +2,7 @@
 /**
  * Send scheduled alerts.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -201,11 +201,11 @@ class ScheduledAlerts extends AbstractService
     protected function collectScriptArguments($argv)
     {
         // Base directory for all views.
-        $this->viewBaseDir = isset($argv[0]) ? $argv[0] : '..';
+        $this->viewBaseDir = $argv[0] ?? '..';
         // Current view local configuration directory
-        $this->baseDir = isset($argv[1]) ? $argv[1] : false;
+        $this->baseDir = $argv[1] ?? false;
         // Schedule base url for alerts to send
-        $this->scheduleBaseUrl = isset($argv[2]) ? $argv[2] : false;
+        $this->scheduleBaseUrl = $argv[2] ?? false;
 
         if (!$this->viewBaseDir || !$this->baseDir) {
             echo $this->usage();
@@ -306,7 +306,7 @@ class ScheduledAlerts extends AbstractService
         $backend
             = $this->serviceManager
                 ->get('VuFind\Search\BackendManager')->get('Solr');
-        $viewManager = $this->serviceManager->get('viewmanager');
+        $viewManager = $this->serviceManager->get('ViewManager');
         $viewModel = $viewManager->getViewModel();
         $renderer = $this->serviceManager->get('ViewRenderer');
         $emailer = $this->serviceManager->get('VuFind\Mailer');

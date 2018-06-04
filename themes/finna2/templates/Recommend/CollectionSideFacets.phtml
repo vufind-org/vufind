@@ -1,7 +1,7 @@
 <!-- START of: finna - Recommend/CollectionSideFacets.phtml -->
-<?
+<?php
     $this->overrideSideFacetCaption = 'Filter Collection';
 ?>
-<? $this->baseUriExtra = $this->recommend->getResults()->getParams()->getCollectionId(); ?>
+<?php $this->baseUriExtra = $this->recommend->getResults()->getParams()->getCollectionId(); ?>
 <?=$this->render('Recommend/SideFacets.phtml')?>
 <!-- END of: finna - Recommend/CollectionSideFacets.phtml -->

@@ -1,42 +1,42 @@
 <!-- START of: finna - ajax/feed-carousel.phtml -->
-<?
+<?php
   $clickableElement = !$this->touchDevice && !isset($this->linkText);
   $clickableLink = !$clickableElement;
 ?>
 
 <div class="carousel">
-  <? if ($this->title || $this->translateTitle): ?><h2 class="carousel-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><? endif; ?>
-  <? if (isset($this->description)): ?><p class="additional-description"><?= $this->translate($this->description)?></p><? endif; ?>
+  <?php if ($this->title || $this->translateTitle): ?><h2 class="carousel-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><?php endif; ?>
+  <?php if (isset($this->description)): ?><p class="additional-description"><?= $this->translate($this->description)?></p><?php endif; ?>
   <div class="carousel-feed">
-    <? $items = isset($this->visualItems) ? array_splice($this->items, 0, $this->visualItems) : $this->items; ?>
-    <? foreach($items as $item): ?>
+    <?php $items = isset($this->visualItems) ? array_splice($this->items, 0, $this->visualItems) : $this->items; ?>
+    <?php foreach($items as $item): ?>
     <div>
-      <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>
-      <? if (isset($item['title'])): ?>
+      <?php if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><?php endif; ?>
+      <?php if (isset($item['title'])): ?>
       <div class="carousel-slide-header">
         <p><?= $this->truncate($item['title'], 70); ?></p>
       </div>
-      <? endif; ?>
+      <?php endif; ?>
 
 
-      <? if (isset($item['text']) || $clickableLink): ?>
+      <?php if (isset($item['text']) || $clickableLink): ?>
       <div class="carousel-text">
-        <? if (isset($item['title'])): ?>
+        <?php if (isset($item['title'])): ?>
         <p class="carousel-hover-title"><?= $this->truncate($item['title'], 70); ?></p>
-        <? endif; ?>
+        <?php endif; ?>
         <p><?= $item['text']; ?>
         </p>
-        <? if ($clickableLink): ?><a <?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>" class="carousel-link"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><?=$this->transEsc($this->linkText ? $this->linkText : 'To the record')?></a><? endif; ?>
+        <?php if ($clickableLink): ?><a <?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>" class="carousel-link"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><?=$this->transEsc($this->linkText ? $this->linkText : 'To the record')?></a><?php endif; ?>
       </div>
-      <? endif; ?>
-      <? if (isset($item['image']) && isset($item['image']['url'])): ?>
+      <?php endif; ?>
+      <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
       <div class="wrapper">
-        <img src="<?= $item['image']['url']; ?>" alt="<?=$this->transEsc("Image");?>: <? if (isset($item['title'])): ?><?= $item['title']; ?><? endif; ?>" />
+        <img src="<?= $item['image']['url']; ?>" alt="<?=$this->transEsc("Image");?>: <?php if (isset($item['title'])): ?><?= $item['title']; ?><?php endif; ?>" />
       </div>
-      <? endif; ?>
-      <? if ($clickableElement):?></a><? endif; ?>
+      <?php endif; ?>
+      <?php if ($clickableElement):?></a><?php endif; ?>
     </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </div>
 </div>
 <!-- END of: finna - ajax/feed-carousel.phtml -->

@@ -2,7 +2,7 @@
 /**
  * Model for LIDO records in Solr.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2017.
  *
@@ -59,23 +59,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Attach date converter
      *
-     * @param \Zend\Config\Config    $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Zend\Config\Config    $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config    $searchSettings Search-specific configuration
-     * file
-     * @param \VuFind\Date\Converter $dateConverter  Date Converter
+     * @param \VuFind\Date\Converter $dateConverter Date Converter
+     *
+     * @return void
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $dateConverter = null
-    ) {
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-
+    public function attachDateConverter($dateConverter)
+    {
         $this->dateConverter = $dateConverter;
-        $this->searchSettings = $searchSettings;
     }
 
     /**
@@ -251,12 +243,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             }
 
             if (!isset($urls['small'])) {
-                $urls['small'] = isset($urls['medium']) ? $urls['medium']
-                    : $urls['large'];
+                $urls['small'] = $urls['medium']
+                    ?? $urls['large'];
             }
             if (!isset($urls['medium'])) {
-                $urls['medium'] = isset($urls['small']) ? $urls['small']
-                    : $urls['large'];
+                $urls['medium'] = $urls['small']
+                    ?? $urls['large'];
             }
 
             $result[] = [
@@ -796,8 +788,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         $urls = [];
         foreach (parent::getURLs() as $url) {
             $blacklisted = $this->urlBlacklisted(
-                isset($url['url']) ? $url['url'] : '',
-                isset($url['desc']) ? $url['desc'] : ''
+                $url['url'] ?? '',
+                $url['desc'] ?? ''
             );
             if (!$blacklisted) {
                 $urls[] = $url;
@@ -818,7 +810,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
             . 'relatedWorkSet/relatedWork/object/objectWebResource'
         );
-        return isset($url[0]) ? $url[0] : false;
+        return $url[0] ?? false;
     }
 
     /**

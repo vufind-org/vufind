@@ -2,7 +2,7 @@
 /**
  * Factory for controllers.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2017.
  *
@@ -67,9 +67,10 @@ class Factory
     public static function getApiController(ServiceManager $sm)
     {
         $controller = new \VuFindApi\Controller\ApiController($sm);
-        $controller->addApi($sm->get('AdminApi'));
-        $controller->addApi($sm->get('SearchApi'));
-        $controller->addApi($sm->get('AuthApi'));
+        $controllerManager = $sm->get('ControllerManager');
+        $controller->addApi($controllerManager->get('AdminApi'));
+        $controller->addApi($controllerManager->get('SearchApi'));
+        $controller->addApi($controllerManager->get('AuthApi'));
         return $controller;
     }
 
@@ -83,7 +84,7 @@ class Factory
     public static function getAuthApiController(ServiceManager $sm)
     {
         $result = new AuthApiController($sm);
-        $result->setLogger($sm->getServiceLocator()->get('VuFind\Logger'));
+        $result->setLogger($sm->get('VuFind\Logger'));
         return $result;
     }
 
@@ -96,10 +97,10 @@ class Factory
      */
     public static function getSearchApiController(ServiceManager $sm)
     {
-        $recordFields = $sm->getServiceLocator()
-            ->get('VuFind\YamlReader')->get('SearchApiRecordFields.yaml');
-        $helperManager = $sm->getServiceLocator()->get('ViewHelperManager');
-        $translator = $sm->getServiceLocator()->get('translator');
+        $recordFields = $sm->get('VuFind\YamlReader')
+            ->get('SearchApiRecordFields.yaml');
+        $helperManager = $sm->get('ViewHelperManager');
+        $translator = $sm->get('VuFind\Translator');
         $rf = new RecordFormatter($recordFields, $helperManager, $translator);
         $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;

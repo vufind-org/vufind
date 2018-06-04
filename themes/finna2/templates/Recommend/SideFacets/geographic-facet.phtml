@@ -1,20 +1,20 @@
-<?
+<?php
   $geoFilters = $this->params->getGeographicFilters($this->params->getFilterList());
   $mapPopupUrl = $this->url('search-mapfacet') . $results->getUrlQuery()->getParams(false);
   $removeFacetUrl = $results->getUrlQuery()->removeFacet($geoFilters[0], '');
 ?>
 <div class="geofacet-header">
   <h5 class="geofacet-title"><?=$this->translate('filter_by_geo_location')?></h5>
-  <? if(!empty($geoFilters)): ?><a class="remove-facet" href="<?=$removeFacetUrl?>"><?=$this->translate("Remove filter");?></a><?endif;?>
+  <?php if(!empty($geoFilters)): ?><a class="remove-facet" href="<?=$removeFacetUrl?>"><?=$this->translate("Remove filter");?></a><?php endif;?>
   <div class="clearfix"></div>
 </div>
 <div class="geographic-facet">
-  <? if(empty($geoFilters)):?>
+  <?php if(empty($geoFilters)):?>
     <div class="location-search-info alert alert-info hidden">
       <div class="fa fa-spinner fa-spin hidden"></div>
       <div class="info"></div>
     </div>
-  <? else: ?>
+  <?php else: ?>
     <div class="map-container">
       <div class="map" style="height: 200px"></div>
       <div class="location-search-info info-map hidden">
@@ -23,7 +23,7 @@
         <div class="info"></div>
       </div>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="map-controls text-center">
     <a class="btn user-location-filter" href="<?=$removeFacetUrl?>"><?=$this->translate("use_my_location");?></a>
     <a class="btn map-control" href="<?=$mapPopupUrl ?>" data-lightbox><?=$this->translate("select_from_map");?></a>
@@ -39,11 +39,11 @@
     var options = {
       items: []
     };
-    <? foreach ($geoFilters as $filter): ?>
-      <? foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
+    <?php foreach ($geoFilters as $filter): ?>
+      <?php foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
         options.items.push('<?=$this->escapeJs($item) ?>');
-      <? endforeach; ?>
-    <? endforeach; ?>
+      <?php endforeach; ?>
+    <?php endforeach; ?>
     finna.MapFacet.initMapFacet(options);
   });
 </script>

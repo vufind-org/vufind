@@ -2,7 +2,7 @@
 /**
  * Table Definition for resource
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -76,14 +76,14 @@ class Resource extends \VuFind\Db\Table\Resource
                 $s->where->equalTo('ur.user_id', $user);
 
                 // Adjust for list if necessary:
-                if (!is_null($list)) {
+                if (null !== $list) {
                     $s->where->equalTo('ur.list_id', $list);
                 }
 
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
-                if (!is_null($limit)) {
+                if (null !== $limit) {
                     $s->limit($limit);
                 }
 

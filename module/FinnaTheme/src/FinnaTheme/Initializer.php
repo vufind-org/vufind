@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -27,9 +27,6 @@
  */
 namespace FinnaTheme;
 
-use Zend\Console\Console;
-use Zend\Stdlib\RequestInterface as Request;
-
 /**
  * VuFind Theme Initializer
  *
@@ -41,20 +38,4 @@ use Zend\Stdlib\RequestInterface as Request;
  */
 class Initializer extends \VuFindTheme\Initializer
 {
-    /**
-     * Support method for init() -- figure out which theme option is active.
-     *
-     * @param Request $request Request object (for obtaining user parameters).
-     *
-     * @return string
-     */
-    protected function pickTheme(Request $request)
-    {
-        if (Console::isConsole()) {
-            return $this->config->theme;
-        } else {
-            // Theme is already set up in VuFindTheme initializer
-            return $this->tools->getTheme();
-        }
-    }
 }

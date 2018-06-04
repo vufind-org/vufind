@@ -2,7 +2,7 @@
 /**
  * Solr Autocomplete Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -84,20 +84,6 @@ class Solr extends \VuFind\Autocomplete\Solr
      * @var array
      */
     protected $facetTranslations;
-
-    /**
-     * Is faceting disabled?
-     *
-     * @var boolean
-     */
-    protected $facetingDisabled = false;
-
-    /**
-     * Current search tab
-     *
-     * @var string
-     */
-    protected $searchTab = null;
 
     /**
      * Current request
@@ -182,12 +168,13 @@ class Solr extends \VuFind\Autocomplete\Solr
         $params->initSpatialDateRangeFilter($this->request);
         $this->searchObject->getOptions()->disableHighlighting();
 
-        if (!$this->facetingDisabled) {
+        if (!$this->request->onlySuggestions) {
+            $searchTab = $this->request->tab
+                ? str_replace('###', ':', $this->request->tab) : '';
             foreach ($this->facetSettings as $field => $facets) {
                 foreach ($facets as $key => $facet) {
                     if (!empty($facet['tabs'])
-                        && (!$this->searchTab
-                        || !in_array($this->searchTab, $facet['tabs']))
+                        && (!$searchTab || !in_array($searchTab, $facet['tabs']))
                     ) {
                         unset($this->facetSettings[$field][$key]);
                     }
@@ -242,9 +229,6 @@ class Solr extends \VuFind\Autocomplete\Solr
                     $facet, null, $this->useOrFacet($facet)
                 );
             }
-            $this->searchObject->getParams()->initSpatialDateRangeFilter(
-                $this->request
-            );
             $hierachicalFacets = $this->searchObject->getFullFieldFacets(
                 array_intersect($this->hierarchicalFacets, $allFacets),
                 false, -1, 'count'
@@ -266,28 +250,6 @@ class Solr extends \VuFind\Autocomplete\Solr
 
         $result = compact('suggestions', 'facets');
         return $result;
-    }
-
-    /**
-     * Disable faceting.
-     *
-     * @return void
-     */
-    public function disableFaceting()
-    {
-        $this->facetingDisabled = true;
-    }
-
-    /**
-     * Set current search tab.
-     *
-     * @param string $tab Search tab.
-     *
-     * @return void
-     */
-    public function setSearchTab($tab)
-    {
-        $this->searchTab = $tab;
     }
 
     /**

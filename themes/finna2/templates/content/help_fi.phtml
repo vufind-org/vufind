@@ -1,16 +1,16 @@
 <!-- START of: finna - content/help_fi.phtml -->
-<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
   <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help'])?>
-<? endif; ?>
+<?php endif; ?>
 <div>
   <div class="sidebar left">
     <div class="content-navigation-menu">
     </div>
   </div>
   <div class="mainbody right">
-    <? if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
       <?=$this->render('Content/Additions/helpBegin.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
     <div id="begin1" class="content-section">
       <h2>Miten aloitan haun Finnassa?</h2>
       <p>Hakuvaihtoehdot Finnassa:</p>
@@ -34,9 +34,9 @@
       <p>Osaan aineistosta  tarjotaan latausmahdollisuus. Muistathan kuitenkin tarkistaa esimerkiksi kuvien käyttöoikeudet aineiston omista tiedoista.</p>
       <p>Aineistoa voi hyödyntää esimerkiksi opetuksen ja oppimisen tukena tai harrastuskäytössä.</p>
     </div>
-    <? if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
       <?=$this->render('Content/Additions/helpEnd.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - content/help_fi.phtml -->

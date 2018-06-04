@@ -2,7 +2,7 @@
 /**
  * Proxy URL view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland.
  *
@@ -28,6 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 use VuFind\Net\ipAddressUtils;
+use Zend\Config\Config;
 
 /**
  * Proxy URL view helper
@@ -50,7 +51,7 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
     /**
      * Permissions configuration
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $permissions;
 
@@ -64,12 +65,12 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
     /**
      * Constructor
      *
-     * @param ipAddressUtils      $ipUtils     IP address utils
-     * @param \Zend\Config\Config $permissions Permissions configuration
      * @param \Zend\Config\Config $config      VuFind configuration
+     * @param \Zend\Config\Config $permissions Permissions configuration
+     * @param ipAddressUtils      $ipUtils     IP address utils
      */
-    public function __construct(
-        ipAddressUtils $ipUtils, $permissions, $config = null
+    public function __construct(Config $config, Config $permissions,
+        ipAddressUtils $ipUtils
     ) {
         parent::__construct($config);
 

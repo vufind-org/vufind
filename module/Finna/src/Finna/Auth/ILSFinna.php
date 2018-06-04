@@ -2,7 +2,7 @@
 /**
  * Additional functionality for ILS/MultiILS authentication.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library 2015.
  *
@@ -144,7 +144,7 @@ trait ILSFinna
                     continue;
                 }
             }
-            $user->$field = isset($info[$field]) ? $info[$field] : ' ';
+            $user->$field = $info[$field] ?? ' ';
         }
 
         // Set home library if not already set
@@ -154,8 +154,8 @@ trait ILSFinna
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(
-            isset($info['cat_username']) ? $info['cat_username'] : ' ',
-            isset($info['cat_password']) ? $info['cat_password'] : ' '
+            $info['cat_username'] ?? ' ',
+            $info['cat_password'] ?? ' '
         );
 
         return $user;

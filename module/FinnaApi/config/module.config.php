@@ -4,16 +4,24 @@ namespace FinnaApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'adminapi' => 'FinnaApi\Controller\Factory::getAdminApiController',
-            'api' => 'FinnaApi\Controller\Factory::getApiController',
-            'authapi' => 'FinnaApi\Controller\Factory::getAuthApiController',
-            'searchapi' => 'FinnaApi\Controller\Factory::getSearchApiController',
+            'FinnaApi\Controller\AdminApiController' => 'FinnaApi\Controller\Factory::getAdminApiController',
+            'FinnaApi\Controller\ApiController' => 'FinnaApi\Controller\Factory::getApiController',
+            'FinnaApi\Controller\AuthApiController' => 'FinnaApi\Controller\Factory::getAuthApiController',
+            'FinnaApi\Controller\SearchApiController' => 'FinnaApi\Controller\Factory::getSearchApiController',
         ],
+        'aliases' => [
+            'AdminApi' => 'FinnaApi\Controller\AdminApiController',
+            'AuthApi' => 'FinnaApi\Controller\AuthApiController',
+
+            // Overrides:
+            'VuFindApi\Controller\ApiController' => 'FinnaApi\Controller\ApiController',
+            'VuFindApi\Controller\SearchApiController' => 'FinnaApi\Controller\SearchApiController',
+        ]
     ],
     'router' => [
         'routes' => [
             'adminApi' => [
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => 'Zend\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/adminapi[/v1][/]',
@@ -24,7 +32,7 @@ $config = [
                 ]
             ],
             'apiHomeBareV1' => [
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => 'Zend\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1[/]',
@@ -35,7 +43,7 @@ $config = [
                 ],
             ],
             'authApiV1' => [
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => 'Zend\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/auth/[:action]',
@@ -45,7 +53,7 @@ $config = [
                 ]
             ],
             'searchApiBareV1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1/search',
@@ -56,7 +64,7 @@ $config = [
                 ]
             ],
             'recordApiBareV1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1/record',

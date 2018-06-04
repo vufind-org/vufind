@@ -2,7 +2,7 @@
 /**
  * Primo Central Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class PrimorecordController extends \VuFind\Controller\PrimorecordController
 {
-    use RecordControllerTrait;
+    use FinnaRecordControllerTrait;
 
     /**
      * Handle onDispatch event

@@ -2,7 +2,7 @@
 /**
  * Factory for autocomplete plugins.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -52,9 +52,9 @@ class Factory extends \VuFind\Autocomplete\Factory
     public static function getSolr(ServiceManager $sm)
     {
         return new Solr(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $sm->get('VuFind\Config')->get('facets'),
+            $sm->get('VuFind\Config')->get('searches')
         );
     }
 }

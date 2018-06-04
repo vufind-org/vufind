@@ -2,7 +2,7 @@
 /**
  * Book Cover Generator
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -44,6 +44,14 @@ use VuFindCode\ISBN;
 class Loader extends \VuFind\ImageLoader
 {
     /**
+     * Class for rendering cover images dynamically if no API match found. Omit
+     * to disable functionality.
+     *
+     * @var Generator
+     */
+    protected $generator = null;
+
+    /**
      * Filename constructed from ISBN
      *
      * @var string
@@ -72,11 +80,11 @@ class Loader extends \VuFind\ImageLoader
     protected $apiManager;
 
     /**
-     * HTTP client
+     * HTTP client factory
      *
-     * @var \Zend\Http\Client
+     * @var \VuFindHttp\HttpService
      */
-    protected $client;
+    protected $httpService;
 
     /**
      * Directory to store downloaded images
@@ -144,22 +152,23 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config    $config  VuFind configuration
-     * @param ApiManager             $manager Plugin manager for API handlers
-     * @param \VuFindTheme\ThemeInfo $theme   VuFind theme tools
-     * @param \Zend\Http\Client      $client  HTTP client
-     * @param string                 $baseDir Directory to store downloaded images
-     * (set to system temp dir if not otherwise specified)
+     * @param \Zend\Config\Config     $config      VuFind configuration
+     * @param ApiManager              $manager     Plugin manager for API handlers
+     * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
+     * @param \VuFindHttp\HttpService $httpService HTTP client factory
+     * @param string                  $baseDir     Directory to store downloaded
+     * images (set to system temp dir if not otherwise specified)
      */
     public function __construct($config, ApiManager $manager,
-        \VuFindTheme\ThemeInfo $theme, \Zend\Http\Client $client, $baseDir = null
+        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService,
+        $baseDir = null
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
         $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
             ? $config->Content->noCoverAvailableImage : null;
         $this->apiManager = $manager;
-        $this->client = $client;
+        $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
             ? rtrim(sys_get_temp_dir(), '\\/') . '/covers'
             : rtrim($baseDir, '\\/');
@@ -193,19 +202,15 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get Cover Generator Object (or return false if disabled)
+     * Set Cover Generator Object
      *
-     * @return VuFind\Cover\Generator|bool
+     * @param Generator $generator Cover generator
+     *
+     * @return void
      */
-    public function getCoverGenerator()
+    public function setCoverGenerator(Generator $generator)
     {
-        if (isset($this->config->Content->makeDynamicCovers)
-            && $this->config->Content->makeDynamicCovers
-        ) {
-            $settings = $this->getCoverGeneratorSettings();
-            return new \VuFind\Cover\Generator($this->themeTools, $settings);
-        }
-        return false;
+        $this->generator = $generator;
     }
 
     /**
@@ -306,8 +311,9 @@ class Loader extends \VuFind\ImageLoader
         } elseif (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
-            if ($generator = $this->getCoverGenerator()) {
-                $this->image = $generator->generate(
+            if ($this->generator) {
+                $this->generator->setOptions($this->getCoverGeneratorSettings());
+                $this->image = $this->generator->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']
                 );
                 $this->contentType = 'image/png';
@@ -598,9 +604,9 @@ class Loader extends \VuFind\ImageLoader
             return true;
         } else {
             // Attempt to pull down the image:
-            $result = $this->client->setUri($url)->send();
+            $result = $this->httpService->createClient($url)->send();
             if (!$result->isSuccess()) {
-                $this->debug("Failed to retrieve image from " + $url);
+                $this->debug('Failed to retrieve image from ' . $url);
                 return false;
             }
             $image = $result->getBody();

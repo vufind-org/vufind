@@ -1,5 +1,5 @@
 <!-- START of: finna - librarycards/recover.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('recovery_title'));
     $this->layout()->finnaMainHeader = '';
@@ -10,13 +10,13 @@
 ?>
 <h2><?=$this->transEsc('recovery_title') ?></h2>
 <?=$this->flashmessages()?>
-<? if ($this->recoveryDisabled): ?>
+<?php if ($this->recoveryDisabled): ?>
   <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
-<? elseif (!$this->emailSent): ?>
+<?php elseif (!$this->emailSent): ?>
   <form id="recover_password" method="post" autocomplete="off">
-    <? if (!$this->translationEmpty('library_card_recovery_help_html')): ?>
+    <?php if (!$this->translationEmpty('library_card_recovery_help_html')): ?>
       <p><?=$this->translate('library_card_recovery_help_html') ?></p>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="form-group">
       <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <p style="padding-top:7px;"><?=$this->transEsc('source_' . $this->target, null, $this->target)?></p>
@@ -36,5 +36,5 @@
       <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Recover Account') ?>"/>
     </div>
   </form>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - librarycards/recover.phtml -->

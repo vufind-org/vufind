@@ -2,7 +2,7 @@
 /**
  * Tags Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,7 +36,7 @@ namespace VuFindTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TagsTest extends \PHPUnit_Framework_TestCase
+class TagsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tag parser
@@ -46,9 +46,11 @@ class TagsTest extends \PHPUnit_Framework_TestCase
     protected $parser;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->parser = new \VuFind\Tags();
     }

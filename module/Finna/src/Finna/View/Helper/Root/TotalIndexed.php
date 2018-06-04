@@ -3,7 +3,7 @@
 /**
  * Count of all indexed items view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -28,6 +28,9 @@
  */
 namespace Finna\View\Helper\Root;
 
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Search\Results\PluginManager as ResultsManager;
+
 /**
  * Count of all indexed items view helper
  *
@@ -39,16 +42,30 @@ namespace Finna\View\Helper\Root;
  */
 class TotalIndexed extends \Zend\View\Helper\AbstractHelper
 {
-    protected $serviceLocator;
+    /**
+     * Cache manager
+     *
+     * @var CacheManager
+     */
+    protected $cacheManager;
+
+    /**
+     * Results manager
+     *
+     * @var ResultsManager
+     */
+    protected $resultsManager;
 
     /**
      * Constructor
      *
-     * @param type $serviceLocator Service locator
+     * @param CacheManager   $cm Cache manager
+     * @param ResultsManager $rm Results manager
      */
-    public function __construct($serviceLocator)
+    public function __construct(CacheManager $cm, ResultsManager $rm)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->cacheManager = $cm;
+        $this->resultsManager = $rm;
     }
 
     /**
@@ -58,8 +75,7 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
      */
     public function getTotalIndexedCount()
     {
-        $cacheDir = $this->serviceLocator->get('VuFind\CacheManager')
-            ->getCacheDir();
+        $cacheDir = $this->cacheManager->getCacheDir();
         // Cache file for number of records in index
         $filename = $cacheDir . 'recordcount.txt';
         $hourOld = time() - (60 * 60);
@@ -71,9 +87,7 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
         if ($fileTime && $fileTime > $hourOld) {
             $totalIndexed = file_get_contents($filename);
         } else {
-            $resultsManager = $this->serviceLocator
-                ->get('VuFind\SearchResultsPluginManager');
-            $results = $resultsManager->get('Solr');
+            $results = $this->resultsManager->get('Solr');
             try {
                 $results->performAndProcessSearch();
                 $totalIndexed = $results->getResultTotal();

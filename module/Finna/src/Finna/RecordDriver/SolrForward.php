@@ -2,7 +2,7 @@
 /**
  * Model for FORWARD records in Solr.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -737,17 +737,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Check if a datasource has patron functions in order to show or hide the
-     * patron login
-     *
-     * @return bool
-     */
-    public function hasPatronFunctions()
-    {
-        return false;
-    }
-
-    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model
@@ -1022,7 +1011,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     {
         // Get video URLs, if any
         $source = $this->getSource();
-        $source = isset($source[0]) ? $source[0] : '';
+        $source = $source[0] ?? '';
         if (empty($this->recordConfig->Record->video_sources)) {
             return [];
         }
@@ -1418,6 +1407,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 }
             }
         }
-        return isset($agerestriction) ? $agerestriction : null;
+        return $agerestriction ?? null;
     }
 }

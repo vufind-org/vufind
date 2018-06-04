@@ -3,7 +3,7 @@
  * Helper class for displaying a notification for unauthorized users
  * on Primo result pages.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -52,7 +52,7 @@ class AuthorizationNotification extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Zend\Service\AuthorizationService $authService Authorization service
+     * @param AuthorizationService $authService Authorization service
      */
     public function __construct(AuthorizationService $authService)
     {

@@ -2,7 +2,7 @@
 /**
  * Console service for verifying record links.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -48,7 +48,7 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
     protected $commentsTable = null;
 
     /**
-     * Comments-Record link table.
+     * CommentsRecord link table.
      *
      * @var CommentRecords
      */
@@ -65,7 +65,7 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
      * Constructor
      *
      * @param VuFind\Db\Table     $commentsTable       Comments table.
-     * @param VuFind\Db\Table     $commentsRecordTable Comments-Record link table.
+     * @param VuFind\Db\Table     $commentsRecordTable CommentsRecord link table.
      * @param VuFind\SearchRunner $searchRunner        SearchRunner
      */
     public function __construct($commentsTable, $commentsRecordTable, $searchRunner)

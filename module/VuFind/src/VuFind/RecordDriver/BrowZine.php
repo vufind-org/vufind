@@ -2,7 +2,7 @@
 /**
  * Model for BrowZine records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class BrowZine extends SolrDefault
+class BrowZine extends DefaultRecord
 {
     /**
      * Get the short (pre-subtitle) title of the record.

@@ -3,7 +3,7 @@
 /**
  * Unit tests for record formatter.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -78,7 +78,9 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getHelperPluginManager()
     {
-        $hm = new \Zend\View\HelperPluginManager();
+        $hm = new \Zend\View\HelperPluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
 
         $mockRecordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')

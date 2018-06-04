@@ -1,5 +1,5 @@
 <!-- START of: finna - primo/advanced.phtml -->
-<?
+<?php
     $this->headScript()->appendFile("finna-primo-adv-search.js");
 
     // Set page title.
@@ -35,8 +35,8 @@
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />
-  <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
-  <? if ($groups !== false) {
+  <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+  <?php if ($groups !== false) {
       $numGroups = count($groups);
     }
     if (!isset($numGroups) || $numGroups < 3) {
@@ -45,11 +45,11 @@
   ?>
   <div class="advanced-search">
     <div id="group1SearchHolder">
-      <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_pci_advanced_html')): ?><span class="tooltip-pci-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transEsc("tooltip_pci_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
+      <h4><?=$this->transEsc("adv_search_label")?><?php if (!$this->translationEmpty('tooltip_pci_advanced_html')): ?><span class="tooltip-pci-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transEsc("tooltip_pci_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><?php endif; ?></h4>
     </div>
 
-    <? for ($i = 0; $i < $numGroups; $i++): ?>
-      <?
+    <?php for ($i = 0; $i < $numGroups; $i++): ?>
+      <?php
         if (isset($groups[$i])) {
             $currentGroup = $groups[$i]->getQueries();
             $numRows = count($currentGroup);
@@ -62,45 +62,45 @@
       ?>
       <div class="adv-group well" id="group<?=$i?>">
         <input type="hidden" name="bool<?=$i?>[]" value="AND" />
-        <? for ($j = 0; $j < $numRows; $j++): ?>
-          <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
+        <?php for ($j = 0; $j < $numRows; $j++): ?>
+          <?php $currRow = $currentGroup[$j] ?? false; ?>
         <div class="primo-advanced-search-fields">
             <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control form-inline">
-            <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+            <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
               <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             </select>
             <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc('Search words')?>..." />
             <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline responsive-field">
-            <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+            <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
               <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             </select>
         </div>
-        <? endfor; ?>
+        <?php endfor; ?>
         <a href="#" class="primo-add-search btn btn-primary">
             <i class="fa fa-plus-small"></i> <?=$this->transEsc("add_search")?>
         </a>
       </div>
-    <? endfor; ?>
-    <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
-    <? if (!empty($lastSort)): ?>
+    <?php endfor; ?>
+    <?php $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
+    <?php if (!empty($lastSort)): ?>
       <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
-    <? endif; ?>
+    <?php endif; ?>
 
-    <? if ($hasDefaultsApplied): ?>
+    <?php if ($hasDefaultsApplied): ?>
       <input type="hidden" name="dfApplied" value="1" />
-    <? endif ?>
-    <? if (!empty($searchFilters)): ?>
+    <?php endif ?>
+    <?php if (!empty($searchFilters)): ?>
       <div>
-        <? if (!empty($searchFilters)): ?>
+        <?php if (!empty($searchFilters)): ?>
           <h4><?=$this->transEsc("adv_search_filters")?></h4>
           <fieldset class="well limit-to">
             <?=$this->render('search/advanced/filters.phtml', ['searchFilters' => $searchFilters])?>
           </fieldset>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="adv-search-bar primo-search-bar">
       <button type="submit" class="btn btn-lg btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button>
     </div>

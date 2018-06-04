@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/change-messaging-settings-driver.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('request_messaging_settings_change'));
 
@@ -10,61 +10,61 @@
 ?>
 <h2><?=$this->transEsc('request_messaging_settings_change'); ?></h2>
 <?=$this->flashmessages()?>
-<? if (empty($profile['email'])): ?>
+<?php if (empty($profile['email'])): ?>
   <div class="alert alert-danger">
     <?=$this->transEsc('no_email_address')?>
     <?=$this->transEsc('no_email_address_text')?>
   </div>
-<? endif; ?>
-  <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
+<?php endif; ?>
+  <?php if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
     <form name="changeMessagingSettings" method="post" action="<?=$this->url('myresearch-changemessagingsettings') ?>" class="messaging-settings-form profile-form">
-      <? foreach ($this->services as $serviceId => $service): ?>
+      <?php foreach ($this->services as $serviceId => $service): ?>
         <div class="form-group">
           <h3><?=$this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type'])?></h3>
         </div>
-        <? foreach ($service['settings'] as $settingId => $setting): ?>
-          <? if (!empty($setting['readonly'])) { continue; } ?>
+        <?php foreach ($service['settings'] as $settingId => $setting): ?>
+          <?php if (!empty($setting['readonly'])) { continue; } ?>
           <div class="form-group">
-            <? $name = !empty($setting['name']) ? $setting['name'] : $settingId; ?>
+            <?php $name = !empty($setting['name']) ? $setting['name'] : $settingId; ?>
             <label<?='select' == $setting['type'] ? ' class="control-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
-            <? if ('boolean' == $setting['type']): ?>
+            <?php if ('boolean' == $setting['type']): ?>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" value="1"<? if ($setting['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
+                  <input type="checkbox" name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" value="1"<?php if ($setting['active']): ?> checked<?php endif; ?><?php if (!empty($setting['readonly'])): ?> disabled<?php endif; ?>>
                   <?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?> <?=$this->transEsc("messaging_settings_option_active");?>
                 </label>
               </div>
-            <? elseif ('multiselect' == $setting['type']): ?>
-                <? foreach($setting['options'] as $optionId => $option): ?>
-                  <? $fullId = $serviceId . '_' . $settingId . '_' . $optionId; ?>
+            <?php elseif ('multiselect' == $setting['type']): ?>
+                <?php foreach($setting['options'] as $optionId => $option): ?>
+                  <?php $fullId = $serviceId . '_' . $settingId . '_' . $optionId; ?>
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" id="<?=$this->escapeHtmlAttr($fullId)?>" name="<?=$this->escapeHtmlAttr($fullId)?>" value="1"<? if ($option['active']): ?> checked<? endif; ?><? if (!empty($setting['readonly'])): ?> disabled<? endif; ?>>
-                      <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
+                      <input type="checkbox" id="<?=$this->escapeHtmlAttr($fullId)?>" name="<?=$this->escapeHtmlAttr($fullId)?>" value="1"<?php if ($option['active']): ?> checked<?php endif; ?><?php if (!empty($setting['readonly'])): ?> disabled<?php endif; ?>>
+                      <?php $name = $option['name'] ?? $optionId; ?>
                       <?=$this->transEsc("messaging_settings_option_$name", null, $name) ?>
                     </label>
                   </div>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </div>
-            <? elseif ('select' == $setting['type']): ?>
-              <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-control" <? if (!empty($setting['readonly'])): ?> readonly<? endif; ?>>
-                <? foreach($setting['options'] as $optionId => $option): ?>
-                  <? $name = isset($option['name']) ? $option['name'] : $optionId; ?>
-                  <option value="<?=$this->escapeHtmlAttr($optionId)?>"<? if ($optionId == $setting['value']): ?> selected<? endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
-                <? endforeach; ?>
+            <?php elseif ('select' == $setting['type']): ?>
+              <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-control" <?php if (!empty($setting['readonly'])): ?> readonly<?php endif; ?>>
+                <?php foreach($setting['options'] as $optionId => $option): ?>
+                  <?php $name = $option['name'] ?? $optionId; ?>
+                  <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($optionId == $setting['value']): ?> selected<?php endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
+                <?php endforeach; ?>
               </select>
-            <? endif; ?>
+            <?php endif; ?>
           </div>
-        <? endforeach; ?>
-      <? endforeach; ?>
+        <?php endforeach; ?>
+      <?php endforeach; ?>
       <div class="form-group">
         <input name="messaging_update_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
       </div>
     </form>
-  <? endif; ?>
-  <? if ($this->approvalRequired): ?>
+  <?php endif; ?>
+  <?php if ($this->approvalRequired): ?>
     <span class="messaging-settings-change-description">
       <?=$this->transEsc('request_change_description_html') ?>
     </span>
-  <? endif; ?>
+  <?php endif; ?>
 <!-- END of: finna - myresearch/change-messaging-settings-driver.phtml -->

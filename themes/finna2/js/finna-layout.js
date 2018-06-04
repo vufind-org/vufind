@@ -541,7 +541,7 @@ finna.layout = (function finnaLayout() {
     var query = window.location.href.split('?')[1];
     $.getJSON(VuFind.path + '/AJAX/JSON?method=getSideFacets&' + query)
       .done(function onGetSideFacetsDone(response) {
-        $container.replaceWith(response.data);
+        $container.replaceWith(response.data.html);
         finna.dateRangeVis.init();
         initToolTips($('.sidebar'));
         initMobileNarrowSearch();
@@ -583,12 +583,12 @@ finna.layout = (function finnaLayout() {
         $.each(response.data, function initFacet(facet, facetData) {
           var $facetContainer = $container.find('div[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
-          if (typeof facetData === 'number') {
+          if (typeof facetData.checkboxCount !== 'undefined') {
             $facetContainer.find('.avail-count').text(
-              facetData.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+              facetData.checkboxCount.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
             );
-          } else if (typeof facetData === 'string') {
-            $facetContainer.html(facetData);
+          } else if (typeof facetData.html !== 'undefined') {
+            $facetContainer.html(facetData.html);
           } else {
             // TODO: this block copied from facets.js, refactor
             var treeNode = $facetContainer.find('.jstree-facet');
@@ -606,7 +606,7 @@ finna.layout = (function finnaLayout() {
             var allowExclude = treeNode.data('exclude');
             var excludeTitle = treeNode.data('exclude-title');
 
-            var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, true);
+            var results = buildFacetNodes(facetData.list, currentPath, allowExclude, excludeTitle, true);
             treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
               treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
               treeNode.find('a.exclude').click(function excludeLinkClick(e) {
@@ -642,7 +642,7 @@ finna.layout = (function finnaLayout() {
     $container.find('.load-indicator').removeClass('hidden');
     $.getJSON(VuFind.path + '/AJAX/JSON?method=getPiwikPopularSearches')
       .done(function onGetPiwikSearchesDone(response) {
-        $container.html(response.data);
+        $container.html(response.data.html);
       })
       .fail(function onGetPiwikSearchesFail() {
         $container.find('.load-indicator').addClass('hidden');

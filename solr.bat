@@ -80,7 +80,7 @@ if not "!%SOLR_PORT%!"=="!!" goto solrportset
 set SOLR_PORT=8080
 :solrportset
 
-call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
+call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Ddisable.configEdit=true -Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"
 goto end
 
 :usage

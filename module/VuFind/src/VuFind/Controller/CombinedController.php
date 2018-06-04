@@ -2,7 +2,7 @@
 /**
  * Combined Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -40,6 +40,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class CombinedController extends AbstractSearch
 {
+    use AjaxResponseTrait;
+
     /**
      * Constructor
      *
@@ -58,7 +60,11 @@ class CombinedController extends AbstractSearch
      */
     public function homeAction()
     {
-        return $this->createViewModel();
+        // We need to load blocks differently in this controller since it
+        // doesn't follow the usual configuration pattern.
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromConfig('combined');
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
@@ -75,8 +81,8 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
-            ->toArray();
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('combined')->toArray();
         $tabConfig = $this->getTabConfig($config);
         if (!isset($tabConfig[$sectionId])) {
             throw new \Exception('Illegal ID');
@@ -85,7 +91,7 @@ class CombinedController extends AbstractSearch
 
         // Retrieve results:
         $options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager');
+            ->get('VuFind\Search\Options\PluginManager');
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
@@ -94,13 +100,6 @@ class CombinedController extends AbstractSearch
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
 
-        // Send response:
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/html');
-        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
-        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-
         // Should we suppress content due to emptiness?
         if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
             && $settings['view']->results->getResultTotal() == 0
@@ -108,7 +107,7 @@ class CombinedController extends AbstractSearch
             $html = '';
         } else {
             $cart = $this->serviceLocator->get('VuFind\Cart');
-            $general = $this->serviceLocator->get('VuFind\Config')
+            $general = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $viewParams = [
                 'searchClassId' => $searchClassId,
@@ -127,8 +126,7 @@ class CombinedController extends AbstractSearch
                 $viewParams
             );
         }
-        $response->setContent($html);
-        return $response;
+        return $this->getAjaxResponse('text/html', $html);
     }
 
     /**
@@ -141,7 +139,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $results = $this->serviceLocator->get('VuFind\SearchRunner')->run(
+        $results = $this->serviceLocator->get('VuFind\Search\SearchRunner')->run(
             $request, 'Combined', $this->getSearchSetupCallback()
         );
 
@@ -153,9 +151,9 @@ class CombinedController extends AbstractSearch
         // Gather combined results:
         $combinedResults = [];
         $options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager');
-        $config = $this->serviceLocator->get('VuFind\Config')->get('combined')
-            ->toArray();
+            ->get('VuFind\Search\Options\PluginManager');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('combined')->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
         foreach ($this->getTabConfig($config) as $current => $settings) {
@@ -194,15 +192,15 @@ class CombinedController extends AbstractSearch
         && intval($config['Layout']['columns']) <= count($combinedResults)
             ? intval($config['Layout']['columns'])
             : count($combinedResults);
-        $placement = isset($config['Layout']['stack_placement'])
-            ? $config['Layout']['stack_placement']
-            : 'distributed';
+        $placement = $config['Layout']['stack_placement']
+            ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
 
         // Get default config for showBulkOptions
-        $settings = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $settings = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
 
         // Build view model:
         return $this->createViewModel(
@@ -215,8 +213,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => isset($settings->Site->showBulkOptions)
-                    && $settings->Site->showBulkOptions
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
             ]
         );
     }
@@ -243,7 +240,7 @@ class CombinedController extends AbstractSearch
             unset($params['activeSearchClassId']); // don't need to pass this forward
 
             $route = $this->serviceLocator
-                ->get('VuFind\SearchOptionsPluginManager')
+                ->get('VuFind\Search\Options\PluginManager')
                 ->get($searchClassId)->getSearchAction();
             $base = $this->url()->fromRoute($route);
             return $this->redirect()->toUrl($base . '?' . http_build_query($params));
@@ -278,7 +275,7 @@ class CombinedController extends AbstractSearch
     {
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
-        $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+        $query->limit = $settings['limit'] ?? null;
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])
@@ -321,6 +318,7 @@ class CombinedController extends AbstractSearch
     protected function getTabConfig($config)
     {
         // Strip out non-tab sections of the configuration:
+        unset($config['HomePage']);
         unset($config['Layout']);
         unset($config['RecommendationModules']);
 

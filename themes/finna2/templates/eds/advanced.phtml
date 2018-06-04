@@ -1,4 +1,4 @@
-<?
+<?php
   // Load the EDS-specific advanced search controls and inject them into the
   // standard advanced search layout:
   $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
@@ -11,12 +11,12 @@
     <input type="hidden" name="join" value="AND"/>
     <input type="hidden" name="bool0[]" value="AND"/>
     <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
-    <? for ($search = 0; $search < 3; $search++): ?>
-      <? if ($search === 0): ?>
+    <?php for ($search = 0; $search < 3; $search++): ?>
+      <?php if ($search === 0): ?>
         <div id="new_search_template">
-      <? endif; ?>
+      <?php endif; ?>
       <div class="adv-search">
-        <? if ($search === 0): ?><input type="hidden" value="AND" class="first-op"/><? endif; ?>
+        <?php if ($search === 0): ?><input type="hidden" value="AND" class="first-op"/><?php endif; ?>
         <select id="search_op0_<?=$search ?>" name="op0[]" class="adv-term-op form-control">
           <option value="AND"><?=$this->transEsc("AND")?></option>
           <option value="OR"><?=$this->transEsc("OR")?></option>
@@ -25,20 +25,20 @@
         <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="adv-term-input form-control" type="text" value=""/>
         <span class="help-block hidden-xs"><?=$this->transEsc("in")?></span>
         <select id="search_type0_<?=$search ?>" name="type0[]" class="adv-term-type form-control">
-          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+          <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
             <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </select>
         <a class="adv-term-remove"><i class="fa fa-times"></i></a>
       </div>
-      <? if ($search === 0): ?>
+      <?php if ($search === 0): ?>
         </div>
-      <? endif; ?>
-    <? endfor; ?>
+      <?php endif; ?>
+    <?php endfor; ?>
     <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
   </div>
 </div>
-<?
+<?php
   $this->formOverride = ob_get_contents();
   ob_end_clean();
 

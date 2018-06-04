@@ -1,49 +1,49 @@
-<?
+<?php
   $this->headLink()->appendStylesheet('EDS.css');
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
 ?>
-<?
+<?php
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
-    <? if ($coverDetails['cover']): ?>
+    <?php if ($coverDetails['cover']): ?>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
         <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
       </a>
-    <? else: ?>
+    <?php else: ?>
       <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
       <div><?=$this->driver->getPubType()?></div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
-<? $thumbnail = ob_get_contents(); ?>
-<? ob_end_clean(); ?>
+<?php $thumbnail = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="media-body">
     <div class="result-body">
-      <? $items = $this->driver->getItems();
+      <?php $items = $this->driver->getItems();
         if (isset($items) && !empty($items)):
           foreach ($items as $item):
             if (!empty($item)): ?>
               <div class="resultItemLine1">
-                <? if('Ti' == $item['Group']): ?>
+                <?php if('Ti' == $item['Group']): ?>
                   <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull _record_link"  data-view="<?=$this->params->getOptions()->getListViewOption()?>">
                   <?=$item['Data']?> </a>
-                <? else:?>
+                <?php else:?>
                   <p>
                     <b><?=$this->transEsc($item['Label'])?>:</b>
-                    <?=$item['Data']?>
+                    <?=$this->driver->linkUrls($item['Data'])?>
                   </p>
-                <? endif;?>
+                <?php endif;?>
               </div>
-            <? endif;
+            <?php endif;
           endforeach;
         elseif ($restrictedView): ?>
           <div class="resultItemLine1">
@@ -55,43 +55,44 @@
               </a>
             </p>
           </div>
-        <? endif; ?>
+        <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
-        <? $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
+        <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
         if (!empty($customLinks)): ?>
-          <? foreach ($customLinks as $customLink): ?>
-          <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
-              $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
-              $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
-              $name = isset($customLink['Text']) ? $customLink['Text'] : '';
-          ?>
-          <span>
-            <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-              <? if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <? endif; ?><?=$this->escapeHtml($name)?>
-            </a>
-          </span>
-          <? endforeach; ?>
-        <? endif; ?>
+          <?php foreach ($customLinks as $customLink): ?>
+            <?php 
+              $url = $customLink['Url'] ?? '';
+              $mot = $customLink['MouseOverText'] ?? '';
+              $icon = $customLink['Icon'] ?? '';
+              $name = $customLink['Text'] ?? '';
+            ?>
+            <span>
+              <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+                <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
+              </a>
+            </span>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </div>
 
-      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
+      <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link" target="_blank">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? if ($this->driver->hasPdfAvailable()): ?>
+      <?php if ($this->driver->hasPdfAvailable()): ?>
         <a href="<?= $this->recordLink()->getUrl($this->driver) . '/PDF'; ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
     <div class="result-links hidden-print">
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-        <?
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+        <?php
           // Add JS Variables for QrCode
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
@@ -103,37 +104,37 @@
             </script>
           </div><br/>
         </span>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+      <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
         <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <?php /* Add to favorites */ ?>
         <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info">
+        <?php /* Saved lists */ ?>
+        <div class="savedLists alert alert-info hidden">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+      <?php /* Hierarchy tree link */ ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+        <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
             <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
           </div>
-        <? endforeach; ?>
-      <? endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </div>
-  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+  <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>

@@ -1,0 +1,12 @@
+<?php //Don't add START and END comments ?>
+<?php if(!empty($data)): ?>
+<div class="truncate-field" data-rows="3">
+  <?php foreach($data as $index => $author): ?>
+    <?=($index > 0 ? ', ' : '')?><?=$this->escapeHtml($author['name'])?></a>
+    <?php if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span>
+    <?php endif; ?>
+    <?php if (!empty($author['uncredited']) && $author['uncredited']): ?> (<?=$this->transEsc('uncredited') ?>)<?php endif; ?>
+    <br/>
+  <?php endforeach; ?>
+</div>
+<?php endif; ?>

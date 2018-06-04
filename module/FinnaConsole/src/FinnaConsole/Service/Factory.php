@@ -2,7 +2,7 @@
 /**
  * Factory for various top-level VuFind services.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -73,9 +73,9 @@ class Factory
     {
         $tableManager = $sm->get('VuFind\DbTablePluginManager');
         $userTable = $tableManager->get('user');
-        $dueDateReminderTable = $tableManager->get('due-date-reminder');
+        $dueDateReminderTable = $tableManager->get('duedatereminder');
 
-        $catalog = \Finna\Service\Factory::getILSConnection($sm);
+        $catalog = $sm->get('VuFind\ILS\Connection');
         $configReader = $sm->get('VuFind\Config');
         $renderer = $sm->get('ViewRenderer');
         $loader = $sm->get('VuFind\RecordLoader');
@@ -127,13 +127,13 @@ class Factory
      */
     public static function getOnlinePaymentMonitor(ServiceManager $sm)
     {
-        $catalog = \Finna\Service\Factory::getILSConnection($sm);
+        $catalog = $sm->get('VuFind\ILS\Connection');
         $tableManager = $sm->get('VuFind\DbTablePluginManager');
         $transactionTable = $tableManager->get('transaction');
         $userTable = $tableManager->get('user');
         $configReader = $sm->get('VuFind\Config');
         $mailer = $sm->get('VuFind\Mailer');
-        $viewManager = $sm->get('viewmanager');
+        $viewManager = $sm->get('ViewManager');
         $viewRenderer = $sm->get('ViewRenderer');
 
         return new OnlinePaymentMonitor(

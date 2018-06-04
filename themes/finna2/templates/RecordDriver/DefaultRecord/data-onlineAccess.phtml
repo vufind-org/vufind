@@ -1,0 +1,17 @@
+<?php //Don't add START and END comments ?>
+<?php
+  $openUrl = $this->openUrl($this->driver, 'record');
+  $openUrlActive = $openUrl->isActive();
+  // Account for replace_other_urls setting
+  $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+?>
+<?php if (!empty($urls) || $openUrlActive): ?>
+<div class="truncate-field" data-rows="3">
+  <?php foreach ($urls as $current): ?>
+    <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+  <?php endforeach; ?>
+  <?php if ($openUrlActive): ?>
+    <?=$openUrl->renderTemplate()?>
+  <?php endif; ?>
+</div>
+<?php endif; ?>

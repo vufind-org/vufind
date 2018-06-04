@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
@@ -50,15 +50,15 @@
 ?>
 <?=$this->flashmessages()?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
-      <? foreach ($recs as $current): ?>
+      <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
-  <?
+  <?php
     $viewParams = [
       'searchClassId' => $searchClassId,
       'combinedResults' => $this->combinedResults,
@@ -68,12 +68,12 @@
     ];
   ?>
   <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
-  <? $recs = $combinedResults->getRecommendations('bottom'); ?>
-  <? if (!empty($recs)): ?>
+  <?php $recs = $combinedResults->getRecommendations('bottom'); ?>
+  <?php if (!empty($recs)): ?>
     <div>
-      <? foreach ($recs as $current): ?>
+      <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 </form>

@@ -2,7 +2,7 @@
 /**
  * QR Code Generator
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -29,7 +29,8 @@
  */
 namespace VuFind\QRCode;
 
-use PHPQRCode;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\QrCode;
 
 /**
  * QR Code Generator
@@ -45,27 +46,11 @@ use PHPQRCode;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * VuFind configuration settings
-     *
-     * @var \Zend\Config\Config
-     */
-    protected $config;
-
-    /**
-     * The text used to generate the QRCode
+     * The default params used to generate the QRCode
      *
      * @var string
      */
-    protected $text = null;
-
-    /**
-     * The params used to generate the QRCode
-     *
-     * @var string
-     */
-    protected $params = [
-        'level' => "L", 'size' => "3", 'margin' => "4"
-    ];
+    protected $defaultParams = ['level' => 'L', 'size' => '3', 'margin' => '4'];
 
     /**
      * Constructor
@@ -75,48 +60,123 @@ class Loader extends \VuFind\ImageLoader
      */
     public function __construct($config, \VuFindTheme\ThemeInfo $theme)
     {
-        $this->config = $config;
         $this->setThemeInfo($theme);
         $this->configuredFailImage
-            = isset($this->config->QRCode->noQRCodeAvailableImage)
-            ? $this->config->QRCode->noQRCodeAvailableImage : null;
+            = $this->config->QRCode->noQRCodeAvailableImage ?? null;
         $this->defaultFailImage = 'images/noQRCode.gif';
+    }
+
+    /**
+     * Get default parameters.
+     *
+     * @return array
+     */
+    public function getDefaults()
+    {
+        return $this->defaultParams;
     }
 
     /**
      * Set up a QR code image
      *
-     * @param string $text   The QR code text
-     * @param array  $params QR code parameters (level/size/margin)
+     * @param string $text      The QR code text
+     * @param array  $rawParams QR code parameters (level/size/margin)
      *
      * @return void
      */
-    public function loadQRCode($text,
-        $params = ['level' => "L", 'size' => "3", 'margin' => "4"]
-    ) {
+    public function loadQRCode($text, $rawParams = [])
+    {
+        // Fill in defaults:
+        $params = $rawParams + $this->defaultParams;
+
+        // Normalize parameters; when the size setting is less than 30 pixels,
+        // do some math to try to map old PHPQRCode-style settings to new
+        // Endroid\QrCode equivalents. When the size setting is 30 or higher,
+        // treat 'size' and 'margin' as literal pixel sizes.
+        $margin = $params['margin'];
+        $level = $this->mapErrorLevel($params['level']);
+        if ($params['size'] < 30) {
+            // In the old system, the margin was multiplied by the size....
+            $margin *= $params['size'];
+
+            // Do some magic math to adjust the QR code size to accommodate the
+            // length of the text and the quality level. This is probably not the
+            // smartest way to do this, but it seems good enough for VuFind's
+            // limited needs.
+            $sizeIncrement = ceil(ceil(sqrt(strlen($text))) / 10);
+            if ($level === ErrorCorrectionLevel::HIGH) {
+                $sizeIncrement *= 38;
+            } elseif ($level === ErrorCorrectionLevel::QUARTILE) {
+                $sizeIncrement *= 34;
+            } else {
+                $sizeIncrement *= 30;
+            }
+
+            // Put it all together:
+            $size = $params['size'] * $sizeIncrement - $params['margin'];
+        } else {
+            $size = $params['size'];
+        }
+
         // Sanitize parameters:
-        $this->text = $text;
-        $this->params = $params;
-        if (!$this->fetchQRCode()) {
+        if (!$this->fetchQRCode($text, $size, $margin, $level)) {
             $this->loadUnavailable();
+        }
+    }
+
+    /**
+     * Map an incoming error correction level parameter to a valid constant.
+     *
+     * @param string $level Error correction level parameter
+     *
+     * @return string
+     */
+    protected function mapErrorLevel($level)
+    {
+        switch (strtoupper(substr($level, 0, 1))) {
+        case '3':
+        case 'H':
+            return ErrorCorrectionLevel::HIGH;
+        case '2':
+        case 'Q':
+            return ErrorCorrectionLevel::QUARTILE;
+        case '1':
+        case 'M':
+            return ErrorCorrectionLevel::MEDIUM;
+        case '0':
+        case 'L':
+        default:
+            return ErrorCorrectionLevel::LOW;
         }
     }
 
     /**
      * Generate a QR code image
      *
+     * @param string $text   The QR code text
+     * @param int    $size   QR code width / height (in pixels)
+     * @param int    $margin QR code margin (in pixels)
+     * @param string $level  Error correction level constant
+     *
      * @return bool True if image displayed, false on failure.
      */
-    protected function fetchQRCode()
+    protected function fetchQRCode($text, $size, $margin, $level)
     {
-        if (empty($this->text)) {
+        if (strlen(trim($text)) == 0) {
             return false;
         }
-        $this->contentType = 'image/png';
-        $this->image = PHPQRCode\QRcode::PNG(
-            $this->text, false,
-            $this->params['level'], $this->params['size'], $this->params['margin']
-        );
+
+        // Build the code:
+        $code = new QrCode($text);
+        $code->setWriterByName('png');
+        $code->setMargin($margin);
+        $code->setErrorCorrectionLevel($level);
+        $code->setSize($size);
+        $code->setEncoding('UTF-8');
+
+        // Save the values.
+        $this->contentType = $code->getContentType();
+        $this->image = $code->writeString();
         return true;
     }
 }

@@ -1,5 +1,0 @@
-<? //Don't add START and END comments ?>
-<? if (!empty($data)):?>
-  <? $soundSystem = $this->driver->getSoundSystem(); ?>
-    <?=$this->escapeHtml($data) ?><? if ($soundSystem): ?>, <?=$this->escapeHtml($soundSystem) ?><? endif; ?>
-<? endif; ?>

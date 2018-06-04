@@ -1,22 +1,22 @@
 <?=$this->doctype('HTML5')?>
 <!-- START of: finna - layout/layout.phtml -->
-<? $currentTabClass = $this->layout()->currentTabId ? ' tab-' . preg_replace('/[^a-z0-9]/', '', strtolower($this->layout()->currentTabId)) : '' ?>
-<? // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
+<?php $currentTabClass = $this->layout()->currentTabId ? ' tab-' . preg_replace('/[^a-z0-9]/', '', strtolower($this->layout()->currentTabId)) : '' ?>
+<?php // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
 <html lang="<?=$this->layout()->userLang?>">
   <head>
     <?$this->headThemeResources()?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-    <? // Turn off automatic telephone number detection on iOS ?>
+    <?php // Turn off automatic telephone number detection on iOS ?>
     <meta name="format-detection" content="telephone=no" />
-    <? // set finna-facebook.png image for Facebook sharing if image is present and we aren't on record view
+    <?php // set finna-facebook.png image for Facebook sharing if image is present and we aren't on record view
       if ($this->imageLink('finna-facebook.png') != '' && $this->layout()->templateName != 'view') {
         $this->headMeta()->setProperty('og:image', $this->serverURL() . $this->imageLink('finna-facebook.png'));
       }
     ?>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
-    <?
+    <?php
       // Set up OpenSearch link:
       $this->headLink(
         [
@@ -45,7 +45,7 @@
     ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
-    <?
+    <?php
       // Set global variables for Javascript code:
       $this->headScript()->prependScript(
          "path = '" . rtrim($this->url('home'), '/') . "';"
@@ -163,7 +163,7 @@
              $this->jsTranslations()->addStrings(['autocomplete_phrase' => $this->translate('autocomplete_phrase')]);
            }
 
-           $browse = isset($browse) ? $browse : false;
+           $browse = $browse ?? false;
            if (!$browse) {
              $activeTab = isset($this->searchClassId) ? $this->searchClassId : DEFAULT_SEARCH_BACKEND;
              if (isset($searchTabs['selected'])) {
@@ -199,12 +199,12 @@
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>
-    <?
+    <?php
     if ($this->scriptSrc('custom.js')) {
        $this->headScript()->appendFile('custom.js');
     }
     ?>
-    <?
+    <?php
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
@@ -216,12 +216,12 @@ JS;
       $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>
-    <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-head")): ?>
+    <?php if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-head")): ?>
       <?=$this->render($template)?>
-    <? endif; ?>
+    <?php endif; ?>
   </head>
-  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
-    <? // Set up the search box -- there are three possible cases:
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
       // 3. It is set to a custom string; we should display the provided version
@@ -280,10 +280,10 @@ JS;
             $this->layout()->searchbox = $this->context($this)->renderInContext(
                 "search/searchbox.phtml",
                 [
-                  'lookfor' => isset($lookfor) ? $lookfor : '',
-                  'filterList' => isset($filters) ? $filters : [],
+                  'lookfor' => $lookfor ?? '',
+                  'filterList' => $filters ?? [],
                   'ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false,
-                  'searchIndex' => isset($type) ? $type : ''
+                  'searchIndex' => $type ?? ''
                 ]
             );
           }
@@ -291,28 +291,28 @@ JS;
       }
     ?>
     <header class="hidden-print">
-      <? if (!$this->cookie()->get('cookieConsent')): ?>
+      <?php if (!$this->cookie()->get('cookieConsent')): ?>
         <?=$this->partial('Helpers/cookie-consent.phtml');?>
-      <? endif; ?>
-      <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/', $_SERVER['HTTP_USER_AGENT'])): ?>
+      <?php endif; ?>
+      <?php if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/', $_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
         <?=$this->translate('outdated_browser_message_html');?>
       </div>
-      <? endif; ?>
-      <? if ($messages = $this->systemMessages()): ?>
+      <?php endif; ?>
+      <?php if ($messages = $this->systemMessages()): ?>
       <div class="container-fluid system-messages">
-        <? foreach ($messages as $message): ?>
+        <?php foreach ($messages as $message): ?>
           <div>
             <?=$message // intentionally not escaped so that markup can be used ?>
           </div>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </div>
-      <? endif; ?>
+      <?php endif; ?>
       <div class="container-fluid navbar">
         <div>
-          <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+          <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
             <span class="sr-only"><?=$this->layout()->srmessage ?></span>
-          <? endif; ?>
+          <?php endif; ?>
           <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
           <?=$this->render('navibar.phtml')?>
         </div>
@@ -320,98 +320,98 @@ JS;
     </header>
     <section role="search" class="searchContent<?=$currentTabClass?>">
       <h2 class="sr-only"><?=$this->transEsc('Search')?></h2>
-      <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
+      <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
           <a class="btn btn-primary btn-uppercase floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
-      <? endif; ?>
-      <? if (!empty($this->layout()->infoMessage)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->layout()->infoMessage)): ?>
         <div class="alert alert-info street-info">
           <div class="container">
               <?=$this->layout()->infoMessage?>
           </div>
         </div>
-      <? endif; ?>
+      <?php endif; ?>
       <div class="search-form-container">
         <div class="container">
-          <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
+          <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
             <div class="logo clearfix">
               <?=$this->render('search/logosection.phtml') ?>
             </div>
-          <? endif; ?>
-        <? if (isset($this->layout()->introduction) && $this->resolver('search/introductiontext.phtml')): ?>
+          <?php endif; ?>
+        <?php if (isset($this->layout()->introduction) && $this->resolver('search/introductiontext.phtml')): ?>
         <div class="introduction">
           <div class="introduction clearfix">
             <?=$this->render('search/introductiontext.phtml') ?>
           </div>
         </div>
-        <? endif; ?>
-        <? if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+        <?php endif; ?>
+        <?php if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
           <nav class="breadcrumbs">
             <div class="hidden-print">
               <ul class="breadcrumb">
-                <? if(is_array($this->layout()->breadcrumbs)): ?>
-                  <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                <?php if(is_array($this->layout()->breadcrumbs)): ?>
+                  <?php if(count($this->layout()->breadcrumbs) > 1): ?>
                     <?=$this->render('breadcrumbs/multi.phtml', [
                         'parents' => $this->layout()->breadcrumbs,
                         'title' => $this->layout()->title,
                         'end' => $this->layout()->breadcrumbEnd,
                         'from' => $this->layout()->from
                       ]) ?>
-                  <? else: ?>
+                  <?php else: ?>
                     <?=$this->render('breadcrumbs/default.phtml', [
                         'parents' => $this->layout()->breadcrumbs,
                         'title' => $this->layout()->title
                       ]) ?>
-                  <? endif; ?>
-                <? else: ?>
+                  <?php endif; ?>
+                <?php else: ?>
                   <?=$this->layout()->breadcrumbs ?>
-                <? endif; ?>
+                <?php endif; ?>
               </ul>
             </div>
           </nav>
-        <? endif; ?>
+        <?php endif; ?>
 
-        <? if (!empty($this->layout()->searchbox) && $this->layout()->searchbox !== false): ?>
+        <?php if (!empty($this->layout()->searchbox) && $this->layout()->searchbox !== false): ?>
             <?=$this->layout()->searchbox ?>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
-      <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && $template = $this->content()->findTemplateForLng('search/home/browsebar')): ?>
+      <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && $template = $this->content()->findTemplateForLng('search/home/browsebar')): ?>
         <?=$this->render($template)?>
-      <? endif; ?>
+      <?php endif; ?>
     </section>
 
-    <? // TODO: get rid of template-dir-* and template-name-* here ?>
+    <?php // TODO: get rid of template-dir-* and template-name-* here ?>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
-      <? if (!empty($this->layout()->advSearchHeader)): ?>
+      <?php if (!empty($this->layout()->advSearchHeader)): ?>
         <?=$this->layout()->advSearchHeader; ?>
-      <? endif; ?>
-      <? if (!empty($this->layout()->finnaFilters)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->layout()->finnaFilters)): ?>
         <div class="search-filters">
           <div class="container filters-container">
             <?=$this->layout()->finnaFilters?>
           </div>
         </div>
-      <? endif; ?>
-      <? if (!empty($this->layout()->finnaStreetBar)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->layout()->finnaStreetBar)): ?>
         <?=$this->layout()->finnaStreetBar?>
-      <? endif; ?>
-      <? if (!empty($this->layout()->finnaMainHeader)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->layout()->finnaMainHeader)): ?>
         <div class="finna-main-header">
           <div class="container">
               <?=$this->layout()->finnaMainHeader?>
           </div>
         </div>
-      <? endif; ?>
-      <? if (!empty($this->layout()->finnaMainTabs)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->layout()->finnaMainTabs)): ?>
       <div class="finna-main-tabs">
         <div class="container">
             <?=$this->layout()->finnaMainTabs?>
         </div>
       </div>
-      <? endif; ?>
+      <?php endif; ?>
       <div id="content" class="container main-content">
         <?=$this->layout()->content ?>
       </div>
@@ -433,7 +433,7 @@ JS;
     </div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>
+    <?php if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>
       <div class="container-fluid general-post-body">
         <div class="container">
           <div>
@@ -443,11 +443,11 @@ JS;
           </div>
         </div>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
 
-    <? if ($finnaSurvey): ?>
+    <?php if ($finnaSurvey): ?>
       <?=$this->finnaSurvey()->render()?>
-    <? endif; ?>
+    <?php endif; ?>
   </body>
 </html>
 <!-- END of: finna - layout/layout.phtml -->

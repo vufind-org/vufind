@@ -2,7 +2,7 @@
 /**
  * Search params plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,6 +39,65 @@ namespace VuFind\Search\Params;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'browzine' => 'VuFind\Search\BrowZine\Params',
+        'combined' => 'VuFind\Search\Combined\Params',
+        'eds' => 'VuFind\Search\EDS\Params',
+        'eit' => 'VuFind\Search\EIT\Params',
+        'emptyset' => 'VuFind\Search\EmptySet\Params',
+        'favorites' => 'VuFind\Search\Favorites\Params',
+        'libguides' => 'VuFind\Search\LibGuides\Params',
+        'mixedlist' => 'VuFind\Search\MixedList\Params',
+        'pazpar2' => 'VuFind\Search\Pazpar2\Params',
+        'primo' => 'VuFind\Search\Primo\Params',
+        'solr' => 'VuFind\Search\Solr\Params',
+        'solrauth' => 'VuFind\Search\SolrAuth\Params',
+        'solrauthor' => 'VuFind\Search\SolrAuthor\Params',
+        'solrauthorfacets' => 'VuFind\Search\SolrAuthorFacets\Params',
+        'solrcollection' => 'VuFind\Search\SolrCollection\Params',
+        'solrreserves' => 'VuFind\Search\SolrReserves\Params',
+        'solrweb' => 'VuFind\Search\SolrWeb\Params',
+        'summon' => 'VuFind\Search\Summon\Params',
+        'tags' => 'VuFind\Search\Tags\Params',
+        'worldcat' => 'VuFind\Search\WorldCat\Params',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Search\BrowZine\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Combined\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\EDS\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\EIT\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\EmptySet\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Favorites\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\LibGuides\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\MixedList\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Pazpar2\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Primo\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Solr\Params' => 'VuFind\Search\Solr\ParamsFactory',
+        'VuFind\Search\SolrAuth\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\SolrAuthor\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\SolrAuthorFacets\Params' =>
+            'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\SolrCollection\Params' =>
+            'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\SolrReserves\Params' =>
+            'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\SolrWeb\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Summon\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\Tags\Params' => 'VuFind\Search\Params\ParamsFactory',
+        'VuFind\Search\WorldCat\Params' => 'VuFind\Search\Params\ParamsFactory',
+    ];
+
+    /**
      * Constructor
      *
      * Make sure plugins are properly initialized.
@@ -52,8 +111,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
+        $this->sharedByDefault = false;
 
+        $this->addAbstractFactory('VuFind\Search\Params\PluginFactory');
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

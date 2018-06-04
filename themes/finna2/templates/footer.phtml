@@ -14,17 +14,17 @@
     <ul>
       <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
       <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
-      <? if ($this->primo()->isAvailable()): ?>
+      <?php if ($this->primo()->isAvailable()): ?>
       <li><a href="<?=$this->url('primo-home')?>"><?=$this->transEsc('Primo Search')?></a></li>
       <li><a href="<?=$this->url('primo-advanced')?>"><?=$this->transEsc('Advanced Search from Primo')?></a></li>
-      <? endif; ?>
+      <?php endif; ?>
       <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
-      <? if ($this->browse()->isAvailable('Database')): ?>
+      <?php if ($this->browse()->isAvailable('Database')): ?>
       <li><a href="<?=$this->url('browse-database')?>"><?=$this->transEsc('browse_extended_Database')?></a></li>
-      <? endif; ?>
-      <? if ($this->browse()->isAvailable('Journal')): ?>
+      <?php endif; ?>
+      <?php if ($this->browse()->isAvailable('Journal')): ?>
       <li><a href="<?=$this->url('browse-journal')?>"><?=$this->transEsc('browse_extended_Journal')?></a></li>
-      <? endif; ?>
+      <?php endif; ?>
     </ul>
   </div>
   <div class="footer-column">

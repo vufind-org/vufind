@@ -2,7 +2,7 @@
 /**
  * Gemini REST API Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -28,8 +28,7 @@
  */
 namespace Finna\ILS\Driver;
 
-use VuFind\Exception\Date;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -93,8 +92,8 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateFormat = $dateConverter;
     }
 
@@ -374,7 +373,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
 
         $names = explode(', ', (string)$info->Name, 2);
         $lastname = $names[0];
-        $firstname = isset($names[1]) ? $names[1] : '';
+        $firstname = $names[1] ?? '';
 
         $activatedServices = [
             'pickUpNotice' => (int)$info->SendRes,
@@ -1076,7 +1075,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
         $addressFields = array_map(
             function ($item) {
                 $parts = explode(':', $item, 2);
-                return isset($parts[1]) ? $parts[1] : '';
+                return $parts[1] ?? '';
             },
             $addressFields
         );

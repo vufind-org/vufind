@@ -2,7 +2,7 @@
 /**
  * Cookie view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2018.
  *
@@ -27,6 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use VuFind\Cookie\CookieManager;
+
 /**
  * Cookie view helper
  *
@@ -41,7 +43,7 @@ class Cookie extends \Zend\View\Helper\AbstractHelper
     /**
      * Cookie manager
      *
-     * @var \VuFind\Cookie\Manager
+     * @var CookieManager
      */
     protected $cookieManager;
 
@@ -50,7 +52,7 @@ class Cookie extends \Zend\View\Helper\AbstractHelper
      *
      * @param \VuFind\Cookie\Manager $cookieManager Cookie manager
      */
-    public function __construct($cookieManager)
+    public function __construct(CookieManager $cookieManager)
     {
         $this->cookieManager = $cookieManager;
     }

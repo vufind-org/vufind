@@ -2,7 +2,7 @@
 /**
  * Authentication manager test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -514,7 +514,15 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        $csrf = new \Zend\Validator\Csrf(
+            [
+                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'salt' => 'csrftest'
+            ]
+        );
+        return new Manager(
+            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+        );
     }
 
     /**
@@ -548,7 +556,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
             ->disableOriginalConstructor()
             ->getMock();
@@ -562,10 +570,10 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('ChoiceAuth', $mockChoice);
-        $pm->setService('Database', $mockDb);
-        $pm->setService('MultiILS', $mockMulti);
-        $pm->setService('Shibboleth', $mockShib);
+        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
+        $pm->setService('VuFind\Auth\Database', $mockDb);
+        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
+        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
     }
 

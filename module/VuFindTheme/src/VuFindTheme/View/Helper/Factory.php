@@ -2,7 +2,7 @@
 /**
  * Factory for VuFindTheme view helpers.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -49,9 +49,9 @@ class Factory
      *
      * @return string|bool
      */
-    public static function getPipelineConfig(ServiceManager $sm)
+    protected static function getPipelineConfig(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $default = false;
         if (isset($config['Site']['asset_pipeline'])) {
             $settings = array_map(
@@ -82,7 +82,7 @@ class Factory
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm)
         );
     }
@@ -97,7 +97,7 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm)
         );
     }
@@ -112,7 +112,7 @@ class Factory
     public static function getHeadThemeResources(ServiceManager $sm)
     {
         return new HeadThemeResources(
-            $sm->getServiceLocator()->get('VuFindTheme\ResourceContainer')
+            $sm->get('VuFindTheme\ResourceContainer')
         );
     }
 
@@ -126,7 +126,7 @@ class Factory
     public static function getImageLink(ServiceManager $sm)
     {
         return new ImageLink(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->get('VuFindTheme\ThemeInfo')
         );
     }
 
@@ -140,22 +140,8 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm)
-        );
-    }
-
-    /**
-     * Construct the MobileUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return MobileUrl
-     */
-    public static function getMobileUrl(ServiceManager $sm)
-    {
-        return new MobileUrl(
-            $sm->getServiceLocator()->get('VuFindTheme\Mobile')
         );
     }
 }

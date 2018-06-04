@@ -2,7 +2,7 @@
 /**
  * Model for Pazpar2 records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Pazpar2 extends SolrDefault
+class Pazpar2 extends DefaultRecord
 {
     /**
      * Pazpar2 fields

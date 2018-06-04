@@ -1,15 +1,15 @@
-<?
+<?php
   $this->content()->setHeading($this->title);
   $this->headTitle($this->title);
 ?>
 
-<? if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-start")): ?>
+<?php if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-start")): ?>
   <?=$this->render($template);?>
-<? endif; ?>
+<?php endif; ?>
 
 <?=$this->organisationPage($this->id, $this->buildings)?>
 
-<? if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-end")): ?>
+<?php if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-end")): ?>
   <?=$this->render('content/Additions/organisation-page-end.phtml')?>
-<? endif; ?>
+<?php endif; ?>
 

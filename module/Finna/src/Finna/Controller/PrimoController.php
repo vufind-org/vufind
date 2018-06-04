@@ -2,7 +2,7 @@
 /**
  * Primo Central Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -38,7 +38,7 @@ namespace Finna\Controller;
  */
 class PrimoController extends \VuFind\Controller\PrimoController
 {
-    use SearchControllerTrait;
+    use FinnaSearchControllerTrait;
 
     /**
      * Search class family to use.

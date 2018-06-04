@@ -2,7 +2,7 @@
 /**
  * Solr Search Parameters
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -128,7 +128,7 @@ class Params extends \VuFind\Search\Solr\Params
                 if ($range = $this->parseDateRangeFilter($filter)) {
                     $from = $range['from'];
                     $to = $range['to'];
-                    $type = isset($range['type']) ? $range['type'] : 'overlap';
+                    $type = $range['type'] ?? 'overlap';
                     $filter = "$dateRangeField:$type|[$from TO $to]";
                     parent::addFilter($filter);
                 }

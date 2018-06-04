@@ -10,7 +10,7 @@ TAGS
 /solr/vendor
 /vendor
 composer.phar
-import/solrmarc.log
+import/solrmarc.log*
 node_modules
 
 # OS Created Files
@@ -50,3 +50,4 @@ local/import/import_auth.properties
 vufind.bat
 public/swagger-ui
 .vagrant
+lessphp_*.list

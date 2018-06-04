@@ -1,8 +1,8 @@
 <?php
 /**
- * Row Definition for Comments-Record link table.
+ * Row Definition for CommentsRecord link table.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -30,7 +30,7 @@ namespace Finna\Db\Row;
 use VuFind\Db\Row\RowGateway;
 
 /**
- * Row Definition for Comments-Record link table.
+ * Row Definition for CommentsRecord link table.
  *
  * @category VuFind
  * @package  Db_Row

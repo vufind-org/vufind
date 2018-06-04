@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('permission_denied_title'));
 
@@ -12,14 +12,14 @@
   <p><?=$this->flashmessages()?></p>
   <p>
     <?=$this->transEsc('permission_denied')?>
-    <? if (!empty($msg)): ?>
+    <?php if (!empty($msg)): ?>
       <div class="alert alert-danger"><?=$this->transEsc($msg)?></div>
-    <? endif; ?>
+    <?php endif; ?>
   </p>
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
     <br/>
-    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
     <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
   </p>
 </div>

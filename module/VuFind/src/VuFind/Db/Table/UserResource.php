@@ -2,7 +2,7 @@
 /**
  * Table Definition for user_resource
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -93,10 +93,10 @@ class UserResource extends Gateway
             $select->where->equalTo('r.source', $source)
                 ->equalTo('r.record_id', $resourceId);
 
-            if (!is_null($userId)) {
+            if (null !== $userId) {
                 $select->where->equalTo('user_resource.user_id', $userId);
             }
-            if (!is_null($listId)) {
+            if (null !== $listId) {
                 $select->where->equalTo('user_resource.list_id', $listId);
             }
         };

@@ -1,26 +1,26 @@
-<? if ($this->pageCount): ?>
+<?php if ($this->pageCount): ?>
   <ul class="pagination">
-    <? if (isset($this->previous)): ?>
-      <? $newParams = $this->params; $newParams['page'] = 1; ?>
+    <?php if (isset($this->previous)): ?>
+      <?php $newParams = $this->params; $newParams['page'] = 1; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a></li>
-      <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+      <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-alt-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
-    <? endif; ?>
-    <? if (count($this->pagesInRange) > 1): ?>
-      <? foreach ($this->pagesInRange as $page): ?>
-        <? if ($page != $this->current): ?>
-          <? $newParams = $this->params; $newParams['page'] = $page; ?>
+    <?php endif; ?>
+    <?php if (count($this->pagesInRange) > 1): ?>
+      <?php foreach ($this->pagesInRange as $page): ?>
+        <?php if ($page != $this->current): ?>
+          <?php $newParams = $this->params; $newParams['page'] = $page; ?>
           <li><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><?=$page?></a></li>
-        <? else: ?>
+        <?php else: ?>
           <li class="active"><span><?=$page?></span></li>
-        <? endif; ?>
-      <? endforeach; ?>
-    <? endif; ?>
-    <? if (isset($this->next)): ?>
-      <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if (isset($this->next)): ?>
+      <?php $newParams = $this->params; $newParams['page'] = $this->next; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-arrow-alt-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
-      <? $newParams = $this->params; $newParams['page'] = $this->pageCount; ?>
+      <?php $newParams = $this->params; $newParams['page'] = $this->pageCount; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-last-page"></i><span class="sr-only"><?=$this->transEsc('Last')?></span></a></li>
-    <? endif; ?>
+    <?php endif; ?>
   </ul>
-<? endif; ?>
+<?php endif; ?>

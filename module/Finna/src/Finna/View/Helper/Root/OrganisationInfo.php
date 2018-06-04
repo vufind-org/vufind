@@ -2,7 +2,7 @@
 /**
  * Organisation info component view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -68,8 +68,8 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
             return null;
         }
 
-        $id = isset($params['id']) ? $params['id'] : null;
-        $buildings = isset($params['buildings']) ? $params['buildings'] : null;
+        $id = $params['id'] ?? null;
+        $buildings = $params['buildings'] ?? null;
 
         if (!$id) {
             if (!isset($this->config->General->defaultOrganisation)) {
@@ -89,8 +89,7 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
             'Helpers/organisation-info.phtml', [
                'id' => $id,
                'buildings' => $buildings,
-               'target' => isset($params['target'])
-                   ? $params['target'] : 'widget',
+               'target' => $params['target'] ?? 'widget',
                'showDetails' => $showDetails
             ]
         );

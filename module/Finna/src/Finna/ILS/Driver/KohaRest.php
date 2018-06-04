@@ -2,7 +2,7 @@
 /**
  * KohaRest ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2017.
  *
@@ -278,7 +278,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Purging the loan history failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -316,7 +316,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the checkout history state failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -354,7 +354,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the phone number failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -392,7 +392,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the phone number failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -430,7 +430,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the email address failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -496,7 +496,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return [
                 'success' => false,
                 'status' => $status,
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -566,7 +566,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Changing the preferences failed',
-                'sys_message' => isset($result['error']) ? $result['error'] : $code
+                'sys_message' => $result['error'] ?? $code
             ];
         }
 
@@ -847,8 +847,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
         $holds = [];
         foreach ($result as $entry) {
-            $bibId = isset($entry['biblionumber']) ? $entry['biblionumber'] : null;
-            $itemId = isset($entry['itemnumber']) ? $entry['itemnumber'] : null;
+            $bibId = $entry['biblionumber'] ?? null;
+            $itemId = $entry['itemnumber'] ?? null;
             $title = '';
             $volume = '';
             $publicationYear = '';
@@ -859,7 +859,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             }
             if (!empty($bibId)) {
                 $bib = $this->getBibRecord($bibId);
-                $title = isset($bib['title']) ? $bib['title'] : '';
+                $title = $bib['title'] ?? '';
                 if (!empty($bib['title_remainder'])) {
                     $title .= ' ' . $bib['title_remainder'];
                     $title = trim($title);
@@ -978,7 +978,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if (!empty($item['ccode'])) {
             $result[] = $this->translateCollection(
                 $item['ccode'],
-                isset($item['ccode_description']) ? $item['ccode_description'] : null
+                $item['ccode_description'] ?? null
             );
         }
         $result[] = $this->translateLocation(
@@ -1158,7 +1158,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 }
                 $this->putCachedData('branches', $branches);
             }
-            $name = isset($branches[$branchId]) ? $branches[$branchId] : $branchId;
+            $name = $branches[$branchId] ?? $branchId;
         }
         return $name;
     }
@@ -1172,8 +1172,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function getHoldingData(&$holding)
     {
-        $marcRecord = isset($holding['_marcRecord'])
-            ? $holding['_marcRecord'] : null;
+        $marcRecord = $holding['_marcRecord'] ?? null;
         if (!isset($holding['_marcRecord'])) {
             foreach ($holding['holdings_metadatas'] as $metadata) {
                 if ('marcxml' === $metadata['format']

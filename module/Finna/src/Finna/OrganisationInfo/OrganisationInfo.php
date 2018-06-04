@@ -3,7 +3,7 @@
  * Service for querying Kirjastohakemisto database.
  * See: https://api.kirjastot.fi/
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2018.
  *
@@ -243,8 +243,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $id = $params['id'];
         }
         $consortium
-            = isset($params['consortium']) ? $params['consortium'] : null;
-        $target = isset($params['target']) ? $params['target'] : 'widget';
+            = $params['consortium'] ?? null;
+        $target = $params['target'] ?? 'widget';
 
         $now = false;
         if (isset($params['periodStart'])) {
@@ -421,7 +421,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $id = $json['finna_org_id'];
             $data = "{$url}?" . http_build_query(['id' => $id]);
             if ($link) {
-                $logo = isset($json['image']) ? $json['image'] : null;
+                $logo = $json['image'] ?? null;
             }
             $name = isset($json['name'][$this->language])
                 ? $json['name'][$this->language]
@@ -657,6 +657,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     protected function fetchData($action, $params, $museum = false)
     {
         if ($museum) {
+            if (empty($this->config->MuseumAPI->url)) {
+                return false;
+            }
             $url = $this->config->MuseumAPI->url . '/finna_org_perustiedot.php'
                 . '?finna_org_id=' . urlencode($params['id']);
         } else {
@@ -812,8 +815,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
 
             $data['openTimes'] = $this->parseSchedules($item['schedules']);
 
-            $data['openNow'] = isset($data['openTimes']['openNow'])
-                ? $data['openTimes']['openNow'] : false
+            $data['openNow'] = $data['openTimes']['openNow'] ?? false
             ;
             $result[] = $data;
         }
@@ -1251,7 +1253,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                     'street' => !empty($json['address']) ? $json['address'] : ''
                 ],
                 'id' => $params['id'],
-                'email' => isset($json['email']) ? $json['email'] : '',
+                'email' => $json['email'] ?? '',
                 'type' => 'museum',
             ];
             //Date handling
@@ -1339,8 +1341,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                     0 => !empty($json['opening_info'][$language])
                         ? $json['opening_info'][$language] : ''
                 ],
-                'contactInfo' => isset($contactInfoToResult)
-                    ? $contactInfoToResult : ''
+                'contactInfo' => $contactInfoToResult ?? ''
             ];
         } else {
             $result = false;

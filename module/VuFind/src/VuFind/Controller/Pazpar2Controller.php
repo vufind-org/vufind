@@ -2,7 +2,7 @@
 /**
  * Pazpar2 Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -49,17 +49,6 @@ class Pazpar2Controller extends AbstractSearch
     {
         $this->searchClassId = 'Pazpar2';
         parent::__construct($sm);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        // Set up default parameters:
-        return $this->createViewModel();
     }
 
     /**

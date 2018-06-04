@@ -2,7 +2,7 @@
 /**
  * Model for EDS records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2017.
@@ -122,7 +122,7 @@ class EDS extends \VuFind\RecordDriver\EDS
         $pagination = $this->getField(
             'RecordInfo/BibRecord/BibEntity/PhysicalDescription/Pagination'
         );
-        return isset($pagination['StartPage']) ? $pagination['StartPage'] : '';
+        return $pagination['StartPage'] ?? '';
     }
 
     /**

@@ -1,20 +1,20 @@
 <!-- START of: finna - RecordDriver/SolrEad/result-condensed.phtml -->
-<?
+<?php
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
     <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
-    <? $thumbnail = ob_get_contents(); ?>
-  <? ob_end_clean(); ?>
-<? endif;?>
+    <?php $thumbnail = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+<?php endif;?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
   <div class="condensed-collapse-toggle">
     <div class="condensed-col-title">
       <i class="fa fa-arrow-right"></i>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-      <?
+      <?php
       $summHighlightedTitle = $this->driver->getHighlightedTitle();
         $summTitle = $this->driver->getTitle();
         if (!empty($summHighlightedTitle)) {
@@ -29,8 +29,8 @@
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <div class="resultHierarchyLinks">
-          <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
-          <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
+          <?php // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
+          <?php if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><?php endif; ?>
           <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
         </div>
       </div>
@@ -40,72 +40,72 @@
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
     <div class="condensed-col-hierarchy">
-    <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+    <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+        <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
             <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
               <i class="fa fa-sitemap"></i>
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
           </div>
-        <? endforeach; ?>
-      <? endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </div>
   <div class="clearfix"></div>
   <div class="media condensed-collapse-data">
-    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <div class="media-<?=$thumbnailAlignment ?> resultThumb hidden-xs">
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
           <?=$thumbnail ?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="media-body">
       <div class="result-body">
-        <? if ($origination = $this->driver->getOrigination()): ?>
+        <?php if ($origination = $this->driver->getOrigination()): ?>
             <span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
             <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
             <br/>
-          <? endif; ?>
-          <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
-            <? $parentSource = $this->driver->getSourceIdentifier(); ?>
-            <? if ($this->driver->isPartOfArchiveSeries()): ?>
-              <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
-            <? else: ?>
-              <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
-            <? endif; ?>
-            <? if (count($topIds) > 0) : ?>
+          <?php endif; ?>
+          <?php if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+            <?php $parentSource = $this->driver->getSourceIdentifier(); ?>
+            <?php if ($this->driver->isPartOfArchiveSeries()): ?>
+              <?php $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
+            <?php else: ?>
+              <?php $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
+            <?php endif; ?>
+            <?php if (count($topIds) > 0) : ?>
             <span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
-            <? foreach ($topIds as $index => $parentId): ?>
+            <?php foreach ($topIds as $index => $parentId): ?>
               <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             <br/>
-            <? endif; ?>
-          <? endif; ?>
-          <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
+            <?php endif; ?>
+          <?php endif; ?>
+          <?php if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
             <span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
-            <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
-            <? foreach ($parentIds as $index => $parentId): ?>
+            <?php $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
+            <?php foreach ($parentIds as $index => $parentId): ?>
               <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             <br/>
-          <? endif; ?>
+          <?php endif; ?>
         <div class="summary">
-        <? if($this->driver->isCollection()): ?>
+        <?php if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
-        <? else: ?>
-          <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
-            <? $author = $authors[0]; ?>
+        <?php else: ?>
+          <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
+            <?php $author = $authors[0]; ?>
             <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a>
-            <? if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
-          <? endif; ?>
-        <? endif; ?>
+            <?php if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
         </div>
         <div class="callnumAndLocation ajax-availability hidden">
-          <? if ($this->driver->supportsAjaxStatus()): ?>
+          <?php if ($this->driver->supportsAjaxStatus()): ?>
             <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
             <span class="callnumber ajax-availability hidden">
               <?=$this->transEsc('Loading')?>...<br/>
@@ -115,16 +115,16 @@
               <?=$this->transEsc('Loading')?>...
             </span>
             <div class="locationDetails"></div>
-          <? else: ?>
-            <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+          <?php else: ?>
+            <?php $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
               <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-            <? endif; ?>
-          <? endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
         </div>
         <div class="hidden-print add-to-favorite-col">
-            <? /* Display qrcode if appropriate: */ ?>
-            <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-                <?
+            <?php /* Display qrcode if appropriate: */ ?>
+            <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+                <?php
                 // Add JS Variables for QrCode
                 $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
                 ?>
@@ -138,34 +138,34 @@
                   </script>
                 </div><br/>
               </div>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-                <? /* Add to favorites */ ?>
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <?php /* Add to favorites */ ?>
               <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
-            <? endif; ?>
+            <?php endif; ?>
 
-            <? $openUrl = $this->driver->getOpenURL(); ?>
+            <?php $openUrl = $this->driver->getOpenURL(); ?>
             <?=$openUrl?'<span class="Z3988" title="' . $this->escapeHtmlAttr($openUrl) . '"></span>':''?>
         </div>
-        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <? /* Saved lists */ ?>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <?php /* Saved lists */ ?>
           <div class="savedLists">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
-        <? endif; ?>
-        <? if ($this->layout()->templateDir === 'list'): ?>
+        <?php endif; ?>
+        <?php if ($this->layout()->templateDir === 'list'): ?>
           <?=$this->render('list/list-notes.phtml')?>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
     </div>
-    <? if ($thumbnail): ?>
+    <?php if ($thumbnail): ?>
     <div class="media-right resultThumb <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
         <?=$thumbnail ?>
     </div>
-    <? endif; ?>
+    <?php endif; ?>
 
     <div class="clearfix visible-xs"></div>
   </div>

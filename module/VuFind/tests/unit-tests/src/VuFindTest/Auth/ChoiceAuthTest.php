@@ -2,7 +2,7 @@
 /**
  * ChoiceAuth test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -247,15 +247,15 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
+        $pm = new PluginManager($this->getServiceManager());
         $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
             ->disableOriginalConstructor()
             ->getMock();
         $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('Database', $mockDb);
-        $pm->setService('Shibboleth', $mockShib);
+        $pm->setService('VuFind\Auth\Database', $mockDb);
+        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
     }
 

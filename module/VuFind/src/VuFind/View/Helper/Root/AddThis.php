@@ -2,7 +2,7 @@
 /**
  * AddThis view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

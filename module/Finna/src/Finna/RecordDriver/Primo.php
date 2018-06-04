@@ -2,7 +2,7 @@
 /**
  * Model for Primo Central records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2012-2016.
@@ -171,7 +171,7 @@ class Primo extends \VuFind\RecordDriver\Primo
                 $urlParts = parse_url($url);
                 $urls[] = [
                    'url' => $url,
-                   'urlShort' => isset($urlParts['host']) ? $urlParts['host'] : $url,
+                   'urlShort' => $urlParts['host'] ?? $url,
                    'citation' => $citation
                 ];
                 break;

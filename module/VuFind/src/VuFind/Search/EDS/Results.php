@@ -2,7 +2,7 @@
 /**
  * EDS API Results
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -124,8 +124,7 @@ class Results extends \VuFind\Search\Base\Results
                     // present in the filter list?  Second, is the current value
                     // an active filter for the current field?
                     $orField = '~' . $field;
-                    $itemsToCheck = isset($filterList[$field])
-                        ? $filterList[$field] : [];
+                    $itemsToCheck = $filterList[$field] ?? [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -149,8 +148,7 @@ class Results extends \VuFind\Search\Base\Results
                         = $facetDetails['value'];
                 }
                 // The EDS API returns facets in the order they should be displayed
-                $current['label'] = isset($filter[$field])
-                    ? $filter[$field] : $field;
+                $current['label'] = $filter[$field] ?? $field;
 
                 // Create a reference to counts called list for consistency with
                 // Solr output format -- this allows the facet recommendations

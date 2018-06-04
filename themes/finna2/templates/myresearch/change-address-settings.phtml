@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/change-address-settings.phtml -->
-<?
+<?php
     $user = $this->auth()->isLoggedIn();
     $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
@@ -15,12 +15,12 @@
 ?>
 <h2><?=$this->escapeHtml($title) ?></h2>
 <?=$this->flashmessages()?>
-<? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
+<?php if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
   <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="address-form profile-form">
-    <? foreach ($this->fields as $field => $data): ?>
+    <?php foreach ($this->fields as $field => $data): ?>
       <div class="form-group">
         <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
-        <?
+        <?php
           $value = isset($this->profile[$field]) ? $this->profile[$field] : '';
           if (!$value) {
             $value = isset($this->profile['full_data'][$field]) ? $this->profile['full_data'][$field] : '';
@@ -28,17 +28,17 @@
         ?>
         <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr($value) ?>" class="form-control"/>
       </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <div class="form-group">
       <input name="address_change_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
     </div>
   </form>
-<? endif; ?>
+<?php endif; ?>
   <div class="address-change-description">
-    <? if ('driver' === $this->config['method']): ?>
+    <?php if ('driver' === $this->config['method']): ?>
       <?=$this->transEsc('request_change_description_html') ?>
-    <? else: ?>
+    <?php else: ?>
       <?=$this->transEsc('request_change_email_description_html') ?>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->

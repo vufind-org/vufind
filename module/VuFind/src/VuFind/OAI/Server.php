@@ -2,7 +2,7 @@
 /**
  * OAI Server class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -323,7 +323,7 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (!is_null($this->setField) && !empty($fields[$this->setField])) {
+        if (null !== $this->setField && !empty($fields[$this->setField])) {
             $sets = $fields[$this->setField];
         } else {
             $sets = [];
@@ -600,7 +600,7 @@ class Server
         // Get non-deleted records from the Solr index:
         $result = $this->listRecordsGetNonDeleted(
             $from, $until, $solrOffset, $solrLimit,
-            isset($params['set']) ? $params['set'] : ''
+            $params['set'] ?? ''
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];

@@ -1,0 +1,13 @@
+<?php //Don't add START and END comments ?>
+<?php foreach ($data as $field): ?>
+  <?=!empty($field['material']) ? $this->escapeHtml($field['material']) . ': ' : '' ?>
+  <?=!empty($field['terms']) ? $this->escapeHtml($field['terms']) : '' ?>
+  <?php if (!empty($field['url'])): ?>
+    <a href="<?=$this->escapeHtmlAttr($field['url']) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($field['url']) ?>">
+  <?php endif; ?>
+  <?=$this->escapeHtml(!empty($field['source']) ? $field['source'] : $this->truncateUrl($field['url'])) ?>
+  <?php if (!empty($field['url'])): ?>
+    </a>
+  <?php endif; ?>
+  <br/>
+<?php endforeach; ?>

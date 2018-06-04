@@ -2,7 +2,7 @@
 /**
  * Console service for reminding users x days before account expiration
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2017.
  *
@@ -248,9 +248,9 @@ class AccountExpirationReminders extends AbstractService
 
         $users = $this->table->select(
             function (Select $select) use ($limitDate) {
-                $select->where->lessThan('finna_last_login', $limitDate);
+                $select->where->lessThan('last_login', $limitDate);
                 $select->where->notEqualTo(
-                    'finna_last_login',
+                    'last_login',
                     '2000-01-01 00:00:00'
                 );
             }
@@ -279,10 +279,10 @@ class AccountExpirationReminders extends AbstractService
             // Avoid sending a reminder if it comes too late (i.e. no reminders have
             // been sent before and there's less than $frequency days before
             // expiration)
-            $expirationDatetime = new DateTime($user->finna_last_login);
+            $expirationDatetime = new DateTime($user->last_login);
             $expirationDatetime->add(new DateInterval('P' . $days . 'D'));
 
-            if (($user->finna_last_expiration_reminder < $user->finna_last_login
+            if (($user->finna_last_expiration_reminder < $user->last_login
                 && $expirationDatetime->getTimestamp() < $initialReminderThreshold)
                 || $expirationDatetime->getTimestamp() < time()
             ) {
@@ -368,7 +368,7 @@ class AccountExpirationReminders extends AbstractService
             $this->currentSiteConfig = parse_ini_file($siteConfig, true);
         }
 
-        $expirationDatetime = new DateTime($user->finna_last_login);
+        $expirationDatetime = new DateTime($user->last_login);
         $expirationDatetime->add(new DateInterval('P' . $expirationDays . 'D'));
 
         $language = isset($this->currentSiteConfig['Site']['language'])
@@ -474,10 +474,10 @@ EOT;
     protected function collectScriptArguments($arguments)
     {
         // Current view local configuration directory
-        $this->baseDir = isset($arguments[0]) ? $arguments[0] : false;
+        $this->baseDir = $arguments[0] ?? false;
 
         // Current view local basedir
-        $this->viewBaseDir = isset($arguments[1]) ? $arguments[1] : false;
+        $this->viewBaseDir = $arguments[1] ?? false;
 
         // Inactive user account will expire in expirationDays days
         $this->expirationDays = (isset($arguments[2]) && $arguments[2] >= 180)

@@ -1,5 +1,5 @@
 <!-- START of: finna - collection/view.phtml -->
-<?
+<?php
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("finna-record.js");
@@ -55,10 +55,10 @@
   $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
      . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
 ?>
-<? if (!empty($lastSearch)) : ?>
+<?php if (!empty($lastSearch)) : ?>
 </div>
 <div class="container">
-<? endif; ?>
+<?php endif; ?>
 <div class="record record-row">
   <div>
     <?=$this->record($this->driver)->getToolbar()?>
@@ -68,56 +68,56 @@
   <div class="record-main mainbody left">
     <?=$this->flashmessages()?>
     <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
-    <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+    <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
        <div class="recordFormat collection-format">
          <?=$this->record($this->driver)->getFormatList()?><br/>
        </div>
-    <? endif; ?>
+    <?php endif; ?>
     <div class="truncate-field wide">
       <?=implode('<br><br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
     </div>
     <?/* Display Main Details from records */?>
-    <?
+    <?php
       $formatter = $this->recordDataFormatter();
       $coreFields = $formatter->getData(
           $driver, $formatter->filterCollectionFields($formatter->getDefaults('core'))
       );
     ?>
-    <? if (!empty($coreFields)): ?>
+    <?php if (!empty($coreFields)): ?>
       <table class="table table-finna-record record-details">
         <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
       </table>
-    <? endif; ?>
+    <?php endif; ?>
     <?/* End Main Details */?>
   </div>
-  <? ob_start(); ?>
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+  <?php ob_start(); ?>
+    <?php if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
       <div class="organisation-menu">
           <?=$this->render('record/record-organisation-menu.phtml') ?>
       </div>
-    <? endif; ?>
-    <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?php endif; ?>
+    <?php foreach ($this->related()->getList($this->driver) as $current): ?>
         <?=$this->related()->render($current)?>
-    <? endforeach; ?>
-  <? $sidebar = ob_get_contents(); ?>
-  <? ob_end_clean(); ?>
+    <?php endforeach; ?>
+  <?php $sidebar = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
   <div class="sidebar right smaller-image-sidebar hidden-xs hidden-sm">
-    <? if ($sidebar):?>
+    <?php if ($sidebar):?>
         <?=$sidebar ?>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 
   <div class="clearfix hidden-lg hidden-md"></div>
-  <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
+  <?php // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
   <div class="record-tabs record-accordions">
-    <? if (count($this->tabs) > 0): ?>
+    <?php if (count($this->tabs) > 0): ?>
       <a id="tabnav"></a>
-        <? if (count($this->tabs) > 3): ?>
+        <?php if (count($this->tabs) > 3): ?>
         <div class="tabs-responsive">
-        <? endif; ?>
+        <?php endif; ?>
         <ul class="recordTabs nav nav-tabs visible-md visible-lg">
-          <? foreach ($this->tabs as $tab => $obj): ?>
-            <? // add current tab to breadcrumbs if applicable:
+          <?php foreach ($this->tabs as $tab => $obj): ?>
+            <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
               $tab_classes = [];
               if (0 === strcasecmp($this->activeTab, $tab)) {
@@ -134,30 +134,30 @@
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
             <a class="<?=strtolower($tab) ?>" aria-label="<?=$this->escapeHtmlAttr($tab)?>"
-              href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
-              data-background<? endif ?>>
-              <? if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><? endif; ?>
-              <? if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><? endif; ?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?>
+              href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
+              data-background<?php endif ?>>
+              <?php if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><?php endif; ?>
+              <?php if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><?php endif; ?><?php if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?>
             </a>
             </li>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </ul>
-        <? if (count($this->tabs) > 3): ?>
+        <?php if (count($this->tabs) > 3): ?>
         </div>
-        <? endif; ?>
-    <? endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
 
     <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
-      <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+      <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
         <div class="tab-pane active <?=$this->activeTab ?>-tab">
           <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
         </div>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
 
     <div class="record-accordions">
-     <? foreach ($this->tabs as $accordion => $obj): ?>
-       <?
+     <?php foreach ($this->tabs as $accordion => $obj): ?>
+       <?php
          // add current tab to breadcrumbs if applicable:
          $desc = $obj->getDescription();
          $accordion_classes = [
@@ -177,15 +177,15 @@
        <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
          <div class="accordion-toggle">
            <a data-tab="<?=strtolower($accordion) ?>" class="accordion-title"
-             href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<? if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
-             data-background<? endif ?>
+             href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
+             data-background<?php endif ?>
            >
-             <span class="title"><?=$this->transEsc($desc)?><? if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></span>
+             <span class="title"><?=$this->transEsc($desc)?><?php if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?></span>
              <i class="icon"></i>
            </a>
          </div>
        </div>
-     <? endforeach; ?>
+     <?php endforeach; ?>
     </div>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>

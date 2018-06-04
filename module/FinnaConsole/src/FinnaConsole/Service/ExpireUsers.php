@@ -2,7 +2,7 @@
 /**
  * Console service for anonymizing expired user accounts.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -113,9 +113,9 @@ class ExpireUsers extends AbstractService
 
         return $this->table->select(
             function (Select $select) use ($expireDate) {
-                $select->where->lessThan('finna_last_login', $expireDate);
+                $select->where->lessThan('last_login', $expireDate);
                 $select->where->notEqualTo(
-                    'finna_last_login',
+                    'last_login',
                     '2000-01-01 00:00:00'
                 );
             }

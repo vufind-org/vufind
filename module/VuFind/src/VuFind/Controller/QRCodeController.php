@@ -2,7 +2,7 @@
 /**
  * QRCode Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\QRCode\Loader;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Generates qrcodes
@@ -40,7 +41,7 @@ use VuFind\QRCode\Loader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class QRCodeController extends AbstractBase
+class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
 {
     /**
      * QR Code loader
@@ -50,23 +51,22 @@ class QRCodeController extends AbstractBase
     protected $loader = false;
 
     /**
-     * Get the cover loader object
+     * Session settings
      *
-     * @return Loader
+     * @var SessionSettings
      */
-    protected function getLoader()
+    protected $sessionSettings = null;
+
+    /**
+     * Constructor
+     *
+     * @param Loader          $loader QR Code Loader
+     * @param SessionSettings $ss     Session settings
+     */
+    public function __construct(Loader $loader, SessionSettings $ss)
     {
-        // Construct object for QRCodes if it does not already exist:
-        if (!$this->loader) {
-            $this->loader = new Loader(
-                $this->getConfig(),
-                $this->serviceLocator->get('VuFindTheme\ThemeInfo')
-            );
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $this->loader, $this->serviceLocator
-            );
-        }
-        return $this->loader;
+        $this->loader = $loader;
+        $this->sessionSettings = $ss;
     }
 
     /**
@@ -76,16 +76,13 @@ class QRCodeController extends AbstractBase
      */
     public function showAction()
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
+        $this->sessionSettings->disableWrite(); // avoid session write timing bug
 
-        $this->getLoader()->loadQRCode(
-            $this->params()->fromQuery('text'),
-            [
-                'level' => $this->params()->fromQuery('level', "L"),
-                'size' => $this->params()->fromQuery('size', "3"),
-                'margin' => $this->params()->fromQuery('margin', "4"),
-            ]
-        );
+        $params = [];
+        foreach ($this->loader->getDefaults() as $param => $default) {
+            $params[$param] = $this->params()->fromQuery($param, $default);
+        }
+        $this->loader->loadQRCode($this->params()->fromQuery('text'), $params);
         return $this->displayQRCode();
     }
 
@@ -96,8 +93,8 @@ class QRCodeController extends AbstractBase
      */
     public function unavailableAction()
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
-        $this->getLoader()->loadUnavailable();
+        $this->sessionSettings->disableWrite(); // avoid session write timing bug
+        $this->loader->loadUnavailable();
         return $this->displayQRCode();
     }
 
@@ -110,11 +107,10 @@ class QRCodeController extends AbstractBase
     protected function displayQRCode()
     {
         $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine(
-            'Content-type', $this->getLoader()->getContentType()
+        $response->getHeaders()->addHeaderLine(
+            'Content-type', $this->loader->getContentType()
         );
-        $response->setContent($this->getLoader()->getImage());
+        $response->setContent($this->loader->getImage());
         return $response;
     }
 }

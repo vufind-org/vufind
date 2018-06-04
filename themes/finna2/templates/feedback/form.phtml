@@ -1,13 +1,13 @@
 <!-- START of: finna - feedback/form.phtml -->
 <div class="feedback-content">
-    <?
+    <?php
     $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->translate('Feedback') . '</h1></div>';
     ?>
   <br>
   <?=$this->flashmessages()?>
-  <? if (!$this->translationEmpty('feedback_instructions_html')): ?>
+  <?php if (!$this->translationEmpty('feedback_instructions_html')): ?>
     <p><?=$this->translate("feedback_instructions_html"); ?></p>
-  <? endif; ?>
+  <?php endif; ?>
   <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
     <div class="form-group">
       <div class="feedback-info">
@@ -19,7 +19,7 @@
     <div class="form-group">
       <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>
         <select name="category" id="category" class="form-control">
-          <? $cat = isset($this->category) ? $this->category : ''; ?>
+          <?php $cat = isset($this->category) ? $this->category : ''; ?>
           <option value="feedback_category_general"<?=$cat == 'feedback_category_general' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_general");?></option>
           <option value="feedback_category_metadata"<?=$cat == 'feedback_category_metadata' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_metadata");?></option>
           <option value="feedback_category_services"<?=$cat == 'feedback_category_services' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_services");?></option>

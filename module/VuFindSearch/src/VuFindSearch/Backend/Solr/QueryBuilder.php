@@ -3,7 +3,7 @@
 /**
  * SOLR QueryBuilder.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -71,11 +71,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Should we create the hl.q parameter when appropriate?
+     * Solr fields to highlight. Also serves as a flag for whether to perform
+     * highlight-specific behavior; if the field list is empty, highlighting is
+     * skipped.
      *
-     * @var bool
+     * @var string
      */
-    protected $createHighlightingQuery = false;
+    protected $fieldsToHighlight = '';
 
     /**
      * Should we create the spellcheck.q parameter when appropriate?
@@ -138,6 +140,9 @@ class QueryBuilder implements QueryBuilderInterface
         }
         $string = $finalQuery->getString() ?: '*:*';
 
+        // Highlighting is enabled if we have a field list set.
+        $highlight = !empty($this->fieldsToHighlight);
+
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -149,7 +154,7 @@ class QueryBuilder implements QueryBuilderInterface
 
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
-                    if ($this->createHighlightingQuery && $oldString != $string) {
+                    if ($highlight && $oldString != $string) {
                         $params->set('hl.q', $oldString);
                     }
                 }
@@ -166,6 +171,11 @@ class QueryBuilder implements QueryBuilderInterface
                 $string = $handler->createSimpleQueryString($string);
             }
         }
+        // Set an appropriate highlight field list when applicable:
+        if ($highlight) {
+            $filter = $handler ? $handler->getAllFields() : [];
+            $params->add('hl.fl', $this->getFieldsToHighlight($filter));
+        }
         $params->set('q', $string);
 
         return $params;
@@ -179,10 +189,49 @@ class QueryBuilder implements QueryBuilderInterface
      * @param bool $enable Should highlighting query generation be enabled?
      *
      * @return void
+     *
+     * @deprecated
      */
     public function setCreateHighlightingQuery($enable)
     {
-        $this->createHighlightingQuery = $enable;
+        // This is deprecated, but use it to manipulate the highlighted field
+        // list for backward compatibility.
+        $this->fieldsToHighlight = $enable ? '*' : '';
+    }
+
+    /**
+     * Get list of fields to highlight, filtered by array.
+     *
+     * @param array $filter Field list to use as a filter.
+     *
+     * @return string
+     */
+    protected function getFieldsToHighlight(array $filter = [])
+    {
+        // No filter? Return unmodified default:
+        if (empty($filter)) {
+            return $this->fieldsToHighlight;
+        }
+        // Account for possibility of comma OR space delimiters:
+        $fields = array_map('trim', preg_split('/[, ]/', $this->fieldsToHighlight));
+        // Wildcard in field list? Return filter as-is; otherwise, use intersection.
+        $list = in_array('*', $fields) ? $filter : array_intersect($fields, $filter);
+        return implode(',', $list);
+    }
+
+    /**
+     * Set list of fields to highlight, if any (or '*' for all). Set to an
+     * empty string (the default) to completely disable highlighting-related
+     * functionality.
+     *
+     * @param string $list Highlighting field list
+     *
+     * @return QueryBuilder
+     */
+    public function setFieldsToHighlight($list)
+    {
+        $this->fieldsToHighlight = $list;
+        return $this;
     }
 
     /**

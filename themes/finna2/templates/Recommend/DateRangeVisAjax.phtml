@@ -14,10 +14,10 @@
     </button>
     </div>
     <div class="content">
-      <? $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js'); ?>
-      <? $this->headScript()->appendFile('vendor/jquery.flot.min.js'); ?>
-      <? $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js'); ?>
-      <? $this->headScript()->appendFile('finna-daterange-vis.js'); ?>
+      <?php $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js'); ?>
+      <?php $this->headScript()->appendFile('vendor/jquery.flot.min.js'); ?>
+      <?php $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js'); ?>
+      <?php $this->headScript()->appendFile('finna-daterange-vis.js'); ?>
       <div class="date-vis"></div>
       <i class="fa fa-spinner fa-spin"></i>
     </div>
@@ -28,7 +28,7 @@
       <div class="next"><i class="fa fa-arrow-right"></i></div>
       <div class="expand-modal"><i class="fa fa-expand"></i></div>
     </div>
-    <? if ($backend != 'primo' && (!isset($hideType) || !$hideType)): ?>
+    <?php if ($backend != 'primo' && (!isset($hideType) || !$hideType)): ?>
     <div class="range-type">
       <label class="radiobutton" for="radio_overlap">
         <input class="timeline_overlap" type="radio" name="type" id="radio_overlap" value="overlap"<?= !$this->type || $this->type == 'overlap' ? ' checked="checked"' : ''; ?>/><?= $this->translate('Timeline overlap'); ?>
@@ -37,10 +37,10 @@
         <input class="timeline_within" type="radio" name="type" id="radio_within" value="within"<?= $this->type == 'within' ? ' checked="checked"' : ''; ?>/><?= $this->translate('Timeline within'); ?>
       </label>
     </div>
-    <? endif; ?>
+    <?php endif; ?>
   </form>
 </div>
-<?
+<?php
 $script = <<<JS
 $(document).ready(function() {
   finna.dateRangeVis.initVis(

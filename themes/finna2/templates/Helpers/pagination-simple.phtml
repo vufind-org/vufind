@@ -1,12 +1,12 @@
 <!-- START of: finna - Helpers/pagination-simple.phtml -->
-<? if ($this->pageCount): ?>
+<?php if ($this->pageCount): ?>
   <ul class="paginationSimple">
-    <li><? if (isset($this->previous)): ?>
-      <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+    <li><?php if (isset($this->previous)): ?>
+      <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i>
       </a>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
     <li>
       <?=$this->label ?: $this->translate(
@@ -17,13 +17,13 @@
         ]
       );?>
     </li>
-    <li<? if (isset($this->next)): ?>>
-      <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+    <li<?php if (isset($this->next)): ?>>
+      <?php $newParams = $this->params; $newParams['page'] = $this->next; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-alt-right"></i>
       </a>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
   </ul>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - Helpers/pagination-simple.phtml -->

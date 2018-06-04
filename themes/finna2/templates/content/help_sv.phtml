@@ -1,16 +1,16 @@
 <!-- START of: finna - content/help_sv.phtml -->
-<? if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
   <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help'])?>
-<? endif; ?>
+<?php endif; ?>
 <div>
   <div class="sidebar left">
     <div class="content-navigation-menu">
     </div>
   </div>
   <div class="mainbody right">
-    <? if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
       <?=$this->render('Content/Additions/helpBegin.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
     <div id="begin1" class="content-section">
       <h2>Hur börjar jag söka i Finna?</h2>
       <p>Det finns flera alternativ:</p>
@@ -34,9 +34,9 @@
       <p>En del av materialet är nedladdningsbart. Kom dock alltid ihåg att kontrollera t.ex bildernas användningsrättigheter i materialets egna uppgifter.</p>
       <p>Material kan användas t.ex. som stöd i undervisning och inlärning eller för hobbyverksamhet.</p>
     </div>
-    <? if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
+    <?php if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
       <?=$this->render('Content/Additions/helpEnd.phtml')?>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - content/help_sv.phtml -->

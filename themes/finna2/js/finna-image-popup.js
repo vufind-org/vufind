@@ -136,9 +136,15 @@ finna.imagePopup = (function finnaImagePopup() {
         preload: [1, 3],
         removalDelay: 200,
         ajax: {
-          cursor: ''
+          cursor: '',
+          settings: {
+            dataType: 'json'
+          }
         },
         callbacks: {
+          parseAjax: function onParseAjax(mfpResponse) {
+            mfpResponse.data = mfpResponse.data.data.html;
+          },
           ajaxContentAdded: function onAjaxContentAdded() {
             var popup = $('.imagepopup-holder');
             var type = popup.data("type");

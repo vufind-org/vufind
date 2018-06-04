@@ -2,7 +2,7 @@
 /**
  * Console service for sending due date reminders.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2013-2017.
  *
@@ -361,9 +361,8 @@ class DueDateReminders extends AbstractService
                     }
 
                     // Store also title for display in email
-                    $title = isset($loan['title'])
-                        ? $loan['title']
-                        : null;
+                    $title = $loan['title']
+                        ?? null;
 
                     if (isset($loan['id'])) {
                         $record = $this->recordLoader->load(
@@ -474,7 +473,7 @@ class DueDateReminders extends AbstractService
             $baseUrl .= "/$urlView";
         }
         $serviceName = $urlInstitution . '.finna.fi';
-        $lastLogin = new \DateTime($user->finna_last_login);
+        $lastLogin = new \DateTime($user->last_login);
         $loginMethod = strtolower($user->finna_auth_method);
         $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
             ? $this->currentSiteConfig['Site']['displayDateFormat']
@@ -541,9 +540,9 @@ class DueDateReminders extends AbstractService
     protected function collectScriptArguments($arguments)
     {
         // VuFind base directory
-        $this->baseDir = isset($arguments[0]) ? $arguments[0] : false;
+        $this->baseDir = $arguments[0] ?? false;
         // Base directory for all views.
-        $this->viewBaseDir = isset($arguments[1]) ? $arguments[1] : '..';
+        $this->viewBaseDir = $arguments[1] ?? '..';
     }
 
     /**

@@ -2,7 +2,7 @@
 /**
  * Holdings Settings Mode Helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -54,7 +54,7 @@ class HoldingsSettings extends AbstractHelper
      *
      * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct($config = null)
+    public function __construct(\Zend\Config\Config $config = null)
     {
         $this->config = $config;
     }

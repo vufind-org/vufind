@@ -1,5 +1,5 @@
 <!-- START of: finna - search/advanced/limit.phtml -->
-<?
+<?php
     // Set up convenience variables:
     $limitList = $this->options->getLimitOptions();
 
@@ -7,12 +7,12 @@
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
     $defaultLimit = empty($lastLimit) ? $this->options->getDefaultLimit() : $lastLimit;
 ?>
-<? if (count($limitList) > 1): ?>
+<?php if (count($limitList) > 1): ?>
   <label for="limit" class="form-inline"><?=$this->transEsc('Results per page')?></label>
   <select id="limit" name="limit" class="form-control form-inline">
-    <? foreach ($limitList as $limitVal): ?>
+    <?php foreach ($limitList as $limitVal): ?>
       <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=($limitVal == $defaultLimit) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($limitVal)?></option>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </select>
-<? endif; ?>
+<?php endif; ?>
 <!-- END of: finna - search/advanced/limit.phtml -->

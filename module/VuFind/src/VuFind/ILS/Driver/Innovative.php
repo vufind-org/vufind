@@ -2,7 +2,7 @@
 /**
  * III ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -176,7 +176,7 @@ class Innovative extends AbstractBase implements
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags
-                $cols[$i] = ereg_replace("<!--([^(-->)]*)-->", "", $cols[$i]);
+                $cols[$i] = preg_replace("/<!--([^(-->)]*)-->/", "", $cols[$i]);
                 // Remove closing th or td tag, trim whitespace and decode html
                 // entities
                 $cols[$i] = html_entity_decode(
@@ -270,7 +270,7 @@ class Innovative extends AbstractBase implements
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,

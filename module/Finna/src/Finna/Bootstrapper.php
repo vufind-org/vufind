@@ -2,7 +2,7 @@
 /**
  * VuFind Bootstrapper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -178,9 +178,12 @@ class Bootstrapper
                 }
             }
             // Send key values to view:
-            $viewModel = $sm->get('viewmanager')->getViewModel();
-            $viewModel->setVariable('userLang', $language);
-            $viewModel->setVariable('allLangs', $config->Languages);
+            $viewManager = $sm->get('ViewManager');
+            if (!($viewManager instanceof \Zend\Mvc\Console\View\ViewManager)) {
+                $viewModel = $viewManager->getViewModel();
+                $viewModel->setVariable('userLang', $language);
+                $viewModel->setVariable('allLangs', $config->Languages);
+            }
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);

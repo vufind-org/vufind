@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -241,6 +241,36 @@ abstract class MinkTestCase extends DbTestCase
         $result = $page->find('css', $selector);
         $this->assertTrue(is_object($result));
         return $result;
+    }
+
+    /**
+     * Set a value within an element selected via CSS; retry if set fails
+     * due to browser bugs.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $value    Value to set
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return mixed
+     */
+    protected function findCssAndSetValue(Element $page, $selector, $value,
+        $timeout = 1000, $retries = 6
+    ) {
+        $field = $this->findCss($page, $selector, $timeout);
+
+        // Workaround for Chromedriver bug; sometimes setting a value
+        // doesn't work on the first try.
+        for ($i = 0; $i < $retries; $i++) {
+            $field->setValue($value);
+            // Did it work? If so, we're done and can leave....
+            if ($field->getValue() === $value) {
+                return;
+            }
+        }
+
+        throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
     }
 
     /**

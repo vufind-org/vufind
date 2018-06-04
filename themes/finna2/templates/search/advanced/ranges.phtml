@@ -1,7 +1,7 @@
 <!-- START of: finna - search/advanced/ranges.phtml -->
-<? if (isset($this->ranges) && !empty($this->ranges)): ?>
-  <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
-  <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
+<?php if (isset($this->ranges) && !empty($this->ranges)): ?>
+  <?php $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
+  <?php foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
     <fieldset>
       <legend class="sr-only"><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
       <div>
@@ -10,9 +10,9 @@
       <div>
         <div class="year-input-container text-center">
           <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>"/>
-          <? if (isset($current['rangeType'])): ?>
+          <?php if (isset($current['rangeType'])): ?>
              <input type="hidden" name="<?= $current['field'] ?>_type" value="<?= $current['rangeType'] ?>"/>
-          <? endif ?>
+          <?php endif ?>
           <label for="<?=$escField?>from" class="sr-only"><?=$this->transEsc('year_from');?></label>
           <input id="<?=$escField?>from" type="number" class="form-control form-inline input-year" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5"/>
           <span class="divider"> - </span>
@@ -20,15 +20,15 @@
           <input id="<?=$escField?>to" type="number" class="form-control form-inline input-year" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5"/>
         </div>
         <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_range')?></p></div>
-        <? if ($current['type'] == 'date'): ?>
+        <?php if ($current['type'] == 'date'): ?>
         <div class="slider-container">
           <label for="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider" class="sr-only"><?=$this->transEsc('year_slider');?></label>
           <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
         </div>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
-      <? if ($current['type'] == 'date'): ?>
-      <?
+      <?php if ($current['type'] == 'date'): ?>
+      <?php
         $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
         $min = $current['ticks'][0];
         $max = end($current['ticks']);
@@ -66,8 +66,8 @@ $(document).ready(function() {
 JS;
       ?>
       <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-    <? endif; ?>
+    <?php endif; ?>
     </fieldset>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>
 <!-- END of: finna - search/advanced/ranges.phtml -->

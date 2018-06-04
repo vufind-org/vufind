@@ -2,7 +2,7 @@
 /**
  * ZF2 module definition for the VuFind console module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -99,6 +99,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
         return [
             'compile theme' => 'Flatten a theme hierarchy for improved performance',
             'generate dynamicroute' => 'Add a dynamic route',
+            'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
             'generate recordroute' => 'Add a record route',

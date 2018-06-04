@@ -2,7 +2,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -29,8 +29,6 @@ namespace Finna\Auth;
 
 use Finna\Db\Row\User;
 use VuFind\Auth\AbstractBase;
-use VuFind\Auth\ChoiceAuth;
-use VuFind\Exception\Auth as AuthException;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -83,60 +81,5 @@ class Manager extends \VuFind\Auth\Manager
             return $auth->ilsSupportsPasswordRecovery($target);
         }
         return false;
-    }
-
-    /**
-     * Try to log in the user using current query parameters; return User object
-     * on success, throws exception on failure.
-     *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
-     *
-     * @throws AuthException
-     * @return User Object representing logged-in user.
-     */
-    public function login($request)
-    {
-        $user = parent::login($request);
-
-        $auth = $this->getAuth();
-        if ($auth instanceof ChoiceAuth) {
-            $method = $auth->getSelectedAuthOption();
-        } else {
-            $method = $this->activeAuth;
-        }
-
-        $user->finna_auth_method = strtolower($method);
-        $user->finna_last_login = date('Y-m-d H:i:s');
-        $user->save();
-
-        return $user;
-    }
-
-    /**
-     * Create a new user account from the request.
-     *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
-     *
-     * @throws AuthException
-     * @return UserRow New user row.
-     */
-    public function create($request)
-    {
-        $user = parent::create($request);
-
-        $auth = $this->getAuth();
-        if ($auth instanceof ChoiceAuth) {
-            $method = $auth->getSelectedAuthOption();
-        } else {
-            $method = $this->activeAuth;
-        }
-
-        $user->finna_auth_method = strtolower($method);
-        $user->finna_last_login = date('Y-m-d H:i:s');
-        $user->save();
-
-        return $user;
     }
 }

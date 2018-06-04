@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR query builder
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -75,10 +75,9 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ['^10', '10'],                       // invalid boosts
             ['test^ test^6', 'test test6'],      // invalid boosts
             ['test^1 test^2', 'test^1 test^2'],  // valid boosts
-            ['this / that', 'this that'],        // freestanding slash
+            ['this / that', 'this "/" that'],    // freestanding slash
             ['/ this', 'this'],                  // leading slash
             ['title /', 'title'],                // trailing slash
-            ['this - that', 'this that'],        // freestanding hyphen
             ['- this', 'this'],                  // leading hyphen
             ['title -', 'title'],                // trailing hyphen
             ['AND', 'and'],                      // freestanding operator
@@ -346,17 +345,18 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with highlighting
+     * Test generation with highlighting, using the setCreateHighlightingQuery()
+     * method.
      *
      * @return void
      */
-    public function testHighlighting()
+    public function testSetCreateHighlightingQuery()
     {
         $qb = new QueryBuilder(
             [
                 'test' => [
                     'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']]
+                    'DismaxParams' => [['bq', 'boost']],
                 ]
             ]
         );
@@ -365,23 +365,94 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         // No hl.q if highlighting query disabled:
         $qb->setCreateHighlightingQuery(false);
-        $response = $qb->build($q);
-        $hlQ = $response->get('hl.q');
-        $this->assertEquals(null, $hlQ[0]);
+        $response1 = $qb->build($q);
+        $hlQ1 = $response1->get('hl.q');
+        $this->assertEquals(null, $hlQ1[0]);
 
         // hl.q if highlighting query enabled:
         $qb->setCreateHighlightingQuery(true);
-        $response = $qb->build($q);
-        $hlQ = $response->get('hl.q');
-        $this->assertEquals('*:*', $hlQ[0]);
+        $response2 = $qb->build($q);
+        $hlQ2 = $response2->get('hl.q');
+        $this->assertEquals('*:*', $hlQ2[0]);
     }
 
     /**
-     * Test generation with spelling
+     * Test hl.q edge case: when we are in dismax (not edismax) mode, and a boost
+     * is set, and a query contains advanced syntax, VuFind manipulates the query
+     * to trigger the boost and sets hl.q to prevent the highlighter from matching
+     * the wrong words.
      *
      * @return void
      */
-    public function testSpelling()
+    public function testHlQ()
+    {
+        $qb = new QueryBuilder(
+            [
+                'test' => [
+                    'DismaxFields' => ['test'],
+                    'DismaxHandler' => 'dismax',
+                    'DismaxParams' => [['bq', 'boost']],
+                ]
+            ]
+        );
+
+        $q = new Query('my friend*', 'test');
+
+        $qb->setFieldsToHighlight('*');
+        $response = $qb->build($q);
+        $hlq = $response->get('hl.q');
+        $q = $response->get('q');
+        $this->assertEquals('(my friend*)', $hlq[0]);
+        $this->assertEquals('((my friend*)) AND (*:* OR boost)', $q[0]);
+    }
+
+    /**
+     * Test generation with highlighting, using the setFieldsToHighlight() method.
+     *
+     * @return void
+     */
+    public function testSetFieldsToHighlight()
+    {
+        $qb = new QueryBuilder(
+            [
+                'test' => [
+                    'QueryFields' => ['test1' => []],
+                    'DismaxFields' => ['test2', 'test3^10000'],
+                ]
+            ]
+        );
+
+        $q = new Query('my friend', 'test');
+
+        // Map of field whitelist to expected hl.fl output.
+        $tests = [
+            // No hl.fl if highlight field list is empty:
+            '' => null,
+            // hl.fl set when whitelist is wildcard:
+            '*' => 'test1,test2,test3',
+            // No hl.fl if whitelist doesn't match handler list:
+            'test4,test5' => null,
+            // hl.fl contains intersection of whitelist and handler list
+            // (testing with a comma-separated whitelist)
+            'test1,test2,test6' => 'test1,test2',
+            // hl.fl contains intersection of whitelist and handler list
+            // (testing with a space-separated whitelist)
+            'test1 test3 test5' => 'test1,test3',
+        ];
+        foreach ($tests as $input => $output) {
+            $qb->setFieldsToHighlight($input);
+            $response = $qb->build($q);
+            $hlfl = $response->get('hl.fl');
+            $this->assertEquals($output, $hlfl[0]);
+        }
+    }
+
+    /**
+     * Test generation with spelling, using the setCreateSpellingQuery() method.
+     *
+     * @return void
+     */
+    public function testSetCreateSpellingQuery()
     {
         $qb = new QueryBuilder(
             [
@@ -396,15 +467,15 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         // No spellcheck.q if spellcheck query disabled:
         $qb->setCreateSpellingQuery(false);
-        $response = $qb->build($q);
-        $spQ = $response->get('spellcheck.q');
-        $this->assertEquals(null, $spQ[0]);
+        $response1 = $qb->build($q);
+        $spQ1 = $response1->get('spellcheck.q');
+        $this->assertEquals(null, $spQ1[0]);
 
         // spellcheck.q if spellcheck query enabled:
         $qb->setCreateSpellingQuery(true);
-        $response = $qb->build($q);
-        $spQ = $response->get('spellcheck.q');
-        $this->assertEquals('my friend', $spQ[0]);
+        $response2 = $qb->build($q);
+        $spQ2 = $response2->get('spellcheck.q');
+        $this->assertEquals('my friend', $spQ2[0]);
     }
 
     /**

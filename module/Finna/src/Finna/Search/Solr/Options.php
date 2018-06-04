@@ -2,7 +2,7 @@
 /**
  * Solr aspect of the Search Multi-class (Options)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -103,7 +103,7 @@ class Options extends \VuFind\Search\Solr\Options
     public function getDateRangeVisualizationField()
     {
         $fields = explode(':', $this->dateRangeVis);
-        return isset($fields[1]) ? $fields[1] : '';
+        return $fields[1] ?? '';
     }
 
     /**

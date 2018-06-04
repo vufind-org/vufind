@@ -1,0 +1,42 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/result-condensed-database.phtml -->
+<?php $subjects = $this->driver->getAllSubjectHeadings(); ?>
+<div class="result-database">
+  <div>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <div class="description">
+    <?php $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
+      <h5><?=$this->transEsc('Summary')?>:</h5>
+        <p class="summary">
+          <?php foreach ($summ as $field): ?>
+          <?=$this->escapeHtmlAttr($field); ?>
+          <?php endforeach; ?>
+        </p>
+    <?php endif; ?>
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Saved lists */ ?>
+      <div class="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <?php endif; ?>
+    </div>
+  </div>
+
+  <?php if (!empty($subjects)): ?>
+  <div class="database-subject">
+    <h5><?=$this->transEsc('Subjects')?>: </h5>
+      <?php foreach ($subjects as $field): ?>
+      <div class="subjectLine" property="keywords">
+        <?php $subject = ''; ?>
+        <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
+          <?php $i = 0; foreach ($field as $subfield): ?>
+            <?=($i++ == 0) ? '' : ' &#8594; '?>
+            <?php $subject = trim($subject . ' ' . $subfield); ?>
+            <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+          <?php endforeach; ?>
+      </div>
+      <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+</div>
+<!-- END of: finna - RecordDriver/DefaultRecord/result-condensed-database.phtml -->

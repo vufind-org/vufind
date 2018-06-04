@@ -2,11 +2,11 @@
 <div>
   <h1 class="public-list-header">
 
-    <? if (isset($this->overrideSearchHeading)): ?>
+    <?php if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
-    <? elseif (!empty($this->params) && $this->params->getSearchType() == 'basic'): ?>
+    <?php elseif (!empty($this->params) && $this->params->getSearchType() == 'basic'): ?>
       <strong><?=$this->escapeHtml($this->lookfor)?></strong>
-    <? endif; ?>
+    <?php endif; ?>
 
   </h1>
 </div>

@@ -2,18 +2,18 @@
     <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
         <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
         <input type="hidden" name="<?=$this->escapeHtmlAttr($facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
-        <? $extraInputAttribs = ($facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+        <?php $extraInputAttribs = ($facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
         <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($facet['values'][0])?$this->escapeHtmlAttr($facet['values'][0]):''?>" <?=$extraInputAttribs?>/>
         <span class="spacer"> - </span>
         <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($facet['values'][1])?$this->escapeHtmlAttr($facet['values'][1]):''?>" <?=$extraInputAttribs?>/>
-        <? if ($facet['type'] == 'date'): ?>
+        <?php if ($facet['type'] == 'date'): ?>
             <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($facet['type'])?>Slider"/></div>
-        <? endif; ?>
+        <?php endif; ?>
         <button class="btn btn-primary" type="submit" value=""><i class="fa fa-search"></i> <?=$this->transEsc('Update')?></button>
     </form>
 </div>
-<? if ($facet['type'] == 'date'): ?>
-    <?
+<?php if ($facet['type'] == 'date'): ?>
+    <?php
     $min = !empty($facet[$title]['values'][0]) ? min($facet[$title]['values'][0], 1400) : 1400;
     $future = date('Y', time() + 31536000);
     $max = !empty($facet[$title]['values'][1]) ? max($future, $facet[$title]['values'][1]) : $future;
@@ -42,4 +42,4 @@ $(document).ready(function() {
 JS;
     ?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<? endif; ?>
+<?php endif; ?>

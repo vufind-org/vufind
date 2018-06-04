@@ -1,4 +1,4 @@
-/*global Hunt, VuFind */
+/*global Element, Hunt, VuFind */
 /*exported checkItemStatuses, itemStatusFail */
 
 function linkCallnumbers(callnumber, callnumber_handler) {
@@ -126,6 +126,7 @@ function checkItemStatus(el) {
   itemQueueAjax(id + '', $item);
 }
 
+var itemStatusObserver = null;
 function checkItemStatuses(_container) {
   var container = _container instanceof Element
     ? _container
@@ -141,7 +142,6 @@ function checkItemStatuses(_container) {
     itemStatusObserver.disconnect();
   }
 }
-var itemStatusObserver = null;
 $(document).ready(function checkItemStatusReady() {
   if (typeof Hunt === 'undefined') {
     checkItemStatuses();

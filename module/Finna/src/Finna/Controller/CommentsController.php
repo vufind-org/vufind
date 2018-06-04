@@ -2,7 +2,7 @@
 /**
  * Comments Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -40,7 +40,7 @@ use Zend\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class CommentsController extends \Finna\Controller\AjaxController
+class CommentsController extends \VuFind\Controller\AbstractBase
 {
     /**
      * Report inappropriate comment
@@ -72,7 +72,7 @@ class CommentsController extends \Finna\Controller\AjaxController
      *
      * @return void
      */
-    public function markCommentInappropriate($id, $reason)
+    protected function markCommentInappropriate($id, $reason)
     {
         $user = $this->getUser();
 

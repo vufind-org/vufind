@@ -2,7 +2,7 @@
 /**
  * RecordDataFormatter Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -41,26 +41,6 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
  */
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
-    /**
-     * Setup test case.
-     *
-     * Mark test skipped if short_open_tag is not enabled. The partial
-     * uses short open tags. This directive is PHP_INI_PERDIR,
-     * i.e. can only be changed via php.ini or a per-directory
-     * equivalent. The test will fail if the test is run on
-     * a system with short_open_tag disabled in the system-wide php
-     * ini-file.
-     *
-     * @return void
-     */
-    protected function setup()
-    {
-        parent::setup();
-        if (!ini_get('short_open_tag')) {
-            $this->markTestSkipped('Test requires short_open_tag to be enabled');
-        }
-    }
-
     /**
      * Get view helpers needed by test.
      *
@@ -142,17 +122,19 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
-        $formatter = $factory->__invoke();
+        $formatter = $factory->__invoke(
+            $this->getServiceManager(), RecordDataFormatter::class
+        );
 
         // Create a view object with a set of helpers:
         $helpers = $this->getViewHelpers();
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:
-        $match = new \Zend\Mvc\Router\RouteMatch([]);
+        $match = new \Zend\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
-            ->setRouter($this->createMock('Zend\Mvc\Router\RouteStackInterface'))
+            ->setRouter($this->createMock('Zend\Router\RouteStackInterface'))
             ->setRouteMatch($match);
 
         // Inject the view object into all of the helpers:
@@ -162,6 +144,39 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         }
 
         return $formatter;
+    }
+
+    /**
+     * Find a result in the results array.
+     *
+     * @param string $needle   Result to look up.
+     * @param array  $haystack Result set.
+     *
+     * @return mixed
+     */
+    protected function findResult($needle, $haystack)
+    {
+        foreach ($haystack as $current) {
+            if ($current['label'] == $needle) {
+                return $current;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract labels from a results array.
+     *
+     * @param array $results Results to process.
+     *
+     * @return array
+     */
+    protected function getLabels($results)
+    {
+        $callback = function ($c) {
+            return $c['label'];
+        };
+        return array_map($callback, $results);
     }
 
     /**
@@ -175,9 +190,101 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $spec = $formatter->getDefaults('core');
         $spec['Building'] = [
             'dataMethod' => 'getBuilding', 'pos' => 0, 'context' => ['foo' => 1],
-            'translationTextDomain' => 'prefix_'
+            'translationTextDomain' => 'prefix_',
         ];
-
+        $spec['MultiTest'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'Multi',
+            'pos' => 1000,
+            'multiFunction' => function ($data) {
+                return [
+                    [
+                        'label' => 'Multi Data',
+                        'values' => $data,
+                    ],
+                    [
+                        'label' => 'Multi Count',
+                        'values' => count($data),
+                    ],
+                ];
+            }
+        ];
+        $spec['MultiEmptyArrayTest'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'multiFunction' => function () {
+                return [];
+            }
+        ];
+        $spec['MultiNullTest'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'multiFunction' => function () {
+                return null;
+            }
+        ];
+        $spec['MultiNullInArrayWithZeroTest'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'allowZero' => false,
+            'multiFunction' => function () {
+                return [
+                    [
+                        'label' => 'Null',
+                        'values' => null,
+                    ],
+                    [
+                        'label' => 'ZeroBlocked',
+                        'values' => 0,
+                    ]
+                ];
+            }
+        ];
+        $spec['MultiNullInArrayWithZeroAllowedTest'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 2000,
+            'allowZero' => true,
+            'multiFunction' => function () {
+                return [
+                    [
+                        'label' => 'Null',
+                        'values' => null,
+                    ],
+                    [
+                        'label' => 'ZeroAllowed',
+                        'values' => 0,
+                    ]
+                ];
+            }
+        ];
+        $spec['MultiWithSortPos'] = [
+            'dataMethod' => true,
+            'renderType' => 'Multi',
+            'pos' => 0,
+            'multiFunction' => function () {
+                return [
+                    [
+                        'label' => 'b',
+                        'values' => 'b',
+                        'options' => ['pos' => 3000]
+                    ],
+                    [
+                        'label' => 'a',
+                        'values' => 'a',
+                        'options' => ['pos' => 3000]
+                    ],
+                    [
+                        'label' => 'c',
+                        'values' => 'c',
+                        'options' => ['pos' => 2999]
+                    ],
+                ];
+            }
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -188,28 +295,43 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'Published' => 'Centro di Studi Vichiani, 1992',
             'Edition' => 'Fictional edition.',
             'Series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            'Multi Count' => 1,
+            'Multi Data' => 'Book',
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
             'Tags' => 'Add Tag No Tags, Be the first to tag this record!',
+            'ZeroAllowed' => 0,
+            'c' => 'c',
+            'a' => 'a',
+            'b' => 'b',
         ];
         $driver = $this->getDriver();
         $results = $formatter->getData($driver, $spec);
 
         // Check for expected array keys
-        $this->assertEquals(array_keys($expected), array_keys($results));
+        $this->assertEquals(array_keys($expected), $this->getLabels($results));
 
         // Check for expected text (with markup stripped)
         foreach ($expected as $key => $value) {
             $this->assertEquals(
                 $value,
-                trim(preg_replace('/\s+/', ' ', strip_tags($results[$key]['value'])))
+                trim(
+                    preg_replace(
+                        '/\s+/', ' ',
+                        strip_tags($this->findResult($key, $results)['value'])
+                    )
+                )
             );
         }
 
         // Check for exact markup in representative example:
-        $this->assertEquals('Italian<br />Latin', $results['Language']['value']);
+        $this->assertEquals(
+            'Italian<br />Latin', $this->findResult('Language', $results)['value']
+        );
 
         // Check for context in Building:
-        $this->assertEquals(['foo' => 1], $results['Building']['context']);
+        $this->assertEquals(
+            ['foo' => 1], $this->findResult('Building', $results)['context']
+        );
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Holdings callnumber view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -27,6 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use Finna\LocationService\LocationService;
+
 /**
  * Holdings callnumber view helper
  *
@@ -41,17 +43,17 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
     /**
      * Location Service.
      *
-     * @var \Finna\LocationService
+     * @var LocationService
      */
     protected $locationService = null;
 
     /**
      * Constructor
      *
-     * @param \Finna\LocationService $locationService Location Service
+     * @param LocationService $locationService Location Service
      * of Finland Location Service
      */
-    public function __construct($locationService)
+    public function __construct(LocationService $locationService)
     {
         $this->locationService = $locationService;
     }

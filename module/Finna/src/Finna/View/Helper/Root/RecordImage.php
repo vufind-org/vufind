@@ -2,7 +2,7 @@
 /**
  * Header view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2014-2017.
  *
@@ -91,8 +91,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             return false;
         }
         $urlHelper = $this->getView()->plugin('url');
-        $imageParams = isset($images[$index]['urls']['large'])
-            ? $images[$index]['urls']['large'] : $images[$index]['urls']['medium'];
+        $imageParams = $images[$index]['urls']['large']
+            ?? $images[$index]['urls']['medium'];
         $imageParams = array_merge($imageParams, $params);
 
         return $urlHelper(
@@ -199,9 +199,11 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             $images = [$images[0]];
         }
 
-        $view->type = $type;
-        $view->images = $images;
+        $context = [
+            'type' => $type,
+            'images' => $images
+        ];
 
-        return $view->render('RecordDriver/SolrDefault/record-image.phtml');
+        return $this->record->renderTemplate('record-image.phtml', $context);
     }
 }

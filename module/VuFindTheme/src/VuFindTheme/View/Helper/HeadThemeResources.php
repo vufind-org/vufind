@@ -2,7 +2,7 @@
 /**
  * View helper for loading theme-related resources in the header.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -97,7 +97,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addMetaTags()
     {
         // Set up encoding:
-        $headMeta = $this->getView()->plugin('headmeta');
+        $headMeta = $this->getView()->plugin('headMeta');
         $headMeta()->prependHttpEquiv(
             'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
         );
@@ -117,7 +117,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addLinks()
     {
         // Convenient shortcut to view helper:
-        $headLink = $this->getView()->plugin('headlink');
+        $headLink = $this->getView()->plugin('headLink');
 
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
@@ -144,7 +144,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // If we have a favicon, load it now:
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
-            $imageLink = $this->getView()->plugin('imagelink');
+            $imageLink = $this->getView()->plugin('imageLink');
             $headLink(
                 [
                     'href' => $imageLink($favicon),
@@ -162,7 +162,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     protected function addScripts()
     {
         // Load Javascript (same ordering considerations as CSS, above):
-        $headScript = $this->getView()->plugin('headscript');
+        $headScript = $this->getView()->plugin('headScript');
         foreach (array_reverse($this->container->getJs()) as $current) {
             $parts =  $this->parseSetting($current);
             $headScript()->prependFile(

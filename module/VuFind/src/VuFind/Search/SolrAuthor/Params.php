@@ -2,7 +2,7 @@
 /**
  * Author aspect of the Search Multi-class (Params)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -50,7 +50,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->get('author'))) {
+        if (null === ($lookfor = $request->get('author'))) {
             return false;
         }
 

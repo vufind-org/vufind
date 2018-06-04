@@ -1,7 +1,7 @@
-<? $cnt = 0; ?>
+<?php $cnt = 0; ?>
 <ul class="article-links">
-<? foreach ($this->items as $item): ?>
-  <?
+<?php foreach ($this->items as $item): ?>
+  <?php
     $selected = $numeric
       ? $element === $cnt
       : $element === $item['id'];
@@ -12,6 +12,6 @@
     }
   ?>
   <li><?= !$selected ? ('<a href="' . $this->escapeHtmlAttr($link) . '">' . $this->escapeHtml($item['title']) . '</a>') : $this->escapeHtml($item['title']) ?></li>
-  <? $cnt++; ?>
-<?endforeach;?>
+  <?php $cnt++; ?>
+<?php endforeach;?>
 </ul>

@@ -2,7 +2,7 @@
 /**
  * Navibar view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2014.
  *
@@ -77,12 +77,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param Zend\Config\Config $config           Menu configuration
-     * custom variables
-     * custom variables
      * @param OrganisationInfo   $organisationInfo Organisation info
      */
-    public function __construct(
-        \Zend\Config\Config $config,
+    public function __construct(\Zend\Config\Config $config,
         \Finna\OrganisationInfo\OrganisationInfo $organisationInfo
     ) {
         $this->config = $config;
@@ -140,7 +137,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     public function getMenuItemUrl(array $data)
     {
         $action = $data['action'];
-        $target = isset($action['target']) ? $action['target'] : null;
+        $target = $action['target'] ?? null;
         if (!$action || empty($action['url'])) {
             return null;
         }
@@ -260,7 +257,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             $options = [];
             foreach ($items as $itemKey => $action) {
                 if (!is_string($action)) {
-                    $action = isset($action[$lng]) ? $action[$lng] : null;
+                    $action = $action[$lng] ?? null;
                 }
 
                 if (strncmp($action, 'metalib-', 8) === 0) {

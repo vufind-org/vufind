@@ -2,7 +2,7 @@
 /**
  * VuFind Mailer Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -161,9 +161,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         if ($this->maxRecipients > 0) {
             if ($this->maxRecipients < count($recipients)) {
                 throw new MailException('Too Many Email Recipients');
-            }
-            if ($this->maxRecipients < count($replyTo)) {
-                throw new MailException('Too Many Email Reply-To Addresses');
             }
         }
         $validator = new \Zend\Validator\EmailAddress();

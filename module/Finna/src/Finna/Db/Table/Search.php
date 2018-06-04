@@ -2,7 +2,7 @@
 /**
  * Table Definition for search
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -93,6 +93,7 @@ class Search extends \VuFind\Db\Table\Search
     {
         $callback = function ($select) use ($uid) {
             $select->where->equalTo('user_id', $uid);
+            $select->where->equalTo('saved', 1);
             $select->order('id');
         };
         return $this->select($callback);

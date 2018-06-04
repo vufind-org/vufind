@@ -2,7 +2,7 @@
 /**
  * Model for MARC records in WorldCat.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,8 +36,13 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class WorldCat extends SolrMarc
+class WorldCat extends DefaultRecord
 {
+    use MarcReaderTrait, MarcAdvancedTrait, MarcBasicTrait {
+        MarcBasicTrait::getNewerTitles insteadof MarcAdvancedTrait;
+        MarcBasicTrait::getPreviousTitles insteadof MarcAdvancedTrait;
+    }
+
     /**
      * Set raw data to initialize the object.
      *
@@ -66,70 +71,6 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get an array of information about record holdings, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHoldings()
-    {
-        // Not supported here:
-        return [];
-    }
-
-    /**
-     * Get an array of information about record history, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHistory()
-    {
-        // Not supported here:
-        return [];
-    }
-
-    /**
-     * Returns true if the record supports real-time AJAX status lookups.
-     *
-     * @return bool
-     */
-    public function supportsAjaxStatus()
-    {
-        return false;
-    }
-
-    /**
-     * Get an array of all ISBNs associated with the record (may be empty).
-     *
-     * @return array
-     */
-    public function getISBNs()
-    {
-        return $this->getFieldArray('020');
-    }
-
-    /**
-     * Get an array of all ISSNs associated with the record (may be empty).
-     *
-     * @return array
-     */
-    public function getISSNs()
-    {
-        return $this->getFieldArray('022');
-    }
-
-    /**
-     * Get an array of all the formats associated with the record.
-     *
-     * @return array
-     */
-    public function getFormats()
-    {
-        return $this->getFieldArray('245', ['h']);
-    }
-
-    /**
      * Get the OCLC number of the record.
      *
      * @return array
@@ -137,174 +78,5 @@ class WorldCat extends SolrMarc
     public function getOCLC()
     {
         return [$this->getUniqueID()];
-    }
-
-    /**
-     * Return the unique identifier of this record within the Solr index;
-     * useful for retrieving additional information (like tags and user
-     * comments) from the external MySQL database.
-     *
-     * @return string Unique identifier.
-     */
-    public function getUniqueID()
-    {
-        return (string)$this->getMarcRecord()->getField('001')->getData();
-    }
-
-    /**
-     * Get the call numbers associated with the record (empty string if none).
-     *
-     * @return array
-     */
-    public function getCallNumbers()
-    {
-        $retVal = [];
-        foreach (['090', '050'] as $field) {
-            $callNo = $this->getFirstFieldValue($field, ['a', 'b']);
-            if (!empty($callNo)) {
-                $retVal[] = $callNo;
-            }
-        }
-        $dewey = $this->getDeweyCallNumber();
-        if (!empty($dewey)) {
-            $retVal[] = $dewey;
-        }
-        return $retVal;
-    }
-
-    /**
-     * Get the Dewey call number associated with this record (empty string if none).
-     *
-     * @return string
-     */
-    public function getDeweyCallNumber()
-    {
-        return $this->getFirstFieldValue('082', ['a']);
-    }
-
-    /**
-     * Get the main authors of the record.
-     *
-     * @return array
-     */
-    public function getPrimaryAuthors()
-    {
-        return [$this->getFirstFieldValue('100', ['a'])];
-    }
-
-    /**
-     * Get an array of all the languages associated with the record.
-     *
-     * @return array
-     */
-    public function getLanguages()
-    {
-        $retVal = [];
-        $field = $this->getMarcRecord()->getField('008');
-        if ($field) {
-            $content = $field->getData();
-            if (strlen($content) >= 38) {
-                $retVal[] = substr($content, 35, 3);
-            }
-        }
-        return $retVal;
-    }
-
-    /**
-     * Get the full title of the record.
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->getFirstFieldValue('245', ['a', 'b']);
-    }
-
-    /**
-     * Get a sortable title for the record (i.e. no leading articles).
-     *
-     * @return string
-     */
-    public function getSortTitle()
-    {
-        $field = $this->getMarcRecord()->getField('245');
-        if ($field) {
-            $title = $field->getSubfield('a');
-            if ($title) {
-                $skip = $field->getIndicator(2);
-                return substr($title->getData(), $skip);
-            }
-        }
-        return parent::getSortTitle();
-    }
-
-    /**
-     * Get the short (pre-subtitle) title of the record.
-     *
-     * @return string
-     */
-    public function getShortTitle()
-    {
-        return $this->getFirstFieldValue('245', ['a']);
-    }
-
-    /**
-     * Get the subtitle of the record.
-     *
-     * @return string
-     */
-    public function getSubtitle()
-    {
-        return $this->getFirstFieldValue('245', ['b']);
-    }
-
-    /**
-     * Get the publishers of the record.
-     *
-     * @return array
-     */
-    public function getPublishers()
-    {
-        return $this->getPublicationInfo('b');
-    }
-
-    /**
-     * Get the publication dates of the record.  See also getDateSpan().
-     *
-     * @return array
-     */
-    public function getPublicationDates()
-    {
-        return $this->getPublicationInfo('c');
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthors()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        return $this->getFieldArray('700', ['a', 'b', 'c', 'd']);
-    }
-
-    /**
-     * Get an array of newer titles for the record.
-     *
-     * @return array
-     */
-    public function getNewerTitles()
-    {
-        return $this->getFieldArray('785', ['a', 's', 't']);
-    }
-
-    /**
-     * Get an array of previous titles for the record.
-     *
-     * @return array
-     */
-    public function getPreviousTitles()
-    {
-        return $this->getFieldArray('780', ['a', 's', 't']);
     }
 }

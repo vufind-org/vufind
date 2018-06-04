@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Finna Module Configuration
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +31,7 @@ $config = [
     'router' => [
         'routes' => [
             'cache-file' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/cache/[:file]',
                     'constraints' => [
@@ -45,7 +44,7 @@ $config = [
                 ],
             ],
             'comments-inappropriate' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Comments/Inappropriate/[:id]',
                     'constraints' => [
@@ -59,20 +58,20 @@ $config = [
                 ]
             ],
             'feed-content-page' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/FeedContent[/:page][/:element]',
                     'constraints' => [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*'
                     ],
                     'defaults' => [
-                        'controller' => 'Feedcontentpage',
+                        'controller' => 'FeedContent',
                         'action'     => 'Content',
                     ]
                 ],
             ],
             'list-page' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/List[/:lid]',
                     'constraints' => [
@@ -85,7 +84,7 @@ $config = [
                 ],
             ],
             'myresearch-changemessagingsettings' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/ChangeMessagingSettings',
                     'defaults' => [
@@ -95,7 +94,7 @@ $config = [
                 ],
             ],
             'myresearch-changeprofileaddress' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/ChangeProfileAddress',
                     'defaults' => [
@@ -105,7 +104,7 @@ $config = [
                 ],
             ],
             'myresearch-unsubscribe' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Unsubscribe',
                     'defaults' => [
@@ -115,7 +114,7 @@ $config = [
                 ],
             ],
             'myresearch-export' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Export',
                     'defaults' => [
@@ -125,7 +124,7 @@ $config = [
                 ],
             ],
             'myresearch-import' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Import',
                     'defaults' => [
@@ -135,7 +134,7 @@ $config = [
                 ],
             ],
             'record-feedback' => [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Record/[:id]/Feedback',
                     'constraints' => [
@@ -152,34 +151,77 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'ajax' => 'Finna\Controller\Factory::getAjaxController',
-            'barcode' => 'Finna\Controller\Factory::getBarcodeController',
-            'browse' => 'Finna\Controller\Factory::getBrowseController',
-            'cache' => 'Finna\Controller\Factory::getCacheController',
-            'cart' => 'Finna\Controller\Factory::getCartController',
-            'combined' => 'Finna\Controller\Factory::getCombinedController',
-            'comments' => 'Finna\Controller\Factory::getCommentsController',
-            'content' => 'Finna\Controller\Factory::getContentController',
-            'cover' => 'Finna\Controller\Factory::getCoverController',
-            'eds' => 'Finna\Controller\Factory::getEdsController',
-            'error' => 'Finna\Controller\Factory::getErrorController',
-            'externalauth' => 'Finna\Controller\Factory::getExternalAuthController',
-            'feedback' => 'Finna\Controller\Factory::getFeedbackController',
-            'feedcontentpage' => 'Finna\Controller\Factory::getFeedContentController',
-            'librarycards' => 'Finna\Controller\Factory::getLibraryCardsController',
-            'locationService' => 'Finna\Controller\Factory::getLocationServiceController',
-            'metalib' => 'Finna\Controller\Factory::getMetaLibController',
-            'metalibrecord' => 'Finna\Controller\Factory::getMetaLibrecordController',
-            'my-research' => 'Finna\Controller\Factory::getMyResearchController',
-            'organisationInfo' => 'Finna\Controller\Factory::getOrganisationInfoController',
-            'pci' => 'Finna\Controller\Factory::getPCIController',
-            'primo' => 'Finna\Controller\Factory::getPrimoController',
-            'primorecord' => 'Finna\Controller\Factory::getPrimorecordController',
-            'record' => 'Finna\Controller\Factory::getRecordController',
-            'collection' => 'Finna\Controller\Factory::getCollectionController',
-            'search' => 'Finna\Controller\Factory::getSearchController',
-            'listpage' => 'Finna\Controller\Factory::getListController',
+            'Finna\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
+            'Finna\Controller\BarcodeController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'Finna\Controller\CacheController' => 'Finna\Controller\CacheControllerFactory',
+            'Finna\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
+            'Finna\Controller\CollectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'Finna\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\CommentsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\ContentController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\CoverController' => 'Finna\Controller\CoverControllerFactory',
+            'Finna\Controller\EdsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\ErrorController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\ExternalAuthController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\FeedContentController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\LocationServiceController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\MetaLibController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\MetalibRecordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\OrganisationInfoController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\PCIController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\PrimoRecordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'Finna\Controller\CollectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'Finna\Controller\SearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\ListController' => 'Finna\Controller\ListControllerFactory',
         ],
+        'aliases' => [
+            'barcode' => 'Finna\Controller\BarcodeController',
+            'Cache' => 'Finna\Controller\CacheController',
+            'cache' => 'Finna\Controller\CacheController',
+            'Comments' => 'Finna\Controller\CommentsController',
+            'comments' => 'Finna\Controller\CommentsController',
+            'FeedContent' => 'Finna\Controller\FeedContentController',
+            'feedcontent' => 'Finna\Controller\FeedContentController',
+            'LocationService' => 'Finna\Controller\LocationServiceController',
+            'locationservice' => 'Finna\Controller\LocationServiceController',
+            'MetaLib' => 'Finna\Controller\MetaLibController',
+            'metalib' => 'Finna\Controller\MetaLibController',
+            'MetaLibRecord' => 'Finna\Controller\MetaLibrecordController',
+            'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
+            'OrganisationInfo' => 'Finna\Controller\OrganisationInfoController',
+            'organisationinfo' => 'Finna\Controller\OrganisationInfoController',
+            'ListPage' => 'Finna\Controller\ListController',
+            'listpage' => 'Finna\Controller\ListController',
+
+            // Overrides:
+            'VuFind\Controller\AjaxController' => 'Finna\Controller\AjaxController',
+            'VuFind\Controller\BrowseController' => 'Finna\Controller\BrowseController',
+            'VuFind\Controller\CartController' => 'Finna\Controller\CartController',
+            'VuFind\Controller\CombinedController' => 'Finna\Controller\CombinedController',
+            'VuFind\Controller\CollectionController' => 'Finna\Controller\CollectionController',
+            'VuFind\Controller\ContentController' => 'Finna\Controller\ContentController',
+            'VuFind\Controller\CoverController' => 'Finna\Controller\CoverController',
+            'VuFind\Controller\EdsController' => 'Finna\Controller\EdsController',
+            'VuFind\Controller\ErrorController' => 'Finna\Controller\ErrorController',
+            'VuFind\Controller\ExternalAuthController' => 'Finna\Controller\ExternalAuthController',
+            'VuFind\Controller\FeedbackController' => 'Finna\Controller\FeedbackController',
+            'VuFind\Controller\LibraryCardsController' => 'Finna\Controller\LibraryCardsController',
+            'VuFind\Controller\MyResearchController' => 'Finna\Controller\MyResearchController',
+            'VuFind\Controller\PrimoController' => 'Finna\Controller\PrimoController',
+            'VuFind\Controller\PrimoRecordController' => 'Finna\Controller\PrimoRecordController',
+            'VuFind\Controller\RecordController' => 'Finna\Controller\RecordController',
+            'VuFind\Controller\SearchController' => 'Finna\Controller\SearchController',
+
+            // Legacy:
+            'PCI' => 'Finna\Controller\PrimoController',
+            'pci' => 'Finna\Controller\PrimoController',
+        ]
     ],
     'controller_plugins' => [
         'factories' => [
@@ -189,26 +231,45 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'Finna\Feed' => 'Finna\Service\Factory::getFeed',
-            'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
-            'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
-            'Finna\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
-            'Finna\Search\Memory' => 'Finna\Service\Factory::getSearchMemory',
-            'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
-            'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
-            'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
-            'VuFind\ILSAuthenticator' => 'Finna\Auth\Factory::getILSAuthenticator',
-            'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
-            'VuFind\ILSHoldLogic' => 'Finna\Service\Factory::getILSHoldLogic',
-            'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
-            'VuFind\RecordLoader' => 'Finna\Service\Factory::getRecordLoader',
-            'VuFind\RecordTabPluginManager' => 'Finna\Service\Factory::getRecordTabPluginManager',
-            'VuFind\Role\PermissionManager' => 'Finna\Service\Factory::getPermissionManager',
-            'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
-            'VuFind\SearchTabsHelper' => 'Finna\Service\Factory::getSearchTabsHelper',
-            'VuFind\SessionManager' => 'Finna\Session\ManagerFactory',
-            'VuFind\YamlReader' => 'Finna\Service\Factory::getYamlReader',
-            'VuFind\Mailer' => 'Finna\Mailer\Factory',
+            'Finna\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
+            'Finna\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
+            'Finna\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
+            'Finna\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
+            'Finna\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
+            'Finna\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
+            'Finna\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
+            'Finna\Feed\Feed' => 'Finna\Service\Factory::getFeed',
+            'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
+            'Finna\LocationService\LocationService' => 'Finna\Service\Factory::getLocationService',
+            'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
+            'Finna\OnlinePayment\OnlinePayment' => 'Finna\Service\Factory::getOnlinePaymentManager',
+            'Finna\OnlinePayment\Session' => 'Finna\Service\Factory::getOnlinePaymentSession',
+            'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
+            'Finna\Record\Loader' => 'VuFind\Record\LoaderFactory',
+            'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
+            'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
+            'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
+
+            'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
+
+            'Zend\Session\SessionManager' => 'Finna\Session\ManagerFactory',
+        ],
+        'aliases' => [
+            'VuFind\Auth\Manager' => 'Finna\Auth\Manager',
+            'VuFind\Auth\ILSAuthenticator' => 'Finna\Auth\ILSAuthenticator',
+            'VuFind\Cache\Manager' => 'Finna\Cache\Manager',
+            'VuFind\Config\PluginManager' => 'Finna\Config\PluginManager',
+            'VuFind\Config\SearchSpecsReader' => 'Finna\Config\SearchSpecsReader',
+            'VuFind\Config\YamlReader' => 'Finna\Config\YamlReader',
+            'VuFind\Cover\Loader' => 'Finna\Cover\Loader',
+            'VuFind\ILS\Connection' => 'Finna\ILS\Connection',
+            'VuFind\Mailer\Mailer' => 'Finna\Mailer\Mailer',
+            'VuFind\Record\Loader' => 'Finna\Record\Loader',
+            'VuFind\RecordTab\PluginManager' => 'Finna\RecordTab\PluginManager',
+            'VuFind\Role\PermissionManager' => 'Finna\Role\PermissionManager',
+            'VuFind\Search\Memory' => 'Finna\Search\Memory',
+            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
@@ -217,11 +278,90 @@ $config = [
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => [
-        // The config reader is a special service manager for loading .ini files:
-        'config_reader' => [
-            'abstract_factories' => ['Finna\Config\PluginFactory'],
-        ],
         'plugin_managers' => [
+            'ajaxhandler' => [
+                'factories' => [
+                    'Finna\AjaxHandler\AddToList' =>
+                        'Finna\AjaxHandler\AddToListFactory',
+                    'Finna\AjaxHandler\ChangePickupLocation' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\ChangeRequestStatus' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\CheckRequestsAreValid' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+                    'Finna\AjaxHandler\CommentRecord' =>
+                        'Finna\AjaxHandler\CommentRecordFactory',
+                    'Finna\AjaxHandler\DeleteRecordComment' =>
+                        'VuFind\AjaxHandler\DeleteRecordCommentFactory',
+                    'Finna\AjaxHandler\EditList' =>
+                        'Finna\AjaxHandler\EditListFactory',
+                    'Finna\AjaxHandler\EditListResource' =>
+                        'Finna\AjaxHandler\EditListResourceFactory',
+                    'Finna\AjaxHandler\GetACSuggestions' =>
+                        'VuFind\AjaxHandler\GetACSuggestionsFactory',
+                    'Finna\AjaxHandler\GetContentFeed' =>
+                        'Finna\AjaxHandler\GetContentFeedFactory',
+                    'Finna\AjaxHandler\GetDateRangeVisual' =>
+                        'Finna\AjaxHandler\GetDateRangeVisualFactory',
+                    'Finna\AjaxHandler\GetDescription' =>
+                        'Finna\AjaxHandler\GetDescriptionFactory',
+                    'Finna\AjaxHandler\GetFacetData' =>
+                        'Finna\AjaxHandler\GetFacetDataFactory',
+                    'Finna\AjaxHandler\GetFeed' =>
+                        'Finna\AjaxHandler\GetFeedFactory',
+                    'Finna\AjaxHandler\GetImagePopup' =>
+                        'Finna\AjaxHandler\GetImagePopupFactory',
+                    'Finna\AjaxHandler\GetOrganisationInfo' =>
+                        'Finna\AjaxHandler\GetOrganisationInfoFactory',
+                    'Finna\AjaxHandler\GetOrganisationPageFeed' =>
+                        'Finna\AjaxHandler\GetOrganisationPageFeedFactory',
+                    'Finna\AjaxHandler\GetPiwikPopularSearches' =>
+                        'Finna\AjaxHandler\GetPiwikPopularSearchesFactory',
+                    'Finna\AjaxHandler\GetSearchTabsRecommendations' =>
+                        'Finna\AjaxHandler\GetSearchTabsRecommendationsFactory',
+                    'Finna\AjaxHandler\GetSideFacets' =>
+                        'Finna\AjaxHandler\GetSideFacetsFactory',
+                    'Finna\AjaxHandler\GetSimilarRecords' =>
+                        'Finna\AjaxHandler\GetSimilarRecordsFactory',
+                    'Finna\AjaxHandler\GetUserLists' =>
+                        'Finna\AjaxHandler\GetUserListsFactory',
+                    'Finna\AjaxHandler\ImportFavorites' =>
+                        'Finna\AjaxHandler\ImportFavoritesFactory',
+                    'Finna\AjaxHandler\OnlinePaymentNotify' =>
+                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
+                    'Finna\AjaxHandler\RegisterOnlinePayment' =>
+                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
+                ],
+                'aliases' => [
+                    'addToList' => 'Finna\AjaxHandler\AddToList',
+                    'changePickupLocation' => 'Finna\AjaxHandler\ChangePickupLocation',
+                    'changeRequestStatus' => 'Finna\AjaxHandler\ChangeRequestStatus',
+                    'checkRequestsAreValid' => 'Finna\AjaxHandler\CheckRequestsAreValid',
+                    'editList' => 'Finna\AjaxHandler\EditList',
+                    'editListResource' => 'Finna\AjaxHandler\EditListResource',
+                    'getContentFeed' => 'Finna\AjaxHandler\GetContentFeed',
+                    'getDescription' => 'Finna\AjaxHandler\GetDescription',
+                    'getDateRangeVisual' => 'Finna\AjaxHandler\GetDateRangeVisual',
+                    'getFeed' => 'Finna\AjaxHandler\GetFeed',
+                    'getImagePopup' => 'Finna\AjaxHandler\GetImagePopup',
+                    'getOrganisationPageFeed' => 'Finna\AjaxHandler\GetOrganisationPageFeed',
+                    'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
+                    'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
+                    'getPiwikPopularSearches' => 'Finna\AjaxHandler\GetPiwikPopularSearches',
+                    'getSearchTabsRecommendations' => 'Finna\AjaxHandler\GetSearchTabsRecommendations',
+                    'getSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
+                    'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
+                    'importFavorites' => 'Finna\AjaxHandler\ImportFavorites',
+                    'onlinePaymentNotify' => 'Finna\AjaxHandler\OnlinePaymentNotify',
+                    'registerOnlinePayment' => 'Finna\AjaxHandler\RegisterOnlinePayment',
+
+                    // Overrides:
+                    'VuFind\AjaxHandler\CommentRecord' => 'Finna\AjaxHandler\CommentRecord',
+                    'VuFind\AjaxHandler\DeleteRecordComment' => 'Finna\AjaxHandler\DeleteRecordComment',
+                    'VuFind\AjaxHandler\GetACSuggestions' => 'Finna\AjaxHandler\GetACSuggestions',
+                    'VuFind\AjaxHandler\GetFacetData' => 'Finna\AjaxHandler\GetFacetData',
+                ]
+            ],
             'auth' => [
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
@@ -231,60 +371,117 @@ $config = [
             ],
             'autocomplete' => [
                 'factories' => [
-                    'solr' => 'Finna\Autocomplete\Factory::getSolr'
+                    'Finna\Autocomplete\Solr' => 'Finna\Autocomplete\SolrFactory',
+                ],
+                'aliases' => [
+                    'VuFind\Autocomplete\Solr' => 'Finna\Autocomplete\Solr',
                 ]
             ],
             'db_row' => [
                 'factories' => [
-                    'commentsinappropriate' => 'Finna\Db\Row\Factory::getCommentsInappropriate',
-                    'commentsrecord' => 'Finna\Db\Row\Factory::getCommentsRecord',
-                    'duedatereminder' => 'Finna\Db\Row\Factory::getDueDateReminder',
-                    'fee' => 'Finna\Db\Row\Factory::getFee',
-                    'finnacache' => 'Finna\Db\Row\Factory::getFinnaCache',
-                    'privateuser' => 'Finna\Db\Row\Factory::getPrivateUser',
-                    'resource' => 'Finna\Db\Row\Factory::getResource',
-                    'search' => 'Finna\Db\Row\Factory::getSearch',
-                    'transaction' => 'Finna\Db\Row\Factory::getTransaction',
-                    'user' => 'Finna\Db\Row\Factory::getUser',
-                    'userlist' => 'Finna\Db\Row\Factory::getUserList',
+                    'Finna\Db\Row\CommentsInappropriate' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\CommentsRecord' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\DueDateReminder' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\Fee' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\FinnaCache' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\PrivateUser' => 'VuFind\Db\Row\UserFactory',
+                    'Finna\Db\Row\Resource' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\Search' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\Transaction' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\User' => 'VuFind\Db\Row\UserFactory',
+                    'Finna\Db\Row\UserCard' => 'Finna\Db\Row\UserCardFactory',
+                    'Finna\Db\Row\UserList' => 'VuFind\Db\Row\RowGatewayFactory',
                 ],
+                'aliases' => [
+                    'VuFind\Db\Row\PrivateUser' => 'Finna\Db\Row\PrivateUser',
+                    'VuFind\Db\Row\Resource' => 'Finna\Db\Row\Resource',
+                    'VuFind\Db\Row\Search' => 'Finna\Db\Row\Search',
+                    'VuFind\Db\Row\Transaction' => 'Finna\Db\Row\Transaction',
+                    'VuFind\Db\Row\User' => 'Finna\Db\Row\User',
+                    'VuFind\Db\Row\UserCard' => 'Finna\Db\Row\UserCard',
+                    'VuFind\Db\Row\UserList' => 'Finna\Db\Row\UserList',
+
+                    // Aliases for table classes without a row class counterpart
+                    'Finna\Db\Row\Comments' => 'VuFind\Db\Row\Comments',
+                    'Finna\Db\Row\Session' => 'VuFind\Db\Row\Session',
+                    'Finna\Db\Row\UserResource' => 'VuFind\Db\Row\UserResource',
+
+                    'commentsinappropriate' => 'Finna\Db\Row\CommentsInappropriate',
+                    'commentsrecord' => 'Finna\Db\Row\CommentsRecord',
+                    'duedatereminder' => 'Finna\Db\Row\DueDateReminder',
+                    'fee' => 'Finna\Db\Row\Fee',
+                    'finnacache' => 'Finna\Db\Row\FinnaCache',
+                    'transaction' => 'Finna\Db\Row\Transaction',
+                ]
             ],
             'db_table' => [
                 'factories' => [
-                    'comments' => 'Finna\Db\Table\Factory::getComments',
-                    'comments-inappropriate' => 'Finna\Db\Table\Factory::getCommentsInappropriate',
-                    'comments-record' => 'Finna\Db\Table\Factory::getCommentsRecord',
-                    'due-date-reminder' => 'Finna\Db\Table\Factory::getDueDateReminder',
-                    'fee' => 'Finna\Db\Table\Factory::getFee',
-                    'finnacache' => 'Finna\Db\Table\Factory::getFinnaCache',
-                    'resource' => 'Finna\Db\Table\Factory::getResource',
-                    'search' => 'Finna\Db\Table\Factory::getSearch',
-                    'session' => 'Finna\Db\Table\Factory::getSession',
-                    'transaction' => 'Finna\Db\Table\Factory::getTransaction',
-                    'user' => 'Finna\Db\Table\Factory::getUser',
-                    'userlist' => 'Finna\Db\Table\Factory::getUserList',
-                    'userresource' => 'Finna\Db\Table\Factory::getUserResource',
+                    'Finna\Db\Table\Comments' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\CommentsInappropriate' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\CommentsRecord' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\DueDateReminder' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\Fee' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\FinnaCache' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\Resource' => 'VuFind\Db\Table\ResourceFactory',
+                    'Finna\Db\Table\Search' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\Session' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\Transaction' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\User' => 'VuFind\Db\Table\UserFactory',
+                    'Finna\Db\Table\UserList' => 'VuFind\Db\Table\GatewayFactory',
+                    'Finna\Db\Table\UserResource' => 'VuFind\Db\Table\GatewayFactory',
                 ],
+                'aliases' => [
+                    'VuFind\Db\Table\Comments' => 'Finna\Db\Table\Comments',
+                    'VuFind\Db\Table\Resource' => 'Finna\Db\Table\Resource',
+                    'VuFind\Db\Table\Search' => 'Finna\Db\Table\Search',
+                    'VuFind\Db\Table\Session' => 'Finna\Db\Table\Session',
+                    'VuFind\Db\Table\User' => 'Finna\Db\Table\User',
+                    'VuFind\Db\Table\UserList' => 'Finna\Db\Table\UserList',
+                    'VuFind\Db\Table\UserResource' => 'Finna\Db\Table\UserResource',
+
+                    'commentsinappropriate' => 'Finna\Db\Table\CommentsInappropriate',
+                    'commentsrecord' => 'Finna\Db\Table\CommentsRecord',
+                    'duedatereminder' => 'Finna\Db\Table\DueDateReminder',
+                    'fee' => 'Finna\Db\Table\Fee',
+                    'finnacache' => 'Finna\Db\Table\FinnaCache',
+                    'transaction' => 'Finna\Db\Table\Transaction',
+                ]
             ],
             'ils_driver' => [
                 'factories' => [
-                    'axiellwebservices' => 'Finna\ILS\Driver\Factory::getAxiellWebServices',
-                    'demo' => 'Finna\ILS\Driver\Factory::getDemo',
-                    'gemini' => 'Finna\ILS\Driver\Factory::getGemini',
-                    'koharest' => 'Finna\ILS\Driver\Factory::getKohaRest',
-                    'mikromarc' => 'Finna\ILS\Driver\Factory::getMikromarc',
-                    'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
-                    'sierrarest' => 'Finna\ILS\Driver\Factory::getSierraRest',
-                    'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
-                    'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful'
+                    'Finna\ILS\Driver\AxiellWebServices' => 'Finna\ILS\Driver\AxiellWebServicesFactory',
+                    'Finna\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',
+                    'Finna\ILS\Driver\Gemini' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
+                    'Finna\ILS\Driver\KohaRest' => 'Finna\ILS\Driver\KohaRestFactory',
+                    'Finna\ILS\Driver\Mikromarc' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
+                    'Finna\ILS\Driver\MultiBackend' => 'VuFind\ILS\Driver\MultiBackendFactory',
+                    'Finna\ILS\Driver\SierraRest' => 'VuFind\ILS\Driver\SierraRestFactory',
+                    'Finna\ILS\Driver\Voyager' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
+                    'Finna\ILS\Driver\VoyagerRestful' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
                 ],
+                'aliases' => [
+                    'axiellwebservices' => 'Finna\ILS\Driver\AxiellWebServices',
+                    'gemini' => 'Finna\ILS\Driver\Gemini',
+                    'mikromark' => 'Finna\ILS\Driver\Mikromarc',
+                    // TOOD: remove the following line when KohaRest driver is available upstream:
+                    'koharest' => 'Finna\ILS\Driver\KohaRest',
+
+                    'VuFind\ILS\Driver\Demo' => 'Finna\ILS\Driver\Demo',
+                    'VuFind\ILS\Driver\KohaRest' => 'Finna\ILS\Driver\KohaRest',
+                    'VuFind\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackend',
+                    'VuFind\ILS\Driver\SierraRest' => 'Finna\ILS\Driver\SierraRest',
+                    'VuFind\ILS\Driver\VoyagerRestful' => 'Finna\ILS\Driver\Voyager',
+                ]
             ],
             'recommend' => [
                 'factories' => [
-                    'collectionsidefacets' => 'Finna\Recommend\Factory::getCollectionSideFacets',
-                    'sidefacets' => 'Finna\Recommend\Factory::getSideFacets',
-                    'sidefacetsdeferred' => 'Finna\Recommend\Factory::getSideFacetsDeferred',
+                    'VuFind\Recommend\CollectionSideFacets' => 'Finna\Recommend\Factory::getCollectionSideFacets',
+                    'VuFind\Recommend\SideFacets' => 'Finna\Recommend\Factory::getSideFacets',
+                    'Finna\Recommend\SideFacetsDeferred' => 'Finna\Recommend\Factory::getSideFacetsDeferred',
                 ],
+                'aliases' => [
+                    'sidefacetsdeferred' => 'Finna\Recommend\SideFacetsDeferred',
+                ]
             ],
             'resolver_driver' => [
                 'factories' => [
@@ -293,36 +490,52 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
-                    'EDS' => 'Finna\Search\Factory\EdsBackendFactory',
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
-                    'Summon' => 'Finna\Search\Factory\SummonBackendFactory',
                 ],
-                'aliases' => [
-                    // Allow Solr core names to be used as aliases for services:
-                    'biblio' => 'Solr',
-                ]
             ],
             'search_options' => [
-                'abstract_factories' => ['Finna\Search\Options\PluginFactory'],
                 'factories' => [
-                    'eds' => 'Finna\Search\Options\Factory::getEDS',
+                    'Finna\Search\Combined\Options' => 'VuFind\Search\OptionsFactory',
+                    'Finna\Search\EDS\Options' => 'VuFind\Search\OptionsFactory',
+                    'Finna\Search\Primo\Options' => 'VuFind\Search\OptionsFactory',
                 ],
+                'aliases' => [
+                    'VuFind\Search\Combined\Options' => 'Finna\Search\Combined\Options',
+                    'VuFind\Search\EDS\Options' => 'Finna\Search\EDS\Options',
+                    'VuFind\Search\Primo\Options' => 'Finna\Search\Primo\Options',
+                ]
             ],
             'search_params' => [
-                'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
                 'factories' => [
-                    'solr' => 'Finna\Search\Params\Factory::getSolr',
-                    'combined' => 'Finna\Search\Params\Factory::getCombined',
+                    'Finna\Search\Combined\Params' => 'Finna\Search\Solr\ParamsFactory',
+                    'Finna\Search\EDS\Params' => 'VuFind\Search\Params\ParamsFactory',
+                    'Finna\Search\EmptySet\Params' => 'VuFind\Search\Params\ParamsFactory',
+                    'Finna\Search\Favorites\Params' => 'VuFind\Search\Params\ParamsFactory',
+                    'Finna\Search\MixedList\Params' => 'VuFind\Search\Params\ParamsFactory',
+                    'Finna\Search\Solr\Params' => 'Finna\Search\Solr\ParamsFactory',
                 ],
+                'aliases' => [
+                    'VuFind\Search\Combined\Params' => 'Finna\Search\Combined\Params',
+                    'VuFind\Search\EDS\Params' => 'Finna\Search\EDS\Params',
+                    'VuFind\Search\EmptySet\Params' => 'Finna\Search\EmptySet\Params',
+                    'VuFind\Search\Favorites\Params' => 'Finna\Search\Favorites\Params',
+                    'VuFind\Search\MixedList\Params' => 'Finna\Search\MixedList\Params',
+                    'VuFind\Search\Solr\Params' => 'Finna\Search\Solr\Params',
+                ]
             ],
             'search_results' => [
-                'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
                 'factories' => [
-                    'combined' => 'Finna\Search\Results\Factory::getCombined',
-                    'favorites' => 'Finna\Search\Results\Factory::getFavorites',
-                    'solr' => 'Finna\Search\Results\Factory::getSolr',
-                    'primo' => 'Finna\Search\Results\Factory::getPrimo',
+                    'Finna\Search\Combined\Results' => 'VuFind\Search\Results\ResultsFactory',
+                    'Finna\Search\Favorites\Results' => 'Finna\Search\Favorites\ResultsFactory',
+                    'Finna\Search\Primo\Results' => 'VuFind\Search\Results\ResultsFactory',
+                    'Finna\Search\Solr\Results' => 'VuFind\Search\Solr\ResultsFactory',
+                ],
+                'aliases' => [
+                    'VuFind\Search\Combined\Results' => 'Finna\Search\Combined\Results',
+                    'VuFind\Search\Favorites\Results' => 'Finna\Search\Favorites\Results',
+                    'VuFind\Search\Primo\Results' => 'Finna\Search\Primo\Results',
+                    'VuFind\Search\Solr\Results' => 'Finna\Search\Solr\Results',
                 ]
             ],
             'content_covers' => [
@@ -336,32 +549,62 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
-                    'eds' => 'Finna\RecordDriver\Factory::getEDS',
-                    'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
-                    'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
-                    'solrforward' => 'Finna\RecordDriver\Factory::getSolrForward',
-                    'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
-                    'solrqdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
-                    'primo' => 'Finna\RecordDriver\Factory::getPrimo'
+                    'Finna\RecordDriver\EDS' =>
+                        'VuFind\RecordDriver\NameBasedConfigFactory',
+                    'Finna\RecordDriver\SolrDefault' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrMarc' =>
+                        'VuFind\RecordDriver\SolrMarcFactory',
+                    'Finna\RecordDriver\SolrEad' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrForward' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrLido'
+                        => 'Finna\RecordDriver\SolrLidoFactory',
+                    'Finna\RecordDriver\SolrQdc' =>
+                        'VuFind\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\Primo' =>
+                        'VuFind\RecordDriver\NameBasedConfigFactory',
+                ],
+                'aliases' => [
+                    'SolrEad' => 'Finna\RecordDriver\SolrEad',
+                    'SolrForward' => 'Finna\RecordDriver\SolrForward',
+                    'SolrLido' => 'Finna\RecordDriver\SolrLido',
+                    'SolrQdc' => 'Finna\RecordDriver\SolrQdc',
+
+                    'VuFind\RecordDriver\EDS' => 'Finna\RecordDriver\EDS',
+                    'VuFind\RecordDriver\SolrDefault' => 'Finna\RecordDriver\SolrDefault',
+                    'VuFind\RecordDriver\SolrMarc' => 'Finna\RecordDriver\SolrMarc',
+                    'VuFind\RecordDriver\Primo' => 'Finna\RecordDriver\Primo',
                 ],
             ],
             'recordtab' => [
                 'factories' => [
-                    'map' => 'Finna\RecordTab\Factory::getMap',
-                    'usercomments' => 'Finna\RecordTab\Factory::getUserComments',
-                    'pressreview' => 'Finna\RecordTab\Factory::getPressReviews',
-                    'music' => 'Finna\RecordTab\Factory::getMusic',
-                    'distribution' => 'Finna\RecordTab\Factory::getDistribution',
-                    'inspectionDetails' =>
-                        'Finna\RecordTab\Factory::getInspectionDetails',
-                    'descriptionFWD' => 'Finna\RecordTab\Factory::getDescriptionFWD',
-                    'itemdescription' =>
-                        'Finna\RecordTab\Factory::getItemDescription',
+                    'Finna\RecordTab\DescriptionFWD' => 'Finna\RecordTab\Factory::getDescriptionFWD',
+                    'Finna\RecordTab\Distribution' => 'Finna\RecordTab\Factory::getDistribution',
+                    'Finna\RecordTab\InspectionDetails' => 'Finna\RecordTab\Factory::getInspectionDetails',
+                    'Finna\RecordTab\ItemDescription' => 'Finna\RecordTab\Factory::getItemDescription',
+                    'Finna\RecordTab\Map' => 'Finna\RecordTab\Factory::getMap',
+                    'Finna\RecordTab\Music' => 'Finna\RecordTab\Factory::getMusic',
+                    'Finna\RecordTab\PressReviews' => 'Finna\RecordTab\Factory::getPressReviews',
+                    'Finna\RecordTab\UserComments' => 'Finna\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
                 ],
+                'aliases' => [
+                    'componentparts' => 'Finna\RecordTab\ComponentParts',
+                    'descriptionFWD' => 'Finna\RecordTab\DescriptionFWD',
+                    'distribution' => 'Finna\RecordTab\Distribution',
+                    'inspectionDetails' => 'Finna\RecordTab\InspectionDetails',
+                    'itemdescription' => 'Finna\RecordTab\ItemDescription',
+                    'music' => 'Finna\RecordTab\Music',
+                    'pressreview' => 'Finna\RecordTab\PressReviews',
+
+                    // Overrides:
+                    'VuFind\RecordTab\Map' => 'Finna\RecordTab\Map',
+                    'VuFind\RecordTab\UserComments' => 'Finna\RecordTab\UserComments',
+                ]
             ],
             'related' => [
                 'factories' => [
@@ -472,9 +715,14 @@ $config = [
     'zfc_rbac' => [
         'vufind_permission_provider_manager' => [
             'factories' => [
-                'authenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
-                'ipRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
+                'Finna\Role\PermissionProvider\AuthenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
+                'Finna\Role\PermissionProvider\IpRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
             ],
+            'aliases' => [
+                'authenticationStrategy' => 'Finna\Role\PermissionProvider\AuthenticationStrategy',
+
+                'VuFind\Role\PermissionProvider\IpRange' => 'Finna\Role\PermissionProvider\IpRange',
+            ]
         ],
     ],
 

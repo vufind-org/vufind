@@ -1,22 +1,22 @@
-<? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+<?php $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
   <h4><?=$this->transEsc('Summon Results')?></h4>
   <div class="list-group">
-    <? foreach ($results as $driver): ?>
+    <?php foreach ($results as $driver): ?>
       <div class="list-group-item">
         <span>
-          <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
+          <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
           <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
             <?=$this->record($driver)->getTitleHtml()?>
           </a>
-          <? $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+          <?php $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
           <span class="small">
             <?=$this->transEsc('by')?>
-            <a href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><? if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
+            <a href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
           </span>
-          <? endif; ?>
+          <?php endif; ?>
         </span>
       </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a>
   </div>
-<? endif ?>
+<?php endif ?>

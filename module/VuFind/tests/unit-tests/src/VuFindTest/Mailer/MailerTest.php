@@ -2,7 +2,7 @@
 /**
  * Mailer Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -208,24 +208,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
-    }
-
-    /**
-     * Test that we only accept one reply-to address by default
-     *
-     * @return void
-     *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Too Many Email Reply-To Addresses
-     */
-    public function testTooManyReplyToAddresses()
-    {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
-        $mailer = new Mailer($transport);
-        $mailer->send(
-            'one@test.com', 'from@example.com', 'subject', 'body',
-            null, 'one@test.com;two@test.com'
-        );
     }
 
     /**

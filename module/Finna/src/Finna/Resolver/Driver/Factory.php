@@ -2,7 +2,7 @@
 /**
  * Resolver Driver Factory Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -51,10 +51,10 @@ class Factory
      */
     public static function getSfx(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         return new Sfx(
             $config->OpenURL->url,
-            $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
+            $sm->get('VuFind\Http')->createClient(),
             $config
         );
     }

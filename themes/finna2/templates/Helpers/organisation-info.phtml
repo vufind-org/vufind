@@ -1,9 +1,9 @@
-<?
+<?php
   $this->headScript()->appendFile("finna-organisation-info.js");
   $this->headScript()->appendFile("finna-organisation-info-widget.js");
 ?>
 <div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
-<? if ($this->target == 'widget'): ?>
+<?php if ($this->target == 'widget'): ?>
   <div>
     <h2><?=$this->transEsc('organisation_info_title');?></h2>
   </div>
@@ -21,7 +21,7 @@
       </div>
       <span class="is-open open info-element"><?=$this->translate('organisation_info_is_open')?></span>
       <span class="is-open closed info-element"><?=$this->translate('organisation_info_is_closed')?></span>
-<? endif ?>
+<?php endif ?>
       <div class="info schedules">
         <div class="week-navi-holder">
           <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1"></i>
@@ -54,7 +54,7 @@
         <div class="mobile-schedules info-element"></div>
       </div>
       <div class="schedules-info info-element"></div>
-<? if ($this->target == 'widget' && $this->showDetails): ?>
+<?php if ($this->target == 'widget' && $this->showDetails): ?>
     </div>
     <div class="details details-col">
       <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
@@ -78,5 +78,5 @@
       </div>
     </div>
   </div>
-<? endif ?>
+<?php endif ?>
 </div>

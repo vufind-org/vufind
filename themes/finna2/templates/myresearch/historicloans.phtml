@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/historicloans.phtml -->
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Loan History'));
 
@@ -15,22 +15,22 @@
 ?>
 <div>
   <div class="my-research-content myresearch-grid-list">
-    <? if (!$this->translationEmpty('loan_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('loan_history_instructions_html')?></p><? endif; ?>
+    <?php if (!$this->translationEmpty('loan_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('loan_history_instructions_html')?></p><?php endif; ?>
     <?=$this->flashmessages()?>
     <div class="useraccount-header">
     <?=$this->transEsc('Loan History')?> (<?=$recordCount;?>)
     <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
-    <? if (isset($this->noSupport)): ?>
-      <? if ($user->getLibraryCards()->count() > 1): ?>
+    <?php if (isset($this->noSupport)): ?>
+      <?php if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
           <p><?=$this->transEsc("no_ils_support_description") ?></p>
         </div>
-      <? endif; ?>
-    <? else: ?>
-      <? if ($template = $this->content()->findTemplateForLng('content/Additions/historic-loans-pre-list')): ?>
+      <?php endif; ?>
+    <?php else: ?>
+      <?php if ($template = $this->content()->findTemplateForLng('content/Additions/historic-loans-pre-list')): ?>
         <div class="historic-loans-pre-list"><?=$this->render($template)?></div>
-      <? endif; ?>
-      <? if (!empty($this->transactions)): ?>
+      <?php endif; ?>
+      <?php if (!empty($this->transactions)): ?>
         <div class="history-controls toolbar">
           <div class="text-right hidden-print right-control">
             <?=$this->render('search/controls/sort.phtml')?>
@@ -43,20 +43,20 @@
           </div>
         </div>
         <table class="myresearch-table">
-        <? $i = 0; foreach ($this->transactions as $resource): ?>
-          <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <?php $i = 0; foreach ($this->transactions as $resource): ?>
+          <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
           <tr class="myresearch-row">
             <td class="text-left hidden-xs">
               <div class="cover-image">
-                <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+                <?php if ($summThumb = $this->record($resource)->getThumbnail()): ?>
                   <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-                <? else: ?>
+                <?php else: ?>
                   <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-                <? endif; ?>
+                <?php endif; ?>
               </div>
             </td>
             <td>
-              <?
+              <?php
                 // If this is a non-missing Solr record, we should display a link:
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   // Use ILS title if available since it may contain e.g. issue number
@@ -77,59 +77,59 @@
                 }
               ?>
               <div class="record-authors">
-              <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+              <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
                 <?=$this->record($resource)->getFormatList() ?>
                 <br/>
-              <? endif; ?>
-              <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+              <?php endif; ?>
+              <?php $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
                 <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
-              <? endif; ?>
+              <?php endif; ?>
 
-              <? if (!empty($ilsDetails['volume'])): ?>
+              <?php if (!empty($ilsDetails['volume'])): ?>
                 <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
                 <br />
-              <? endif; ?>
+              <?php endif; ?>
 
-              <? if (!empty($ilsDetails['publication_year'])): ?>
+              <?php if (!empty($ilsDetails['publication_year'])): ?>
                 <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
                 <br />
-              <? endif; ?>
+              <?php endif; ?>
               </div>
             </td>
             <td class="checkedout-status-information">
-              <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
+              <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
                 <br />
-              <? endif; ?>
+              <?php endif; ?>
 
-              <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+              <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
                 <br />
-              <? endif; ?>
+              <?php endif; ?>
 
-              <? if (!empty($ilsDetails['checkoutdate'])): ?>
+              <?php if (!empty($ilsDetails['checkoutdate'])): ?>
                 <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutdate'])?>
                 <br>
-              <? endif; ?>
-              <? if (!empty($ilsDetails['returndate'])): ?>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['returndate'])): ?>
                 <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returndate'])?>
                 <br>
-              <? endif; ?>
-              <? if (!empty($ilsDetails['duedate'])): ?>
-                <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><? endif; ?>
-              <? endif; ?>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['duedate'])): ?>
+                <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['duedate'])?><?php if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><?php endif; ?>
+              <?php endif; ?>
             </td>
           </tr>
-        <? endforeach; ?>
+        <?php endforeach; ?>
         </table>
         <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
-        <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
+        <?php if ($template = $this->content()->findTemplateForLng("content/Additions/checkout-history-post-list")): ?>
           <div class="checkout-history-post-list"><?=$this->render($template)?></div>
-        <? endif; ?>
-      <? else: ?>
+        <?php endif; ?>
+      <?php else: ?>
         <h4><?=$this->transEsc('You do not have any items in the checkout history')?>.</h4>
-      <? endif; ?>
-    <? endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - myresearch/historicloans.phtml -->

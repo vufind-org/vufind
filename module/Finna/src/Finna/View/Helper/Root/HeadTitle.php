@@ -3,7 +3,7 @@
 /**
  * Prepend the site title from config.ini if it exists.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -42,16 +42,16 @@ class HeadTitle extends \Zend\View\Helper\HeadTitle
     /**
      * Main configuration
      *
-     * @var array
+     * @var \Zend\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param array $config Main configuration
+     * @param \Zend\Config\Config $config Main configuration
      */
-    public function __construct($config)
+    public function __construct(\Zend\Config\Config $config)
     {
         $this->config = $config;
     }

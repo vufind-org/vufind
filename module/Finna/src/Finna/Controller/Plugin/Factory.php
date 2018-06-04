@@ -2,7 +2,7 @@
 /**
  * VuFind Factory for controller plugins
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2017-2018.
  *
@@ -53,14 +53,13 @@ class Factory
      */
     public static function getRecaptcha(ServiceManager $sm)
     {
-        $locator = $sm->getServiceLocator();
-        $config = $locator->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config')->get('config');
         return new Recaptcha(
-            $locator->get('VuFind\Recaptcha'),
+            $sm->get('VuFind\Recaptcha'),
             $config,
-            $locator->get('VuFind\AuthManager'),
-            $locator->get('VuFind\SessionManager'),
-            $locator->get('VuFind\Translator')
+            $sm->get('VuFind\AuthManager'),
+            $sm->get('VuFind\SessionManager'),
+            $sm->get('VuFind\Translator')
         );
     }
 }

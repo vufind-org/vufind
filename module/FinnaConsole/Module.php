@@ -2,7 +2,7 @@
 /**
  * Module for storing local overrides for VuFindConsole.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -38,7 +38,8 @@ use Zend\Console\Adapter\AdapterInterface as Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterface
+class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterface,
+    \Zend\ModuleManager\Feature\ConsoleBannerProviderInterface
 {
     /**
      * Get module configuration

@@ -2,7 +2,7 @@
 /**
  * Session handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,48 @@ namespace VuFind\Session;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'database' => 'VuFind\Session\Database',
+        'file' => 'VuFind\Session\File',
+        'memcache' => 'VuFind\Session\Memcache',
+        // for legacy 1.x compatibility
+        'filesession' => 'VuFind\Session\File',
+        'memcachesession' => 'VuFind\Session\Memcache',
+        'mysqlsession' => 'VuFind\Session\Database',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Session\Database' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Session\File' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Session\Memcache' => 'Zend\ServiceManager\Factory\InvokableFactory',
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory('VuFind\Session\PluginFactory');
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

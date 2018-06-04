@@ -1,5 +1,5 @@
 <!-- START of: finna - myresearch/mylist-navi.phtml -->
-<?
+<?php
   $numOfResources = $user->getNumOfResources();
   $currentLimit = 20; // default limit for favorites
   if (isset($this->results)) {
@@ -21,27 +21,27 @@
         <span> (<?=$numOfResources; ?>)</span>
       </a>
     </li>
-    <? foreach ($lists as $list): ?>
-    <? $active = ($list->id === $activeId); ?>
+    <?php foreach ($lists as $list): ?>
+    <?php $active = ($list->id === $activeId); ?>
     <li>
       <a href="<?= $active ? '#' : $this->url('userList', ['id' => $list['id']])?>?limit=<?=$currentLimit;?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
-        <? if ($list['public']): ?>
+        <?php if ($list['public']): ?>
         <i class="fa fa-public public-favorite-list pull-left"></i>
-        <? endif; ?>
+        <?php endif; ?>
         <div class="favorite-list-name">
           <?=$this->escapeHtml($list['title'])?>
           <span> (<?=$list->cnt?>)</span>
         </div>
-        <? if ($active): ?>
+        <?php if ($active): ?>
         <span class="pull-right remove-favorite-list"><i class="fa fa-button fa-times remove"></i></span>
-        <? endif; ?>
+        <?php endif; ?>
       </a>
-      <? if ($active): ?>
-      <? $url = $this->serverUrl() . $this->url('home') . 'List/' . $list['id']; ?>
+      <?php if ($active): ?>
+      <?php $url = $this->serverUrl() . $this->url('home') . 'List/' . $list['id']; ?>
       <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
-      <? endif; ?>
+      <?php endif; ?>
     </li>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <li>
       <div class="list-group-item add-new-list">
         <div class="name"><?=$this->transEsc('Create a List') ?></div>

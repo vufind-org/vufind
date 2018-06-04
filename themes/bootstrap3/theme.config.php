@@ -11,7 +11,6 @@ return [
         'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
-        'vendor/base64.js:lt IE 10', // btoa polyfill
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
@@ -28,12 +27,17 @@ return [
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
-            'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
-            'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
-            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
+            'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
+            'VuFind\View\Helper\Bootstrap3\Highlight' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
+            'VuFind\View\Helper\Bootstrap3\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
+            'VuFind\View\Helper\Bootstrap3\Search' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ],
-        'invokables' => [
+        'aliases' => [
+            'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
+            'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
+            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Recaptcha',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
     ]

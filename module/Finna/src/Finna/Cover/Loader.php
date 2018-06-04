@@ -2,7 +2,7 @@
 /**
  * Record image loader
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2015-2018.
@@ -174,15 +174,16 @@ class Loader extends \VuFind\Cover\Loader
      *
      * @param \Vufind\RecordDriver\SolrDefault $driver Record
      * @param int                              $index  Image index
+     * @param string                           $size   Requested size
      *
      * @return void
      */
     public function loadRecordImage(
-        \VuFind\RecordDriver\SolrDefault $driver, $index = 0
+        \VuFind\RecordDriver\SolrDefault $driver, $index, $size
     ) {
         $this->index = $index;
 
-        $params = $driver->getRecordImage($this->size, $index);
+        $params = $driver->getRecordImage($size, $index);
 
         if (isset($params['url'])) {
             $this->id = $driver->getUniqueID();
@@ -348,7 +349,7 @@ class Loader extends \VuFind\Cover\Loader
         );
 
         // Attempt to pull down the image:
-        $result = $this->client->setUri($url)->send();
+        $result = $this->httpService->createClient($url)->send();
         if (!$result->isSuccess()) {
             $this->debug("Failed to retrieve image from $url");
             return false;

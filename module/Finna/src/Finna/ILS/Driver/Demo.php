@@ -6,7 +6,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014.
@@ -69,6 +69,9 @@ class Demo extends \VuFind\ILS\Driver\Demo
         ) {
             return !empty($this->config['PasswordRecovery']['enabled'])
                 ? $this->config['PasswordRecovery'] : false;
+        }
+        if ('changePickupLocation' === $function) {
+            return ['method' => 'driver'];
         }
 
         return parent::getConfig($function, $params);
@@ -153,8 +156,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
 
         $config = isset($this->config['OnlinePayment'])
             ? $this->config['OnlinePayment'] : [];
-        $nonPayable = isset($config['nonPayable'])
-            ? $config['nonPayable'] : []
+        $nonPayable = $config['nonPayable'] ?? []
         ;
         $nonPayable[] = $accruedType;
         foreach ($fines as &$fine) {
@@ -218,7 +220,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
     {
         if ($method == 'markFeesAsPaid') {
             $required = [
-                'currency', 'enabled', 'registrationMethod'
+                'currency', 'enabled'
             ];
 
             foreach ($required as $req) {
@@ -284,5 +286,98 @@ class Demo extends \VuFind\ILS\Driver\Demo
         return [
             'success' => true
         ];
+    }
+
+    /**
+     * Change pickup location
+     *
+     * This is responsible for changing the pickup location of a hold
+     *
+     * @param string $patron      Patron array
+     * @param string $holdDetails The request details
+     *
+     * @return array Associative array of the results
+     */
+    public function changePickupLocation($patron, $holdDetails)
+    {
+        $requestId = $holdDetails['requestId'];
+        $pickUpLocation = $holdDetails['pickupLocationId'];
+
+        if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
+            return $this->holdError('hold_invalid_pickup');
+        }
+
+        $session = $this->getSession();
+        if (!isset($session->holds)) {
+            return $this->holdError('ils_connection_failed');
+        }
+        foreach ($session->holds as &$hold) {
+            if (isset($hold['requestId']) && $hold['requestId'] == $requestId) {
+                $hold['location'] = $pickUpLocation;
+                return ['success' => true];
+            }
+        }
+        return $this->holdError('hold_error_failed');
+    }
+
+    /**
+     * Generate a list of holds, storage retrieval requests or ILL requests.
+     *
+     * @param string $requestType Request type (Holds, StorageRetrievalRequests or
+     * ILLRequests)
+     *
+     * @return ArrayObject List of requests
+     */
+    protected function createRequestList($requestType)
+    {
+        $list = parent::createRequestList($requestType);
+        if ('Holds' === $requestType) {
+            $i = 0;
+            foreach ($list as $key => $item) {
+                $list[$key]['requestId'] = ++$i;
+                $list[$key]['is_editable'] = empty($item['available'])
+                    && empty($item['inTransit']);
+                if (!isset($item['available'])) {
+                    $list[$key]['available'] = false;
+                }
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * Return a hold error message
+     *
+     * @param string $message Error message
+     *
+     * @return array
+     */
+    protected function holdError($message)
+    {
+        return [
+            'success' => false,
+            'sysMessage' => $message
+        ];
+    }
+
+    /**
+     * Is the selected pickup location valid for the hold?
+     *
+     * @param string $pickUpLocation Selected pickup location
+     * @param array  $patron         Patron information returned by the patronLogin
+     * method.
+     * @param array  $holdDetails    Details of hold being placed
+     *
+     * @return bool
+     */
+    protected function pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)
+    {
+        $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
+        foreach ($pickUpLibs as $location) {
+            if ($location['locationID'] == $pickUpLocation) {
+                return true;
+            }
+        }
+        return false;
     }
 }

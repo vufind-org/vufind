@@ -1,5 +1,5 @@
 <!-- START of: finna - list/list.phtml -->
-<?
+<?php
 $list = $this->results->getListObject();
 // Set up page title:
 $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
@@ -55,15 +55,15 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     </div>
   </div>
 </div>
-<? // NOTE: insert extra closing div here to make the RSS-link container 100% wide ?>
+<?php // NOTE: insert extra closing div here to make the RSS-link container 100% wide ?>
 </div>
 
 <div class="container-fluid searchtools-background">
   <div class="container">
     <div class="searchtools hidden-print">
-      <? $this->results->getParams()->setPage(1); ?>
+      <?php $this->results->getParams()->setPage(1); ?>
       <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
     </div>
   </div>
-<? // NOTE: leave out a closing div to compensate for the one added above ?>
+<?php // NOTE: leave out a closing div to compensate for the one added above ?>
 <!-- END of: finna - list/list.phtml -->

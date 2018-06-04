@@ -2,7 +2,7 @@
 /**
  * Development Tools Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -78,7 +78,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
+                $this->serviceLocator->get('VuFind\Search\Results\PluginManager')
             );
         }
         if (isset($view->results) && $view->results) {

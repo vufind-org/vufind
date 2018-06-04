@@ -2,7 +2,7 @@
 /**
  * Model for EAD records in Solr.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2012-2017.
@@ -168,12 +168,12 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             }
 
             if (!isset($urls['small'])) {
-                $urls['small'] = isset($urls['medium']) ? $urls['medium']
-                    : $urls['large'];
+                $urls['small'] = $urls['medium']
+                    ?? $urls['large'];
             }
             if (!isset($urls['medium'])) {
-                $urls['medium'] = isset($urls['large']) ? $urls['large']
-                    : $urls['small'];
+                $urls['medium'] = $urls['large']
+                    ?? $urls['small'];
             }
 
             $description = isset($daogrp->daodesc->p) ? $daogrp->daodesc->p
