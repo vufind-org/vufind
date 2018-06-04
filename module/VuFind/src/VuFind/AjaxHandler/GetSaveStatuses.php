@@ -125,7 +125,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
