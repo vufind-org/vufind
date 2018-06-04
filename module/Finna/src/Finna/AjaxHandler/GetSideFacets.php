@@ -203,7 +203,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                                 $count += $item['count'];
                             }
                         }
-                        $response[$facet] = $count;
+                        $response[$facet]['checkboxCount'] = $count;
                         continue 2;
                     }
                 }
@@ -240,11 +240,11 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                         );
                     }
 
-                    $response[$facet] = $facetList;
+                    $response[$facet]['list'] = $facetList;
                 } else {
                     $context['facet'] = $facet;
                     $context['cluster'] = $sideFacetSet[$facet] ?? [];
-                    $response[$facet] = $this->renderer->render(
+                    $response[$facet]['html'] = $this->renderer->render(
                         'Recommend/SideFacets/facet.phtml',
                         $context
                     );
@@ -258,6 +258,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             'Recommend/SideFacets.phtml',
             $context
         );
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }

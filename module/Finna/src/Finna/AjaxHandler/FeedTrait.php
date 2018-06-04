@@ -156,6 +156,6 @@ trait FeedTrait
             }
         }
 
-        return ['html' => $html, 'settings' => $settings];
+        return compact('html', 'settings');
     }
 }

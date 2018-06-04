@@ -194,6 +194,6 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
 
         file_put_contents($cacheFile, $html);
 
-        return $this->formatResponse(['html' => $html], self::STATUS_OK);
+        return $this->formatResponse(compact('html'), self::STATUS_OK);
     }
 }

@@ -7,8 +7,8 @@ finna.record = (function finnaRecord() {
       var url = VuFind.path + '/AJAX/JSON?method=getDescription&id=' + id;
       $.getJSON(url)
         .done(function onGetDescriptionDone(response) {
-          if (response.data.length > 0) {
-            description.html(response.data);
+          if (response.data.html.length > 0) {
+            description.html(response.data.html);
 
             // Make sure any links open in a new window
             description.find('a').attr('target', '_blank');

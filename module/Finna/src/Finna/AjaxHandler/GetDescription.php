@@ -138,7 +138,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
         ) {
             // Load local cache if available
             if (($content = file_get_contents($localFile)) !== false) {
-                return $this->formatResponse($content, self::STATUS_OK);
+                return $this->formatResponse(['html' => $content], self::STATUS_OK);
             } else {
                 return $this->formatResponse('', self::STATUS_ERROR, 500);
             }
@@ -167,7 +167,9 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
 
                     file_put_contents($localFile, $content);
 
-                    return $this->formatResponse($content, self::STATUS_OK);
+                    return $this->formatResponse(
+                        ['html' => $content], self::STATUS_OK
+                    );
                 }
             }
             $language = $this->translator->getLocale();
@@ -180,9 +182,9 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
                 // Process markdown
                 $summary = $this->viewRenderer->plugin('markdown')->toHtml($summary);
 
-                return $this->formatResponse($summary, self::STATUS_OK);
+                return $this->formatResponse(['html' => $summary], self::STATUS_OK);
             }
         }
-        return $this->formatResponse('');
+        return $this->formatResponse(['html' => '']);
     }
 }

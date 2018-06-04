@@ -208,6 +208,6 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
             }
         }
 
-        return $this->formatResponse(['html' => $html], self::STATUS_OK);
+        return $this->formatResponse(compact('html'), self::STATUS_OK);
     }
 }
