@@ -3,17 +3,22 @@
 
 function channelAddLinkButtons(elem) {
   var links = JSON.parse(elem.dataset.linkJson);
-  var $cont = $('<div class="channel-links pull-left"></div>');
+  var $cont = $('<div class="dropdown"><button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fa fa-ellipsis-h"></i></button></div>');
+  var $list = $('<ul class="dropdown-menu"></ul>');
   for (var i = 0; i < links.length; i++) {
-    $cont.append(
+    var li = $('<li/>');
+    li.append(
       $('<a/> ', {
         'href': links[i].url,
-        'class': links[i].label + " btn btn-default",
+        'class': links[i].label,
         'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
       })
     );
+    $list.append(li);
   }
-  $('#' + elem.id + ' .slider-menu').append($cont);
+  $cont.append($list);
+  $(elem).siblings('.channel-title').append($cont);
+  console.log($cont);
 }
 
 function setupChannelSlider(i, op) {

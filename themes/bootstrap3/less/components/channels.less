@@ -1,5 +1,6 @@
 .channel-wrapper {
-  margin-bottom: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 @media (max-width: 767px) {
   .channel-wrapper {
@@ -61,6 +62,13 @@
   max-width: none;
 }
 
+.channel-title h2 {
+  display: inline-block;
+  margin: 0;
+}
+.channel-title .dropdown {
+  display: inline-block;
+}
 .channel-title a:hover { text-decoration: none; }
 .channel-title i.fa-fw {
   width: 1.4em;
@@ -71,6 +79,7 @@
 }
 .channel-title .placeholder { width: 25px; }
 
+.channel-title .dropdown button,
 .channel .slick-prev::before,
 .channel .slick-next::before {
   color: #555;
