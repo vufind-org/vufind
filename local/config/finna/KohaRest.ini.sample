@@ -115,6 +115,7 @@ pattern = "numeric"
 ;fields[] = Country:country
 ;fields[] = Phone:mobile
 ;fields[] = Email:email
+;fields[] = Hold Identifier:othernames
 ; url is required for the url method. url can be a single address or an array of
 ; language-specific addresses. First example is a single one:
 ;url = http://address.of.change.form
