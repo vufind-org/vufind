@@ -36,23 +36,18 @@
               ? $searchAction . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
               : $searchAction . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
           ?>
-          <?php $subLinks = $this->exclude && !$item['isApplied']; ?>
-          <?php if ($subLinks): ?>
-            <li class="facet js-facet-item">
-              <a href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
+          <?php $hasSubLinks; ?>
+          <?php if ($hasSubLinks = $this->exclude && !$item['isApplied']): ?>
+            <li class="facet excludable js-facet-item">
           <?php else: ?>
-            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet js-facet-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
+            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet excludable js-facet-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
           <?php endif; ?>
-              <?php if (!empty($item['displayText'])): ?>
-                <?=$this->escapeHtml($item['displayText']) ?>
-              <?php elseif (!empty($item['value'])): ?>
-                <?=$this->escapeHtml($item['value']) ?>
-              <?php else: // prevent empty value inside <a> tag ?>
-                -
-              <?php endif; ?>
-            <?php if ($subLinks): ?>
-              </a>
+
+            <?php if($this->exclude): ?>
+              <?php $excludeURL =$this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT'); ?>
+              <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
             <?php endif; ?>
+
             <?php if($item['isApplied']): ?>
               <?php if ($item['operator'] == 'OR'): ?>
                 <i class="fa fa-check-square-o" aria-hidden="true"></i>
@@ -62,12 +57,26 @@
             <?php else: ?>
               <span class="badge">
                 <?=$this->localizedNumber($item['count']) ?>
-                <?php if ($this->exclude): ?>
-                  <a href="<?=$this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>" data-lightbox-ignore><i class="fa fa-times" aria-hidden="true"></i></a>
-                <?php endif; ?>
               </span>
             <?php endif; ?>
-          <?=$subLinks ? '</li>' : '</a>'; ?>
+
+            <? if ($hasSubLinks): ?>
+              <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
+            <?php endif; ?>
+
+            <?php if (!empty($item['displayText'])): ?>
+              <?=$this->escapeHtml($item['displayText']) ?>
+            <?php elseif (!empty($item['value'])): ?>
+              <?=$this->escapeHtml($item['value']) ?>
+            <?php else: // prevent empty value inside <a> tag ?>
+              -
+            <?php endif; ?>
+
+            <?php if ($hasSubLinks): ?>
+              </a>
+            <?php endif; ?>
+
+          <?=$hasSubLinks ? '</li>' : '</a>'; ?>
         <?php endforeach; ?>
       <?php endif; ?>
       <?php if ($this->anotherPage): ?>
