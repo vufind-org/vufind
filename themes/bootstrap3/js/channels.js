@@ -20,6 +20,7 @@ function setupChannelSlider(i, op) {
   $(op).slick({
     slidesToShow: 6,
     slidesToScroll: 6,
+    infinite: false,
     rtl: $(document.body).hasClass("rtl")
   });
   $(op).on('swipe', function channelDrag() {
@@ -29,7 +30,7 @@ function setupChannelSlider(i, op) {
   $(op).find('.channel-record').dotdotdot({
     callback: function dddcallback(istrunc, orig) {
       if (istrunc) {
-        $(this).attr('title', $(orig).text());
+        $(this).attr('title', $(orig).text().trim());
       }
     }
   });
