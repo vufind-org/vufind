@@ -65,7 +65,9 @@ class OverdriveConnectorFactory implements \Zend\ServiceManager\Factory\FactoryI
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $odConfig = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
         $auth = $container->get('VuFind\Auth\ILSAuthenticator');
-
-        return new $requestedName($config, $odConfig, $auth);
+        $session = new \Zend\Session\Container(
+            'DigitalContent\OverdriveController', $container->get('Zend\Session\SessionManager')
+        );
+        return new $requestedName($config, $odConfig, $session, $auth);
     }
 }
