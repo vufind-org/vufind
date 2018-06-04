@@ -36,8 +36,8 @@
               ? $searchAction . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
               : $searchAction . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
           ?>
-          <?php $hasSubLinks; ?>
-          <?php if ($hasSubLinks = $this->exclude && !$item['isApplied']): ?>
+          <?php $hasSubLinks = $this->exclude && !$item['isApplied']; ?>
+          <?php if ($hasSubLinks): ?>
             <li class="facet excludable js-facet-item">
           <?php else: ?>
             <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet excludable js-facet-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
