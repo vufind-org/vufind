@@ -30,7 +30,10 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         $title = $this->getShortTitle();
         $subtitle = $this->getSubtitle();
         $titleSection = $this->getTitleSection();
-        if (!empty($subtitle)) { $title .= ' : ' . $subtitle; }
+        // In some cases the subtitles contain the English translation
+        // then don't separate title and subtitle with ":"
+        $title_subtitle_separator = preg_match('/^\s*=\s/', $subtitle) ? ' ' : ' : ';
+        if (!empty($subtitle)) { $title .= $title_subtitle_separator . $subtitle; }
         if (!empty($titleSection)) { $title .= ' / ' . $titleSection; }
         return $title;
     }
