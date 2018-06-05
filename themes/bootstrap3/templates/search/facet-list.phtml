@@ -36,15 +36,15 @@
               ? $searchAction . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
               : $searchAction . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
           ?>
-          <?php $hasSubLinks; ?>
-          <?php if ($hasSubLinks = $this->exclude && !$item['isApplied']): ?>
+          <?php $hasSubLinks = $this->exclude && !$item['isApplied']; ?>
+          <?php if ($hasSubLinks): ?>
             <li class="facet excludable js-facet-item">
           <?php else: ?>
             <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet excludable js-facet-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
           <?php endif; ?>
 
             <?php if($this->exclude): ?>
-              <?php $excludeURL =$this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT'); ?>
+              <?php $excludeURL = $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT'); ?>
               <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
             <?php endif; ?>
 
@@ -60,8 +60,10 @@
               </span>
             <?php endif; ?>
 
-            <? if ($hasSubLinks): ?>
+            <?php if ($hasSubLinks): ?>
               <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
+            <?php else: ?>
+              <span class="text">
             <?php endif; ?>
 
             <?php if (!empty($item['displayText'])): ?>
@@ -74,6 +76,8 @@
 
             <?php if ($hasSubLinks): ?>
               </a>
+            <?php else: ?>
+              </span>
             <?php endif; ?>
 
           <?=$hasSubLinks ? '</li>' : '</a>'; ?>

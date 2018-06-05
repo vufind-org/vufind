@@ -26,7 +26,7 @@
       : $this->currentPath() . $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], $thisFacet['operator']);
   ?>
   <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-    <div class="facet excludable facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif; ?>">
+    <div class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif; ?>">
       <?php $excludeURL = $thisFacet['isApplied']
         ? $this->currentPath() . $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])->addFacet($this->title, $thisFacet['value'], 'NOT')
         : $this->currentPath() . $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], 'NOT');
