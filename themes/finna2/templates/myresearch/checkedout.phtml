@@ -33,47 +33,47 @@
     <div class="checkedout-pre-list"><?=$this->render($template)?></div>
   <?php endif; ?>
   <?php if (!empty($this->transactions)): ?>
-    <?php if ($this->renewForm): ?>
-    <form name="renewals" method="post" id="renewals">
-      <table class="myresearch-table">
-      <tr class="toolbar">
-        <th class="text-left checkbox-col">
-          <div class="checkboxFilter mylist-select-all">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-                <?=$this->transEsc('Select All')?>
-                <span class="selected"></span> <span class="loans-renewal-available"></span>
-              </label>
-            </div>
-          </div>
-        </th>
-        <th colspan="2">
-          <div class="renew-button-col">
-            <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-            <?php if ($this->paginator): ?>
-              <input type="submit" class="btn btn-primary renew-button" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
-            <?php endif; ?>
-          </div>
-          <div class="sort-col">
-            <?=$this->render('search/controls/sort.phtml')?>
-          </div>
-        </th>
-      </tr>
-    <?php else: ?>
-    <table class="myresearch-table">
-      <tr class="toolbar">
-        <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
-        <th class="text-right" colspan="2">
-          <?=$this->render('search/controls/sort.phtml')?>
-        </th>
-      </tr>
-    <?php endif; ?>
-
     <?php if ($paginator): ?>
       <div class="pagination-container">
         <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => $params]) : ''?>
       </div>
+    <?php endif; ?>
+
+    <?php if ($this->renewForm): ?>
+      <form name="renewals" method="post" id="renewals">
+        <table class="myresearch-table">
+        <tr class="toolbar">
+          <th class="text-left checkbox-col">
+            <div class="checkboxFilter mylist-select-all">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                  <?=$this->transEsc('Select All')?>
+                  <span class="selected"></span> <span class="loans-renewal-available"></span>
+                </label>
+              </div>
+            </div>
+          </th>
+          <th colspan="2">
+            <div class="renew-button-col">
+              <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+              <?php if ($this->paginator): ?>
+                <input type="submit" class="btn btn-primary renew-button" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+              <?php endif; ?>
+            </div>
+            <div class="sort-col">
+              <?=$this->render('search/controls/sort.phtml')?>
+            </div>
+          </th>
+        </tr>
+    <?php else: ?>
+      <table class="myresearch-table">
+        <tr class="toolbar">
+          <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
+          <th class="text-right" colspan="2">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </th>
+        </tr>
     <?php endif; ?>
 
     <?php foreach ($hiddenTransactions as $ilsDetails): ?>
