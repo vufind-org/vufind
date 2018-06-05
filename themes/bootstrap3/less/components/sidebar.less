@@ -3,33 +3,6 @@
   margin-bottom: 1rem;
   padding-left: 0;
 
-  .facet,
-  .title {
-    display: block;
-    padding: 8px 15px;
-    line-height: 1.5rem;
-    width: 100%;
-    text-align: left;
-    background-color: transparent;
-
-    .badge,
-    .status {
-      float: right;
-
-      body.rtl & { float: left; }
-    }
-    .badge {
-      max-height: 19px;
-      line-height: 1.1rem;
-    }
-  }
-  .facet { border-bottom: 1px solid @list-group-border; }
-  .title {
-    padding-right: 8px;
-    border: 1px solid @list-group-border;
-    font-weight: bold;
-  }
-
   [data-toggle="collapse"] {
     cursor: pointer;
 
@@ -49,32 +22,43 @@
     border-right: 1px solid @list-group-border;
   }
   & > .facet:first-child { border-top: 1px solid @list-group-border; }
-
-  .facetOR .text {
-    display: inline-block;
-    padding-left: 0.5rem;
-    text-indent: -0.5rem;
-  }
 }
 
-.full-facet-list .excludable,
-.facet-group .excludable {
+
+.facet,
+.facet-group .title {
   display: flex;
   flex-direction: row-reverse;
-  padding-right: 0;
+  padding: .5rem;
+  width: 100%;
+  line-height: 1.5rem;
+  background-color: transparent;
 
-  .badge { flex-shrink: 0; }
-  .text { flex-grow: 1; }
+  .text {
+    flex-grow: 1;
+  }
+
+  .badge {
+    flex-shrink: 0;
+    max-height: 19px;
+    line-height: 1.1rem;
+  }
+
   .exclude {
     flex-basis: 2rem;
     flex-shrink: 0;
     text-align: center;
   }
-
-  body.rtl & {
-    padding-left: 0;
-    padding-right: 15px;
-  }
+}
+.facet {
+  border-bottom: 1px solid @list-group-border;
+}
+.facet-group .title {
+  display: block;
+  padding-right: 8px;
+  border: 1px solid @list-group-border;
+  font-weight: bold;
+  text-align: inherit;
 }
 
 .checkbox-filter {
