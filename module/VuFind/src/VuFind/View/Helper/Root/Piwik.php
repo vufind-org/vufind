@@ -305,10 +305,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getRecordDriver()
     {
-        $viewModel = $this->getView()->plugin('view_model');
+        $view = $this->getView();
+        $viewModel = $view->plugin('view_model');
         $current = $viewModel->getCurrent();
         if (null === $current) {
-            return null;
+            $driver = $view->vars('driver');
+            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+                return $driver;
+            }
         }
         $children = $current->getChildren();
         if (isset($children[0])) {
