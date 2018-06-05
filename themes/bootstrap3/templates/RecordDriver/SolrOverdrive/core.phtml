@@ -44,14 +44,12 @@
            
            <?php 
            $avail = $this->driver->getOverdriveAvailability();
-           //$holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold');
            $checkedOut = $isOnHold = false;
-           //if($user = $this->auth()->isLoggedIn()):
                $checkedOut = $this->driver->isCheckedOut($user);
                if(!$checkedOut){
                    $hold = $this->driver->isHeld($user);
                }
-           //endif; ?>
+            ?>
            
            <div class="hold pull-right">
            <?php 

@@ -32,7 +32,7 @@ use Zend\Session\Container;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
-//use flashMessages if possible
+
 //remove outside calls requring user
 //migrate to result obj instead of array
 
@@ -167,7 +167,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         $odAccess = $this->sessionContainer->odAccess;
         $this->debug("odaccess: $odAccess");
         if (empty($odAccess)) {
-            if ($this->_connectToPatronAPI(
+            if ($this->connectToPatronAPI(
                 $user["cat_username"], 
                 $user["cat_password"], true
             )
@@ -355,7 +355,10 @@ class OverdriveConnector implements LoggerAwareInterface,
             
             $response = $this->callPatronUrl(
                 $user["cat_username"], 
-                $user["cat_password"], $url, $params, "POST"
+                $user["cat_password"], 
+                $url, 
+                $params, 
+                "POST"
             );
             $holdResult = array();
             $holdResult['result'] = false;
@@ -935,7 +938,6 @@ class OverdriveConnector implements LoggerAwareInterface,
             );
             $client = $this->getHttpClient($url);
             $client->setHeaders($headers);
-
             $client->setMethod($requestType);
 
             if ($params != null) {
@@ -949,8 +951,9 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $postData = json_encode($jsonData);
                 $client->setRawBody($postData);
             }
-            
-            $response = $client->setUri($url)->send();
+            $this->debug("patronURL data sent: $postData");
+            $this->debug("patronURL method: ".$client->getMethod());
+            $response = $client->send();
             $body = $response->getBody();
            
             //if all goes well for DELETE, the code will be 204 
@@ -1010,14 +1013,14 @@ class OverdriveConnector implements LoggerAwareInterface,
             $url = $config->patronTokenURL;
             $websiteId = $config->websiteID;
             $ilsname = $config->ILSname;
-            $authHeader = base64_encode($conf->clientKey . ":" . $conf->clientSecret);
+            $authHeader = base64_encode($config->clientKey . ":" . $config->clientSecret);
             $headers = array(
                 "Content-Type: application/x-www-form-urlencoded;charset=UTF-8", 
                 "Authorization: Basic $authHeader",
                 "User-Agent: VuFind");
             $client = $this->getHttpClient($url);
             $client->setHeaders($headers);
-
+            $client->setMethod("POST");
             if ($patronPin == null) {
                 $postFields = "grant_type=password&username={$patronBarcode}";
                 $postFields .= "&password=ignore&password_required=false";
@@ -1028,12 +1031,12 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $postFields .= "&password={$patronPin}&scope=websiteId";
                 $postFields .= ":{$websiteId}%20authorizationname:{$ilsname}";
             }
-
+            $this->debug("patron API token data: $postFields");
             $client->setRawBody($postFields);
             $response = $client->setUri($url)->send();
             $body = $response->getBody();
             $patronTokenData = json_decode($body);
-            $this->debug("return from OD patron API Call: ". print_r($patronTokenData, true));
+            $this->debug("return from OD patron API token Call: ". print_r($patronTokenData, true));
             if (isset($patronTokenData->expires_in)) {
                 $patronTokenData->expirationTime = time() + $patronTokenData->expires_in;
             } else {

@@ -13,7 +13,8 @@
  namespace VuFind\Controller;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
- use Zend\Log\LoggerAwareInterface;
+use Zend\Log\LoggerAwareInterface;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
  /**
   * Overdrive Controller supports action for Overdrive Integration
@@ -96,7 +97,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             'holds' => $myholds,
             ]
         );
-
+//$this->flashMessenger()->addMessage('testing', 'info');
         $view->setTemplate('myresearch/odmycontent');
         return $view;
     }
