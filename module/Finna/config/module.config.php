@@ -31,7 +31,7 @@ $config = [
     'router' => [
         'routes' => [
             'cache-file' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [
                     'route'    => '/cache/[:file]',
                     'constraints' => [
@@ -147,6 +147,11 @@ $config = [
                     ]
                 ]
             ]
+        ],
+    ],
+    'route_manager' => [
+        'aliases' => [
+            'Zend\Mvc\Router\Http\Segment' => 'Zend\Router\Http\Segment'
         ]
     ],
     'controllers' => [
