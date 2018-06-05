@@ -11,7 +11,7 @@
     <meta name="format-detection" content="telephone=no" />
     <?php // set finna-facebook.png image for Facebook sharing if image is present and we aren't on record view
       if ($this->imageLink('finna-facebook.png') != '' && $this->layout()->templateName != 'view') {
-        $this->headMeta()->setProperty('og:image', $this->serverURL() . $this->imageLink('finna-facebook.png'));
+        $this->headMeta()->setProperty('og:image', $this->serverUrl() . $this->imageLink('finna-facebook.png'));
       }
     ?>
     <?=$this->headMeta()?>
