@@ -1,4 +1,4 @@
-/*global ChannelSlider, getUrlRoot, htmlEncode, VuFind */
+/*global getUrlRoot, htmlEncode, VuFind */
 /*exported channelAddLinkButtons */
 
 function channelAddLinkButtons(elem) {
@@ -31,14 +31,14 @@ function setupChannelSlider(i, op) {
         breakpoint: 768,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
+          slidesToScroll: 3
         }
       },
       {
         breakpoint: 480,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1,
+          slidesToScroll: 1
         }
       }
     ]
@@ -146,7 +146,6 @@ function bindChannelAddMenu(iteration, channel) {
   });
 }
 
-var justSwiped = false;
 $(document).ready(function channelReady() {
   $('.channel').each(setupChannelSlider);
   $('.channel').each(bindChannelAddMenu);
