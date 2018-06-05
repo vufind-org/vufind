@@ -18,7 +18,6 @@ function channelAddLinkButtons(elem) {
   }
   $cont.append($list);
   $(elem).siblings('.channel-title').append($cont);
-  console.log($cont);
 }
 
 function setupChannelSlider(i, op) {
