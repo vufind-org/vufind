@@ -15,4 +15,11 @@ class Utility {
         }
         return $instance_type;
     }
+
+    public static function printToConsole( $data ) {
+        $output = $data;
+        if ( is_array( $output ) )
+            $output = implode( ',', $output);
+        echo "<script>console.log( '" . $output . "' );</script>";
+    }
 }
