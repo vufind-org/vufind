@@ -6,7 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -92,6 +92,13 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
     protected $escapedChars = '+-&|!(){}[]^"~*?:\\/';
 
     /**
+     * Stop words that are ignored
+     *
+     * @var array
+     */
+    protected $stopWords = ['and', 'not', 'the'];
+
+    /**
      * Constructor.
      *
      * @param \Zend\Config\Config $searchConfig Search config
@@ -173,6 +180,10 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
                     $query[] = "$field:($escaped)^$fullBoost";
                     foreach (explode(' ', $values) as $value) {
                         if (strlen($value) < 3) {
+                            continue;
+                        }
+                        $valueLower = mb_strtolower($value, 'UTF-8');
+                        if (in_array($valueLower, $this->stopWords)) {
                             continue;
                         }
                         $escaped = addcslashes($value, $this->escapedChars);
