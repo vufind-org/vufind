@@ -472,7 +472,8 @@ $config = [
                     'VuFind\ILS\Driver\KohaRest' => 'Finna\ILS\Driver\KohaRest',
                     'VuFind\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackend',
                     'VuFind\ILS\Driver\SierraRest' => 'Finna\ILS\Driver\SierraRest',
-                    'VuFind\ILS\Driver\VoyagerRestful' => 'Finna\ILS\Driver\Voyager',
+                    'VuFind\ILS\Driver\Voyager' => 'Finna\ILS\Driver\Voyager',
+                    'VuFind\ILS\Driver\VoyagerRestful' => 'Finna\ILS\Driver\VoyagerRestful',
                 ]
             ],
             'recommend' => [
