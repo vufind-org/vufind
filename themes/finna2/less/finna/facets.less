@@ -106,9 +106,6 @@
     border: 1px solid  @gray-lighter;
     padding: 15px 10px;
   }
-  & .list-group-item i.fa.fa-square-o, .list-group-item i.fa.fa-check-square-o {
-    vertical-align: middle;
-  }
 
   & .list-group-item i.fa.fa-check-square-o {
     color: @link-color;
@@ -117,9 +114,6 @@
   // Hierarchical facets
   .jstree-node .facet {
     border: none;
-    &:not(.excludable) .badge {
-      margin-right: 10px;
-    }
   }
   .jstree-facet {
     .jstree-anchor {
@@ -139,7 +133,7 @@
       }
     }
     .facet {
-      padding: 4px 0 0 10px;
+      padding: 4px 8px 0 10px;
     }
   }
   .jstree-container-ul {
@@ -253,7 +247,6 @@ span.badge.cb-facet {
   .facet {
     padding: 5px 8px;
     display: flex;
-    flex-direction: row-reverse;
     .text { flex-grow: 1; }
   }
   .title {
@@ -273,26 +266,20 @@ span.badge.cb-facet {
   }
   .collapsed::after {content: '\25BC';}
 
-  .excludable {
-    display: flex;
-    flex-direction: row-reverse;
-    padding-right: 0;
-
-    .badge { flex-shrink: 0; }
-    .text { flex-grow: 1; }
-    .exclude {
-      flex-basis: 2rem;
-      flex-shrink: 0;
-      text-align: center;
-      i  {
-        font-size: 0.8em;
-      }
+  .badge { flex-shrink: 0; }
+  .text { flex-grow: 1; }
+  .exclude {
+    margin-left: 5px;
+    flex-shrink: 0;
+    text-align: center;
+    i  {
+      font-size: 0.8em;
     }
+  }
 
-    body.rtl & {
-      padding-left: 0;
-      padding-right: 15px;
-    }
+  body.rtl & {
+    padding-left: 0;
+    padding-right: 15px;
   }
 }
 
@@ -322,11 +309,17 @@ span.badge.cb-facet {
   .active .fa {
     float: right;
     margin-top: .25rem;
-    margin-right: 0.5rem;
     margin-left: 0.5rem;
   }
   .facet {
-    display: inherit;
+    display: flex;
+    flex-direction: row;
+    .badge {
+      padding-right: 4px;
+    }
+    .fa-square-o {
+      display: none;
+    }
   }
 }
 
