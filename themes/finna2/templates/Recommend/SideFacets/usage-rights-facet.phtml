@@ -3,41 +3,28 @@
 <?php foreach ($cluster['list'] as $i => $thisFacet): ?>
   <?php
     $usageOptions[$thisFacet['value']] = $thisFacet;
+
+    $toggleUrl = $thisFacet['isApplied']
+      ? $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator'])
+      : $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']);
+
     ob_start();
   ?>
-  <?php if ($thisFacet['isApplied']): ?>
-    <a class="list-group-item active<?php if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<?php endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
-      <?php if ($thisFacet['operator'] == 'OR'): ?>
-        <i class="fa fa-check-square-o" aria-hidden="true"></i>
-      <?php else: ?>
-        <span class="pull-right"><i class="fa fa-check" aria-hidden="true"></i></span>
-      <?php endif; ?>
+  <div class="facet js-facet-item<?php if ($thisFacet['isApplied']): ?> active<?php endif; ?>">
+    <a class="text" href="<?=$toggleUrl ?>">
       <?=$this->transEsc($thisFacet['value'] . '_facet')?>
     </a>
-  <?php else: ?>
-    <?php $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
-    <?php if ($allowExclude): ?>
-      <div class="list-group-item facet facet<?=$thisFacet['operator'] ?> excludable">
+    <?php if (!$thisFacet['isApplied']): ?>
+      <span class="badge">
+        <?=$this->localizedNumber($thisFacet['count'])?>
+      </span>
+      <?php if ($allowExclude): ?>
         <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-    <?php else: ?>
-      <div class="list-group-item facet">
-    <?php endif; ?>
-    <span class="badge">
-      <?=$this->localizedNumber($thisFacet['count'])?>
-    </span>
-    <a class="text" href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
-    <?php if ($thisFacet['operator'] == 'OR'): ?>
-      <i class="fa fa-square-o" aria-hidden="true"></i>
-    <?php endif; ?>
-    <?=$this->transEsc($thisFacet['value'] . '_facet')?>
-    <?php if ($allowExclude): ?>
-        </a>
-      </div>
-    <?php else: ?>
-      </a>
-      </div>
-    <?php endif; ?>
-  <?php endif; ?>
+      <?php endif; ?>
+    <? else: ?>
+      <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
+    <? endif; ?>
+  </div>
   <?php $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endforeach; ?>
