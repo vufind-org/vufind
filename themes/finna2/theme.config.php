@@ -121,6 +121,7 @@ return [
             'Combined' => 'combined',
             'KeepAlive' => 'keepAlive',
             'MetaLib' => 'metaLib',
+            'metalib' => 'metaLib',
             'Primo' => 'primo',
             'proxyurl' => 'proxyUrl',
             'searchtabs' => 'searchTabs',
