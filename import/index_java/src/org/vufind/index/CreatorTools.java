@@ -132,7 +132,11 @@ public class CreatorTools
         // relator allowed" list.
         if (subfieldE.size() == 0 && subfield4.size() == 0) {
             if (Arrays.asList(noRelatorAllowed).contains(tag)) {
-                relators.add("");
+                // 100 contains the first author even if the relator is not given explicitly
+                if (tag.equals("100"))
+                    relators.add("aut");
+                else
+                    relators.add("");
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
