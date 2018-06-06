@@ -1,7 +1,7 @@
 <?php
   $toggleUrl = $this->facet['isApplied']
-    ? $this->urlBase . $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
-    : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
+    ? $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
+    : $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
 
   $hasSubLinks = $this->exclude && !$this->facet['isApplied'];
 
