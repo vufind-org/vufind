@@ -134,7 +134,7 @@ class AlmaDatabase extends Database
             // the ILS login screen from VuFind
             $user->saveCredentials($params['username'], $params['password']);
         } else {
-            throw new AuthException('Error while creating user in Alma');
+            throw new AuthException($this->translate('ils_account_create_error'));
         }
 
         return $user;
