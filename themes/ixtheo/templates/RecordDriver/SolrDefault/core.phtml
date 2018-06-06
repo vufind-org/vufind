@@ -114,7 +114,7 @@
         <tr>
           <th><?=$this->transEsc(count($authors['primary']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['primary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['primary'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
@@ -123,7 +123,7 @@
         <tr>
           <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':'; '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
@@ -132,7 +132,7 @@
         <tr>
           <th><?=$this->transEsc('Other Authors')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
