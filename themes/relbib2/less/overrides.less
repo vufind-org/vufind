@@ -1,37 +1,52 @@
 .row-home {
-    background: transparent url(/themes/relbib2/images/background4.jpg) no-repeat;
-    background-size: cover;
+    /* stoneroad */
+    background: transparent url(/themes/relbib2/images/background.jpg) no-repeat;
     background-position: center center;
+    background-size: cover;
 }
 
 .panel-home {
-  h1 {
-    a {
-      text-shadow: initial;
+    h1 {
+        a {
+            text-shadow: 4px 4px 10px #323232;
+            background-color: rgba(0, 0, 0, 0.15);
+        }
     }
-  }
 
-  h4 {
-    text-shadow: initial;
-    font-weight: bold;
-  }
+    h4 {
+        font-weight: bold;
+        font-size: 24px;
+        text-shadow: 4px 4px 10px #323232;
+        background-color: rgba(0, 0, 0, 0.10);
+    }
 
-  .control-label {
-      color: white;
-  }
+    .control-label {
+        color: white;
+    }
 
-  a {
-      color: white;
-      text-decoration: underline;
-  }
+    a {
+        color: white;
+    }
+
+    ul.nav-pills > li {
+        background-color: #495057;
+    }
 }
 
 #searchbox_news {
-    color: white;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px; padding-top: 1px;
+    color: @brand-primary;
+    font-size: 130%;
+
+    a {
+        color: @brand-primary;
+        text-decoration: underline;
+    }
 }
 
 .background-lightblue {
-    background: #600000;
+    background: @brand-primary;
 }
 
 .logo-img {
