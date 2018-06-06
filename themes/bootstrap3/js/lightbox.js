@@ -162,7 +162,7 @@ VuFind.register('lightbox', function Lightbox() {
             originalUrl: _originalUrl,
             formUrl: obj.url
           });
-          if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)/* || obj.url.match(/AlmaDatabase/)*/) {
+          if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             if (eventResult) {
               VuFind.refreshPage();
             }
