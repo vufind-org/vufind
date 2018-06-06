@@ -39,7 +39,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         .appendTo($html);
 
       if (allowExclude) {
-        $html.addClass('excludable');
         var excludeUrl = currentPath + this.exclude;
         var $a = $('<a/>')
           .addClass('exclude')
