@@ -1,8 +1,16 @@
-<div class="col-xs-12 col-sm-4 panel panel-top panel-default">
+<div class="col-xs-12 col-sm-3 panel panel-top panel-default">
     <div class="panel-image-wrapper"><img src="<?=$this->imageLink('frontpage/discover.jpg') ?>" alt="" class="img-responsive panel-image"></div>
     <div class="panel-content">
         <h4>Discover RelBib</h4>
-        <p>[Wissenswertes zu RelBib]</p>
-        <a href="<?=$this->url('content-page', ['page' => 'discover']) ?>#anchor" class="btn btn-default" role="button">Mehr erfahren</a>
+        <p>
+            <ul>
+                <li><a href="<?=$this->url('content-page', ['page' => 'discover_search_browsing']) ?>">Suchen und Browsen</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => 'discover_features']) ?>">RelBib Features</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => 'discover_my_relbib']) ?>">Meine RelBib</a></li>
+                <li><a href="/relbib_docs/relbib_journals.pdf">RelBib Zeitschriftenliste</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => 'discover_A-Z']) ?>">RelBib A-Z</a></li>
+            </ul>
+        </p>
+        <!--<a href="<?=$this->url('content-page', ['page' => 'discover']) ?>#anchor" class="btn btn-default" role="button">Mehr erfahren</a>-->
     </div>
 </div>
