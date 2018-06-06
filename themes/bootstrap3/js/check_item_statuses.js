@@ -50,7 +50,7 @@ function displayItemStatus(result, $item) {
       locationListHTML += '</div>';
       locationListHTML += '<div class="groupCallnumber">';
       locationListHTML += (result.locationList[x].callnumbers)
-           ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+        ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
       locationListHTML += '</div>';
     }
     $item.find('.locationDetails').removeClass('hidden');
@@ -92,17 +92,17 @@ function runItemAjaxForQueue() {
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
     data: { 'id': itemStatusIds }
   })
-  .done(function checkItemStatusDone(response) {
-    for (var j = 0; j < response.data.length; j++) {
-      displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
-      itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
-    }
-    itemStatusRunning = false;
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(response, textStatus);
-    itemStatusRunning = false;
-  });
+    .done(function checkItemStatusDone(response) {
+      for (var j = 0; j < response.data.length; j++) {
+        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
+        itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
+      }
+      itemStatusRunning = false;
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      itemStatusFail(response, textStatus);
+      itemStatusRunning = false;
+    });
 }
 
 function itemQueueAjax(id, el) {
