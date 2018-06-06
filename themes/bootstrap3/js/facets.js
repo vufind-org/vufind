@@ -6,25 +6,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
   $(data).each(function facetNodesEach() {
     var $html = $('<div/>').addClass('facet');
-    if (!this.isApplied && counts) {
-      if (allowExclude) {
-        $html.addClass('excludable');
-        var excludeUrl = currentPath + this.exclude;
-        var $a = $('<a/>')
-          .addClass('exclude')
-          .attr('href', excludeUrl)
-          .attr('title', excludeTitle);
-        $('<i/>').addClass('fa fa-times').appendTo($a);
-        $a.appendTo($html);
-      }
-      $('<span/>')
-        .addClass('badge')
-        .text(
-          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
-        )
-        .appendTo($html);
-    }
-
     var url = currentPath + this.href;
     var $item = $('<span/>')
       .addClass('main text' + (this.isApplied ? ' applied' : ''))
@@ -48,6 +29,25 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
     $item.append(this.displayText);
     $item.appendTo($html);
+
+    if (!this.isApplied && counts) {
+      $('<span/>')
+        .addClass('badge')
+        .text(
+          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+        )
+        .appendTo($html);
+
+      if (allowExclude) {
+        var excludeUrl = currentPath + this.exclude;
+        var $a = $('<a/>')
+          .addClass('exclude')
+          .attr('href', excludeUrl)
+          .attr('title', excludeTitle);
+        $('<i/>').addClass('fa fa-times').appendTo($a);
+        $a.appendTo($html);
+      }
+    }
 
     $html = $('<div/>').append($html);
 
