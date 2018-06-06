@@ -252,7 +252,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
 
         if (!self::HasChapter($book_code))
             return $chapter_code_as_string;
-        $chapter_code_as_string .= " " . strval(self::GetChapter($book_code));
+        $chapter_code_as_string .= strval(self::GetChapter($book_code));
         if (!self::HasVerse($book_code))
             return $chapter_code_as_string;
         $verse = self::GetVerse($book_code);
