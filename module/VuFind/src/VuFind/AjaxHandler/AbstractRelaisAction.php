@@ -1,10 +1,10 @@
 <?php
 /**
- * Date Exception
+ * Abstract Relais Ajax Action
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,22 +20,58 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Exceptions
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Exception;
+namespace VuFind\AjaxHandler;
+
+use VuFind\Connection\Relais;
+use VuFind\Db\Row\User;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Date Exception
+ * Abstract Relais Ajax Action
  *
  * @category VuFind
- * @package  Exceptions
+ * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Date extends \Exception
+abstract class AbstractRelaisAction extends AbstractBase
+    implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Relais connector
+     *
+     * @var Relais
+     */
+    protected $relais;
+
+    /**
+     * Logged-in user (or null if none)
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * Constructor
+     *
+     * @param SessionSettings $ss     Session settings
+     * @param Relais          $relais Relais connector
+     * @param User            $user   Logged in user (or null if none)
+     */
+    public function __construct(SessionSettings $ss, Relais $relais,
+        User $user = null
+    ) {
+        $this->sessionSettings = $ss;
+        $this->relais = $relais;
+        $this->user = $user;
+    }
 }

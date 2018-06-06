@@ -27,7 +27,7 @@
  */
 namespace VuFind\Db\Row;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 /**
