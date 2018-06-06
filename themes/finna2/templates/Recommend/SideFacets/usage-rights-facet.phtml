@@ -21,9 +21,9 @@
       <?php if ($allowExclude): ?>
         <a class="exclude" href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
       <?php endif; ?>
-    <? else: ?>
+    <?php else: ?>
       <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
   <?php $usageOptions[$thisFacet['value']]['html'] = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
@@ -31,7 +31,7 @@
 
 <?=!empty($usageOptions['usage_A']) ? $usageOptions['usage_A']['html'] : ''?>
 <?php if (!empty($usageOptions['usage_B']) || !empty($usageOptions['usage_D'])): ?>
-  <div class="usage-right-group<?php if ($allowExclude): ?> usage-rights-excludable<?php endif ?>">
+  <div class="usage-right-group<?php if ($allowExclude): ?> usage-rights-excludable<?php endif; ?>">
     <span><?=$this->transEsc('usage_title_derivates')?></span>
     <?=!empty($usageOptions['usage_D']) ? $usageOptions['usage_D']['html'] : '' ?>
     <?=!empty($usageOptions['usage_B']) ? $usageOptions['usage_B']['html'] : '' ?>
