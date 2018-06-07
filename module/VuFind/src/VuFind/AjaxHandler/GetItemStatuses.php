@@ -29,6 +29,7 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
@@ -405,7 +406,14 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $ids = $params->fromPost('id', $params->fromQuery('id', []));
-        $results = $this->ils->getStatuses($ids);
+        try {
+            $results = $this->ils->getStatuses($ids);
+        } catch (ILSException $e) {
+            // If the ILS fails, send an empty response instead of a fatal
+            // error; we don't want to confuse the end user unnecessarily.
+            error_log($e->getMessage());
+            $results = [];
+        }
 
         if (!is_array($results)) {
             // If getStatuses returned garbage, let's turn it into an empty array

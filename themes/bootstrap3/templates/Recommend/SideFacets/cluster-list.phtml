@@ -1,12 +1,6 @@
 <?php $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle"'; ?>
 <?php $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . ' hidden'; ?>
 <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
-  <?php
-    if(empty($thisFacet['displayText'])) {
-      $thisFacet['displayText'] = "-";
-    }
-  ?>
-  <?php /* MORE link */ ?>
   <?php if ($i == $this->facets_before_more): ?>
     <?php if ($facetLightbox = $this->options->getFacetListAction()): ?>
       <?php $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0); ?>
@@ -14,53 +8,23 @@
       <?php $moreUrl = '#'; ?>
     <?php endif; ?>
     <?php if (($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox): ?>
-      <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
+      <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+        <span class="text"><?=$this->transEsc('more')?> ...</span>
+      </a>
       <?php break; ?>
     <?php endif; ?>
-    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
-  <?php endif; ?>
-
-  <?php
-    $affectiveURL = $thisFacet['isApplied']
-      ? $this->currentPath() . $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])
-      : $this->currentPath() . $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], $thisFacet['operator']);
-  ?>
-  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-    <div class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif; ?>">
-      <?php $excludeURL = $thisFacet['isApplied']
-        ? $this->currentPath() . $results->getUrlQuery()->removeFacet($this->title, $thisFacet['value'], $thisFacet['operator'])->addFacet($this->title, $thisFacet['value'], 'NOT')
-        : $this->currentPath() . $results->getUrlQuery()->addFacet($this->title, $thisFacet['value'], 'NOT');
-      ?>
-      <a href="<?=$excludeURL ?>" title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
-  <?php else: ?>
-    <a href="<?=$affectiveURL ?>" class="facet facet<?=$thisFacet['operator'] ?><?php if ($thisFacet['isApplied']): ?> active<?php endif; ?><?php if ($i >= $this->facets_before_more): ?> <?=$moreClass ?><?php endif; ?>">
-  <?php endif; ?>
-
-  <?php if ($thisFacet['isApplied']): ?>
-    <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
-  <?php else: ?>
-    <span class="badge"><?=$this->localizedNumber($thisFacet['count'])?></span>
-  <?php endif; ?>
-
-  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-    <a href="<?=$affectiveURL ?>" class="text">
-  <?php else: ?>
-    <span class="text">
-  <?php endif; ?>
-
-  <?php if ($thisFacet['operator'] == 'OR'): ?>
-    <i class="fa <?=$thisFacet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o' ?>" aria-hidden="true"></i>
-  <?php endif; ?>
-
-  <?=$this->escapeHtml($thisFacet['displayText'])?>
-
-  <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
-      </a>
-    </div>
-  <?php else: ?>
-      </span>
+    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
+      <span class="text"><?=$this->transEsc('more')?> ...</span>
     </a>
   <?php endif; ?>
+  <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+    'exclude' => $this->allowExclude,
+    'facet' => $thisFacet,
+    'group' => $this->title,
+    'moreClass' => $i >= $this->facets_before_more ? $moreClass : false,
+    'url' => $this->results->getUrlQuery(),
+    'urlBase' => $this->currentPath(),
+  ]) ?>
 <?php endforeach; ?>
 
 <?php /* LESS and SEE MORE links */ ?>
@@ -72,7 +36,11 @@
         $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
       }
     ?>
-    <a class="facet narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?> ...</a>
+    <a class="facet narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+      <span class="text"><?=$this->transEsc('see all')?> ...</span>
+    </a>
   <?php endif; ?>
-  <a class="facet narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')"><?=$this->transEsc('less')?> ...</a>
+  <a class="facet narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
+    <span class="text"><?=$this->transEsc('less')?> ...</span>
+  </a>
 <?php endif; ?>
