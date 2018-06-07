@@ -1,4 +1,4 @@
-<!-- START of: finna - RecordDriver/SolrDefault/core-fields.phtml -->
+<!-- START of: finna - RecordDriver/DefaultRecord/core-fields.phtml -->
 <?php foreach ($coreFields as $key => $current): ?>
   <?php $header = $this->transEsc($current['context']['title'] ?? $current['label']); ?>
   <?php if ($header): ?>
@@ -7,4 +7,4 @@
     <?=$current['value']?>
   <?php endif; ?>
 <?php endforeach; ?>
-<!-- END of: finna - RecordDriver/SolrDefault/core-fields.phtml -->
+<!-- END of: finna - RecordDriver/DefaultRecord/core-fields.phtml -->

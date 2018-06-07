@@ -75,7 +75,7 @@
       ?>
       <?php if (!empty($coreFields)): ?>
         <table class="table table-finna-record record-details">
-          <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
+          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
         </table>
       <?php endif; ?>
       <?=$openUrl ? $openUrl->renderMoreOptions() : '' ?>

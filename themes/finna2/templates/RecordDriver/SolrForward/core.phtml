@@ -253,7 +253,7 @@
       ?>
       <?php if (!empty($coreFields)): ?>
         <table class="table table-finna-record record-details">
-          <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
+          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
         </table>
       <?php endif; ?>
       <button class="btn show-details-button hidden"><?=$this->transEsc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>

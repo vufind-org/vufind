@@ -272,7 +272,7 @@
     ?>
     <?php if (!empty($coreFields)): ?>
       <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
-        <?=$this->partial('RecordDriver/SolrDefault/core-fields.phtml', ['coreFields' => $coreFields]);?>
+        <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
         <?php if ($openUrlActive): ?>
           <tr>
             <td colspan="2" class="more-options-link"><?=$openUrl->renderTemplate()?> </td>
