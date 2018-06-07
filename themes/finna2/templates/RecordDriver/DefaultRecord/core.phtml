@@ -228,7 +228,7 @@
       <?php endif; ?>
 
       <?php $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-        <div class="recordPublications">
+        <span class="recordPublications">
           <?php foreach ($publications as $field): ?>
             <span property="publisher" typeof="Organization">
               <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
@@ -239,15 +239,16 @@
               <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
             <?php endif; ?>
           <?php endforeach; ?>
-        </div>
+        </span>
       <?php endif; ?>
-    </div> <?php // record-core-metadata ?>
 
-    <?php $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
-      <span class="recordEdition">
-        <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
-      </span>
-    <?php endif; ?>
+      <?php $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
+        <span class="recordEdition">
+          <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
+        </span>
+      <?php endif; ?>
+
+    </div> <?php // record-core-metadata ?>
 
     <div class="description recordSummary">
       <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
