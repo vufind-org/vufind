@@ -164,7 +164,7 @@
         </div>
       </div>
 
-      <div class="record-authors" property="author">
+      <div class="record-core-metadata" property="author">
         <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
           <span class="recordFormat">
             <?=$this->record($this->driver)->getFormatList() ?>
@@ -201,23 +201,23 @@
           </div>
         <?php endif; ?>
         <?php $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-            <span class="recordPublications">
-              <?php $publicationDate = ''; ?>
-              <?php foreach ($publications as $index => $field): ?>
-                <?=$index > 0 ? ' ; ' : '' ?>
-                <span property="publisher" typeof="Organization">
-                <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
-                  <span property="name"><?=$this->escapeHtml($pubName)?></span>
-                <?php endif; ?>
-                </span>
-                <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-                  <?php $publicationDate = $pubDate; ?>
-                <?php endif; ?>
-              <?php endforeach; ?>
-              <?php if (!empty($publicationDate)): ?>
-                <span property="publicationDate"><?=$this->escapeHtml($publicationDate)?></span>
+          <span class="recordPublications">
+            <?php $publicationDate = ''; ?>
+            <?php foreach ($publications as $index => $field): ?>
+              <?=$index > 0 ? ' ; ' : '' ?>
+              <span property="publisher" typeof="Organization">
+              <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
+                <span property="name"><?=$this->escapeHtml($pubName)?></span>
               <?php endif; ?>
-            </span>
+              </span>
+              <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+                <?php $publicationDate = $pubDate; ?>
+              <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if (!empty($publicationDate)): ?>
+              <span property="publicationDate"><?=$this->escapeHtml($publicationDate)?></span>
+            <?php endif; ?>
+          </span>
         <?php endif; ?>
 
         <?php $edition = $this->driver->getEdition(); if (!empty($edition)): ?>

@@ -102,7 +102,7 @@
           </div>
         <?php endif; ?>
 
-        <div class="record-authors">
+        <div class="record-core-metadata">
           <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
             <div class="truncate-field">
               <?php foreach($results as $index => $author): ?>
@@ -117,6 +117,7 @@
             </div>
           <?php endif; ?>
         </div>
+
         <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
         <?php if ($summary): ?>
           <div class="truncate-field wide recordSummary">

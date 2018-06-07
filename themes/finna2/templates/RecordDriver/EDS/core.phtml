@@ -34,7 +34,7 @@
     ?>
 
     <?php if (!empty($urls) || $openUrlActive): ?>
-      <div class="eds-available-online-record">
+      <div class="recordURLs eds-available-online-record">
         <?=$this->partial('RecordDriver/EDS/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
         <?php if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?>
@@ -48,7 +48,7 @@
       </div>
     <?php endif; ?>
 
-    <div class="record-authors">
+    <div class="record-core-metadata">
       <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <div><?=$this->record($this->driver)->getFormatList()?></div>
       <?php endif; ?>

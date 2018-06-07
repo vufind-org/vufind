@@ -33,7 +33,7 @@
           </a>
         </div>
 
-        <div class="record-authors">
+        <div class="record-core-metadata">
           <?=$this->record($this->driver)->getFormatList() ?><br/>
           <?php if($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
