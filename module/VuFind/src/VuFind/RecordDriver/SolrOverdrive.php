@@ -58,10 +58,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $recordConfig VuFind main configuration (omit for
-     *                                            built-in defaults)
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
-     *                                            (omit to use $recordConfig as $recordConfig)
+     * @param \Zend\Config\Config mainConfig VuFind main configuration
+     * @param \Zend\Config\Config $recordConfig Record-specific configuration
      * @param \VuFind\DigitalContent\OverdriveConnector Overdrive Connector
      */
     public function __construct(
@@ -77,12 +75,16 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
 
-    public function supportsOpenUrl(){
+    public function supportsOpenUrl()
+    {
         return false;
     }
-    public function supportsCoinsOpenUrl(){
+
+    public function supportsCoinsOpenUrl()
+    {
         return false;
     }
+
     /**
      * Get an array of all the formats associated with the record.
      *
@@ -145,215 +147,110 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     */
 
     /**
-     * summary
+     * Returns true if the record supports real-time AJAX status lookups.
      *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return bool
      */
     public function supportsAjaxStatus()
     {
         return true;
     }
 
+
     /**
-     * summary
+     * Get Overdrive Access
      *
-     * Description.
+     * Pass-through to the connector to determine whether logged-in user
+     * has access to Overdrive actions
      *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return boolean Whether the logged-in user has access to Overdrive.
      */
-    public function testDriver()
+    public function getOverdriveAccess()
     {
-        if ($this->hasILS()) {
-            $rid = $this->fields['odrid_str'];
-            return $rid;
-        } else {
-            return "NOILS";
-        }
-    }
-    
-    /**
-     * summary
-     *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
-     */
-    public function getOverdriveAccess(){
         return $this->connector->getAccess();
     }
-    
+
     /**
-     * summary
+     * Is Logged in
      *
-     * Description.
+     * Returns whether the current user is logged in
      *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return object|boolean User if logged in, false if not.
      */
-    public function isLoggedIn(){
+    public function isLoggedIn()
+    {
         return $this->connector->getUser();
     }
-    
+
     /**
-     * summary
+     * Get Overdrive ID
      *
-     * Description.
+     * Returns the Overdrive ID (or resource ID) for the current item. Note: for
+     * records in marc format, this may be different than the Solr Record ID
      *
-     * @since x.x.x
      *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return string OverdriveID
+     * @throws \Exception
      */
     public function getOverdriveID()
     {
         $result = 0;
         if ($this->config) {
             if ($this->config->isMarc) {
-                //TODO GET CONFIG
-                $result = $this->getFieldArray('037', 'a')[0];
+                $field = $this->conf->idField;
+                $subfield = $this->conf->idSubfield;
+                $result = $this->getFieldArray($field, $subfield)[0];
             } else {
-                //TODO SET prefix in CONFIG
-                //$prefix = 'overdrive.';
-                //$result = substr($this->getUniqueID(), strlen($prefix));
-                //$result = $this->getUniqueID();
                 $result = $this->getUniqueID();
             }
         }
         return $result;
     }
 
-    /**
-     * summary
-     *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
-     */    
-    public function getUniqueID()
-    {
-        if (!isset($this->fields['id'])) {
-            throw new \Exception('ID not set!');
-        }
-        //$this->debug("id: " . $this->fields['id']);
 
-        return $this->fields['id'];
-    }
+    /*    public function getUniqueID()
+        {
+            if (!isset($this->fields['id'])) {
+                throw new \Exception('ID not set!');
+            }
+            //$this->debug("id: " . $this->fields['id']);
+
+            return $this->fields['id'];
+        }*/
 
     /**
      * Returns the availability for the current record
      *
-     * @see   Function/method/class relied on
-     * @return type returns an object with the info in it (see URL above) or false if there was a problem.
+     * @return object|bool returns an object with the info in it (see URL above)
+     * or false if there was a problem.
      */
-
     public function getOverdriveAvailability()
     {
         $overDriveId = $this->getOverdriveID();
         $this->debug("idb4: $overDriveId");
         return $this->connector->getAvailability($overDriveId);
-
-        //$this->debug("idb4: $overDriveId");
-        //$overDriveId = $this->_translateODID($overDriveId);
-        //$this->debug("idafter: $overDriveId");
-        $res = false;
-        if (!$overDriveId) {
-            $this->logWarning(
-                "no overdrive content ID was passed in.",
-                ["getOverdriveAvailability"]
-            );
-            return false;
-        }
-        if ($conf = $this->config()) {
-
-            //if ($productsKey == null){
-            $productsKey = $conf->prodKey;
-            //}
-            $baseUrl = $conf->discURL;
-            $availabilityUrl
-                = "$baseUrl/v2/collections/$productsKey/products/$overDriveId/availability";
-            $res = $this->_callUrl($availabilityUrl);
-        }
-        return $res;
     }
 
 
     /**
      * isCheckedOut   Is this resource already checked out to the user?
      *
-     * @param $user
-     * @return Returns the checkout information if currently checked out
+     *
+     * @return object|bool Returns the checkout information if currently checked out
      *    by this user or false if not.
      */
-    public function isCheckedOut($user)
+    public function isCheckedOut()
     {
         $this->debug(" ischeckout", array(), true);
-        $overDriveId = $this->getOverdriveID();
-        $result = $this->connector->getCheckouts($user, true);
+        $overdriveID = $this->getOverdriveID();
+        $result = $this->connector->getCheckouts(true);
         if ($result->status) {
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
                 $this->debug(
-                    strtolower($checkout->reserveId) . " == " . $overDriveId
+                    strtolower($checkout->reserveId) . " == " . $overdriveID
                 );
-                if (strtolower($checkout->reserveId) == $overDriveId) {
+                if (strtolower($checkout->reserveId) == $overdriveID) {
                     $this->debug("overdrive checkout found");
                     return $checkout;
                 }
@@ -366,16 +263,17 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
     /**
      * Is Held
-     * Checks to see if the current record is on hold through Overcdrive
+     * Checks to see if the current record is on hold through Overcdrive.
      *
      * @param $user
      *
-     * @return bool
+     * @return object|bool Returns the hold info if on hold or false if not.
+     * @throws \Exception
      */
     public function isHeld($user)
     {
         $overDriveId = $this->getOverdriveID();
-        $result = $this->connector->getHolds($user, true);
+        $result = $this->connector->getHolds(true);
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
@@ -393,7 +291,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * Passthru to the connector for checking out the current record.
      * NoteToSelf: Do we need ID? Don't we know the id?
-     * 
+     *
      * @since 5.0
      *
      * @see   Function/method/class relied on
@@ -405,12 +303,24 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */ 
+     */
     public function doOverdriveCheckout($overDriveId, $user = false)
     {
         return $this->connector->doOverdriveCheckout(
             $overDriveId, $user = false
         );
+    }
+
+    /**
+     *  this will be reomved after I fix my data to have short titles
+     */
+    public function getBreadcrumb()
+    {
+        if (!$this->getShortTitle()) {
+            return $this->getTitle();
+        } else {
+            return $this->getShortTitle();
+        }
     }
 
     /**
@@ -429,32 +339,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */ 
-    public function getBreadcrumb(){
-        if(!$this->getShortTitle()){
-            return $this->getTitle();
-        }else{
-            return $this->getShortTitle();
-        }
-    }
-    
-    /**
-     * summary
-     *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
-     *
-     * @return type Description.
-     */ 
+     */
     public
     function getGeneralNotes()
     {
@@ -470,7 +355,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return array("Formats" => $results);
     }
 
-        /**
+    /**
      * summary
      *
      * Description.
@@ -489,10 +374,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * cover150Wide:150
      * cover:100
      * cover300Wide:300
+     *
      * @return type Description.
-     */ 
+     */
     public
-    function getThumbnail($size = 'small')
+    function getThumbnail(
+        $size = 'small'
+    )
     {
         if ($size == 'large') {
             $cover = "cover300Wide";
@@ -530,11 +418,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */     
+     */
     public
     function getSummary()
     {
-        $this->debug("findme get summary");
         return array("Summary" => $this->fields["description"]);
     }
 
@@ -554,14 +441,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */     
+     */
     public
     function getRawData()
     {
-        
+
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
-        $this->debug("raw data:" . print_r($data, true));
         return $data;
     }
 
@@ -581,7 +467,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */  
+     */
     public
     function getFormattedRawData()
     {
@@ -616,16 +502,18 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param type  $var     Optional. Description. Default.
      *
      * @return type Description.
-     */ 
+     */
     public
     function getRealTimeTitleHold()
     {
         $od_id = $this->getOverdriveID();
         $rec_id = $this->getUniqueID();
-        $urlDetails = ['action' => 'Hold', 
-                       'record' => $rec_id, 
-                       'query' => "od_id=$od_id&rec_id=$rec_id",
-                       'anchor' => ''];
+        $urlDetails = [
+            'action' => 'Hold',
+            'record' => $rec_id,
+            'query' => "od_id=$od_id&rec_id=$rec_id",
+            'anchor' => ''
+        ];
         return $urlDetails;
     }
 }
