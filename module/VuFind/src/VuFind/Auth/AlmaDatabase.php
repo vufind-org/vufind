@@ -106,13 +106,13 @@ class AlmaDatabase extends Database
 
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
-        
+
         // Validate username and password
         $this->validateUsernameAndPassword($params);
-        
+
         // Get the user table
         $userTable = $this->getUserTable();
-        
+
         // Make sure parameters are correct
         $this->validateParams($params, $userTable);
 
