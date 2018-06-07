@@ -1,4 +1,13 @@
 <?php
+$formats = $this->driver->getFormats();
+if (in_array('0/Book/', $formats)
+    && !in_array('1/Book/BookSection/', $formats)
+) {
+    $pagesTag = 'SP';
+} else {
+    $pagesTag = 'OP';
+}
+
 echo $this->record($this->driver)->getExportFormat('refworks');
 
 $title = rtrim($this->driver->getTitle(), " /");
@@ -21,7 +30,7 @@ if (is_array($series)) {
 $containerTitle = $this->driver->tryMethod('getContainerTitle');
 if (!empty($containerTitle)) {
     $formats = $this->driver->getFormats();
-    if (end($formats) == '1/Book/BookSection/') {
+    if (in_array('1/Book/BookSection/', $formats)) {
         echo "T2 $containerTitle\n";
     } else {
         echo "JF $containerTitle\n";
@@ -37,16 +46,18 @@ if (!empty($containerTitle)) {
     $page = $this->driver->tryMethod('getContainerStartPage');
     if (!empty($page)) {
         echo "SP $page\n";
-        $end = $this->driver->tryMethod('getContainerEndPage');
-        if (!empty($end)) {
-            echo "OP $end\n";
+        if ('RT Book, Whole' !== $exportFormat) {
+            $end = $this->driver->tryMethod('getContainerEndPage');
+            if (!empty($end)) {
+                echo "OP $end\n";
+            }
         }
     }
-}
-
-if ($extents = $this->driver->tryMethod('getExtent')) {
-    foreach ($extents as $extent) {
-        echo "OP $extent\n";
+} else {
+    if ($extents = $this->driver->tryMethod('getExtent')) {
+        foreach ($extents as $extent) {
+            echo "$pagesTag $extent\n";
+        }
     }
 }
 
@@ -125,12 +136,14 @@ if (is_array($summary)) {
 }
 
 // Try to find a page count in the physical description:
-$physical = $this->driver->tryMethod('getPhysicalDescriptions');
-if (is_array($physical)) {
-    foreach ($physical as $current) {
-        if (preg_match('/([0-9]+\s*[sp]\b\.?)/', $current, $matches)) {
-            echo "OP {$matches[1]}\n";
-            break;
+if (empty($extents)) {
+    $physical = $this->driver->tryMethod('getPhysicalDescriptions');
+    if (is_array($physical)) {
+        foreach ($physical as $current) {
+            if (preg_match('/([0-9]+\s*[sp]\b\.?)/', $current, $matches)) {
+                echo "$pagesTag {$matches[1]}\n";
+                break;
+            }
         }
     }
 }
