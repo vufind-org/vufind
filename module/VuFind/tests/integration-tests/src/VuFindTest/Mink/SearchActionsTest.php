@@ -227,7 +227,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .badge .fa-times');
+            ->findAll('css', '#modal #facet-list-count .fa-times');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // more
         $this->findCss($page, '#modal .js-facet-next-page')->click();
@@ -247,7 +247,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .badge .fa-times');
+            ->findAll('css', '#modal #facet-list-count .fa-times');
         $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
 
         // sort by title
@@ -264,7 +264,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         $excludes = $page
-            ->findAll('css', '#modal #facet-list-index .badge .fa-times');
+            ->findAll('css', '#modal #facet-list-index .fa-times');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // sort by index again
         $this->findCss($page, '[data-sort="count"]')->click();
