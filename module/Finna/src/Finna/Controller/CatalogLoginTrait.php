@@ -45,11 +45,12 @@ trait CatalogLoginTrait
     /**
      * Does the user have catalog credentials available?  Returns associative array
      * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false.
+     * returns false. If there is an ILS exception, a flash message is added and
+     * a newly created ViewModel is returned.
      *
      * Finna version adds handling of secondary user name
      *
-     * @return bool|array
+     * @return bool|array|ViewModel
      */
     protected function catalogLogin()
     {

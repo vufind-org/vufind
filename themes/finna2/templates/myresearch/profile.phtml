@@ -279,7 +279,7 @@
       <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
     <?php endif; ?>
   </div>
-  <?php if (!is_array($this->profile) && 'ils-none' !== $this->ils()->getOfflineMode()): ?>
+  <?php if (!is_array($this->profile) && 'ils-none' !== $this->ils()->getOfflineMode() && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 
