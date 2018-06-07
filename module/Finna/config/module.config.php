@@ -230,7 +230,10 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'recaptcha' => 'Finna\Controller\Plugin\Factory::getRecaptcha',
+            'Finna\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Factory::getRecaptcha',
+        ],
+        'aliases' => [
+            'VuFind\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Recaptcha',
         ],
     ],
     'service_manager' => [
