@@ -15,8 +15,8 @@
       <?php break; ?>
     <?php endif; ?>
     <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
-      <span class="text"><?=$this->transEsc('more')?>...</span>
-    </a>
+      <span class="text"><i class="fa fa-handle-open" aria-hidden="true"></i> <?=$this->transEsc('more')?></span>
+    </a> 
   <?php endif; ?>
   <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
     'exclude' => $this->allowExclude,
@@ -38,11 +38,11 @@
       }
     ?>
     <a class="facet narrow-toggle <?=$moreClass ?> more-narrow-toggle" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-      <span class="text"><?=$this->transEsc('see all')?>...</span>
+      <span class="text"><i class="fa fa-list" aria-hidden="true"></i> <?=$this->transEsc('see all')?></span>
     </a>
   <?php endif; ?>
   <a class="facet narrow-toggle <?=$moreClass ?> less-narrow-toggle" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
-    <span class="text"><?=$this->transEsc('less')?>...</span>
+    <span class="text"><i class="fa fa-handle-close" aria-hidden="true"></i> <?=$this->transEsc('less')?></span>
   </a>
 <?php endif; ?>
 <?php else: ?>

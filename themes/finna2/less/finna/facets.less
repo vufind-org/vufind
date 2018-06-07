@@ -85,13 +85,19 @@
       text-decoration: underline;
     }
     &.more-narrow-toggle, &.less-narrow-toggle {
-      color: @gray;
       border-radius: 0px;
+      color: @gray;
+      font-weight: bold;
+      font-size: 0.8em;
+      text-transform: uppercase;
+      text-decoration: none;
+      width: 100%;
       & i {
-        float: right;
-        font-size: 1.3em;
+        font-size: 1.2em;
         font-weight: bold;
-        margin-top: 2px;
+        height: 1.2em;
+        vertical-align: middle;
+        width: 1em;
       }
     }
   }
@@ -171,6 +177,9 @@
   @media (max-width: @screen-xs-max) {
     & .facet:not(.facet-group), .usage-right-group {
       font-size: 1.15em;
+    }
+    .narrow-toggle .text {
+      font-size: 0.8em;
     }
     .jstree-facet .list-group-item {
       padding: 6px 0 3px 10px;
