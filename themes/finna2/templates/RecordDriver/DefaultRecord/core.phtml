@@ -87,7 +87,7 @@
     <?php endif; ?>
 
     <?php if (!empty($audioUrls)): ?>
-      <?= $this->partial('RecordDriver/SolrDefault/record-audio-player.phtml', ['audioUrls' => $audioUrls]) ?>
+      <?=$this->record($this->driver)->renderTemplate('record-audio-player.phtml', ['audioUrls' => $audioUrls]);?>
     <?php endif; ?>
 
     <div class="record-rating text-left">
