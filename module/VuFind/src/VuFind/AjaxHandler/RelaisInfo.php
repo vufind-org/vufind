@@ -45,7 +45,7 @@ class RelaisInfo extends AbstractRelaisAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -58,16 +58,18 @@ class RelaisInfo extends AbstractRelaisAction
         $authorizationId = $authResponse->AuthorizationId ?? null;
         if ($authorizationId === null) {
             return $this->formatResponse(
-                $this->translate('Failed'), self::STATUS_ERROR
+                $this->translate('Failed'), self::STATUS_HTTP_FORBIDDEN
             );
         }
 
         $allowLoan = $authResponse->AllowLoanAddRequest ?? false;
         if ($allowLoan == false) {
-            return $this->formatResponse('AllowLoan was false', self::STATUS_ERROR);
+            return $this->formatResponse(
+                'AllowLoan was false', self::STATUS_HTTP_ERROR
+            );
         }
 
-        $response = $this->relais->search($oclcNumber, $authorizationId, $lin);
-        return $this->formatResponse($response);
+        $result = $this->relais->search($oclcNumber, $authorizationId, $lin);
+        return $this->formatResponse(compact('result'));
     }
 }

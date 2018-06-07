@@ -136,7 +136,7 @@ class GetVisData extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -152,6 +152,7 @@ class GetVisData extends AbstractBase
         $rawDateFacets = $params->fromQuery('facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
         $fields = $this->processDateFacets($filters, $dateFacets);
-        return $this->formatResponse($this->processFacetValues($filters, $fields));
+        $facets = $this->processFacetValues($filters, $fields);
+        return $this->formatResponse(compact('facets'));
     }
 }

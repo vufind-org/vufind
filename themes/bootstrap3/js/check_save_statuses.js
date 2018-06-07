@@ -55,9 +55,9 @@ function runSaveAjaxForQueue() {
     }
   })
   .done(function checkSaveStatusDone(response) {
-    for (var id in response.data) {
-      if (response.data.hasOwnProperty(id)) {
-        displaySaveStatus(response.data[id], saveStatusEls[id]);
+    for (var id in response.data.statuses) {
+      if (response.data.statuses.hasOwnProperty(id)) {
+        displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
       }
       // Remove populated ids from the queue
       for (var j = 0; j < saveStatusObjs; j++) {
