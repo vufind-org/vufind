@@ -1,3 +1,26 @@
+<?  $formatRoles = function ($roles) {
+    if (!isset($roles['role'])) {
+      return '';
+    }
+    $that = $this;
+    $translate = function ($arr) use ($that) {
+      $translatedRoles = array();
+      foreach ($arr as $element) {
+          if (!is_array($element)) {
+            $translatedRoles[] = $that->transEsc('CreatorRoles::' . $element);
+          } else {
+            foreach ($element as $str) {
+                $translatedRoles[] = $that->transEsc('CreatorRoles::' . $str);
+            }
+          }
+      }
+      return implode(',', $translatedRoles);
+    };
+    return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+  };
+?>
+
+
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <div class="row">
     <div>
@@ -29,48 +52,26 @@
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
         <? else: ?>
           <? // Handle displaying of author according to rule 3 of issue 131 ?>
-          <? $primaryAuthor = $this->driver->getPrimaryAuthor(); ?>
-          <? $otherAuthors = $this->driver->getSecondaryAuthors(); ?>
-          <? if (!empty($primaryAuthor) || !empty($otherAuthors)): ?>
-            <?=$this->transEsc('by')?>
-            <? if (!empty($primaryAuthor)): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $primaryAuthor)?>"><?
-                /* TODO: Highlight primary author. */
-                echo $this->escapeHtml($primaryAuthor);
-              ?></a>
+          <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+          <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
+            <? // Limit to showing at most three authors ?>
+            <? $truncate_authors = (count($authors['primary']) > 3); ?>
+            <? if ($truncate_authors): ?>
+              <? $authors['primary'] = array_splice($authors['primary'], 0, 3); ?>
             <? endif; ?>
-            <? if (!empty($otherAuthors)): ?>
-              <? if (!empty($primaryAuthor)): ?>
-                <? echo ' ; ' ?>
-              <? endif; ?>
-              <? $otherAuthorsAndRoles = $this->driver->getSecondaryAuthorsAndRole() ?>
-              <? $i = 0 ?>
-              <? foreach($otherAuthors as $author): ?>
-                <? if ($i > 1): ?>
-                  <? echo '...' ?>
-                  <? break; ?>
-                <? endif; ?>
-                <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?
-                  /* Highlight author */
-                  echo $this->escapeHtml($author);
-                ?></a>
-                <? foreach ($otherAuthorsAndRoles as $author_and_role): ?>
-                   <? $author_and_role_splitted = preg_split('/\$/', $author_and_role) ?>
-                   <? if ($author_and_role_splitted[0] == preg_replace('/(\s*)(\d+)(\s*)-?(\d*)(\s*)/', '',  $author)): ?>
-                     <? echo '(' . $this->transEsc('CreatorRoles::' . $author_and_role_splitted[1]) . ')' ?>
-                   <? endif; ?>
-                <? endforeach ?>
-                <? if (!($author == end($otherAuthors))): ?>
-                  <? echo ' ; ' ?>
-                <? endif; ?>
-              <? endforeach; ?>
+            <? $i = 0; foreach ($authors['primary'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?>
+               <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+               <?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span>
+            <? endforeach; ?>
+            <? // Show dots if we exceedeed max display length ?>
+            <? if ($truncate_authors): ?>
+               <? echo '...' ?>
             <? endif; ?>
           <? else: ?>
             <? // Handle corporation information... ?>
             <? $corporation = implode($this->driver->tryMethod('getCorporation'), " ") ?>
             <? if (!empty($corporation)): ?>
                <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?
-                //$summCorporation = $this->driver->getHighlightedAuthor();
                 $summCorporation = "";
                 echo !empty($summCorporation)
                   ? $this->highlight($summCorporation)
