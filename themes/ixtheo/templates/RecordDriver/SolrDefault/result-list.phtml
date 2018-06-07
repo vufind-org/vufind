@@ -1,26 +1,3 @@
-<?  $formatRoles = function ($roles) {
-    if (!isset($roles['role'])) {
-      return '';
-    }
-    $that = $this;
-    $translate = function ($arr) use ($that) {
-      $translatedRoles = array();
-      foreach ($arr as $element) {
-          if (!is_array($element)) {
-            $translatedRoles[] = $that->transEsc('CreatorRoles::' . $element);
-          } else {
-            foreach ($element as $str) {
-                $translatedRoles[] = $that->transEsc('CreatorRoles::' . $str);
-            }
-          }
-      }
-      return implode(',', $translatedRoles);
-    };
-    return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
-  };
-?>
-
-
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <div class="row">
     <div>
@@ -61,7 +38,7 @@
             <? endif; ?>
             <? $i = 0; foreach ($authors['primary'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?>
                <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
-               <?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span>
+               <?=$this->escapeHtml($author)?></a><?=$this->tuefind()->formatRoles($roles)?></span>
             <? endforeach; ?>
             <? // Show dots if we exceedeed max display length ?>
             <? if ($truncate_authors): ?>

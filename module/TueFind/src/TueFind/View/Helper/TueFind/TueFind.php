@@ -65,4 +65,32 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $percentage = $this->getOverallPercentage($count, $results);
         return $percentage > 0.1 ? $view->localizedNumber($percentage, 1) : "&lt; 0.1";
     }
+
+   /**
+    * Appropriately format the roles for authors
+    * @param array roles
+    *
+    * @return string
+    */
+
+   function formatRoles($roles) {
+
+       if (!isset($roles['role'])) {
+           return '';
+       }
+       $translate = function ($arr) {
+         $translatedRoles = array();
+         foreach ($arr as $element) {
+             if (!is_array($element)) {
+               $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
+             } else {
+               foreach ($element as $str) {
+                   $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
+               }
+             }
+         }
+         return implode(',', $translatedRoles);
+       };
+       return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+   }
 }
