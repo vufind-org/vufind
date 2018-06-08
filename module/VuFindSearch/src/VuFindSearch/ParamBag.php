@@ -248,4 +248,14 @@ class ParamBag implements \Countable
         }
         return $request;
     }
+
+    /**
+     * Get a count of parameters set in the bag.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->params);
+    }
 }
