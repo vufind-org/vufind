@@ -1,19 +1,19 @@
 <?php //Don't add START and END comments ?>
-<?php if(!empty($data)): ?>
-    <?php $prevOtherLinkHeading = ''; ?>
-    <?php foreach ($data as $result): ?>
-        <?php if (!empty($result['isn'])): ?>
-         <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
-          <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
-            <?=$this->escapeHtml($otherLinkTitle); ?>
-          </a>
-        <?php elseif (!empty($result['title'])): ?>
-          <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
-            <?=$this->escapeHtml($result['title']); ?>
-          </a>
-        <?php endif; ?>
-        <?php if (!empty($result['author'])): ?>
-          (<?=$this->escapeHtml($result['author']); ?>)
-        <?php endif; ?>
-    <?php endforeach; ?>
+<?php if (!empty($data)): ?>
+  <?php $prevOtherLinkHeading = ''; ?>
+  <?php foreach ($data as $result): ?>
+    <?php if (!empty($result['isn'])): ?>
+      <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+      <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+        <?=$this->escapeHtml($otherLinkTitle); ?>
+      </a>
+    <?php elseif (!empty($result['title'])): ?>
+      <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+        <?=$this->escapeHtml($result['title']); ?>
+      </a>
+    <?php endif; ?>
+    <?php if (!empty($result['author'])): ?>
+      (<?=$this->escapeHtml($result['author']); ?>)
+    <?php endif; ?>
+  <?php endforeach; ?>
 <?php endif; ?>

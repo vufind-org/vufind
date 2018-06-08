@@ -1,6 +1,6 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data)): ?>
-    <?php foreach($data as $field): ?>
-      <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
-    <?php endforeach; ?>
+  <?php foreach($data as $field): ?>
+    <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
+  <?php endforeach; ?>
 <?php endif; ?>

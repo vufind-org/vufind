@@ -1,11 +1,11 @@
 <?php //Don't add START and END comments ?>
-<?php if(!empty($data) && is_array($data)): ?>
+<?php if (!empty($data) && is_array($data)): ?>
   <div class="truncate-field">
     <?php foreach ($data as $field):?>
       <?=$field ?>
     <?php endforeach; ?>
   </div>
-  <?php else: ?>
+<?php else: ?>
   <div class="truncate-field">
     <?=$data // intentionally left unescaped due to embedded HTML ?>
   </div>

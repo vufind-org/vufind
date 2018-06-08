@@ -1,31 +1,31 @@
 <?php //Don't add START and END comments ?>
 <?php $mainFormat = $this->driver->getMainFormat(); ?>
 <?php foreach ($data as $eventType => $events): ?>
-<tr class="recordEvents">
-  <th><?=$this->transEsc("lido_event_type_{$mainFormat}_$eventType")?>:</th>
-  <td>
-    <div class="truncate-field">
-    <?php foreach ($events as $event): ?>
-      <?php if ($event != $events[0]): ?><br/><?php endif; ?>
-      <?php if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><?php endif; ?>
-      <?php if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><?php elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><?php endif; ?>
-      <?php if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><?php endif; ?>
-      <?php if (!empty($event['materials'])): ?>
-        <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['materials']))?><br/>
-      <?php endif; ?>
-      <?php if (!empty($event['places'])): ?>
-        <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['places']))?><br/>
-      <?php endif; ?>
-      <?php if (!empty($event['culture'])): ?><?=$this->escapeHtml($event['culture'])?><br/><?php endif; ?>
-      <?php if (!empty($event['actors'])): ?>
-        <?php foreach ($event['actors'] as $actor): ?>
-          <?=$this->escapeHtml($actor['name'])?><?php if (!empty($actor['role'])): ?>, <?=$this->escapeHtml($actor['role'])?><?php endif; ?>
-        <?php endforeach; ?>
-        <br/>
-      <?php endif; ?>
-      <?php if (!empty($event['description'])): ?><?=$this->escapeHtml($event['description'])?><br/><?php endif; ?>
-    <?php endforeach; ?>
-    </div>
-  </td>
-</tr>
+  <tr class="recordEvents">
+    <th><?=$this->transEsc("lido_event_type_{$mainFormat}_$eventType")?>:</th>
+    <td>
+      <div class="truncate-field">
+      <?php foreach ($events as $event): ?>
+        <?php if ($event != $events[0]): ?><br/><?php endif; ?>
+        <?php if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><?php endif; ?>
+        <?php if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><?php elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><?php endif; ?>
+        <?php if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><?php endif; ?>
+        <?php if (!empty($event['materials'])): ?>
+          <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['materials']))?><br/>
+        <?php endif; ?>
+        <?php if (!empty($event['places'])): ?>
+          <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['places']))?><br/>
+        <?php endif; ?>
+        <?php if (!empty($event['culture'])): ?><?=$this->escapeHtml($event['culture'])?><br/><?php endif; ?>
+        <?php if (!empty($event['actors'])): ?>
+          <?php foreach ($event['actors'] as $actor): ?>
+            <?=$this->escapeHtml($actor['name'])?><?php if (!empty($actor['role'])): ?>, <?=$this->escapeHtml($actor['role'])?><?php endif; ?>
+          <?php endforeach; ?>
+          <br/>
+        <?php endif; ?>
+        <?php if (!empty($event['description'])): ?><?=$this->escapeHtml($event['description'])?><br/><?php endif; ?>
+      <?php endforeach; ?>
+      </div>
+    </td>
+  </tr>
 <?php endforeach; ?>

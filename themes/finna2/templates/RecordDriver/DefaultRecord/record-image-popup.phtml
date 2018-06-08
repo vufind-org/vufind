@@ -102,39 +102,39 @@
             $images = $this->record($this->driver)->getAllRecordImageUrls();
           ?>
           <?php if (!empty($urls) || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-              <?php $index = 0; ?>
-                <?php $renderedURLs = []; ?>
-                <?php if (!empty($urls)): ?>
-                  <?php foreach ($urls as $url): ?>
-                    <?php
-                      $renderedURLs[] = $url['url'];
-                      $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
-                    ?>
+            <?php $index = 0; ?>
+            <?php $renderedURLs = []; ?>
+            <?php if (!empty($urls)): ?>
+              <?php foreach ($urls as $url): ?>
+                <?php
+                  $renderedURLs[] = $url['url'];
+                  $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
+                ?>
 
-                    <div class="record-online-link">
-                      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"
-                          <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<?php endif; ?>
-                          <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-                          <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-                         target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>">
-                        <i class="fa fa-external-link"></i> <?php if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=$this->transEsc('default::link_' . $desc, null, $desc) ?><?php endif; ?></a></div>
+                <div class="record-online-link">
+                  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"
+                      <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<?php endif; ?>
+                      <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
+                      <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
+                      target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>">
+                    <i class="fa fa-external-link"></i> <?php if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=$this->transEsc('default::link_' . $desc, null, $desc) ?><?php endif; ?></a></div>
 
-                      <?php $index++; ?>
-                    <?php if ($index > 4): ?>
-                    <div>...</div>
-                    <?php break; endif; ?>
-                  <?php endforeach; ?>
+                  <?php $index++; ?>
+                <?php if ($index > 4): ?>
+                <div>...</div>
+                <?php break; endif; ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+            <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+              <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+                <?php if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+                <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><?php if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><?php endif; ?></a>
+                <?php if ($url['source']): ?>
+                  <span class="online-source"><?=is_array($url['source']) ? '(' . $this->transEsc('Multiple Organisations') . ')' : '';?></span>
                 <?php endif; ?>
-                <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-                  <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-                    <?php if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs)) { continue; } ?>
-                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><?php if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><?php endif; ?></a>
-                    <?php if ($url['source']): ?>
-                      <span class="online-source"><?=is_array($url['source']) ? '(' . $this->transEsc('Multiple Organisations') . ')' : '';?></span>
-                    <?php endif; ?>
-                    </div>
-                  <?php endforeach; ?>
-                <?php endif; ?>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
           <?php endif; ?>
           <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i><span><?=$this->transEsc('To the record') ?></span></a></div>
           <?php if ($this->userlist()->getMode() !== 'disabled'): ?><div class="save-record-link"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span><?=$this->transEsc('Add to favorites')?></span></a></div><?php endif; ?>

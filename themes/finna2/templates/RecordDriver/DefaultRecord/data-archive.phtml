@@ -7,15 +7,15 @@
     <?php $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
   <?php endif; ?>
   <?php if ($topIds): ?>
-      <?php foreach ($topIds as $index => $parentId): ?>
-        <?php
-          try {
-            $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
-          } catch (\Exception $e) {
-            $parentUrl = '';
-          }
-        ?>
-        <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
-      <?php endforeach; ?>
+    <?php foreach ($topIds as $index => $parentId): ?>
+      <?php
+        try {
+          $parentUrl = $this->recordLink()->getUrl("$parentSource|$parentId");
+        } catch (\Exception $e) {
+          $parentUrl = '';
+        }
+      ?>
+      <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+    <?php endforeach; ?>
   <?php endif; ?>
 <?php endif; ?>

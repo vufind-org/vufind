@@ -1,6 +1,6 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data['presenters']) || !empty($data['details'])): ?>
-<div class="truncate-field">
+  <div class="truncate-field">
     <?php if (!empty($data['presenters'])): ?>
       <?php foreach($data['presenters'] as $index => $author): ?>
         <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?>
@@ -12,5 +12,5 @@
         <?=($index > 0 || !empty($data['presenters']) ? '' : '')?><?=$this->escapeHtml($detail)?>
       <?php endforeach; ?>
     <?php endif; ?>
-</div>
+  </div>
 <?php endif; ?>

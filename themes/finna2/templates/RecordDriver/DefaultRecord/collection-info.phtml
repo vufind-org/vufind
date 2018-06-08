@@ -1,12 +1,12 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/collection-info.phtml -->
 <?php $this->headScript()->appendFile('collection_record.js'); ?>
 <div>
-    <?php // if you have a preview tab but want to move or remove the preview link
-       // from this area of the record view, this can be split into
-       // getPreviewData() (should stay here) and
-       // getPreviewLink() (can go in your desired tab) ?>
-    <?=$this->record($this->driver)->getPreviews()?>
-
+  <?php
+    // if you have a preview tab but want to move or remove the preview link
+    // from this area of the record view, this can be split into
+    // getPreviewData() (should stay here) and
+    // getPreviewLink() (can go in your desired tab) ?>
+  <?=$this->record($this->driver)->getPreviews()?>
 
   <div class="record-information">
     <h2 class="collection-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
@@ -23,7 +23,6 @@
     <div class="savedLists" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
-
   </div>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/collection-info.phtml -->

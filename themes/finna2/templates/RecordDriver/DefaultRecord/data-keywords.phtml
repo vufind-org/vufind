@@ -1,10 +1,10 @@
 <?php //Don't add START and END comments ?>
-<?php if(!empty($data)): ?>
-<div class="truncate-field">
+<?php if (!empty($data)): ?>
+  <div class="truncate-field">
     <?php foreach ($data as $keyword): ?>
-        <div class="subjectLine" property="keywords">
-          <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword)?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword)?>"><?=$this->escapeHtml($keyword) ?></a>
-        </div>
+      <div class="subjectLine" property="keywords">
+        <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword)?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword)?>"><?=$this->escapeHtml($keyword) ?></a>
+      </div>
     <?php endforeach; ?>
-</div>
+  </div>
 <?php endif; ?>

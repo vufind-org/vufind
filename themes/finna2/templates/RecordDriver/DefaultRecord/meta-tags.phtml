@@ -10,7 +10,7 @@
 
   $authors = $this->driver->tryMethod('getNonPresenterAuthors');
   if ($authors === null) {
-      $authors = $this->driver->tryMethod('getCreators');
+     $authors = $this->driver->tryMethod('getCreators');
   }
   $publisher = $this->driver->getPublishers();
   $imagePath = $this->recordImage($this->record($this->driver))->getLargeImage();

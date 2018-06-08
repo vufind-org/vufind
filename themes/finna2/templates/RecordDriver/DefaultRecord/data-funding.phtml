@@ -1,17 +1,17 @@
 <?php //Don't add START and END comments ?>
-<?php if(!empty($data)): ?>
-<div class="truncate-field">
-  <?php foreach ($data as $index => $item): ?>
-    <?php
-      $additional = [];
-      if (!empty($item['type'])) {
-        $additional[] = $this->escapeHtml($item['type']);
-      }
-      if (!empty($item['amount'])) {
-        $additional[] = $this->escapeHtml($item['amount']);
-      }
-    ?>
-    <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><?php if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><?php endif; ?>
-  <?php endforeach; ?>
-</div>
+<?php if (!empty($data)): ?>
+  <div class="truncate-field">
+    <?php foreach ($data as $index => $item): ?>
+      <?php
+        $additional = [];
+        if (!empty($item['type'])) {
+          $additional[] = $this->escapeHtml($item['type']);
+        }
+        if (!empty($item['amount'])) {
+          $additional[] = $this->escapeHtml($item['amount']);
+        }
+      ?>
+      <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><?php if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><?php endif; ?>
+    <?php endforeach; ?>
+  </div>
 <?php endif; ?>

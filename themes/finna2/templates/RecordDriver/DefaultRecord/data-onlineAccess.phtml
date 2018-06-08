@@ -6,12 +6,12 @@
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 ?>
 <?php if (!empty($urls) || $openUrlActive): ?>
-<div class="truncate-field" data-rows="3">
-  <?php foreach ($urls as $current): ?>
-    <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
-  <?php endforeach; ?>
-  <?php if ($openUrlActive): ?>
-    <?=$openUrl->renderTemplate()?>
-  <?php endif; ?>
-</div>
+  <div class="truncate-field" data-rows="3">
+    <?php foreach ($urls as $current): ?>
+      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+    <?php endforeach; ?>
+    <?php if ($openUrlActive): ?>
+      <?=$openUrl->renderTemplate()?>
+    <?php endif; ?>
+  </div>
 <?php endif; ?>
