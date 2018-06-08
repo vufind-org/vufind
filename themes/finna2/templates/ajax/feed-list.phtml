@@ -6,7 +6,11 @@
     <?php $items = isset($this->visualItems) ? array_splice($this->items, 0, $this->visualItems) : $this->items; ?>
     <?php foreach($items as $item): ?>
     <li>
-      <?php if (isset($item['date'])): ?><span class="date"><?= $item['date']; ?></span> <?php endif; ?>
+      <?php if (isset($item['date'])): ?>
+        <span class="date"<?php if (isset($item['dateFull'])):?> title="<?=$item['dateFull']?>"<?php endif; ?>>
+          <?= $item['date']; ?>
+        </span>
+      <?php endif; ?>
       <?php if (!isset($this->linkText) && isset($item['link'])):?>
       <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']) . ($this->feedUrl ? '?feedUrl=' . $this->escapeHtmlAttr(urlencode($this->feedUrl)) : '')?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?> data-feed="<?=$this->escapeHtmlAttr($this->feedUrl)?>"><?php endif; ?>
         <?php if (isset($item['image']) && isset($item['image']['url'])): ?>

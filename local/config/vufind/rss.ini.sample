@@ -52,6 +52,9 @@
 ;
 ; Item date format on content page or modal
 ; contentDateFormat = "j.n.Y"
+;
+; Full date format on content page or modal
+; fullDateFormat = "j.n.Y"
 
 ; Content elements to hide (by default all elments are shown):
 
