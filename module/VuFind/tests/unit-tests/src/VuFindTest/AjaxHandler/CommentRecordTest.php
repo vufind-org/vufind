@@ -117,7 +117,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $handler = $this->getHandler(null, null, false);
         $this->assertEquals(
-            ['Comments disabled', 'ERROR', 403],
+            ['Comments disabled', 400],
             $handler->handleRequest($this->getParamsHelper())
         );
     }
@@ -131,7 +131,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $handler = $this->getHandler(null, null, true);
         $this->assertEquals(
-            ['You must be logged in first', 'NEED_AUTH', 401],
+            ['You must be logged in first', 401],
             $handler->handleRequest($this->getParamsHelper())
         );
     }
@@ -145,7 +145,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $handler = $this->getHandler(null, null, true, $this->getMockUser());
         $this->assertEquals(
-            ['bulk_error_missing', 'ERROR', 400],
+            ['bulk_error_missing', 400],
             $handler->handleRequest($this->getParamsHelper())
         );
     }
@@ -168,7 +168,9 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
             'comment' => 'bar',
         ];
         $this->assertEquals(
-            [true, 'OK'],
+            [
+                ['commentId' => true]
+            ],
             $handler->handleRequest($this->getParamsHelper([], $post))
         );
     }

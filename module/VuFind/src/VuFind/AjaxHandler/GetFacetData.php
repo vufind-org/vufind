@@ -87,7 +87,7 @@ class GetFacetData extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -103,19 +103,21 @@ class GetFacetData extends AbstractBase
 
         $facets = $this->results->getFullFieldFacets([$facet], false, -1, 'count');
         if (empty($facets[$facet]['data']['list'])) {
-            return $this->formatResponse([]);
+            $facets = [];
+        } else {
+            $facetList = $facets[$facet]['data']['list'];
+
+            if (!empty($sort)) {
+                $this->facetHelper->sortFacetList($facetList, $sort == 'top');
+            }
+
+            $facets = $this->facetHelper->buildFacetArray(
+                $facet,
+                $facetList,
+                $this->results->getUrlQuery(),
+                false
+            );
         }
-
-        $facetList = $facets[$facet]['data']['list'];
-
-        if (!empty($sort)) {
-            $this->facetHelper->sortFacetList($facetList, $sort == 'top');
-        }
-
-        return $this->formatResponse(
-            $this->facetHelper->buildFacetArray(
-                $facet, $facetList, $this->results->getUrlQuery(), false
-            )
-        );
+        return $this->formatResponse(compact('facets'));
     }
 }
