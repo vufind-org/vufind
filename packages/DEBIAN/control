@@ -4,7 +4,7 @@ Section: World Wide Web
 Priority: Optional
 Architecture: all
 Depends: apache2,
-         default-jdk,
+         openjdk-8-jdk | default-jdk,
          libapache2-mod-php5 | libapache2-mod-php,
          libapache2-mod-php5 | php-mbstring,
          mysql-server | virtual-mysql-server-core,
