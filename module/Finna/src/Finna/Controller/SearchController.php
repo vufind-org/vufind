@@ -252,16 +252,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Get the search memory
-     *
-     * @return \Finna\Search\Memory
-     */
-    public function getSearchMemory()
-    {
-        return $this->serviceLocator->get('Finna\Search\Memory');
-    }
-
-    /**
      * Handler for database and journal browse actions.
      *
      * @param string $type Browse type

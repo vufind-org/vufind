@@ -110,14 +110,4 @@ class PrimoController extends \VuFind\Controller\PrimoController
                 ? '' : $results->getParams()->getDisplayQuery()
         );
     }
-
-    /**
-     * Get the search memory
-     *
-     * @return \Finna\Search\Memory
-     */
-    public function getSearchMemory()
-    {
-        return $this->serviceLocator->get('Finna\Search\Memory');
-    }
 }

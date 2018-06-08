@@ -64,14 +64,4 @@ class CollectionController extends \VuFind\Controller\CollectionController
         $this->getSearchMemory()->rememberScrollData($view->scrollData);
         return $view;
     }
-
-    /**
-     * Get the search memory
-     *
-     * @return \Finna\Search\Memory
-     */
-    public function getSearchMemory()
-    {
-        return $this->serviceLocator->get('Finna\Search\Memory');
-    }
 }

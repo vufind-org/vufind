@@ -60,16 +60,6 @@ class EdsController extends \VuFind\Controller\EdsController
     }
 
     /**
-     * Get the search memory
-     *
-     * @return \Finna\Search\Memory
-     */
-    public function getSearchMemory()
-    {
-        return $this->serviceLocator->get('Finna\Search\Memory');
-    }
-
-    /**
      * Handle an advanced search
      *
      * @return mixed

@@ -271,16 +271,6 @@ class RecordController extends \VuFind\Controller\RecordController
     }
 
     /**
-     * Get the search memory
-     *
-     * @return \Finna\Search\Memory
-     */
-    public function getSearchMemory()
-    {
-        return $this->serviceLocator->get('Finna\Search\Memory');
-    }
-
-    /**
      * Decode double-encoded UTF-8 received from Voyager
      *
      * @param string $str String to decode
