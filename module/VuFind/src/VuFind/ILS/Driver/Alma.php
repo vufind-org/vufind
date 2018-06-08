@@ -277,6 +277,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $requested = ((string)$item->item_data->requested == 'false')
                             ? false
                             : true;
+                       
+                        $number = ++$copyCount;
+                        $description = null;
+                        if ($item->item_data->description != null
+                        	&& !empty($item->item_data->description))
+                        {
+                        	$number = (string)$item->item_data->description;
+                        	$description = (string)$item->item_data->description;
+                        }
 
                         // For some data we need to do additional API calls
                         // due to the Alma API architecture
@@ -303,12 +312,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'callnumber' => (string)$item->holding_data->call_number,
                             'duedate' => $duedate,
                             'returnDate' => false, // TODO: support recent returns
-                            'number' => ++$copyCount,
+                            'number' => $number,//++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
                             'item_notes' => $itemNotes,
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
-                            'addLink' => $addLink
+                            'addLink' => $addLink,
+                       		// For Alma title-level hold requests
+                        	'description' => $description
                         ];
                     }
                 }
@@ -1155,6 +1166,71 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function placeHold($holdDetails)
     {
+    	// Check for title or item level request
+    	$level = $holdDetails['level'] ?? 'item';
+    	
+    	if ($level === 'title') {
+    		echo '<pre>';
+    		print_r('Title level request');
+    		echo '</pre>';
+    		
+    		echo '<pre>';
+    		print_r($holdDetails);
+    		echo '</pre>';
+    		
+    		
+    		$client = $this->httpService->createClient(
+	            $this->baseUrl . '/bibs/' . $holdDetails['id']
+	            . '/requests?apiKey=' . urlencode($this->apiKey)
+	            . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
+	            . '&format=json'
+	        );
+    		
+	        $client->setHeaders(
+	            [
+	                'Content-type: application/json',
+	                'Accept: application/json'
+	            ]
+	        );
+	        
+	        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        
+	        $body = ['request_type' => 'HOLD'];
+	        $body['description'] = '????'; // GET DESCRIPTION HERE - MAYBE FROM HMACKeys???
+	         if (isset($holdDetails['pickUpLocation'])) {
+	            $body['pickup_location_type'] = 'LIBRARY';
+	            $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
+	        }
+	        //$body['material_type'] = ???;
+	        if (isset($holdDetails['requiredBy'])) {
+	            $date = $this->dateConverter->convertFromDisplayDate(
+	                'Y-m-d',
+	                $holdDetails['requiredBy']
+	            );
+	            $body['last_interest_date'] = $date;
+	        }
+	        
+	        if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
+	            $body['comment'] = $holdDetails['comment'];
+	        }
+	        
+	        echo '<pre>';
+	        print_r(json_encode($body));
+	        echo '</pre>';
+	        $client->setRawBody(json_encode($body));
+        
+        
+        
+        
+    	} else {
+    		echo '<pre>';
+    		print_r('ITEM level request');
+    		echo '</pre>';
+    	}
+
+    	return;
+    	
+    	
         $client = $this->httpService->createClient(
             $this->baseUrl . '/bibs/' . $holdDetails['id']
             . '/holdings/' . urlencode($holdDetails['holding_id'])
