@@ -109,24 +109,24 @@
                 echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
               }
             ?>
-            <div class="record-authors">
-            <?php $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
-            <?php endif; ?>
+            <div class="record-core-metadata">
+              <?php $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <?php endif; ?>
 
-            <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=$this->record($resource)->getFormatList() ?>
-              <br/>
-            <?php endif; ?>
-            <?php if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
-              <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-              <br />
-            <?php endif; ?>
+              <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+                <?=$this->record($resource)->getFormatList() ?>
+                <br/>
+              <?php endif; ?>
+              <?php if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
+                <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+                <br />
+              <?php endif; ?>
 
-            <?php if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
-              <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-              <br />
-            <?php endif; ?>
+              <?php if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
+                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+                <br />
+              <?php endif; ?>
             </div>
           </td>
           <td class="text-right">

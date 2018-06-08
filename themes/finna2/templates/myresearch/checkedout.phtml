@@ -143,28 +143,28 @@
               echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
             }
           ?>
-            <div class="record-authors">
-            <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=$this->record($resource)->getFormatList() ?>
-              <br/>
-            <?php endif; ?>
-            <?php $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
-            <?php endif; ?>
+            <div class="record-core-metadata">
+              <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+                <?=$this->record($resource)->getFormatList() ?>
+                <br/>
+              <?php endif; ?>
+              <?php $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <?php endif; ?>
 
-            <?php if (!empty($ilsDetails['volume'])): ?>
-              <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-              <br />
-            <?php endif; ?>
+              <?php if (!empty($ilsDetails['volume'])): ?>
+                <strong><?=$this->transEsc('Issue')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+                <br />
+              <?php endif; ?>
 
-            <?php if (!empty($ilsDetails['publication_year'])): ?>
-              <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-              <br />
-            <?php endif; ?>
-            <?php if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
-              <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
-              <br />
-            <?php endif; ?>
+              <?php if (!empty($ilsDetails['publication_year'])): ?>
+                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+                <br />
+              <?php endif; ?>
+              <?php if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
+                <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
+                <br />
+              <?php endif; ?>
             </div>
           </div>
           <div class="status-column">

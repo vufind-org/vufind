@@ -122,8 +122,7 @@
                       echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
                     }
                   ?>
-                  <div class="record-authors">
-
+                  <div class="record-core-metadata">
                      <?php $formats = $resource->getFormats(); if (count($formats) > 0): ?>
                       <?=$this->record($resource)->getFormatList() ?>
                       <br/>
