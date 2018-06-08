@@ -30,6 +30,7 @@ namespace VuFind\ILS\Driver;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Http\Headers;
+use VuFind\ChannelProvider\RecentlyReturned;
 
 /**
  * Alma ILS Driver
@@ -948,7 +949,79 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         
         return $returnArray;
     }
-
+    
+    /**
+     * Get Alma loan IDs for use in renewMyItems.
+     *
+     * @param array $checkOutDetails An array from getMyTransactions
+     *
+     * @return string The Alma loan ID for this loan
+     *
+     * @author Michael Birkner
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+        $loanId = $checkOutDetails['item_id'];
+        return $loanId;
+    }
+    
+    /**
+     * Renew loans via Alma API.
+     *
+     * @param array $renewDetails An array with the IDs of the loans returned by
+     *                            getRenewDetails and the patron information
+     *                            returned by patronLogin.
+     *
+     * @return array[] An array with the renewal details and a success or error
+     *                 message.
+     *
+     * @author Michael Birkner
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $returnArray = [];
+        $patronUserName = $renewDetails['patron']['cat_username'];
+        
+        foreach ($renewDetails['details'] as $loanId) {
+            // Create an empty array that holds the information for a renewal
+            $renewal = [];
+            
+            try {
+                // POST the renewals to Alma
+                $apiResult = $this->makeRequest(
+                    '/users/'.$patronUserName.'/loans/'.$loanId.'/?op=renew',
+                    array(),
+                    array(),
+                    'POST'
+                );
+                
+                // Add information to the renewal array
+                $blocks = false;
+                $renewal[$loanId]['success'] = true;
+                $renewal[$loanId]['new_date'] = $this->parseDate(
+                    (string)$apiResult->due_date,
+                    true
+                );
+                //$renewal[$loanId]['new_time'] = ;
+                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
+                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                
+                // Add the renewal to the return array
+                $returnArray['details'] = $renewal;
+            } catch (ILSException $ilsEx) {
+                // Add the empty renewal array to the return array
+                $returnArray['details'] = $renewal;
+                
+                // Add a message that can be translated
+                $blocks[] = 'renew_fail';
+            }
+        }
+        
+        $returnArray['blocks'] = $blocks;
+        
+        return $returnArray;
+    }
+    
     /**
      * Get Status
      *
