@@ -97,7 +97,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -105,16 +105,14 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -126,8 +124,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
             if (empty($commentId) || empty($comment)) {
                 return $this->formatResponse(
                     $this->translate('An error has occurred'),
-                    self::STATUS_ERROR,
-                    500
+                    self::STATUS_HTTP_BAD_REQUEST
                 );
             }
             $rating = $params->fromPost('rating');
@@ -139,7 +136,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
                 $average = $this->commentsTable->getAverageRatingForResource($id);
                 $output['rating'] = $average;
             }
-            return $this->formatResponse($output, self::STATUS_OK);
+            return $this->formatResponse($output);
         }
 
         if ($type === '1') {
@@ -149,20 +146,18 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
             if (count($comments)) {
                 return $this->formatResponse(
                     $this->translate('An error has occurred'),
-                    self::STATUS_ERROR,
-                    500
+                    self::STATUS_HTTP_ERROR
                 );
             }
         }
 
         $output = parent::handleRequest($params);
 
-        if ('OK' !== $output[1]) {
+        if (isset($output[1]) && 200 !== $output[1]) {
             return $output;
         }
 
-        $commentId = $output[0];
-        $output = ['id' => $commentId];
+        $commentId = $output[0]['commentId'];
 
         // Update type
         $this->commentsTable->setType($this->user->id, $commentId, $type);
@@ -200,9 +195,9 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
 
         if ($updateRating) {
             $average = $this->commentsTable->getAverageRatingForResource($id);
-            $output['rating'] = $average;
+            $output[0]['rating'] = $average;
         }
 
-        return $this->formatResponse($output, self::STATUS_OK);
+        return $this->formatResponse($output[0]);
     }
 }

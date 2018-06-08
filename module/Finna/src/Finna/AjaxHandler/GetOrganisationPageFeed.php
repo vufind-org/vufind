@@ -103,7 +103,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -112,7 +112,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
         $id = $params->fromPost('id', $params->fromQuery('id'));
         $url = $params->fromPost('url', $params->fromQuery('url'));
         if (!$id || !$url) {
-            return $this->formatResponse('', self::STATUS_ERROR, 400);
+            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
 
         $url = urldecode($url);
@@ -150,8 +150,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
         }
 
         return $this->formatResponse(
-            $this->formatFeed($feed, $this->config, $this->renderer, $url),
-            self::STATUS_OK
+            $this->formatFeed($feed, $this->config, $this->renderer, $url)
         );
     }
 
@@ -170,6 +169,6 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
             $outputMsg . ($logMsg ? " ({$logMsg})" : null)
         );
 
-        return $this->formatResponse($outputMsg, self::STATUS_ERROR, $httpStatus);
+        return $this->formatResponse($outputMsg, $httpStatus);
     }
 }

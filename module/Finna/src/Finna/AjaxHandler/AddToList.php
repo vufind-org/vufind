@@ -107,7 +107,7 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -115,16 +115,14 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Lists disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_FORBIDDEN
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -132,8 +130,7 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
         if (empty($listParams['listId']) || empty($listParams['ids'])) {
             return $this->formatResponse(
                 $this->translate('Missing parameter'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
         $listId = $listParams['listId'];
@@ -143,8 +140,7 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
         if ($list->user_id !== $this->user->id) {
             return $this->formatResponse(
                 $this->translate('Invalid list id'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
@@ -155,17 +151,13 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
                 $driver = $this->recordLoader->load($recId, $source);
                 $this->favorites->save(['list' => $listId], $this->user, $driver);
             } catch (\Exception $e) {
-                return $this->output(
-                    $this->translate('Failed'), self::STATUS_ERROR, 500
-                );
                 return $this->formatResponse(
                     $this->translate('Failed'),
-                    self::STATUS_ERROR,
-                    500
+                    self::STATUS_HTTP_ERROR
                 );
             }
         }
 
-        return $this->formatResponse('', self::STATUS_OK);
+        return $this->formatResponse('');
     }
 }

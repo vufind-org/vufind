@@ -47,13 +47,13 @@ class RegisterOnlinePayment extends AbstractOnlinePaymentAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         $res = $this->processPayment($params->getController()->getRequest());
         return $res['success']
-            ? $this->formatResponse('', self::STATUS_OK)
-            : $this->formatResponse('', self::STATUS_ERROR, 500);
+            ? $this->formatResponse('')
+            : $this->formatResponse('', self::STATUS_HTTP_ERROR);
     }
 }

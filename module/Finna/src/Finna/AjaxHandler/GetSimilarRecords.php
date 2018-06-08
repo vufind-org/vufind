@@ -88,13 +88,17 @@ class GetSimilarRecords extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
         $id = $params->fromPost('id', $params->fromQuery('id'));
+
+        if (empty($id)) {
+            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+        }
 
         $driver = $this->recordLoader->load($id);
 

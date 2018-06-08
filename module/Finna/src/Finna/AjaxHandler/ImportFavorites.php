@@ -144,15 +144,14 @@ class ImportFavorites extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -190,7 +189,7 @@ class ImportFavorites extends \VuFind\AjaxHandler\AbstractBase
             ? 'myresearch/import-error.phtml'
             : 'myresearch/import-success.phtml';
         $html = $this->renderer->partial($template, $templateParams);
-        return $this->formatResponse(['html' => $html], self::STATUS_OK);
+        return $this->formatResponse(compact('html'));
     }
 
     /**

@@ -45,7 +45,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -55,8 +55,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -121,7 +120,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                             'msg' => $this->translate($msg)
                         ];
                     }
-                    return $this->formatResponse($results, self::STATUS_OK);
+                    return $this->formatResponse($results);
                 }
             } catch (\Exception $e) {
                 // Do nothing -- just fail through to the error message below.
@@ -129,7 +128,7 @@ class CheckRequestsAreValid extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
         );
     }
 }

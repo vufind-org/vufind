@@ -71,8 +71,8 @@ finna.autocomplete = (function finnaAutocomplete() {
             data: data,
             dataType: 'json',
             success: function onAutocompleteSuccess(json) {
-              if (json.data.length > 0) {
-                cb(json.data);
+              if (json.data.suggestions.length > 0) {
+                cb(json.data.suggestions);
               } else {
                 cb([]);
               }

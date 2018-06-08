@@ -113,7 +113,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -122,7 +122,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
         $id = $params->fromPost('id', $params->fromQuery('id'));
 
         if (!$id) {
-            return $this->formatResponse('', self::STATUS_ERROR, 400);
+            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
 
         $cacheDir = $this->cacheManager->getCache('description')->getOptions()
@@ -140,7 +140,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
             if (($content = file_get_contents($localFile)) !== false) {
                 return $this->formatResponse(['html' => $content], self::STATUS_OK);
             } else {
-                return $this->formatResponse('', self::STATUS_ERROR, 500);
+                return $this->formatResponse('', self::STATUS_HTTP_ERROR);
             }
         } else {
             // Get URL
@@ -167,9 +167,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
 
                     file_put_contents($localFile, $content);
 
-                    return $this->formatResponse(
-                        ['html' => $content], self::STATUS_OK
-                    );
+                    return $this->formatResponse(['html' => $content]);
                 }
             }
             $language = $this->translator->getLocale();
@@ -182,7 +180,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
                 // Process markdown
                 $summary = $this->viewRenderer->plugin('markdown')->toHtml($summary);
 
-                return $this->formatResponse(['html' => $summary], self::STATUS_OK);
+                return $this->formatResponse(['html' => $summary]);
             }
         }
         return $this->formatResponse(['html' => '']);

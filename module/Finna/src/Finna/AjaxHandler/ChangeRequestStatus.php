@@ -45,7 +45,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -55,18 +55,16 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         ) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
         $requestId = $this->params()->fromQuery('requestId');
         $frozen = $this->params()->fromQuery('frozen');
         if (empty($requestId)) {
-            return $this->output(
+            return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
@@ -77,8 +75,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
             if (!$result) {
                 return $this->formatResponse(
                     $this->translate('unavailable'),
-                    self::STATUS_ERROR,
-                    400
+                    self::STATUS_HTTP_BAD_REQUEST
                 );
             }
 
@@ -88,7 +85,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
             ];
             $results = $this->connection->changeRequestStatus($patron, $details);
 
-            return $this->formatResponse($results, self::STATUS_OK);
+            return $this->formatResponse($results);
         } catch (\Exception $e) {
             $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
             $this->logError('changePickupLocation failed: ' . $e->getMessage());
@@ -96,7 +93,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
         );
     }
 }

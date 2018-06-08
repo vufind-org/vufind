@@ -103,7 +103,7 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -111,7 +111,7 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
 
         $id = $params->fromPost('id', $params->fromQuery('id'));
         if (!$id) {
-            return $this->formatResponse('', self::STATUS_ERROR, 400);
+            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
 
         $touchDevice = $params->fromQuery('touch-device') === '1';
@@ -122,17 +122,17 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
 
             $feed = $this->feedService->readFeed($id, $this->url, $homeUrl);
         } catch (\Exception $e) {
-            return $this->formatResponse($e->getMessage(), self::STATUS_ERROR, 400);
+            return $this->formatResponse($e->getMessage(), self::STATUS_HTTP_ERROR);
         }
 
         if (!$feed) {
             return $this->formatResponse(
-                'Error reading feed', self::STATUS_ERROR, 400
+                'Error reading feed', self::STATUS_HTTP_ERROR
             );
         }
 
         return $this->formatResponse(
-            $this->formatFeed($feed, $this->config, $this->renderer), self::STATUS_OK
+            $this->formatFeed($feed, $this->config, $this->renderer)
         );
     }
 }

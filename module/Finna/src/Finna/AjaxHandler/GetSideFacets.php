@@ -112,7 +112,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -150,7 +150,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
 
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Solr faceting request failed');
-            return $this->output('', self::STATUS_ERROR, 500);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
         $recommend = $results->getRecommendations('side');

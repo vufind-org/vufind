@@ -86,7 +86,7 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -169,7 +169,7 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
             );
         }
 
-        return $this->formatResponse($response, self::STATUS_OK);
+        return $this->formatResponse($response);
     }
 
     /**
@@ -187,6 +187,6 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
             $outputMsg . ($logMsg ? " ({$logMsg})" : null)
         );
 
-        return $this->formatResponse($outputMsg, self::STATUS_ERROR, $httpStatus);
+        return $this->formatResponse($outputMsg, $httpStatus);
     }
 }

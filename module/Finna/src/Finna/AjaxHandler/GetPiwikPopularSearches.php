@@ -102,7 +102,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -112,7 +112,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
             || !isset($this->config->Piwik->site_id)
             || !isset($this->config->Piwik->token_auth)
         ) {
-            return $this->formatResponse('', self::STATUS_ERROR, 400);
+            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
 
         $params = [
@@ -142,7 +142,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
         ) {
             // Load local cache if available
             if (($content = file_get_contents($cacheFile)) !== false) {
-                return $this->formatResponse(['html' => $content], self::STATUS_OK);
+                return $this->formatResponse(['html' => $content]);
             }
         }
 
@@ -152,7 +152,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
         $result = $client->send();
         if (!$result->isSuccess()) {
             $this->logError("Piwik request for popular searches failed, url $url");
-            return $this->formatResponse('', self::STATUS_ERROR, 500);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
         $response = json_decode($result->getBody(), true);
@@ -161,7 +161,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
                 "Piwik request for popular searches failed, url $url, message: "
                 . $response['message']
             );
-            return $this->formatResponse('', self::STATUS_ERROR, 500);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $searchPhrases = [];
         foreach ($response as $item) {
@@ -194,6 +194,6 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
 
         file_put_contents($cacheFile, $html);
 
-        return $this->formatResponse(compact('html'), self::STATUS_OK);
+        return $this->formatResponse(compact('html'));
     }
 }

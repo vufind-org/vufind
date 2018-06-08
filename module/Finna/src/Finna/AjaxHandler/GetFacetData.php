@@ -95,7 +95,7 @@ class GetFacetData extends \VuFind\AjaxHandler\GetFacetData
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -104,10 +104,9 @@ class GetFacetData extends \VuFind\AjaxHandler\GetFacetData
         $request = $params->getController()->getRequest();
         if ($type = $this->getBrowseAction($request)) {
             if (!isset($this->browseConfig[$type])) {
-                return $this->output(
+                return $this->formatResponse(
                     "Missing configuration for browse action: $type",
-                    self::STATUS_ERROR,
-                    500
+                    self::STATUS_HTTP_ERROR
                 );
             }
 

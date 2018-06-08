@@ -86,7 +86,7 @@ class GetUserLists extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -94,15 +94,14 @@ class GetUserLists extends \VuFind\AjaxHandler\AbstractBase
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Lists disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_FORBIDDEN
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
+                self::STATUS_HTTP_NEED_AUTH,
                 401
             );
         }
@@ -113,6 +112,6 @@ class GetUserLists extends \VuFind\AjaxHandler\AbstractBase
             'myresearch/mylist-navi.phtml',
             ['user' => $this->user, 'activeId' => $activeId, 'lists' => $lists]
         );
-        return $this->formatResponse($html, self::STATUS_OK);
+        return $this->formatResponse($html);
     }
 }

@@ -86,7 +86,7 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -94,16 +94,14 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Lists disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -111,8 +109,7 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
         if (!isset($listParams['id']) || !isset($listParams['title'])) {
             return $this->formatResponse(
                 $this->translate('Missing parameter'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
@@ -127,6 +124,6 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
 
         $listParams['id'] = $finalId;
 
-        return $this->formatResponse($listParams, self::STATUS_OK);
+        return $this->formatResponse($listParams);
     }
 }

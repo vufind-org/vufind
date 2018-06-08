@@ -86,7 +86,7 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -94,15 +94,14 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Lists disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
+                self::STATUS_HTTP_NEED_AUTH,
                 401
             );
         }
@@ -113,8 +112,7 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
         ) {
             return $this->formatResponse(
                 $this->translate('Missing parameter'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
@@ -127,7 +125,9 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
 
         $resources = $this->user->getSavedData($listParams['id'], $listId, $source);
         if (empty($resources)) {
-            return $this->output('User resource not found', self::STATUS_ERROR, 400);
+            return $this->formatResponse(
+                'User resource not found', self::STATUS_HTTP_BAD_REQUEST
+            );
         }
 
         foreach ($resources as $res) {
@@ -136,6 +136,6 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
             $row->save();
         }
 
-        return $this->formatResponse('', self::STATUS_OK);
+        return $this->formatResponse('');
     }
 }

@@ -80,7 +80,7 @@ class GetDateRangeVisual extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -121,7 +121,7 @@ class GetDateRangeVisual extends \VuFind\AjaxHandler\AbstractBase
         }
 
         if (empty($facetList)) {
-            return $this->formatResponse([], self::STATUS_OK);
+            return $this->formatResponse([]);
         }
 
         $res = [];
@@ -140,6 +140,6 @@ class GetDateRangeVisual extends \VuFind\AjaxHandler\AbstractBase
             $res[] = [$val, $count];
         }
         $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
-        return $this->formatResponse($res, self::STATUS_OK);
+        return $this->formatResponse($res);
     }
 }

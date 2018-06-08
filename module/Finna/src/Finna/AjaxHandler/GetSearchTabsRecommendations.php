@@ -108,14 +108,14 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
         if (empty($this->config->SearchTabsRecommendations->recommendations)) {
-            return $this->formatResponse('', self::STATUS_OK);
+            return $this->formatResponse('');
         }
         $recommendationsConfig
             = $this->config->SearchTabsRecommendations->recommendations;
@@ -126,7 +126,7 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
         $search = $this->searchTable->select(['id' => $id])->current();
         if (empty($search)) {
             return $this->formatResponse(
-                'Search not found', self::STATUS_ERROR, 400
+                'Search not found', self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
@@ -140,16 +140,16 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
             || $searchClass == 'Combined'
             || $searchParams->getSearchType() != 'basic'
         ) {
-            return $this->formatResponse('', self::STATUS_OK);
+            return $this->formatResponse('');
         }
 
         $query = $searchParams->getQuery();
         if (!($query instanceof \VuFindSearch\Query\Query)) {
-            return $this->formatResponse('', self::STATUS_OK);
+            return $this->formatResponse('');
         }
         $lookfor = $query->getString();
         if (!$lookfor) {
-            return $this->formatResponse('', self::STATUS_OK);
+            return $this->formatResponse('');
         }
 
         $view = $this->renderer;
@@ -208,6 +208,6 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
             }
         }
 
-        return $this->formatResponse(compact('html'), self::STATUS_OK);
+        return $this->formatResponse(compact('html'));
     }
 }

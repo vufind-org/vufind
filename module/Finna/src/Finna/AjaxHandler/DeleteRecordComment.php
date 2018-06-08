@@ -47,16 +47,16 @@ class DeleteRecordComment extends \VuFind\AjaxHandler\DeleteRecordComment
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         $result = parent::handleRequest($params);
-        if (!isset($result[2])) {
-            $id = $params->fromQuery('id');
-            $average = $this->table->getAverageRatingForResource($id);
-            return $this->formatResponse(['rating' => $average]);
+        if (isset($result[1]) && 200 !== $result[1]) {
+            return $result;
         }
-        return $result;
+        $id = $params->fromQuery('id');
+        $average = $this->table->getAverageRatingForResource($id);
+        return $this->formatResponse(['rating' => $average]);
     }
 }
