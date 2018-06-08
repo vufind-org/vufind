@@ -711,7 +711,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
                 "checkout" => $this->dateConverter->convert(
-                    'Y-m-d H:i', 'm-d-Y', $checkout
+                    'Y-m-d H:i',
+                    'm-d-Y',
+                    $checkout
                 ),
                 "fine"     => (string)$fee->type['desc']
             ];
@@ -859,6 +861,92 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ];
         }
         return $holdList;
+    }
+    
+    /**
+     * Get transactions of the current patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return string[]    Transaction information as array or empty array if the
+     *                  patron has no transactions.
+     *
+     * @author Michael Birkner
+     */
+    public function getMyTransactions($patron)
+    {
+        // Defining the return value
+        $returnArray = [];
+        
+        // Get the patrons user name
+        $patronUserName = $patron['cat_username'];
+        
+        // Create a timestamp for calculating the due / overdue status
+        $nowTS = mktime();
+        
+        // Create parameters for the API call
+        // INFO: "order_by" does not seem to work as expected!
+        //       This is an Alma API problem.
+        $params = [
+            'limit' => '100',
+            'order_by' => 'due_date',
+            'direction' => 'DESC',
+            'expand' => 'renewable'
+        ];
+        
+        // Get user loans from Alma API
+        $apiResult = $this->makeRequest(
+            '/users/'.$patronUserName.'/loans/',
+            $params
+        );
+        
+        // If there is an API result, process it
+        if ($apiResult) {
+            // Iterate over all item loans
+            foreach ($apiResult->item_loan as $itemLoan) {
+                $loan['duedate'] = $this->parseDate(
+                    (string)$itemLoan->due_date,
+                    true
+                );
+                //$loan['dueTime'] = ;
+                $loan['dueStatus'] = null; // Calculated below
+                $loan['id'] = (string)$itemLoan->mms_id;
+                //$loan['source'] = 'Solr';
+                $loan['barcode'] = (string)$itemLoan->item_barcode;
+                //$loan['renew'] = ;
+                //$loan['renewLimit'] = ;
+                //$loan['request'] = ;
+                //$loan['volume'] = ;
+                $loan['publication_year'] = (string)$itemLoan->publication_year;
+                $loan['renewable']
+                    = (strtolower((string)$itemLoan->renewable) == 'true')
+                    ? true
+                    : false;
+                //$loan['message'] = ;
+                $loan['title'] = (string)$itemLoan->title;
+                $loan['item_id'] = (string)$itemLoan->loan_id;
+                $loan['institution_name'] = (string)$itemLoan->library;
+                //$loan['isbn'] = ;
+                //$loan['issn'] = ;
+                //$loan['oclc'] = ;
+                //$loan['upc'] = ;
+                $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
+                
+                // Calculate due status
+                $dueDateTS = strtotime($loan['duedate']);
+                if ($nowTS > $dueDateTS) {
+                    // Loan is overdue
+                    $loan['dueStatus'] = 'overdue';
+                } elseif (($dueDateTS - $nowTS) < 86400) {
+                    // Due date within one day
+                    $loan['dueStatus'] = 'due';
+                }
+                
+                $returnArray[] = $loan;
+            }
+        }
+        
+        return $returnArray;
     }
 
     /**
@@ -1015,7 +1103,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         if (isset($holdDetails['requiredBy'])) {
             $date = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
+                'Y-m-d',
+                $holdDetails['requiredBy']
             );
             $body['last_interest_date'] = $date;
         }
