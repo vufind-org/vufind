@@ -77,7 +77,7 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
             return '';
         }
 
-        $html = '<div class="spelling-suggestions">';
+        $html = '<div class="spelling-suggestions hidden-print">';
         $html .= $msg;
         foreach ($spellingSuggestions as $term => $details) {
             $html .= ' ' . $view->escapeHtml($term) . ' &raquo; ';

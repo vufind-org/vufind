@@ -174,9 +174,7 @@
       </div>
     <?php endif; ?>
     <?php if ($this->results->getResultTotal() > 0): ?>
-      <span class="hidden-print">
       <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
-      </span>
     <?php endif; ?>
 
     <?php /* End Listing Options */ ?>
