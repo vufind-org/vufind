@@ -379,10 +379,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initAdvancedFacets()
     {
-        $success = $this
-            ->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
         // If no configuration was found, set up defaults instead:
-        if (!$success) {
+        if (!$this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings')) {
             $defaults = ['Language' => 'Language', 'ContentType' => 'Format'];
             foreach ($defaults as $key => $value) {
                 $this->addFacet($key, $value);
@@ -398,9 +396,7 @@ class Params extends \VuFind\Search\Base\Params
     public function initHomePageFacets()
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
-        $homeSuccess = $this
-            ->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings');
-        if (!$homeSuccess) {
+        if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
             $this->initAdvancedFacets();
         }
     }
