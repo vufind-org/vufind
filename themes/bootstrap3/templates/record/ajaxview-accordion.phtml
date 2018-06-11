@@ -1,3 +1,4 @@
+<?=$this->piwik()?>
 <?php
   $this->defaultTab = strtolower($this->defaultTab);
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
