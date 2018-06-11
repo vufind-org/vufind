@@ -28,8 +28,6 @@
  */
 namespace VuFind\Search\Search2;
 
-use VuFindSearch\ParamBag;
-
 /**
  * Search Params for second Solr index
  *
@@ -42,50 +40,13 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Create search backend parameters for advanced features.
-     *
-     * @return ParamBag
-     */
-    public function getBackendParameters()
-    {
-        return parent::getBackendParameters();
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // Based on preference, change the order of initialization to make sure
-        // that preferred facet labels come in last.
-        if ($preferredSection == 'Advanced') {
-            $this->initHomePageFacets();
-            $this->initBasicFacets();
-            $this->initAdvancedFacets();
-        } else {
-            $this->initHomePageFacets();
-            $this->initAdvancedFacets();
-            $this->initBasicFacets();
-        }
-        $this->initCheckboxFacets();
-    }
-
-    /**
      * Initialize facet settings for the advanced search screen.
      *
      * @return void
      */
     public function initAdvancedFacets()
     {
-        $this->initFacetList('Advanced', 'Advanced_Settings', 'Search2');
+        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
     }
 
     /**
@@ -96,24 +57,8 @@ class Params extends \VuFind\Search\Solr\Params
     public function initHomePageFacets()
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
-        if (!$this->initFacetList(
-            'HomePage',
-            'HomePage_Settings',
-            'Search2'
-        )
-        ) {
+        if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
             $this->initAdvancedFacets();
         }
-    }
-
-    /**
-     * Initialize facet settings for the standard search screen.
-     *
-     * @return void
-     */
-    public function initBasicFacets()
-    {
-        $this->initFacetList('ResultsTop', 'Results_Settings', 'Search2');
-        $this->initFacetList('Results', 'Results_Settings', 'Search2');
     }
 }
