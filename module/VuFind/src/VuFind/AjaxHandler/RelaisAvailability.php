@@ -45,7 +45,7 @@ class RelaisAvailability extends AbstractRelaisAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -56,7 +56,7 @@ class RelaisAvailability extends AbstractRelaisAction
         $authorizationId = $this->relais->authenticatePatron();
         if ($authorizationId === null) {
             return $this->formatResponse(
-                $this->translate('Failed'), self::STATUS_ERROR
+                $this->translate('Failed'), self::STATUS_HTTP_FORBIDDEN
             );
         }
 
@@ -66,8 +66,10 @@ class RelaisAvailability extends AbstractRelaisAction
             || strpos($responseText, 'ErrorMessage') !== false
             || strpos($responseText, 'false') !== false
         ) {
-            return $this->formatResponse('no');
+            $result = 'no';
+        } else {
+            $result = 'ok';
         }
-        return $this->formatResponse('ok');
+        return $this->formatResponse(compact('result'));
     }
 }

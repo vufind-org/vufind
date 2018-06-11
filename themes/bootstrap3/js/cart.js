@@ -204,7 +204,8 @@ VuFind.register('cart', function Cart() {
         var currentId = $this.data('cart-id');
         var currentSource = $this.data('cart-source');
         $this.find('.correct').removeClass('correct hidden');
-        $this.find('.cart-add').click(function cartAddClick() {
+        $this.find('.cart-add').click(function cartAddClick(e) {
+          e.preventDefault();
           if (addItem(currentId, currentSource)) {
             $this.find('.cart-add').addClass('hidden');
             $this.find('.cart-remove').removeClass('hidden');
@@ -215,7 +216,8 @@ VuFind.register('cart', function Cart() {
             }, 5000);
           }
         });
-        $this.find('.cart-remove').click(function cartRemoveClick() {
+        $this.find('.cart-remove').click(function cartRemoveClick(e) {
+          e.preventDefault();
           removeItem(currentId, currentSource);
           $this.find('.cart-add').removeClass('hidden');
           $this.find('.cart-remove').addClass('hidden');

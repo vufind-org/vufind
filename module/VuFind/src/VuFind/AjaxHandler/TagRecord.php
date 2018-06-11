@@ -86,15 +86,14 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_AUTH
             );
         }
 
@@ -109,6 +108,6 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
                 : $driver->deleteTags($this->user, $this->tagParser->parse($tag));
         }
 
-        return $this->formatResponse($this->translate('Done'));
+        return $this->formatResponse('');
     }
 }
