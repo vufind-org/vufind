@@ -20,17 +20,4 @@ class SearchController extends \VuFind\Controller\SearchController
             ]
         );
     }
-
-        /**
-     * Results action.
-     *
-     * @return mixed
-     */
-    public function resultsAction()
-    {
-        // overwrite to suppress special Tag handling as provided by standard
-        // VuFind
-        return parent::resultsAction();
-    }
-
 }
