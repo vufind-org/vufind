@@ -46,7 +46,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->searchIni = $this->facetsIni = 'Search2';
+        $this->mainIni = $this->searchIni = $this->facetsIni = 'Search2';
         parent::__construct($configLoader);
     }
 

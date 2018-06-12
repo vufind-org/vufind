@@ -47,18 +47,6 @@ class Search2BackendFactory extends SolrDefaultBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->searchConfig = $this->facetConfig = 'Search2';
-    }
-
-    /**
-     * Get the Solr URL.
-     *
-     * @param string $config name of configuration file (null for default)
-     *
-     * @return string|array
-     */
-    protected function getSolrUrl($config = null)
-    {
-        return parent::getSolrUrl($config ?? $this->searchConfig);
+        $this->mainConfig = $this->searchConfig = $this->facetConfig = 'Search2';
     }
 }
