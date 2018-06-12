@@ -11,6 +11,8 @@
 
     // Additional translations
     $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
+
+    $user = $this->auth()->isLoggedIn();
 ?>
 <div class="my-research-content">
     <?=$this->flashmessages()?>
@@ -52,12 +54,16 @@
             <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
           <?php endif; ?>
           <td data-label="<?=$this->transEsc('Username')?>">
-            <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
-              <div class="librarycard-barcode">
-                <img src="data:image/png;base64,<?=$this->barcode()->createPng($username, 2, 40)?>" alt="">
-              </div>
+            <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0): ?>
+              <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
+                <div class="librarycard-barcode">
+                  <img src="data:image/png;base64,<?=$this->barcode()->createPng($username, 2, 40)?>" alt="">
+                </div>
+                <span><?=$this->escapeHtml($username)?></span>
+              </a>
+            <? else: ?>
               <span><?=$this->escapeHtml($username)?></span>
-            </a>
+            <? endif; ?>
           </td>
           <td data-label="<?=$this->transEsc('Actions')?>" class="library-card-actions">
             <div>
