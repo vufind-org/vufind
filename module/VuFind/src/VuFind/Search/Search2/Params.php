@@ -46,7 +46,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initAdvancedFacets()
     {
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
+        $this->initFacetList('Advanced_Facets', 'Advanced_Settings');
     }
 
     /**

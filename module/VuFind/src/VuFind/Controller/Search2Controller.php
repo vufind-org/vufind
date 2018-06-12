@@ -39,7 +39,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Search2Controller extends AbstractSearch
+class Search2Controller extends AbstractSolrSearch
 {
     /**
      * Constructor
