@@ -124,8 +124,7 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function processAdvancedFacets($facetList, $searchObject = false,
         $hierarchicalFacets = []
-    )
-    {
+    ) {
         // Process the facets
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
