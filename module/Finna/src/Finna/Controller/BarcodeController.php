@@ -55,7 +55,7 @@ class BarcodeController extends \VuFind\Controller\AbstractBase
             [
                 'code' => $code,
                 'type' => $type,
-                'html' => $htmlGenerator->getBarcode($code, $type, 3, 40)
+                'html' => $htmlGenerator->getBarcode($code, $type, 3, 60)
             ]
         );
     }
