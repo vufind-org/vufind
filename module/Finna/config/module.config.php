@@ -186,6 +186,7 @@ $config = [
             'Finna\Controller\ListController' => 'Finna\Controller\ListControllerFactory',
         ],
         'aliases' => [
+            'Barcode' => 'Finna\Controller\BarcodeController',
             'barcode' => 'Finna\Controller\BarcodeController',
             'Cache' => 'Finna\Controller\CacheController',
             'cache' => 'Finna\Controller\CacheController',

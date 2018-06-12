@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Controller;
+namespace Finna\Controller;
 
 /**
  * Generates barcodes
@@ -36,7 +36,7 @@ namespace VuFind\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class BarcodeController extends AbstractBase
+class BarcodeController extends \VuFind\Controller\AbstractBase
 {
     /**
      * Send barcode data for display in the view

@@ -54,16 +54,14 @@
             <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
           <?php endif; ?>
           <td data-label="<?=$this->transEsc('Username')?>">
-            <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0): ?>
-              <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
+            <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
+              <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0): ?>
                 <div class="librarycard-barcode">
                   <img src="data:image/png;base64,<?=$this->barcode()->createPng($username, 2, 40)?>" alt="">
                 </div>
-                <span><?=$this->escapeHtml($username)?></span>
-              </a>
-            <? else: ?>
+              <?php endif; ?>
               <span><?=$this->escapeHtml($username)?></span>
-            <? endif; ?>
+            </a>
           </td>
           <td data-label="<?=$this->transEsc('Actions')?>" class="library-card-actions">
             <div>
