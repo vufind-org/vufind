@@ -1,0 +1,137 @@
+<h1>Konektibo logikoak</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Wildcard Searches">Komodin-bilaketa</a></li>
+  <li><a href="#Fuzzy Searches">Bilaketa zehaztugabea</a></li>
+  <li><a href="#Proximity Searches">Gertutasun-bilaketa</a></li>
+  <li><a href="#Range Searches">Tarte-bilaketa</a></li>
+  <li><a href="#Boosting a Term">Hitz bat estimulatu</a></li>
+  <li><a href="#Boolean operators">Eragile boolearrak</a>
+    <ul>
+      <li><a href="#AND">AND</a></li>
+      <li><a href="#+">+</a></li>
+      <li><a href="#OR">OR</a></li>
+      <li><a href="#NOT">NOT</a></li>
+      <li><a href="#-">-</a></li>
+    </ul>
+  </li>
+</ul>
+
+
+<dl class="Content">
+  <dt><a name="Wildcard Searches"></a>Komodin-bilaketa</dt>
+  <dd>
+    <p>Galdera ikurra <strong>(?)</strong> erabili karaktere zehatz bat ordezkatzeko..</p>
+    <p>Adibidez, “text” edo “test” bilatzeko honako bilaketa hau erabil dezakezu:</p>
+    <pre class="code">te?t</pre>
+
+    <p>Karkatere anitz ordezteko (zero edo gehiago) erabili izartxoa(<strong>*</strong>).</p>
+    <p>Adibidez, "test" erroko "tests" edo "tester" bilatzeko, idatzi honako hau: </p>
+    <pre class="code">test*</pre>
+
+    <p>Hitzaren erdian ere erabil daiteke izartxo (*) komodina:</p>
+    <pre class="code">te*t</pre>
+  </dd>
+
+  <dt><a name="Fuzzy Searches"></a>Bilaketa zehaztugabea</dt>
+  <dd>
+<p>
+  Antzeko grafia duen hitz bat bilatzeko <strong>(~) </strong> azentu-marka jarri hitzaren amaieran. Adibidez, "mono"-ren antzeko grafia duten hitzak bilatzeko</p>
+    <pre class="code">mono~</pre>
+    <p>Bilaketa horrek mono, kono edo moko bezalako emaitzak emango ditu.</p>
+
+   <p>0 eta 1 baloreak zehaztuta antzekotasun-parametroa doitu daiteke. 1 baloretik gertuago antzekotasun handiagoa izango du emaitz-hitzak. Adibidez
+       :</p>
+    <pre class="code">mono~0.8</pre>
+    <p>Antzekotasun-parametroa zehazten ez bada, balore estandarra erabiltzen da, hots, 0.5.</p>
+  </dd>
+
+  <dt><a name="Proximity Searches"></a>Gertutasun-bilaketa</dt>
+  <dd>
+    <p>
+    Gertutasun-bilaketa erabiltzeko <strong>(~)</strong> azentu-marka  ipini hitz anitzen bukaeran . Adibidez,  "marketing" eta "Meffert" bilatzeko bost hitz baino distantzia txikiagoan, honako bilaketa egin</p>
+    <pre class="code">"marketing Meffert"~5</pre>
+  </dd>
+
+  <dt><a name="Range Searches"></a>Tarte-bilaketa</dt>
+  <dd>
+    <p>
+    Kortxeteak <strong>({ })</strong> erabili tarte-bilaketa egiteko. Adibidez, A, B edo C hizkiz hasten diren hitzak bilatzeko, honako hau idatzi</p>
+    <pre class="code">{A TO C}</pre>
+    <p>
+    Zenbakiekin ere aplika daiteke tarte-bilaketa, urteak kasu:</p>
+    <pre class="code">[2009 TO 2012]</pre>
+  </dd>
+
+  <dt><a name="Boosting a Term"></a>Hitz bat estimulatu</dt>
+   <dd>
+    <p>
+    Hitz bati garrantzia handiagoa emateko azentu zirkunflexua <strong>(^)</strong> erabili hitz anitzen bilaketan</p>
+    <pre class="code">marketing Meffert^5</pre>
+    <p>"Meffert" hitza estimulatuta, hitz hori dutenak emaitzetan baloratuagoak izango dira.
+    </p>
+  </dd>
+
+  <dt><a name="Boolean operators"></a>Eragile boolearrak</dt>
+  <dd>
+    <p>
+    Eragile boolearrek hitz eta esaldiak logikoki konektatzea ahalbidetzen dute. Honako eragile hauek daude onartuak:</p>
+    <pre class="code">AND</pre>
+    <pre class="code">+</pre>
+    <pre class="code">OR</pre>
+    <pre class="code">NOT</pre>
+    <pre class="code">-</pre>
+    <p>Eragile boolearrak maiuskulaz idatzi behar dira.</p>
+    <dl>
+
+      <dt><a name="AND"></a>AND</dt>
+      <dd>
+        <p><strong>AND </strong>, eragile lehenetsia da juntagailu gisa . Hau da,  <strong> AND </strong>  eragilea katalogoak automatikoki erabiliko du bilaketa hitzen artean idatzi beharrik gabe.  <strong>AND</strong>  eragileak bilaketan zehaztutako hitz guztiak dituzten erregistroak bilatuko ditu.
+        </p>
+        <p>Esaterako,  "marketing" eta "Meffert" hitzak dituen erregistroak bilatzeko txertatu:
+            </p>
+        <pre class="code">marketing Meffert</pre>
+        <p>o alternativamente</p>
+        <pre class="code">marketing AND Meffert</pre>
+      </dd>
+
+      <dt><a name="+"></a>+ (gehi)</dt>
+      <dd>
+        <p>
+Gehi <strong>(+) </strong>eragileak hitz bat behar du jarraian itsatsita. Horrela, emaitz-erregistroen edozein ataletan hitz hori agertu behar du.
+</p>
+        <p>Adibidez, "marketing" hitza duten baina "Meffert" hitza izan dezaketen erregistroak bilatzeko, honela idatzi behar da:</p>
+        <pre class="code">+marketing Meffert</pre>
+      </dd>
+
+      <dt><a name="OR"></a>OR</dt>
+      <dd>
+        <p><strong>OR</strong>  eragilea aplikatuta, bilaketak hitzetako bat duen emaitzak ematen ditu.
+        </p>
+        <p>Esaterako, "marketing" edo "Meffert" hitzak dituzten tituluak bilatzeko, idatzi:</p>
+        <pre class="code">marketing OR Meffert</pre>
+      </dd>
+
+      <dt><a name="NOT"></a>NOT</dt>
+      <dd>
+        <p>
+Bigarren hitza ezik lehena duten erregistroak bilatzeko <strong> NOT </strong> eragilea erabili.
+</p>
+        <p>
+Adibidez, "marketing" hitza duten erregistroak baina, era berean, "Meffert" hitza ez dutenak bilatzeko, txertatu:
+</p>
+        <pre class="code">marketing NOT Meffert</pre>
+        <p>Oharra:  <strong>NOT</strong>  eragilea bi hitzez soilik osatua dagoen bilaketan erabil daiteke. Beraz, honako bilaketak ez du emaitzik jaulkiko:
+        </p>
+        <pre class="code">NOT marketing</pre>
+           </dd>
+
+      <dt><a name="-"></a>- (ken)</dt>
+      <dd>
+        <p>Ken eragilea <strong>(-) </strong>hitz baten aurretik jarrita, hitz hori duten erregistroak baztertzen ditu.</p>
+        <p>Adibidez:</p>
+        <pre class="code">marketing -Meffert</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>
