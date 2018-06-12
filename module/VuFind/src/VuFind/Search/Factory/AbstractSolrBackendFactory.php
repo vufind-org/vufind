@@ -203,12 +203,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Spellcheck
-        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
-            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = ['basicSpell'];
-            } else {
-                $dictionaries = ['default', 'basicSpell'];
-            }
+        if ($config->Spelling->enabled ?? true) {
+            $dictionaries = ($config->Spelling->simple ?? false)
+                ? ['basicSpell'] : ['default', 'basicSpell'];
             $spellingListener = new InjectSpellingListener($backend, $dictionaries);
             $spellingListener->attach($events);
         }
