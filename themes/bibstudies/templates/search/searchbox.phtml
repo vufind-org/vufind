@@ -132,7 +132,6 @@
                   <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
                   <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
               </ul>
-
           </li>
           <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -147,7 +146,7 @@
           </li>
           <li>
             <form class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-               <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
+               <div class="input-group input-group-sm pull-right" style="padding-top:10px; padding-bottom:10px; max-width: 200px">
                  <input id="searchForm_bibleranges" class="searchForm form-control search-query" type="text" name="lookfor" placeholder="<?=$this->transEsc("Bible Ranges")?>"
                         value="<?=($currentHandler == "BibleRangeSearch") ? $this->escapeHtmlAttr($this->lookfor) : ''?>"/>
                  <div class="input-group-btn">
