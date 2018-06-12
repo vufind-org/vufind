@@ -88,6 +88,7 @@ function initFacetTree(treeNode, inSidebar)
     return false;
   });
 
+  var source = treeNode.data('source');
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');
   var currentPath = treeNode.data('path');
@@ -104,6 +105,7 @@ function initFacetTree(treeNode, inSidebar)
   $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
+      source: source,
       facetName: facet,
       facetSort: sort,
       facetOperator: operator
