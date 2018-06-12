@@ -53,10 +53,7 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
     {
         if (is_array($apiErrorMessage)) {
             $this->setApiError($apiErrorMessage);
-            parent::__construct(
-                isset($this->apiErrorDetails['Description'])
-                ? $this->apiErrorDetails['Description'] : ''
-            );
+            parent::__construct($this->apiErrorDetails['Description'] ?? '');
         } else {
             parent::__construct($apiErrorMessage);
         }
@@ -71,20 +68,27 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
      */
     protected function setApiError($message)
     {
-        //AuthErrorMessages
         if (isset($message['ErrorCode'])) {
+            // AuthErrorMessages
             $this->apiErrorDetails['ErrorCode'] = $message['ErrorCode'];
             $this->apiErrorDetails['Description'] = $message['Reason'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['AdditionalDetail'];
-        }
-
-        //EDSAPI error messages
-        if (isset($message['ErrorNumber'])) {
+        } elseif (isset($message['ErrorNumber'])) {
+            // EDSAPI error messages
             $this->apiErrorDetails['ErrorCode'] = $message['ErrorNumber'];
             $this->apiErrorDetails['Description'] = $message['ErrorDescription'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['DetailedErrorDescription'];
+        } elseif (is_array($message['errors'] ?? null)
+            && count($message['errors']) > 0
+        ) {
+            // Array of errors
+            $this->apiErrorDetails['ErrorCode'] = $message['errors'][0]['code'];
+            $this->apiErrorDetails['Description'] = $message['errors'][0]['message'];
+        } else {
+            $this->apiErrorDetails['ErrorCode'] = null;
+            $this->apiErrorDetails['Description'] = 'unrecognized error';
         }
     }
 
@@ -115,8 +119,7 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
      */
     public function getApiErrorCode()
     {
-        return isset($this->apiErrorDetails)
-            ? $this->apiErrorDetails['ErrorCode'] : '';
+        return $this->apiErrorDetails['ErrorCode'] ?? '';
     }
 
     /**
@@ -126,8 +129,7 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
      */
     public function getApiErrorDescription()
     {
-        return isset($this->apiErrorDetails)
-            ? $this->apiErrorDetails['Description'] : '';
+        return $this->apiErrorDetails['Description'] ?? '';
     }
 
     /**
@@ -137,7 +139,6 @@ class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendExcept
      */
     public function getApiDetailedErrorDescription()
     {
-        return (isset($this->apiErrorDetails))
-            ? $this->apiErrorDetails['DetailedDescription'] : '';
+        return $this->apiErrorDetails['DetailedDescription'] ?? '';
     }
 }
