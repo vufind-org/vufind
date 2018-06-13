@@ -6,7 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013-2015.
+ * Copyright (C) The National Library of Finland 2013-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -208,12 +208,15 @@ class SolrDefaultBackendFactory
     /**
      * Get the Solr URL.
      *
+     * @param string $config name of configuration file (null for default)
+     *
      * @return string|array
      */
-    protected function getSolrUrl()
+    protected function getSolrUrl($config = null)
     {
         $url = parent::getSolrUrl();
-        if (is_array($url) && $this->config->get('config')->Index->shuffle) {
+        $config = $config ?? $this->mainConfig;
+        if (is_array($url) && !empty($this->config->get($config)->Index->shuffle)) {
             shuffle($url);
         }
         return $url;

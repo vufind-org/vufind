@@ -1,15 +1,17 @@
 <?php
   $geoFilters = $this->params->getGeographicFilters($this->params->getFilterList());
   $mapPopupUrl = $this->url('search-mapfacet') . $results->getUrlQuery()->getParams(false);
-  $removeFacetUrl = $results->getUrlQuery()->removeFacet($geoFilters[0], '');
+  $removeFacetUrl = $results->getUrlQuery()->removeFacet($geoFilters[0] ?? '', ''); ?>
 ?>
 <div class="geofacet-header">
   <h5 class="geofacet-title"><?=$this->translate('filter_by_geo_location')?></h5>
-  <?php if(!empty($geoFilters)): ?><a class="remove-facet" href="<?=$removeFacetUrl?>"><?=$this->translate("Remove filter");?></a><?php endif;?>
+  <?php if (!empty($geoFilters)): ?>
+    <a class="remove-facet" href="<?=$removeFacetUrl?>"><?=$this->translate("Remove filter");?></a>
+  <?php endif;?>
   <div class="clearfix"></div>
 </div>
 <div class="geographic-facet">
-  <?php if(empty($geoFilters)):?>
+  <?php if (empty($geoFilters)):?>
     <div class="location-search-info alert alert-info hidden">
       <div class="fa fa-spinner fa-spin hidden"></div>
       <div class="info"></div>

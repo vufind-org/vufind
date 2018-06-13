@@ -29,6 +29,7 @@
  */
 namespace Finna\AjaxHandler;
 
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
@@ -76,16 +77,16 @@ class GetFacetData extends \VuFind\AjaxHandler\GetFacetData
     /**
      * Constructor
      *
-     * @param SessionSettings         $ss      Session settings
-     * @param HierarchicalFacetHelper $fh      Facet helper
-     * @param Results                 $results Solr results object
-     * @param Config                  $bc      Browse configuration
-     * @param Config                  $fc      Facet configuration
+     * @param SessionSettings         $ss Session settings
+     * @param HierarchicalFacetHelper $fh Facet helper
+     * @param ResultsManager          $rm Search results manager
+     * @param Config                  $bc Browse configuration
+     * @param Config                  $fc Facet configuration
      */
     public function __construct(SessionSettings $ss, HierarchicalFacetHelper $fh,
-        Results $results, Config $bc, Config $fc
+        ResultsManager $rm, Config $bc, Config $fc
     ) {
-        parent::__construct($ss, $fh, $results);
+        parent::__construct($ss, $fh, $rm);
         $this->browseConfig = $bc;
         $this->facetConfig = $fc;
     }

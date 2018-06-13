@@ -68,7 +68,7 @@ class GetFacetDataFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
         return new $requestedName(
             $container->get('VuFind\Session\Settings'),
             $container->get('VuFind\Search\Solr\HierarchicalFacetHelper'),
-            $container->get('VuFind\Search\Results\PluginManager')->get('Solr'),
+            $container->get('VuFind\Search\Results\PluginManager'),
             $container->get('VuFind\Config')->get('browse'),
             $container->get('VuFind\Config')->get('facet')
         );
