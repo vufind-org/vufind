@@ -237,4 +237,18 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($url);
     }
+
+    /**
+     * Get the route for a record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     *
+     * @return string
+     */
+    public function getRoute($driver)
+    {
+        $details = $this->router->getTabRouteDetails($driver, $tab);
+        return $details['route'];
+    }
 }
