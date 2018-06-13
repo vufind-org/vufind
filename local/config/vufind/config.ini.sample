@@ -24,7 +24,7 @@ default_from = ""
 ;provider_id = https://
 
 [OpenURL]
-url = "http://"
+url = ""
 
 ;[EZproxy]
 ;host = http://proxy.myuniversity.edu
