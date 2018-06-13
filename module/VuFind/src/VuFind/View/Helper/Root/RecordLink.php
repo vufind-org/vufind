@@ -248,7 +248,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
      */
     public function getRoute($driver)
     {
-        $details = $this->router->getTabRouteDetails($driver, $tab);
+        $details = $this->router->getTabRouteDetails($driver, null);
         return $details['route'];
     }
 }
