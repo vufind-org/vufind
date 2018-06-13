@@ -28,8 +28,6 @@
  */
 namespace VuFind\Search\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Factory for a second Solr backend
  *
