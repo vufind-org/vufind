@@ -15,7 +15,12 @@ function displayItemStatus(result, $item) {
   $item.removeClass('js-item-pending');
   $item.find('.status').empty().append(result.availability_message);
   $item.find('.ajax-availability').removeClass('ajax-availability hidden');
-  if (typeof(result.full_status) != 'undefined'
+  if (typeof(result.error) != 'undefined'
+    && result.error.length > 0
+  ) {
+    $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
+    $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
+  } else if (typeof(result.full_status) != 'undefined'
     && result.full_status.length > 0
     && $item.find('.callnumAndLocation').length > 0
   ) {
@@ -115,7 +120,8 @@ function itemQueueAjax(id, el) {
   itemStatusEls[id] = el;
   itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
   el.addClass('js-item-pending').removeClass('hidden');
-  el.find('.status').removeClass('hidden');
+  el.find('.callnumAndLocation').removeClass('hidden');
+  el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
 }
 
 function checkItemStatus(el) {

@@ -396,6 +396,28 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Support method for getItemStatuses() -- process a failed record.
+     *
+     * @param array $record Information on items linked to a single bib record
+     *
+     * @return array Summarized availability information
+     */
+    protected function getItemStatusError($record)
+    {
+        return [
+            'id' => $record[0]['id'],
+            'error' => $record[0]['error'],
+            'availability' => false,
+            'availability_message' => $record[0]['availability_message'] ?? '',
+            'location' => false,
+            'locationList' => [],
+            'reserve' => false,
+            'reserve_message' => '',
+            'callnumber' => false
+        ];
+    }
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -412,7 +434,15 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             // If the ILS fails, send an empty response instead of a fatal
             // error; we don't want to confuse the end user unnecessarily.
             error_log($e->getMessage());
-            $results = [];
+            foreach ($ids as $id) {
+                $results[] = [
+                    [
+                        'id' => $id,
+                        'error' => 'An error has occurred',
+                        'availability_message' => 'status_unknown_message'
+                    ]
+                ];
+            }
         }
 
         if (!is_array($results)) {
@@ -451,14 +481,19 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
 
             // Skip empty records:
             if (count($record)) {
-                if ($locationSetting == "group") {
-                    $current = $this->getItemStatusGroup(
-                        $record, $messages, $callnumberSetting
-                    );
+                // Check for errors
+                if (!empty($record[0]['error'])) {
+                    $current = $this->getItemStatusError($record);
                 } else {
-                    $current = $this->getItemStatus(
-                        $record, $messages, $locationSetting, $callnumberSetting
-                    );
+                    if ($locationSetting === 'group') {
+                        $current = $this->getItemStatusGroup(
+                            $record, $messages, $callnumberSetting
+                        );
+                    } else {
+                        $current = $this->getItemStatus(
+                            $record, $messages, $locationSetting, $callnumberSetting
+                        );
+                    }
                 }
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
