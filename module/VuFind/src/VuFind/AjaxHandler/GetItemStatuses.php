@@ -484,16 +484,14 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 // Check for errors
                 if (!empty($record[0]['error'])) {
                     $current = $this->getItemStatusError($record);
+                } elseif ($locationSetting === 'group') {
+                    $current = $this->getItemStatusGroup(
+                       $record, $messages, $callnumberSetting
+                    );
                 } else {
-                    if ($locationSetting === 'group') {
-                        $current = $this->getItemStatusGroup(
-                            $record, $messages, $callnumberSetting
-                        );
-                    } else {
-                        $current = $this->getItemStatus(
-                            $record, $messages, $locationSetting, $callnumberSetting
-                        );
-                    }
+                    $current = $this->getItemStatus(
+                        $record, $messages, $locationSetting, $callnumberSetting
+                    );
                 }
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
