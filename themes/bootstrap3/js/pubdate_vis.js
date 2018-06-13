@@ -59,7 +59,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
   var url = baseURL + '/AJAX/json?method=getVisData&facetFields=' + encodeURIComponent(facetFields) + '&' + searchParams;
   $.getJSON(url, function getVisDataJSON(data) {
-    $.each(data.data, function getVisDataEach(key, val) {
+    $.each(data.data.facets, function getVisDataEach(key, val) {
       //check if there is data to display, if there isn't hide the box
       if (val.data === undefined || val.data.length === 0) {
         return;

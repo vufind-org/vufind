@@ -93,9 +93,10 @@ function runItemAjaxForQueue() {
     data: { 'id': itemStatusIds }
   })
     .done(function checkItemStatusDone(response) {
-      for (var j = 0; j < response.data.length; j++) {
-        displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
-        itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
+      for (var j = 0; j < response.data.statuses.length; j++) {
+        var status = response.data.statuses[j];
+        displayItemStatus(status, itemStatusEls[status.id]);
+        itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
       }
       itemStatusRunning = false;
     })

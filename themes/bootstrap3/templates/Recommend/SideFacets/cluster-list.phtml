@@ -8,10 +8,14 @@
       <?php $moreUrl = '#'; ?>
     <?php endif; ?>
     <?php if (($this->showMoreInLightbox && $this->showMoreInLightbox !== 'more') && $facetLightbox): ?>
-      <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
+      <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+        <span class="text"><?=$this->transEsc('more')?> ...</span>
+      </a>
       <?php break; ?>
     <?php endif; ?>
-    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
+    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
+      <span class="text"><?=$this->transEsc('more')?> ...</span>
+    </a>
   <?php endif; ?>
   <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
     'exclude' => $this->allowExclude,
@@ -37,6 +41,6 @@
     </a>
   <?php endif; ?>
   <a class="facet narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
-      <span class="text"><?=$this->transEsc('less')?> ...</span>
-    </a>
+    <span class="text"><?=$this->transEsc('less')?> ...</span>
+  </a>
 <?php endif; ?>

@@ -86,7 +86,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $handler = $this->getHandler();
         $this->assertEquals(
-            ['You must be logged in first', 'NEED_AUTH', 401],
+            ['You must be logged in first', 401],
             $handler->handleRequest($this->getParamsHelper(['id' => 1, 'data' => 1]))
         );
     }
@@ -100,7 +100,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $handler = $this->getHandler(null, null, null, $this->getMockUser());
         $this->assertEquals(
-            ['bulk_error_missing', 'ERROR', 400],
+            ['bulk_error_missing', 400],
             $handler->handleRequest($this->getParamsHelper())
         );
     }
@@ -135,7 +135,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     public function testHoldResponse()
     {
         $this->assertEquals(
-            [['status' => true, 'msg' => 'request_place_text'], 'OK'],
+            [['status' => true, 'msg' => 'request_place_text']],
             $this->runSuccessfulTest('checkRequestIsValid')
         );
     }
@@ -148,7 +148,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     public function testILLResponse()
     {
         $this->assertEquals(
-            [['status' => true, 'msg' => 'ill_request_place_text'], 'OK'],
+            [['status' => true, 'msg' => 'ill_request_place_text']],
             $this->runSuccessfulTest('checkILLRequestIsValid', 'ILLRequest')
         );
     }
@@ -162,8 +162,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $this->assertEquals(
             [
-                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
-                'OK'
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
             ], $this->runSuccessfulTest(
                 'checkStorageRetrievalRequestIsValid', 'StorageRetrievalRequest'
             )
