@@ -27,9 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
+use Zend\Http\Header\Cookie;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 /**
@@ -57,10 +59,18 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
     public function __invoke(
         ContainerInterface $container, $name, callable $callback,
         array $options = null
-    ) {
+    ): HandlerInterface {
+        /** @var HandlerInterface $handler */
         $handler = call_user_func($callback);
         $config = $container->get('VuFind\Config\PluginManager');
-        $secure = $config->get('config')->Session->secure;
-        return $secure ? new SecureDelegator($handler) : $handler;
+        $secure = $config->get('config')->Session->secure ?? false;
+        return $secure ? $this->delegate($container, $handler) : $handler;
+    }
+
+    protected function delegate(
+        ContainerInterface $container, $handler
+    ): SecureDelegator {
+        $cookieManager = $container->get('VuFind\Cookie\CookieManager');
+        return new SecureDelegator($cookieManager, $handler);
     }
 }

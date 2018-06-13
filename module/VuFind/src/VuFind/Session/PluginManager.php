@@ -67,6 +67,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Session\Memcache' => 'Zend\ServiceManager\Factory\InvokableFactory',
     ];
 
+    /**
+     * Default delegator factories.
+     *
+     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     */
     protected $delegators = [
         'VuFind\Session\Database' => ['VuFind\Session\SecureDelegatorFactory'],
         'VuFind\Session\File' => ['VuFind\Session\SecureDelegatorFactory'],

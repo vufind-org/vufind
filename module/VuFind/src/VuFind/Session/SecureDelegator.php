@@ -29,6 +29,7 @@
  */
 namespace VuFind\Session;
 
+use VuFind\Cookie\CookieManager;
 use VuFind\Db\Table\PluginManager;
 use Zend\Config\Config;
 use Zend\Crypt\BlockCipher;
@@ -54,6 +55,13 @@ class SecureDelegator implements HandlerInterface
     protected $cipher;
 
     /**
+     * VuFind cookie manager service.
+     *
+     * @var CookieManager
+     */
+    protected $cookieManager;
+
+    /**
      * The wrapped session handler.
      *
      * @var HandlerInterface
@@ -65,9 +73,10 @@ class SecureDelegator implements HandlerInterface
      *
      * @param HandlerInterface $handler {@see $handler}
      */
-    public function __construct(HandlerInterface $handler)
+    public function __construct(CookieManager $cookieManager, HandlerInterface $handler)
     {
         $this->handler = $handler;
+        $this->cookieManager = $cookieManager;
         $this->cipher = BlockCipher::factory('openssl');
     }
 
@@ -148,23 +157,17 @@ class SecureDelegator implements HandlerInterface
      */
     public function open($save_path, $name)
     {
-        $cookie = "{$name}_KEY";
+        $cookieName = "{$name}_KEY";
+        $cipherKey = ($cookieValue = $this->cookieManager->get($cookieName))
+            ?? base64_encode(Rand::getBytes(64));
 
-        if (!isset($_COOKIE[$cookie])) {
-            $params = session_get_cookie_params();
-            setcookie(
-                $cookie,
-                $_COOKIE[$cookie] = base64_encode(Rand::getBytes(64)),
-                $params['lifetime'] ? $params['lifetime'] + time() : 0,
-                $params['path'],
-                $params['domain'],
-                $params['secure'],
-                $params['httponly']
-            );
+        if (!$cookieValue) {
+            $lifetime = session_get_cookie_params()['lifetime'];
+            $expire = $lifetime ? $lifetime + time() : 0;
+            $this->cookieManager->set($cookieName, $cipherKey, $expire);
         }
 
-        $this->cipher->setKey(base64_decode($_COOKIE[$cookie]));
-
+        $this->cipher->setKey(base64_decode($cipherKey));
         return $this->handler->open($save_path, $name);
     }
 
