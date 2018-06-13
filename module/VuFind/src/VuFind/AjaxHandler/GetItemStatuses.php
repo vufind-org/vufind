@@ -431,7 +431,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         try {
             $results = $this->ils->getStatuses($ids);
         } catch (ILSException $e) {
-            // If the ILS fails, send an empty response instead of a fatal
+            // If the ILS fails, send an error response instead of a fatal
             // error; we don't want to confuse the end user unnecessarily.
             error_log($e->getMessage());
             foreach ($ids as $id) {
