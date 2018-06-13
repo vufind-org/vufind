@@ -27,11 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-
 namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
-use Zend\Http\Header\Cookie;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 /**
@@ -60,17 +59,46 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container, $name, callable $callback,
         array $options = null
     ): HandlerInterface {
-        /** @var HandlerInterface $handler */
+        /**
+         * The wrapped session handler.
+         *
+         * @var HandlerInterface $handler
+         */
         $handler = call_user_func($callback);
         $config = $container->get('VuFind\Config\PluginManager');
         $secure = $config->get('config')->Session->secure ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
     }
 
+    /**
+     * Creates the delegating session handler
+     *
+     * @param ContainerInterface $container Service Container
+     * @param HandlerInterface   $handler   Wrapped session handler
+     *
+     * @return HandlerInterface
+     */
     protected function delegate(
-        ContainerInterface $container, $handler
-    ): SecureDelegator {
+        ContainerInterface $container, HandlerInterface $handler
+    ): HandlerInterface {
         $cookieManager = $container->get('VuFind\Cookie\CookieManager');
-        return new SecureDelegator($cookieManager, $handler);
+        $config = $container->get('ProxyManager\Configuration');
+        $factory = new LazyLoadingValueHolderFactory($config);
+        $delegator = new SecureDelegator($cookieManager, $handler);
+        /**
+         * The handler proxy.
+         *
+         * @var HandlerInterface $handler
+         */
+        $handler = $factory->createProxy(
+            HandlerInterface::class, function (
+                &$target, $proxy, $method, array $params, &$init
+            ) use ($delegator) {
+                $init = null;
+                $target = $delegator;
+                return true;
+            }
+        );
+        return $handler;
     }
 }

@@ -30,8 +30,6 @@
 namespace VuFind\Session;
 
 use VuFind\Cookie\CookieManager;
-use VuFind\Db\Table\PluginManager;
-use Zend\Config\Config;
 use Zend\Crypt\BlockCipher;
 use Zend\Math\Rand;
 
@@ -45,7 +43,7 @@ use Zend\Math\Rand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-class SecureDelegator implements HandlerInterface
+class SecureDelegator
 {
     /**
      * The block cipher for en/decrypting session data.
@@ -71,80 +69,15 @@ class SecureDelegator implements HandlerInterface
     /**
      * SecureDelegator constructor.
      *
-     * @param HandlerInterface $handler {@see $handler}
+     * @param CookieManager    $cookieManager {@see $cookieHandler}
+     * @param HandlerInterface $handler       {@see $handler}
      */
-    public function __construct(CookieManager $cookieManager, HandlerInterface $handler)
-    {
+    public function __construct(
+        CookieManager $cookieManager, HandlerInterface $handler
+    ) {
         $this->handler = $handler;
         $this->cookieManager = $cookieManager;
         $this->cipher = BlockCipher::factory('openssl');
-    }
-
-    /**
-     * Enable session writing (default)
-     *
-     * @return void
-     */
-    public function enableWrites()
-    {
-        $this->handler->enableWrites();
-    }
-
-    /**
-     * Disable session writing, i.e. make it read-only
-     *
-     * @return void
-     */
-    public function disableWrites()
-    {
-        $this->handler->disableWrites();
-    }
-
-    /**
-     * Set configuration.
-     *
-     * @param Config $config Session configuration ([Session] section of
-     * config.ini)
-     *
-     * @return void
-     */
-    public function setConfig(Config $config)
-    {
-        $this->handler->setConfig($config);
-    }
-
-    /**
-     * Closes the wrapped handler;
-     *
-     * @return bool
-     */
-    public function close()
-    {
-        return $this->handler->close();
-    }
-
-    /**
-     * Destroys a session.
-     *
-     * @param string $session_id Session id
-     *
-     * @return bool
-     */
-    public function destroy($session_id)
-    {
-        return $this->handler->destroy($session_id);
-    }
-
-    /**
-     * Triggers garbage collection.
-     *
-     * @param int $maxlifetime Session maximum lifetime.
-     *
-     * @return bool
-     */
-    public function gc($maxlifetime)
-    {
-        return $this->handler->gc($maxlifetime);
     }
 
     /**
@@ -199,25 +132,15 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Get the wrapped handlers table manager.
+     * Pass calls to non-existing methods to the wrapped Handler
      *
-     * @return PluginManager
-     * @throws \Exception
+     * @param string $name      Name of the method being called
+     * @param array  $arguments Passed Arguments
+     *
+     * @return mixed
      */
-    public function getDbTableManager()
+    public function __call($name, $arguments)
     {
-        return $this->handler->getDbTableManager();
-    }
-
-    /**
-     * Set the wrapped handlers table manager.
-     *
-     * @param PluginManager $manager Table manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(PluginManager $manager)
-    {
-        $this->handler->setDbTableManager($manager);
+        return $this->handler->{$name}(...$arguments);
     }
 }
