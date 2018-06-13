@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Factory for a second Solr backend
+ * Search2 Autocomplete Module
  *
  * PHP version 7
  *
- * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -13,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,32 +20,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Factory
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Autocomplete
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
-namespace VuFind\Search\Factory;
-
-use Zend\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\Autocomplete;
 
 /**
- * Factory for a second Solr backend
+ * Search2 Autocomplete Module
+ *
+ * This class provides suggestions by using the secondary Solr index.
  *
  * @category VuFind
- * @package  Search_Factory
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Autocomplete
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
-class Search2BackendFactory extends SolrDefaultBackendFactory
+class Search2 extends Solr
 {
     /**
-     * Constructor
+     * Search object family to use
+     *
+     * @var string
      */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->mainConfig = $this->searchConfig = $this->facetConfig = 'Search2';
-    }
+    protected $searchClassId = 'Search2';
 }
