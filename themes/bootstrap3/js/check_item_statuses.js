@@ -92,7 +92,8 @@ var ItemStatusHandler = {
             return;
         }
         // display the error message on each of the ajax status place holder
-        $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
+        $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
+            .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
     },
     itemQueueAjax: function(id, el){
         clearTimeout(this.itemStatusTimer);
