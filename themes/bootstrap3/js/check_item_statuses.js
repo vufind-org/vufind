@@ -123,7 +123,8 @@ function itemQueueAjax(id, el) {
   el.addClass('js-item-pending').removeClass('hidden');
   el.find('.callnumAndLocation').removeClass('hidden');
   el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
-}
+  el.find('.status').removeClass('hidden');
+ }
 
 function checkItemStatus(el) {
   var $item = $(el);

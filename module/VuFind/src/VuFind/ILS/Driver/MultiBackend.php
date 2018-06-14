@@ -198,8 +198,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 $items[] = [
                     [
                         'id' => $id,
-                        'error' => 'An error has occurred',
-                        'availability_message' => 'status_unknown_message'
+                        'error' => 'An error has occurred'
                     ]
                 ];
             }

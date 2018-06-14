@@ -406,9 +406,9 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         return [
             'id' => $record[0]['id'],
-            'error' => $record[0]['error'],
+            'error' => $this->translate($record[0]['error']),
             'availability' => false,
-            'availability_message' => $record[0]['availability_message'] ?? '',
+            'availability_message' => '',
             'location' => false,
             'locationList' => [],
             'reserve' => false,
@@ -438,8 +438,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $results[] = [
                     [
                         'id' => $id,
-                        'error' => 'An error has occurred',
-                        'availability_message' => 'status_unknown_message'
+                        'error' => 'An error has occurred'
                     ]
                 ];
             }
