@@ -11,14 +11,14 @@ VuFind.register('openurl', function OpenUrl() {
       dataType: 'json',
       url: url
     })
-    .done(function getResolverLinksDone(response) {
-      $target.removeClass('ajax_availability').empty().append(response.data.html);
-    })
-    .fail(function getResolverLinksFail(response, textStatus) {
-      $target.removeClass('ajax_availability').addClass('text-danger').empty();
-      if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
-      $target.append(response.responseJSON.data);
-    });
+      .done(function getResolverLinksDone(response) {
+        $target.removeClass('ajax_availability').empty().append(response.data.html);
+      })
+      .fail(function getResolverLinksFail(response, textStatus) {
+        $target.removeClass('ajax_availability').addClass('text-danger').empty();
+        if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
+        $target.append(response.responseJSON.data);
+      });
   }
 
   function embedOpenUrlLinks(el) {
@@ -44,7 +44,7 @@ VuFind.register('openurl', function OpenUrl() {
   // combined results fetched with AJAX are loaded.
   function init(_container) {
     var container = _container || $('body');
-     // assign action to the openUrlWindow link class
+    // assign action to the openUrlWindow link class
     container.find('a.openUrlWindow').unbind('click').click(function openUrlWindowClick() {
       var params = extractClassParams(this);
       var settings = params.window_settings;

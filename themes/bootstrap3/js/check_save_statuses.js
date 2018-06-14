@@ -54,24 +54,25 @@ function runSaveAjaxForQueue() {
       'source': sources
     }
   })
-  .done(function checkSaveStatusDone(response) {
-    for (var id in response.data.statuses) {
-      if (response.data.statuses.hasOwnProperty(id)) {
-        displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
-      }
-      // Remove populated ids from the queue
-      for (var j = 0; j < saveStatusObjs; j++) {
-        if (saveStatusObjs[j].id === id) {
-          saveStatusObjs.splice(j, 1);
+    .done(function checkSaveStatusDone(response) {
+      for (var id in response.data.statuses) {
+        if (Object.prototype.hasOwnProperty.call(response.data.statuses, id)) {
+          displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
+
+          // Remove populated ids from the queue
+          for (var j = 0; j < saveStatusObjs; j++) {
+            if (saveStatusObjs[j].id === id) {
+              saveStatusObjs.splice(j, 1);
+            }
+          }
         }
       }
-    }
-    saveStatusRunning = false;
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    saveStatusFail(response, textStatus);
-    saveStatusRunning = false;
-  });
+      saveStatusRunning = false;
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      saveStatusFail(response, textStatus);
+      saveStatusRunning = false;
+    });
 }
 function saveQueueAjax(obj, el) {
   if (el.hasClass('js-save-pending')) {
