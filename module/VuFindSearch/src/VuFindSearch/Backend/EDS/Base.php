@@ -288,7 +288,7 @@ abstract class EdsApi_REST_Base
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
      *
-     * @throws \Exception
+     * @throws Exception
      * @return object         EDS API response (or an Error object).
      */
     protected function call($baseUrl, $headerParams, $params = [],
