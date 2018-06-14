@@ -468,7 +468,7 @@ $config = [
                 'aliases' => [
                     'axiellwebservices' => 'Finna\ILS\Driver\AxiellWebServices',
                     'gemini' => 'Finna\ILS\Driver\Gemini',
-                    'mikromark' => 'Finna\ILS\Driver\Mikromarc',
+                    'mikromarc' => 'Finna\ILS\Driver\Mikromarc',
                     // TOOD: remove the following line when KohaRest driver is available upstream:
                     'koharest' => 'Finna\ILS\Driver\KohaRest',
 
