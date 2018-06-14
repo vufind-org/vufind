@@ -124,7 +124,7 @@ function itemQueueAjax(id, el) {
   el.find('.callnumAndLocation').removeClass('hidden');
   el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
   el.find('.status').removeClass('hidden');
- }
+}
 
 function checkItemStatus(el) {
   var $item = $(el);
