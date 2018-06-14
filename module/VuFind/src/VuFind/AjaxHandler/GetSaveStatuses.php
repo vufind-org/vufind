@@ -125,7 +125,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -134,8 +134,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -145,10 +144,10 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        return $this->formatResponse($this->getDataFromUser($ids, $sources));
+        $statuses = $this->getDataFromUser($ids, $sources);
+        return $this->formatResponse(compact('statuses'));
     }
 }

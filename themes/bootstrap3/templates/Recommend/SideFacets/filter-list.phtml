@@ -18,10 +18,12 @@
       ?>
       <a class="facet" href="<?=$removeLink ?>" title="<?=$this->transEsc('clear_tag_filter') ?>">
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
+        <span class="text">
+            <?php if ($filter['operator'] == 'NOT'): ?><?=$this->transEsc('NOT') ?><?php endif; ?>
+            <?php if ($filter['operator'] == 'OR' && $i > 0): ?><?=$this->transEsc('OR') ?><?php endif; ?>
+            <?=$this->transEsc($field) ?>: <?=$this->escapeHtml($filter['displayText']) ?>
+        </span>
         <span class="status"><i class="fa fa-times" aria-hidden="true"></i></span>
-        <?php if ($filter['operator'] == 'NOT'): ?><?=$this->transEsc('NOT') ?><?php endif; ?>
-        <?php if ($filter['operator'] == 'OR' && $i > 0): ?><?=$this->transEsc('OR') ?><?php endif; ?>
-        <span class="text"><?=$this->transEsc($field) ?>: <?=$this->escapeHtml($filter['displayText']) ?></span>
       </a>
     <?php endforeach; ?>
   <?php endforeach; ?>

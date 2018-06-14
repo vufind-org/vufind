@@ -44,15 +44,17 @@ class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
      * Create a results object with hidden filters pre-populated.
      *
      * @param ContainerInterface $container Service manager
+     * @param string             $name      Name of results object to load (based
+     * on name of FacetCache service name)
      *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getResults(ContainerInterface $container)
+    protected function getResults(ContainerInterface $container, $name)
     {
         $filters = $container->get('VuFind\Search\SearchTabsHelper')
-            ->getHiddenFilters('Solr');
+            ->getHiddenFilters($name);
         $results = $container->get('VuFind\Search\Results\PluginManager')
-            ->get('Solr');
+            ->get($name);
         $params = $results->getParams();
         foreach ($filters as $key => $subFilters) {
             foreach ($subFilters as $filter) {

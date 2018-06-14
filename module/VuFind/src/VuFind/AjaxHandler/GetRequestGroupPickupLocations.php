@@ -47,7 +47,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -57,16 +57,14 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
         if (null === $id || null === $requestGroupId) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -93,7 +91,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
         }
 
         return $this->formatResponse(
-            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+            $this->translate('An error has occurred'), self::STATUS_HTTP_ERROR
         );
     }
 }

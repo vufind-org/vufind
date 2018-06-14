@@ -32,59 +32,19 @@
           <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . $this->sort ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?> ...</a>
         <?php endif; ?>
         <?php foreach ($this->data as $item): ?>
-          <?php $toggleUrl = $item['isApplied']
-              ? $searchAction . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
-              : $searchAction . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
-          ?>
-          <?php $hasSubLinks = $this->exclude && !$item['isApplied']; ?>
-          <?php if ($hasSubLinks): ?>
-            <li class="facet excludable js-facet-item">
-          <?php else: ?>
-            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="facet excludable js-facet-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
-          <?php endif; ?>
-
-            <?php if($this->exclude): ?>
-              <?php $excludeURL = $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT'); ?>
-              <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
-            <?php endif; ?>
-
-            <?php if($item['isApplied']): ?>
-              <?php if ($item['operator'] == 'OR'): ?>
-                <i class="fa fa-check-square-o" aria-hidden="true"></i>
-              <?php else: ?>
-                <i class="fa fa-check" aria-hidden="true"></i>
-              <?php endif; ?>
-            <?php else: ?>
-              <span class="badge">
-                <?=$this->localizedNumber($item['count']) ?>
-              </span>
-            <?php endif; ?>
-
-            <?php if ($hasSubLinks): ?>
-              <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
-            <?php else: ?>
-              <span class="text">
-            <?php endif; ?>
-
-            <?php if (!empty($item['displayText'])): ?>
-              <?=$this->escapeHtml($item['displayText']) ?>
-            <?php elseif (!empty($item['value'])): ?>
-              <?=$this->escapeHtml($item['value']) ?>
-            <?php else: // prevent empty value inside <a> tag ?>
-              -
-            <?php endif; ?>
-
-            <?php if ($hasSubLinks): ?>
-              </a>
-            <?php else: ?>
-              </span>
-            <?php endif; ?>
-
-          <?=$hasSubLinks ? '</li>' : '</a>'; ?>
+          <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+            'exclude' => $this->exclude,
+            'facet' => $item,
+            'group' => $this->facet,
+            'url' => $this->results->getUrlQuery(),
+            'urlBase' => $searchAction
+          ]) ?>
         <?php endforeach; ?>
       <?php endif; ?>
       <?php if ($this->anotherPage): ?>
-        <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->translate('more') ?> ...</a>
+        <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
+          <span class="text"><?=$this->translate('more') ?> ...</span>
+        </a>
       <?php endif; ?>
     </div>
   <?php endforeach; ?>

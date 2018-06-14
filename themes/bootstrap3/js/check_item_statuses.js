@@ -70,7 +70,8 @@ function itemStatusFail(response, textStatus) {
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
+  $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
+    .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
 }
 
 var itemStatusIds = [];
@@ -93,9 +94,10 @@ function runItemAjaxForQueue() {
     data: { 'id': itemStatusIds }
   })
   .done(function checkItemStatusDone(response) {
-    for (var j = 0; j < response.data.length; j++) {
-      displayItemStatus(response.data[j], itemStatusEls[response.data[j].id]);
-      itemStatusIds.splice(itemStatusIds.indexOf(response.data[j].id), 1);
+    for (var j = 0; j < response.data.statuses.length; j++) {
+      var status = response.data.statuses[j];
+      displayItemStatus(status, itemStatusEls[status.id]);
+      itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
     }
     itemStatusRunning = false;
   })

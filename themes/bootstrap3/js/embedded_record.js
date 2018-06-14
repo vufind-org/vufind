@@ -136,44 +136,42 @@ VuFind.register('embedded', function embedded() {
             source: result.find('.hiddenSource')[0].value
           }),
           success: function getRecordDetailsSuccess(response) {
-            if (response.status === 'OK') {
-              // Insert tabs html
-              longNode.html(response.data);
-              // Hide loading
-              loadingNode.addClass('hidden');
-              longNode.collapse('show');
-              // Load first tab
-              if (tabid) {
-                ajaxLoadTab(tabid, true);
-              } else {
-                var $firstTab = $(longNode).find('.list-tab-toggle.active');
-                if ($firstTab.length === 0) {
-                  $firstTab = $(longNode).find('.list-tab-toggle:eq(0)');
-                }
-                ajaxLoadTab($firstTab.attr('id'), true);
+            // Insert tabs html
+            longNode.html(response.data.html);
+            // Hide loading
+            loadingNode.addClass('hidden');
+            longNode.collapse('show');
+            // Load first tab
+            if (tabid) {
+              ajaxLoadTab(tabid, true);
+            } else {
+              var $firstTab = $(longNode).find('.list-tab-toggle.active');
+              if ($firstTab.length === 0) {
+                $firstTab = $(longNode).find('.list-tab-toggle:eq(0)');
               }
-              // Bind tab clicks
-              longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
-                if (!$(this).parent().hasClass('noajax')) {
-                  addToStorage(divID, this.id);
-                }
-                return ajaxLoadTab(this.id);
-              });
-              longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
-                function embeddedComments() {
-                  return registerAjaxCommentRecord(
-                    longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
-                  );
-                }
-              );
-              longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
-                ajaxLoadTab(el.id, false);
-              });
-              // Add events to record toolbar
-              VuFind.lightbox.bind(longNode);
-              if (typeof checkSaveStatuses == 'function') {
-                checkSaveStatuses(longNode);
+              ajaxLoadTab($firstTab.attr('id'), true);
+            }
+            // Bind tab clicks
+            longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
+              if (!$(this).parent().hasClass('noajax')) {
+                addToStorage(divID, this.id);
               }
+              return ajaxLoadTab(this.id);
+            });
+            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
+              function embeddedComments() {
+                return registerAjaxCommentRecord(
+                  longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
+                );
+              }
+            );
+            longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
+              ajaxLoadTab(el.id, false);
+            });
+            // Add events to record toolbar
+            VuFind.lightbox.bind(longNode);
+            if (typeof checkSaveStatuses == 'function') {
+              checkSaveStatuses(longNode);
             }
           }
         });

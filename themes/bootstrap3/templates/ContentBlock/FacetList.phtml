@@ -23,6 +23,7 @@ JS;
         <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
           <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+              data-source="<?=$this->escapeHtml($this->searchClassId)?>"
               data-facet="<?=$this->escapeHtml($field)?>"
               data-path="<?=$this->url($basicSearch)?>"
               data-exclude="0"
