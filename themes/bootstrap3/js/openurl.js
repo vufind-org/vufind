@@ -12,7 +12,7 @@ VuFind.register('openurl', function OpenUrl() {
       url: url
     })
     .done(function getResolverLinksDone(response) {
-      $target.removeClass('ajax_availability').empty().append(response.data);
+      $target.removeClass('ajax_availability').empty().append(response.data.html);
     })
     .fail(function getResolverLinksFail(response, textStatus) {
       $target.removeClass('ajax_availability').addClass('text-danger').empty();

@@ -1,6 +1,6 @@
 <?php
 /**
- * Summon FacetCache Factory.
+ * Relais helper factory.
  *
  * PHP version 7
  *
@@ -20,35 +20,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Summon
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Search\Summon;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Summon FacetCache Factory.
+ * Relais helper factory.
  *
  * @category VuFind
- * @package  Search_Summon
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
+class RelaisFactory implements FactoryInterface
 {
     /**
-     * Create a results object.
+     * Create an object
      *
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return \VuFind\Search\Base\Results
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    protected function getResults(ContainerInterface $container)
-    {
-        return $container->get('VuFind\Search\Results\PluginManager')->get('Summon');
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $urlHelper = $container->get('ViewHelperManager')->get('url');
+        $loginUrl = $urlHelper->__invoke('relais-login');
+        return new $requestedName($config->Relais ?? null, $loginUrl);
     }
 }

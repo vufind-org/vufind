@@ -1,0 +1,45 @@
+<h1>Bilaketa Aurreratua</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Search Fields">Bilaketa-eremuak</a></li>
+  <li><a href="#Search Groups">Bilaketa-taldeak</a></li>
+</ul>
+
+<dl class="Content">
+  <dt><a name="Search Fields"></a>Bilaketa-eremuak</dt>
+  <dd>
+    <p>
+      Lehen aldiz Bilaketa Aurreratua bisitatzen bada hainbat bilaketa-eremu agertzen dira. Eremu bakoitzean sar daitezke nahi diren bilaketa-hitzak.   <a href="<?=$this->url('help-home')?>?topic=search">Bilaketa-operadoreak</a> baimentzen dira.
+    </p>
+    <p>
+       Eremu bakoitzean zerrenda baten bidez zehazten da bilatu nahi den datu mota (izenburua, autorea, etab.). Bilaketa aurreratuan nahi diren bilaketa motak doitu eta bateratu daitezke
+    </p>
+    <p>Hainbat bilaketa-eremuren arteko erlazioa zehaztu daiteke "Operatzaileak" parametroarekin.
+    </p>
+    <ul>
+      <li>ETA – Bilaketak eremu guztiekin bat egiten dituen emaitzak soilik   bueltatzen ditu ( AND Boolearraren parekoa da).</li>
+      <li>EDO – Bilaketak eremu batekin gutxienez bat egiten dituen emaitzak ematen ditu ( OR Boolearraren parekoa da).</li>
+      <li>BAINA EZ – Bilaketak eremuetan sartutako terminoak izan ezik, beste emaitza guztiak ematen ditu (NOT Boolearraren parekoa da).
+      </li>
+    </ul>
+    <p>
+"Bilaketa bat gehitu" botoiarekin bilaketa-eremu gehiago gehitzen dira orrian.  Nahi adina bilaketa-eremu gehitu daitezke. 
+
+</p>
+  </dd>
+
+  <dt><a name="Search Groups"></a>Bilaketa-taldeak</dt>
+  <dd>
+    <p>
+       Bilaketa konplexuetan, bilaketa-eremu multzo bat eskas gera daiteke. Demagun, Txina edo Indiako historiari buruzko dokumentuak bilatu nahi direla. “ETA" parametroa erabilita Txina, India eta Historia terminoekin, bilaketak Txina eta Indiako historiaren inguruko emaitzak ematen ditu.  “EDO" parametroak, berriz, Historia edo India edo Txina-ren inguruko dokumentuak bilatzen ditu – ez Txina eta Indiako historiari buruzkoak.</p>
+    <p>"Bilaketa-taldeak" aukerari esker  askotariko bilaketa-eremu taldetan arakatu dezakegu . Bilaketa-talde bat gehituz gero eremu-talde berria irekitzen da. Nahi ez diren taldeak ezabatzeko  "Ezabatu" sakatu behar da. Horretaz gainera, bilaketa-taldeen arteko bateragarritasuna kudeatu daiteke “ETA”, “EDO” eta “EZ BAINA” parametroekin.
+    </p>
+
+    <p>Aurrerago aipatu den adibidea honela ebatzi daiteke:</p>
+    <ul>
+      <li>Sartu lehen bilaketa-taldean "India" eta "Txina" eta aukeratu “EDO” parametroa</li>
+      <li>Gehitu beste bilaketa-talde bat eta sartu “historia” hitza.</li>
+      <li>Aukeratu “ETA” parametroa</li>
+    </ul>
+  </dd>
+</dl>

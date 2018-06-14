@@ -5,7 +5,11 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
   ?>
   <tr vocab="http://schema.org/" typeof="Offer">
-    <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?></th>
+    <th class="copy-number"><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
+      <?php if ($holding['enumchron'] ?? false): ?>
+        <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
+      <?php endif; ?>         
+    </th>
     <td>
       <?php if ($holding['reserve'] == "Y"): ?>
         <link property="availability" href="http://schema.org/InStoreOnly" />
@@ -39,6 +43,7 @@
           <?php if ($holding['link'] ?? false): ?>
             <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->recordLink()->getRequestUrl($holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
           <?php endif; ?>
+          <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
         <?php endif; ?>
         <?php if (isset($holding['item_notes'])): ?>
           <div class="item-notes">

@@ -54,6 +54,20 @@ class CombinedController extends AbstractSearch
     }
 
     /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        // We need to load blocks differently in this controller since it
+        // doesn't follow the usual configuration pattern.
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromConfig('combined');
+        return $this->createViewModel(compact('blocks'));
+    }
+
+    /**
      * Single result action (used for AJAX)
      *
      * @return mixed
@@ -304,6 +318,7 @@ class CombinedController extends AbstractSearch
     protected function getTabConfig($config)
     {
         // Strip out non-tab sections of the configuration:
+        unset($config['HomePage']);
         unset($config['Layout']);
         unset($config['RecommendationModules']);
 
