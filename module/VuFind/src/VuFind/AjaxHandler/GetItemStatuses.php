@@ -398,17 +398,18 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     /**
      * Support method for getItemStatuses() -- process a failed record.
      *
-     * @param array $record Information on items linked to a single bib record
+     * @param array  $record Information on items linked to a single bib record
+     * @param string $msg    Availability message
      *
      * @return array Summarized availability information
      */
-    protected function getItemStatusError($record)
+    protected function getItemStatusError($record, $msg = '')
     {
         return [
             'id' => $record[0]['id'],
             'error' => $this->translate($record[0]['error']),
             'availability' => false,
-            'availability_message' => '',
+            'availability_message' => $msg,
             'location' => false,
             'locationList' => [],
             'reserve' => false,
@@ -482,7 +483,8 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             if (count($record)) {
                 // Check for errors
                 if (!empty($record[0]['error'])) {
-                    $current = $this->getItemStatusError($record);
+                    $current = $this
+                        ->getItemStatusError($record, $messages['unknown']);
                 } elseif ($locationSetting === 'group') {
                     $current = $this->getItemStatusGroup(
                         $record, $messages, $callnumberSetting

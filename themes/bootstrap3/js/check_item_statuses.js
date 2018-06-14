@@ -19,7 +19,7 @@ function displayItemStatus(result, $item) {
     && result.error.length > 0
   ) {
     $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
-    $item.find('.callnumber,.hideIfDetailed,.location,.status').addClass('hidden');
+    $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
   } else if (typeof(result.full_status) != 'undefined'
     && result.full_status.length > 0
     && $item.find('.callnumAndLocation').length > 0
