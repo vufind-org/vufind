@@ -100,7 +100,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_AUTH
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
