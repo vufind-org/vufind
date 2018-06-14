@@ -50,7 +50,7 @@ function displayItemStatus(result, $item) {
       locationListHTML += '</div>';
       locationListHTML += '<div class="groupCallnumber">';
       locationListHTML += (result.locationList[x].callnumbers)
-           ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+        ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
       locationListHTML += '</div>';
     }
     $item.find('.locationDetails').removeClass('hidden');
@@ -70,7 +70,8 @@ function itemStatusFail(response, textStatus) {
     return;
   }
   // display the error message on each of the ajax status place holder
-  $('.js-item-pending').addClass('text-danger').append(response.responseJSON.data);
+  $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
+    .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
 }
 
 var itemStatusIds = [];
@@ -92,18 +93,18 @@ function runItemAjaxForQueue() {
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
     data: { 'id': itemStatusIds }
   })
-  .done(function checkItemStatusDone(response) {
-    for (var j = 0; j < response.data.statuses.length; j++) {
-      var status = response.data.statuses[j];
-      displayItemStatus(status, itemStatusEls[status.id]);
-      itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
-    }
-    itemStatusRunning = false;
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(response, textStatus);
-    itemStatusRunning = false;
-  });
+    .done(function checkItemStatusDone(response) {
+      for (var j = 0; j < response.data.statuses.length; j++) {
+        var status = response.data.statuses[j];
+        displayItemStatus(status, itemStatusEls[status.id]);
+        itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
+      }
+      itemStatusRunning = false;
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      itemStatusFail(response, textStatus);
+      itemStatusRunning = false;
+    });
 }
 
 function itemQueueAjax(id, el) {
