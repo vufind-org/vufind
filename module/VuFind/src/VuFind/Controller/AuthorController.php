@@ -60,11 +60,7 @@ class AuthorController extends AbstractSearch
      */
     public function resultsAction()
     {
-        $recordRoute = $this->params()->fromQuery('recordroute');
         $this->searchClassId = 'SolrAuthor';
-        if ($recordRoute == 'search2record') {
-            $this->searchClassId = 'Search2Author';
-        }
 
         // Save author searches if next_prev_navigation is enabled - otherwise
         // there are wacky results when trying to page through results (the
