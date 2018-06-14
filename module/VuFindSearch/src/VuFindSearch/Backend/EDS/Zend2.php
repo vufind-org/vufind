@@ -31,6 +31,7 @@ require_once dirname(__FILE__) . '/Base.php';
 use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 use Zend\Http\Client as Zend2HttpClient;
 use Zend\Log\LoggerAwareInterface;
+use Exception;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation
@@ -119,7 +120,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and respones
      *
-     * @throws EbscoEdsApiException
+     * @throws Exception
      * @return string               HTTP response body
      */
     protected function httpRequest($baseUrl, $method, $queryString, $headers,
@@ -141,7 +142,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
         $this->client->setEncType($messageFormat);
         $result = $this->client->send();
         if (!$result->isSuccess()) {
-            throw new \EbscoEdsApiException(json_decode($result->getBody(), true));
+            throw new Exception(json_decode($result->getBody(), true));
         }
         return $result->getBody();
     }

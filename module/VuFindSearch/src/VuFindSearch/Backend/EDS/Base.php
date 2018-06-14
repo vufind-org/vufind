@@ -27,7 +27,7 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-require_once dirname(__FILE__) . '/Exception.php';
+use Exception;
 
 /**
  * EBSCO Search API abstract base class
@@ -288,7 +288,7 @@ abstract class EdsApi_REST_Base
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
      *
-     * @throws \EbscoEdsApiException
+     * @throws \Exception
      * @return object         EDS API response (or an Error object).
      */
     protected function call($baseUrl, $headerParams, $params = [],
@@ -323,7 +323,7 @@ abstract class EdsApi_REST_Base
      *
      * @param array $input The raw response from Summon
      *
-     * @throws EbscoEdsApiException
+     * @throws Exception
      * @return array       The processed response from EDS API
      */
     protected function process($input)
@@ -332,13 +332,13 @@ abstract class EdsApi_REST_Base
         try {
             $result = json_decode($input, true);
         } catch (Exception $e) {
-            throw new EbscoEdsApiException(
+            throw new Exception(
                 'An error occurred when processing EDS Api response: '
                 . $e->getMessage()
             );
         }
         if (!isset($result)) {
-            throw new EbscoEdsApiException('Unknown error processing response');
+            throw new Exception('Unknown error processing response');
         }
         return $result;
     }

@@ -232,7 +232,7 @@ class Backend extends AbstractBackend
         try {
             $response = $this->client
                 ->search($searchModel, $authenticationToken, $sessionToken);
-        } catch (\EbscoEdsApiException $e) {
+        } catch (\Exception $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -294,7 +294,7 @@ class Backend extends AbstractBackend
             $response = $this->client->retrieve(
                 $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
             );
-        } catch (\EbscoEdsApiException $e) {
+        } catch (\Exception $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -535,7 +535,7 @@ class Backend extends AbstractBackend
         try {
             $authToken = $this->getAuthenticationToken();
             $results = $this->client->createSession($profile, $isGuest, $authToken);
-        } catch (\EbscoEdsApiException $e) {
+        } catch (\Exception $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
             $this->debugPrint(
@@ -577,7 +577,7 @@ class Backend extends AbstractBackend
         }
         try {
             $response = $this->client->info($authenticationToken, $sessionToken);
-        } catch (\EbscoEdsApiException $e) {
+        } catch (\Exception $e) {
             if ($e->getApiErrorCode() == 104) {
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
