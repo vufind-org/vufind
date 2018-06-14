@@ -56,18 +56,18 @@ function setupChannelSlider(i, op) {
           type: 'POST',
           data: {tab: 'description'}
         })
-        .done(function channelPopoverDone(data) {
-          record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
-            + '<div class="btn-group btn-group-justified">'
-            + '<a href="' + VuFind.path + '/Channels/Record?'
-              + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-              + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-            + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-            + '</div>'
-            + data;
-          record.popover('show');
-        });
+          .done(function channelPopoverDone(data) {
+            record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
+              + '<div class="btn-group btn-group-justified">'
+              + '<a href="' + VuFind.path + '/Channels/Record?'
+                + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+                + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+              + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+              + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
+              + data;
+            record.popover('show');
+          });
       }
       return false;
     });
