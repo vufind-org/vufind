@@ -79,6 +79,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $serviceLocator;
 
     /**
+     * Primary configuration file identifier.
+     *
+     * @var string
+     */
+    protected $mainConfig = 'config';
+
+    /**
      * Search configuration file identifier.
      *
      * @var string
@@ -181,7 +188,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $events = $this->serviceLocator->get('SharedEventManager');
 
         // Load configurations:
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
         $search = $this->config->get($this->searchConfig);
         $facet = $this->config->get($this->facetConfig);
 
@@ -196,12 +203,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Spellcheck
-        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
-            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = ['basicSpell'];
-            } else {
-                $dictionaries = ['default', 'basicSpell'];
-            }
+        if ($config->Spelling->enabled ?? true) {
+            $dictionaries = ($config->Spelling->simple ?? false)
+                ? ['basicSpell'] : ['default', 'basicSpell'];
             $spellingListener = new InjectSpellingListener($backend, $dictionaries);
             $spellingListener->attach($events);
         }
@@ -266,11 +270,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get the Solr URL.
      *
+     * @param string $config name of configuration file (null for default)
+     *
      * @return string|array
      */
-    protected function getSolrUrl()
+    protected function getSolrUrl($config = null)
     {
-        $url = $this->config->get('config')->Index->url;
+        $url = $this->config->get($config ?? $this->mainConfig)->Index->url;
         $core = $this->getSolrCore();
         if (is_object($url)) {
             return array_map(
@@ -317,7 +323,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
 
         $handlers = [
             'select' => [
@@ -359,7 +365,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
         $defaultDismax = isset($config->Index->default_dismax_handler)
             ? $config->Index->default_dismax_handler : 'dismax';
         $builder = new QueryBuilder($specs, $defaultDismax);

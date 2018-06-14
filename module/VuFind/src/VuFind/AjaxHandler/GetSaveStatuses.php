@@ -134,7 +134,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_AUTH
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 

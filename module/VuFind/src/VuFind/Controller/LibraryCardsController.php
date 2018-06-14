@@ -192,6 +192,16 @@ class LibraryCardsController extends AbstractBase
         $cardID = $this->params()->fromQuery('cardID');
         $user->activateLibraryCard($cardID);
 
+        // Connect to the ILS and check that the credentials are correct:
+        $catalog = $this->getILS();
+        $patron = $catalog->patronLogin(
+            $user->cat_username, $user->getCatPassword()
+        );
+        if (!$patron) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_invalid', 'error');
+        }
+
         $this->setFollowupUrlToReferer();
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();

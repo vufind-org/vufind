@@ -39,16 +39,21 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class FacetCacheFactory implements FactoryInterface
+class FacetCacheFactory implements FactoryInterface
 {
     /**
-     * Create a results object with appropriate pre-populated values.
+     * Create a results object.
      *
      * @param ContainerInterface $container Service manager
+     * @param string             $name      Name of results object to load (based
+     * on name of FacetCache service name)
      *
-     * @return \VuFind\Search\Base\Results
+     * @return Results
      */
-    abstract protected function getResults(ContainerInterface $container);
+    protected function getResults(ContainerInterface $container, $name)
+    {
+        return $container->get('VuFind\Search\Results\PluginManager')->get($name);
+    }
 
     /**
      * Create an object
@@ -70,7 +75,9 @@ abstract class FacetCacheFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $results = $this->getResults($container);
+        $parts = explode('\\', $requestedName);
+        $requestedNamespace = $parts[count($parts) - 2];
+        $results = $this->getResults($container, $requestedNamespace);
         $cacheManager = $container->get('VuFind\Cache\Manager');
         $language = $container->get('Zend\Mvc\I18n\Translator')->getLocale();
         return new $requestedName($results, $cacheManager, $language);
