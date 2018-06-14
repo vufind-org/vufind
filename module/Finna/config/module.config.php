@@ -78,7 +78,7 @@ $config = [
                         'lid'     => '[0-9]+',
                     ],
                     'defaults' => [
-                        'controller' => 'Listpage',
+                        'controller' => 'ListPage',
                         'action'     => 'List',
                     ]
                 ],
