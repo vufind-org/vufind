@@ -1335,7 +1335,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                 "$mode request for '$urlParams' failed"
             );
             $this->debug(
-                "with params: '$params' with xml: '$xml'"
+                "with params: '" . var_export($params, true) . "' with xml: '$xml': "
                 . $result->getStatusCode() . ': ' . $result->getReasonPhrase()
             );
             $this->error(
