@@ -1,1 +1,2 @@
-<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($this->lookfor)?>%22&amp;type=Title
+<?php $searchRoute = $this->searchOptions($this->driver->getSourceIdentifier())->getSearchAction(); ?>
+<?=$this->url($searchRoute)?>?lookfor=%22<?=urlencode($this->lookfor)?>%22&amp;type=Title
