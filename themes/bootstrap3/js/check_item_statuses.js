@@ -81,9 +81,10 @@ var ItemStatusHandler = {
 
     checkItemStatusDone: function(response) {
         var data = response.data;
-        for (var j = 0; j < data.length; j++) {
-            displayItemStatus(data[j], this.itemStatusEls[data[j].id]);
-            this.itemStatusIds.splice(this.itemStatusIds.indexOf(data[j].id), 1);
+        for (var j = 0; j < response.data.statuses.length; j++) {
+            var status = response.data.statuses[j];
+            displayItemStatus(status, itemStatusEls[status.id]);
+            itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
         }
     },
     itemStatusFail: function(response,textStatus) {
