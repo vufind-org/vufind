@@ -53,14 +53,14 @@ trait IlsAwareTrait
      *
      * @var \VuFind\ILS\Logic\Holds
      */
-    protected $holdLogic;
+    protected $holdLogic = null;
 
     /**
      * Title hold logic
      *
      * @var \VuFind\ILS\Logic\TitleHolds
      */
-    protected $titleHoldLogic;
+    protected $titleHoldLogic = null;
 
     /**
      * Attach an ILS connection and related logic to the driver
@@ -78,6 +78,16 @@ trait IlsAwareTrait
         $this->ils = $ils;
         $this->holdLogic = $holdLogic;
         $this->titleHoldLogic = $titleHoldLogic;
+    }
+
+    /**
+     * Disable an ILS connection.
+     *
+     * @return void
+     */
+    public function detachILS()
+    {
+        $this->ils = $this->holdLogic = $this->titleHoldLogic = null;
     }
 
     /**
