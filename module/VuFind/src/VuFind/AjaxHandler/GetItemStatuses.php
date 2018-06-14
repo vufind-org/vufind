@@ -120,7 +120,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
 
         $filtered = [];
         foreach ($record as $current) {
-            if (!in_array($current['location'], $hideHoldings)) {
+            if (!in_array($current['location'] ?? null, $hideHoldings)) {
                 $filtered[] = $current;
             }
         }
