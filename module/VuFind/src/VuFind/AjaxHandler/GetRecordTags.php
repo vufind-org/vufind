@@ -83,7 +83,7 @@ class GetRecordTags extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -108,6 +108,6 @@ class GetRecordTags extends AbstractBase
 
         $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user];
         $html = $this->renderer->render('record/taglist', $viewParams);
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }

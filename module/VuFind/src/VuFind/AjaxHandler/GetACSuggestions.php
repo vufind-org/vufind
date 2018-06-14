@@ -67,12 +67,13 @@ class GetACSuggestions extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $query = new Parameters($params->fromQuery());
-        return $this->formatResponse($this->suggester->getSuggestions($query));
+        $suggestions = $this->suggester->getSuggestions($query);
+        return $this->formatResponse(compact('suggestions'));
     }
 }

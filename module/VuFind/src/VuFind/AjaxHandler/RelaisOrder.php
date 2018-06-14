@@ -45,7 +45,7 @@ class RelaisOrder extends AbstractRelaisAction
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -58,16 +58,16 @@ class RelaisOrder extends AbstractRelaisAction
         $authorizationId = $this->relais->authenticatePatron($lin);
         if ($authorizationId === null) {
             return $this->formatResponse(
-                $this->translate('Failed'), self::STATUS_ERROR
+                $this->translate('Failed'), self::STATUS_HTTP_FORBIDDEN
             );
         }
 
         // Place order
-        $responseText = $this->relais
+        $result = $this->relais
             ->placeRequest($oclcNumber, $authorizationId, $lin);
-        if (strpos($responseText, 'error') !== false) {
-            return $this->formatResponse($responseText, self::STATUS_ERROR);
+        if (strpos($result, 'error') !== false) {
+            return $this->formatResponse($result, self::STATUS_HTTP_ERROR);
         }
-        return $this->formatResponse($responseText);
+        return $this->formatResponse(compact('result'));
     }
 }

@@ -186,7 +186,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load Spelling preferences
-        $config = $configLoader->get('config');
+        $config = $configLoader->get($this->mainIni);
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }
