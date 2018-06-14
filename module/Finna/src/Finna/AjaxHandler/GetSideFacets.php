@@ -185,7 +185,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                             [$field => $value]
                         );
                         if (!isset($checkboxResults[$field]['list'])) {
-                            $response[$facet] = null;
+                            $response[$facet]['checkboxCount'] = 0;
                             continue 2;
                         }
                         $count = 0;
@@ -250,7 +250,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                     );
                 }
             }
-            return $this->formatResponse($response);
+            return $this->formatResponse(['facets' => $response]);
         }
 
         // Render full sidefacets

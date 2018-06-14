@@ -580,7 +580,7 @@ finna.layout = (function finnaLayout() {
     $container.find('.facet-load-indicator').removeClass('hidden');
     $.getJSON(VuFind.path + '/AJAX/JSON?' + query, request)
       .done(function onGetSideFacetsDone(response) {
-        $.each(response.data, function initFacet(facet, facetData) {
+        $.each(response.data.facets, function initFacet(facet, facetData) {
           var $facetContainer = $container.find('div[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {

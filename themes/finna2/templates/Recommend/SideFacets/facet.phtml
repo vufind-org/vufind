@@ -2,6 +2,7 @@
 <?php $this->results = $results = $this->recommend->getResults(); ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
+<?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
 <?php $geographicFacets = []; ?>
 <?php
   if (is_callable([$this->recommend, 'getGeographicFacets'])) {
