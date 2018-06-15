@@ -192,7 +192,16 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getStatus($id);
+            try {
+                $items[] = $this->getStatus($id);
+            } catch (ILSException $e) {
+                $items[] = [
+                    [
+                        'id' => $id,
+                        'error' => 'An error has occurred'
+                    ]
+                ];
+            }
         }
         return $items;
     }
