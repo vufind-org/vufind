@@ -51,7 +51,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'missing' => 'VuFind\RecordDriver\Missing',
         'pazpar2' => 'VuFind\RecordDriver\Pazpar2',
         'primo' => 'VuFind\RecordDriver\Primo',
-        'search2' => 'VuFind\RecordDriver\SolrMarc',
         'solrauth' => 'VuFind\RecordDriver\SolrAuth',
         'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
         'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
