@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use EBSCO\EdsApi\SearchCriteria;
-
 /**
  * EDS API Results
  *
@@ -40,23 +38,6 @@ use EBSCO\EdsApi\SearchCriteria;
  */
 class Results extends \VuFind\Search\Base\Results
 {
-    /**
-     * Search criteria available for a given search
-     *
-     * @var array
-     */
-    protected $searchCriteria;
-
-    /**
-     * Obtain the search criteria available for this searching session (if present)
-     *
-     * @return SearchCriteria
-     */
-    public function getSearchCriteria()
-    {
-        return $this->searchCriteria;
-    }
-
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
