@@ -28,7 +28,6 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use VuFindSearch\Backend\EDS\Exception as EDSException;
 use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 use Zend\Http\Client as Zend2HttpClient;
 use Zend\Log\LoggerAwareInterface;
@@ -120,7 +119,7 @@ class Zend2 extends \VuFindSearch\Backend\EDS\Base implements LoggerAwareInterfa
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and respones
      *
-     * @throws Exception
+     * @throws ApiException
      * @return string               HTTP response body
      */
     protected function httpRequest($baseUrl, $method, $queryString, $headers,
@@ -143,7 +142,7 @@ class Zend2 extends \VuFindSearch\Backend\EDS\Base implements LoggerAwareInterfa
         $result = $this->client->send();
         if (!$result->isSuccess()) {
             $obj = json_decode($result->getBody());
-            throw new EDSException((array)$obj);
+            throw new ApiException((array)$obj);
         }
         return $result->getBody();
     }

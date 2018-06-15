@@ -226,7 +226,7 @@ class Backend extends AbstractBackend
         try {
             $response = $this->client
                 ->search($searchModel, $authenticationToken, $sessionToken);
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -241,7 +241,7 @@ class Backend extends AbstractBackend
                     }
                     $response = $this->client
                         ->search($searchModel, $authenticationToken, $sessionToken);
-                } catch (Exception $e) {
+                } catch (ApiException $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
@@ -249,7 +249,7 @@ class Backend extends AbstractBackend
                 $response = [];
                 break;
             }
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             $this->debugPrint("Exception found: " . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
@@ -288,7 +288,7 @@ class Backend extends AbstractBackend
             $response = $this->client->retrieve(
                 $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
             );
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
             case 104:
@@ -304,7 +304,7 @@ class Backend extends AbstractBackend
                     $response = $this->client->retrieve(
                         $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
                     );
-                } catch (Exception $e) {
+                } catch (ApiException $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
@@ -529,7 +529,7 @@ class Backend extends AbstractBackend
         try {
             $authToken = $this->getAuthenticationToken();
             $results = $this->client->createSession($profile, $isGuest, $authToken);
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
             $this->debugPrint(
@@ -541,7 +541,7 @@ class Backend extends AbstractBackend
                     $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
                         ->createSession($this->profile, $isGuest, $authToken);
-                } catch (Exception $e) {
+                } catch (ApiException $e) {
                     throw new BackendException(
                         $e->getMessage(),
                         $e->getCode(),
@@ -571,13 +571,13 @@ class Backend extends AbstractBackend
         }
         try {
             $response = $this->client->info($authenticationToken, $sessionToken);
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             if ($e->getApiErrorCode() == 104) {
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client
                         ->info($authenticationToken, $sessionToken);
-                } catch (Exception $e) {
+                } catch (ApiException $e) {
                     throw new BackendException(
                         $e->getMessage(),
                         $e->getCode(),
