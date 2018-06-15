@@ -56,6 +56,8 @@ class SolrMarc extends SolrDefault
      * Set the list of backends that support ILS integration.
      *
      * @param array $backends List of backends that support ILS integration
+     *
+     * @return string[]
      */
     public function setIlsBackends($backends)
     {
