@@ -129,7 +129,7 @@ class GeneratorTools
             $delegatorPath = array_merge($configPath, ['delegators', $newClass]);
             $this->writeNewConfig($delegatorPath, $newDelegators, $target, false);
         }
-    
+
         return true;
     }
 
