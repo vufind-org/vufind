@@ -504,7 +504,7 @@ $config = [
             'search_options' => [
                 'factories' => [
                     'Finna\Search\Combined\Options' => 'VuFind\Search\OptionsFactory',
-                    'Finna\Search\EDS\Options' => 'VuFind\Search\OptionsFactory',
+                    'Finna\Search\EDS\Options' => 'VuFind\Search\EDS\OptionsFactory',
                     'Finna\Search\Primo\Options' => 'VuFind\Search\OptionsFactory',
                 ],
                 'aliases' => [
