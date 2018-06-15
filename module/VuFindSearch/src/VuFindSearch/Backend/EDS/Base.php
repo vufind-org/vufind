@@ -28,8 +28,6 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use Exception;
-
 /**
  * EBSCO Search API abstract base class
  *
