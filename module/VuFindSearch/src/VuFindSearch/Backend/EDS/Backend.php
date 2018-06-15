@@ -28,17 +28,16 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use Exception;
 use VuFindSearch\Backend\AbstractBackend;
-use    VuFindSearch\Backend\EDS\Zend2 as ApiClient;
-use    VuFindSearch\Backend\Exception\BackendException;
-use    VuFindSearch\ParamBag;
-use    VuFindSearch\Query\AbstractQuery;
-use    VuFindSearch\Response\RecordCollectionFactoryInterface;
-use    VuFindSearch\Response\RecordCollectionInterface;
-use    Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use    Zend\Config\Config;
-use    Zend\Session\Container as SessionContainer;
+use VuFindSearch\Backend\EDS\Zend2 as ApiClient;
+use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
+use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Zend\Config\Config;
+use Zend\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend
