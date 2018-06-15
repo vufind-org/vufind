@@ -198,7 +198,7 @@ class Solr extends \VuFind\Autocomplete\Solr
         }
 
         $facets = [];
-        if (!$this->facetingDisabled) {
+        if (!$this->request->onlySuggestions) {
             $getFacetValues = function ($facet) {
                 return [$facet['value'], $facet['count']];
             };
