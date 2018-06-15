@@ -36,7 +36,12 @@ finna.itemStatus = (function finnaItemStatus() {
             find('option[value="' + result.record_number + '"]').attr('selected', '1');
 
           var details = item.find('.locationDetails');
-          if (typeof(result.full_status) != 'undefined'
+          if (typeof(result.error) != 'undefined'
+            && result.error.length > 0
+          ) {
+            item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
+            item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
+          } else if (typeof(result.full_status) != 'undefined'
             && result.full_status.length > 0
             && item.find('.callnumAndLocation').length > 0
           ) {
