@@ -161,6 +161,9 @@
 # between multiple configured VuFind instances. You can create a chain of parent
 # files if necessary.
 #
+# If @parent_yaml cannot be accessed as an absolute path, it will also be tried
+# relative to the path of the file defining it.
+#
 #-----------------------------------------------------------------------------------
 
 # These searches use Dismax when possible:
