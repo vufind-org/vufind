@@ -56,8 +56,8 @@
 #      QueryFields: ...
 #    # All the same settings as above, but for exact searches, i.e. search terms
 #    #     enclosed in quotes. Allows different fields or weights for exact
-#    #     searches. See below for commented-out examples.  
-#       
+#    #     searches. See below for commented-out examples.
+#
 # ...etc.
 #
 #-----------------------------------------------------------------------------------
@@ -180,6 +180,7 @@ ISN:
   DismaxFields:
     - isbn
     - issn
+    - other_issn_isn_mv
   DismaxHandler: edismax
 
 Subject:
@@ -358,7 +359,7 @@ Classification:
   QueryFields:
     - classification_txt_mv:
       - [onephrase, ~]
-      
+
 publisher:
   DismaxFields:
     - publisher^100
@@ -436,7 +437,7 @@ Holdings:
     holdings_txtP_mv:
       - [and, 100]
       - [or, ~]
-      
+
 PublicationPlace:
   DismaxFields:
     - publication_place_txt_mv^100
