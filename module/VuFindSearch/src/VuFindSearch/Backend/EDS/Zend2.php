@@ -41,7 +41,7 @@ use Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Zend2 extends \VuFindSearch\Backend\EDS\Base implements LoggerAwareInterface
+class Zend2 extends Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
