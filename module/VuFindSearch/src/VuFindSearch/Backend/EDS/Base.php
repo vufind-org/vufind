@@ -287,7 +287,7 @@ abstract class Base
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
      *
-     * @throws \Exception
+     * @throws ApiException
      * @return object         EDS API response (or an Error object).
      */
     protected function call($baseUrl, $headerParams, $params = [],
@@ -322,7 +322,7 @@ abstract class Base
      *
      * @param array $input The raw response from Summon
      *
-     * @throws \Exception
+     * @throws ApiException
      * @return array       The processed response from EDS API
      */
     protected function process($input)
@@ -331,13 +331,13 @@ abstract class Base
         try {
             $result = json_decode($input, true);
         } catch (\Exception $e) {
-            throw new \Exception(
+            throw new ApiException(
                 'An error occurred when processing EDS Api response: '
                 . $e->getMessage()
             );
         }
         if (!isset($result)) {
-            throw new \Exception('Unknown error processing response');
+            throw new ApiException('Unknown error processing response');
         }
         return $result;
     }
