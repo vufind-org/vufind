@@ -234,6 +234,10 @@
             <div class="my-profile-col profile-title"><?=$this->transEsc('Group') ?>:</div>
             <div class="profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
           <?php endif; ?>
+          <?php if (!empty($this->profile['notes'])): ?>
+            <div class="my-profile-col profile-title"><?=$this->transEsc('Notes') ?>:</div>
+            <div class="profile-text-value"><?=$this->escapeHtml($this->profile['notes']) ?></div>
+          <?php endif; ?>
           <?php if (!empty($this->profile['expiration_date'])): ?>
             <div class="my-profile-col profile-title"><?=$this->transEsc('Expires') ?>:</div>
             <div class="profile-text-value"><?=$this->escapeHtml($this->profile['expiration_date']) ?></div>

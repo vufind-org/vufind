@@ -81,6 +81,8 @@ method = driver
 ; value for Koha is 'driver'.
 [updateSmsNumber]
 method = driver
+; Link the SMS number to the following Koha fields (default is smsalertnumber):
+;fields = "smsalertnumber,phone"
 
 ; Due date reminder settings
 [dueDateReminder]
@@ -98,6 +100,10 @@ maxLength = 4
 pattern = "numeric"
 ;hint = "Your optional custom hint can go here."
 
+[Profile]
+; The field to display as the phone number. Empty string for "none".
+;phoneNumberField = "phone"
+
 ; Uncomment the following lines to enable updating of address information.
 ; Choose a method on how to update the address information (driver, email or url).
 [updateAddress]
@@ -113,7 +119,6 @@ pattern = "numeric"
 ;fields[] = Zip:zipcode
 ;fields[] = City:city
 ;fields[] = Country:country
-;fields[] = Phone:mobile
 ;fields[] = Email:email
 ;fields[] = Hold Identifier:othernames
 ; url is required for the url method. url can be a single address or an array of

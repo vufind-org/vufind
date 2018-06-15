@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2017.
+ * Copyright (C) The National Library of Finland 2017-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -236,10 +236,15 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             }
         }
 
+        $phoneField = isset($this->config['Profile']['phoneNumberField'])
+            ? $this->config['Profile']['phoneNumberField']
+            : 'mobile';
+
         return [
             'firstname' => $result['firstname'],
             'lastname' => $result['surname'],
-            'phone' => $result['mobile'],
+            'phone' => $phoneField && !empty($result[$phoneField])
+                ? $result[$phoneField] : '',
             'smsnumber' => $result['smsalertnumber'],
             'email' => $result['email'],
             'address1' => $result['address'],
@@ -253,6 +258,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'guarantees' => $guarantees,
             'loan_history' => $result['privacy'],
             'messagingServices' => $messagingSettings,
+            'notes' => $result['opacnote'],
             'full_data' => $result
         ];
     }
@@ -378,9 +384,14 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     public function updateSmsNumber($patron, $number)
     {
-        $request = [
-            'smsalertnumber' => $number
-        ];
+        $fields = !empty($this->config['updateSmsNumber']['fields'])
+            ? explode(',', $this->config['updateSmsNumber']['fields'])
+            : ['smsalertnumber'];
+
+        $request = [];
+        foreach ($fields as $field) {
+            $request[$field] = $number;
+        }
         list($code, $result) = $this->makeRequest(
             ['v1', 'patrons', $patron['id']],
             json_encode($request),
