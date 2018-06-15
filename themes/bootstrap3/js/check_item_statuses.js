@@ -15,7 +15,6 @@ function displayItemStatus(result, $item) {
     $item.removeClass('js-item-pending');
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
-
     if (typeof(result.error) != 'undefined'
         && result.error.length > 0
     ) {
