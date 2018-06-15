@@ -28,11 +28,10 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use VuFindSearch\Backend\EDS\Base,
-    Zend\Http\Client\Adapter\Curl as CurlAdapter,
-    Zend\Http\Client as Zend2HttpClient,
-    Zend\Log\LoggerAwareInterface,
-    VuFindSearch\Backend\EDS\Exception as EDSException;
+use VuFindSearch\Backend\EDS\Exception as EDSException;
+use Zend\Http\Client\Adapter\Curl as CurlAdapter;
+use Zend\Http\Client as Zend2HttpClient;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation

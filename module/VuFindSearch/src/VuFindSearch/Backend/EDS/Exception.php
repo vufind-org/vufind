@@ -26,6 +26,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
+
 /**
  * EBSCO EdsApi Exception class
  *
