@@ -45,7 +45,6 @@
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
     <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?> />
-    <?php endif; ?>
     <?php if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">
         <?php foreach ($handlers as $handler): ?>
@@ -120,20 +119,3 @@
     ?>
   </form>
 <?php endif; ?>
-
-<?php if ($this->searchClassId == "EDS"): ?>
-<script type="text/javascript">
-  //##### Required Variables #####
-  //ID of form for submission of terms to search
-  var searchformid = 'searchForm';
-  //ID of search box input field
-  var searchboxid = 'searchForm_lookfor';
-  //ID of div or span that the autocomplete results will appear below
-  var appenddiv = 'edsSearchWrapper';
-  //determines if search happens when autocomplete term is clicked
-  var searchOnClick = true;
-  //##### End Variables #####
-</script>
-<script src="https://widgets.ebscohost.com/prod/simplekey/autocomplete/autocomp.js"></script>
-<?php endif; ?>
-
