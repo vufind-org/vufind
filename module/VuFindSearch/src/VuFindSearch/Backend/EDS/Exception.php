@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\EDS;
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */

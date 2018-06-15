@@ -22,16 +22,17 @@
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 
-require_once dirname(__FILE__) . '/Base.php';
-use Zend\Http\Client\Adapter\Curl as CurlAdapter;
-use Zend\Http\Client as Zend2HttpClient;
-use Zend\Log\LoggerAwareInterface;
-use Exception;
+use VuFindSearch\Backend\EDS\Base,
+    Zend\Http\Client\Adapter\Curl as CurlAdapter,
+    Zend\Http\Client as Zend2HttpClient,
+    Zend\Log\LoggerAwareInterface,
+    VuFindSearch\Backend\EDS\Exception as EDSException;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation
@@ -42,7 +43,7 @@ use Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
+class Zend2 extends \VuFindSearch\Backend\EDS\Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -142,7 +143,8 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
         $this->client->setEncType($messageFormat);
         $result = $this->client->send();
         if (!$result->isSuccess()) {
-            throw new Exception(json_decode($result->getBody(), true));
+            $obj = json_decode($result->getBody());
+            throw new EDSException((array)$obj);
         }
         return $result->getBody();
     }
