@@ -45,6 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'none' => 'VuFind\Autocomplete\None',
+        'eds' => 'VuFind\Autocomplete\Eds',
         'oclcidentities' => 'VuFind\Autocomplete\OCLCIdentities',
         'solr' => 'VuFind\Autocomplete\Solr',
         'solrauth' => 'VuFind\Autocomplete\SolrAuth',
@@ -68,6 +69,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\Autocomplete\None' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Autocomplete\Eds' => 'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Autocomplete\OCLCIdentities' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Autocomplete\Solr' => 'VuFind\Autocomplete\SolrFactory',
