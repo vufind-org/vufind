@@ -76,8 +76,8 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $entry->setTitle(
             empty($title) ? $this->translate('Title not available') : $title
         );
-        $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordlink');
+        $serverUrl = $this->getView()->plugin('serverUrl');
+        $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
         } catch (\Zend\Router\Exception\RuntimeException $e) {
