@@ -120,7 +120,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
 
         $filtered = [];
         foreach ($record as $current) {
-            if (!in_array($current['location'], $hideHoldings)) {
+            if (!in_array($current['location'] ?? null, $hideHoldings)) {
                 $filtered[] = $current;
             }
         }
@@ -396,6 +396,29 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Support method for getItemStatuses() -- process a failed record.
+     *
+     * @param array  $record Information on items linked to a single bib record
+     * @param string $msg    Availability message
+     *
+     * @return array Summarized availability information
+     */
+    protected function getItemStatusError($record, $msg = '')
+    {
+        return [
+            'id' => $record[0]['id'],
+            'error' => $this->translate($record[0]['error']),
+            'availability' => false,
+            'availability_message' => $msg,
+            'location' => false,
+            'locationList' => [],
+            'reserve' => false,
+            'reserve_message' => '',
+            'callnumber' => false
+        ];
+    }
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -409,10 +432,17 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         try {
             $results = $this->ils->getStatuses($ids);
         } catch (ILSException $e) {
-            // If the ILS fails, send an empty response instead of a fatal
+            // If the ILS fails, send an error response instead of a fatal
             // error; we don't want to confuse the end user unnecessarily.
             error_log($e->getMessage());
-            $results = [];
+            foreach ($ids as $id) {
+                $results[] = [
+                    [
+                        'id' => $id,
+                        'error' => 'An error has occurred'
+                    ]
+                ];
+            }
         }
 
         if (!is_array($results)) {
@@ -451,7 +481,11 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
 
             // Skip empty records:
             if (count($record)) {
-                if ($locationSetting == "group") {
+                // Check for errors
+                if (!empty($record[0]['error'])) {
+                    $current = $this
+                        ->getItemStatusError($record, $messages['unknown']);
+                } elseif ($locationSetting === 'group') {
                     $current = $this->getItemStatusGroup(
                         $record, $messages, $callnumberSetting
                     );

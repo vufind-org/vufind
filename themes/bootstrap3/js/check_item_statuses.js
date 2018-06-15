@@ -15,7 +15,17 @@ function displayItemStatus(result, $item) {
   $item.removeClass('js-item-pending');
   $item.find('.status').empty().append(result.availability_message);
   $item.find('.ajax-availability').removeClass('ajax-availability hidden');
-  if (typeof(result.full_status) != 'undefined'
+  if (typeof(result.error) != 'undefined'
+    && result.error.length > 0
+  ) {
+    // Only show error message if we also have a status indicator active:
+    if ($item.find('.status').length > 0) {
+      $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
+    } else {
+      $item.find('.callnumAndLocation').addClass('hidden');
+    }
+    $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
+  } else if (typeof(result.full_status) != 'undefined'
     && result.full_status.length > 0
     && $item.find('.callnumAndLocation').length > 0
   ) {
@@ -50,7 +60,7 @@ function displayItemStatus(result, $item) {
       locationListHTML += '</div>';
       locationListHTML += '<div class="groupCallnumber">';
       locationListHTML += (result.locationList[x].callnumbers)
-           ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
+        ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
       locationListHTML += '</div>';
     }
     $item.find('.locationDetails').removeClass('hidden');
@@ -93,18 +103,18 @@ function runItemAjaxForQueue() {
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
     data: { 'id': itemStatusIds }
   })
-  .done(function checkItemStatusDone(response) {
-    for (var j = 0; j < response.data.statuses.length; j++) {
-      var status = response.data.statuses[j];
-      displayItemStatus(status, itemStatusEls[status.id]);
-      itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
-    }
-    itemStatusRunning = false;
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    itemStatusFail(response, textStatus);
-    itemStatusRunning = false;
-  });
+    .done(function checkItemStatusDone(response) {
+      for (var j = 0; j < response.data.statuses.length; j++) {
+        var status = response.data.statuses[j];
+        displayItemStatus(status, itemStatusEls[status.id]);
+        itemStatusIds.splice(itemStatusIds.indexOf(status.id), 1);
+      }
+      itemStatusRunning = false;
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      itemStatusFail(response, textStatus);
+      itemStatusRunning = false;
+    });
 }
 
 function itemQueueAjax(id, el) {
@@ -116,6 +126,8 @@ function itemQueueAjax(id, el) {
   itemStatusEls[id] = el;
   itemStatusTimer = setTimeout(runItemAjaxForQueue, itemStatusDelay);
   el.addClass('js-item-pending').removeClass('hidden');
+  el.find('.callnumAndLocation').removeClass('hidden');
+  el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
   el.find('.status').removeClass('hidden');
 }
 
