@@ -141,8 +141,7 @@ class Zend2 extends Base implements LoggerAwareInterface
         $this->client->setEncType($messageFormat);
         $result = $this->client->send();
         if (!$result->isSuccess()) {
-            $obj = json_decode($result->getBody());
-            throw new ApiException((array)$obj);
+            throw new ApiException(json_decode($result->getBody(), true));
         }
         return $result->getBody();
     }
