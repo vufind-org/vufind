@@ -28,6 +28,7 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
+use Exception;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\EDS\Zend2 as ApiClient;
 use VuFindSearch\Backend\Exception\BackendException;
@@ -241,7 +242,7 @@ class Backend extends AbstractBackend
                     }
                     $response = $this->client
                         ->search($searchModel, $authenticationToken, $sessionToken);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
@@ -249,7 +250,7 @@ class Backend extends AbstractBackend
                 $response = [];
                 break;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->debugPrint("Exception found: " . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
@@ -304,7 +305,7 @@ class Backend extends AbstractBackend
                     $response = $this->client->retrieve(
                         $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
                     );
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
@@ -541,7 +542,7 @@ class Backend extends AbstractBackend
                     $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
                         ->createSession($this->profile, $isGuest, $authToken);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),
                         $e->getCode(),
@@ -577,7 +578,7 @@ class Backend extends AbstractBackend
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client
                         ->info($authenticationToken, $sessionToken);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),
                         $e->getCode(),
