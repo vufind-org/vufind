@@ -63,6 +63,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
+     * Default delegator factories.
+     *
+     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     */
+    protected $delegators = [
+        'VuFind\RecordDriver\SolrMarc' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+        'VuFind\RecordDriver\SolrMarcRemote' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+    ];
+
+    /**
      * Default plugin factories.
      *
      * @var array
@@ -82,9 +94,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrDefault' =>
             'VuFind\RecordDriver\SolrDefaultFactory',
-        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrMarcFactory',
+        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrDefaultFactory',
         'VuFind\RecordDriver\SolrMarcRemote' =>
-            'VuFind\RecordDriver\SolrMarcFactory',
+            'VuFind\RecordDriver\SolrDefaultFactory',
         'VuFind\RecordDriver\SolrReserves' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\SolrWebFactory',

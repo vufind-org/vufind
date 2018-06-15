@@ -44,41 +44,4 @@ class SolrMarc extends SolrDefault
     use IlsAwareTrait;
     use MarcReaderTrait;
     use MarcAdvancedTrait;
-
-    /**
-     * Backends with ILS integration.
-     *
-     * @var string[]
-     */
-    protected $ilsBackends = [];
-
-    /**
-     * Set the list of backends that support ILS integration.
-     *
-     * @param array $backends List of backends that support ILS integration
-     *
-     * @return string[]
-     */
-    public function setIlsBackends($backends)
-    {
-        $this->ilsBackends = $backends;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        parent::setSourceIdentifier($identifier);
-
-        // If the source identifier is not ILS-compatible, unload any ILS
-        // connection that was injected during construction.
-        if (!in_array($identifier, $this->ilsBackends)) {
-            $this->detachILS();
-        }
-    }
 }

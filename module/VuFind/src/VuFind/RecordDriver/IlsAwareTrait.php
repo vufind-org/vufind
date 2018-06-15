@@ -49,6 +49,13 @@ trait IlsAwareTrait
     protected $ils = null;
 
     /**
+     * Backends with ILS integration.
+     *
+     * @var string[]
+     */
+    protected $ilsBackends = [];
+
+    /**
      * Hold logic
      *
      * @var \VuFind\ILS\Logic\Holds
@@ -81,23 +88,14 @@ trait IlsAwareTrait
     }
 
     /**
-     * Disable an ILS connection.
-     *
-     * @return void
-     */
-    public function detachILS()
-    {
-        $this->ils = $this->holdLogic = $this->titleHoldLogic = null;
-    }
-
-    /**
      * Do we have an attached ILS connection?
      *
      * @return bool
      */
     protected function hasILS()
     {
-        return null !== $this->ils;
+        return null !== $this->ils
+            && in_array($this->getSourceIdentifier(), $this->ilsBackends);
     }
 
     /**
@@ -149,6 +147,18 @@ trait IlsAwareTrait
         }
 
         return false;
+    }
+
+    /**
+     * Set the list of backends that support ILS integration.
+     *
+     * @param array $backends List of backends that support ILS integration
+     *
+     * @return string[]
+     */
+    public function setIlsBackends($backends)
+    {
+        $this->ilsBackends = $backends;
     }
 
     /**
