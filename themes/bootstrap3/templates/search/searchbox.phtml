@@ -43,12 +43,7 @@
 <?php else: ?>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
-    <?php $placeholder = $this->searchbox()->getPlaceholderText(isset($tabConfig['selected']['id']) ? $tabConfig['selected']['id'] : null); ?>
-    <?php if ($this->searchClassId == 'EDS'): ?>
-    <span id="edsSearchWrapper">
-    <input class="form-control edsSearchBox"  id="searchForm_lookfor" name="lookfor" type="text" autocomplete="off" value="<?=$this->escapeHtmlAttr($this->lookfor)?>" onkeyup="autocomp()"//>
-    </span>
-    <?php else: ?>
+    <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
     <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?> />
     <?php endif; ?>
     <?php if ($handlerCount > 1): ?>
