@@ -113,6 +113,11 @@ class PluginFactory implements AbstractFactoryInterface
                 )
                 : [];
             foreach ($child as $section => $contents) {
+                // Check if arrays in the current config file should be merged with
+                // preceding arrays from config files defined as Parent_Config.
+                $mergeArraySettings
+                    = !empty($child->Parent_Config->merge_array_settings);
+
                 // Omit Parent_Config from the returned configuration; it is only
                 // needed during loading, and its presence will cause problems in
                 // config files that iterate through all of the sections (e.g.
@@ -126,7 +131,21 @@ class PluginFactory implements AbstractFactoryInterface
                     $config->$section = $child->$section;
                 } else {
                     foreach (array_keys($contents->toArray()) as $key) {
-                        $config->$section->$key = $child->$section->$key;
+                        // If a key is defined as key[] in the config file the key
+                        // remains a Zend\Config\Config object. If the current
+                        // section is not configured as an override section we try to
+                        // merge the key[] values instead of overwriting them.
+                        if (is_object($config->$section->$key)
+                            && is_object($child->$section->$key)
+                            && $mergeArraySettings
+                        ) {
+                            $config->$section->$key = array_merge(
+                                $config->$section->$key->toArray(),
+                                $child->$section->$key->toArray()
+                            );
+                        } else {
+                            $config->$section->$key = $child->$section->$key;
+                        }
                     }
                 }
             }

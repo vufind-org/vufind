@@ -183,6 +183,21 @@ class Factory
     }
 
     /**
+     * Factory for MapSelection module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MapSelection
+     */
+    public function getMapSelection(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('Vufind\Config');
+        $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
+        $solr = $backend->get('Solr');
+        return new MapSelection($config, $solr);
+    }
+
+    /**
      * Factory for Random Recommendations.
      *
      * @param ServiceManager $sm Service manager.
@@ -195,21 +210,6 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Search'),
             $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
         );
-    }
-
-    /**
-     * Factory for ResultGoogleMapAjax Recommendations.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return ResultGoogleMapAjax
-     */
-    public static function getResultGoogleMapAjax(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $key = isset($config->Content->googleMapApiKey)
-            ? $config->Content->googleMapApiKey : null;
-        return new ResultGoogleMapAjax($key);
     }
 
     /**

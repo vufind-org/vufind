@@ -72,13 +72,9 @@
   </fields>
 
   <uniqueKey>id</uniqueKey>
-  <defaultSearchField>allfields</defaultSearchField>
 
   <!-- CopyFields for Keyword Searching -->
   <copyField source="heading" dest="heading_keywords" />
   <copyField source="use_for" dest="use_for_keywords" />
   <copyField source="see_also" dest="see_also_keywords" />
-
-  <!-- Default Boolean Operator -->
-  <solrQueryParser defaultOperator="AND"/>
 </schema>

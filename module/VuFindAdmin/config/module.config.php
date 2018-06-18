@@ -3,13 +3,13 @@ namespace VuFindAdmin\Module\Configuration;
 
 $config = [
     'controllers' => [
-        'invokables' => [
-            'admin' => 'VuFindAdmin\Controller\AdminController',
-            'adminconfig' => 'VuFindAdmin\Controller\ConfigController',
-            'adminsocial' => 'VuFindAdmin\Controller\SocialstatsController',
-            'adminmaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
-            'adminstatistics' => 'VuFindAdmin\Controller\StatisticsController',
-            'admintags' => 'VuFindAdmin\Controller\TagsController',
+        'factories' => [
+            'admin' => 'VuFindAdmin\Controller\Factory::getAdminController',
+            'adminconfig' => 'VuFindAdmin\Controller\Factory::getConfigController',
+            'adminsocial' => 'VuFindAdmin\Controller\Factory::getSocialstatsController',
+            'adminmaintenance' => 'VuFindAdmin\Controller\Factory::getMaintenanceController',
+            'adminstatistics' => 'VuFindAdmin\Controller\Factory::getStatisticsController',
+            'admintags' => 'VuFindAdmin\Controller\Factory::getTagsController',
         ],
     ],
     'router' => [

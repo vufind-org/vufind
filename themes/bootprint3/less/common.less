@@ -1,0 +1,109 @@
+a,
+.btn-link {
+  color: #06C;
+  &:hover { color: #09F; }
+}
+.alert { padding: 8px; }
+.breadcrumbs .container {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+.breadcrumb {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  padding-left: 0;
+  font-size: 12px;
+}
+.btn { padding: 3px 5px 2px; }
+.btn.btn-default {
+  background: @gray-lighter;
+  background-image: linear-gradient(#fff, @nav-tabs-border-color);
+  border: 1px solid @gray;
+  color: @gray-darker;
+  text-shadow: 0 1px 0 #fff;
+}
+.btn:not(.btn-default) { font-weight:bold; }
+.btn-danger,
+.btn-danger:hover  { border-color:darken(@brand-danger,  12%); }
+.btn-info,
+.btn-info:hover    { border-color:darken(@brand-info,    12%); }
+.btn-primary,
+.btn-primary:hover { border-color:darken(@brand-primary, 12%); }
+.btn-success,
+.btn-success:hover { border-color:darken(@brand-success, 12%); }
+.btn-warning,
+.btn-warning:hover { border-color:darken(@brand-warning, 12%); }
+.container {
+  padding: 0;
+  background: #fff;
+}
+
+h2 { margin: 8px 0; }
+
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background: #fff;
+}
+
+input[type=radio],
+input[type=checkbox] {
+  margin: 2px auto 0;
+  padding: 0 2px;
+}
+.nav > li > a { padding: 5px 10px; }
+.nav-pills {
+  display: table;
+  margin: 0 auto;
+}
+.navbar { min-height: 1px; }
+.navbar-form {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
+.pagination {
+  display: table;
+  margin: 18px auto;
+}
+.pagination > li > a,
+.pagination > li > span { padding: 4px 12px 3px; }
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+  background: @brand-primary;
+  border-color: @brand-primary;
+}
+.panel-heading { padding: 0; }
+.panel-heading a {
+  cursor: pointer;
+  display: inline-block;
+  padding: 6px;
+  width: 100%;
+}
+.row:not(.top-row) {
+  padding: 6px 4px;
+  margin: 0 -4px;
+}
+.row > p { padding: 0 1em; }
+.sub-breadcrumb { padding: 0 5px; }
+.tab-content {
+  padding: 6px 8px;
+  border: 1px solid @gray-lighter;
+  border-top: 0;
+  margin-bottom: 5px;
+}
+
+@media (max-width: 767px) {
+  .label { font-size: 85%; }
+}
+@media (min-width: 768px) {
+  .badge {
+    font-size: 85%;
+    margin-top: 1px;
+  }
+  .label { padding-top: .3em; }
+  .modal-dialog { width: 650px; }
+}

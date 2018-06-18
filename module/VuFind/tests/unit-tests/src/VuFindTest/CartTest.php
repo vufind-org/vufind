@@ -53,13 +53,12 @@ class CartTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->loader = $this->getMock(
-            'VuFind\Record\Loader', [],
-            [
-                $this->getMock('VuFindSearch\Service'),
-                $this->getMock('VuFind\RecordDriver\PluginManager')
-            ]
-        );
+        $this->loader = $this->getMockBuilder('VuFind\Record\Loader')
+            ->setMethods([])
+            ->setConstructorArgs([
+                $this->createMock('VuFindSearch\Service'),
+                $this->createMock('VuFind\RecordDriver\PluginManager')
+            ])->getMock();
     }
 
     /**
@@ -75,10 +74,10 @@ class CartTest extends \PHPUnit_Framework_TestCase
     protected function getMockCookieManager($cookies = [], $path = '/',
         $domain = null, $secure = false
     ) {
-        return $this->getMock(
-            'VuFind\Cookie\CookieManager', ['set'],
-            [$cookies, $path, $domain, $secure]
-        );
+        return $this->getMockBuilder('VuFind\Cookie\CookieManager')
+            ->setMethods(['set'])
+            ->setConstructorArgs([$cookies, $path, $domain, $secure])
+            ->getMock();
     }
 
     /**

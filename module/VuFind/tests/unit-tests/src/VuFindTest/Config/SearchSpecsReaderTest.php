@@ -65,9 +65,9 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
         $parentPath = Locator::getLocalConfigPath('top.yaml', null, true);
         $parent = "top: foo";
         $childPath = Locator::getLocalConfigPath('middle.yaml', null, true);
-        $child = "@parent_yaml: $parentPath\nmiddle: bar";
+        $child = "\"@parent_yaml\": $parentPath\nmiddle: bar";
         $grandchildPath = Locator::getLocalConfigPath('bottom.yaml', null, true);
-        $grandchild = "@parent_yaml: $childPath\nbottom: baz";
+        $grandchild = "\"@parent_yaml\": $childPath\nbottom: baz";
 
         // Fail if we are unable to write files:
         if (null === $parentPath || null === $childPath || null === $grandchildPath

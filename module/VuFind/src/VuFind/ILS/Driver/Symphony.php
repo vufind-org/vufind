@@ -27,9 +27,12 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use SoapClient;
+use SoapFault;
+use SoapHeader;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Record\Loader;
 use Zend\Log\LoggerAwareInterface;
 
 /**
@@ -42,11 +45,9 @@ use Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Symphony extends AbstractBase
-    implements ServiceLocatorAwareInterface, LoggerAwareInterface
+class Symphony extends AbstractBase implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * Cache for policy information
@@ -61,6 +62,32 @@ class Symphony extends AbstractBase
      * @var array
      */
     protected $policies;
+
+    /**
+     * Cache manager
+     *
+     * @var CacheManager
+     */
+    protected $cacheManager;
+
+    /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Loader       $loader       Record loader
+     * @param CacheManager $cacheManager Cache manager (optional)
+     */
+    public function __construct(Loader $loader, CacheManager $cacheManager = null)
+    {
+        $this->recordLoader = $loader;
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Initialize the driver.
@@ -120,13 +147,11 @@ class Symphony extends AbstractBase
         ];
 
         // Initialize cache manager.
-        if (isset($configArray['PolicyCache']['type'])) {
-            $serviceManager = $this->getServiceLocator()->getServiceLocator();
-            if ($serviceManager->has('VuFind\CacheManager')) {
-                $manager = $serviceManager->get('VuFind\CacheManager');
-                $this->policyCache
-                    = $manager->getCache($configArray['PolicyCache']['type']);
-            }
+        if (isset($configArray['PolicyCache']['type'])
+            && $this->cacheManager
+        ) {
+            $this->policyCache = $this->cacheManager
+                ->getCache($configArray['PolicyCache']['type']);
         }
     }
 
@@ -375,8 +400,7 @@ class Symphony extends AbstractBase
 
         $entryNumber = $this->config['999Holdings']['entry_number'];
 
-        $records = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\RecordLoader')->loadBatch($ids);
+        $records = $this->recordLoader->loadBatch($ids);
         foreach ($records as $record) {
             $results = $record->getFormattedMarcDetails($entryNumber, $marcMap);
             foreach ($results as $result) {

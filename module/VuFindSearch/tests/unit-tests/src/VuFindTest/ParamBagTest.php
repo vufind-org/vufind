@@ -44,6 +44,33 @@ use PHPUnit_Framework_TestCase as TestCase;
 class ParamBagTest extends TestCase
 {
     /**
+     * Test "contains"
+     *
+     * @return void
+     */
+    public function testContains()
+    {
+        $bag = new ParamBag();
+        $bag->set('foo', 'bar');
+        $this->assertTrue($bag->contains('foo', 'bar'));
+        $this->assertFalse($bag->contains('bar', 'foo'));
+        $this->assertFalse($bag->contains('foo', 'baz'));
+    }
+
+    /**
+     * Test "hasParam"
+     *
+     * @return void
+     */
+    public function testHasParam()
+    {
+        $bag = new ParamBag();
+        $bag->set('foo', 'bar');
+        $this->assertTrue($bag->hasParam('foo'));
+        $this->assertFalse($bag->hasParam('bar'));
+    }
+
+    /**
      * Test "remove"
      *
      * @return void

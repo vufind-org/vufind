@@ -134,7 +134,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     public function testSaveThrowsUnknownFormat()
     {
         $conn = $this->createConnector();
-        $document = $this->getMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
+        $document = $this->createMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
         $conn->write($document, 'unknown', 'update');
     }
 

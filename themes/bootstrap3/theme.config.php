@@ -8,6 +8,7 @@ return array(
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
+        'flex-fallback.css::lt IE 10', // flex polyfill
     ),
     'js' => array(
         'vendor/base64.js:lt IE 10', // btoa polyfill
@@ -15,7 +16,8 @@ return array(
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
         'vendor/validator.min.js',
-        'autocomplete.js',
+        'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
+        'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
     ),

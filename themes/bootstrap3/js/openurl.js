@@ -35,7 +35,7 @@ VuFind.register('openurl', function OpenUrl() {
     // If the target is already visible, a previous click has populated it;
     // don't waste time doing redundant work.
     if (target.hasClass('hidden')) {
-      _loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
+      _loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('searchClassId'));
     }
   }
 

@@ -44,14 +44,14 @@ class CommitDocument extends AbstractDocument
     /**
      * Value for commitWithin attribute
      *
-     * @var integer
+     * @var int
      */
     protected $commitWithin;
 
     /**
      * Constructor.
      *
-     * @param integer $commitWithin commitWithin attribute value
+     * @param int $commitWithin commitWithin attribute value
      *
      * @return void
      */

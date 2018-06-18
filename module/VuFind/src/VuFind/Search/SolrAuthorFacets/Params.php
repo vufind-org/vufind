@@ -70,7 +70,7 @@ class Params extends \VuFind\Search\Solr\Params
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return boolean True if search settings were found, false if not.
+     * @return bool True if search settings were found, false if not.
      */
     protected function initBasicSearch($request)
     {

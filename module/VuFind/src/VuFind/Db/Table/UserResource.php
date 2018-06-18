@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Expression;
 
 /**
@@ -41,10 +43,17 @@ class UserResource extends Gateway
 {
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct()
-    {
-        parent::__construct('user_resource', 'VuFind\Db\Row\UserResource');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'user_resource'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -101,7 +110,7 @@ class UserResource extends Gateway
      * @param string $list_id     ID of list to link up
      * @param string $notes       Notes to associate with link
      *
-     * @return void
+     * @return \VuFind\Db\Row\UserResource
      */
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
         $notes = ''
@@ -123,6 +132,7 @@ class UserResource extends Gateway
         // Update the notes:
         $result->notes = $notes;
         $result->save();
+        return $result;
     }
 
     /**

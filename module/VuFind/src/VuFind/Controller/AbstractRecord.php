@@ -70,13 +70,6 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
-     * Should we log statistics?
-     *
-     * @var bool
-     */
-    protected $logStatistics = true;
-
-    /**
      * Record driver
      *
      * @var AbstractRecordDriver
@@ -204,7 +197,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $tagParser = $this->serviceLocator->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
@@ -258,12 +251,6 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\RecordStats')
-                ->log($this->loadRecord(), $this->getRequest());
-        }
-
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );
@@ -299,10 +286,12 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+        $tagParser = $this->serviceLocator->get('VuFind\Tags');
         $post['mytags']
             = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
-        $results = $driver->saveToFavorites($post, $user);
+        $favorites = $this->serviceLocator
+            ->get('VuFind\Favorites\FavoritesService');
+        $results = $favorites->save($post, $user, $driver);
 
         // Display a success status message:
         $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
@@ -335,6 +324,12 @@ class AbstractRecord extends AbstractBase
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
             throw new ForbiddenException('Lists disabled');
+        }
+
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
         }
 
         // Process form submission:
@@ -419,7 +414,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $mailer = $this->serviceLocator->get('VuFind\Mailer');
         $view = $this->createEmailViewModel(
             null, $mailer->getDefaultRecordSubject($driver)
         );
@@ -450,17 +445,33 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Is SMS enabled?
+     *
+     * @return bool
+     */
+    protected function smsEnabled()
+    {
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
+        return $check->getSmsSetting() !== 'disabled';
+    }
+
+    /**
      * SMS action - Allows the SMS form to appear.
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function smsAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->smsEnabled()) {
+            throw new ForbiddenException('SMS disabled');
+        }
+
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->getServiceLocator()->get('VuFind\SMS');
+        $sms = $this->serviceLocator->get('VuFind\SMS');
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
@@ -515,7 +526,7 @@ class AbstractRecord extends AbstractBase
         $format = $this->params()->fromQuery('style');
 
         // Display export menu if missing/invalid option
-        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $export = $this->serviceLocator->get('VuFind\Export');
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
@@ -601,15 +612,6 @@ class AbstractRecord extends AbstractBase
             ->getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->url()->fromRoute($details['route'], $details['params']);
 
-        // Special case: don't use anchors in jquerymobile theme, since they
-        // mess things up!
-        if (strlen($params) && substr($params, 0, 1) == '#') {
-            $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-            if ($themeInfo->getTheme() == 'jquerymobile') {
-                $params = '';
-            }
-        }
-
         return $this->redirect()->toUrl($target . $params);
     }
 
@@ -634,7 +636,7 @@ class AbstractRecord extends AbstractBase
     {
         $driver = $this->loadRecord();
         $request = $this->getRequest();
-        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
         $details = $rtpm->getTabDetailsForRecord(
             $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab

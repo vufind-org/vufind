@@ -111,7 +111,7 @@ class ServerParam implements PermissionProviderInterface,
      *
      * @param string $option Option
      *
-     * @return boolean true if a server param matches, false if not
+     * @return bool true if a server param matches, false if not
      */
     protected function checkServerParam($option)
     {

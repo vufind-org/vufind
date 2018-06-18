@@ -55,11 +55,11 @@ class Voyager extends AbstractBase
     }
 
     /**
-     * Database connection
+     * Lazily instantiated database connection. Use getDb() to access it.
      *
      * @var Oci8
      */
-    protected $db;
+    protected $lazyDb;
 
     /**
      * Name of database
@@ -138,41 +138,54 @@ class Voyager extends AbstractBase
         // Define Database Name
         $this->dbName = $this->config['Catalog']['database'];
 
-        // Based on the configuration file, use either "SID" or "SERVICE_NAME"
-        // to connect (correct value varies depending on Voyager's Oracle setup):
-        $connectType = isset($this->config['Catalog']['connect_with_sid']) &&
-            $this->config['Catalog']['connect_with_sid'] ?
-            'SID' : 'SERVICE_NAME';
-
-        $tns = '(DESCRIPTION=' .
-                 '(ADDRESS_LIST=' .
-                   '(ADDRESS=' .
-                     '(PROTOCOL=TCP)' .
-                     '(HOST=' . $this->config['Catalog']['host'] . ')' .
-                     '(PORT=' . $this->config['Catalog']['port'] . ')' .
-                   ')' .
-                 ')' .
-                 '(CONNECT_DATA=' .
-                   "({$connectType}={$this->config['Catalog']['service']})" .
-                 ')' .
-               ')';
-        try {
-            $this->db = new Oci8(
-                "oci:dbname=$tns;charset=US_ASCII",
-                $this->config['Catalog']['user'],
-                $this->config['Catalog']['password']
-            );
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            $this->error(
-                "PDO Connection failed ($this->dbName): " . $e->getMessage()
-            );
-            throw new ILSException($e->getMessage());
-        }
-
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+    }
+
+    /**
+     * Initialize database connection if necessary and return it.
+     *
+     * @throws ILSException
+     * @return \PDO
+     */
+    protected function getDb()
+    {
+        if (null === $this->lazyDb) {
+            // Based on the configuration file, use either "SID" or "SERVICE_NAME"
+            // to connect (correct value varies depending on Voyager's Oracle setup):
+            $connectType = isset($this->config['Catalog']['connect_with_sid']) &&
+                $this->config['Catalog']['connect_with_sid'] ?
+                'SID' : 'SERVICE_NAME';
+
+            $tns = '(DESCRIPTION=' .
+                     '(ADDRESS_LIST=' .
+                       '(ADDRESS=' .
+                         '(PROTOCOL=TCP)' .
+                         '(HOST=' . $this->config['Catalog']['host'] . ')' .
+                         '(PORT=' . $this->config['Catalog']['port'] . ')' .
+                       ')' .
+                     ')' .
+                     '(CONNECT_DATA=' .
+                       "({$connectType}={$this->config['Catalog']['service']})" .
+                     ')' .
+                   ')';
+            try {
+                $this->lazyDb = new Oci8(
+                    "oci:dbname=$tns;charset=US7ASCII",
+                    $this->config['Catalog']['user'],
+                    $this->config['Catalog']['password']
+                );
+                $this->lazyDb
+                    ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $e) {
+                $this->error(
+                    "PDO Connection failed ($this->dbName): " . $e->getMessage()
+                );
+                throw new ILSException($e->getMessage());
+            }
+        }
+        return $this->lazyDb;
     }
 
     /**
@@ -336,7 +349,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = [
-            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",
+            "BIB_ITEM.BIB_ID", "ITEM.ITEM_ID",  "MFHD_MASTER.MFHD_ID",
             "ITEM.ON_RESERVE", "ITEM_STATUS_DESC as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -393,7 +406,7 @@ class Voyager extends AbstractBase
         // Expressions
         $sqlExpressions = [
             "BIB_MFHD.BIB_ID",
-            "1 as ITEM_ID", "'N' as ON_RESERVE",
+            "null as ITEM_ID", "MFHD_MASTER.MFHD_ID", "'N' as ON_RESERVE",
             "'No information available' as status",
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
@@ -445,8 +458,10 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            if (!isset($data[$row['ITEM_ID']])) {
-                $data[$row['ITEM_ID']] = [
+            $rowId = null !== $row['ITEM_ID']
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            if (!isset($data[$rowId])) {
+                $data[$rowId] = [
                     'id' => $row['BIB_ID'],
                     'status' => $row['STATUS'],
                     'status_array' => [$row['STATUS']],
@@ -461,10 +476,11 @@ class Voyager extends AbstractBase
                         : PHP_INT_MAX
                 ];
             } else {
-                if (!in_array(
-                    $row['STATUS'], $data[$row['ITEM_ID']]['status_array']
-                )) {
-                    $data[$row['ITEM_ID']]['status_array'][] = $row['STATUS'];
+                $statusFound = in_array(
+                    $row['STATUS'], $data[$rowId]['status_array']
+                );
+                if (!$statusFound) {
+                    $data[$rowId]['status_array'][] = $row['STATUS'];
                 }
             }
         }
@@ -590,6 +606,13 @@ class Voyager extends AbstractBase
     protected function getHoldingItemsSQL($id)
     {
         // Expressions
+        $returnDate = <<<EOT
+CASE WHEN ITEM_STATUS_TYPE.ITEM_STATUS_DESC = 'Discharged' THEN (
+  SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), 'MM-DD-YY HH24:MI')
+    FROM $this->dbName.CIRC_TRANS_ARCHIVE
+    WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID
+) ELSE NULL END RETURNDATE
+EOT;
         $sqlExpressions = [
             "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
             "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",
@@ -603,9 +626,7 @@ class Voyager extends AbstractBase
             "ITEM.PERM_LOCATION",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY') as duedate",
-            "(SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), " .
-            "'MM-DD-YY HH24:MI') FROM $this->dbName.CIRC_TRANS_ARCHIVE " .
-            "WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID) RETURNDATE",
+            $returnDate,
             "ITEM.ITEM_SEQUENCE_NUMBER",
             $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
         ];
@@ -674,7 +695,7 @@ class Voyager extends AbstractBase
                 "LOCATION.LOCATION_NAME) as location",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-            "null as duedate", "0 AS TEMP_LOCATION",
+            "null as duedate", "null as RETURNDATE", "0 AS TEMP_LOCATION",
             "0 as PERM_LOCATION",
             "0 as ITEM_SEQUENCE_NUMBER",
             $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
@@ -735,7 +756,8 @@ class Voyager extends AbstractBase
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            $rowId = isset($row['ITEM_ID'])
+                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -747,10 +769,13 @@ class Voyager extends AbstractBase
                 }
 
                 // If we've encountered a new status code, we should track it:
-                if (!in_array(
-                    $row['STATUS'], $record['STATUS_ARRAY']
-                )) {
+                if (!in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
                     $record['STATUS_ARRAY'][] = $row['STATUS'];
+                }
+
+                // If we have a return date for this status, take it
+                if (null !== $row['RETURNDATE']) {
+                    $record['RETURNDATE'] = $row['RETURNDATE'];
                 }
             } else {
                 // This is the first time we've encountered this row number --
@@ -994,7 +1019,7 @@ class Voyager extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function processHoldingData($data, $id, $patron = false)
+    protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = [];
 
@@ -1027,17 +1052,10 @@ class Voyager extends AbstractBase
                 }
                 $returnDate = false;
                 if (!empty($row['RETURNDATE'])) {
-                    $returnDate = $this->dateFormat->convertToDisplayDate(
-                        "m-d-y H:i", $row['RETURNDATE']
+                    $returnDate = $this->dateFormat->convertToDisplayDateAndTime(
+                        'm-d-y H:i', $row['RETURNDATE']
                     );
-                    $returnTime = $this->dateFormat->convertToDisplayTime(
-                        "m-d-y H:i", $row['RETURNDATE']
-                    );
-                    $returnDate .=  " " . $returnTime;
                 }
-
-                $returnDate = (in_array("Discharged", $row['STATUS_ARRAY']))
-                    ? $returnDate : false;
 
                 $requests_placed = isset($row['HOLDS_PLACED'])
                     ? $row['HOLDS_PLACED'] : 0;
@@ -1213,6 +1231,20 @@ class Voyager extends AbstractBase
         $sql .= " FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
                "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
+
+        // Limit the barcode statuses that allow logging in. By default only
+        // 1 (active) and 4 (expired) are allowed.
+        $allowedStatuses = preg_replace(
+            '/[^:\d]*/',
+            '',
+            isset($this->config['Catalog']['allowed_barcode_statuses'])
+                ? $this->config['Catalog']['allowed_barcode_statuses']
+                : '1:4'
+        );
+        if ($allowedStatuses) {
+            $sql .= ' AND PATRON_BARCODE.BARCODE_STATUS IN ('
+                . str_replace(':', ',', $allowedStatuses) . ')';
+        }
 
         try {
             $bindBarcode = strtolower(utf8_decode($barcode));
@@ -2053,22 +2085,6 @@ class Voyager extends AbstractBase
         $limit = ($limit) ? $limit : 20;
         $bindParams[':startRow'] = (($page - 1) * $limit) + 1;
         $bindParams[':endRow'] = ($page * $limit);
-        /*
-        $sql = "select * from " .
-               "(select a.*, rownum rnum from " .
-               "(select LINE_ITEM.BIB_ID, BIB_TEXT.TITLE, FUND.FUND_NAME, " .
-               "LINE_ITEM.CREATE_DATE, LINE_ITEM_STATUS.LINE_ITEM_STATUS_DESC " .
-               "from $this->dbName.BIB_TEXT, $this->dbName.LINE_ITEM, " .
-               "$this->dbName.LINE_ITEM_COPY_STATUS, " .
-               "$this->dbName.LINE_ITEM_STATUS, $this->dbName.LINE_ITEM_FUNDS, " .
-               "$this->dbName.FUND " .
-               "where BIB_TEXT.BIB_ID = LINE_ITEM.BIB_ID " .
-               "and LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID " .
-               "and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID " .
-               "and LINE_ITEM_STATUS.LINE_ITEM_STATUS = " .
-               "LINE_ITEM_COPY_STATUS.LINE_ITEM_STATUS " .
-               "and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ";
-        */
         $sql = "select * from " .
                "(select a.*, rownum rnum from " .
                "(select LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE " .
@@ -2446,7 +2462,7 @@ class Voyager extends AbstractBase
             list(, $caller) = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
-        $sqlStmt = $this->db->prepare($sql);
+        $sqlStmt = $this->getDb()->prepare($sql);
         $sqlStmt->execute($bind);
 
         return $sqlStmt;

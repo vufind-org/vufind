@@ -26,10 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\TableGateway\AbstractTableGateway,
-    Zend\Db\TableGateway\Feature,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Row\RowGateway;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\TableGateway\AbstractTableGateway;
+use Zend\Db\TableGateway\Feature;
 
 /**
  * Generic VuFind table gateway.
@@ -40,56 +40,51 @@ use Zend\Db\TableGateway\AbstractTableGateway,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
+class Gateway extends AbstractTableGateway
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-
     /**
-     * Name of class used to represent rows (null for default)
+     * Table manager
      *
-     * @var string
+     * @var PluginManager
      */
-    protected $rowClass = null;
-    
+    protected $tableManager;
+
     /**
      * Constructor
      *
-     * @param string $table    Name of database table to interface with
-     * @param string $rowClass Name of class used to represent rows (null for
-     * default)
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct($table, $rowClass = null)
-    {
-        $this->table = $table;
-        $this->rowClass = $rowClass;
-    }
-
-    /**
-     * Set database adapter
-     *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
-     *
-     * @return void
-     */
-    public function setAdapter(\Zend\Db\Adapter\Adapter $adapter)
-    {
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj, $table
+    ) {
         $this->adapter = $adapter;
+        $this->tableManager = $tm;
+        $this->table = $table;
+
+        $this->initializeFeatures($cfg);
+        $this->initialize();
+
+        if (null !== $rowObj) {
+            $resultSetPrototype = $this->getResultSetPrototype();
+            $resultSetPrototype->setArrayObjectPrototype($rowObj);
+        }
     }
 
     /**
-     * Initialize
+     * Initialize features
+     *
+     * @param array $cfg Zend Framework configuration
      *
      * @return void
      */
-    public function initialize()
+    public function initializeFeatures($cfg)
     {
-        if ($this->isInitialized) {
-            return;
-        }
-
         // Special case for PostgreSQL sequences:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
-            $cfg = $this->getServiceLocator()->getServiceLocator()->get('config');
             $maps = isset($cfg['vufind']['pgsql_seq_mapping'])
                 ? $cfg['vufind']['pgsql_seq_mapping'] : null;
             if (isset($maps[$this->table])) {
@@ -103,31 +98,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
                 );
             }
         }
-
-        parent::initialize();
-        if (null !== $this->rowClass) {
-            $resultSetPrototype = $this->getResultSetPrototype();
-            $resultSetPrototype->setArrayObjectPrototype(
-                $this->initializeRowPrototype()
-            );
-        }
-    }
-
-    /**
-     * Construct the prototype for rows.
-     *
-     * @return object
-     */
-    protected function initializeRowPrototype()
-    {
-        $prototype = new $this->rowClass($this->getAdapter());
-        if ($prototype instanceof ServiceLocatorAwareInterface) {
-            $prototype->setServiceLocator($this->getServiceLocator());
-        }
-        \VuFind\ServiceManager\Initializer::initInstance(
-            $prototype, $this->getServiceLocator()->getServiceLocator()
-        );
-        return $prototype;
     }
 
     /**
@@ -171,6 +141,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
      */
     public function getDbTable($table)
     {
-        return $this->getServiceLocator()->get($table);
+        return $this->tableManager->get($table);
     }
 }

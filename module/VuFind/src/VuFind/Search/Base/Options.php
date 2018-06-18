@@ -733,10 +733,10 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Return the route name for the search results action.
-     * false to cover unimplemented drivers
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
      *
-     * @return false
+     * @return string|bool
      */
     public function getFacetListAction()
     {
@@ -891,22 +891,6 @@ abstract class Options implements TranslatorAwareInterface
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
         $class = explode('\\', get_class($this));
         return $class[2];
-    }
-
-    /**
-     * Sleep magic method -- the translator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new one in the
-     * __wakeup() method, it needs to be re-injected from outside.
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['configLoader']);
-        unset($vars['translator']);
-        $vars = array_keys($vars);
-        return $vars;
     }
 
     /**

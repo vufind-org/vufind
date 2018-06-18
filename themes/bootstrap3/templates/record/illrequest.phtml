@@ -9,119 +9,102 @@
 ?>
 <h2><?=$this->transEsc('ill_request_place_text')?></h2>
 <? if ($this->helpText): ?>
-<p class="helptext"><?=$this->helpText?></p>
+  <p class="help-block"><?=$this->helpText?></p>
 <? endif; ?>
 
-<div id="ILLRequestForm" class="storage-retrieval-request-form">
-  <form name="placeILLRequest" class="form-horizontal" method="post">
-    <?=$this->flashmessages()?>
-    <? if (in_array("itemId", $this->extraFields)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc('ill_request_item')?>:</label>
-        <div class="col-sm-9">
-          <select id="itemId" name="gatheredDetails[itemId]" class="form-control">
-          <? foreach ($this->items as $item): ?>
-            <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
-              <?=$this->escapeHtml($item['name'])?>
-            </option>
-         <? endforeach; ?>
-          </select>
-        </div>
-      </div>
-    <? endif; ?>
-
-    <? if (in_array("pickUpLibrary", $this->extraFields) && !empty($this->pickupLibraries)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc("ill_request_pick_up_library")?>:</label>
-        <div class="col-sm-9">
-          <? if (count($this->pickupLibraries) > 1): ?>
-            <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control">
-            <?
-              if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== "") {
-                  $selected = $this->gatheredDetails['pickUpLibrary'];
-              } else {
-                  $selected = false;
-              }
-            ?>
-            <? foreach ($this->pickupLibraries as $lib): ?>
-              <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
-                <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
-              </option>
-            <? endforeach; ?>
-            </select>
-          <? else: ?>
-            <? $lib = $this->pickupLibraries[0]; ?>
-            <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->escapeHtmlAttr($this->translate('library_' . $lib['name'], null, $lib['name']))?>" />
-            <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>" />
-          <? endif; ?>
-        </div>
-      </div>
-    <? endif; ?>
-
-    <? if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
-      <div class="form-group">
-        <label id="pickupLibraryLocationLabel" class="col-sm-3 control-label"><i></i>&nbsp;<?=$this->transEsc("ill_request_pick_up_location")?>:<noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript></label>
-        <div class="col-sm-9">
-          <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control">
-          </select>
-        </div>
-      </div>
-    <? endif; ?>
-
-    <? if (in_array("pickUpLocation", $this->extraFields)): ?>
-      <? if (count($this->pickup) > 1): ?>
-        <div class="form-group">
-          <?
-            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
-                $selected = $this->gatheredDetails['pickUpLocation'];
-            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-                $selected = $this->homeLibrary;
-            } else {
-                $selected = $this->defaultPickup;
-            }
-          ?>
-          <label class="col-sm-3 control-label"><?=$this->transEsc("pick_up_location")?>:</label>
-          <div class="col-sm-9">
-            <select name="gatheredDetails[pickUpLocation]" class="form-control">
-            <? foreach ($this->pickup as $lib): ?>
-              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-                <?=$this->escapeHtml($lib['locationDisplay'])?>
-              </option>
-            <? endforeach; ?>
-            </select>
-          </div>
-        </div>
-      <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
-      <? endif; ?>
-    <? endif; ?>
-
-    <? if (in_array("requiredByDate", $this->extraFields)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc("hold_required_by")?>:</label>
-        <div class="col-sm-9">
-          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
-          (<?=$this->dateTime()->getDisplayDateFormat()?>)
-        </div>
-      </div>
-    <? endif; ?>
-
-    <? if (in_array("comments", $this->extraFields)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
-        <div class="col-sm-9">
-          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
-        </div>
-      </div>
-    <? endif; ?>
-
+<form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post">
+  <?=$this->flashmessages()?>
+  <? if (in_array("itemId", $this->extraFields)): ?>
     <div class="form-group">
-      <div class="col-sm-9 col-sm-offset-3">
-        <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEsc('ill_request_submit_text')?>"/>
-      </div>
+      <label class="control-label"><?=$this->transEsc('ill_request_item')?>:</label>
+      <select id="itemId" name="gatheredDetails[itemId]" class="form-control">
+        <? foreach ($this->items as $item): ?>
+          <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
+            <?=$this->escapeHtml($item['name'])?>
+          </option>
+        <? endforeach; ?>
+      </select>
     </div>
-  </form>
-</div>
+  <? endif; ?>
+
+  <? if (in_array("pickUpLibrary", $this->extraFields) && !empty($this->pickupLibraries)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc("ill_request_pick_up_library")?>:</label>
+      <? if (count($this->pickupLibraries) > 1): ?>
+        <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control">
+        <?
+          if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== "") {
+              $selected = $this->gatheredDetails['pickUpLibrary'];
+          } else {
+              $selected = false;
+          }
+        ?>
+        <? foreach ($this->pickupLibraries as $lib): ?>
+          <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
+            <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
+          </option>
+        <? endforeach; ?>
+        </select>
+      <? else: ?>
+        <? $lib = $this->pickupLibraries[0]; ?>
+        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->escapeHtmlAttr($this->translate('library_' . $lib['name'], null, $lib['name']))?>" />
+        <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>" />
+      <? endif; ?>
+    </div>
+  <? endif; ?>
+
+  <? if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
+    <div class="form-group">
+      <label id="pickupLibraryLocationLabel" class="control-label"><i></i>&nbsp;<?=$this->transEsc("ill_request_pick_up_location")?>:<noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript></label>
+      <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
+    </div>
+  <? endif; ?>
+
+  <? if (in_array("pickUpLocation", $this->extraFields)): ?>
+    <? if (count($this->pickup) > 1): ?>
+      <div class="form-group">
+        <?
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+            $selected = $this->gatheredDetails['pickUpLocation'];
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+            $selected = $this->homeLibrary;
+          } else {
+            $selected = $this->defaultPickup;
+          }
+        ?>
+        <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
+        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+          <? foreach ($this->pickup as $lib): ?>
+            <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+              <?=$this->escapeHtml($lib['locationDisplay'])?>
+            </option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    <? else: ?>
+      <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
+    <? endif; ?>
+  <? endif; ?>
+
+  <? if (in_array("requiredByDate", $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
+      (<?=$this->dateTime()->getDisplayDateFormat()?>)
+    </div>
+  <? endif; ?>
+
+  <? if (in_array("comments", $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc("Comments")?>:</label>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+    </div>
+  <? endif; ?>
+
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="placeILLRequest" value="<?=$this->transEsc('ill_request_submit_text')?>"/>
+  </div>
+</form>
 
 <?
     // Set up ill script; we do this inline instead of in the header for lightbox compatibility:

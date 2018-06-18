@@ -38,8 +38,14 @@ VuFind.register('embedded', function embedded() {
     var id = $result.find('.hiddenId')[0].value;
     var source = $result.find('.hiddenSource')[0].value;
     if ($tab.parent().hasClass('noajax')) {
-      window.location.href = $tab.attr('href');
-      return true;
+      if ($tab.is('a')) {
+        // tab case:
+        window.location.href = $tab.attr('href');
+      } else {
+        // accordion case:
+        window.location.href = $tab.find('a').attr('data-href');
+      }
+      return false;
     }
     var urlroot;
     if (source === VuFind.defaultSearchBackend) {
@@ -72,7 +78,7 @@ VuFind.register('embedded', function embedded() {
         }
       });
     }
-    if (click) {
+    if (click && !$tab.parent().hasClass('default')) {
       $tab.click();
     }
     return true;
@@ -87,26 +93,30 @@ VuFind.register('embedded', function embedded() {
     }
     var result = $link.closest('.result');
     var mediaBody = result.find('.media-body');
-    var shortNode = mediaBody.find('.short-view');
+    var shortNode = mediaBody.find('.result-body');
+    var linksNode = mediaBody.find('.result-links');
     var longNode = mediaBody.find('.long-view');
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
       result.addClass('embedded');
-      mediaBody.find('.short-view').addClass('collapse');
+      shortNode.addClass('collapse');
+      linksNode.addClass('collapse');
       longNode = $('<div class="long-view collapse"></div>');
       // Add loading status
       shortNode
         .before('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '
                 + VuFind.translate('loading') + '...</div>')
         .before(longNode);
-      $link.addClass('js-setup');
       longNode.on('show.bs.collapse', function embeddedExpand() {
         $link.addClass('expanded');
       });
-      longNode.on('hidden.bs.collapse', function embeddedCollapsed() {
-        $link.removeClass('expanded');
+      longNode.on('hidden.bs.collapse', function embeddedCollapsed(e) {
+        if ($(e.target).hasClass('long-view')) {
+          $link.removeClass('expanded');
+        }
       });
+      $link.addClass('expanded js-setup');
     }
     // Gather information
     var divID = result.find('.hiddenId')[0].value;
@@ -144,11 +154,10 @@ VuFind.register('embedded', function embedded() {
               }
               // Bind tab clicks
               longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
-                addToStorage(divID, this.id);
+                if (!$(this).parent().hasClass('noajax')) {
+                  addToStorage(divID, this.id);
+                }
                 return ajaxLoadTab(this.id);
-              });
-              longNode.find('.noajax .list-tab-toggle').click(function accordionNoAjax() {
-                window.location.href = $(this).attr('data-href');
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
                 function embeddedComments() {
@@ -172,6 +181,7 @@ VuFind.register('embedded', function embedded() {
         longNode.collapse('show');
       }
       shortNode.collapse('hide');
+      linksNode.collapse('hide');
       if (!$link.hasClass('auto')) {
         addToStorage(divID, $(longNode).find('.list-tab-toggle.active').attr('id'));
       } else {
@@ -179,6 +189,7 @@ VuFind.register('embedded', function embedded() {
       }
     } else {
       shortNode.collapse('show');
+      linksNode.collapse('show');
       longNode.collapse('hide');
       removeFromStorage(divID);
     }

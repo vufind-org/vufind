@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use Zend\Config\Config;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * BrowseController Class
@@ -65,9 +67,10 @@ class BrowseController extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param ServiceLocatorInterface $sm     Service manager
+     * @param Config                  $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         $this->config = $config;
 
@@ -77,6 +80,7 @@ class BrowseController extends AbstractBase
                 $this->disabledFacets[] = $key;
             }
         }
+        parent::__construct($sm);
     }
 
     /**
@@ -453,7 +457,7 @@ class BrowseController extends AbstractBase
             'era'          => 'By Era'
         ];
 
-        return $this->performBrowse('Author', $categoryList, false);
+        return $this->performBrowse('Author', $categoryList, true);
     }
 
     /**
@@ -590,7 +594,7 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $results = $this->getServiceLocator()
+        $results = $this->serviceLocator
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
@@ -697,9 +701,14 @@ class BrowseController extends AbstractBase
 
         // ALPHABET TO ['value','displayText']
         // (value has asterix appended for Solr, but is unmodified for tags)
-        $suffix = $this->getCurrentAction() == 'Tag' ? '' : '*';
-        $callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $letter];
+        $action = $this->getCurrentAction();
+        $callback = function ($letter) use ($action) {
+            // Tag is a special case because it is database-backed; for everything
+            // else, use a Solr query that will allow case-insensitive lookups.
+            $value = ($action == 'Tag')
+                ? $letter
+                : '(' . strtoupper($letter) . '* OR ' . strtolower($letter) . '*)';
+            return ['value' => $value, 'displayText' => $letter];
         };
         preg_match_all('/(.)/u', $chars, $matches);
         return array_map($callback, $matches[1]);

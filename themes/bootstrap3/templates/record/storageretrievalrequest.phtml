@@ -12,104 +12,86 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<div class="storage-retrieval-request-form">
-  <form name="placeStorageRetrievalRequest" class="form-horizontal" method="post">
-    <?=$this->flashmessages()?>
-    <? if (in_array("item-issue", $this->extraFields)): ?>
-      <div class="form-group">
-        <div class="col-sm-3 controls">
-          <div class="radio">
-            <label>
-              <input type="radio" id="storageRetrievalRequestItem" name="gatheredDetails[level]" value="copy"<?=!isset($this->gatheredDetails['level']) || $this->gatheredDetails['level'] != 'title' ? ' checked="checked"' : ''?>>
-              <?=$this->transEsc('storage_retrieval_request_selected_item')?>
-            </label>
-          </div>
-
-          <div class="radio">
-            <label>
-              <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
-              <?=$this->transEsc('storage_retrieval_request_reference')?>
-            </label>
-          </div>
-        </div>
+<form name="placeStorageRetrievalRequest" class="form-storage-retrieval-request" method="post">
+  <?=$this->flashmessages()?>
+  <? if (in_array("item-issue", $this->extraFields)): ?>
+    <div class="form-group controls">
+      <div class="radio">
+        <label>
+          <input type="radio" id="storageRetrievalRequestItem" name="gatheredDetails[level]" value="copy"<?=!isset($this->gatheredDetails['level']) || $this->gatheredDetails['level'] != 'title' ? ' checked="checked"' : ''?>>
+          <?=$this->transEsc('storage_retrieval_request_selected_item')?>
+        </label>
       </div>
-      <div class="form-group">
-        <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
-          <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
-          <div class="col-sm-9">
-            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="form-control"/><br/>
-          </div>
-          <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
-          <div class="col-sm-9">
-            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="form-control"/><br/>
-          </div>
-          <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
-          <div class="col-sm-9">
-            <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="form-control"/><br/>
-          </div>
-        </div>
-      </div>
-    <? endif; ?>
 
-    <? if (in_array("requiredByDate", $this->extraFields)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc("hold_required_by")?>:</label>
-        <div class="col-sm-9">
-          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
-          (<?=$this->dateTime()->getDisplayDateFormat()?>)
-        </div>
-      </div>
-    <? endif; ?>
-
-    <? if (in_array("pickUpLocation", $this->extraFields)): ?>
-      <? if ($this->pickup): ?>
-        <div class="form-group">
-          <?
-            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
-                $selected = $this->gatheredDetails['pickUpLocation'];
-            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-                $selected = $this->homeLibrary;
-            } else {
-                $selected = $this->defaultPickup;
-            }
-          ?>
-          <label class="col-sm-3 control-label"><?=$this->transEsc("pick_up_location")?>:</label>
-          <div class="col-sm-9">
-            <select name="gatheredDetails[pickUpLocation]" class="form-control">
-            <? if ($selected === false && count($this->pickup) > 1): ?>
-              <option value="" selected="selected">
-                <?=$this->transEsc('select_pickup_location')?>
-              </option>
-            <? endif; ?>
-            <? foreach ($this->pickup as $lib): ?>
-              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-                <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
-              </option>
-            <? endforeach; ?>
-            </select>
-          </div>
-        </div>
-      <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
-      <? endif; ?>
-    <? endif; ?>
-
-    <? if (in_array("comments", $this->extraFields)): ?>
-      <div class="form-group">
-        <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
-        <div class="col-sm-9">
-          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
-        </div>
-      </div>
-    <? endif; ?>
-
-    <div class="form-group">
-      <div class="col-sm-9 col-sm-offset-3">
-        <input class="btn btn-primary" type="submit" name="placeStorageRetrievalRequest" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
+      <div class="radio">
+        <label>
+          <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
+          <?=$this->transEsc('storage_retrieval_request_reference')?>
+        </label>
       </div>
     </div>
-  </form>
-</div>
+    <div class="form-group">
+      <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
+        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
+        <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="form-control"/><br/>
+        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
+        <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="form-control"/><br/>
+        <label class="control-label"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
+        <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="form-control"/><br/>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <? if (in_array("requiredByDate", $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
+      (<?=$this->dateTime()->getDisplayDateFormat()?>)
+    </div>
+  <? endif; ?>
+
+  <? if (in_array("pickUpLocation", $this->extraFields)): ?>
+    <? if ($this->pickup): ?>
+      <div class="form-group">
+        <?
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+            $selected = $this->gatheredDetails['pickUpLocation'];
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+            $selected = $this->homeLibrary;
+          } else {
+            $selected = $this->defaultPickup;
+          }
+        ?>
+        <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
+        <select name="gatheredDetails[pickUpLocation]" class="form-control">
+          <? if ($selected === false && count($this->pickup) > 1): ?>
+            <option value="" selected="selected">
+              <?=$this->transEsc('select_pickup_location')?>
+            </option>
+          <? endif; ?>
+          <? foreach ($this->pickup as $lib): ?>
+            <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+              <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
+            </option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    <? else: ?>
+      <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
+    <? endif; ?>
+  <? endif; ?>
+
+  <? if (in_array("comments", $this->extraFields)): ?>
+    <div class="form-group">
+      <label class="control-label"><?=$this->transEsc("Comments")?>:</label>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+    </div>
+  <? endif; ?>
+
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="placeStorageRetrievalRequest" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
+  </div>
+</form>
 
 <script type="text/javascript">
 $(document).ready(function() {

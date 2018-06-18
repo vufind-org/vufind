@@ -47,6 +47,20 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     protected $config;
 
     /**
+     * Alphabrowse settings for search box.
+     *
+     * @var array
+     */
+    protected $alphabrowseConfig;
+
+    /**
+     * Placeholders from config.ini
+     *
+     * @var array
+     */
+    protected $placeholders;
+
+    /**
      * Search options plugin manager
      *
      * @var OptionsManager
@@ -63,13 +77,20 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param OptionsManager $optionsManager Search options plugin manager
-     * @param array          $config         Configuration for search box
+     * @param OptionsManager $optionsManager    Search options plugin manager
+     * @param array          $config            Configuration for search box
+     * @param array          $placeholders      Array of placeholders keyed by
+     * backend
+     * @param array          $alphabrowseConfig source => label config for
+     * alphabrowse options to display in combined box (empty for none)
      */
-    public function __construct(OptionsManager $optionsManager, $config = [])
-    {
+    public function __construct(OptionsManager $optionsManager, $config = [],
+        $placeholders = [], $alphabrowseConfig = []
+    ) {
         $this->optionsManager = $optionsManager;
         $this->config = $config;
+        $this->alphabrowseConfig = $alphabrowseConfig;
+        $this->placeholders = $placeholders;
     }
 
     /**
@@ -102,6 +123,18 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             }
         }
         return false;
+    }
+
+    /**
+     * Are alphabrowse options configured to display in the search options
+     * drop-down?
+     *
+     * @return bool
+     */
+    public function alphaBrowseOptionsEnabled()
+    {
+        // Alphabrowse options depend on combined handlers:
+        return $this->combinedHandlersActive() && !empty($this->alphabrowseConfig);
     }
 
     /**
@@ -153,6 +186,26 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             $final[] = ['id' => 'applied_filter_' . ($i + 1), 'value' => $val];
         }
         return $final;
+    }
+
+    /**
+     * Get placeholder text from config using the activeSearchClass as key
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return string
+     */
+    public function getPlaceholderText($activeSearchClass)
+    {
+        // Searchbox place
+        if (!empty($this->placeholders)) {
+            return isset($this->placeholders[$activeSearchClass])
+                ? $this->placeholders[$activeSearchClass]
+                : (isset($this->placeholders['default'])
+                    ? $this->placeholders['default']
+                    : null);
+        }
+        return null;
     }
 
     /**
@@ -280,6 +333,24 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 $handlers[] = [
                     'value' => $type . ':' . $target, 'label' => $label,
                     'indent' => false, 'selected' => false
+                ];
+            }
+        }
+
+        // Should we add alphabrowse links?
+        if ($this->alphaBrowseOptionsEnabled()) {
+            $alphaBrowseBase = $this->getView()->plugin('url')
+                ->__invoke('alphabrowse-home');
+            $labelPrefix = $this->getView()->translate('Browse Alphabetically')
+                . ': ';
+            foreach ($this->alphabrowseConfig as $source => $label) {
+                $alphaBrowseUrl = $alphaBrowseBase . '?source=' . urlencode($source)
+                    . '&from=';
+                $handlers[] = [
+                    'value' => 'External:' . $alphaBrowseUrl,
+                    'label' => $labelPrefix . $this->getView()->translate($label),
+                    'indent' => false,
+                    'selected' => $activeHandler == 'AlphaBrowse:' . $source
                 ];
             }
         }

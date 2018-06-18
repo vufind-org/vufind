@@ -156,14 +156,12 @@ class ILLRequests extends AbstractRequestBase
                 $flashMsg->addMessage('ill_request_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
-                    // TODO : add a mechanism for inserting tokens into translated
-                    // messages so we can avoid a double translation here.
-                    $msg = $this->getController()->translate(
-                        'ill_request_cancel_success_items'
-                    );
-                    $flashMsg->addMessage(
-                        $cancelResults['count'] . ' ' . $msg, 'success'
-                    );
+                    $msg = $this->getController()
+                        ->translate(
+                            'ill_request_cancel_success_items',
+                            ['%%count%%' => $cancelResults['count']]
+                        );
+                    $flashMsg->addMessage($msg, 'success');
                 }
                 return $cancelResults;
             }

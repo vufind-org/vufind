@@ -59,7 +59,8 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
+        $theme = $this->getMockBuilder('VuFindTheme\ThemeInfo')
+            ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
@@ -135,13 +136,13 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param \Zend\Http\Client                    $client  HTTP client (null to create TestAdapter)
      * @param array|bool                           $mock    Array of functions to mock, or false for real object
      *
-     * @return void
+     * @return Loader
      */
     protected function getLoader($config = [], $manager = null, $theme = null, $client = null, $mock = false)
     {
         $config = new Config($config);
         if (null === $manager) {
-            $manager = $this->getMock('VuFind\Content\Covers\PluginManager');
+            $manager = $this->createMock('VuFind\Content\Covers\PluginManager');
         }
         if (null === $theme) {
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
@@ -152,7 +153,10 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $client->setAdapter($adapter);
         }
         if ($mock) {
-            return $this->getMock('VuFind\Cover\Loader', $mock, [$config, $manager, $theme, $client]);
+            return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
+                ->setMethods($mock)
+                ->setConstructorArgs([$config, $manager, $theme, $client])
+                ->getMock();
         }
         return new Loader($config, $manager, $theme, $client);
     }
@@ -165,5 +169,12 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     protected function getThemeDir()
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
+    }
+}
+
+class MockLoader extends \VuFind\Cover\Loader
+{
+    public function debug($msg, array $context = [], $prependClass = true)
+    {
     }
 }

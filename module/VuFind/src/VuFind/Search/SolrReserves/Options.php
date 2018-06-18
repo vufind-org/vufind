@@ -53,6 +53,17 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getFacetListAction()
+    {
+        return 'search-reservesfacetlist';
+    }
+
+    /**
      * Return the route name for the search results action.
      *
      * @return string

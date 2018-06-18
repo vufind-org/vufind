@@ -45,7 +45,7 @@ class CAS extends AbstractBase
     /**
      * Already Setup phpCAS
      *
-     * @var boolean
+     * @var bool
      */
     protected $phpCASSetup = false;
 

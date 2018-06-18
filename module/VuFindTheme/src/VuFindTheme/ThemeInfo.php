@@ -93,6 +93,18 @@ class ThemeInfo
     }
 
     /**
+     * Get the configuration file for the specified mixin.
+     *
+     * @param string $mixin Mixin name
+     *
+     * @return string
+     */
+    protected function getMixinConfig($mixin)
+    {
+        return $this->baseDir . "/$mixin/mixin.config.php";
+    }
+
+    /**
      * Get the configuration file for the specified theme.
      *
      * @param string $theme Theme name
@@ -137,6 +149,26 @@ class ThemeInfo
     }
 
     /**
+     * Load configuration for the specified theme (and its mixins, if any) into the
+     * allThemeInfo property.
+     *
+     * @param string $theme Name of theme to load
+     *
+     * @return void
+     */
+    protected function loadThemeConfig($theme)
+    {
+        // Load theme configuration...
+        $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        // ..and if there are mixins, load those too!
+        if (isset($this->allThemeInfo[$theme]['mixins'])) {
+            foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
+                $this->allThemeInfo[$mix] = include $this->getMixinConfig($mix);
+            }
+        }
+    }
+
+    /**
      * Get all the configuration details related to the current theme.
      *
      * @return array
@@ -149,8 +181,7 @@ class ThemeInfo
             $this->allThemeInfo = [];
             $currentTheme = $this->getTheme();
             do {
-                $this->allThemeInfo[$currentTheme]
-                    = include $this->getThemeConfig($currentTheme);
+                $this->loadThemeConfig($currentTheme);
                 $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
             } while ($currentTheme);
         }
@@ -180,16 +211,21 @@ class ThemeInfo
         $allThemeInfo = $this->getThemeInfo();
 
         while (!empty($currentTheme)) {
-            foreach ($allPaths as $currentPath) {
-                $file = "$basePath/$currentTheme/$currentPath";
-                if (file_exists($file)) {
-                    if (true === $returnType) {
-                        return $file;
-                    } else if (self::RETURN_ALL_DETAILS === $returnType) {
-                        return ['path' => $file, 'theme' => $currentTheme];
+            $currentThemeSet = array_merge(
+                (array) $currentTheme,
+                isset($allThemeInfo[$currentTheme]['mixins'])
+                    ? $allThemeInfo[$currentTheme]['mixins'] : []
+            );
+            foreach ($currentThemeSet as $theme) {
+                foreach ($allPaths as $currentPath) {
+                    $path = "$basePath/$theme/$currentPath";
+                    if (file_exists($path)) {
+                        // Depending on return type, send back the requested data:
+                        if (self::RETURN_ALL_DETAILS === $returnType) {
+                            return compact('path', 'theme');
+                        }
+                        return $returnType ? $path : $theme;
                     }
-                    // Default return type:
-                    return $currentTheme;
                 }
             }
             $currentTheme = $allThemeInfo[$currentTheme]['extends'];

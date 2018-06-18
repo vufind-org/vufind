@@ -124,7 +124,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $current Name chunk to examine.
      *
-     * @return boolean        Should we use this as a name?
+     * @return bool           Should we use this as a name?
      */
     protected function isUsefulNameChunk($current)
     {

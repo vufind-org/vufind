@@ -75,10 +75,15 @@ class SearchRunner
      * Constructor
      *
      * @param ResultsManager $resultsManager Results manager
+     * @param EventManager   $events         Event manager (optional)
      */
-    public function __construct(ResultsManager $resultsManager)
-    {
+    public function __construct(ResultsManager $resultsManager,
+        EventManager $events = null
+    ) {
         $this->resultsManager = $resultsManager;
+        if (null !== $events) {
+            $this->setEventManager($events);
+        }
     }
 
     /**

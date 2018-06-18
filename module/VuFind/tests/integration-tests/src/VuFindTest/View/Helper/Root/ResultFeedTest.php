@@ -59,22 +59,23 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
-        $currentPath = $this->getMock('VuFind\View\Helper\Root\CurrentPath');
+        $currentPath = $this->createMock('VuFind\View\Helper\Root\CurrentPath');
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMock(
-            'VuFind\View\Helper\Root\RecordLink', [],
-            [new \VuFind\Record\Router(
-                $this->getServiceManager()->get('VuFind\RecordLoader'),
-                new \Zend\Config\Config([])
-            )
-            ]
-        );
+        $recordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+            ->setConstructorArgs(
+                [
+                    new \VuFind\Record\Router(
+                        $this->getServiceManager()->get('VuFind\RecordLoader'),
+                        new \Zend\Config\Config([])
+                    )
+                ]
+            )->getMock();
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
-        $serverUrl = $this->getMock('Zend\View\Helper\ServerUrl');
+        $serverUrl = $this->createMock('Zend\View\Helper\ServerUrl');
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 
@@ -83,6 +84,21 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             'recordlink' => $recordLink,
             'serverurl' => $serverUrl
         ];
+    }
+
+    /**
+     * Mock out the translator.
+     *
+     * @return \Zend\I18n\Translator\TranslatorInterface
+     */
+    protected function getMockTranslator()
+    {
+        $mock = $this->getMockBuilder('Zend\I18n\Translator\TranslatorInterface')
+            ->getMock();
+        $mock->expects($this->at(1))->method('translate')
+            ->with($this->equalTo('showing_results_of_html'), $this->equalTo('default'))
+            ->will($this->returnValue('Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>'));
+        return $mock;
     }
 
     /**
@@ -106,6 +122,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
+        $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper->__invoke($results, '/test/path');
         $this->assertTrue(is_object($feed));
@@ -120,7 +137,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Zend\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            'Showing 1-2 of 2', $parsedFeed->getDescription()
+            'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;

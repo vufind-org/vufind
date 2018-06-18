@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\SolrAuth;
+use VuFind\Record\Loader;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Solr Authority Search Parameters
@@ -41,12 +43,15 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
      */
-    public function __construct(\VuFind\Search\Base\Params $params)
-    {
-        parent::__construct($params);
+    public function __construct(\VuFind\Search\Base\Params $params,
+        SearchService $searchService, Loader $recordLoader
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
         $this->backendId = 'SolrAuth';
     }
 }

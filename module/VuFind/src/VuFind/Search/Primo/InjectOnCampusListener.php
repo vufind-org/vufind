@@ -57,7 +57,7 @@ class InjectOnCampusListener
     /**
      * Is user on campus or not?
      *
-     * @var boolean
+     * @var bool
      */
     protected $isOnCampus;
 
@@ -101,7 +101,7 @@ class InjectOnCampusListener
     /**
      * Determines, which value is needed for the onCampus parameter
      *
-     * @return boolean
+     * @return bool
      */
     protected function getOnCampus()
     {

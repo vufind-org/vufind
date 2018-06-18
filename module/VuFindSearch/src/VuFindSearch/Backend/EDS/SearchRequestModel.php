@@ -112,7 +112,7 @@ class SearchRequestModel
     /**
      * Whether or not to highlight the search term in the results.
      *
-     * @var boolean
+     * @var bool
      */
     protected $highlight;
 
@@ -271,7 +271,7 @@ class SearchRequestModel
      * @param string $valueToCheck    Value to check the ending characters of
      * @param string $valueToCheckFor Characters to check for
      *
-     * @return boolean
+     * @return bool
      */
     protected static function endsWith($valueToCheck, $valueToCheckFor)
     {

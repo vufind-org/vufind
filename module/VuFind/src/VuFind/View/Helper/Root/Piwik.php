@@ -53,6 +53,13 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $siteId;
 
     /**
+     * Search prefix (see config.ini for details)
+     *
+     * @var string
+     */
+    protected $searchPrefix;
+
+    /**
      * Whether to track use custom variables to track additional information
      *
      * @var bool
@@ -88,26 +95,42 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $params;
 
     /**
+     * A timestamp used to identify the init function to avoid name clashes when
+     * opening lightboxes.
+     *
+     * @var int
+     */
+    protected $timestamp;
+
+    /**
      * Constructor
      *
      * @param string|bool                      $url        Piwik address
      * (false if disabled)
-     * @param int                              $siteId     Piwik site ID
+     * @param int|array                        $options    Options array (or,
+     * if a single value, the Piwik site ID -- for backward compatibility)
      * @param bool                             $customVars Whether to track
      * additional information in custom variables
      * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
      * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
-    public function __construct($url, $siteId, $customVars, $router, $request)
+    public function __construct($url, $options, $customVars, $router, $request)
     {
         $this->url = $url;
         if ($url && substr($url, -1) != '/') {
             $this->url .= '/';
         }
-        $this->siteId = $siteId;
+        if (is_array($options)) {
+            $this->siteId = $options['siteId'];
+            $this->searchPrefix = isset($options['searchPrefix'])
+                ? $options['searchPrefix'] : '';
+        } else {
+            $this->siteId = $options;
+        }
         $this->customVars = $customVars;
         $this->router = $router;
         $this->request = $request;
+        $this->timestamp = round(microtime(true) * 1000);
     }
 
     /**
@@ -235,10 +258,13 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
+        if ('layout/lightbox' === $viewModel->getCurrent()->getTemplate()) {
+            return null;
+        }
         $children = $viewModel->getCurrent()->getChildren();
         if (isset($children[0])) {
             $template = $children[0]->getTemplate();
-            if (!strstr($template, '/home')) {
+            if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
                 $results = $children[0]->getVariable('results');
                 if (is_a($results, 'VuFind\Search\Base\Results')) {
                     return $results;
@@ -257,7 +283,11 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getCombinedSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
-        $children = $viewModel->getCurrent()->getChildren();
+        $current = $viewModel->getCurrent();
+        if (null === $current) {
+            return null;
+        }
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $results = $children[0]->getVariable('combinedResults');
             if (is_array($results)) {
@@ -387,14 +417,15 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode()
     {
+        $escape = $this->getView()->plugin('escapejs');
         return <<<EOT
 
-function initVuFindPiwikTracker(){
+function initVuFindPiwikTracker{$this->timestamp}(){
     var VuFindPiwikTracker = Piwik.getTracker();
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
     VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl('{$this->getCustomUrl()}');
+    VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
 
 EOT;
     }
@@ -406,7 +437,7 @@ EOT;
      */
     protected function getCustomUrl()
     {
-        $path = $this->request->getUri()->getPath();
+        $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
@@ -432,11 +463,17 @@ EOT;
     VuFindPiwikTracker.enableLinkTracking();
 };
 (function(){
-var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.defer=true; g.async=true;
-    g.src='{$this->url}piwik.js';
-    g.onload=initVuFindPiwikTracker;
-s.parentNode.insertBefore(g,s); })();
+    if (typeof Piwik === 'undefined') {
+        var d=document, g=d.createElement('script'),
+            s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.defer=true; g.async=true;
+        g.src='{$this->url}piwik.js';
+        g.onload=initVuFindPiwikTracker{$this->timestamp};
+        s.parentNode.insertBefore(g,s);
+    } else {
+        initVuFindPiwikTracker{$this->timestamp}();
+    }
+})();
 EOT;
     }
 
@@ -489,7 +526,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        '$backendId|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}$backendId|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;
@@ -511,7 +548,7 @@ EOT;
         $searchType = $escape($params->getSearchType());
         $resultCount = 0;
         foreach ($combinedResults as $currentSearch) {
-            if ($currentSearch['ajax']) {
+            if (!empty($currentSearch['ajax'])) {
                 // Some results fetched via ajax, so report that we don't know the
                 // result count.
                 $resultCount = 'false';
@@ -524,7 +561,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        'Combined|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}Combined|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;

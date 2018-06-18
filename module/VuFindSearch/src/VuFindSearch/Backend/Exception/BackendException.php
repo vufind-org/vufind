@@ -75,7 +75,7 @@ class BackendException extends RuntimeException
      *
      * @param string $tag Tag
      *
-     * @return boolean
+     * @return bool
      */
     public function hasTag($tag)
     {

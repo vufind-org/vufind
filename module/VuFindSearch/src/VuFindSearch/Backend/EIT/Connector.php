@@ -103,8 +103,8 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * Execute a search.
      *
      * @param ParamBag $params Parameters
-     * @param integer  $offset Search offset
-     * @param integer  $limit  Search limit
+     * @param int      $offset Search offset
+     * @param int      $limit  Search limit
      *
      * @return array
      */

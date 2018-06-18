@@ -32,7 +32,7 @@ use Zend\Feed\Reader\Reader as FeedReader;
 /**
  * EuropeanaResults Recommendations Module
  *
- * This class provides recommendations by using the WorldCat Terminologies API.
+ * This class provides recommendations by using the Europeana API.
  *
  * @category VuFind
  * @package  Recommendations
@@ -139,7 +139,7 @@ class EuropeanaResults implements RecommendInterface,
         // Parse out parameters:
         $params = explode(':', $settings);
         $this->baseUrl = (isset($params[0]) && !empty($params[0]))
-            ? $params[0] : 'api.europeana.eu/api/opensearch.rss';
+            ? $params[0] : 'api.europeana.eu/api/v2/opensearch.rss';
         $this->requestParam = (isset($params[1]) && !empty($params[1]))
             ? $params[1] : 'searchTerms';
         $this->limit = isset($params[2]) && is_numeric($params[2])
@@ -231,7 +231,7 @@ class EuropeanaResults implements RecommendInterface,
             if (!empty($link)) {
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
-                    'link' => substr($link, 0, strpos($link, '.srw')) . '.html',
+                    'link' => $link,
                     'enclosure' => $value->getEnclosure()['url']
                 ];
             }

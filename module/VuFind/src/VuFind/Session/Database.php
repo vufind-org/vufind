@@ -55,7 +55,7 @@ class Database extends AbstractBase
                 ->readSession($sess_id, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sess_id);
-            return;
+            return '';
         }
     }
 

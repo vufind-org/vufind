@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * EIT Record Controller
@@ -43,8 +44,10 @@ class EITrecordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
         $this->accessPermission = 'access.EITModule';
@@ -52,7 +55,7 @@ class EITrecordController extends AbstractRecord
         $this->defaultTab = 'Description';
 
         // Call standard record controller initialization:
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -62,7 +65,7 @@ class EITrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EIT');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('EIT');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

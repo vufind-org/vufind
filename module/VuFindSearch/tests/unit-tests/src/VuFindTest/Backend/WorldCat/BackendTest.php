@@ -113,7 +113,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $fact = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
         $back = new Backend($conn, $fact);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -149,10 +149,10 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
-            'VuFindSearch\Backend\WorldCat\Connector',
-            $mock, ['fake', $client]
-        );
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->getMockBuilder('VuFindSearch\Backend\WorldCat\Connector')
+            ->setMethods($mock)
+            ->setConstructorArgs(['fake', $client])
+            ->getMock();
     }
 }

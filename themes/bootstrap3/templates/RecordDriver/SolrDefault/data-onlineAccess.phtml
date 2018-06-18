@@ -1,0 +1,14 @@
+<?
+  $openUrl = $this->openUrl($this->driver, 'record');
+  $openUrlActive = $openUrl->isActive();
+  // Account for replace_other_urls setting
+  $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+?>
+<? if (!empty($urls) || $openUrlActive): ?>
+  <? foreach ($urls as $current): ?>
+    <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+  <? endforeach; ?>
+  <? if ($openUrlActive): ?>
+    <?=$openUrl->renderTemplate()?><br/>
+  <? endif; ?>
+<? endif; ?>

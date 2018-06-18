@@ -12,9 +12,9 @@
     <whitelist addUncoveredFilesFromWhitelist="true">
       <directory suffix=".php">../src/VuFind</directory>
       <directory suffix=".php">../../VuFindAdmin/src</directory>
+      <directory suffix=".php">../../VuFindApi/src</directory>
       <directory suffix=".php">../../VuFindConsole/src</directory>
       <directory suffix=".php">../../VuFindDevTools/src</directory>
-      <directory suffix=".php">../../VuFindHttp/src</directory>
       <directory suffix=".php">../../VuFindSearch/src</directory>
       <directory suffix=".php">../../VuFindTheme/src</directory>
     </whitelist>

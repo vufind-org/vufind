@@ -84,7 +84,7 @@ class ClaviusSQL extends AbstractBase
     /**
      * How many days is new document hidden in catalog
      *
-     * @var integer
+     * @var int
      */
     protected $hideNewItemsDays;
 

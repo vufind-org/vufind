@@ -105,7 +105,7 @@ class Innovative extends AbstractBase implements
         } else {
             // Return digits only.
             $id_ = substr($id, 1);
-        };
+        }
         return $id_;
     }
 

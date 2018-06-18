@@ -39,17 +39,6 @@ namespace VuFind\Search\Favorites;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
-     */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
-    {
-        parent::__construct($options, $configLoader);
-    }
-
-    /**
      * Add filters to the object based on values found in the request object.
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user

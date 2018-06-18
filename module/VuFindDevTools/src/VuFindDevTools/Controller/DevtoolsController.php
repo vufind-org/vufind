@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -43,6 +43,27 @@ use VuFindDevTools\LanguageHelper;
 class DevtoolsController extends \VuFind\Controller\AbstractBase
 {
     /**
+     * Fetch the query builder for the specified search backend. Return null if
+     * unavailable.
+     *
+     * @param string $id Backend ID
+     *
+     * @return object
+     */
+    protected function getQueryBuilder($id)
+    {
+        try {
+            $backend = $this->serviceLocator
+                ->get('VuFind\Search\BackendManager')
+                ->get($id);
+        } catch (\Exception $e) {
+            return null;
+        }
+        return is_callable([$backend, 'getQueryBuilder'])
+            ? $backend->getQueryBuilder() : null;
+    }
+
+    /**
      * Deminify action
      *
      * @return \Zend\View\Model\ViewModel
@@ -56,7 +77,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
             );
         }
         if (isset($view->results) && $view->results) {
@@ -66,19 +87,21 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
                 $view->backendParams = $params->getBackendParameters()
                     ->getArrayCopy();
             }
-            try {
-                $backend = $this->getServiceLocator()
-                    ->get('VuFind\Search\BackendManager')
-                    ->get($params->getSearchClassId());
-            } catch (\Exception $e) {
-                $backend = false;
-            }
-            if ($backend && is_callable([$backend, 'getQueryBuilder'])) {
-                $builder = $backend->getQueryBuilder();
+            if ($builder = $this->getQueryBuilder($params->getSearchClassId())) {
                 $view->queryParams = $builder->build($view->query)->getArrayCopy();
             }
         }
         return $view;
+    }
+
+    /**
+     * Home action
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function homeAction()
+    {
+        return $this->createViewModel();
     }
 
     /**

@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-
 use VuFind\Solr\Utils as SolrUtils;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * EDS Controller
  *
@@ -41,11 +42,13 @@ class EdsController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'EDS';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**
@@ -55,7 +58,7 @@ class EdsController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
@@ -87,9 +90,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel(
-            ['results' => $this->getHomePageFacets()]
-        );
+        return $this->createViewModel();
     }
 
     /**
@@ -106,7 +107,7 @@ class EdsController extends AbstractSearch
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
      *
-     * @return \VuFind\Search\EDS\Results
+     * @return array
      */
     protected function getAdvancedFacets()
     {
@@ -127,18 +128,6 @@ class EdsController extends AbstractSearch
         }
 
         return $availableLimiters;
-    }
-
-    /**
-     * Return a Search Results object containing homepage facet information.  This
-     * data may come from the cache.
-     *
-     * @return \VuFind\Search\EDS\Results
-     */
-    protected function getHomePageFacets()
-    {
-        // For now, we'll use the same fields as the advanced search screen.
-        return $this->getAdvancedFacets();
     }
 
     /**

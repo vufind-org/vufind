@@ -53,7 +53,7 @@ class FilterFieldConversionListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
-        $mock = $this->getMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),

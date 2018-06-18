@@ -8,14 +8,12 @@
     $accessLevel = $this->driver->getAccessLevel();
     $restrictedView = empty($accessLevel) ? false : true;
 ?>
-<div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-3 img-col">
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <div class="media-left medium img-col">
     <? if ($thumb): ?>
-        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
-      <div class="clearfix">
-        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-      </div>
+      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
     <? endif; ?>
     <? if ($pubType): ?>
       <p><?=$this->transEsc($pubType)?></p>
@@ -47,7 +45,7 @@
       <? endif; ?>
     </div>
   </div>
-  <div class="col-sm-9 info-col">
+  <div class="media-body info-col">
     <h3 property="name"><?=$this->driver->getTitle()?></h3>
 
     <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">

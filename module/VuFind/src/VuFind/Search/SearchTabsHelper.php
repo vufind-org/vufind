@@ -64,6 +64,13 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     protected $filterConfig;
 
     /**
+     * Tab permission configuration
+     *
+     * @var array
+     */
+    protected $permissionConfig;
+
+    /**
      * Request
      *
      * @var Request
@@ -77,14 +84,16 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param array         $tabConfig    Tab configuration
      * @param array         $filterConfig Tab filter configuration
      * @param Request       $request      Request
+     * @param array         $permConfig   Tab permission configuration
      */
     public function __construct(PluginManager $results, array $tabConfig,
-        array $filterConfig, Request $request
+        array $filterConfig, Request $request, array $permConfig = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
         $this->filterConfig = $filterConfig;
         $this->request = $request;
+        $this->permissionConfig = $permConfig;
     }
 
     /**
@@ -131,6 +140,16 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get the tab permissions
+     *
+     * @return array
+     */
+    public function getTabPermissionConfig()
+    {
+        return $this->permissionConfig;
+    }
+
+    /**
      * Extract search class name from a tab id
      *
      * @param string $tabId Tab id as defined in config.ini
@@ -150,7 +169,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param string $hiddenFilters Hidden filters
      * @param string $configFilters Filters from filter configuration
      *
-     * @return boolean
+     * @return bool
      */
     public function filtersMatch($class, $hiddenFilters, $configFilters)
     {
@@ -171,7 +190,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
         }
 
         $firstTab = null;
-        foreach ($this->tabConfig as $key => $label) {
+        foreach (array_keys($this->tabConfig) as $key) {
             $class = $this->extractClassName($key);
             if ($class == $searchClassId) {
                 if (null === $firstTab) {

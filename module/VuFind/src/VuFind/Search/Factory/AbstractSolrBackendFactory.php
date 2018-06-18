@@ -320,7 +320,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 'defaults' => ['fl' => '*,score'],
                 'appends'  => ['fq' => []],
             ],
-            'term' => [
+            'terms' => [
                 'functions' => ['terms'],
             ],
         ];

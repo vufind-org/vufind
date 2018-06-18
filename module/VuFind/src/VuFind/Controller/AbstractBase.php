@@ -32,6 +32,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\View\Model\ViewModel,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
@@ -59,6 +60,26 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
+     * Behavior when access is denied (used unless overridden through
+     * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
+     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * permissionBehavior.ini (normally 'promptLogin' unless changed).
+     *
+     * @var string
+     */
+    protected $accessDeniedBehavior = null;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        $this->setServiceLocator($sm);
+    }
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -67,15 +88,15 @@ class AbstractBase extends AbstractActionController
      */
     public function validateAccessPermission(MvcEvent $e)
     {
-        // Make sure the current user has permission to access the module:
-        if ($this->accessPermission
-            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
-        ) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, [], false));
-                return;
+        // If there is an access permission set for this controller, pass it
+        // through the permission helper, and if the helper returns a custom
+        // response, use that instead of the normal behavior.
+        if ($this->accessPermission) {
+            $response = $this->permission()
+                ->check($this->accessPermission, $this->accessDeniedBehavior);
+            if (is_object($response)) {
+                $e->setResponse($response);
             }
-            throw new ForbiddenException('Access denied.');
         }
     }
 
@@ -87,6 +108,7 @@ class AbstractBase extends AbstractActionController
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();
+
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();
@@ -94,15 +116,6 @@ class AbstractBase extends AbstractActionController
                 MvcEvent::EVENT_DISPATCH, [$this, 'validateAccessPermission'], 1000
             );
         }
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Placeholder so child classes can call parent::__construct() in case
-        // of future global behavior.
     }
 
     /**
@@ -114,9 +127,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        if ('lightbox' === $this->params()->fromPost(
-            'layout', $this->params()->fromQuery('layout', false)
-        )) {
+        $layout = $this->params()
+            ->fromPost('layout', $this->params()->fromQuery('layout', false));
+        if ('lightbox' === $layout) {
             $this->layout()->setTemplate('layout/lightbox');
         }
         return new ViewModel($params);
@@ -136,7 +149,7 @@ class AbstractBase extends AbstractActionController
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
         $view->editableSubject = isset($config->Mail->user_editable_subjects)
@@ -200,7 +213,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getAuthManager()
     {
-        return $this->getServiceLocator()->get('VuFind\AuthManager');
+        return $this->serviceLocator->get('VuFind\AuthManager');
     }
 
     /**
@@ -212,7 +225,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getAuthorizationService()
     {
-        return $this->getServiceLocator()
+        return $this->serviceLocator
             ->get('ZfcRbac\Service\AuthorizationService');
     }
 
@@ -223,7 +236,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getILSAuthenticator()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSAuthenticator');
+        return $this->serviceLocator->get('VuFind\ILSAuthenticator');
     }
 
     /**
@@ -243,7 +256,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getViewRenderer()
     {
-        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
+        return $this->serviceLocator->get('ViewRenderer');
     }
 
     /**
@@ -255,10 +268,10 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    protected function forceLogin($msg = null, $extras = [], $forward = true)
+    public function forceLogin($msg = null, $extras = [], $forward = true)
     {
         // Set default message if necessary.
-        if (is_null($msg)) {
+        if (null === $msg) {
             $msg = 'You must be logged in first';
         }
 
@@ -349,7 +362,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->getServiceLocator()->get('VuFind\Config')->get($id);
+        return $this->serviceLocator->get('VuFind\Config')->get($id);
     }
 
     /**
@@ -359,7 +372,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get('VuFind\ILSConnection');
     }
 
     /**
@@ -369,7 +382,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordLoader()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordLoader');
+        return $this->serviceLocator->get('VuFind\RecordLoader');
     }
 
     /**
@@ -379,7 +392,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordCache()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordCache');
+        return $this->serviceLocator->get('VuFind\RecordCache');
     }
 
     /**
@@ -389,7 +402,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordRouter()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordRouter');
+        return $this->serviceLocator->get('VuFind\RecordRouter');
     }
 
     /**
@@ -401,7 +414,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
             ->get($table);
     }
 
@@ -460,10 +473,10 @@ class AbstractBase extends AbstractActionController
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string  $submitElement Name of the post field of the submit button
-     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     * @param string $submitElement Name of the post field of the submit button
+     * @param bool   $useRecaptcha  Are we using captcha in this situation?
      *
-     * @return boolean
+     * @return bool
      */
     protected function formWasSubmitted($submitElement = 'submit',
         $useRecaptcha = false
@@ -512,7 +525,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function disableSessionWrites()
     {
-        $this->getServiceLocator()->get('VuFind\Session\Settings')->disableWrite();
+        $this->serviceLocator->get('VuFind\Session\Settings')->disableWrite();
     }
 
     /**
@@ -522,7 +535,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getSearchMemory()
     {
-        return $this->getServiceLocator()->get('VuFind\Search\Memory');
+        return $this->serviceLocator->get('VuFind\Search\Memory');
     }
 
     /**
@@ -532,7 +545,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function commentsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -543,7 +556,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function listsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -554,7 +567,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function tagsEnabled()
     {
-        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $check = $this->serviceLocator->get('VuFind\AccountCapabilities');
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -645,7 +658,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getRecordTabConfig()
     {
-        $cfg = $this->getServiceLocator()->get('Config');
+        $cfg = $this->serviceLocator->get('Config');
         return $cfg['vufind']['recorddriver_tabs'];
     }
 }

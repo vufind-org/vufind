@@ -1,0 +1,223 @@
+package org.vufind.index;
+/**
+ * Indexing routines using the UpdateDateTracker.
+ *
+ * Copyright (C) Villanova University 2017.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+import java.util.Iterator;
+import java.util.Set;
+import java.text.SimpleDateFormat;
+import org.solrmarc.index.SolrIndexer;
+import org.solrmarc.tools.SolrMarcIndexerException;
+import org.marc4j.marc.Record;
+import org.apache.log4j.Logger;
+
+/**
+ * Indexing routines using the UpdateDateTracker.
+ */
+public class UpdateDateTools
+{
+    // Initialize logging category
+    static Logger logger = Logger.getLogger(UpdateDateTools.class.getName());
+
+    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static 
+    // which given the rest of the design of SolrMarc will make them work correctly.
+    private SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
+    private SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
+
+    /**
+     * Support method for getLatestTransaction.
+     * @return Date extracted from 005 (or very old date, if unavailable)
+     */
+    private java.util.Date normalize005Date(String input)
+    {
+        // Normalize "null" strings to a generic bad value:
+        if (input == null) {
+            input = "null";
+        }
+
+        // Try to parse the date; default to "millisecond 0" (very old date) if we can't
+        // parse the data successfully.
+        java.util.Date retVal;
+        try {
+            retVal = marc005date.parse(input);
+        } catch(java.text.ParseException e) {
+            retVal = new java.util.Date(0);
+        }
+        return retVal;
+    }
+
+    /**
+     * Support method for getLatestTransaction.
+     * @return Date extracted from 008 (or very old date, if unavailable)
+     */
+    private java.util.Date normalize008Date(String input)
+    {
+        // Normalize "null" strings to a generic bad value:
+        if (input == null || input.length() < 6) {
+            input = "null";
+        }
+
+        // Try to parse the date; default to "millisecond 0" (very old date) if we can't
+        // parse the data successfully.
+        java.util.Date retVal;
+        try {
+            retVal = marc008date.parse(input.substring(0, 6));
+        } catch(java.lang.StringIndexOutOfBoundsException e) {
+            retVal = new java.util.Date(0);
+        } catch(java.text.ParseException e) {
+            retVal = new java.util.Date(0);
+        }
+        return retVal;
+    }
+
+    /**
+     * Extract the latest transaction date from the MARC record.  This is useful
+     * for detecting when a record has changed since the last time it was indexed.
+     *
+     * @param record MARC record
+     * @return Latest transaction date.
+     */
+    public java.util.Date getLatestTransaction(Record record) {
+        // First try the 005 -- this is most likely to have a precise transaction date:
+        Set<String> dates = SolrIndexer.instance().getFieldList(record, "005");
+        if (dates != null) {
+            Iterator<String> dateIter = dates.iterator();
+            if (dateIter.hasNext()) {
+                return normalize005Date(dateIter.next());
+            }
+        }
+
+        // No luck with 005?  Try 008 next -- less precise, but better than nothing:
+        dates = SolrIndexer.instance().getFieldList(record, "008");
+        if (dates != null) {
+            Iterator<String> dateIter = dates.iterator();
+            if (dateIter.hasNext()) {
+                return normalize008Date(dateIter.next());
+            }
+        }
+
+        // If we got this far, we couldn't find a valid value; return an arbitrary date:
+        return new java.util.Date(0);
+    }
+
+
+    /**
+     * Update the index date in the database for the specified core/ID pair.  We
+     * maintain a database of "first/last indexed" times separately from Solr to
+     * allow the history of our indexing activity to be stored permanently in a
+     * fashion that can survive even a total Solr rebuild.
+     */
+    public void updateTracker(String core, String id, java.util.Date latestTransaction)
+    {
+        // Update the database (if necessary):
+        try {
+            UpdateDateTracker.instance().index(core, id, latestTransaction);
+        } catch (java.sql.SQLException e) {
+            // If we're in the process of shutting down, an error is expected:
+            if (!DatabaseManager.instance().isShuttingDown()) {
+                dieWithError("Unexpected database error");
+            }
+        }
+    }
+
+    /**
+     * Get the "first indexed" date for the current record.  (This is the first
+     * time that SolrMarc ever encountered this particular record).
+     *
+     * @param record current MARC record
+     * @param fieldSpec fields / subfields to be analyzed
+     * @param core core name
+     * @return ID string
+     */
+    public String getFirstIndexed(Record record, String fieldSpec, String core) {
+        // Update the database, then send back the first indexed date:
+        updateTracker(core, SolrIndexer.instance().getFirstFieldVal(record, fieldSpec), getLatestTransaction(record));
+        return UpdateDateTracker.instance().getFirstIndexed();
+    }
+
+    /**
+     * Get the "first indexed" date for the current record.  (This is the first
+     * time that SolrMarc ever encountered this particular record).
+     *
+     * @param record current MARC record
+     * @param fieldSpec fields / subfields to be analyzed
+     * @return ID string
+     */
+    public String getFirstIndexed(Record record, String fieldSpec) {
+        return getFirstIndexed(record, fieldSpec, "biblio");
+    }
+
+    /**
+     * Get the "first indexed" date for the current record.  (This is the first
+     * time that SolrMarc ever encountered this particular record).
+     *
+     * @param record current MARC record
+     * @return ID string
+     */
+    public String getFirstIndexed(Record record) {
+        return getFirstIndexed(record, "001", "biblio");
+    }
+
+    /**
+     * Get the "last indexed" date for the current record.  (This is the last time
+     * the record changed from SolrMarc's perspective).
+     *
+     * @param record current MARC record
+     * @param fieldSpec fields / subfields to be analyzed
+     * @param core core name
+     * @return ID string
+     */
+    public String getLastIndexed(Record record, String fieldSpec, String core) {
+        // Update the database, then send back the last indexed date:
+        updateTracker(core, SolrIndexer.instance().getFirstFieldVal(record, fieldSpec), getLatestTransaction(record));
+        return UpdateDateTracker.instance().getLastIndexed();
+    }
+
+    /**
+     * Get the "last indexed" date for the current record.  (This is the last time
+     * the record changed from SolrMarc's perspective).
+     *
+     * @param record current MARC record
+     * @param fieldSpec fields / subfields to analyze
+     * @return ID string
+     */
+    public String getLastIndexed(Record record, String fieldSpec) {
+        return getLastIndexed(record, fieldSpec, "biblio");
+    }
+
+    /**
+     * Get the "last indexed" date for the current record.  (This is the last time
+     * the record changed from SolrMarc's perspective).
+     *
+     * @param record current MARC record
+     * @return ID string
+     */
+    public String getLastIndexed(Record record) {
+        return getLastIndexed(record, "001", "biblio");
+    }
+
+    /**
+     * Log an error message and throw a fatal exception.
+     * @param msg message to log
+     */
+    private void dieWithError(String msg)
+    {
+        logger.error(msg);
+        throw new SolrMarcIndexerException(SolrMarcIndexerException.EXIT, msg);
+    }
+}

@@ -70,7 +70,7 @@ class ConfigController extends AbstractAdmin
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            $this->getServiceLocator()->get('VuFind\Config')->reload('config');
+            $this->serviceLocator->get('VuFind\Config')->reload('config');
         } else {
             $this->flashMessenger()->addMessage(
                 'Could not enable auto-configuration; check permissions on '

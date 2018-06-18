@@ -72,6 +72,17 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
+     * Return the route name for the facet list action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getFacetListAction()
+    {
+        return 'web-facetlist';
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool

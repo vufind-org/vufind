@@ -6,6 +6,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2016.
+ * Copyright (C) The National Library of Finland 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,13 +19,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
 use VuFindTheme\ThemeInfo;
@@ -36,6 +38,7 @@ use VuFindTheme\ThemeInfo;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -89,6 +92,8 @@ trait ConcatTrait
      * @param stdClass $item Link element object
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getType($item)
     {
@@ -119,9 +124,9 @@ trait ConcatTrait
     /**
      * Check if config is enamled for this file type
      *
-     * @param string $config Config for current application environment
+     * @param string|bool $config Config for current application environment
      *
-     * @return boolean
+     * @return bool
      */
     protected function enabledInConfig($config)
     {
@@ -151,7 +156,7 @@ trait ConcatTrait
 
         $this->getContainer()->ksort();
 
-        foreach ($this as $key => $item) {
+        foreach ($this as $item) {
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,
@@ -192,7 +197,12 @@ trait ConcatTrait
      */
     protected function getResourceCacheDir()
     {
-        return $this->themeInfo->getBaseDir() . '/../local/cache/public/';
+        if (!defined('LOCAL_CACHE_DIR')) {
+            throw new \Exception(
+                'Asset pipeline feature depends on the LOCAL_CACHE_DIR constant.'
+            );
+        }
+        return LOCAL_CACHE_DIR . '/public/';
     }
 
     /**
@@ -221,18 +231,82 @@ trait ConcatTrait
         $filename = md5($group['key']) . '.min.' . $this->getFileType();
         $concatPath = $this->getResourceCacheDir() . $filename;
         if (!file_exists($concatPath)) {
-            $minifier = $this->getMinifier();
-            foreach ($group['items'] as $item) {
-                $details = $this->themeInfo->findContainingTheme(
-                    $this->getFileType() . '/' . $this->getResourceFilePath($item),
-                    ThemeInfo::RETURN_ALL_DETAILS
-                );
-                $minifier->add($details['path']);
+            $lockfile = "$concatPath.lock";
+            $handle = fopen($lockfile, 'c+');
+            if (!is_resource($handle)) {
+                throw new \Exception("Could not open lock file $lockfile");
             }
-            $minifier->minify($concatPath);
+            if (!flock($handle, LOCK_EX)) {
+                fclose($handle);
+                throw new \Exception("Could not lock file $lockfile");
+            }
+            // Check again if file exists after acquiring the lock
+            if (!file_exists($concatPath)) {
+                try {
+                    $this->createConcatenatedFile($concatPath, $group);
+                } catch (\Exception $e) {
+                    flock($handle, LOCK_UN);
+                    fclose($handle);
+                    throw $e;
+                }
+            }
+            flock($handle, LOCK_UN);
+            fclose($handle);
         }
 
         return $urlHelper('home') . 'cache/' . $filename;
+    }
+
+    /**
+     * Create a concatenated file from the given group of files
+     *
+     * @param string $concatPath Resulting file path
+     * @param array  $group      Object containing 'key' and stdobj file 'items'
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function createConcatenatedFile($concatPath, $group)
+    {
+        $data = [];
+        foreach ($group['items'] as $item) {
+            $details = $this->themeInfo->findContainingTheme(
+                $this->getFileType() . '/'
+                . $this->getResourceFilePath($item),
+                ThemeInfo::RETURN_ALL_DETAILS
+            );
+            $data[] = $this->getMinifiedData($details, $concatPath);
+        }
+        // Separate each file's data with a new line so that e.g. a file
+        // ending in a comment doesn't cause the next one to also get commented out.
+        file_put_contents($concatPath, implode("\n", $data));
+    }
+
+    /**
+     * Get minified data for a file
+     *
+     * @param array  $details    File details
+     * @param string $concatPath Target path for the resulting file (used in minifier
+     * for path mapping)
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getMinifiedData($details, $concatPath)
+    {
+        if ($this->isMinifiable($details['path'])) {
+            $minifier = $this->getMinifier();
+            $minifier->add($details['path']);
+            $data = $minifier->execute($concatPath);
+        } else {
+            $data = file_get_contents($details['path']);
+            if (false === $data) {
+                throw new \Exception(
+                    "Could not read file {$details['path']}"
+                );
+            }
+        }
+        return $data;
     }
 
     /**
@@ -284,6 +358,20 @@ trait ConcatTrait
     }
 
     /**
+     * Check if a file is minifiable i.e. does not have a pattern that denotes it's
+     * already minified
+     *
+     * @param string $filename File name
+     *
+     * @return bool
+     */
+    protected function isMinifiable($filename)
+    {
+        $basename = basename($filename);
+        return preg_match('/\.min\.(js|css)/', $basename) === 0;
+    }
+
+    /**
      * Can we use the asset pipeline?
      *
      * @return bool
@@ -291,8 +379,13 @@ trait ConcatTrait
     protected function isPipelineActive()
     {
         if ($this->usePipeline) {
-            $cacheDir = $this->getResourceCacheDir();
-            if (!is_writable($cacheDir)) {
+            try {
+                $cacheDir = $this->getResourceCacheDir();
+            } catch (\Exception $e) {
+                $this->usePipeline = $cacheDir = false;
+                error_log($e->getMessage());
+            }
+            if ($cacheDir && !is_writable($cacheDir)) {
                 $this->usePipeline = false;
                 error_log("Cannot write to $cacheDir; disabling asset pipeline.");
             }

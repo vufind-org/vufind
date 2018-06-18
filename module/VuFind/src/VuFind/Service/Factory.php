@@ -109,10 +109,24 @@ class Factory
             ? (bool)$config->Site->showBookBag : false;
         $size = isset($config->Site->bookBagMaxSize)
             ? $config->Site->bookBagMaxSize : 100;
+        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
+            ? $config->Site->bookbagTogglesInSearch : true;
         return new \VuFind\Cart(
             $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
-            $size, $active
+            $size, $active, $activeInSearch
         );
+    }
+
+    /**
+     * Construct the Channel Provider Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\ChannelProvider\PluginManager
+     */
+    public static function getChannelProviderPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'ChannelProvider');
     }
 
     /**
@@ -126,7 +140,7 @@ class Factory
     {
         $config = $sm->get('Config');
         return new \VuFind\Config\PluginManager(
-            new \Zend\ServiceManager\Config($config['vufind']['config_reader'])
+            $sm, $config['vufind']['config_reader']
         );
     }
 
@@ -205,6 +219,9 @@ class Factory
             && $config->Cookies->limit_by_path
         ) {
             $path = $sm->get('Request')->getBasePath();
+            if (empty($path)) {
+                $path = '/';
+            }
         }
         $secure = isset($config->Cookies->only_secure)
             ? $config->Cookies->only_secure
@@ -212,7 +229,12 @@ class Factory
         $domain = isset($config->Cookies->domain)
             ? $config->Cookies->domain
             : null;
-        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
+        $session_name = isset($config->Cookies->session_name)
+            ? $config->Cookies->session_name
+            : null;
+        return new \VuFind\Cookie\CookieManager(
+            $_COOKIE, $path, $domain, $secure, $session_name
+        );
     }
 
     /**
@@ -270,6 +292,18 @@ class Factory
     }
 
     /**
+     * Construct the Db\Row Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Db\Row\PluginManager
+     */
+    public static function getDbRowPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Db\Row');
+    }
+
+    /**
      * Construct the Db\Table Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -310,9 +344,7 @@ class Factory
         $configKey = strtolower(str_replace('\\', '_', $ns));
         $config = $sm->get('Config');
         return new $className(
-            new \Zend\ServiceManager\Config(
-                $config['vufind']['plugin_managers'][$configKey]
-            )
+            $sm, $config['vufind']['plugin_managers'][$configKey]
         );
     }
 
@@ -479,21 +511,6 @@ class Factory
     }
 
     /**
-     * Construct the logger.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Log\Logger
-     */
-    public static function getLogger(ServiceManager $sm)
-    {
-        $logger = new \VuFind\Log\Logger();
-        $logger->setServiceLocator($sm);
-        $logger->setConfig($sm->get('VuFind\Config')->get('config'));
-        return $logger;
-    }
-
-    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.
@@ -532,17 +549,16 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
-            $siteKey, $secretKey, ['ssl' => true]
-        );
-        if (isset($config->Captcha->theme)) {
-            $recaptcha->setOption('theme', $config->Captcha->theme);
-        }
-        $translator = $sm->get('VuFind\Translator');
-        $recaptcha->setOption('lang', $translator->getLocale());
-
         $httpClient = $sm->get('VuFind\Http')->createClient();
-        $recaptcha->setHttpClient($httpClient);
+        $translator = $sm->get('VuFind\Translator');
+        $options = ['lang' => $translator->getLocale()];
+        if (isset($config->Captcha->theme)) {
+            $options['theme'] = $config->Captcha->theme;
+        }
+        $recaptcha = new \VuFind\Service\ReCaptcha(
+            $siteKey, $secretKey, ['ssl' => true], $options, null, $httpClient
+        );
+
         return $recaptcha;
     }
 
@@ -572,6 +588,38 @@ class Factory
             $sm->get('VuFind\Config')->get('RecordCache'),
             $sm->get('VuFind\DbTablePluginManager')->get('Record')
         );
+    }
+
+    /**
+     * Construct the PermissionDeniedManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionDeniedManager
+     */
+    public static function getPermissionDeniedManager(ServiceManager $sm)
+    {
+        return new \VuFind\Role\PermissionDeniedManager(
+            $sm->get('VuFind\Config')->get('permissionBehavior')
+        );
+    }
+
+    /**
+     * Construct the PermissionManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Role\PermissionManager
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+            $permManager = new \VuFind\Role\PermissionManager(
+                $sm->get('VuFind\Config')->get('permissions')->toArray()
+            );
+            $permManager->setAuthorizationService(
+                $sm->get('ZfcRbac\Service\AuthorizationService')
+            );
+            return $permManager;
     }
 
     /**
@@ -614,22 +662,6 @@ class Factory
         return new \VuFind\Record\Router(
             $sm->get('VuFind\RecordLoader'),
             $sm->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
-     * Construct the record stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Record
-     */
-    public static function getRecordStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Record(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
         );
     }
 
@@ -684,7 +716,7 @@ class Factory
         );
         $registry = $sm->createScopedServiceManager();
         $smConfig->configureServiceManager($registry);
-        $manager  = new \VuFind\Search\BackendManager($registry);
+        $manager = new \VuFind\Search\BackendManager($registry);
 
         return $manager;
     }
@@ -749,7 +781,22 @@ class Factory
     public static function getSearchRunner(ServiceManager $sm)
     {
         return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
+        );
+    }
+
+    /**
+     * Construct the search service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFindSearch\Service
+     */
+    public static function getSearchService(ServiceManager $sm)
+    {
+        return new \VuFindSearch\Service(
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
 
@@ -768,22 +815,6 @@ class Factory
     }
 
     /**
-     * Construct the search stats helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Search
-     */
-    public static function getSearchStats(ServiceManager $sm)
-    {
-        return new \VuFind\Statistics\Search(
-            $sm->get('VuFind\Config')->get('config'),
-            $sm->get('VuFind\StatisticsDriverPluginManager'),
-            $sm->get('VuFind\SessionManager')->getId()
-        );
-    }
-
-    /**
      * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -797,10 +828,12 @@ class Factory
             ? $config->SearchTabs->toArray() : [];
         $filterConfig = isset($config->SearchTabsFilters)
             ? $config->SearchTabsFilters->toArray() : [];
+        $permissionConfig = isset($config->SearchTabsPermissions)
+            ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
             $sm->get('VuFind\SearchResultsPluginManager'),
             $tabConfig, $filterConfig,
-            $sm->get('Application')->getRequest()
+            $sm->get('Application')->getRequest(), $permissionConfig
         );
     }
 
@@ -829,18 +862,6 @@ class Factory
             $sm->get('VuFind\Search\BackendManager'),
             $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
         );
-    }
-
-    /**
-     * Construct the Statistics\Driver Plugin Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Statistics\Driver\PluginManager
-     */
-    public static function getStatisticsDriverPluginManager(ServiceManager $sm)
-    {
-        return static::getGenericPluginManager($sm, 'Statistics\Driver');
     }
 
     /**
@@ -927,6 +948,20 @@ class Factory
         return new \VuFind\Connection\WorldCatUtils(
             isset($config->WorldCat) ? $config->WorldCat : null,
             $client, true, $ip
+        );
+    }
+
+    /**
+     * Construct the YAML reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\YamlReader
+     */
+    public static function getYamlReader(ServiceManager $sm)
+    {
+        return new \VuFind\Config\YamlReader(
+            $sm->get('VuFind\CacheManager')
         );
     }
 }

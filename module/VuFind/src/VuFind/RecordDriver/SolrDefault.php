@@ -199,9 +199,15 @@ class SolrDefault extends AbstractBase
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
      * @return array
      */
-    public function getAllSubjectHeadings()
+    public function getAllSubjectHeadings($extended = false)
     {
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
@@ -213,8 +219,10 @@ class SolrDefault extends AbstractBase
         // The Solr index doesn't currently store subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.  Other record
         // drivers (i.e. MARC) can offer this data in a more granular format.
-        $callback = function ($i) {
-            return [$i];
+        $callback = function ($i) use ($extended) {
+            return $extended
+                ? ['heading' => [$i], 'type' => '', 'source' => '']
+                : [$i];
         };
         return array_map($callback, array_unique($headings));
     }
@@ -240,6 +248,51 @@ class SolrDefault extends AbstractBase
     public function getAllRecordLinks()
     {
         return null;
+    }
+
+    /**
+     * Get Author Information with Associated Data Fields
+     *
+     * @param string $index      The author index [primary, corporate, or secondary]
+     * used to construct a method name for retrieving author data (e.g.
+     * getPrimaryAuthors).
+     * @param array  $dataFields An array of fields to used to construct method
+     * names for retrieving author-related data (e.g., if you pass 'role' the
+     * data method will be similar to getPrimaryAuthorsRoles). This value will also
+     * be used as a key associated with each author in the resulting data array.
+     *
+     * @return array
+     */
+    public function getAuthorDataFields($index, $dataFields = [])
+    {
+        $data = $dataFieldValues = [];
+
+        // Collect author data
+        $authorMethod = sprintf('get%sAuthors', ucfirst($index));
+        $authors = $this->tryMethod($authorMethod, [], []);
+
+        // Collect attribute data
+        foreach ($dataFields as $field) {
+            $fieldMethod = $authorMethod . ucfirst($field) . 's';
+            $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
+        }
+
+        // Match up author and attribute data (this assumes that the attribute
+        // arrays have the same indices as the author array; i.e. $author[$i]
+        // has $dataFieldValues[$attribute][$i].
+        foreach ($authors as $i => $author) {
+            if (!isset($data[$author])) {
+                $data[$author] = [];
+            }
+
+            foreach ($dataFieldValues as $field => $dataFieldValue) {
+                if (!empty($dataFieldValue[$i])) {
+                    $data[$author][$field][] = $dataFieldValue[$i];
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -420,29 +473,23 @@ class SolrDefault extends AbstractBase
      * Deduplicate author information into associative array with main/corporate/
      * secondary keys.
      *
+     * @param array $dataFields An array of extra data fields to retrieve (see
+     * getAuthorDataFields)
+     *
      * @return array
      */
-    public function getDeduplicatedAuthors()
+    public function getDeduplicatedAuthors($dataFields = ['role'])
     {
-        $authors = [
-            'main' => $this->getAuthorRolesArray(
-                $this->getPrimaryAuthors(),
-                $this->getPrimaryAuthorsRoles()
-            ),
-            'corporate' => $this->getAuthorRolesArray(
-                $this->getCorporateAuthors(),
-                $this->getCorporateAuthorsRoles()
-            ),
-            'secondary' => $this->getAuthorRolesArray(
-                $this->getSecondaryAuthors(),
-                $this->getSecondaryAuthorsRoles()
-            )
-        ];
+        $authors = [];
+        foreach (['primary', 'secondary', 'corporate'] as $type) {
+            $authors[$type] = $this->getAuthorDataFields($type, $dataFields);
+        }
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
             if (!empty($array1) && !empty($array2)) {
-                foreach ($array1 as $author => $roles) {
+                $keys = array_keys($array1);
+                foreach ($keys as $author) {
                     if (isset($array2[$author])) {
                         $array1[$author] = array_merge(
                             $array1[$author],
@@ -454,50 +501,25 @@ class SolrDefault extends AbstractBase
             }
         };
 
-        $dedup($authors['main'], $authors['corporate']);
+        $dedup($authors['primary'], $authors['corporate']);
         $dedup($authors['secondary'], $authors['corporate']);
-        $dedup($authors['main'], $authors['secondary']);
+        $dedup($authors['primary'], $authors['secondary']);
 
-        $dedup_roles = function (&$array) {
-            foreach ($array as $author => $roles) {
-                if (is_array($roles)) {
-                    $array[$author] = array_unique($roles);
+        $dedup_data = function (&$array) {
+            foreach ($array as $author => $data) {
+                foreach ($data as $field => $values) {
+                    if (is_array($values)) {
+                        $array[$author][$field] = array_unique($values);
+                    }
                 }
             }
         };
 
-        $dedup_roles($authors['main']);
-        $dedup_roles($authors['secondary']);
-        $dedup_roles($authors['corporate']);
+        $dedup_data($authors['primary']);
+        $dedup_data($authors['secondary']);
+        $dedup_data($authors['corporate']);
 
         return $authors;
-    }
-
-    /**
-     * Helper function to restructure author arrays including relators
-     *
-     * @param array $authors Array of authors
-     * @param array $roles   Array with relators of authors
-     *
-     * @return array
-     */
-    protected function getAuthorRolesArray($authors = [], $roles = [])
-    {
-        $authorRolesArray = [];
-
-        if (!empty($authors)) {
-            foreach ($authors as $index => $author) {
-                if (!isset($authorRolesArray[$author])) {
-                    $authorRolesArray[$author] = [];
-                }
-                if (isset($roles[$index]) && !empty($roles[$index])
-                ) {
-                    $authorRolesArray[$author][] = $roles[$index];
-                }
-            }
-        }
-
-        return $authorRolesArray;
     }
 
     /**
@@ -630,7 +652,7 @@ class SolrDefault extends AbstractBase
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
-                    if (!in_array($key, $this->forbiddenSnippetFields)) {
+                    if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
                             'caption' => $this->getSnippetCaption($key)
@@ -1176,7 +1198,7 @@ class SolrDefault extends AbstractBase
     public function getRealTimeHoldings()
     {
         // Not supported by the Solr index -- implement in child classes.
-        return [];
+        return ['holdings' => []];
     }
 
     /**
@@ -1327,7 +1349,9 @@ class SolrDefault extends AbstractBase
             'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
             'callnumber' => $this->getCallNumber(),
             'size'       => $size,
-            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8'),
+            'recordid'   => $this->getUniqueID(),
+            'source'   => $this->getSourceIdentifier(),
         ];
         if ($isbn = $this->getCleanISBN()) {
             $arr['isbn'] = $isbn;
@@ -1797,17 +1821,6 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude text (or false if not available).
-     *
-     * @return string|bool
-     */
-    public function getLongLat()
-    {
-        return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : false;
-    }
-
-    /**
      * Get schema.org type mapping, an array of sub-types of
      * http://schema.org/CreativeWork, defaulting to CreativeWork
      * itself if nothing else matches.
@@ -1900,7 +1913,10 @@ class SolrDefault extends AbstractBase
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );
-        return $this->searchService->search('Solr', $query, 0, 0)->getTotal();
+        // Disable highlighting for efficiency; not needed here:
+        $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+        return $this->searchService->search('Solr', $query, 0, 0, $params)
+            ->getTotal();
     }
 
     /**
@@ -1913,5 +1929,38 @@ class SolrDefault extends AbstractBase
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
+    }
+
+    /**
+     * Get the bbox-geo variable.
+     *
+     * @return array
+     */
+    public function getGeoLocation()
+    {
+        return isset($this->fields['long_lat'])
+            ? $this->fields['long_lat'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) coordinates
+     *
+     * @return array
+     */
+    public function getDisplayCoordinates()
+    {
+        return isset($this->fields['long_lat_display'])
+            ? $this->fields['long_lat_display'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) labels
+     *
+     * @return array
+     */
+    public function getCoordinateLabels()
+    {
+        return isset($this->fields['long_lat_label'])
+            ? $this->fields['long_lat_label'] : [];
     }
 }

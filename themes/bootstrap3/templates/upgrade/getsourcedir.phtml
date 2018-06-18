@@ -10,7 +10,7 @@
 <h3>Option 1: Upgrade from VuFind 1.x</h3>
 <p>Please enter the full path of the directory containing your previous version of VuFind (e.g. /usr/local/vufind):</p>
 <form class="form-inline" method="post" action="<?=$this->url('upgrade-getsourcedir')?>">
-  <input type="text" name="sourcedir" /> <input class="btn btn-default" type="submit" />
+  <input type="text" name="sourcedir" /> <input class="btn btn-primary" type="submit" />
 </form>
 <hr />
 <h3>Option 2: Upgrade from VuFind 2.x or newer</h3>
@@ -25,5 +25,5 @@
     <label for="skip-<?=$this->escapeHtmlAttr($key)?>">Skip <?=$this->escapeHtml($value); ?> Upgrade</label><br />
   <? endforeach; ?>
   </p>
-  <input class="btn btn-default" type="submit" />
+  <input class="btn btn-primary" type="submit" />
 </form>

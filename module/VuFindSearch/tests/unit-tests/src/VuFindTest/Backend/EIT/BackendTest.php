@@ -128,7 +128,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $fact = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
         $back = new Backend($conn, $fact);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -164,11 +164,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->getMock('Zend\Http\Client');
-        return $this->getMock(
-            'VuFindSearch\Backend\EIT\Connector', $mock,
-            ['http://fake', $client, 'profile', 'pwd', 'dbs']
-        );
+        $client = $this->createMock('Zend\Http\Client');
+        return $this->getMockBuilder(__NAMESPACE__ . '\ConnectorMock')
+            ->setMethods($mock)
+            ->setConstructorArgs(['http://fake', $client, 'profile', 'pwd', 'dbs'])
+            ->getMock();
     }
 
     /**
@@ -184,5 +184,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             return $driver;
         };
         return new \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory($callback);
+    }
+}
+
+class ConnectorMock extends \VuFindSearch\Backend\EIT\Connector
+{
+    public function call($method = 'GET', $params = null)
+    {
     }
 }

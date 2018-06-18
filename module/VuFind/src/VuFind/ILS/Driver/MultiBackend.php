@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2012-2016.
+ * Copyright (C) The National Library of Finland 2012-2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,9 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Multiple Backend Driver.
@@ -44,14 +42,11 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase
-    implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-
     /**
      * The array of configured driver names.
      *
@@ -97,21 +92,30 @@ class MultiBackend extends AbstractBase
     /**
      * ILS authenticator
      *
-     * @param \VuFind\Auth\ILSAuthenticator
+     * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuth;
+
+    /**
+     * ILS driver manager
+     *
+     * @var PluginManager
+     */
+    protected $driverManager;
 
     /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
+     * @param PluginManager                 $dm           ILS driver manager
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth
+        \VuFind\Auth\ILSAuthenticator $ilsAuth, PluginManager $dm
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
+        $this->driverManager = $dm;
     }
 
     /**
@@ -211,6 +215,12 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
+            // If the patron belongs to another source, just pass on an empty array
+            // to indicate that the patron has logged in but is not available for the
+            // current catalog.
+            if ($patron && $this->getSource($patron['cat_username']) !== $source) {
+                $patron = [];
+            }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
                 $this->stripIdPrefixes($patron, $source)
@@ -550,9 +560,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyStorageRetrievalRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -573,7 +584,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -604,7 +617,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -701,21 +716,27 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $id     BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $id          BIB ID
+     * @param array $patron      Patron information returned by the patronLogin
      * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups($id, $patron)
+    public function getRequestGroups($id, $patron, $holdDetails = null)
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($patron['cat_username']) != $source
                 || !$this->methodSupported(
-                    $driver, 'getRequestGroups', compact('id', 'patron')
+                    $driver,
+                    'getRequestGroups',
+                    compact('id', 'patron', 'holdDetails')
                 )
             ) {
                 // Return empty array since the sources don't match or the method
@@ -724,7 +745,8 @@ class MultiBackend extends AbstractBase
             }
             $groups = $driver->getRequestGroups(
                 $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
             );
             return $groups;
         }
@@ -942,7 +964,9 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return bool True if request is valid, false if not
+     * @return mixed An array of data on the request including
+     * whether or not it is valid and a status message. Alternatively a boolean
+     * true if request is valid, false if not.
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1065,9 +1089,10 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported(
+            $supported = $this->methodSupported(
                 $driver, 'getMyILLRequests', compact('patron')
-            )) {
+            );
+            if (!$supported) {
                 // Return empty array if not supported by the driver
                 return [];
             }
@@ -1164,6 +1189,58 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getRequestBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $supported = $this->methodSupported(
+                $driver, 'getRequestBlocks', compact('patron')
+            );
+            if (!$supported) {
+                return false;
+            }
+            return $driver->getRequestBlocks(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $supported = $this->methodSupported(
+                $driver, 'getAccountBlocks', compact('patron')
+            );
+            if (!$supported) {
+                return false;
+            }
+            return $driver->getAccountBlocks(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
@@ -1254,7 +1331,7 @@ class MultiBackend extends AbstractBase
      *
      * @param string $id The id to be split
      *
-     * @return string  Source
+     * @return string Source
      */
     protected function getSource($id)
     {
@@ -1263,7 +1340,6 @@ class MultiBackend extends AbstractBase
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Could not find source id in '$id'");
         return '';
     }
 
@@ -1296,9 +1372,6 @@ class MultiBackend extends AbstractBase
                 return $source;
             }
         }
-        $this->debug(
-            'Could not find source id in params: ' . print_r($params, true)
-        );
         return '';
     }
 
@@ -1350,7 +1423,7 @@ class MultiBackend extends AbstractBase
             $this->error("No configuration found for source '$source'");
             return null;
         }
-        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst = clone($this->driverManager->get($driver));
         $driverInst->setConfig($config);
         $driverInst->init();
         return $driverInst;

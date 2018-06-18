@@ -110,7 +110,7 @@ class Recaptcha extends AbstractPlugin
     /**
      * Pull the captcha field from POST and check them for accuracy
      *
-     * @return boolean
+     * @return bool
      */
     public function validate()
     {
@@ -141,7 +141,7 @@ class Recaptcha extends AbstractPlugin
      *
      * @param string $domain The specific config term are we checking; ie. "sms"
      *
-     * @return boolean
+     * @return bool
      */
     public function active($domain = false)
     {

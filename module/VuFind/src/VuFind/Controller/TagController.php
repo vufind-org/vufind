@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Tag Controller
@@ -41,11 +42,13 @@ class TagController extends AbstractSearch
 {
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'Tags';
-        parent::__construct();
+        parent::__construct($sm);
     }
 
     /**

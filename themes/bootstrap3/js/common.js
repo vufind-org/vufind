@@ -1,5 +1,5 @@
-/*global isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
+/*global grecaptcha, isPhoneNumberValid */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -37,8 +37,17 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var translate = function translate(op) {
-    return _translations[op] || op;
+  var translate = function translate(op, _replacements) {
+    var replacements = _replacements || [];
+    var translation = _translations[op] || op;
+    if (replacements) {
+      for (var key in replacements) {
+        if (replacements.hasOwnProperty(key)) {
+          translation = translation.replace(key, replacements[key]);
+        }
+      }
+    }
+    return translation;
   };
 
   /**
@@ -130,10 +139,30 @@ function lessFacets(id) {
   $('#more-' + id).removeClass('hidden');
   return false;
 }
+function getUrlRoot(url) {
+  // Parse out the base URL for the current record:
+  var urlroot = null;
+  var urlParts = url.split(/[?#]/);
+  var urlWithoutFragment = urlParts[0];
+  if (VuFind.path === '') {
+    // special case -- VuFind installed at site root:
+    var chunks = urlWithoutFragment.split('/');
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
+  } else {
+    // standard case -- VuFind has its own path under site:
+    var slashSlash = urlWithoutFragment.indexOf('//');
+    var pathInUrl = slashSlash > -1
+      ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
+      : urlWithoutFragment.indexOf(VuFind.path);
+    var parts = urlWithoutFragment.substring(pathInUrl + VuFind.path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
+  }
+  return urlroot;
+}
 function facetSessionStorage(e) {
   var source = $('#result0 .hiddenSource').val();
   var id = e.target.id;
-  var key = 'sidefacet-'+source+id;
+  var key = 'sidefacet-' + source + id;
   if (!sessionStorage.getItem(key)) {
     sessionStorage.setItem(key, document.getElementById(id).className);
   } else {
@@ -158,6 +187,24 @@ function phoneNumberFormHandler(numID, regionCode) {
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+}
+
+// Setup captchas after Google script loads
+function recaptchaOnLoad() {
+  if (typeof grecaptcha !== 'undefined') {
+    var captchas = $('.g-recaptcha:empty');
+    for (var i = 0; i < captchas.length; i++) {
+      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
+    }
+  }
+}
+function resetCaptcha($form) {
+  if (typeof grecaptcha !== 'undefined') {
+    var captcha = $form.find('.g-recaptcha');
+    if (captcha.length > 0) {
+      grecaptcha.reset(captcha.data('captchaId'));
+    }
   }
 }
 
@@ -195,55 +242,51 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').each(function autocompleteSetup(i, op) {
-    $(op).autocomplete({
-      maxResults: 10,
-      loadingString: VuFind.translate('loading') + '...',
-      handler: function vufindACHandler(input, cb) {
-        var query = input.val();
-        var searcher = extractClassParams(input);
-        var hiddenFilters = [];
-        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
-        });
-        $.fn.autocomplete.ajax({
-          url: VuFind.path + '/AJAX/JSON',
-          data: {
-            q: query,
-            method: 'getACSuggestions',
-            searcher: searcher.searcher,
-            type: searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters: hiddenFilters
-          },
-          dataType: 'json',
-          success: function autocompleteJSON(json) {
-            if (json.data.length > 0) {
-              var datums = [];
-              for (var j = 0; j < json.data.length; j++) {
-                datums.push(json.data[j]);
-              }
-              cb(datums);
-            } else {
-              cb([]);
+  $('#searchForm_lookfor').autocomplete({
+    maxResults: 10,
+    loadingString: VuFind.translate('loading') + '...',
+    handler: function vufindACHandler(input, cb) {
+      var query = input.val();
+      var searcher = extractClassParams(input);
+      var hiddenFilters = [];
+      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+        hiddenFilters.push($(this).val());
+      });
+      $.fn.autocomplete.ajax({
+        url: VuFind.path + '/AJAX/JSON',
+        data: {
+          q: query,
+          method: 'getACSuggestions',
+          searcher: searcher.searcher,
+          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
+          hiddenFilters: hiddenFilters
+        },
+        dataType: 'json',
+        success: function autocompleteJSON(json) {
+          if (json.data.length > 0) {
+            var datums = [];
+            for (var j = 0; j < json.data.length; j++) {
+              datums.push(json.data[j]);
             }
+            cb(datums);
+          } else {
+            cb([]);
           }
-        });
-      }
-    });
+        }
+      });
+    }
   });
   // Update autocomplete on type change
-  $('.searchForm_type').change(function searchTypeChange() {
-    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
-    $lookfor.autocomplete('clear cache');
+  $('#searchForm_type').change(function searchTypeChange() {
+    $('#searchForm_lookfor').autocomplete('clear cache');
   });
 }
 
 /**
  * Handle arrow keys to jump to next record
- * @returns {undefined}
  */
 function keyboardShortcuts() {
-  var $searchform = $('.searchForm_lookfor');
+  var $searchform = $('#searchForm_lookfor');
   if ($('.pager').length > 0) {
     $(window).keydown(function shortcutKeyDown(e) {
       if (!$searchform.is(':focus')) {
@@ -280,6 +323,48 @@ function keyboardShortcuts() {
   }
 }
 
+/**
+ * Setup facets
+ */
+function setupFacets() {
+  // Advanced facets
+  $('.facetAND a,.facetOR a').click(function facetBlocking() {
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+    window.location.assign($(this).attr('href'));
+  });
+
+  // Side facet status saving
+  $('.facet-group .collapse').each(function openStoredFacets(index, item) {
+    var source = $('#result0 .hiddenSource').val();
+    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+    if (storedItem) {
+      var saveTransition = $.support.transition;
+      try {
+        $.support.transition = false;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else {
+          $(item).collapse('hide');
+        }
+      } finally {
+        $.support.transition = saveTransition;
+      }
+    }
+  });
+  $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+}
+
+function setupIeSupport() {
+  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
+  // Cannot use conditional comments since IE 11 doesn't support them but still has
+  // the issue
+  var ua = window.navigator.userAgent;
+  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
+    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
+  }
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -295,10 +380,19 @@ $(document).ready(function commonDocReady() {
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
-    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    $('[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+    $form.find('.checkbox-select-all').prop('checked', this.checked);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
   });
   $('.checkbox-select-item').change(function selectAllDisable() {
-    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
+    var $form = this.form ? $(this.form) : $(this).closest('form');
+    if ($form.length === 0) {
+      return;
+    }
+    $form.find('.checkbox-select-all').prop('checked', false);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
   });
 
   // handle QR code links
@@ -330,25 +424,17 @@ $(document).ready(function commonDocReady() {
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
-  // Advanced facets
-  $('.facetOR').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
+  setupFacets();
 
-  // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-'+source+item.id);
-    if (storedItem) {
-      item.className = storedItem;
-      if (item.className.indexOf('in') < 0) {
-        $(item).siblings('.title').addClass('collapsed');
-      } else {
-        $(item).siblings('.title').removeClass('collapsed');
-      }
-    }
+  // retain filter sessionStorage
+  $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
+    sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
+    $('.applied-filter').prop('checked', this.checked);
   });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+  if (sessionStorage.getItem('vufind_retain_filters')) {
+    var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
+    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
+  }
+
+  setupIeSupport();
 });

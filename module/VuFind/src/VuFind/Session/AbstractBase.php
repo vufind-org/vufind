@@ -67,6 +67,16 @@ abstract class AbstractBase implements SaveHandlerInterface,
     protected $writesDisabled = false;
 
     /**
+     * Enable session writing (default)
+     *
+     * @return void
+     */
+    public function enableWrites()
+    {
+        $this->writesDisabled = false;
+    }
+
+    /**
      * Disable session writing, i.e. make it read-only
      *
      * @return void
@@ -133,8 +143,10 @@ abstract class AbstractBase implements SaveHandlerInterface,
      */
     public function destroy($sess_id)
     {
-        $table = $this->getTable('Search');
-        $table->destroySession($sess_id);
+        $searchTable = $this->getTable('Search');
+        $searchTable->destroySession($sess_id);
+        $sessionTable = $this->getTable('ExternalSession');
+        $sessionTable->destroySession($sess_id);
         return true;
     }
 

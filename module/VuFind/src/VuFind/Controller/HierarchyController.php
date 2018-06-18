@@ -89,7 +89,7 @@ class HierarchyController extends AbstractBase
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
-        $results = $this->getServiceLocator()
+        $results = $this->serviceLocator
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
@@ -120,7 +120,7 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
@@ -153,7 +153,7 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -183,7 +183,7 @@ class HierarchyController extends AbstractBase
     public function getrecordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
         try {
             $record = $loader->load($id);
             $result = $this->getViewRenderer()->record($record)

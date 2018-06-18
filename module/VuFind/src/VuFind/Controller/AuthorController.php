@@ -39,6 +39,21 @@ namespace VuFind\Controller;
 class AuthorController extends AbstractSearch
 {
     /**
+     * Returns a list of all items associated with one facet for the lightbox
+     *
+     * Parameters:
+     * facet        The facet to retrieve
+     * searchParams Facet search params from $results->getUrlQuery()->getParams()
+     *
+     * @return mixed
+     */
+    public function facetListAction()
+    {
+        $this->searchClassId = 'SolrAuthor';
+        return parent::facetListAction();
+    }
+
+    /**
      * Sets the configuration for displaying author results
      *
      * @return mixed
@@ -93,7 +108,7 @@ class AuthorController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }

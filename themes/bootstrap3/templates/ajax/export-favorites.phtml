@@ -3,7 +3,7 @@
     <?=$this->transEsc('export_success'); ?>&nbsp;&mdash;&nbsp;
     <a class="btn btn-primary" href="<?=$this->escapeHtmlAttr($this->url)?>"<?=$this->export()->needsRedirect($this->format) ? ' target="_blank"' : ''?>><?=
         $this->export()->needsRedirect($this->format)
-            ? $this->transEsc('export_redirect', array('%%service%%' => $this->translate($this->export()->getLabelForFormat($this->format))))
+            ? $this->transEsc('export_redirect', ['%%service%%' => $this->translate($this->export()->getLabelForFormat($this->format))])
             : $this->transEsc('export_download')
       ?></a>
   </div>

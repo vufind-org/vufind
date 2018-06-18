@@ -238,7 +238,7 @@ class ResourceContainer
      *
      * @param string $file Filename to check
      *
-     * @return boolean
+     * @return bool
      */
     protected function dynamicallyParsed($file)
     {
@@ -255,7 +255,7 @@ class ResourceContainer
      *
      * @param string $file Filename to remove
      *
-     * @return boolean
+     * @return bool
      */
     protected function removeCSS($file)
     {

@@ -39,17 +39,6 @@ namespace VuFind\Controller;
 trait HoldsTrait
 {
     /**
-     * Action for dealing with blocked holds.
-     *
-     * @return mixed
-     */
-    public function blockedholdAction()
-    {
-        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
-    /**
      * Action for dealing with holds.
      *
      * @return mixed
@@ -84,16 +73,23 @@ trait HoldsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkRequestIsValid(
+        $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
-            return $this->blockedholdAction();
+        );
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'hold_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
         $requestGroups = $catalog->checkCapability(
-            'getRequestGroups', [$driver->getUniqueID(), $patron]
-        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : [];
+            'getRequestGroups', [$driver->getUniqueID(), $patron, $gatheredDetails]
+        ) ? $catalog->getRequestGroups(
+            $driver->getUniqueID(), $patron, $gatheredDetails
+        ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : [];
 
@@ -114,18 +110,19 @@ trait HoldsTrait
         $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeHold'))) {
+        if (null !== $this->params()->fromPost('placeHold')) {
             // If the form contained a pickup location or request group, make sure
             // they are valid:
-            $valid = $this->holds()->validateRequestGroupInput(
+            $validGroup = $this->holds()->validateRequestGroupInput(
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
-            if (!$valid) {
+            $validPickup = $validGroup && $this->holds()->validatePickUpInput(
+                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
+            );
+            if (!$validGroup) {
                 $this->flashMessenger()
                     ->addMessage('hold_invalid_request_group', 'error');
-            } elseif (!$this->holds()->validatePickUpInput(
-                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
-            )) {
+            } elseif (!$validPickup) {
                 $this->flashMessenger()->addMessage('hold_invalid_pickup', 'error');
             } else {
                 // If we made it this far, we're ready to place the hold;
@@ -168,7 +165,7 @@ trait HoldsTrait
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup

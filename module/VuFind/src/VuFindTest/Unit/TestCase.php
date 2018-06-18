@@ -192,7 +192,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
-                'VuFind\Logger', $this->getMock('VuFind\Log\Logger')
+                'VuFind\Logger', $this->createMock('VuFind\Log\Logger')
             );
             $this->serviceManager->setService(
                 'VuFind\Http', new \VuFindHttp\HttpService()

@@ -165,7 +165,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     /**
      * Return true if current collection index is valid.
      *
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {

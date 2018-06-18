@@ -46,7 +46,7 @@ class UserComments extends AbstractBase
     protected $enabled;
 
     /**
-     * Is this tab enabled?
+     * Should we use ReCaptcha?
      *
      * @var bool
      */

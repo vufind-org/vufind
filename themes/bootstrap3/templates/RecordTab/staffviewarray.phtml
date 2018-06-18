@@ -7,7 +7,7 @@
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
       <td>
-        <? if (!is_array($values)) { $values = array($values); } ?>
+        <? if (!is_array($values)) { $values = [$values]; } ?>
         <? foreach ($values as $value): ?>
           <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
         <? endforeach; ?>

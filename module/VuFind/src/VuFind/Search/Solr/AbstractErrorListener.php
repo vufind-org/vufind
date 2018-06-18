@@ -90,7 +90,7 @@ abstract class AbstractErrorListener
      *
      * @param BackendInterface $backend Backend instance
      *
-     * @return boolean
+     * @return bool
      */
     public function listenForBackend(BackendInterface $backend)
     {

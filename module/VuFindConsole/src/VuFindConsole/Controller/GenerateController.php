@@ -50,11 +50,15 @@ class GenerateController extends AbstractBase
      */
     public function dynamicrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[3])) {
+        $request = $this->getRequest();
+        $route = $request->getParam('name');
+        $controller = $request->getParam('newController');
+        $action = $request->getParam('newAction');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [route] [controller] [action]"
-                . " [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate dynamicroute'
+                . ' [route] [controller] [action] [target_module]'
             );
             Console::writeLine(
                 "\troute - the route name (used by router), e.g. customList"
@@ -70,11 +74,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $route = $argv[0];
-        $controller = $argv[1];
-        $action = $argv[2];
-        $module = $argv[3];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -98,10 +97,13 @@ class GenerateController extends AbstractBase
     public function extendserviceAction()
     {
         // Display help message if parameters missing:
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $source = $request->getParam('source');
+        $target = $request->getParam('target');
+        if (empty($source) || empty($target)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [config_path] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate extendservice'
+                . ' [config_path] [target_module]'
             );
             Console::writeLine(
                 "\tconfig_path - the path to the service in the framework config"
@@ -112,9 +114,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $source = $argv[0];
-        $target = $argv[1];
 
         $parts = explode('/', $source);
         $partCount = count($parts);
@@ -166,10 +165,13 @@ class GenerateController extends AbstractBase
      */
     public function nontabrecordactionAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $action = $request->getParam('newAction');
+        $module = $request->getParam('module');
+        if (empty($action) || empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [action] [target_module]"
+                'Usage: ' . $request->getScriptName()
+                . ' generate nontabrecordaction [action] [target_module]'
             );
             Console::writeLine(
                 "\taction - new action to add"
@@ -180,9 +182,6 @@ class GenerateController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $action = $argv[0];
-        $module = $argv[1];
-
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
         $this->backUpFile($configPath);
@@ -191,17 +190,17 @@ class GenerateController extends AbstractBase
         $config = include $configPath;
 
         // Append the route
-        $mainConfig = $this->getServiceLocator()->get('Config');
+        $mainConfig = $this->serviceLocator->get('Config');
         foreach ($mainConfig['router']['routes'] as $key => $val) {
             if (isset($val['options']['route'])
-                && substr($val['options']['route'], -12) == '[:id[/:tab]]'
+                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
             ) {
                 $newRoute = $key . '-' . strtolower($action);
                 if (isset($mainConfig['router']['routes'][$newRoute])) {
                     Console::writeLine($newRoute . ' already exists; skipping.');
                 } else {
                     $val['options']['route'] = str_replace(
-                        '[:id[/:tab]]', "[:id]/$action", $val['options']['route']
+                        '[:id[/[:tab]]]', "[:id]/$action", $val['options']['route']
                     );
                     $val['options']['defaults']['action'] = $action;
                     $config['router']['routes'][$newRoute] = $val;
@@ -221,10 +220,14 @@ class GenerateController extends AbstractBase
      */
     public function recordrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[2])) {
+        $request = $this->getRequest();
+        $base = $request->getParam('base');
+        $controller = $request->getParam('newController');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [base] [controller] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate recordroute'
+                . ' [base] [controller] [target_module]'
             );
             Console::writeLine(
                 "\tbase - the base route name (used by router), e.g. record"
@@ -237,10 +240,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $base = $argv[0];
-        $controller = $argv[1];
-        $module = $argv[2];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -263,10 +262,13 @@ class GenerateController extends AbstractBase
      */
     public function staticrouteAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
-        if (!isset($argv[1])) {
+        $request = $this->getRequest();
+        $route = $request->getParam('name');
+        $module = $request->getParam('module');
+        if (empty($module)) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [route_definition] [target_module]"
+                'Usage: ' . $request->getScriptName() . ' generate staticroute'
+                . ' [route_definition] [target_module]'
             );
             Console::writeLine(
                 "\troute_definition - a Controller/Action string, e.g. Search/Home"
@@ -276,9 +278,6 @@ class GenerateController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-
-        $route = $argv[0];
-        $module = $argv[1];
 
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -291,6 +290,60 @@ class GenerateController extends AbstractBase
 
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Create a custom theme from the template, configure.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function themeAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('themename');
+        if (empty($name)) {
+            Console::writeLine("\tNo themename found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\ThemeGenerator');
+        if (!$generator->generate($name)
+            || !$generator->configure($this->getConfig(), $name)
+        ) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine("\tFinished.");
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Create a custom theme from the template.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function thememixinAction()
+    {
+        // Validate command line argument:
+        $request = $this->getRequest();
+        $name = $request->getParam('name');
+        if (empty($name)) {
+            Console::writeLine("\tNo mixin name found, using \"custom\"");
+            $name = 'custom';
+        }
+
+        // Use the theme generator to create and configure the theme:
+        $generator = $this->serviceLocator->get('VuFindTheme\MixinGenerator');
+        if (!$generator->generate($name)) {
+            Console::writeLine($generator->getLastError());
+            return $this->getFailureResponse();
+        }
+        Console::writeLine(
+            "\tFinished. Add to your theme.config.php 'mixins' setting to activate."
+        );
         return $this->getSuccessResponse();
     }
 
@@ -604,7 +657,7 @@ class GenerateController extends AbstractBase
      */
     protected function retrieveConfig(array $path)
     {
-        $config = $this->getServiceLocator()->get('config');
+        $config = $this->serviceLocator->get('config');
         foreach ($path as $part) {
             if (!isset($config[$part])) {
                 return false;

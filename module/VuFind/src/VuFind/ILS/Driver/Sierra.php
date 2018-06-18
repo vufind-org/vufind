@@ -107,7 +107,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             . "FROM sierra_view.bib_view "
             . "LEFT JOIN sierra_view.bib_record_item_record_link ON "
             . "(bib_view.id = bib_record_item_record_link.bib_record_id) "
-            . "WHERE bib_view.record_num = $1;";
+            . "INNER JOIN sierra_view.item_view ON "
+            . "(bib_record_item_record_link.item_record_id = item_view.id) "
+            . "WHERE bib_view.record_num = $1 "
+            . "AND item_view.is_suppressed = false;";
         $record_ids = pg_query_params(
             $this->db, $get_record_ids_query, [$this->idStrip($id)]
         );

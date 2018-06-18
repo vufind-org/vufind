@@ -28,8 +28,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for session
@@ -43,12 +44,21 @@ use Zend\Db\Sql\Expression;
  */
 class Session extends Gateway
 {
+    use ExpirationTrait;
+
     /**
      * Constructor
+     *
+     * @param Adapter       $adapter Database adapter
+     * @param PluginManager $tm      Table manager
+     * @param array         $cfg     Zend Framework configuration
+     * @param RowGateway    $rowObj  Row prototype object (null for default)
+     * @param string        $table   Name of database table to interface with
      */
-    public function __construct()
-    {
-        parent::__construct('session', 'VuFind\Db\Row\Session');
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'session'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
     /**
@@ -144,61 +154,6 @@ class Session extends Gateway
     }
 
     /**
-     * Delete expired sessions. Allows setting of 'from' and 'to' ID's so that rows
-     * can be deleted in small batches.
-     *
-     * @param int $daysOld Age in days of an "expired" session.
-     * @param int $idFrom  Lowest id of rows to delete.
-     * @param int $idTo    Highest id of rows to delete.
-     *
-     * @return int Number of rows deleted
-     */
-    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
-    {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $callback = function ($select) use ($expireDate, $idFrom, $idTo) {
-            $where = $select->where->lessThan('last_used', $expireDate);
-            if (null !== $idFrom) {
-                $where->and->greaterThanOrEqualTo('id', $idFrom);
-            }
-            if (null !== $idTo) {
-                $where->and->lessThanOrEqualTo('id', $idTo);
-            }
-        };
-        return $this->delete($callback);
-    }
-
-    /**
-     * Get the lowest id and highest id for expired sessions.
-     *
-     * @param int $daysOld Age in days of an "expired" session.
-     *
-     * @return array|bool Array of lowest id and highest id or false if no expired
-     * records found
-     */
-    public function getExpiredIdRange($daysOld = 2)
-    {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $callback = function ($select) use ($expireDate) {
-            $select->where->lessThan('last_used', $expireDate);
-        };
-        $select = $this->getSql()->select();
-        $select->columns(
-            [
-                'id' => new Expression('1'), // required for TableGateway
-                'minId' => new Expression('MIN(id)'),
-                'maxId' => new Expression('MAX(id)'),
-            ]
-        );
-        $select->where($callback);
-        $result = $this->selectWith($select)->current();
-        if (null === $result->minId) {
-            return false;
-        }
-        return [$result->minId, $result->maxId];
-    }
-
-    /**
      * Get a query representing expired sessions (this can be passed
      * to select() or delete() for further processing).
      *
@@ -214,5 +169,28 @@ class Session extends Gateway
             $select->where->lessThan('last_used', $expireDate);
         };
         return $callback;
+    }
+
+    /**
+     * Update the select statement to find records to delete.
+     *
+     * @param Select $select  Select clause
+     * @param int    $daysOld Age in days of an "expired" record.
+     * @param int    $idFrom  Lowest id of rows to delete.
+     * @param int    $idTo    Highest id of rows to delete.
+     *
+     * @return void
+     */
+    protected function expirationCallback($select, $daysOld, $idFrom = null,
+        $idTo = null
+    ) {
+        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $where = $select->where->lessThan('last_used', $expireDate);
+        if (null !== $idFrom) {
+            $where->and->greaterThanOrEqualTo('id', $idFrom);
+        }
+        if (null !== $idTo) {
+            $where->and->lessThanOrEqualTo('id', $idTo);
+        }
     }
 }

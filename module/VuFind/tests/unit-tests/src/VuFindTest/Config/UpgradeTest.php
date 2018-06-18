@@ -89,16 +89,19 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
-        $expectedWarnings = [];
+        $expectedWarnings = [
+            'The Statistics module has been removed from Vufind. '
+            . 'For usage tracking, please configure Google Analytics or Piwik.'
+        ];
         if ((float)$version < 1.3) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the default theme.  Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3.  You may need to "
+                . "the default theme. Your config.ini [Site] theme setting "
+                . "has been reset to the default: bootprint3. You may need to "
                 . "reimplement your custom theme.";
         } else if ((float)$version < 2.4) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the blueprint theme.  Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3.  You may need to "
+                . "the blueprint theme. Your config.ini [Site] theme setting "
+                . "has been reset to the default: bootprint3. You may need to "
                 . "reimplement your custom theme.";
         }
         $this->assertEquals($expectedWarnings, $warnings);
@@ -402,6 +405,18 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
                 . 'for important information on how to upgrade your Analytics.',
                 $warnings
             )
+        );
+        $this->assertTrue(
+            in_array(
+                'Google Maps is no longer a supported Content/recordMap option;'
+                . ' please review your config.ini.',
+                $warnings
+            )
+        );
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['Content']['recordMap']));
+        $this->assertFalse(
+            isset($results['config.ini']['Content']['googleMapApiKey'])
         );
     }
 

@@ -25,15 +25,18 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
+  <property name="solr_version" value="6.4.2" />
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="3.1" />
+  <property name="version" value="4.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
     <property name="mysqlpwswitch" value="-p" />
   </then></if>
+
+  <includepath classpath="${srcdir}/vendor/phpdocumentor" />
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -137,6 +140,64 @@
     <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
+  <target name="installsolr" description="Install Solr">
+    <!-- load previously installed version from marker file, if present -->
+    <if>
+      <available file="${srcdir}/solr/vendor/.installedVersion" />
+      <then>
+        <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
+      </then>
+    </if>
+    <!-- only attempt to install Solr if the desired version is not already there -->
+    <if>
+      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <then>
+        <!-- make sure we don't run out of memory during installation: -->
+        <php expression="ini_set('memory_limit', '1G');" />
+
+        <!-- download from Apache if not already present in the downloads cache -->
+        <if>
+          <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
+           <then>
+            <mkdir dir="${srcdir}/downloads" />
+            <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+          </then>
+        </if>
+        <!-- unpack the archive into solr/vendor -->
+        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${tmp}" />
+        <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
+        <move file="${tmp}/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <!-- make scripts executable -->
+        <chmod mode="0755">
+          <fileset dir="${srcdir}/solr/vendor/bin">
+            <include name="**/**" />
+            <exclude name="**/*.cmd" />
+          </fileset>
+        </chmod>
+        <!-- update the marker file with the installed version -->
+        <echo file="${srcdir}/solr/vendor/.installedVersion" message="${solr_version}" />
+      </then>
+    </if>
+  </target>
+
+  <target name="installswaggerui">
+    <delete dir="${srcdir}/public/swagger-ui" includeemptydirs="true" failonerror="false" />
+    <copy todir="${srcdir}/public/swagger-ui">
+      <fileset dir="${srcdir}/vendor/swagger-api/swagger-ui/dist" defaultexcludes="false" />
+    </copy>
+    <reflexive>
+      <fileset dir="${srcdir}/public/swagger-ui">
+        <include pattern="index.html" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
+          <regexp pattern="url = &quot;.*&quot;" replace="url = &quot;../api/v1?swagger&quot;" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
+
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
@@ -159,7 +220,7 @@
     <if>
       <istrue value="${seleniumjar}" />
       <then>
-        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar} > /dev/null &amp;" />
+        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar}" passthru="true" spawn="true" checkreturn="true" />
       </then>
     </if>
 
@@ -187,7 +248,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
         <!-- build database -->
@@ -198,13 +259,19 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
+        <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
       </else>
     </if>
 
-    <!-- Turn on exception logging -->
-    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
-    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <!-- Update config.ini to activate DB connection and exception logging -->
+    <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
+          <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
     <exec command="touch ${srcdir}/vufind-exception.log" />
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
@@ -283,7 +350,6 @@
     <!-- delete the configuration, sample index, logs and cache data -->
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
     <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
-    <delete file="${srcdir}/composer.lock" failonerror="false" />
     <delete file="${srcdir}/composer.phar" failonerror="false" />
     <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
@@ -304,8 +370,14 @@
       <property name="composer_extra_params" value="--no-dev" />
     </phingcall>
     <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
-    <copy todir = "${builddir}/export/vufind/usr/local/vufind/vendor">
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
+    </copy>
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
+      <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
+    </copy>
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/public/swagger-ui">
+      <fileset dir="${srcdir}/public/swagger-ui" defaultexcludes="false" />
     </copy>
 
     <!-- create a version-specific symlink so that tar/zip packages will have

@@ -38,12 +38,14 @@ function getHTPreviews(keys) {
 }
 
 function applyPreviewUrl($link, url) {
-    // Update the preview button:
-  $link.attr('href', url).removeClass('hidden');
+  // Update the preview button:
+  $link.attr('href', url).removeClass('hidden')
+       .attr('rel', 'noopener'); // Performance improvement
 
-    // Update associated record thumbnail, if any:
+  // Update associated record thumbnail, if any:
   $link.parents('.result,.record')
-        .find('.recordcover[data-linkpreview="true"]').parents('a').attr('href', url);
+       .find('.recordcover[data-linkpreview="true"]').parents('a').attr('href', url)
+       .attr('rel', 'noopener');
 }
 
 function processBookInfo(booksInfo, previewClass, viewOptions) {

@@ -63,6 +63,23 @@ class Koha extends AbstractBase
     protected $locCodes;
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -97,6 +114,38 @@ class Koha extends AbstractBase
         // Location codes are defined in 'Koha.ini' file according to current
         // version (3.02)
         $this->locCodes = $this->config['Location_Codes'];
+
+        // If we are using SAML/Shibboleth for authentication for both ourselves
+        // and Koha then we can't validate the patrons passwords against Koha as
+        // they won't have one. (Double negative logic used so that if the config
+        // option isn't present in Koha.ini then ILS passwords will be validated)
+        $this->validatePasswords
+            = empty($this->config['Catalog']['dontValidatePasswords']);
+
+        // Set our default terms for block types
+        $this->blockTerms = [
+            'SUSPENSION' => 'Account Suspended',
+            'OVERDUES' => 'Account Blocked (Overdue Items)',
+            'MANUAL' => 'Account Blocked',
+            'DISCHARGE' => 'Account Blocked for Discharge',
+        ];
+
+        // Now override the default with any defined in the `Koha.ini` config file
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            if (!empty($this->config['Blocks'][$blockType])) {
+                $this->blockTerms[$blockType] = $this->config['Blocks'][$blockType];
+            }
+        }
+
+        // Allow the users to set if an account block's comments should be included
+        // by setting the block type to true or false () in the `Koha.ini` config
+        // file (defaults to false if not present)
+        $this->showBlockComments = [];
+
+        foreach (['SUSPENSION','OVERDUES','MANUAL','DISCHARGE'] as $blockType) {
+            $this->showBlockComments[$blockType]
+                = !empty($this->config['Show_Block_Comments'][$blockType]);
+        }
     }
 
     /**
@@ -144,7 +193,7 @@ class Koha extends AbstractBase
                     if ($rowIssue) {
                         $available = false;
                         $status = 'Checked out';
-                        $duedate = $rowIssue['DUEDATE'];
+                        $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
                     } else {
                         $available = true;
                         $status = 'Available';
@@ -257,10 +306,10 @@ class Koha extends AbstractBase
             foreach ($sqlStmt->fetchAll() as $row) {
                 $fineLst[] = [
                     'amount' => (null == $row['AMOUNT']) ? 0 : $row['AMOUNT'],
-                    'checkout' => $row['CHECKOUT'],
+                    'checkout' => $this->displayDate($row['CHECKOUT']),
                     'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
                     'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDate($row['DUEDATE']),
                     'id' => $row['BIBNO']
                 ];
             }
@@ -301,8 +350,8 @@ class Koha extends AbstractBase
                 $holdLst[] = [
                     'id' => $row['BIBNO'],
                     'location' => $row['BRNAME'],
-                    'expire' => $row['EXDATE'],
-                    'create' => $row['RSVDATE']
+                    'expire' => $this->displayDate($row['EXDATE']),
+                    'create' => $this->displayDate($row['RSVDATE'])
                 ];
             }
             return $holdLst;
@@ -381,7 +430,7 @@ class Koha extends AbstractBase
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 $transactionLst[] = [
-                    'duedate' => $row['DUEDATE'],
+                    'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
                     'renew' => $row['RENEWALS']
@@ -392,6 +441,50 @@ class Koha extends AbstractBase
         catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin
+     *
+     * @throws ILSException
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        try {
+            $id = $patron['id'];
+            $sql = "select type as TYPE, comment as COMMENT " .
+                "from borrower_debarments " .
+                "where (expiration is null or expiration >= NOW()) " .
+                "and borrowernumber = :id";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':id' => $id]);
+
+            foreach ($sqlStmt->fetchAll() as $row) {
+                $block = empty($this->blockTerms[$row['TYPE']])
+                    ? [$row['TYPE']]
+                    : [$this->blockTerms[$row['TYPE']]];
+
+                if (!empty($this->showBlockComments[$row['TYPE']])
+                    && !empty($row['COMMENT'])
+                ) {
+                    $block[] = $row['COMMENT'];
+                }
+
+                $blocks[] = implode(' - ', $block);
+            }
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return count($blocks) ? $blocks : false;
     }
 
     /**
@@ -510,11 +603,19 @@ class Koha extends AbstractBase
 
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .
-            "where userid = :username and password = :db_pwd";
+            "where userid = :username";
         
+        $parameters = [':username' => $username];
+
+        if ($this->validatePasswords) {
+            $sql .= " and password = :db_pwd";
+            $parameters[':db_pwd'] = $db_pwd;
+        }
+
         try {
             $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute([':username' => $username, ':db_pwd' => $db_pwd]);
+            $sqlStmt->execute($parameters);
+
             $row = $sqlStmt->fetch();
             if ($row) {
                 // NOTE: Here, 'cat_password' => $password is used, password is
@@ -538,6 +639,51 @@ class Koha extends AbstractBase
         }
         catch (PDOException $e) {
             throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
+     * Convert a database date to a displayable date.
+     *
+     * @param string $date Date to convert
+     *
+     * @return string
+     */
+    public function displayDate($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return $this->dateConverter->convertToDisplayDate('Y-m-d H:i:s', $date);
+        } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $date) === 1) { // YYYY-MM-DD
+            return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
+        }
+    }
+
+    /**
+     * Convert a database datetime to a displayable date and time.
+     *
+     * @param string $date Datetime to convert
+     *
+     * @return string
+     */
+    public function displayDateTime($date)
+    {
+        if (empty($date)) {
+            return "";
+        } else if (preg_match("/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/", $date) === 1) {
+            // YYYY-MM-DD HH:MM:SS
+            return
+                $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d H:i:s', $date
+                );
+        } else {
+            error_log("Unexpected date format: $date");
+            return $date;
         }
     }
 }

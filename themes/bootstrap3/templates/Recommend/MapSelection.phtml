@@ -1,0 +1,43 @@
+<? if ($this->recommend->getSearchResultCoordinates()) :?>
+<?
+  $this->headScript()->appendFile('vendor/ol/ol.js');
+  $this->headScript()->appendFile('map_selection.js');
+  $this->headLink()->appendStylesheet('vendor/ol/ol.css');
+
+  $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $baseUrl = $this->url('home');
+  $geoField = $this->recommend->getGeoField();
+  $urlpath = $this->url('search-results');
+  $coordinates = $this->recommend->getSelectedCoordinates();
+  $showSelection = true;
+  $popupTitle = $this->transEsc('map_results_label');
+  if ($coordinates == null) {
+    $coordinates = $this->recommend->getDefaultCoordinates();
+    $showSelection = false;
+  }
+  $height = $this->recommend->getHeight();
+  $searchParams = $this->recommend->getSearchParams();
+  $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
+    json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
+    json_encode($resultsCoords), json_encode($popupTitle)];
+  $jsParams = implode(', ', $params);
+  $jsLoad = "loadMapSelection(" . $jsParams . ");";
+  $addSearchOption = <<<EOF
+    $('.search-query-options>.advanced').after('&nbsp;&nbsp;<a href="#" class="advanced" onclick=\\'{$jsLoad} $(this).remove(); return false;\\'>{$this->transEsc('Geographic Search')}</a>');
+EOF;
+?>
+<div class="authorbox">
+  <div id="geo_search" style="display: none;">
+    <button id="draw_box"><?=$this->transEsc('Draw Search Box')?></button>
+    <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
+    <div id="geo_search_map" style="height: <?=$height?>px;">
+      <div id="popup"></div>
+    </div>
+  </div>
+  <? if ($showSelection) :?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
+  <? else: ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
+  <? endif; ?>
+</div>
+<? endif; ?>

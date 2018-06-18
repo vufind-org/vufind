@@ -1,7 +1,12 @@
+/**
+ * Assign catalog formats to Font Awesome icons
+ */
 
+// Alias
+.fa-printer:before        {content: "\f02f";} // .fa-print
 // Search Icons
-.fa-grid:before   {content: "\f00a";} // .fa-th
-.fa-visual:before {content: "\f008";} // .fa-film
+.fa-grid:before           {content: "\f00a";} // .fa-th
+.fa-visual:before         {content: "\f008";} // .fa-film
 // Type Icons
 .fa-x:before              {content: "\f0f6";} // .fa-file-text-o
 .fa-atlas:before          {content: "\f14e";} // .fa-compass

@@ -346,11 +346,7 @@ class DeduplicationListener
     {
         $result = [];
         foreach ($params->get('fq') as $fq) {
-            if (preg_match_all(
-                '/\bbuilding:"([^"]+)"/',
-                $fq,
-                $matches
-            )) {
+            if (preg_match_all('/\bbuilding:"([^"]+)"/', $fq, $matches)) {
                 $values = $matches[1];
                 foreach ($values as $value) {
                     if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
@@ -364,8 +360,7 @@ class DeduplicationListener
         }
 
         array_unshift($result, '');
-        $result = array_flip($result);
-        return $result;
+        return array_flip($result);
     }
 
 }

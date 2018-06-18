@@ -91,7 +91,7 @@ class PrimoBackendFactory implements FactoryInterface
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
 
-        $this->createListeners($backend);
+        $this->createListeners();
 
         return $backend;
     }
@@ -114,11 +114,9 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Create listeners.
      *
-     * @param Backend $backend Backend
-     *
      * @return void
      */
-    protected function createListeners(Backend $backend)
+    protected function createListeners()
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 

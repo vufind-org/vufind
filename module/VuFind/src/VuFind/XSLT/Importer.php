@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
-use DOMDocument, VuFind\Config\Locator as ConfigLocator,
-    XSLTProcessor, Zend\Console\Console,
-    VuFindSearch\Backend\Solr\Document\RawXMLDocument,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use DOMDocument;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
+use XSLTProcessor;
+use Zend\Console\Console;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind XSLT importer
@@ -41,9 +42,24 @@ use DOMDocument, VuFind\Config\Locator as ConfigLocator,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class Importer implements ServiceLocatorAwareInterface
+class Importer
 {
-    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service manager
+     */
+    public function __construct(ServiceLocatorInterface $sm)
+    {
+        $this->serviceLocator = $sm;
+    }
 
     /**
      * Save an XML file to the Solr index using the specified configuration.
@@ -64,7 +80,7 @@ class Importer implements ServiceLocatorAwareInterface
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
-            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
             $solr->save($index, new RawXMLDocument($xml));
         } else {
             Console::write($xml . "\n");
@@ -171,7 +187,7 @@ class Importer implements ServiceLocatorAwareInterface
                 }
                 $methods = get_class_methods($class);
                 if (method_exists($class, 'setServiceLocator')) {
-                    $class::setServiceLocator($this->getServiceLocator());
+                    $class::setServiceLocator($this->serviceLocator);
                 }
                 foreach ($methods as $method) {
                     $xsl->registerPHPFunctions($class . '::' . $method);

@@ -154,7 +154,7 @@
 # Note that you may create a "@parent_yaml" entry at the very top of the file to
 # inherit sections from another file. For example:
 #
-# @parent_yaml: "/path/to/my/file.yaml"
+# "@parent_yaml": "/path/to/my/file.yaml"
 #
 # Only sections not found in this file will be loaded in from the parent file.
 # In some complex scenarios, this can be a useful way of sharing settings
@@ -193,6 +193,12 @@ Subject:
 #  ExactSettings:
 #    DismaxFields:
 #      - topic_unstemmed^150
+
+
+Coordinate:
+  DismaxFields:
+    - long_lat_display
+  DismaxHandler: edismax
 
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
@@ -264,6 +270,7 @@ AllFields:
     - description
     - isbn
     - issn
+    - long_lat_display
   DismaxHandler: edismax
 #  ExactSettings:
 #    DismaxFields:

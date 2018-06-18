@@ -123,7 +123,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @param array $linkData An array of keys to check
      *
-     * @return boolean|array
+     * @return bool|array
      */
     public function validateRequest($linkData)
     {

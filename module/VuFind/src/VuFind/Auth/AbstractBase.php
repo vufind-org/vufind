@@ -96,6 +96,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Reset any internal status; this is essentially an event hook which most auth
+     * modules can ignore. See ChoiceAuth for a use case example.
+     *
+     * @return void
+     */
+    public function resetState()
+    {
+        // By default, do no checking.
+    }
+
+    /**
      * Set configuration.
      *
      * @param \Zend\Config\Config $config Configuration to set

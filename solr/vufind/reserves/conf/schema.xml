@@ -38,10 +38,7 @@
    <field name="department_str" type="string" indexed="true" stored="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
- <defaultSearchField>course</defaultSearchField>
  <copyField source="course"     dest="course_str"/>
  <copyField source="instructor" dest="instructor_str"/>
  <copyField source="department" dest="department_str"/>
- <!-- Default Boolean Operator -->
- <solrQueryParser defaultOperator="AND"/>
 </schema>

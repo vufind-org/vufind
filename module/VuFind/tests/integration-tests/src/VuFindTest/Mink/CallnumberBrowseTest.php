@@ -65,7 +65,7 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue($query);
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         $this->findCss($page, '.btn.btn-primary')->click();
         $this->snooze();
         return $page;
@@ -138,7 +138,7 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @param string                      $type        dewey or lcc
      * @param \Behat\Mink\Element\Element $page        page element
-     * @param boolean                     $expectLinks links on multiple?
+     * @param bool                        $expectLinks links on multiple?
      *
      * @return void
      */
@@ -176,9 +176,9 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Sets callnumber_handler to true
      *
-     * @param string  $nos         multiple_call_nos setting
-     * @param string  $locs        multiple_locations setting
-     * @param boolean $expectLinks whether or not links are expected for multiple callnumbers in this config
+     * @param string $nos         multiple_call_nos setting
+     * @param string $locs        multiple_locations setting
+     * @param bool   $expectLinks whether or not links are expected for multiple callnumbers in this config
      *
      * @return void
      */

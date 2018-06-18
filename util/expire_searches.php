@@ -26,7 +26,7 @@
  * @link     https://vufind.org/jira/browse/VUFIND-235 JIRA Ticket
  */
 
-// Load the Zend framework -- this will automatically trigger the appropriate
-// controller action based on directory and file names
-define('CLI_DIR', __DIR__);     // save directory name of current script
+// Manipulate command line to load correct route, then load Zend Framework:
+array_unshift($_SERVER['argv'], array_shift($_SERVER['argv']), 'util', 'expire_searches');
+$_SERVER['argc'] += 2;
 require_once __DIR__ . '/../public/index.php';

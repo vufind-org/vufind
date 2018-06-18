@@ -76,10 +76,10 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         if (!$this->continuousIntegrationRunning()) {
             return $this->markTestSkipped('Continuous integration not running.');
         }
-        $this->driver = $this->getMock('VuFind\ILS\Driver\Sample');
+        $this->driver = $this->createMock('VuFind\ILS\Driver\Sample');
         $driverManager = new \VuFind\ILS\Driver\PluginManager();
         $driverManager->setService('Sample', $this->driver);
-        $mockConfigReader = $this->getMock('VuFind\Config\PluginManager');
+        $mockConfigReader = $this->createMock('VuFind\Config\PluginManager');
         $mockConfigReader->expects($this->any())->method('get')
             ->will($this->returnValue(new \Zend\Config\Config([])));
         $this->auth = new \VuFind\Auth\ILS(

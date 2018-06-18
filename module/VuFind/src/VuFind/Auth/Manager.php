@@ -558,6 +558,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         if (!$this->getAuth()->getSessionInitiator(null)
             && !$this->csrf->isValid($request->getPost()->get('csrf'))
         ) {
+            $this->getAuth()->resetState();
             throw new AuthException('authentication_error_technical');
         }
 
