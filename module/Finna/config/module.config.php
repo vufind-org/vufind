@@ -584,6 +584,11 @@ $config = [
                     'VuFind\RecordDriver\SolrMarc' => 'Finna\RecordDriver\SolrMarc',
                     'VuFind\RecordDriver\Primo' => 'Finna\RecordDriver\Primo',
                 ],
+                'delegators' => [
+                    'Finna\RecordDriver\SolrMarc' => [
+                        'VuFind\RecordDriver\IlsAwareDelegatorFactory'
+                    ],
+                ],
             ],
             'recordtab' => [
                 'factories' => [
