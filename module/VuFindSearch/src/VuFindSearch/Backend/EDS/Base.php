@@ -217,10 +217,11 @@ abstract class EdsApi_REST_Base
      * @param string $username username associated with an EBSCO EdsApi account
      * @param string $password password associated with an EBSCO EdsApi account
      * @param string $orgid    Organization id the request is initiated from
+     * @param array  $params   optional params (autocomplete)
      *
      * @return array
      */
-    public function authenticate($username = null, $password = null, $orgid = null)
+    public function authenticate($username = null, $password = null, $orgid = null, $params = null)
     {
         $this->debugPrint(
             "Authenticating: username: $username, password: $password, orgid: $orgid"
@@ -228,6 +229,7 @@ abstract class EdsApi_REST_Base
         $url = $this->authHost . '/uidauth';
         $org = $orgid ?? $this->orgId;
         $authInfo = [];
+        $authParam = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
         }
@@ -237,8 +239,12 @@ abstract class EdsApi_REST_Base
         if (isset($org)) {
             $authInfo['orgid'] = $org;
         }
+        if (isset($params)) {
+            $authParam['Options'] = $params;
+        }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody);
+        $messageParam = json_encode($authParam);
+        return $this->call($url, null, $messageParam, 'POST', $messageBody);
     }
 
     /**
