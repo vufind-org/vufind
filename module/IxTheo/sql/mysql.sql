@@ -63,3 +63,5 @@ CREATE VIEW resource_tags_bibstudies AS (
   (SELECT resource.id FROM resource JOIN bibstudies_ids
    ON resource.record_id = bibstudies_ids.record_id)
 );
+
+GRANT CREATE TEMPORARY TABLES ON `vufind`.* TO 'vufind'@'localhost';
