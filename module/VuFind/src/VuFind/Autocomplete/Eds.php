@@ -68,10 +68,27 @@ class Eds implements AutocompleteInterface
     public function getSuggestions($query)
     {
         // Initialize return array:
-        $results = [];
+        $results = ["TEST1","TEST2","TEST3"];
 
         // Send back results:
         return array_unique($results);
+
+        // perhaps this method can look like this
+        // ToDo
+
+        if (!is_object($this->searchObject)) {
+            throw new \Exception('Please set configuration first.');
+        }
+
+        try {
+            // Perform the autocomplete search:
+            $results = $this->searchObject->getAutocomplete($query);
+
+        } catch (\Exception $e) {
+            // Ignore errors -- just return empty results if we must.
+        }
+        return isset($results) ? array_unique($results) : [];
+
     }
 
     /**
@@ -84,5 +101,22 @@ class Eds implements AutocompleteInterface
      */
     public function setConfig($params)
     {
+        // Set up the Search Object:
+        $this->initSearchObject();
     }
+
+    /**
+     * Initialize the search object used for finding recommendations.
+     *
+     * @return void
+     */
+    protected function initSearchObject()
+    {
+        // Build a new search object:
+        // ToDo: does not work in this way without a resultManager
+        $this->searchObject = $this->resultsManager->get($this->searchClassId);
+        // ToDo: Check if this is necessary
+        // $this->searchObject->getOptions()->spellcheckEnabled(false);
+    }
+
 }
