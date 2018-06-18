@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for SolrMarc record drivers.
+ * Factory for Search2 results objects.
  *
  * PHP version 7
  *
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Search_Search2
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\Search\Search2;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for SolrMarc record drivers.
+ * Factory for Search2 results objects.
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Search_Search2
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrMarcFactory extends SolrDefaultFactory
+class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
 {
     /**
      * Create an object
@@ -57,14 +57,11 @@ class SolrMarcFactory extends SolrDefaultFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $driver = parent::__invoke($container, $requestedName, $options);
-        if ($container->has('VuFind\ILS\Connection')) {
-            $driver->attachILS(
-                $container->get('VuFind\ILS\Connection'),
-                $container->get('VuFind\ILS\Logic\Holds'),
-                $container->get('VuFind\ILS\Logic\TitleHolds')
-            );
-        }
-        return $driver;
+        $solr = parent::__invoke($container, $requestedName, $options);
+        $config = $container->get('VuFind\Config\PluginManager')->get('Search2');
+        $solr->setSpellingProcessor(
+            new \VuFind\Search\Solr\SpellingProcessor($config->Spelling ?? null)
+        );
+        return $solr;
     }
 }
