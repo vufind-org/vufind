@@ -389,6 +389,25 @@ class Backend extends AbstractBackend
         $this->queryBuilder = $queryBuilder;
     }
 
+    /**
+     * Get popular terms using the autocomplete API.
+     *
+     * @param string $query simple query string
+     *
+     * @return array of terms 
+     */
+    public function getAutocomplete($query)
+    {
+        // Todo:
+        // get autocomplete Token, Url, CustId
+        // get indicated domain/data type from EDS.ini
+        // build request 
+        // get request
+        // parse result and build array of terms
+        return ["TEST1","TEST2","TEST3"]; 
+    }
+
+
     /// Internal API
 
     /**
