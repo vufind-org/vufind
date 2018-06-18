@@ -113,7 +113,11 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         // Add idPrefix condition
         $idPrefix = $this->getIdPrefix();
-        return $this->recordLoader->load(strlen($idPrefix) ? $idPrefix . $id : $id);
+        return $this->recordLoader->load(
+            strlen($idPrefix) ? $idPrefix . $id : $id,
+            DEFAULT_SEARCH_BACKEND,
+            true    // tolerate missing records
+        );
     }
 
     /**

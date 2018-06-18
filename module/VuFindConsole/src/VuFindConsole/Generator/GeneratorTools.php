@@ -82,6 +82,7 @@ class GeneratorTools
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');
         $cpm = $container->get('ControllerPluginManager');
+        $delegators = [];
         if ($container->has($class)) {
             $factory = $this->getFactoryFromContainer($container, $class);
             $configPath = ['service_manager'];
@@ -94,6 +95,7 @@ class GeneratorTools
             $pmKey = $apmFactory->getConfigKey(get_class($pm));
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
+            $delegators = $this->getDelegatorsFromContainer($pm, $class);
         }
 
         // No factory found? Throw an error!
@@ -106,8 +108,7 @@ class GeneratorTools
 
         // Create the custom factory only if requested.
         $newFactory = $extendFactory
-            ? $this->cloneFactory($factory, $target)
-            : $factory;
+            ? $this->cloneFactory($factory, $target) : $factory;
 
         // Finalize the local module configuration -- create a factory for the
         // new class, and set up the new class as an alias for the old class.
@@ -117,6 +118,17 @@ class GeneratorTools
         // Don't back up the config twice -- the first backup from the previous
         // write operation is sufficient.
         $this->writeNewConfig($aliasPath, $newClass, $target, false);
+
+        // Clone/configure delegator factories as needed.
+        if (!empty($delegators)) {
+            $newDelegators = [];
+            foreach ($delegators as $delegator) {
+                $newDelegators[] = $extendFactory
+                    ? $this->cloneFactory($delegator, $target) : $delegator;
+            }
+            $delegatorPath = array_merge($configPath, ['delegators', $newClass]);
+            $this->writeNewConfig($delegatorPath, $newDelegators, $target, false);
+        }
 
         return true;
     }
@@ -148,6 +160,36 @@ class GeneratorTools
     {
         $factories = $this->getAllFactoriesFromContainer($container);
         return $factories[$class] ?? null;
+    }
+
+    /**
+     * Get a list of delegators in the provided container.
+     *
+     * @param ContainerInterface $container Container to inspect
+     *
+     * @return array
+     */
+    protected function getAllDelegatorsFromContainer(ContainerInterface $container)
+    {
+        // There is no "getDelegators" method, so we need to use reflection:
+        $reflectionProperty = new \ReflectionProperty($container, 'delegators');
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($container);
+    }
+
+    /**
+     * Get delegators from the provided container (or empty array if undefined).
+     *
+     * @param ContainerInterface $container Container to inspect
+     * @param string             $class     Class whose delegators we want
+     *
+     * @return array
+     */
+    protected function getDelegatorsFromContainer(ContainerInterface $container,
+        $class
+    ) {
+        $delegators = $this->getAllDelegatorsFromContainer($container);
+        return $delegators[$class] ?? [];
     }
 
     /**

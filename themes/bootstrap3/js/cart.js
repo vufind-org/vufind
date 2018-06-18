@@ -155,14 +155,15 @@ VuFind.register('cart', function Cart() {
     $("#updateCart, #bottom_updateCart").unbind('click').click(function cartUpdate() {
       var elId = this.id;
       var selected = [];
+      var addToSelected = function processCartFormValues() {
+        if (-1 === selected.indexOf(this.value)) {
+          selected.push(this.value);
+        }
+      };
       var selectedInForm = $form.find('input[name="ids[]"]:checked');
       var selectedFormAttr = $('input[form="' + $form.attr('id') + '"][name="ids[]"]:checked');
-      $(selectedInForm).each(function cartFormCheckboxValues() {
-        selected.push(this.value);
-      });
-      $(selectedFormAttr).each(function cartAttrCheckboxValues() {
-        selected.push(this.value);
-      });
+      $(selectedInForm).each(addToSelected);
+      $(selectedFormAttr).each(addToSelected);
       if (selected.length > 0) {
         var msg = "";
         var orig = getFullItems();
@@ -204,7 +205,8 @@ VuFind.register('cart', function Cart() {
         var currentId = $this.data('cart-id');
         var currentSource = $this.data('cart-source');
         $this.find('.correct').removeClass('correct hidden');
-        $this.find('.cart-add').click(function cartAddClick() {
+        $this.find('.cart-add').click(function cartAddClick(e) {
+          e.preventDefault();
           if (addItem(currentId, currentSource)) {
             $this.find('.cart-add').addClass('hidden');
             $this.find('.cart-remove').removeClass('hidden');
@@ -215,7 +217,8 @@ VuFind.register('cart', function Cart() {
             }, 5000);
           }
         });
-        $this.find('.cart-remove').click(function cartRemoveClick() {
+        $this.find('.cart-remove').click(function cartRemoveClick(e) {
+          e.preventDefault();
           removeItem(currentId, currentSource);
           $this.find('.cart-add').removeClass('hidden');
           $this.find('.cart-remove').addClass('hidden');

@@ -123,7 +123,7 @@ class PAIA extends DAIA
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->baseUrl . $this->paiaURL) . $suffix
         );
     }

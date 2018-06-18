@@ -56,18 +56,18 @@ function setupChannelSlider(i, op) {
           type: 'POST',
           data: {tab: 'description'}
         })
-        .done(function channelPopoverDone(data) {
-          record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
-            + '<div class="btn-group btn-group-justified">'
-            + '<a href="' + VuFind.path + '/Channels/Record?'
-              + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-              + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-            + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-            + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-            + '</div>'
-            + data;
-          record.popover('show');
-        });
+          .done(function channelPopoverDone(data) {
+            record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
+              + '<div class="btn-group btn-group-justified">'
+              + '<a href="' + VuFind.path + '/Channels/Record?'
+                + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+                + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+              + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+              + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
+              + data;
+            record.popover('show');
+          });
       }
       return false;
     });
@@ -85,26 +85,29 @@ function bindChannelAddMenu(iteration, scope) {
   $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       var list = $(e.target).closest('.dropdown-menu');
-      var $testEl = $(data);
-      // Make sure the channel has content
-      if ($testEl.find('.channel-record').length === 0) {
-        $(e.target).closest('.channel').after(
-          '<div class="channel-title no-results">'
-          + '<h2>' + $testEl.find('h2').html() + '</h2>'
-          + VuFind.translate('nohit_heading')
-          + '</div>'
-        );
-      } else {
-        $(e.target).closest('.channel').after(data);
-        $('.channel').each(setupChannelSlider);
-        $('.channel').each(bindChannelAddMenu);
-      }
-      // Remove dropdown link
-      $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
+      var $testEls = $('<div>' + data + '</div>').find('.channel-wrapper');
+      $testEls.each(function addRetrievedNonEmptyChannels(i, element) {
+        var $testEl = $(element);
+        // Make sure the channel has content
+        if ($testEl.find('.channel-record').length === 0) {
+          $(e.target).closest('.channel').after(
+            '<div class="channel-title no-results">'
+            + '<h2>' + $testEl.find('h2').html() + '</h2>'
+            + VuFind.translate('nohit_heading')
+            + '</div>'
+          );
+        } else {
+          $(e.target).closest('.channel').after($testEl);
+          $('.channel').each(setupChannelSlider);
+          $('.channel').each(bindChannelAddMenu);
+        }
+        // Remove dropdown link
+        $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
 
-      if (list.children().length === 0) {
-        $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
-      }
+        if (list.children().length === 0) {
+          $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
+        }
+      });
     });
     return false;
   });

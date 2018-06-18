@@ -55,6 +55,6 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
         $factory = new KeepAliveFactory();
         $handler = $factory($container, KeepAlive::class);
         $params = new \Zend\Mvc\Controller\Plugin\Params();
-        $this->assertEquals([true, 'OK'], $handler->handleRequest($params));
+        $this->assertEquals([true], $handler->handleRequest($params));
     }
 }

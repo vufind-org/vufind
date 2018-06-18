@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 
 /**
  * Citation view helper

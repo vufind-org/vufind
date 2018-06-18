@@ -27,8 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\Stdlib\Parameters;
@@ -61,25 +61,25 @@ class GetFacetData extends AbstractBase
     protected $facetHelper;
 
     /**
-     * Solr search results object
+     * Solr search results manager
      *
-     * @var Results
+     * @var ResultsManager
      */
-    protected $results;
+    protected $resultsManager;
 
     /**
      * Constructor
      *
-     * @param SessionSettings         $ss      Session settings
-     * @param HierarchicalFacetHelper $fh      Facet helper
-     * @param Results                 $results Solr results object
+     * @param SessionSettings         $ss Session settings
+     * @param HierarchicalFacetHelper $fh Facet helper
+     * @param ResultsManager          $rm Search results manager
      */
     public function __construct(SessionSettings $ss, HierarchicalFacetHelper $fh,
-        Results $results
+        ResultsManager $rm
     ) {
         $this->sessionSettings = $ss;
         $this->facetHelper = $fh;
-        $this->results = $results;
+        $this->resultsManager = $rm;
     }
 
     /**
@@ -87,7 +87,7 @@ class GetFacetData extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -96,26 +96,27 @@ class GetFacetData extends AbstractBase
         $facet = $params->fromQuery('facetName');
         $sort = $params->fromQuery('facetSort');
         $operator = $params->fromQuery('facetOperator');
+        $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
 
-        $paramsObj = $this->results->getParams();
+        $results = $this->resultsManager->get($backend);
+        $paramsObj = $results->getParams();
         $paramsObj->addFacet($facet, null, $operator === 'OR');
         $paramsObj->initFromRequest(new Parameters($params->fromQuery()));
 
-        $facets = $this->results->getFullFieldFacets([$facet], false, -1, 'count');
+        $facets = $results->getFullFieldFacets([$facet], false, -1, 'count');
         if (empty($facets[$facet]['data']['list'])) {
-            return $this->formatResponse([]);
+            $facets = [];
+        } else {
+            $facetList = $facets[$facet]['data']['list'];
+
+            if (!empty($sort)) {
+                $this->facetHelper->sortFacetList($facetList, $sort == 'top');
+            }
+
+            $facets = $this->facetHelper->buildFacetArray(
+                $facet, $facetList, $results->getUrlQuery(), false
+            );
         }
-
-        $facetList = $facets[$facet]['data']['list'];
-
-        if (!empty($sort)) {
-            $this->facetHelper->sortFacetList($facetList, $sort == 'top');
-        }
-
-        return $this->formatResponse(
-            $this->facetHelper->buildFacetArray(
-                $facet, $facetList, $this->results->getUrlQuery(), false
-            )
-        );
+        return $this->formatResponse(compact('facets'));
     }
 }
