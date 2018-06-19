@@ -250,6 +250,7 @@ function setupAutocomplete() {
   // Search autocomplete
   searchbox.autocomplete({
     cacheObj: cacheObj,
+    rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     handler: function vufindACHandler(input, cb) {

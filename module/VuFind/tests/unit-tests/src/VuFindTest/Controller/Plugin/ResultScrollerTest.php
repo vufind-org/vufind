@@ -44,6 +44,29 @@ use Zend\Session\Container;
 class ResultScrollerTest extends TestCase
 {
     /**
+     * Test next_prev_nav bug
+     * Expect next_prev to behave like it's disabled if the last search didn't return any results
+     *
+     * @return void
+     */
+    public function testNextPrevNavBug()
+    {
+        $results = $this->getMockResults(0, 0, 0, true, 'sorted');
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertFalse($plugin->init($results));
+
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => null, 'nextRecord' => null,
+            'currentPosition' => null, 'resultTotal' => null
+        ];
+
+        $this->assertEquals($expected, $plugin->getScrollData(
+            $results->getMockRecordDriver('sorted20'))
+        );
+    }
+
+    /**
      * Test disabled behavior
      *
      * @return void

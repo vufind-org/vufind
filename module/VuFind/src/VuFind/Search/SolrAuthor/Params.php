@@ -54,9 +54,11 @@ class Params extends \VuFind\Search\Solr\Params
             return false;
         }
 
-        // Force the search to be a phrase:
-        $lookfor = '"' . str_replace('"', '\"', $lookfor) . '"';
-        
+        // Force the search to be a phrase if it is not already:
+        if (!preg_match('/^".*"$/', $lookfor)) {
+            $lookfor = '"' . str_replace('"', '\"', $lookfor) . '"';
+        }
+
         // Set the search (handler is always Author for this module):
         $this->setBasicSearch($lookfor, 'Author');
         return true;
