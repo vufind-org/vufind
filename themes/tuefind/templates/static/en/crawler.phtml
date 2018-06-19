@@ -1,0 +1,20 @@
+<h1>University Library Web Crawler</h1>
+
+<p>If you have found this page you may have encountered the user-agent string of our crawler application.</p>
+
+<p>The Tübingen University Library (Universitätsbibliothek Tübingen) maintains several search engines for bibliographic metadata, there being:
+    <ul>
+        <li>1. <a href="https://ixtheo.de" target="_blank">IxTheo</a> (search for theological articles, books etc.)</li>
+        <li>2. <a href="https://relbib.de" target="_blank">RelBib</a> (search for articles, books etc. relating to religious studies)</li>
+        <li>3. <a href="https://krimdok.uni-tuebingen.de" target="_blank">KrimDok</a> (search for criminological articles, books etc.)</li>
+    </ul>
+</p>
+
+<p>Our crawler harvests metadata which we then use to create additional entries for one or more of these search engines. We try to narrow the crawls to highly relevant pages but may accidentally access additional data.  We do not store or evaluate full text items even if we accidentally download them.</p>
+
+<p>If you have any questions, please feel free to contact us:
+<ul>
+    <li><a href="mailto:<?=$this->systemEmail();?>">For organizational issues/questions</a></li>
+    <li><a href="mailto:<?=$this->tuefind()->getTeamEmail();?>">For purely technical issues/questions</a></li>
+</ul>
+</p>
