@@ -13,6 +13,9 @@ $config = [
             'AdminApi' => 'FinnaApi\Controller\AdminApiController',
             'AuthApi' => 'FinnaApi\Controller\AuthApiController',
 
+            'adminapi' => 'AdminApi',
+            'authapi' => 'AuthApi',
+
             // Overrides:
             'VuFindApi\Controller\ApiController' => 'FinnaApi\Controller\ApiController',
             'VuFindApi\Controller\SearchApiController' => 'FinnaApi\Controller\SearchApiController',
