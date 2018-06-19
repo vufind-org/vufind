@@ -138,7 +138,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
         ) {
             // Load local cache if available
             if (($content = file_get_contents($localFile)) !== false) {
-                return $this->formatResponse(['html' => $content], self::STATUS_OK);
+                return $this->formatResponse(['html' => $content]);
             } else {
                 return $this->formatResponse('', self::STATUS_HTTP_ERROR);
             }
