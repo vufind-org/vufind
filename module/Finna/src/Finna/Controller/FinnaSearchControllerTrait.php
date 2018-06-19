@@ -78,7 +78,7 @@ trait FinnaSearchControllerTrait
 
         $searchId = $combined[$this->searchClassId];
         $search = $this->getTable('Search')->getRowById($searchId, false);
-        if (null === $search) {
+        if (!$search) {
             return;
         }
 
