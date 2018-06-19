@@ -370,10 +370,15 @@ $config = [
             ],
             'auth' => [
                 'factories' => [
-                    'ils' => 'Finna\Auth\Factory::getILS',
-                    'multiils' => 'Finna\Auth\Factory::getMultiILS',
-                    'shibboleth' => 'Finna\Auth\Factory::getShibboleth'
+                    'Finna\Auth\ILS' => 'Finna\Auth\Factory::getILS',
+                    'Finna\Auth\MultiILS' => 'Finna\Auth\Factory::getMultiILS',
+                    'Finna\Auth\Shibboleth' => 'Finna\Auth\Factory::getShibboleth',
                 ],
+                'aliases' => [
+                    'VuFind\Auth\ILS' => 'Finna\Auth\ILS',
+                    'VuFind\Auth\MultiILS' => 'Finna\Auth\MultiILS',
+                    'VuFind\Auth\Shibboleth' => 'Finna\Auth\Shibboleth',
+                ]
             ],
             'autocomplete' => [
                 'factories' => [
