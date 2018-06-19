@@ -79,8 +79,8 @@ function setupChannelSlider(i, op) {
         type: 'POST',
         data: {tab: 'description'}
       })
-      .done(function channelPopoverDone(data) {
-        record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
+        .done(function channelPopoverDone(data) {
+          record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
           + '<div class="btn-group btn-group-justified">'
           + '<a href="' + VuFind.path + '/Channels/Record?'
             + 'id=' + encodeURIComponent(record.attr('data-record-id'))
@@ -89,8 +89,8 @@ function setupChannelSlider(i, op) {
           + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
           + '</div>'
           + data;
-        record.popover('show');
-      });
+          record.popover('show');
+        });
     }
     return false;
   });
