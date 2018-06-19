@@ -36,7 +36,7 @@ namespace Finna\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class LocationServiceController extends \Finna\Controller\AjaxController
+class LocationServiceController extends \VuFind\Controller\AbstractBase
 {
     /**
      * Return HTML that loads the Location Service map to an iframe.
