@@ -31,8 +31,8 @@ namespace Finna\View\Helper\Root;
 
 use Finna\OrganisationInfo\OrganisationInfo;
 use Finna\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Cache\Manager as CacheManager;
 use VuFind\Search\Results\PluginManager;
+use Zend\Cache\Storage\StorageInterface;
 
 /**
  * Organisations list view helper
@@ -51,9 +51,9 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache manager
+     * Cache
      *
-     * @var CacheManager
+     * @var StorageInterface
      */
     protected $cache;
 
@@ -81,13 +81,13 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
     /**
      * Constructor
      *
-     * @param CacheManager            $cache            cache manager
-     * @param HierarchicalFacetHelper $facetHelper      facet helper
-     * @param PluginManager           $resultsManager   search result manager
-     * @param OrganisationInfo        $organisationInfo organisation info service
+     * @param StorageInterface        $cache            Cache
+     * @param HierarchicalFacetHelper $facetHelper      Facet helper
+     * @param PluginManager           $resultsManager   Search result manager
+     * @param OrganisationInfo        $organisationInfo Organisation info service
      */
     public function __construct(
-        CacheManager $cache, HierarchicalFacetHelper $facetHelper,
+        StorageInterface $cache, HierarchicalFacetHelper $facetHelper,
         PluginManager $resultsManager, OrganisationInfo $organisationInfo
     ) {
         $this->cache = $cache;

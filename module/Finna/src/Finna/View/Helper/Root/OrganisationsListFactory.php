@@ -61,9 +61,6 @@ class OrganisationsListFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new OrganisationsList(
-            $cache, $facetHelper, $resultsManager, $organisationInfo
-        );
 
         return new $requestedName(
             $container->get('VuFind\Cache\Manager')->getCache('object'),
