@@ -137,7 +137,7 @@ var ItemStatusHandler = {
 
 //store the handlers in a "hash" obj
 //add you own overridden handler here
-var handlers = {
+var checkItemHandlers = {
   'ils': ItemStatusHandler,
 };
 
@@ -158,7 +158,7 @@ function checkItemStatus(el) {
     handlerName = $item.data("handler-name");
   }
   //queue the element into the handler
-  handlers[handlerName].itemQueueAjax(id, $item);
+  checkItemHandlers[handlerName].itemQueueAjax(id, $item);
 }
 
 function checkItemStatuses(_container) {
@@ -176,7 +176,7 @@ function checkItemStatuses(_container) {
     if ($(ajaxItems[i]).data("handler-name")) {
       handlerName = $(ajaxItems[i]).data("handler-name");
     }
-    handlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
+    checkItemHandlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
   }
   // Stop looking for a scroll loader
   if (itemStatusObserver) {
