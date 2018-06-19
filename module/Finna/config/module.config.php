@@ -497,8 +497,11 @@ $config = [
             ],
             'resolver_driver' => [
                 'factories' => [
-                    'sfx' => 'Finna\Resolver\Driver\Factory::getSfx',
+                    'Finna\Resolver\Driver\Sfx' => 'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
                 ],
+                'aliases' => [
+                    'VuFind\Resolver\Driver\Sfx' => 'Finna\Resolver\Driver\Sfx',
+                ]
             ],
             'search_backend' => [
                 'factories' => [
@@ -566,7 +569,7 @@ $config = [
                     'Finna\RecordDriver\SolrDefault' =>
                         'VuFind\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrMarc' =>
-                        'VuFind\RecordDriver\SolrMarcFactory',
+                        'VuFind\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrEad' =>
                         'VuFind\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrForward' =>
