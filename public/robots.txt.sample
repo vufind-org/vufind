@@ -19,6 +19,14 @@ Disallow: /Record/*/Holdings
 Disallow: /*/Record/*/Holdings
 Disallow: /SearchApi/
 Disallow: /*/SearchApi/
+Disallow: /EDS/
+Disallow: /*/EDS/
+Disallow: /EdsRecord/
+Disallow: /*/EdsRecord/
+Disallow: /Summon/
+Disallow: /*/Summon/
+Disallow: /SummonRecord/
+Disallow: /*/SummonRecord/
 # Allow indexing of record pages by commenting out the following two lines:
 Disallow: /Record/
 Disallow: /*/Record/
