@@ -4,7 +4,7 @@
     $url = $current['url'];
     $target = ' target="_blank"';
     if ('#' === $url[0]) {
-      $url = $this->recordlink()->getUrl($this->driver) . $url;
+      $url = $this->recordLink()->getUrl($this->driver) . $url;
       $target = '';
     }
   ?>
