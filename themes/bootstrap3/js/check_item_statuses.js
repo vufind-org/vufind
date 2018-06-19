@@ -143,7 +143,6 @@ var handlers = {
 
 function checkItemStatus(el) {
   var $item = $(el);
-  var handlerName = 'ils';
   if ($item.hasClass('js-item-pending')) {
     return;
   }
@@ -151,11 +150,12 @@ function checkItemStatus(el) {
     return false;
   }
   var id = $item.find('.hiddenId').val();
-  if ($item.find('.hiddenHandler').length > 0) {
-    handlerName = $item.find('.hiddenHandler').val();
+  var handlerName = 'ils';
+  if ($item.find('.handler-name').length > 0) {
+    handlerName = $item.find('.handler-name').val();
   }
-  if ($item.data("handlerName")) {
-    handlerName = $item.data("handlerName");
+  if ($item.data("handler-name")) {
+    handlerName = $item.data("handler-name");
   }
   //queue the element into the handler
   handlers[handlerName].itemQueueAjax(id, $item);
@@ -169,8 +169,13 @@ function checkItemStatuses(_container) {
   var ajaxItems = $(container).find('.ajaxItem');
   for (var i = 0; i < ajaxItems.length; i++) {
     var id = $(ajaxItems[i]).find('.hiddenId').val();
-    var handlerName = $(ajaxItems[i]).find('.handler').val();
-    if (!handlerName){ handlerName = 'ils'; }
+    var handlerName = 'ils';
+    if ($(ajaxItems[i]).find('.handler-name').length > 0) {
+      handlerName = $(ajaxItems[i]).find('.handler-name').val();
+    }
+    if ($(ajaxItems[i]).data("handler-name")) {
+      handlerName = $(ajaxItems[i]).data("handler-name");
+    }
     handlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
   }
   // Stop looking for a scroll loader
