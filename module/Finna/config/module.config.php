@@ -519,6 +519,9 @@ $config = [
                     'VuFind\Search\Combined\Options' => 'Finna\Search\Combined\Options',
                     'VuFind\Search\EDS\Options' => 'Finna\Search\EDS\Options',
                     'VuFind\Search\Primo\Options' => 'Finna\Search\Primo\Options',
+
+                    // Counterpart for EmptySet Params:
+                    'Finna\Search\EmptySet\Options' => 'VuFind\Search\EmptySet\Options',
                 ]
             ],
             'search_params' => [
