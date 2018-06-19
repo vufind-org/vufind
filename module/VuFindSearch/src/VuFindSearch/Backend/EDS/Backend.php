@@ -391,7 +391,7 @@ class Backend extends AbstractBackend
      *
      * @return array of terms 
      */
-    public function getAutocomplete($query)
+    public function autocomplete($query)
     {
         // Todo:
         // get autocomplete Token, Url, CustId
@@ -399,7 +399,7 @@ class Backend extends AbstractBackend
         // build request 
         // get request
         // parse result and build array of terms
-        return ["TEST1","TEST2","TEST3"]; 
+        return ["AUTO1","AUTO2","AUTO3"]; 
     }
 
 

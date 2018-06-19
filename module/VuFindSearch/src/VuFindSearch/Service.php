@@ -147,6 +147,33 @@ class Service
     }
 
     /**
+     * Retrieve an array for autocomplete.
+     *
+     * @param string   $backend Search backend identifier
+     * @param string   $query   Query string 
+     *
+     * @return RecordCollectionInterface
+     */
+    public function autocomplete($backend, $query)
+    {
+        $params  = $params ?: new ParamBag();
+        $context = __FUNCTION__;
+        $args = compact('backend', 'query');
+        $backend = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
+
+        $this->triggerPre($backend, $args);
+        try {
+            $response = $backend->autocomplete($query);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
      * Retrieve a batch of records.
      *
      * @param string   $backend Search backend identifier

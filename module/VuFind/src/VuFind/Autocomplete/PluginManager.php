@@ -71,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\Autocomplete\None' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Autocomplete\Eds' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Autocomplete\Eds' => 'VuFind\Autocomplete\SolrFactory',
         'VuFind\Autocomplete\OCLCIdentities' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Autocomplete\Search2' => 'VuFind\Autocomplete\SolrFactory',
