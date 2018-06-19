@@ -1,6 +1,6 @@
 <?php
 /**
- * EBSCO EdsApi Exception class
+ * EBSCO API Exception class
  *
  * PHP version 7
  *
@@ -25,17 +25,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+namespace VuFindSearch\Backend\EDS;
 
 /**
- * EBSCO EdsApi Exception class
+ * EBSCO API Exception class
  *
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class EbscoEdsApiException extends \VuFindSearch\Backend\Exception\BackendException
+class ApiException extends \VuFindSearch\Backend\Exception\BackendException
 {
     /**
      * Error message details returned from the API
