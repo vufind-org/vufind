@@ -52,4 +52,18 @@ $config = [
     ],
 ];
 
+$config['router']['routes']['static-page'] = [
+    'type'    => 'Zend\Mvc\Router\Http\Segment',
+    'options' => [
+        'route'    => "/:page",
+        'constraints' => [
+            'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+        ],
+        'defaults' => [
+            'controller' => 'StaticPage',
+            'action'     => 'staticPage',
+        ]
+    ]
+];
+
 return $config;
