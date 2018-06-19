@@ -29,7 +29,7 @@ return [
             'Finna\View\Helper\Root\MetaLib' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Navibar' => 'Finna\View\Helper\Root\NavibarFactory',
             'Finna\View\Helper\Root\OnlinePayment' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'Finna\View\Helper\Root\OpenUrl' => 'VuFind\View\Helper\Root\OpenUrlFactory',
+            'Finna\View\Helper\Root\OpenUrl' => 'Finna\View\Helper\Root\OpenUrlFactory',
             'Finna\View\Helper\Root\OrganisationDisplayName' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\OrganisationInfo' => 'Finna\View\Helper\Root\OrganisationInfoFactory',
             'Finna\View\Helper\Root\OrganisationsList' => 'Finna\View\Helper\Root\OrganisationsListFactory',
