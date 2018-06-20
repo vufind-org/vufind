@@ -46,7 +46,7 @@
             <? endif; ?>
           <? else: ?>
             <? // Handle corporation information... ?>
-            <? $corporation = implode($this->driver->tryMethod('getCorporation'), " ") ?>
+            <? $corporation = !is_null($this->driver->tryMethod('getCorporation')) ? implode($this->driver->tryMethod('getCorporation'), " ") : ""?>
             <? if (!empty($corporation)): ?>
                <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?
                 $summCorporation = "";
@@ -74,7 +74,7 @@
           <? else: ?>
               <div>
               <? // Fill with non article handling code ?>
-              <?=implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ") ?>
+              <?=!is_null($this->driver->tryMethod('getPublicationDetailsNoPlaces')) ? implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ")  : "" ?>
               </div>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
