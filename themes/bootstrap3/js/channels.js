@@ -61,16 +61,19 @@ function setupChannelSlider(i, op) {
       }
     }
   });
+  var currentPopover = false;
   $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
     var record = $(event.delegateTarget);
     if (record.data('popover')) {
-      if (record.attr('aria-describedby')) {
+      if (record.data('record-id') === currentPopover) {
         record.popover('hide');
+        currentPopover = false;
       } else {
-        $('[aria-describedby]').popover('hide');
         record.popover('show');
+        currentPopover = record.data('record-id');
       }
     } else {
+      currentPopover = record.data('record-id');
       record.data('popover', true);
       record.popover({
         content: VuFind.translate('loading') + '...',
