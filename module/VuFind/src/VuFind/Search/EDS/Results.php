@@ -71,17 +71,6 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the popular terms from eds 
-     *
-     * @param string $query that would be used to get popular terms 
-     *
-     * @return array        array of popular terms
-     */
-    public function getAutocomplete($query) {
-        return $this->getSearchService()->autocomplete('EDS', $query);;
-    }
-
-    /**
      * Returns the stored list of facets for the last search
      *
      * @param array $filter Array of field => on-screen description listing

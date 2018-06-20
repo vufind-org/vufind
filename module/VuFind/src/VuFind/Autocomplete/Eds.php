@@ -58,13 +58,20 @@ class Eds implements AutocompleteInterface
     protected $searchClassId = 'EDS';
 
     /**
+     * Results plugin manager
+     *
+     * @var \VuFindSearch\Backend\EDS\Backend 
+     */
+    protected $backend;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFindSearch\Backend\EDS\Backend $backend Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    public function __construct(\VuFindSearch\Backend\EDS\Backend $backend)
     {
-        $this->resultsManager = $results;
+        $this->backend = $backend;
     }
 
     /**
@@ -86,13 +93,13 @@ class Eds implements AutocompleteInterface
         // perhaps this method can look like this
         // ToDo
 
-        if (!is_object($this->searchObject)) {
+        if (!is_object($this->backend)) {
             throw new \Exception('Please set configuration first.');
         }
 
         try {
             // Perform the autocomplete search:
-            $results = $this->searchObject->getAutocomplete($query);
+            $results = $this->backend->autocomplete($query);
 
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
@@ -110,21 +117,5 @@ class Eds implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        // Set up the Search Object:
-        $this->initSearchObject();
     }
-
-    /**
-     * Initialize the search object used for finding recommendations.
-     *
-     * @return void
-     */
-    protected function initSearchObject()
-    {
-        // Build a new search object:
-        $this->searchObject = $this->resultsManager->get($this->searchClassId);
-        // ToDo: Check if this is necessary
-        // $this->searchObject->getOptions()->spellcheckEnabled(false);
-    }
-
 }
