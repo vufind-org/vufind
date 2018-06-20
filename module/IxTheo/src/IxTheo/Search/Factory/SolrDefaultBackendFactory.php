@@ -51,6 +51,12 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
 
         $current_lang = $this->serviceLocator->get('Vufind\Translator')->getLocale();
 
+        // On the Solr side we use different naming scheme
+        // so map traditional and simplified chinese accordingly
+        $chinese_lang_map = [ "zh" => "hant", "zh-cn" => "hans"];
+        if (array_key_exists($current_lang, $chinese_lang_map))
+            $current_lang = $chinese_lang_map[$current_lang];
+
         $handlers = [
             'select' => [
                 'fallback' => true,
