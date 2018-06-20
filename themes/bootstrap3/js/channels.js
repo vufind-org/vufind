@@ -82,7 +82,7 @@ function setupChannelSlider(i, op) {
     ]
   });
   $(op).on('swipe', function channelDrag() {
-      switchPopover(false);
+    switchPopover(false);
   });
   // truncate long titles and add hover
   $(op).find('.channel-record').dotdotdot();
@@ -173,7 +173,7 @@ $(document).ready(function channelReady() {
   $('.channel').each(setupChannelSlider);
   $('.channel').each(bindChannelAddMenu);
   $(document).on("hidden.bs.popover", function deselectPopover(e) {
-    if(isCurrentPopoverRecord($(e.target))) {
+    if (isCurrentPopoverRecord($(e.target))) {
       switchPopover(false);
     }
   });
