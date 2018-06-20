@@ -26,6 +26,39 @@ function channelAddLinkButtons(elem) {
   $(elem).siblings('.channel-title').append($cont);
 }
 
+var currentPopover = false;
+function isCurrentPopoverRecord(record)
+{
+  return record && currentPopover
+    && record.data('record-id') === currentPopover.data('record-id');
+}
+function switchPopover(record)
+{
+  // Hide the old popover:
+  if (currentPopover) {
+    currentPopover.popover('hide');
+  }
+  // Special case: if the new popover is the same as the old one, reset the
+  // current popover status so that the next click will open it again (toggle)
+  if (isCurrentPopoverRecord(record)) {
+    currentPopover = false;
+  } else {
+    // Default case: set the currentPopover to the new incoming value:
+    currentPopover = record;
+  }
+  // currentPopover has now been updated; show it if appropriate:
+  if (currentPopover) {
+    currentPopover.popover('show');
+  }
+}
+function redrawPopover(record, html)
+{
+  // Only update the popover if the context hasn't changed since the
+  // AJAX call was triggered.
+  if (isCurrentPopoverRecord(record)) {
+    record.data('bs.popover').tip().find('.popover-content').html(html);
+  }
+}
 function setupChannelSlider(i, op) {
   $(op).find(".slide").removeClass("hidden");
   $(op).slick({
@@ -51,7 +84,7 @@ function setupChannelSlider(i, op) {
     ]
   });
   $(op).on('swipe', function channelDrag() {
-    $('[aria-describedby]').popover('hide');
+      switchPopover(false);
   });
   // truncate long titles and add hover
   $(op).find('.channel-record').dotdotdot({
@@ -61,47 +94,33 @@ function setupChannelSlider(i, op) {
       }
     }
   });
-  var currentPopover = false;
   $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
     var record = $(event.delegateTarget);
-    if (record.data('popover')) {
-      if (record.data('record-id') === currentPopover) {
-        record.popover('hide');
-        currentPopover = false;
-      } else {
-        record.popover('show');
-        currentPopover = record.data('record-id');
-      }
-    } else {
-      currentPopover = record.data('record-id');
-      record.data('popover', true);
-      record.popover({
-        content: VuFind.translate('loading') + '...',
-        html: true,
-        placement: 'bottom',
-        trigger: 'focus',
-        container: '#' + record.closest('.channel').attr('id')
+    record.popover({
+      content: VuFind.translate('loading') + '...',
+      html: true,
+      placement: 'bottom',
+      trigger: 'focus',
+      container: '#' + record.closest('.channel').attr('id')
+    });
+    switchPopover(record);
+    $.ajax({
+      url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
+      type: 'POST',
+      data: {tab: 'description'}
+    })
+      .done(function channelPopoverDone(data) {
+        var newContent = '<h2>' + htmlEncode(record.text()) + '</h2>'
+        + '<div class="btn-group btn-group-justified">'
+        + '<a href="' + VuFind.path + '/Channels/Record?'
+          + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+          + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+        + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+        + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+        + '</div>'
+        + data;
+        redrawPopover(record, newContent);
       });
-      $('[aria-describedby]').popover('hide');
-      record.popover('show');
-      $.ajax({
-        url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
-        type: 'POST',
-        data: {tab: 'description'}
-      })
-        .done(function channelPopoverDone(data) {
-          record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
-          + '<div class="btn-group btn-group-justified">'
-          + '<a href="' + VuFind.path + '/Channels/Record?'
-            + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-            + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-          + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-          + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-          + '</div>'
-          + data;
-          record.popover('show');
-        });
-    }
     return false;
   });
   // Channel add buttons
