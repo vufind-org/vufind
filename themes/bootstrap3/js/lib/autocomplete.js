@@ -14,10 +14,14 @@
         var position = input.offset();
         element.css({
           top: position.top + input.outerHeight(),
-          left: position.left,
           minWidth: input.width()
         });
-      }
+        if (options.rtl) {
+          element.css("right", document.body.offsetWidth - position.left - input.outerWidth());
+        } else {
+          element.css("left", position.left);
+        }
+      };
 
       var show = function show() {
         element.removeClass(options.hidingClass);
@@ -375,7 +379,8 @@
     highlight: true,
     loadingString: 'Loading...',
     maxResults: 20,
-    minLength: 3
+    minLength: 3,
+    rtl: false
   };
 
   var timer = false;

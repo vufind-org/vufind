@@ -66,13 +66,23 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         return $percentage > 0.1 ? $view->localizedNumber($percentage, 1) : "&lt; 0.1";
     }
 
+    /**
+     * Get Team Email Address
+     *
+     * @return string
+     */
+    function getTeamEmail() {
+        $config = $this->sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $team_email = isset($config->Site->email_team) ? $config->Site->email_team : '';
+        return $team_email;
+    }
+    
    /**
     * Appropriately format the roles for authors
     * @param array roles
     *
     * @return string
     */
-
    function formatRoles($roles) {
 
        if (!isset($roles['role'])) {

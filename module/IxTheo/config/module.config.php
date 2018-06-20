@@ -127,20 +127,6 @@ $staticRoutes = [
     'MyResearch/DeletePDASubscription',
 ];
 
-$config['router']['routes']['static-page'] = [
-    'type'    => 'Zend\Mvc\Router\Http\Segment',
-    'options' => [
-        'route'    => "/:page",
-        'constraints' => [
-            'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-        ],
-        'defaults' => [
-            'controller' => 'StaticPage',
-            'action'     => 'staticPage',
-        ]
-    ]
-];
-
 $routeGenerator = new \IxTheo\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);

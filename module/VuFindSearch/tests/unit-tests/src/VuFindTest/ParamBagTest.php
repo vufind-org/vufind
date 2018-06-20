@@ -97,4 +97,19 @@ class ParamBagTest extends TestCase
         $bag3->mergeWithAll([$bag1, $bag2]);
         $this->assertEquals(['a' => [1], 'b' => [2], 'c' => [3]], $bag3->getArrayCopy());
     }
+
+    /**
+     * Test countability.
+     *
+     * @return void
+     */
+    public function testCountability()
+    {
+        $bag = new ParamBag();
+        $this->assertEquals(0, count($bag));
+        $bag->set('foo', 'bar');
+        $this->assertEquals(1, count($bag));
+        $bag->set('xyzzy', 'baz');
+        $this->assertEquals(2, count($bag));
+    }
 }
