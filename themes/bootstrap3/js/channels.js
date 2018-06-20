@@ -1,4 +1,4 @@
-/*global getUrlRoot, htmlEncode, VuFind */
+/*global getUrlRoot, VuFind */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links = JSON.parse(elem.dataset.linkJson);
@@ -81,7 +81,7 @@ VuFind.register('channels', function Channels() {
       ]
     });
     $(op).on('swipe', function channelDrag() {
-        switchPopover(false);
+      switchPopover(false);
     });
     // truncate long titles and add hover
     $(op).find('.channel-record').dotdotdot();
@@ -172,7 +172,7 @@ VuFind.register('channels', function Channels() {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);
     $(document).on("hidden.bs.popover", function deselectPopover(e) {
-      if(isCurrentPopoverRecord($(e.target))) {
+      if (isCurrentPopoverRecord($(e.target))) {
         switchPopover(false);
       }
     });
