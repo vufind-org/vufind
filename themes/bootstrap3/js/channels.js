@@ -27,6 +27,7 @@ function channelAddLinkButtons(elem) {
 }
 
 function setupChannelSlider(i, op) {
+  $(op).find(".slide").removeClass("hidden");
   $(op).slick({
     slidesToShow: 6,
     slidesToScroll: 6,
