@@ -27,13 +27,11 @@ function channelAddLinkButtons(elem) {
 }
 
 var currentPopover = false;
-function isCurrentPopoverRecord(record)
-{
+function isCurrentPopoverRecord(record) {
   return record && currentPopover
     && record.data('record-id') === currentPopover.data('record-id');
 }
-function switchPopover(record)
-{
+function switchPopover(record) {
   // Hide the old popover:
   if (currentPopover) {
     currentPopover.popover('hide');
@@ -51,13 +49,13 @@ function switchPopover(record)
     currentPopover.popover('show');
   }
 }
-function redrawPopover(record, html)
-{
+function redrawPopover(record, html) {
   // Only update the popover if the context hasn't changed since the
   // AJAX call was triggered.
   if (isCurrentPopoverRecord(record)) {
     record.data('bs.popover').tip().find('.popover-content').html(html);
   }
+  record.data('bs.popover').options.content = html;
 }
 function setupChannelSlider(i, op) {
   $(op).find(".slide").removeClass("hidden");
@@ -87,40 +85,36 @@ function setupChannelSlider(i, op) {
       switchPopover(false);
   });
   // truncate long titles and add hover
-  $(op).find('.channel-record').dotdotdot({
-    callback: function dddcallback(istrunc, orig) {
-      if (istrunc) {
-        $(this).attr('title', $(orig).text().trim());
-      }
-    }
-  });
+  $(op).find('.channel-record').dotdotdot();
   $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
     var record = $(event.delegateTarget);
-    record.popover({
-      content: VuFind.translate('loading') + '...',
-      html: true,
-      placement: 'bottom',
-      trigger: 'focus',
-      container: '#' + record.closest('.channel').attr('id')
-    });
-    switchPopover(record);
-    $.ajax({
-      url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
-      type: 'POST',
-      data: {tab: 'description'}
-    })
-      .done(function channelPopoverDone(data) {
-        var newContent = '<h2>' + htmlEncode(record.text()) + '</h2>'
-        + '<div class="btn-group btn-group-justified">'
-        + '<a href="' + VuFind.path + '/Channels/Record?'
-          + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-          + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-        + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-        + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-        + '</div>'
-        + data;
-        redrawPopover(record, newContent);
+    if (!record.data("popover-loaded")) {
+      record.popover({
+        content: VuFind.translate('loading') + '...',
+        html: true,
+        placement: 'bottom',
+        trigger: 'focus',
+        container: '#' + record.closest('.channel').attr('id')
       });
+      $.ajax({
+        url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
+        type: 'POST',
+        data: {tab: 'description'}
+      })
+        .done(function channelPopoverDone(data) {
+          var newContent = '<div class="btn-group btn-group-justified">'
+          + '<a href="' + VuFind.path + '/Channels/Record?'
+            + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+            + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+          + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
+          + '<a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+          + '</div>'
+          + data;
+          redrawPopover(record, newContent);
+          record.data("popover-loaded", true);
+        });
+    }
+    switchPopover(record);
     return false;
   });
   // Channel add buttons
@@ -178,4 +172,9 @@ function bindChannelAddMenu(iteration, channel) {
 $(document).ready(function channelReady() {
   $('.channel').each(setupChannelSlider);
   $('.channel').each(bindChannelAddMenu);
+  $(document).on("hidden.bs.popover", function deselectPopover(e) {
+    if(isCurrentPopoverRecord($(e.target))) {
+      switchPopover(false);
+    }
+  });
 });
