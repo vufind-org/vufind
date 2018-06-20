@@ -76,4 +76,31 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $team_email = isset($config->Site->email_team) ? $config->Site->email_team : '';
         return $team_email;
     }
+    
+   /**
+    * Appropriately format the roles for authors
+    * @param array roles
+    *
+    * @return string
+    */
+   function formatRoles($roles) {
+
+       if (!isset($roles['role'])) {
+           return '';
+       }
+       $translate = function ($arr) {
+         $translatedRoles = array();
+         foreach ($arr as $element) {
+             if (!is_array($element)) {
+               $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
+             } else {
+               foreach ($element as $str) {
+                   $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
+               }
+             }
+         }
+         return implode(',', $translatedRoles);
+       };
+       return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+   }
 }

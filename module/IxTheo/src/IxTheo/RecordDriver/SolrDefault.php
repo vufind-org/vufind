@@ -39,32 +39,6 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get an array of publication detail lines combining information from
-     * getPublicationDates(), getPublishers()
-     *
-     * @return array
-     */
-    public function getPublicationDetailsNoPlaces(){
-        $names = $this->getPublishers();
-        $dates = $this->getHumanReadablePublicationDates();
-
-        $i = 0;
-        $retval = [];
-        while (isset($names[$i]) || isset($dates[$i])) {
-            // Build objects to represent each set of data; these will
-            // transform seamlessly into strings in the view layer.
-            $retval[] = new \VuFind\RecordDriver\Response\PublicationDetails(
-                isset($names[$i]) ? $names[$i] : '',
-                isset($dates[$i]) ? $dates[$i] : '',
-                null
-            );
-            $i++;
-        }
-
-        return $retval;
-    }
-
-    /**
      * Get secondary author and its role in a '$'-separated string
      *
      * @return array
@@ -273,17 +247,35 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $book_code_as_string . $separator . strval(self::GetVerse($book_code));
     }
 
+    private static function DecodeChapterVerse($book_code, $separator) {
+        $chapter_code_as_string = "";
+
+        if (!self::HasChapter($book_code))
+            return $chapter_code_as_string;
+        $chapter_code_as_string .= strval(self::GetChapter($book_code));
+        if (!self::HasVerse($book_code))
+            return $chapter_code_as_string;
+        $verse = self::GetVerse($book_code);
+        if ($verse != 0 && $verse != 999)
+            return $chapter_code_as_string . $separator . strval(self::GetVerse($book_code));
+        else
+            return $chapter_code_as_string;
+    }
+
     private static function BibleRangeToDisplayString($bible_range, $language_code) {
         $separator = (substr($language_code, 0, 2) == "de") ? "," : ":";
         $code1 = (int)substr($bible_range, 0, 8);
         $code2 = (int)substr($bible_range, 9, 8);
+
         if ($code1 + 999999 == $code2)
             return self::DecodeBookCode($code1, $separator);
         if (self::GetBookCode($code1) != self::GetBookCode($code2))
             return self::DecodeBookCode($code1, $separator) . " – " . self::DecodeBookCode($code2, $separator);
+
         $codes_as_string = self::$codes_to_book_abbrevs[self::GetBookCode($code1)] . " ";
         $chapter1 = self::GetChapter($code1);
         $chapter2 = self::GetChapter($code2);
+
         if ($chapter1 == $chapter2) {
             $codes_as_string .= strval($chapter1);
             $verse1 = self::GetVerse($code1);
@@ -295,7 +287,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             else
                 return $codes_as_string . $separator . strval($verse1) . "–" . strval($verse2);
         }
-        return $codes_as_string . strval($chapter1) . "–" . strval($chapter2);
+        return $codes_as_string . self::DecodeChapterVerse($code1, $separator) . "–" . self::DecodeChapterVerse($code2, $separator);
     }
 
     public function getBibleRangesString() {
@@ -310,13 +302,12 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         }
         return $bible_references;
     }
-    
+
     /** Check whether a record is potentially available for PDA
      *
      * @return bool
      */
-    public function isPotentiallyPDA()
-    {
+    public function isPotentiallyPDA() {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }
 }
