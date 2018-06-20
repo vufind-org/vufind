@@ -3,7 +3,13 @@
 
 function channelAddLinkButtons(elem) {
   var links = JSON.parse(elem.dataset.linkJson);
-  var $cont = $('<div class="dropdown"><button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fa fa-ellipsis-h"></i></button></div>');
+  var $cont = $(
+    '<div class="dropdown">' +
+    '  <button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+    '    <i class="fa fa-caret-square-o-down"></i>' +
+    '   </button>' +
+    '</div>'
+  );
   var $list = $('<ul class="dropdown-menu"></ul>');
   for (var i = 0; i < links.length; i++) {
     var li = $('<li/>');
