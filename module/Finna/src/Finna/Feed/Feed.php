@@ -270,7 +270,21 @@ class Feed implements \Zend\Log\LoggerAwareInterface
 
         if (!$channel) {
             // No cache available, read from source.
-            if (preg_match('/^http(s)?:\/\//', $url)) {
+            if (strstr($url, 'finna-test.fi')) {
+                // Refuse to load feeds from finna-test.fi
+                $feedStr = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <atom:link href="" rel="self" type="application/rss+xml"/>
+    <link></link>
+    <title><![CDATA[<!-- Feed URL blacklisted -->]]></title>
+    <description></description>
+  </channel>
+</rss>
+EOT;
+                $channel = Reader::importString($feedStr);
+            } elseif (preg_match('/^http(s)?:\/\//', $url)) {
                 // Absolute URL
                 try {
                     $channel = Reader::import($url);
