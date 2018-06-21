@@ -420,3 +420,34 @@ span.badge.cb-facet {
     padding: 10px;
   }
 }
+
+/* ------ TOP FACETS ------ */
+.top-title {
+  display: inline-block;
+  padding-top: .5rem;
+  padding-left: .5rem;
+  font-weight: bold;
+  color: #000;
+}
+.top-title .fa {
+  width: 1rem;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .top-title { padding-top: 0; }
+  .top-title .fa { display: none; }
+  .top-facets .collapse {
+    display: block;
+    height: auto !important;
+  }
+}
+
+.top-facets .facet,
+.top-facets .narrow-toggle,
+.top-facets > strong {
+  display: inline-block;
+  width: auto;
+  padding: .25rem .5rem;
+  border: 0;
+  white-space: nowrap;
+}
