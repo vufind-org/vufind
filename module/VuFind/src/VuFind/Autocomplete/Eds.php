@@ -44,13 +44,6 @@ namespace VuFind\Autocomplete;
 class Eds implements AutocompleteInterface
 {
     /**
-     * Autocomplete handler
-     *
-     * @var string
-     */
-    protected $handler;
-
-    /**
      * Search object family to use
      *
      * @var string
