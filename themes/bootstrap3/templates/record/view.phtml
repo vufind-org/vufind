@@ -60,7 +60,7 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="<?=$this->layoutClass('mainbody')?><?=count($this->related()->getList($this->driver)) < 1 ? ' solo' : '' ?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
