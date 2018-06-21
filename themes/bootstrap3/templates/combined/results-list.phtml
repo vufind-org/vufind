@@ -12,7 +12,7 @@
   $params->setLimit($limit);
 ?>
 <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-  <div class="pull-right">
+  <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link"><i class="fa fa-gears"></i> <?=$this->transEsc('More options')?></a>
   </div>
   <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
@@ -23,7 +23,7 @@
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
 <? endif; ?>
 <div class="clearfix">
-  <div class="pull-left help-block">
+  <div class="pull-left flip help-block">
     <? if ($recordTotal > 0): ?>
       <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>

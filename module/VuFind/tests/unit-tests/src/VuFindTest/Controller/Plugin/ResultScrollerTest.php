@@ -70,7 +70,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => 'VuFind|4', 'nextRecord' => 'VuFind|6',
+            'previousRecord' => 'Solr|4', 'nextRecord' => 'Solr|6',
             'currentPosition' => 5, 'resultTotal' => 10
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(5)));
@@ -87,7 +87,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => null, 'nextRecord' => 'VuFind|2',
+            'previousRecord' => null, 'nextRecord' => 'Solr|2',
             'currentPosition' => 1, 'resultTotal' => 10
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
@@ -104,7 +104,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => 'VuFind|9', 'nextRecord' => null,
+            'previousRecord' => 'Solr|9', 'nextRecord' => null,
             'currentPosition' => 10, 'resultTotal' => 10
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(10)));
@@ -121,7 +121,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => 'VuFind|16', 'nextRecord' => null,
+            'previousRecord' => 'Solr|16', 'nextRecord' => null,
             'currentPosition' => 17, 'resultTotal' => 17
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(17)));
@@ -138,7 +138,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => 'VuFind|10', 'nextRecord' => 'VuFind|12',
+            'previousRecord' => 'Solr|10', 'nextRecord' => 'Solr|12',
             'currentPosition' => 11, 'resultTotal' => 30
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(11)));
@@ -155,7 +155,7 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-            'previousRecord' => 'VuFind|19', 'nextRecord' => 'VuFind|21',
+            'previousRecord' => 'Solr|19', 'nextRecord' => 'Solr|21',
             'currentPosition' => 20, 'resultTotal' => 30
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(20)));

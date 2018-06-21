@@ -416,6 +416,7 @@ class AjaxController extends AbstractBase
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;
+                $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
@@ -437,7 +438,9 @@ class AjaxController extends AbstractBase
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
-                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
+                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
+                'status_unknown' => isset($details['status_unknown'])
+                    ? $details['status_unknown'] : false
             ];
             $locationList[] = $locationInfo;
         }
@@ -490,7 +493,7 @@ class AjaxController extends AbstractBase
             );
         }
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : 'VuFind';
+            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
             $data = $user->getSavedData($id, null, $source);
             if ($data) {
                 // if this item was saved, add it to the list of saved items.
@@ -512,30 +515,33 @@ class AjaxController extends AbstractBase
     /**
      * Send output data and exit.
      *
-     * @param mixed  $data   The response data
-     * @param string $status Status of the request
+     * @param mixed  $data     The response data
+     * @param string $status   Status of the request
+     * @param int    $httpCode A custom HTTP Status Code
      *
      * @return \Zend\Http\Response
+     * @throws \Exception
      */
-    protected function output($data, $status)
+    protected function output($data, $status, $httpCode = null)
     {
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        if ($httpCode !== null) {
+            $response->setStatusCode($httpCode);
+        }
         if ($this->outputMode == 'json') {
-            $response = $this->getResponse();
-            $headers = $response->getHeaders();
-            $headers->addHeaderLine(
-                'Content-type', 'application/javascript'
-            );
-            $headers->addHeaderLine(
-                'Cache-Control', 'no-cache, must-revalidate'
-            );
-            $headers->addHeaderLine(
-                'Expires', 'Mon, 26 Jul 1997 05:00:00 GMT'
-            );
-            $output = ['data' => $data,'status' => $status];
+            $headers->addHeaderLine('Content-type', 'application/javascript');
+            $output = ['data' => $data, 'status' => $status];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
             }
             $response->setContent(json_encode($output));
+            return $response;
+        } else if ($this->outputMode == 'plaintext') {
+            $headers->addHeaderLine('Content-type', 'text/plain');
+            $response->setContent($data ? $status . " $data" : $status);
             return $response;
         } else {
             throw new \Exception('Unsupported output mode: ' . $this->outputMode);
@@ -631,7 +637,7 @@ class AjaxController extends AbstractBase
         try {
             $driver = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', 'VuFind')
+                $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
             );
             $tag = $this->params()->fromPost('tag', '');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
@@ -665,7 +671,7 @@ class AjaxController extends AbstractBase
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind'),
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0, null, null, 'count', $is_me_id
         );
 
@@ -855,108 +861,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Save a record to a list.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function saveRecordAjax()
-    {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        $driver = $this->getRecordLoader()->load(
-            $this->params()->fromPost('id'),
-            $this->params()->fromPost('source', 'VuFind')
-        );
-        $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
-        $post['mytags'] = $tagParser->parse($post['mytags']);
-        $driver->saveToFavorites($post, $user);
-        return $this->output('Done', self::STATUS_OK);
-    }
-
-    /**
-     * Saves records to a User's favorites
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function bulkSaveAjax()
-    {
-        // Without IDs, we can't continue
-        $ids = $this->params()->fromPost('ids', []);
-        if (empty($ids)) {
-            return $this->output(
-                ['result' => $this->translate('bulk_error_missing')],
-                self::STATUS_ERROR
-            );
-        }
-
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        try {
-            $this->favorites()->saveBulk(
-                $this->getRequest()->getPost()->toArray(), $user
-            );
-            return $this->output(
-                [
-                    'result' => ['list' => $this->params()->fromPost('list')],
-                    'info' => $this->translate("bulk_save_success")
-                ], self::STATUS_OK
-            );
-        } catch (\Exception $e) {
-            return $this->output(
-                ['info' => $this->translate('bulk_save_error')],
-                self::STATUS_ERROR
-            );
-        }
-    }
-
-    /**
-     * Add a list.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function addListAjax()
-    {
-        $user = $this->getUser();
-
-        try {
-            $table = $this->getTable('UserList');
-            $list = $table->getNew($user);
-            $id = $list->updateFromRequest($user, $this->getRequest()->getPost());
-        } catch (\Exception $e) {
-            switch(get_class($e)) {
-            case 'VuFind\Exception\LoginRequired':
-                return $this->output(
-                    $this->translate('You must be logged in first'),
-                    self::STATUS_NEED_AUTH
-                );
-                break;
-            case 'VuFind\Exception\ListPermission':
-            case 'VuFind\Exception\MissingField':
-                return $this->output(
-                    $this->translate($e->getMessage()), self::STATUS_ERROR
-                );
-            default:
-                throw $e;
-            }
-        }
-
-        return $this->output(['id' => $id], self::STATUS_OK);
-    }
-
-    /**
      * Get Autocomplete suggestions.
      *
      * @return \Zend\Http\Response
@@ -970,159 +874,6 @@ class AjaxController extends AbstractBase
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
         );
-    }
-
-    /**
-     * Text a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function smsRecordAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-        // Attempt to send the email:
-        try {
-            // Check captcha
-            $this->recaptcha()->setErrorMode('throw');
-            $useRecaptcha = $this->recaptcha()->active('sms');
-            // Process form submission:
-            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
-                throw new \Exception('recaptcha_not_passed');
-            }
-            $record = $this->getRecordLoader()->load(
-                $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', 'VuFind')
-            );
-            $to = $this->params()->fromPost('to');
-            $body = $this->getViewRenderer()->partial(
-                'Email/record-sms.phtml', ['driver' => $record, 'to' => $to]
-            );
-            $this->getServiceLocator()->get('VuFind\SMS')->text(
-                $this->params()->fromPost('provider'), $to, null, $body
-            );
-            return $this->output(
-                $this->translate('sms_success'), self::STATUS_OK
-            );
-        } catch (\Exception $e) {
-            return $this->output(
-                $this->translate($e->getMessage()), self::STATUS_ERROR
-            );
-        }
-    }
-
-    /**
-     * Email a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function emailRecordAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-
-        // Force login if necessary:
-        $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$this->getUser()
-        ) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        // Attempt to send the email:
-        try {
-            // Check captcha
-            $this->recaptcha()->setErrorMode('throw');
-            $useRecaptcha = $this->recaptcha()->active('email');
-            // Process form submission:
-            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
-                throw new \Exception('recaptcha_not_passed');
-            }
-
-            $record = $this->getRecordLoader()->load(
-                $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', 'VuFind')
-            );
-            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
-            $view = $this->createEmailViewModel(
-                null, $mailer->getDefaultRecordSubject($record)
-            );
-            $mailer->setMaxRecipients($view->maxRecipients);
-            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
-                ? $view->from : null;
-            $mailer->sendRecord(
-                $view->to, $view->from, $view->message, $record,
-                $this->getViewRenderer(), $view->subject, $cc
-            );
-            return $this->output(
-                $this->translate('email_success'), self::STATUS_OK
-            );
-        } catch (\Exception $e) {
-            return $this->output(
-                $this->translate($e->getMessage()), self::STATUS_ERROR
-            );
-        }
-    }
-
-    /**
-     * Email a search.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function emailSearchAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-
-        // Force login if necessary:
-        $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$this->getUser()
-        ) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        // Make sure URL is properly formatted -- if no protocol is specified, run it
-        // through the serverurl helper:
-        $url = $this->params()->fromPost('url');
-        if (substr($url, 0, 4) != 'http') {
-            $urlHelper = $this->getViewRenderer()->plugin('serverurl');
-            $url = $urlHelper($url);
-        }
-
-        // Attempt to send the email:
-        try {
-            // Check captcha
-            $this->recaptcha()->setErrorMode('throw');
-            $useRecaptcha = $this->recaptcha()->active('email');
-            // Process form submission:
-            if (!$this->formWasSubmitted('url', $useRecaptcha)) {
-                throw new \Exception('recaptcha_not_passed');
-            }
-
-            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
-            $defaultSubject = $this->params()->fromQuery('cart')
-                ? $this->translate('bulk_email_title')
-                : $mailer->getDefaultLinkSubject();
-            $view = $this->createEmailViewModel(null, $defaultSubject);
-            $mailer->setMaxRecipients($view->maxRecipients);
-            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
-                ? $view->from : null;
-            $mailer->sendLink(
-                $view->to, $view->from, $view->message, $url,
-                $this->getViewRenderer(), $view->subject, $cc
-            );
-            return $this->output(
-                $this->translate('email_success'), self::STATUS_OK
-            );
-        } catch (\Exception $e) {
-            return $this->output(
-                $this->translate($e->getMessage()), self::STATUS_ERROR
-            );
-        }
     }
 
     /**
@@ -1229,7 +980,7 @@ class AjaxController extends AbstractBase
 
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
-            $id, $this->params()->fromPost('source', 'VuFind')
+            $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
         );
         $id = $resource->addComment($comment, $user);
 
@@ -1271,62 +1022,11 @@ class AjaxController extends AbstractBase
     {
         $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $html = $this->getViewRenderer()
             ->render('record/comments-list.phtml', ['driver' => $driver]);
         return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Delete multiple items from favorites or a list.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function deleteFavoritesAjax()
-    {
-        $user = $this->getUser();
-        if ($user === false) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        $listID = $this->params()->fromPost('listID');
-        $ids = $this->params()->fromPost('ids');
-
-        if (!is_array($ids)) {
-            return $this->output(
-                $this->translate('delete_missing'),
-                self::STATUS_ERROR
-            );
-        }
-
-        $this->favorites()->delete($ids, $listID, $user);
-        return $this->output(
-            ['result' => $this->translate('fav_delete_success')],
-            self::STATUS_OK
-        );
-    }
-
-    /**
-     * Delete records from a User's cart
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function removeItemsCartAjax()
-    {
-        // Without IDs, we can't continue
-        $ids = $this->params()->fromPost('ids');
-        if (empty($ids)) {
-            return $this->output(
-                ['result' => $this->translate('bulk_error_missing')],
-                self::STATUS_ERROR
-            );
-        }
-        $this->getServiceLocator()->get('VuFind\Cart')->removeItems($ids);
-        return $this->output(['delete' => true], self::STATUS_OK);
     }
 
     /**
@@ -1351,6 +1051,7 @@ class AjaxController extends AbstractBase
                 'result' => $this->translate('Done'),
                 'result_additional' => $html,
                 'needs_redirect' => $export->needsRedirect($format),
+                'export_type' => $export->getBulkExportType($format),
                 'result_url' => $url
             ], self::STATUS_OK
         );
@@ -1595,6 +1296,55 @@ class AjaxController extends AbstractBase
             ),
             self::STATUS_OK
         );
+    }
+
+    /**
+     * Check status and return a status message for e.g. a load balancer.
+     *
+     * A simple OK as text/plain is returned if everything works properly.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function systemStatusAction()
+    {
+        $this->outputMode = 'plaintext';
+
+        // Check system status
+        $config = $this->getConfig();
+        if (!empty($config->System->healthCheckFile)
+            && file_exists($config->System->healthCheckFile)
+        ) {
+            return $this->output(
+                'Health check file exists', self::STATUS_ERROR, 503
+            );
+        }
+
+        // Test search index
+        try {
+            $results = $this->getResultsManager()->get('Solr');
+            $params = $results->getParams();
+            $params->setQueryIDs(['healthcheck']);
+            $results->performAndProcessSearch();
+        } catch (\Exception $e) {
+            return $this->output(
+                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR, 500
+            );
+        }
+
+        // Test database connection
+        try {
+            $sessionTable = $this->getTable('Session');
+            $sessionTable->getBySessionId('healthcheck', false);
+        } catch (\Exception $e) {
+            return $this->output(
+                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
+            );
+        }
+
+        // This may be called frequently, don't leave sessions dangling
+        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+
+        return $this->output('', self::STATUS_OK);
     }
 
     /**

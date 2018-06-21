@@ -129,8 +129,7 @@ class Holds extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->setNamespace('error')
-                        ->addMessage('error_inconsistent_parameters');
+                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
                     return [];
                 }
             }
@@ -140,21 +139,21 @@ class Holds extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->setNamespace('error')->addMessage('hold_cancel_fail');
+                $flashMsg->addMessage('hold_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
                     // messages so we can avoid a double translation here.
                     $msg = $this->getController()
                         ->translate('hold_cancel_success_items');
-                    $flashMsg->setNamespace('info')->addMessage(
-                        $cancelResults['count'] . ' ' . $msg
+                    $flashMsg->addMessage(
+                        $cancelResults['count'] . ' ' . $msg, 'success'
                     );
                 }
                 return $cancelResults;
             }
         } else {
-             $flashMsg->setNamespace('error')->addMessage('hold_empty_selection');
+             $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
     }

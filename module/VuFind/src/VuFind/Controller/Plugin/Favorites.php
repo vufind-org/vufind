@@ -51,7 +51,7 @@ class Favorites extends AbstractPlugin
      *  </ul>
      * @param \VuFind\Db\Row\User $user   The user saving the record
      *
-     * @return void
+     * @return array list information
      */
     public function saveBulk($params, $user)
     {
@@ -87,6 +87,7 @@ class Favorites extends AbstractPlugin
                 ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
         }
+        return ['listId' => $list->id];
     }
 
     /**

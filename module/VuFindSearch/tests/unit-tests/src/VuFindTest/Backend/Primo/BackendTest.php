@@ -212,7 +212,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
             'VuFindSearch\Backend\Primo\Connector', $mock,
-            ['api-id', 'inst-id', $client]
+            ['http://fakeaddress.none', 'inst-id', $client]
         );
     }
 }

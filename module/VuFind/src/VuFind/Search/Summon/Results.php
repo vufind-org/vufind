@@ -204,6 +204,10 @@ class Results extends \VuFind\Search\Base\Results
         $translate = in_array(
             $field, $this->getOptions()->getTranslatedFacets()
         );
+        if ($translate) {
+            $transTextDomain = $this->getOptions()
+                ->getTextDomainForTranslatedFacet($field);
+        }
 
         // Loop through all the facet values to see if any are applied.
         foreach ($current['counts'] as $facetIndex => $facetDetails) {
@@ -236,7 +240,7 @@ class Results extends \VuFind\Search\Base\Results
 
             // Create display value:
             $current['counts'][$facetIndex]['displayText'] = $translate
-                ? $this->translate($facetDetails['value'])
+                ? $this->translate("$transTextDomain::{$facetDetails['value']}")
                 : $facetDetails['value'];
         }
 

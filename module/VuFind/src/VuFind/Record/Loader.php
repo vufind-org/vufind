@@ -79,8 +79,9 @@ class Loader
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function load($id, $source = 'VuFind', $tolerateMissing = false)
-    {
+    public function load($id, $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateMissing = false
+    ) {
         $results = $this->searchService->retrieve($source, $id)->getRecords();
         if (count($results) > 0) {
             return $results[0];
@@ -106,7 +107,7 @@ class Loader
      * @throws \Exception
      * @return array
      */
-    public function loadBatchForSource($ids, $source = 'VuFind')
+    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         return $this->searchService->retrieveBatch($source, $ids)->getRecords();
     }

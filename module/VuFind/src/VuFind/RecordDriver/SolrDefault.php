@@ -296,6 +296,19 @@ class SolrDefault extends AbstractBase
         return isset($this->fields['callnumber-raw'])
             ? $this->fields['callnumber-raw'] : [];
     }
+
+    /**
+     * Return the first valid DOI found in the record (false if none).
+     *
+     * @return mixed
+     */
+    public function getCleanDOI()
+    {
+        $field = 'doi_str_mv';
+        return (isset($this->fields[$field][0]) && !empty($this->fields[$field][0]))
+            ? $this->fields[$field][0] : false;
+    }
+
     /**
      * Return the first valid ISBN found in the record (favoring ISBN-10 over
      * ISBN-13 when possible).
@@ -666,11 +679,11 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Support method for getOpenURL() -- pick the OpenURL format.
+     * Support method for getOpenUrl() -- pick the OpenURL format.
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...
@@ -685,8 +698,10 @@ class SolrDefault extends AbstractBase
             return $formats[0];
         } else if (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
+        } else if (strlen($this->getCleanISBN()) > 0) {
+            return 'Book';
         }
-        return 'Book';
+        return 'UnknownFormat';
     }
 
     /**
@@ -717,7 +732,7 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getDefaultOpenURLParams()
+    protected function getDefaultOpenUrlParams()
     {
         // Get a representative publication date:
         $pubDate = $this->getPublicationDates();
@@ -739,9 +754,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getBookOpenURLParams()
+    protected function getBookOpenUrlParams()
     {
-        $params = $this->getDefaultOpenURLParams();
+        $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:book';
         $params['rft.genre'] = 'book';
         $params['rft.btitle'] = $params['rft.title'];
@@ -766,9 +781,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getArticleOpenURLParams()
+    protected function getArticleOpenUrlParams()
     {
-        $params = $this->getDefaultOpenURLParams();
+        $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
         $params['rft.genre'] = 'article';
         $params['rft.issn'] = (string)$this->getCleanISSN();
@@ -798,9 +813,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getUnknownFormatOpenURLParams($format)
+    protected function getUnknownFormatOpenUrlParams($format = 'UnknownFormat')
     {
-        $params = $this->getDefaultOpenURLParams();
+        $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
         $params['rft.creator'] = $this->getPrimaryAuthor();
         $publishers = $this->getPublishers();
@@ -820,9 +835,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getJournalOpenURLParams()
+    protected function getJournalOpenUrlParams()
     {
-        $params = $this->getUnknownFormatOpenURLParams('Journal');
+        $params = $this->getUnknownFormatOpenUrlParams('Journal');
         /* This is probably the most technically correct way to represent
          * a journal run as an OpenURL; however, it doesn't work well with
          * Zotero, so it is currently commented out -- instead, we just add
@@ -855,21 +870,40 @@ class SolrDefault extends AbstractBase
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
+     * @param bool $overrideSupportsOpenUrl Flag to override checking
+     * supportsOpenUrl() (default is false)
+     *
      * @return string OpenURL parameters.
      */
-    public function getOpenURL()
+    public function getOpenUrl($overrideSupportsOpenUrl = false)
     {
+        // stop here if this record does not support OpenURLs
+        if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
+            return false;
+        }
+
         // Set up parameters based on the format of the record:
-        $format = $this->getOpenURLFormat();
-        $method = "get{$format}OpenURLParams";
+        $format = $this->getOpenUrlFormat();
+        $method = "get{$format}OpenUrlParams";
         if (method_exists($this, $method)) {
             $params = $this->$method();
         } else {
-            $params = $this->getUnknownFormatOpenURLParams($format);
+            $params = $this->getUnknownFormatOpenUrlParams($format);
         }
 
         // Assemble the URL:
         return http_build_query($params);
+    }
+
+    /**
+     * Get the OpenURL parameters to represent this record for COinS even if
+     * supportsOpenUrl() is false for this RecordDriver.
+     *
+     * @return string OpenURL parameters.
+     */
+    public function getCoinsOpenUrl()
+    {
+        return $this->getOpenUrl($this->supportsCoinsOpenUrl());
     }
 
     /**
@@ -1547,24 +1581,6 @@ class SolrDefault extends AbstractBase
 
         // Unsupported format:
         return false;
-    }
-
-    /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Only display OpenURL link if the option is turned on and we have
-        // an ISSN.  We may eventually want to make this rule more flexible.
-        if (!$this->getCleanISSN()) {
-            return false;
-        }
-        return parent::openURLActive($area);
     }
 
     /**

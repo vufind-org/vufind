@@ -39,13 +39,6 @@ namespace VuFind\Search\EDS;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Maximum number of results
-     *
-     * @var int
-     */
-    protected $resultLimit = 100;
-
-    /**
      * Available search mode options
      *
      * @var array
@@ -124,9 +117,11 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
-        $this->searchIni = 'EDS';
+        $this->searchIni = $this->facetsIni = 'EDS';
         $searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
+        // 2015-06-30 RF - Changed to unlimited
+        //$this->resultLimit = 100;
         $this->viewOptions = [
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'
@@ -134,6 +129,14 @@ class Options extends \VuFind\Search\Base\Options
         $this->apiInfo = $apiInfo;
         $this->setOptionsFromApi($searchSettings);
         $this->setOptionsFromConfig($searchSettings);
+        $facetConf = $configLoader->get($this->facetsIni);
+        if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
+            && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
+        ) {
+            $this->setTranslatedFacets(
+                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
+            );
+        }
     }
 
     /**
@@ -227,18 +230,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'eds-advanced';
-    }
-
-    /**
-     * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
-     *
-     * @return int
-     */
-    public function getVisibleSearchResultLimit()
-    {
-        return $this->resultLimit;
     }
 
     /**

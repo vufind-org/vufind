@@ -63,26 +63,27 @@ class VuFindSitemap extends VuFind
         @unlink($xmlFile);
         preg_match('/<plainTextContent[^>]*>([^<]*)</ms', $xml, $matches);
         $final = isset($matches[1]) ?
-            html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8') : '';
+            trim(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8')) : '';
 
         // Extract the title from the XML:
         preg_match('/<title[^>]*>([^<]*)</ms', $xml, $matches);
         $title = isset($matches[1]) ?
-            html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8') : '';
+            trim(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8')) : '';
 
         // Extract the keywords from the XML:
         preg_match_all('/<keyword[^>]*>([^<]*)</ms', $xml, $matches);
         $keywords = [];
         if (isset($matches[1])) {
             foreach ($matches[1] as $current) {
-                $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
+                $keywords[]
+                    = trim(html_entity_decode($current, ENT_QUOTES, 'UTF-8'));
             }
         }
 
         // Extract the description from the XML:
         preg_match('/<description[^>]*>([^<]*)</ms', $xml, $matches);
         $description = isset($matches[1])
-            ? html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8') : '';
+            ? trim(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8')) : '';
 
         // Send back the extracted fields:
         return [

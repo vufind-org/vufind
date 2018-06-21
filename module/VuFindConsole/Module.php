@@ -89,6 +89,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'language copystring' => 'Copy one language string to another',
             'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
+            'util commit' => 'Solr commit tool',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',
             'util deletes' => 'Tool for deleting Solr records',

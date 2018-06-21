@@ -163,6 +163,8 @@ class Backend extends AbstractBackend
      */
     public function retrieveBatch($ids, ParamBag $params = null)
     {
+        $params = $params ?: new ParamBag();
+
         // Load 100 records at a time; this is a good number to avoid memory
         // problems while still covering a lot of ground.
         $pageSize = 100;
@@ -177,13 +179,9 @@ class Backend extends AbstractBackend
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, []);
             $currentPage = array_map($formatIds, $currentPage);
-            $params = new ParamBag(
-                [
-                    'q' => 'id:(' . implode(' OR ', $currentPage) . ')',
-                    'start' => 0,
-                    'rows' => $pageSize
-                ]
-            );
+            $params->set('q', 'id:(' . implode(' OR ', $currentPage) . ')');
+            $params->set('start', 0);
+            $params->set('rows', $pageSize);
             $this->injectResponseWriter($params);
             $next = $this->createRecordCollection(
                 $this->connector->search($params)

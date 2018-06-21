@@ -1,7 +1,0 @@
-/.project
-/vendor
-/composer.lock
-/.buildpath
-/.settings
-/devTestConfig.xml
-/qaTestConfig.xml

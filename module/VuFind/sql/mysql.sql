@@ -73,7 +73,7 @@ CREATE TABLE `resource` (
   `title` varchar(200) NOT NULL DEFAULT '',
   `author` varchar(200) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
-  `source` varchar(50) NOT NULL DEFAULT 'VuFind',
+  `source` varchar(50) NOT NULL DEFAULT 'Solr',
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -172,8 +172,8 @@ CREATE TABLE `user` (
   `lastname` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
   `cat_username` varchar(50) DEFAULT NULL,
-  `cat_password` varchar(50) DEFAULT NULL,
-  `cat_pass_enc` varchar(110) DEFAULT NULL,
+  `cat_password` varchar(70) DEFAULT NULL,
+  `cat_pass_enc` varchar(170) DEFAULT NULL,
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',

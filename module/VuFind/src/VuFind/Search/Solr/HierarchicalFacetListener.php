@@ -77,13 +77,6 @@ class HierarchicalFacetListener
     protected $facetHelper;
 
     /**
-     * Translated facets.
-     *
-     * @var array
-     */
-    protected $translatedFacets;
-
-    /**
      * Facet display styles.
      *
      * @var array
@@ -119,10 +112,6 @@ class HierarchicalFacetListener
         $this->facetHelper
             = $this->serviceLocator->get('VuFind\HierarchicalFacetHelper');
 
-        $this->translatedFacets
-            = isset($this->facetConfig->Advanced_Settings->translated_facets)
-            ? $this->facetConfig->Advanced_Settings->translated_facets->toArray()
-            : [];
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
             = isset($specialFacets->hierarchicalFacetDisplayStyles)

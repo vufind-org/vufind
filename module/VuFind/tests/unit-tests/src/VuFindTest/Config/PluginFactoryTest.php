@@ -178,6 +178,21 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test that the plugin factory omits the Parent_Config section from the
+     * merged configuration.
+     *
+     * @void
+     */
+    public function testParentConfigOmission()
+    {
+        if (self::$writeFailed) {
+            $this->markTestSkipped('Could not write test configurations.');
+        }
+        $config = $this->getConfig('unit-test-child');
+        $this->assertFalse(isset($config->Parent_Config));
+    }
+
+    /**
      * Test configuration is read-only.
      *
      * @return void

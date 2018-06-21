@@ -39,6 +39,8 @@ use VuFind\Auth\Database;
  */
 class DatabaseTest extends \VuFindTest\Unit\DbTestCase
 {
+    use \VuFindTest\Unit\UserCreationTrait;
+
     /**
      * Object to test
      *
@@ -49,23 +51,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
     /**
      * Standard setup method.
      *
-     * @return void
+     * @return mixed
      */
     public static function setUpBeforeClass()
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new DatabaseTest();
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable('User');
-        if (count($userTable->select()) > 0) {
-            return self::markTestSkipped(
-                'Test cannot run with pre-existing user data!'
-            );
-        }
+        return static::failIfUsersExist();
     }
 
     /**
@@ -291,19 +281,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function tearDownAfterClass()
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new DatabaseTest();
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Delete test user
-        $test = new DatabaseTest();
-        $userTable = $test->getTable('User');
-        $user = $userTable->getByUsername('testuser', false);
-        if (empty($user)) {
-            throw new \Exception('Problem deleting expected user.');
-        }
-        $user->delete();
+        static::removeUsers('testuser');
     }
 }

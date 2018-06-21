@@ -146,7 +146,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Options\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );
@@ -159,7 +158,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Params\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );
@@ -172,7 +170,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     [
                         'abstract_factories' =>
                             ['VuFind\Search\Results\PluginFactory'],
-                        'aliases' => ['VuFind' => 'Solr'],
                     ]
                 )
             );

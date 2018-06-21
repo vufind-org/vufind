@@ -4,7 +4,7 @@
   <div data-role="navbar">
     <ul>
       <li><a href="#Search-narrow" data-rel="dialog" data-transition="flip"><?=$this->transEsc('Narrow Search')?></a></li>
-      <? if (($account = $this->auth()->getManager()) && $account->loginEnabled()): // hide save option if login disabled ?>
+      <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
         <li>
           <? if (isset($this->results) && is_numeric($this->results->getSearchId())): ?>
             <? if ($this->results->isSavedSearch()): ?>

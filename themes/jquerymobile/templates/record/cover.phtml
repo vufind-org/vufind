@@ -1,0 +1,8 @@
+<? /* Display thumbnail if appropriate: */ ?>
+<? if ($cover): ?>
+  <? if ($this->link): ?><a rel="external" href="<?=$this->escapeHtmlAttr($this->link)?>"><? endif; ?>
+  <div class="recordcover">
+    <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>
+  </div>
+  <? if ($this->link): ?></a><? endif; ?>
+<? endif; ?>

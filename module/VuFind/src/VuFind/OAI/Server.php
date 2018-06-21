@@ -776,7 +776,9 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
-                if (strlen($params['from']) > strlen($params['until'])) {
+                if (!empty($params['until'])
+                    && strlen($params['from']) > strlen($params['until'])
+                ) {
                     $params['from'] = substr($params['from'], 0, 10);
                 }
             }
@@ -793,7 +795,7 @@ class Server
 
         // If no set field is configured and a set parameter comes in, we have a
         // problem:
-        if (is_null($this->setField) && isset($params['set'])
+        if (null === $this->setField && empty($this->setQueries)
             && !empty($params['set'])
         ) {
             throw new \Exception('noSetHierarchy:Sets not supported');

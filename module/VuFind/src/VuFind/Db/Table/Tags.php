@@ -100,7 +100,7 @@ class Tags extends Gateway
      *
      * @return array
      */
-    public function getForResource($id, $source = 'VuFind', $limit = 0,
+    public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND, $limit = 0,
         $list = null, $user = null, $sort = 'count', $userToCheck = null
     ) {
         return $this->select(

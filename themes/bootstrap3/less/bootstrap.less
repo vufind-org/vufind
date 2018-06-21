@@ -37,13 +37,22 @@ label.list-group-item {
 #modal {background-color: rgba(0,0,0,.2);}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
-p.lead {
+h2 {
   @media (min-width: 768px) {
     font-size: 23px;
     font-weight: normal;
   }
   @media (max-width: 767px) {
     font-size: 20px;
+  }
+}
+h3 {
+  @media (min-width: 768px) {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  @media (max-width: 767px) {
+    font-size: 16px;
   }
 }
 .recordcover {max-height: 300px;}
@@ -61,10 +70,10 @@ p.lead {
 .tab-content {padding: 4px;}
 @media (max-width: 991px) {
   header .container.navbar {margin-bottom: 0;}
-  #searchForm {margin-top: 0;}
+  .searchForm {margin-top: 0;}
 }
 @media (max-width: 767px) {
-  #searchForm {padding-top: 0;}
+  .searchForm {padding-top: 0;}
 }
 
 /* --- Advanced Search --- */
@@ -138,27 +147,30 @@ p.lead {
 }
 
 /* --- Autocomplete --- */
-.twitter-typeahead {
-  vertical-align: top;
+.autocomplete-results {
+  margin-top: 2px;
+  border: 1px solid @list-group-border;
   background-color: #fff;
   border-radius: @border-radius-base;
-  @media (max-width: 767px) {width: 100%;}
-}
-.twitter-typeahead .tt-hint {display: none;}
-.tt-dropdown-menu {&:extend(.list-group);}
-.tt-suggestion {
-  &:extend(.list-group-item);
-  cursor: pointer;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  &.active {white-space: inherit;}
-  &.tt-cursor {
-    background-color: @brand-primary;
-    color: #fff;
-  }
+  overflow: hidden;
 
-  p {margin: 0;}
+  .item {
+    display: block;
+    padding-top: .75rem;
+    padding-right: 1rem;
+    padding-bottom: .75rem;
+    padding-left: 1.25rem;
+    border-bottom: 1px solid @list-group-border;
+    cursor: pointer;
+
+    &:last-child {border: 0;}
+    &.selected {
+      background-color: @brand-primary;
+      color: #fff;
+    }
+  }
 }
+
 
 /* --- Badges - blend the links in --- */
 .badge a {color: #fff;}
@@ -263,7 +275,7 @@ p.lead {
   font-weight: bold;
   color: #000;
 }
-#tagList {
+.tagList {
   .tag {
     display: inline-block;
     margin: 0 1px 1px;
@@ -281,10 +293,10 @@ p.lead {
     .button-size(@padding-base-vertical; @padding-base-vertical; @font-size-base; @line-height-base; @border-radius-base);
     .badge .fa {width: 12px;}
   }
+  button {border: 0;}
   .tag-form {display: inline;}
-  .tag-form button {border: 0;}
 }
-#tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
+.tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
 
 /* --- Search --- */
 .bulkActionButtons label {display: inline-block;}
@@ -317,6 +329,7 @@ p.lead {
 
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
+.narrow-toggle { text-align: center; }
 .sidebar {
   label:not(.list-group-item) {margin-left: 20px;}
   .list-group:not(.filters) .title {
@@ -345,7 +358,11 @@ p.lead {
     border-bottom-right-radius: @border-radius-base;
   }
 }
-.list-group-item, .badge i.fa {cursor: inherit;}
+.list-group-item, .badge {
+  i.fa {
+    cursor: inherit;
+  }
+}
 .sidebar .facet a {text-decoration: none;}
 .top-row .applied {
   font-weight: bold;
@@ -546,7 +563,7 @@ li.jstree-facet ul {padding-left: 20px;}
 
 /* --- Offcanvas --- */
 @offcanvas-offset: 75%;
-@offcanvas-padding: 25px;
+@offcanvas-padding: 30px;
 
 .offcanvas-overlay,
 .offcanvas-toggle {display: none;}
@@ -563,7 +580,7 @@ li.jstree-facet ul {padding-left: 20px;}
       padding-right: 0;
       overflow-y: auto;
       h4 {padding-left: @padding-base-horizontal;}
-      .checkbox {margin-left: 20px+@padding-base-horizontal;}
+      .checkbox {margin-left: 20px + @padding-base-horizontal;}
       .list-group, .list-group-item {
         border-left: 0;
         border-right: 0;
@@ -572,10 +589,8 @@ li.jstree-facet ul {padding-left: 20px;}
     }
     &.active {overflow-y: hidden;}
     &.offcanvas-left {
-      & > .container {
-        background: #FFF;
-        padding-left: @offcanvas-padding;
-      }
+      padding-left: @offcanvas-padding - @grid-gutter-width/2;
+      & .main {background: #FFF;}
       &.active {
         margin-left: @offcanvas-offset;
         margin-right: -@offcanvas-offset;
@@ -591,10 +606,8 @@ li.jstree-facet ul {padding-left: 20px;}
       }
     }
     &.offcanvas-right {
-      & > .container {
-        background: #FFF;
-        padding-right: @offcanvas-padding;
-      }
+      padding-right: @offcanvas-padding - @grid-gutter-width/2;
+      & .main > .container {background: #FFF;}
       &.active {
         margin-left: -@offcanvas-offset;
         margin-right: @offcanvas-offset;
@@ -622,7 +635,7 @@ li.jstree-facet ul {padding-left: 20px;}
       display: block;
       position: fixed;
       top: 50%;
-      width: @offcanvas-padding;
+      width: calc(@offcanvas-padding - 5px);
       padding: 20px 0;
       background: @brand-primary;
       color: #EEE;

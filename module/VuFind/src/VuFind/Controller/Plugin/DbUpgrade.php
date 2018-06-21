@@ -387,6 +387,28 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Given a current row default, return true if the current default matches the
+     * one found in the SQL provided as the $sql parameter. Return false if there
+     * is a mismatch that will require table structure updates.
+     *
+     * @param string $currentDefault Object to check
+     * @param string $sql            SQL to compare against
+     *
+     * @return bool
+     */
+    protected function defaultMatches($currentDefault, $sql)
+    {
+        preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
+        $expectedDefault = isset($matches[1]) ? $matches[1] : null;
+        if (null !== $expectedDefault) {
+            $expectedDefault = trim(rtrim($expectedDefault, ','), "'");
+            $expectedDefault = (strtoupper($expectedDefault) == 'NULL')
+                ? null : $expectedDefault;
+        }
+        return ($expectedDefault === $currentDefault);
+    }
+
+    /**
      * Given a table column object, return true if the object's type matches the
      * specified $type parameter.  Return false if there is a mismatch that will
      * require table structure updates.
@@ -457,7 +479,7 @@ class DbUpgrade extends AbstractPlugin
     public function getModifiedColumns($missingTables = [],
         $missingColumns = []
     ) {
-        $missing = [];
+        $modified = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
             if (in_array($table, $missingTables)) {
@@ -494,15 +516,20 @@ class DbUpgrade extends AbstractPlugin
                     continue;
                 }
                 $currentColumn = $actualColumns[$column];
-                if (!$this->typeMatches($currentColumn, $expectedTypes[$i])) {
-                    if (!isset($missing[$table])) {
-                        $missing[$table] = [];
+                if (!$this->typeMatches($currentColumn, $expectedTypes[$i])
+                    || !$this->defaultMatches(
+                        $currentColumn->getColumnDefault(),
+                        $columnDefinitions[$column]
+                    )
+                ) {
+                    if (!isset($modified[$table])) {
+                        $modified[$table] = [];
                     }
-                    $missing[$table][] = $columnDefinitions[$column];
+                    $modified[$table][] = $columnDefinitions[$column];
                 }
             }
         }
-        return $missing;
+        return $modified;
     }
 
     /**

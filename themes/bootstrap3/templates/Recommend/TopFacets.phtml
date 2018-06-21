@@ -15,7 +15,7 @@
       <? /* More link */ ?>
       <? if ($iter == $corner+1): ?>
         </div><div id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="row top-row">
-          <span class="col-sm-12"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
+          <span class="col-sm-12 narrow-toggle"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
         </div><div class="row top-row <?=$moreClass ?>">
       <? endif; ?>
       <? /* Columns */ ?>
@@ -41,7 +41,7 @@
       <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
       <? /* Less link */ ?>
       <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
-        <a class="col-sm-12" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
+        <a class="col-sm-12 narrow-toggle" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
       <? endif; ?>
       <? $iter++; ?>
     <? endforeach; ?>

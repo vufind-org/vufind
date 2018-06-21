@@ -78,7 +78,7 @@ class QueryBuilder
      */
     protected function queryToEdsQuery(Query $query, $operator = 'AND')
     {
-        $expression = str_replace('"', '', $query->getString());
+        $expression = $query->getString();
         $expression = SearchRequestModel::escapeSpecialCharacters($expression);
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode

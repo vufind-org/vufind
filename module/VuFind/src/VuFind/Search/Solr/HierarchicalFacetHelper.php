@@ -252,7 +252,7 @@ class HierarchicalFacetHelper
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied']) {
+            if ($item['isApplied'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }

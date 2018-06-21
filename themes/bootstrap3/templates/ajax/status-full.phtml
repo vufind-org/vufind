@@ -7,7 +7,14 @@
   <? $i = 0; foreach ($this->statusItems as $item): ?>
     <? if (++$i == 5) break; // Show no more than 5 items ?>
     <tr>
-      <td><?=$this->transEsc('location_' . $item['location'], array(), $item['location'])?></td>
+      <td>
+        <? $locationText = $this->transEsc('location_' . $item['location'], array(), $item['location']); ?>
+        <? if (isset($item['locationhref']) && $item['locationhref']): ?>
+          <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
+        <? else: ?>
+          <?=$locationText?>
+        <? endif; ?>
+      </td>
       <td><?=$this->escapeHtml($item['callnumber'])?></td>
       <td>
         <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>

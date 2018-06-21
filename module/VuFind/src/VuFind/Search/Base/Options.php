@@ -150,6 +150,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacets = [];
 
     /**
+     * Text domains for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsTextDomains = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -211,6 +218,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var \VuFind\Config\PluginManager
      */
     protected $configLoader;
+
+    /**
+     * Maximum number of results (no limit by default)
+     *
+     * @var int
+     */
+    protected $resultLimit = -1;
 
     /**
      * Constructor
@@ -457,6 +471,43 @@ abstract class Options implements TranslatorAwareInterface
     public function getTranslatedFacets()
     {
         return $this->translatedFacets;
+    }
+
+    /**
+     * Configure facet translation using an array of field names with optional
+     * colon-separated text domains.
+     *
+     * @param array $facets Incoming configuration.
+     *
+     * @return void
+     */
+    public function setTranslatedFacets($facets)
+    {
+        // Reset properties:
+        $this->translatedFacets = $this->translatedFacetsTextDomains = [];
+
+        // Fill in new data:
+        foreach ($facets as $current) {
+            $parts = explode(':', $current);
+            $this->translatedFacets[] = $parts[0];
+            if (isset($parts[1])) {
+                $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+        }
+    }
+
+    /**
+     * Look up the text domain for use when translating a particular facet
+     * field.
+     *
+     * @param string $field Field name being translated
+     *
+     * @return string
+     */
+    public function getTextDomainForTranslatedFacet($field)
+    {
+        return isset($this->translatedFacetsTextDomains[$field])
+            ? $this->translatedFacetsTextDomains[$field] : 'default';
     }
 
     /**
@@ -724,8 +775,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getVisibleSearchResultLimit()
     {
-        // No limit by default:
-        return -1;
+        return intval($this->resultLimit);
     }
 
     /**

@@ -51,10 +51,25 @@ class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
     {
         $normalizer = new ExtendedIniNormalizer();
         $langDir = realpath(__DIR__ . '/../../../../../../../languages');
-        $handle = opendir($langDir);
+        $this->checkDirectory($normalizer, $langDir);
+    }
+
+    /**
+     * Test language integrity inside a directory.
+     *
+     * @param ExtendedIniNormalizer $normalizer Normalizer to test
+     * @param string                $dir        Directory name.
+     *
+     * @return void
+     */
+    protected function checkDirectory($normalizer, $dir)
+    {
+        $handle = opendir($dir);
         while ($file = readdir($handle)) {
-            if (substr($file, -4) == '.ini') {
-                $full = $langDir . '/' . $file;
+            $full = $dir . '/' . $file;
+            if ($file != '.' && $file != '..' && is_dir($full)) {
+                $this->checkDirectory($normalizer, $full);
+            } else if (substr($file, -4) == '.ini') {
                 $this->assertEquals(
                     $normalizer->normalizeFileToString($full),
                     file_get_contents($full),

@@ -99,7 +99,7 @@ class RouterTest extends TestCase
         $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
         $this->assertEquals(
             ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
-            $router->getTabRouteDetails('VuFind|test', 'foo')
+            $router->getTabRouteDetails('Solr|test', 'foo')
         );
     }
 
@@ -172,12 +172,12 @@ class RouterTest extends TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'VuFind')
+    protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getResourceSource')
+        $driver->expects($this->any())->method('getSourceIdentifier')
             ->will($this->returnValue($source));
         return $driver;
     }

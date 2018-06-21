@@ -163,8 +163,7 @@ class LibraryCardsController extends AbstractBase
             $user->deleteLibraryCard($cardID);
 
             // Success Message
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('Library Card Deleted');
+            $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
             // Redirect to MyResearch library cards
             return $this->redirect()->toRoute('librarycards-home');
         }
@@ -217,8 +216,8 @@ class LibraryCardsController extends AbstractBase
         $password = $this->params()->fromPost('password', '');
 
         if (!$username || !$password) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('authentication_error_blank');
+            $this->flashMessenger()
+                ->addMessage('authentication_error_blank', 'error');
             return false;
         }
 
@@ -230,8 +229,8 @@ class LibraryCardsController extends AbstractBase
         $catalog = $this->getILS();
         $patron = $catalog->patronLogin($username, $password);
         if (!$patron) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('authentication_error_invalid');
+            $this->flashMessenger()
+                ->addMessage('authentication_error_invalid', 'error');
             return false;
         }
 
@@ -241,8 +240,7 @@ class LibraryCardsController extends AbstractBase
                 $id == 'NEW' ? null : $id, $cardName, $username, $password
             );
         } catch(\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage($e->getMessage());
+            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             return false;
         }
 

@@ -7,13 +7,23 @@
 ?>
 <h2><?=$this->transEsc('Upgrade VuFind')?></h2>
 <?=$this->flashmessages()?>
-<p class="lead">Option 1: Upgrade from VuFind 1.x</p>
+<h3>Option 1: Upgrade from VuFind 1.x</h3>
 <p>Please enter the full path of the directory containing your previous version of VuFind (e.g. /usr/local/vufind):</p>
 <form class="form-inline" method="post" action="<?=$this->url('upgrade-getsourcedir')?>">
   <input type="text" name="sourcedir" /> <input class="btn btn-default" type="submit" />
 </form>
-<p class="lead">Option 2: Upgrade from VuFind 2.x</p>
-<p>Please enter the version number you are upgrading from (e.g. 2.0.1):</p>
+<hr />
+<h3>Option 2: Upgrade from VuFind 2.x</h3>
 <form class="form-inline" method="post" action="<?=$this->url('upgrade-getsourceversion')?>">
-  <input type="text" name="sourceversion" /> <input class="btn btn-default" type="submit" />
+  <p>
+    Please enter the version number you are upgrading from (e.g. 2.0.1):
+    <input type="text" name="sourceversion" />
+  </p>
+  <p>Options:<br />
+  <? foreach (['config' => 'Configuration', 'database' => 'Database Structure', 'metadata' => 'Stored Metadata'] as $key => $value): ?>
+    <input type="checkbox" name="skip[]" id="skip-<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($key)?>" />
+    <label for="skip-<?=$this->escapeHtmlAttr($key)?>">Skip <?=$this->escapeHtml($value); ?> Upgrade</label><br />
+  <? endforeach; ?>
+  </p>
+  <input class="btn btn-default" type="submit" />
 </form>

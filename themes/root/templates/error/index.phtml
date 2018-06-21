@@ -19,7 +19,7 @@
   </pre>
 
   <? if ($e = $this->exception->getPrevious()): ?>
-    <h3>Previous exceptions:</h2>
+    <h3>Previous exceptions:</h3>
     <? while($e): ?>
         <h4><?php echo get_class($e); ?></h4>
         <p><?=$e->getMessage()?></p>

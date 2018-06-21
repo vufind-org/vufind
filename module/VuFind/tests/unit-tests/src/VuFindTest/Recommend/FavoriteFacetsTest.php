@@ -46,13 +46,10 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testFacetInitWithDisabledTags()
     {
-        $configLoader = $this->getMockConfigLoader(
-            ['Social' => ['tags' => false]]
-        );
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->exactly(0))->method('addFacet'); // no facets are expected in this case
-        $this->getFavoriteFacets($configLoader, $results);
+        $this->getFavoriteFacets($results, 'disabled');
     }
     /**
      * Test facet initialization with enabled tags.
@@ -64,21 +61,22 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
-        $this->getFavoriteFacets(null, $results);
+        $this->getFavoriteFacets($results);
     }
 
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager                $configLoader config loader
      * @param \VuFind\Search\Solr\Results                 $results      results object
+     * @param string                                      $tagSetting   Are tags enabled?
      * @param string                                      $settings     settings
      * @param \Zend\StdLib\Parameters                     $request      request
      * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper (true to build default, null to omit)
+     * @param \VuFind\Config\PluginManager                $configLoader config loader
      *
      * @return FavoriteFacets
      */
-    protected function getFavoriteFacets($configLoader = null, $results = null, $settings = '', $request = null, $facetHelper = null)
+    protected function getFavoriteFacets($results = null, $tagSetting = 'enabled', $settings = '', $request = null, $facetHelper = null, $configLoader = null)
     {
         if (null === $configLoader) {
             $configLoader = $this->getMockConfigLoader();
@@ -92,7 +90,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $request) {
             $request = new \Zend\StdLib\Parameters([]);
         }
-        $sf = new FavoriteFacets($configLoader, $facetHelper);
+        $sf = new FavoriteFacets($configLoader, $facetHelper, $tagSetting);
         $sf->setConfig($settings);
         $sf->init($results->getParams(), $request);
         $sf->process($results);
@@ -111,7 +109,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();
-        $loader->expects($this->once())->method('get')->with($this->equalTo($key))
+        $loader->expects($this->any())->method('get')->with($this->equalTo($key))
             ->will($this->returnValue(new \Zend\Config\Config($config)));
         return $loader;
     }

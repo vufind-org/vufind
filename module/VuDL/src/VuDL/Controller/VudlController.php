@@ -252,7 +252,7 @@ class VudlController extends AbstractVuDL
         $view->id = $root;
 
         try {
-            $driver = $this->getRecordLoader()->load($root, 'VuFind');
+            $driver = $this->getRecordLoader()->load($root);
         } catch(\Exception $e) {
         }
         if (isset($driver) && $driver->isProtected()) {

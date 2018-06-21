@@ -104,7 +104,7 @@ class Results extends \VuFind\Search\Base\Results
         if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
             $filterList = $this->getParams()->getFilters();
-
+            $translatedFacets = $this->getOptions()->getTranslatedFacets();
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // EBSCO's side -- we'll probably need to translate this to a
@@ -112,9 +112,10 @@ class Results extends \VuFind\Search\Base\Results
                 $field = $current['displayName'];
 
                 // Should we translate values for the current facet?
-                $translate = in_array(
-                    $field, $this->getOptions()->getTranslatedFacets()
-                );
+                if ($translate = in_array($field, $translatedFacets)) {
+                    $transTextDomain = $this->getOptions()
+                        ->getTextDomainForTranslatedFacet($field);
+                }
 
                 // Loop through all the facet values to see if any are applied.
                 foreach ($current['counts'] as $facetIndex => $facetDetails) {
@@ -124,7 +125,7 @@ class Results extends \VuFind\Search\Base\Results
                     // an active filter for the current field?
                     $orField = '~' . $field;
                     $itemsToCheck = isset($filterList[$field])
-                    ? $filterList[$field] : [];
+                        ? $filterList[$field] : [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -139,14 +140,13 @@ class Results extends \VuFind\Search\Base\Results
 
                     // Create display value:
                     $current['counts'][$facetIndex]['displayText'] = $translate
-                    ? $this->translate($facetDetails['displayText'])
-                    : $facetDetails['displayText'];
+                        ? $this->translate(
+                            "$transTextDomain::{$facetDetails['displayText']}"
+                        ) : $facetDetails['displayText'];
 
                     // Create display value:
-                    $current['counts'][$facetIndex]['value'] = $translate
-                    ? $this->translate($facetDetails['value'])
-                    : $facetDetails['value'];
-
+                    $current['counts'][$facetIndex]['value']
+                        = $facetDetails['value'];
                 }
                 // The EDS API returns facets in the order they should be displayed
                 $current['label'] = isset($filter[$field])

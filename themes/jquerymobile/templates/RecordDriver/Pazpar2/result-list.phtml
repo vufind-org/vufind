@@ -1,5 +1,5 @@
 <b>
-  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
     <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>

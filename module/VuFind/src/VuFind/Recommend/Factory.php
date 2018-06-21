@@ -174,8 +174,11 @@ class Factory
      */
     public static function getFavoriteFacets(ServiceManager $sm)
     {
+        $parentSm = $sm->getServiceLocator();
         return new FavoriteFacets(
-            $sm->getServiceLocator()->get('VuFind\Config')
+            $parentSm->get('VuFind\Config'),
+            null,
+            $parentSm->get('VuFind\AccountCapabilities')->getTagSetting()
         );
     }
 
@@ -329,20 +332,6 @@ class Factory
     public static function getWorldCatIdentities(ServiceManager $sm)
     {
         return new WorldCatIdentities(
-            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-        );
-    }
-
-    /**
-     * Factory for WorldCatTerms module.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCatTerms
-     */
-    public static function getWorldCatTerms(ServiceManager $sm)
-    {
-        return new WorldCatTerms(
             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
         );
     }

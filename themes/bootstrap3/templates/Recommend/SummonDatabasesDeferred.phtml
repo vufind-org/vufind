@@ -1,6 +1,6 @@
 <?
   // Set up Javascript for use below:
-  $loadJs = 'var url = path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
+  $loadJs = 'var url = VuFind.getPath() + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
     . "\$('#SummonDeferredDatabases').load(url);";
 ?>
 <div id="SummonDeferredDatabases">

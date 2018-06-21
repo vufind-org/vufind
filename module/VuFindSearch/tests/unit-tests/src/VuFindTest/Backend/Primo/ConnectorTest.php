@@ -81,7 +81,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
         $terms = [];
         $result = $conn->query('dummyinst', $terms);
         $this->assertEquals(0, $result['recordCount']);
-        $this->assertEquals('Primo API does not accept a null query', $result['error']);
+        $this->assertEquals('Primo does not accept an empty query', $result['error']);
     }
 
     /**
@@ -159,7 +159,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
-        $conn = new Connector('fakeid', 'fakeinst', $client);
+        $conn = new Connector('http://fakeaddress.none', 'fakeinst', $client);
         return $conn;
     }
 }

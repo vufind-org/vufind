@@ -122,8 +122,9 @@ class Holds
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => isset($items[0]['location'])
-                    ? $items[0]['location']
-                    : ''
+                    ? $items[0]['location'] : '',
+                'locationhref' => isset($items[0]['locationhref'])
+                    ? $items[0]['locationhref'] : ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -489,7 +490,8 @@ class Holds
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
-            'source' => isset($details['source']) ? $details['source'] : 'VuFind',
+            'source' => isset($details['source'])
+                ? $details['source'] : DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
         ];
     }

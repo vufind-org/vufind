@@ -71,6 +71,9 @@ class MultiILS extends ILS
         // Connect to catalog:
         try {
             $patron = $this->getCatalog()->patronLogin($username, $password);
+        } catch (AuthException $e) {
+            // Pass Auth exceptions through
+            throw $e;
         } catch (\Exception $e) {
             throw new AuthException('authentication_error_technical');
         }

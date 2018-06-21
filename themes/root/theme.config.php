@@ -3,6 +3,7 @@ return array(
     'extends' => false,
     'helpers' => array(
         'factories' => array(
+            'accountcapabilities' => 'VuFind\View\Helper\Root\Factory::getAccountCapabilities',
             'addthis' => 'VuFind\View\Helper\Root\Factory::getAddThis',
             'alphabrowse' => 'VuFind\View\Helper\Root\Factory::getAlphaBrowse',
             'auth' => 'VuFind\View\Helper\Root\Factory::getAuth',

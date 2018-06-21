@@ -5,7 +5,7 @@
   <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
   <? endforeach ?>
 </select>
-<label for="login_username"><?=$this->transEsc('Username')?>:</label>
-<input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>"/>
-<label for="login_password"><?=$this->transEsc('Password')?>:</label>
-<input id="login_password" type="password" name="password"/>
+<label for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+<input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>"/>
+<label for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
+<input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password"/>

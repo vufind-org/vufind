@@ -51,7 +51,7 @@ class Record extends AbstractBase
         $this->save(
             [
                 'recordId'     => $data->getUniqueId(),
-                'recordSource' => $data->getResourceSource()
+                'recordSource' => $data->getSourceIdentifier()
             ],
             $request
         );

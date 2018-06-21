@@ -128,14 +128,12 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
+                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
             );
             $resource->addComment($comment, $user);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('add_comment_success');
+            $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('add_comment_fail_blank');
+            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
         }
 
         return $this->redirectToRecord('', 'UserComments');
@@ -155,11 +153,9 @@ class AbstractRecord extends AbstractBase
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('delete_comment_success');
+            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('delete_comment_failure');
+            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
@@ -188,8 +184,8 @@ class AbstractRecord extends AbstractBase
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage(['msg' => 'add_tag_success']);
+            $this->flashMessenger()
+                ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
 
@@ -222,13 +218,12 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
             $driver->deleteTags($user, [$tag]);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage(
-                    [
-                        'msg' => 'tags_deleted',
-                        'tokens' => ['%count%' => 1]
-                    ]
-                );
+            $this->flashMessenger()->addMessage(
+                [
+                    'msg' => 'tags_deleted',
+                    'tokens' => ['%count%' => 1]
+                ], 'success'
+            );
         }
 
         return $this->redirectToRecord();
@@ -283,11 +278,17 @@ class AbstractRecord extends AbstractBase
         $post = $this->getRequest()->getPost()->toArray();
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
         $post['mytags'] = $tagParser->parse($post['mytags']);
-        $driver->saveToFavorites($post, $user);
+        $results = $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->setNamespace('info')
-            ->addMessage('bulk_save_success');
+        $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
+        $message = [
+            'html' => true,
+            'msg' => $this->translate('bulk_save_success') . '. '
+            . '<a href="' . $listUrl . '" class="gotolist">'
+            . $this->translate('go_to_list') . '</a>.'
+        ];
+        $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getFollowupUrl()) {
@@ -343,7 +344,7 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getResourceSource()
+            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -412,12 +413,10 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('email_success');
+                $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -456,12 +455,10 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('sms_success');
+                $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -497,8 +494,8 @@ class AbstractRecord extends AbstractBase
         $export = $this->getServiceLocator()->get('VuFind\Export');
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('export_invalid_format');
+                $this->flashMessenger()
+                    ->addMessage('export_invalid_format', 'error');
             }
             $view->setTemplate('record/export-menu');
             return $view;
@@ -598,32 +595,21 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get a default tab by looking up the provided record driver in the tab
-     * configuration array.
+     * Support method to load tab information from the RecordTabPluginManager.
      *
-     * @param AbstractRecordDriver $driver Record driver
-     *
-     * @return string
+     * @return void
      */
-    protected function getDefaultTabForRecord(AbstractRecordDriver $driver)
+    protected function loadTabDetails()
     {
-        // Load configuration:
-        $config = $this->getTabConfiguration();
-
-        // Get the current record driver's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // setting.
-        $className = get_class($driver);
-        while (true) {
-            if (isset($config[$className]['defaultTab'])) {
-                return $config[$className]['defaultTab'];
-            }
-            $className = get_parent_class($className);
-            if (empty($className)) {
-                // No setting found...
-                return null;
-            }
-        }
+        $driver = $this->loadRecord();
+        $request = $this->getRequest();
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $details = $rtpm->getTabDetailsForRecord(
+            $driver, $this->getTabConfiguration(), $request,
+            $this->fallbackDefaultTab
+        );
+        $this->allTabs = $details['tabs'];
+        $this->defaultTab = $details['default'] ? $details['default'] : false;
     }
 
     /**
@@ -635,24 +621,8 @@ class AbstractRecord extends AbstractBase
     {
         // Load default tab if not already retrieved:
         if (null === $this->defaultTab) {
-            // Load record driver tab configuration:
-            $driver = $this->loadRecord();
-            $this->defaultTab = $this->getDefaultTabForRecord($driver);
-
-            // Missing/invalid record driver configuration? Fall back to configured
-            // default:
-            $tabs = $this->getAllTabs();
-            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
-                $this->defaultTab = $this->fallbackDefaultTab;
-            }
-
-            // Is configured tab also invalid? If so, pick first existing tab:
-            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
-                $keys = array_keys($tabs);
-                $this->defaultTab = isset($keys[0]) ? $keys[0] : '';
-            }
+            $this->loadTabDetails();
         }
-
         return $this->defaultTab;
     }
 
@@ -664,11 +634,7 @@ class AbstractRecord extends AbstractBase
     protected function getAllTabs()
     {
         if (null === $this->allTabs) {
-            $driver = $this->loadRecord();
-            $request = $this->getRequest();
-            $this->allTabs = $this->getServiceLocator()
-                ->get('VuFind\RecordTabPluginManager')
-                ->getTabsForRecord($driver, $this->getTabConfiguration(), $request);
+            $this->loadTabDetails();
         }
         return $this->allTabs;
     }
@@ -707,10 +673,14 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
+        $config = $this->getConfig();
+
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
+        $view->ajaxTabs = isset($config->Site->ajaxTabs)
+            ? $config->Site->ajaxTabs : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

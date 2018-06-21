@@ -1539,9 +1539,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Assume an error response:
         $response = ['success' => false, 'status' => "hold_error_fail"];
 
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
         // Validate input
         //  * Request level
         $allowed_req_levels = [
@@ -1568,7 +1565,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Still here? Guess the request is valid, lets send it to virtua
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0" .
             "&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=" .
@@ -1649,10 +1646,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function cancelHold($request_number)
     {
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0" .
             "&reqscr=4&reqreqlevel=2&reqidtype=127" .
@@ -1689,17 +1683,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function fakeLogin($patron)
     {
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = $this->getApiBaseUrl();
         $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
             "elementcount" => "1",
             "function" => "PATRONATTEMPT",
             "host" => $this->config['Catalog']['host_string'],
-            "lng" => "en",
+            "lng" => $this->getConfiguredLanguage(),
             "login" => "1",
             "pos" => "1",
             "rootsearch" => "KEYWORD",
@@ -1766,13 +1757,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $initial[$row['barcode']] = $row;
         }
 
-        // Get the iPortal server
-        $web_server = $this->config['Catalog']['webhost'];
-
         // Fake a login to get an authenticated session
         $session_id = $this->fakeLogin($patron);
 
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = $this->getApiBaseUrl();
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
@@ -1780,7 +1768,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $post_data .= "&search="       . "PATRON";
         $post_data .= "&sessionid="    . "$session_id";
         $post_data .= "&skin="         . "homepage";
-        $post_data .= "&lng="          . "en";
+        $post_data .= "&lng="          . $this->getConfiguredLanguage();
         $post_data .= "&inst="         . "consortium";
         $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
         $post_data .= "&u1="           . "12";
@@ -1847,6 +1835,32 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $list[] = 'vtls' .  str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
         }
         return $list;
+    }
+
+    /**
+     * Support method -- get base URL for API requests.
+     *
+     * @return string
+     */
+    protected function getApiBaseUrl()
+    {
+        // Get the iPortal server
+        $host = $this->config['Catalog']['webhost'];
+        $path = isset($this->config['Catalog']['cgi_token'])
+            ? trim($this->config['Catalog']['cgi_token'], '/')
+            : 'cgi-bin';
+        return "http://{$host}/{$path}/chameleon";
+    }
+
+    /**
+     * Support method -- determine the language from the configuration.
+     *
+     * @return string
+     */
+    protected function getConfiguredLanguage()
+    {
+        return isset($this->config['Catalog']['language'])
+            ? $this->config['Catalog']['language'] : 'en';
     }
 
     /**

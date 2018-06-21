@@ -85,6 +85,13 @@ class SideFacets extends AbstractFacets
     protected $checkboxFacets = [];
 
     /**
+     * Settings controlling how many values to display before "show more."
+     *
+     * @var array
+     */
+    protected $showMoreSettings = [];
+
+    /**
      * Collapsed facet setting
      *
      * @var bool|string
@@ -179,6 +186,12 @@ class SideFacets extends AbstractFacets
             ? $config->$checkboxSection->toArray() : [];
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+
+        // Show more settings:
+        if (isset($config->Results_Settings->showMore)) {
+            $this->showMoreSettings
+                = $config->Results_Settings->showMore->toArray();
         }
 
         // Collapsed facets:
@@ -331,6 +344,27 @@ class SideFacets extends AbstractFacets
             return array_keys($this->getFacetSet());
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
+    }
+
+    /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @param string $facetName Name of the facet to get
+     *
+     * @return int
+     */
+    public function getShowMoreSetting($facetName = '*')
+    {
+        // Look for either facet-specific configuration or else a configured
+        // default. If neither is found, initialize return value to 0.
+        if (isset($this->showMoreSettings[$facetName])) {
+            $val = intval($this->showMoreSettings[$facetName]);
+        } elseif (isset($this->showMoreSettings['*'])) {
+            $val = intval($this->showMoreSettings['*']);
+        }
+
+        // Validate the return value, defaulting to 6 if missing/invalid
+        return (isset($val) && $val > 0) ? $val : 6;
     }
 
     /**

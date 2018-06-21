@@ -55,7 +55,7 @@ class Comments extends Gateway
      *
      * @return array|\Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getForResource($id, $source = 'VuFind')
+    public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource($id, $source, false);

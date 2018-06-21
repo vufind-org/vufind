@@ -43,45 +43,6 @@ use Zend\Config\Config;
 class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Test language mappings.
-     *
-     * @return void
-     */
-    public function testGetLangName()
-    {
-        $c = $this->getMockController();
-
-        // config-driven case:
-        $this->assertEquals('English', $c->getLangName('en'));
-
-        // special cases:
-        $this->assertEquals('British English', $c->getLangName('en-gb'));
-        $this->assertEquals('Brazilian Portuguese', $c->getLangName('pt-br'));
-
-        // unknown case:
-        $this->assertEquals('??', $c->getLangName('??'));
-    }
-
-    /**
-     * Test language comparison.
-     *
-     * @return void
-     */
-    public function testComparison()
-    {
-        $l1 = ['1' => 'one', '2' => 'two', '3' => 'three'];
-        $l2 = ['2' => 'two', '4' => 'four'];
-        $c = new Controller();
-        $expected = [
-            'notInL1' => [4],
-            'notInL2' => [1, 3],
-            'l1Percent' => '150.00',
-            'l2Percent' => '66.67'
-        ];
-        $this->assertEquals($expected, $this->callMethod($c, 'compareLanguages', [$l1, $l2]));
-    }
-
-    /**
      * Test language action.
      *
      * @return void

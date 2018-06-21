@@ -385,17 +385,17 @@ class AbstractSearch extends AbstractBase
         $searchTable = $this->getTable('Search');
         $search = $searchTable->select(['id' => $searchId])->current();
         if (empty($search)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notFound');
+            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
             return false;
         }
 
         // Fail if user has no permission to view this search:
         $user = $this->getUser();
         $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
-        if ($search->session_id != $sessId && $search->user_id != $user->id) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_noRights');
+        if ($search->session_id != $sessId
+            && ($user === false || $search->user_id != $user->id)
+        ) {
+            $this->flashMessenger()->addMessage('advSearchError_noRights', 'error');
             return false;
         }
 
@@ -408,8 +408,8 @@ class AbstractSearch extends AbstractBase
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('advSearchError_notAdvanced');
+                $this->flashMessenger()
+                    ->addMessage('advSearchError_notAdvanced', 'error');
                 return false;
             }
         }

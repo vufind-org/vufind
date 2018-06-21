@@ -65,8 +65,8 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
                 return "";
             }
             return $this->left
-                ? 'offcanvas offcanvas-left'
-                : 'offcanvas offcanvas-right';
+                ? 'offcanvas offcanvas-left flip'
+                : 'offcanvas offcanvas-right flip';
         }
     }
 }

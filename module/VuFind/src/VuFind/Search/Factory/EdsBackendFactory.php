@@ -103,10 +103,12 @@ class EdsBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
+        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
+        $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(),
             $this->serviceLocator->get('VuFind\CacheManager')->getCache('object'),
-            new \Zend\Session\Container('EBSCO'), $this->edsConfig
+            new \Zend\Session\Container('EBSCO'), $this->edsConfig, $isGuest
         );
         $backend->setAuthManager($this->serviceLocator->get('VuFind\AuthManager'));
         $backend->setLogger($this->logger);

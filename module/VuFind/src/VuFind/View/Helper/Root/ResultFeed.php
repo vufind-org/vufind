@@ -179,6 +179,39 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     }
 
     /**
+     * Support method to extract a date from a record driver. Return empty string
+     * if no valid match is found.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record to read from
+     *
+     * @return string
+     */
+    protected function getDcDate($record)
+    {
+        // See if we can extract a date that's pre-formatted in a DC-friendly way:
+        $dates = (array)$record->tryMethod('getPublicationDates');
+        $regex = '/[0-9]{4}(\-[01][0-9])?(\-[0-3][0-9])?/';
+        foreach ($dates as $date) {
+            if (preg_match($regex, $date, $matches)) {
+                // If the full string is longer than the match, see if we can use
+                // DateTime to format it to something more useful:
+                if (strlen($date) > strlen($matches[0])) {
+                    try {
+                        $formatter = new DateTime($date);
+                        return $formatter->format('Y-m-d');
+                    } catch (\Exception $ex) {
+                        // DateTime failed; fall through to default behavior below.
+                    }
+                }
+                return $matches[0];
+            }
+        }
+
+        // Still no good? Give up.
+        return '';
+    }
+
+    /**
      * Support method to turn a record driver object into an RSS entry.
      *
      * @param Feed                              $feed   Feed to update
@@ -190,7 +223,10 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
-        $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
+        $title = empty($title) ? $record->getBreadcrumb() : $title;
+        $entry->setTitle(
+            empty($title) ? $this->translate('Title not available') : $title
+        );
         $serverUrl = $this->getView()->plugin('serverurl');
         $recordLink = $this->getView()->plugin('recordlink');
         try {
@@ -218,9 +254,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                 $entry->addDCFormat($format);
             }
         }
-        $date = $record->tryMethod('getPublicationDates');
-        if (isset($date[0]) && !empty($date[0])) {
-            $entry->setDCDate($date[0]);
+        $dcDate = $this->getDcDate($record);
+        if (!empty($dcDate)) {
+            $entry->setDCDate($dcDate);
         }
 
         $feed->addEntry($entry);

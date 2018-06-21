@@ -1,6 +1,6 @@
 <?
   $searchParams = $this->recommend->getSearchParams();
-  
+
   $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.8&sensor=false&language='.$this->layout()->userLang);
   $this->headScript()->appendFile('https://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.9/src/markerclusterer_packed.js');
 ?>
@@ -96,7 +96,7 @@ var myOptions;
 var map;
 var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
   function initialize() {
-    var url = path+'/AJAX/json?method=getMapData&<?=$searchParams ?>';
+    var url = VuFind.getPath()+'/AJAX/json?method=getMapData&<?=$searchParams ?>';
     //alert('go: ' + url);
     $.getJSON(url, function(data){
       //alert(data);
@@ -111,7 +111,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-          },     
+          },
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       map = new google.maps.Map(document.getElementById("map_canvas"),
@@ -171,7 +171,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
     else{// code for IE6, IE5
       xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    var ajaxUrl = path+'/AJAX/ResultGoogleMapInfo?limit=5&filter[]=long_lat%3A"' + marker.loc_facet+'"&<?=$searchParams ?>';
+    var ajaxUrl = VuFind.getPath()+'/AJAX/ResultGoogleMapInfo?limit=5&filter[]=long_lat%3A"' + marker.loc_facet+'"&<?=$searchParams ?>';
     xmlhttp.open("GET", ajaxUrl, false);
     xmlhttp.send();
 

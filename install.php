@@ -169,6 +169,11 @@ if (!empty($host)) {
         "\nneed to do some virtual host configuration. See\n" .
         "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
 }
+if ('/' == $basePath) {
+    echo "Since you are installing VuFind at the root of your domain, you will also"
+        . "\nneed to edit your Apache configuration to change DocumentRoot to:\n"
+        . $baseDir . "/public\n\n";
+}
 echo "Once the configuration is linked, restart Apache.  You should now be able\n";
 echo "to access VuFind at http://localhost{$basePath}\n\n";
 echo "For proper use of command line tools, you should also ensure that your\n";
@@ -207,12 +212,12 @@ function getApacheLocation($overrideDir)
         } else if (is_dir('/etc/apache2/2.2/conf.d')) {         // Solaris
             $confD = '/etc/apache2/2.2/conf.d';
             $httpdConf = '/etc/apache2/2.2/httpd.conf';
-        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
-            $confD = '/etc/apache2/conf.d';
-            $httpdConf = '/etc/apache2/httpd.conf';
         } else if (is_dir('/etc/apache2/conf-enabled')) {   // new Ubuntu / OpenSUSE
             $confD = '/etc/apache2/conf-enabled';
             $httpdConf = '/etc/apache2/apache2.conf';
+        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
+            $confD = '/etc/apache2/conf.d';
+            $httpdConf = '/etc/apache2/httpd.conf';
         } else if (is_dir('/opt/local/apache2/conf/extra')) {   // Mac with Mac Ports
             $confD = '/opt/local/apache2/conf/extra';
             $httpdConf = '/opt/local/apache2/conf/httpd.conf';
@@ -235,7 +240,7 @@ function getApacheLocation($overrideDir)
         echo "You can do it in either of two ways:\n\n";
         echo "    a) Add this line to your {$httpdConf} file:\n";
         echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
-        echo "    b) Link the configuration to Apache's conf.d directory like this:";
+        echo "    b) Link the configuration to Apache's config directory like this:";
         echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/{$symlink}\n";
         echo "\nOption b is preferable if your platform supports it,\n";
         echo "but option a is more certain to be supported.\n\n";
@@ -496,12 +501,17 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
     if (empty($config)) {
         die("Problem reading {$baseConfig}.\n\n");
     }
-    $config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
-    $config = str_replace("/usr/local/vufind", "%base-dir%", $config);
-    $config = preg_replace("|([^/])\/vufind|", "$1%base-path%", $config);
-    $config = str_replace("%override-dir%", $overrideDir, $config);
-    $config = str_replace("%base-dir%", $baseDir, $config);
-    $config = str_replace("%base-path%", $basePath, $config);
+    $config = str_replace('/usr/local/vufind/local', '%override-dir%', $config);
+    $config = str_replace('/usr/local/vufind', '%base-dir%', $config);
+    $config = preg_replace('|([^/])\/vufind|', '$1%base-path%', $config);
+    $config = str_replace('%override-dir%', $overrideDir, $config);
+    $config = str_replace('%base-dir%', $baseDir, $config);
+    $config = str_replace('%base-path%', $basePath, $config);
+    // Special cases for root basePath:
+    if ('/' == $basePath) {
+        $config = str_replace('//', '/', $config);
+        $config = str_replace('Alias /', '#Alias /', $config);
+    }
     if (!empty($module)) {
         $config = str_replace(
             "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",

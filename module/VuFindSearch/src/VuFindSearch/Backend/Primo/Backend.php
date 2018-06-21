@@ -28,6 +28,8 @@
  */
 namespace VuFindSearch\Backend\Primo;
 
+use VuFindSearch\Feature\RetrieveBatchInterface;
+
 use VuFindSearch\Query\AbstractQuery;
 
 use VuFindSearch\ParamBag;
@@ -47,7 +49,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend extends AbstractBackend
+class Backend extends AbstractBackend implements RetrieveBatchInterface
 {
     /**
      * Connector.
@@ -131,9 +133,13 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
+        $onCampus = $onCampus ? $onCampus[0] : false;
         try {
             $response   = $this->connector
-                ->getRecord($id, $this->connector->getInstitutionCode());
+                ->getRecord(
+                    $id, $this->connector->getInstitutionCode(), $onCampus
+                );
         } catch (\Exception $e) {
             throw new BackendException(
                 $e->getMessage(),
@@ -144,6 +150,52 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Retrieve a batch of documents.
+     *
+     * @param array    $ids    Array of document identifiers
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function retrieveBatch($ids, ParamBag $params = null)
+    {
+        $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
+        $onCampus = $onCampus ? $onCampus[0] : false;
+
+        // Load 100 records at a time; this is a good number to avoid memory
+        // problems while still covering a lot of ground.
+        $pageSize = 100;
+
+        // Retrieve records a page at a time:
+        $results = false;
+        while (count($ids) > 0) {
+            $currentPage = array_splice($ids, 0, $pageSize, []);
+
+            try {
+                $response = $this->connector->getRecords(
+                    $currentPage, $this->connector->getInstitutionCode(), $onCampus
+                );
+            } catch (\Exception $e) {
+                throw new BackendException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
+            }
+            $next = $this->createRecordCollection($response);
+            if (!$results) {
+                $results = $next;
+            } else {
+                foreach ($next->getRecords() as $record) {
+                    $results->add($record);
+                }
+            }
+        }
+        $this->injectSourceIdentifier($results);
+        return $results;
     }
 
     /**
@@ -225,6 +277,7 @@ class Backend extends AbstractBackend
 
         // Convert the options:
         $options = [];
+
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
@@ -232,6 +285,12 @@ class Backend extends AbstractBackend
         ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
+        }
+
+        // Use special facet pcAvailabilty if it has been set
+        if (isset($params['filterList']['pcAvailability'])) {
+            unset($options['filterList']['pcAvailability']);
+            $options['pcAvailability'] = true;
         }
 
         return $options;

@@ -59,8 +59,8 @@ class UserResource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getSavedData($resourceId, $source = 'VuFind', $listId = null,
-        $userId = null
+    public function getSavedData($resourceId, $source = DEFAULT_SEARCH_BACKEND,
+        $listId = null, $userId = null
     ) {
         $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
             $select->columns(
