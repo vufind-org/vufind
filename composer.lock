@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "49dc9f1a089fe65602826869126e47a0",
+    "content-hash": "b9f2285cd5518a38909b129013f317cc",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -3402,16 +3402,16 @@
         },
         {
             "name": "zendframework/zend-servicemanager",
-            "version": "dev-master",
+            "version": "2.7.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/demiankatz/zend-servicemanager.git",
-                "reference": "ae73b1b3affd9c4e3031fb88c84a7082368ca6c3"
+                "url": "https://github.com/zendframework/zend-servicemanager.git",
+                "reference": "99ec9ed5d0f15aed9876433c74c2709eb933d4c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/demiankatz/zend-servicemanager/zipball/ae73b1b3affd9c4e3031fb88c84a7082368ca6c3",
-                "reference": "ae73b1b3affd9c4e3031fb88c84a7082368ca6c3",
+                "url": "https://api.github.com/repos/zendframework/zend-servicemanager/zipball/99ec9ed5d0f15aed9876433c74c2709eb933d4c7",
+                "reference": "99ec9ed5d0f15aed9876433c74c2709eb933d4c7",
                 "shasum": ""
             },
             "require": {
@@ -3441,25 +3441,16 @@
                     "Zend\\ServiceManager\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ZendTest\\ServiceManager\\": "test/",
-                    "ZendBench\\ServiceManager\\": "benchmarks/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": " ",
             "homepage": "https://github.com/zendframework/zend-servicemanager",
             "keywords": [
                 "servicemanager",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/demiankatz/zend-servicemanager/tree/undefined-factory-fix"
-            },
-            "time": "2018-06-08T21:19:09+00:00"
+            "time": "2018-06-22T14:49:54+00:00"
         },
         {
             "name": "zendframework/zend-session",
@@ -3902,7 +3893,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/zendframework/ZendRest/zipball/7427d242b4546e5aef1206d2c97e402109d8843e",
                 "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-                "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
@@ -3916,10 +3907,10 @@
                     "ZendRest": "library/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": " ",
             "homepage": "http://packages.zendframework.com/",
             "keywords": [
                 "rest",
@@ -8190,7 +8181,6 @@
     "stability-flags": {
         "ahand/mobileesp": 20,
         "pear/validate_ispn": 20,
-        "zendframework/zend-servicemanager": 20,
         "ghislainf/zf2-whoops": 20
     },
     "prefer-stable": false,
