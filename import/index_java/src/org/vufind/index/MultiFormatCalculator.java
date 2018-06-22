@@ -72,8 +72,10 @@ public class MultiFormatCalculator
         String leader = record.getLeader().toString();
         char leaderBit;
         ControlField fixedField = (ControlField) record.getVariableField("008");
+        String formatString;
         char formatCode = ' ';
-        char formatSubCode = ' ';
+        char formatCode2 = ' ';
+        char formatCode4 = ' ';
 
         // This record could be a book... until we prove otherwise!
         boolean couldBeBook = true;
@@ -122,18 +124,13 @@ public class MultiFormatCalculator
             ControlField formatField;
             while(fieldsIter.hasNext()) {
                 formatField = (ControlField) fieldsIter.next();
-                formatCode = formatField.getData().toUpperCase().charAt(0);
-                // There should be a second character in the 007 field, but if there
-                // isn't, we shouldn't blow up!  We'll catch the appropriate exception
-                // and use a blank space instead.
-                try {
-                    formatSubCode = formatField.getData().toUpperCase().charAt(1);
-                } catch(java.lang.StringIndexOutOfBoundsException e) {
-                    formatSubCode = ' ';
-                }
+                formatString = formatField.getData().toUpperCase();
+                formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
+                formatCode2 = formatString.length() > 1 ? formatString.charAt(1) : ' ';
+                formatCode4 = formatString.length() > 4 ? formatString.charAt(4) : ' ';
                 switch (formatCode) {
                     case 'A':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'D':
                                 result.add("Atlas");
                                 break;
@@ -143,7 +140,7 @@ public class MultiFormatCalculator
                         }
                         break;
                     case 'C':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'A':
                                 result.add("TapeCartridge");
                                 break;
@@ -182,7 +179,7 @@ public class MultiFormatCalculator
                         result.add("Braille");
                         break;
                     case 'G':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'C':
                             case 'D':
                                 result.add("Filmstrip");
@@ -201,7 +198,7 @@ public class MultiFormatCalculator
                         result.add("Microfilm");
                         break;
                     case 'K':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'C':
                                 result.add("Collage");
                                 break;
@@ -237,7 +234,7 @@ public class MultiFormatCalculator
                         couldBeBook = false;
                         break;
                     case 'M':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'F':
                                 result.add("VideoCassette");
                                 break;
@@ -261,7 +258,7 @@ public class MultiFormatCalculator
                         result.add("SensorImage");
                         break;
                     case 'S':
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'D':
                                 result.add("SoundDisc");
                                 break;
@@ -277,7 +274,7 @@ public class MultiFormatCalculator
                         // All video content should get flagged as video; we will also
                         // add a second value to distinguish different types of video.
                         result.add("Video");
-                        switch(formatSubCode) {
+                        switch(formatCode2) {
                             case 'C':
                                 result.add("VideoCartridge");
                                 break;
