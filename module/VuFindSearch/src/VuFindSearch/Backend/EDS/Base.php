@@ -223,7 +223,7 @@ abstract class Base
     public function authenticate($username = null, $password = null, $orgid = null, $params = null)
     {
         $this->debugPrint(
-            "Authenticating: username: $username, password: $password, orgid: $orgid"
+            "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
         $org = $orgid ?? $this->orgId;
@@ -239,11 +239,10 @@ abstract class Base
             $authInfo['orgid'] = $org;
         }
         if (isset($params)) {
-            $authParam['Options'] = $params;
+            $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        $messageParam = json_encode($authParam);
-        return $this->call($url, null, $messageParam, 'POST', $messageBody);
+        return $this->call($url, null, null, 'POST', $messageBody);
     }
 
     /**

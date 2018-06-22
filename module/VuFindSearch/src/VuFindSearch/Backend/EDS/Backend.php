@@ -148,7 +148,7 @@ class Backend extends AbstractBackend
      *
      * @var string
      */
-    protected $autocomplete_idx = rawqueries;
+    protected $autocomplete_idx = 'rawqueries';
 
     /**
      * Constructor.
@@ -415,6 +415,7 @@ class Backend extends AbstractBackend
     {
         // Todo:
         // get autocomplete Token, Url, CustId
+        $autocompleteToken = $this->getAutocompleteToken();
         // get indicated domain/data type from EDS.ini
         // build request 
         // get request
@@ -477,13 +478,73 @@ class Backend extends AbstractBackend
         if (!empty($username) && !empty($password)) {
             $this->debugPrint(
                 'Calling Authenticate with username: '
-                . "$username, password: $password, orgid: $orgId "
+                . "$username, password: XXXXXXXX, orgid: $orgId "
             );
             $results = $this->client->authenticate($username, $password, $orgId);
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
             $authTokenData = ['token' => $token, 'expiration' => $timeout];
             $this->cache->setItem('edsAuthenticationToken', $authTokenData);
+        }
+        return $token;
+    }
+
+   /**
+     * Obtain the autocomplete authentication to use with the EDS API from cache if it exists. If
+     * not, then generate a new one.
+     *
+     * @param bool $isInvalid whether or not the the current autocomplete token is invalid
+     *
+     * @return string autocompleteToken 
+     */
+    protected function getAutocompleteToken($isInvalid = false)
+    {
+        $token = null;
+        if ($this->ipAuth) {
+            return $token;
+        }
+        if ($isInvalid) {
+            $this->cache->setItem('edsAutocomplete', null);
+        }
+        $autocompleteData = $this->cache->getItem('edsAutocomplete');
+        if (isset($autocompleteData)) {
+            $currentToken =  $autocompleteData['token'] ?? '';
+            $expirationTime = $authTokenData['expiration'] ?? 0;
+            $this->debugPrint(
+                'Cached Authentication data: '
+                . "$currentToken, expiration time: $expirationTime"
+            );
+
+            // Check to see if the token expiration time is greater than the current
+            // time.  If the token is expired or within 5 minutes of expiring,
+            // generate a new one.
+            if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
+                return $currentToken;
+            }
+        }
+
+        $username = $this->userName;
+        $password = $this->password;
+        $orgId = $this->orgId;
+        $params = ['autocomplete'];
+        if (!empty($username) && !empty($password)) {
+            $this->debugPrint(
+                'Calling Authenticate with username: '
+                . "$username, password: XXXXXXXX, orgid: $orgId "
+            );
+            $results = $this->client->authenticate($username, $password, $orgId, $params);
+            $autoresult = $results['Autocomplete'];
+            $token = $autoresult['Token'];
+            $timeout = $autoresult['TokenTimeOut'] + time();
+            $custid = $autoresult['CustId'];
+            $url = $autoresult['Url'];
+            $this->debugPrint(
+                'Autocomplete data token: '
+                . "$token, custid: $custid, url: $url "
+            );
+
+            $authTokenData = ['token' => $token, 'expiration' => $timeout];
+            $this->cache->setItem('edsAutocomplete', $authTokenData);
         }
         return $token;
     }
