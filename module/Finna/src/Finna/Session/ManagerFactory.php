@@ -28,7 +28,6 @@
 namespace Finna\Session;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for instantiating Session Manager
