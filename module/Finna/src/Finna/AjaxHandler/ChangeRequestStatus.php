@@ -39,7 +39,10 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ChangeRequestStatus extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
+    implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Handle a request.
      *
@@ -85,7 +88,6 @@ class ChangeRequestStatus extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
 
             return $this->formatResponse($results);
         } catch (\Exception $e) {
-            $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
             $this->logError('changePickupLocation failed: ' . $e->getMessage());
             // Fall through to the error message below.
         }
