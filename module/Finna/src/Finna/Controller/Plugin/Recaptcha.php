@@ -153,6 +153,9 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
         $storage = new \Zend\Session\Container(
             'SessionState', $this->sessionManager
         );
+        if (empty($storage->sessionStartTime)) {
+            $storage->sessionStartTime = time();
+        }
         $timestamp = isset($storage->lastProtectedActionTime)
             ? $storage->lastProtectedActionTime : $storage->sessionStartTime;
         $passed = time() - $timestamp >= $this->actionInterval;

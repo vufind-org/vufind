@@ -27,6 +27,7 @@
  */
 namespace Finna\Session;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -43,15 +44,23 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class ManagerFactory extends \VuFind\Session\ManagerFactory
 {
     /**
-     * Create service
+     * Create an object
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function createService(ServiceLocatorInterface $sm)
-    {
-        $sessionManager = parent::createService($sm);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $sessionManager = parent::__invoke($container, $requestedName, $options);
         $storage = new \Zend\Session\Container('SessionState', $sessionManager);
         if (empty($storage->sessionStartTime)) {
             $storage->sessionStartTime = time();
