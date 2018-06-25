@@ -66,8 +66,9 @@ class Related extends AbstractClassBasedTemplateRenderer
     /**
      * Constructor
      *
-     * @param \VuFind\Related\PluginManager $pluginManager Plugin manager for related
-     * record modules.
+     * @param RelatedManager $pluginManager Plugin manager for related record modules
+     * @param ConfigManager  $cm            Configuration manager
+     * @param OptionsManager $om            Search options manager
      */
     public function __construct(RelatedManager $pluginManager,
         ConfigManager $cm, OptionsManager $om
