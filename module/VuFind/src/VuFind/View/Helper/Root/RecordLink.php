@@ -229,7 +229,10 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     public function getChildRecordSearchUrl($driver)
     {
         $urlHelper = $this->getView()->plugin('url');
-        $url = $urlHelper('search-results')
+        $optionsHelper = $this->getView()->plugin('searchOptions');
+        $route = $optionsHelper->__invoke($driver->getSourceIdentifier())
+            ->getSearchAction();
+        $url = $urlHelper($route)
             . '?lookfor='
             . urlencode(addcslashes($driver->getUniqueID(), '"'))
             . '&type=ParentID';
