@@ -46,7 +46,7 @@ if (!empty($containerTitle)) {
     $page = $this->driver->tryMethod('getContainerStartPage');
     if (!empty($page)) {
         echo "SP $page\n";
-        if ('RT Book, Whole' !== $exportFormat) {
+        if (!in_array('1/Book/Book/', $formats)) {
             $end = $this->driver->tryMethod('getContainerEndPage');
             if (!empty($end)) {
                 echo "OP $end\n";
