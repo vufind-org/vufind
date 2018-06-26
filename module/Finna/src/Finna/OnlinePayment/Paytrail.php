@@ -123,7 +123,7 @@ class Paytrail extends BaseHandler
                 $this->config->paymentDescription . " - $patronId"
             );
         } else {
-            $module->setMerchantDescription($description);
+            $module->setMerchantDescription($patronId);
         }
 
         $lastname = trim($user->lastname);
