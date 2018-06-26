@@ -1,7 +1,7 @@
 <?php
   $geoFilters = $this->params->getGeographicFilters($this->params->getFilterList());
   $mapPopupUrl = $this->url('search-mapfacet') . $results->getUrlQuery()->getParams(false);
-  $removeFacetUrl = $results->getUrlQuery()->removeFacet($geoFilters[0] ?? '', ''); ?>
+  $removeFacetUrl = $results->getUrlQuery()->removeFacet($geoFilters[0] ?? '', '');
 ?>
 <div class="geofacet-header">
   <h5 class="geofacet-title"><?=$this->translate('filter_by_geo_location')?></h5>
