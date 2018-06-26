@@ -220,7 +220,8 @@ abstract class Base
      *
      * @return array
      */
-    public function authenticate($username = null, $password = null, $orgid = null, $params = null)
+    public function authenticate($username = null, $password = null, 
+                    $orgid = null, $params = null)
     {
         $this->debugPrint(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
