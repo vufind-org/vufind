@@ -1,4 +1,4 @@
-/*global Element, Hunt, VuFind */
+/*global Hunt, VuFind */
 /*exported checkItemStatuses, itemStatusFail */
 
 function linkCallnumbers(callnumber, callnumber_handler) {
@@ -142,9 +142,9 @@ function checkItemStatus(el) {
 
 var itemStatusObserver = null;
 function checkItemStatuses(_container) {
-  var container = _container instanceof Element
-    ? _container
-    : document.body;
+  var container = typeof _container === 'undefined'
+    ? document.body
+    : _container;
 
   var ajaxItems = $(container).find('.ajaxItem');
   for (var i = 0; i < ajaxItems.length; i++) {

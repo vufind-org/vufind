@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Zend\Log\LoggerAwareInterface;
+
 /**
  * External Authentication/Authorization Controller
  *
@@ -38,8 +40,10 @@ namespace VuFind\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class ExternalAuthController extends AbstractBase
+class ExternalAuthController extends AbstractBase implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Permission from permissions.ini required for EZProxy authorization.
      *
@@ -62,24 +66,40 @@ class ExternalAuthController extends AbstractBase
         }
 
         $user = $this->getUser();
-        if ($user) {
-            // Logged in, check for authorization
-            $authService = $this->serviceLocator
-                ->get('ZfcRbac\Service\AuthorizationService');
-            if (!$authService->isGranted($this->ezproxyRequiredPermission)) {
-                $view = $this->createViewModel();
-                $view->unauthorized = true;
-                $this->flashMessenger()->addErrorMessage(
-                    'external_auth_unauthorized'
+
+        $authService = $this->serviceLocator
+            ->get('ZfcRbac\Service\AuthorizationService');
+        if ($authService->isGranted($this->ezproxyRequiredPermission)) {
+            // Access granted, redirect to EZproxy
+            if (empty($config->EZproxy->disable_ticket_auth_logging)) {
+                $logger = $this->serviceLocator->get('VuFind\Logger');
+                $logger->log(
+                    \Zend\Log\Logger::INFO,
+                    "EZproxy login to '" . $config->EZproxy->host
+                    . "' for '" . ($user ? $user->username : 'anonymous')
+                    . "' from IP address "
+                    . $this->request->getServer()->get('REMOTE_ADDR')
                 );
-                return $view;
             }
             $url = $this->params()->fromPost(
                 'url', $this->params()->fromQuery('url')
             );
+            $username = !empty($config->EZproxy->anonymous_ticket) || !$user
+                ? 'anonymous' : $user->username;
             return $this->redirect()->toUrl(
-                $this->createEzproxyTicketUrl($user->username, $url)
+                $this->createEzproxyTicketUrl($username, $url)
             );
+        }
+
+        if ($user) {
+            // User already logged in, inform that the current login does not
+            // allow access.
+            $view = $this->createViewModel();
+            $view->unauthorized = true;
+            $this->flashMessenger()->addErrorMessage(
+                'external_auth_unauthorized'
+            );
+            return $view;
         }
         return $this->forceLogin('external_auth_login_message');
     }

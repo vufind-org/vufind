@@ -308,6 +308,24 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Search for the specified query.
+     *
+     * @param string $query Search term(s)
+     *
+     * @return \Behat\Mink\Element\Element
+     */
+    protected function performSearch($query)
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->snooze();
+        return $page;
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
