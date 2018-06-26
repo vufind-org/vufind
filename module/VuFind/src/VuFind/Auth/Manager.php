@@ -450,7 +450,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function getCsrfHash($regenerate = false, $maxTokens = 5)
     {
         // Reset token store if we've overflowed the limit:
-        if (count($this->csrf->getSession()->tokenList) > $maxTokens) {
+        if (count($this->csrf->getSession()->tokenList ?? []) > $maxTokens) {
             $this->csrf->getSession()->tokenList = [];
         }
         $token = $this->csrf->getHash($regenerate);
