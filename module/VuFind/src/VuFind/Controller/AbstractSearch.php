@@ -730,7 +730,7 @@ class AbstractSearch extends AbstractBase
             [$facet], false, $limit, $sort, $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
-        $list = $facets[$facet]['data']['list'];
+        $list = $facets[$facet]['data']['list'] ?? [];
         $params->activateAllFacets();
         $facetLabel = $params->getFacetLabel($facet);
 
@@ -743,7 +743,7 @@ class AbstractSearch extends AbstractBase
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
-                'anotherPage' => $facets[$facet]['more'],
+                'anotherPage' => $facets[$facet]['more'] ?? '',
                 'sort' => $sort,
                 'sortOptions' => $facetSortOptions,
                 'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
