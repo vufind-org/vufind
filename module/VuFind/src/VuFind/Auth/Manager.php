@@ -442,12 +442,19 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * If no CSRF token currently exists, or should be regenerated, generates one.
      *
      * @param bool $regenerate Should we regenerate token? (default false)
+     * @param int  $maxTokens  The maximum number of tokens to store in the
+     * session.
      *
      * @return string
      */
-    public function getCsrfHash($regenerate = false)
+    public function getCsrfHash($regenerate = false, $maxTokens = 5)
     {
-        return $this->csrf->getHash($regenerate);
+        // Reset token store if we've overflowed the limit:
+        if (count($this->csrf->getSession()->tokenList) > $maxTokens) {
+            $this->csrf->getSession()->tokenList = [];
+        }
+        $token = $this->csrf->getHash($regenerate);
+        return $token;
     }
 
     /**
@@ -553,11 +560,14 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->getAuth()->preLoginCheck($request);
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
-            && !$this->csrf->isValid($request->getPost()->get('csrf'))
-        ) {
-            $this->getAuth()->resetState();
-            throw new AuthException('authentication_error_technical');
+        if (!$this->getAuth()->getSessionInitiator(null)) {
+            if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
+                $this->getAuth()->resetState();
+                throw new AuthException('authentication_error_technical');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->getSession()->tokenList = [];
+            }
         }
 
         // Perform authentication:

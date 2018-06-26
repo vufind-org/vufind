@@ -1736,6 +1736,9 @@ class MyResearchController extends AbstractBase
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
                 );
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $csrf->getSession()->tokenList = [];
             }
             $user->delete(
                 $config->Authentication->delete_comments_with_user ?? true
