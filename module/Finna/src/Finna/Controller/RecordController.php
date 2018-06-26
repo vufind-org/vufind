@@ -401,7 +401,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
             $validPickup = $validGroup && $this->holds()->validatePickUpInput(
-                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
+                $gatheredDetails['pickUpLocation'] ?? '', $extraHoldFields, $pickup
             );
             if (!$validGroup) {
                 $this->flashMessenger()
