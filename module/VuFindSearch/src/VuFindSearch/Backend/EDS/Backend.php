@@ -490,8 +490,8 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Obtain the autocomplete authentication to use with the EDS API from cache if it 
-     * exists. If not, then generate a new one.
+     * Obtain the autocomplete authentication to use with the EDS API from cache  
+     * if it exists. If not, then generate a new one.
      *
      * @param bool $isInvalid whether or not the the current autocomplete token 
      * is invalid
@@ -534,7 +534,7 @@ class Backend extends AbstractBackend
                 . "$username, password: XXXXXXXX, orgid: $orgId "
             );
             $results = $this->client->authenticate(
-                       $username, $password, $orgId, $params);
+            $username, $password, $orgId, $params);
             $autoresult = $results['Autocomplete'];
             $token = $autoresult['Token'];
             $timeout = $autoresult['TokenTimeOut'] + time();
