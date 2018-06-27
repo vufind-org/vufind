@@ -416,11 +416,20 @@ class Backend extends AbstractBackend
         // Todo:
         // get autocomplete Token, Url, CustId
         $autocompleteToken = $this->getAutocompleteToken();
+        $autocompleteData = $this->cache->getItem('edsAutocomplete');
+        $autocompleteUrl = $autocompleteData['url'];
+        $autocompleteCustId = $autocompleteData['custid'];
         // get indicated domain/data type from EDS.ini
+        $autocompleteType = $this->autocomplete_idx;
         // build request 
-        // get request
+        $url = $autocompleteUrl . '?idx=' . $autocompleteType .
+        '&token=' . urlencode($autocompleteToken) . 
+        '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
+        $autocompleteCustId . '"]}]&term=' . urlencode($query);
+        $this->debugPrint("Url autocomplete: " . $url);
+        $autocompleteresponse =  $this->client->autocomplete($url);
         // parse result and build array of terms
-        return ["AUTO1","AUTO2","AUTO3"]; 
+        return $this->parseAutocomplete($autocompleteresponse); 
     }
 
 
@@ -545,11 +554,30 @@ class Backend extends AbstractBackend
                 . "$token, custid: $custid, url: $url "
             );
 
-            $authTokenData = ['token' => $token, 'expiration' => $timeout];
+            $authTokenData = ['token' => $token, 'expiration' => $timeout, 
+            'url' => $url, 'custid' => $custid];
             $this->cache->setItem('edsAutocomplete', $authTokenData);
         }
         return $token;
     }
+
+    /**
+     * Parse autocomplete response from API in an array of terms
+     *
+     * @param array $msg Response from API 
+     *
+     * @return array of terms 
+     */
+    protected function parseAutocomplete($msg)
+    {
+        $result = [];
+        foreach ($msg["terms"] as $value) {
+           $result[] = $value["term"];
+           $this->debugPrint("Term : " . $value["term"]);
+        }
+        return $result; 
+    }
+
 
     /**
      * Print a message if debug is enabled.

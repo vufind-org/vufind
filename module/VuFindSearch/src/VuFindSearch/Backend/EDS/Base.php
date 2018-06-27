@@ -211,6 +211,19 @@ abstract class Base
     }
 
     /**
+     * Execute an EdsApi autocomplete
+     *
+     * @param string             $url
+     *
+     * @return array An array of autocomplete terns as returned from the api
+     */
+    public function autocomplete($url)
+    {
+        return $this->call($url, null, null, 'GET', null);
+    }
+
+
+    /**
      * Generate an authentication token with a valid EBSCO EDS Api account
      *
      * @param string $username username associated with an EBSCO EdsApi account
