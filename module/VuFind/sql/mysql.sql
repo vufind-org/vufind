@@ -136,7 +136,7 @@ CREATE TABLE `search` (
 CREATE TABLE `session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
-  `data` text,
+  `data` mediumtext,
   `last_used` int(12) NOT NULL DEFAULT '0',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
