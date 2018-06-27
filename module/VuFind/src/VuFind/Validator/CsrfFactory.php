@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Service;
+namespace VuFind\Validator;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -36,7 +36,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * CSRF Validator factory.
  *
  * @category VuFind
- * @package  Service
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -44,7 +44,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *
  * @codeCoverageIgnore
  */
-class CsrfValidatorFactory implements FactoryInterface
+class CsrfFactory implements FactoryInterface
 {
     /**
      * Create an object
