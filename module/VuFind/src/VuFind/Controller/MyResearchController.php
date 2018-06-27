@@ -1738,7 +1738,7 @@ class MyResearchController extends AbstractBase
                 );
             } else {
                 // After successful token verification, clear list to shrink session:
-                $csrf->getSession()->tokenList = [];
+                $this->csrf->trimTokenList(0);
             }
             $user->delete(
                 $config->Authentication->delete_comments_with_user ?? true

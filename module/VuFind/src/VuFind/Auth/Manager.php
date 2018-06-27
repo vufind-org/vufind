@@ -450,11 +450,8 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function getCsrfHash($regenerate = false, $maxTokens = 5)
     {
         // Reset token store if we've overflowed the limit:
-        if (count($this->csrf->getSession()->tokenList ?? []) > $maxTokens) {
-            $this->csrf->getSession()->tokenList = [];
-        }
-        $token = $this->csrf->getHash($regenerate);
-        return $token;
+        $this->csrf->trimTokenList($maxTokens);
+        return $this->csrf->getHash($regenerate);
     }
 
     /**
@@ -566,7 +563,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
-                $this->csrf->getSession()->tokenList = [];
+                $this->csrf->trimTokenList(0);
             }
         }
 
