@@ -58,7 +58,7 @@ class Csrf extends \Zend\Validator\Csrf
     public function trimTokenList($limit)
     {
         $session = $this->getSession();
-        if ($limit < 1 || !is_array($session->tokenList ?? null)) {
+        if ($limit < 1) {
             // Reset the array if necessary:
             $session->tokenList = [];
         } elseif ($limit < $this->getTokenCount()) {
