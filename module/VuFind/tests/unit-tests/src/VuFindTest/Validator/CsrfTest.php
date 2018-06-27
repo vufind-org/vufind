@@ -1,10 +1,10 @@
 <?php
 /**
- * Solr Utils Test Class
+ * CSRF Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,7 @@ use VuFind\Validator\Csrf;
 use Zend\Session\Container;
 
 /**
- * Solr Utils Test Class
+ * CSRF Test Class
  *
  * @category VuFind
  * @package  Tests
