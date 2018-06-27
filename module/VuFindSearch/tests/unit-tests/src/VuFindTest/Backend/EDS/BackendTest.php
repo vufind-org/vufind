@@ -44,6 +44,35 @@ use VuFindSearch\Query\Query;
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Test performing an autocomplete
+     *
+     * @return void
+     */
+    public function testAutocomplete()
+    {
+        $conn = $this->getConnectorMock(['autocomplete']);
+        $conn->expects($this->once())
+            ->method('autocomplete')
+            ->will($this->returnValue($this->loadResponse('autocomplete')));
+
+        $back = $this->getBackend(
+            $conn, $this->getRCFactory(), null, null, [],
+            ['getAuthenticationToken', 'getSessionToken']
+        );
+        $back->expects($this->any())
+            ->method('getAuthenticationToken')
+            ->will($this->returnValue('auth1234'));
+        $back->expects($this->any())
+            ->method('getSessionToken')
+            ->will($this->returnValue('sess1234'));
+        $back->setIdentifier('bla');
+
+        $coll = $back->autocomplete('bla');
+        // ToDo: impelement the test if the fixtures for autocomplete 
+        // generates the corret answer
+    }
+
+    /**
      * Test retrieving a record.
      *
      * @return void
