@@ -28,6 +28,7 @@
 namespace VuFindTest\Validator;
 
 use VuFind\Validator\Csrf;
+use Zend\Session\Container;
 
 /**
  * Solr Utils Test Class
@@ -47,7 +48,7 @@ class CsrfTest extends \PHPUnit\Framework\TestCase
      */
     public function testCounting()
     {
-        $csrf = new Csrf();
+        $csrf = new Csrf(['session' => new Container('csrftest1')]);
         $this->assertEquals(0, $csrf->getTokenCount());
         $csrf->getHash();
         $this->assertEquals(1, $csrf->getTokenCount());
@@ -62,7 +63,7 @@ class CsrfTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrimming()
     {
-        $csrf = new Csrf();
+        $csrf = new Csrf(['session' => new Container('csrftest2')]);
         // Try trimming an empty list:
         $csrf->trimTokenList(5);
         $this->assertEquals(0, $csrf->getTokenCount());
