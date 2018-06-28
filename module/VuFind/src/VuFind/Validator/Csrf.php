@@ -1,6 +1,6 @@
 <?php
 /**
- * Related helper factory.
+ * Extension of Zend\Validator\Csrf with token counting/clearing functions added.
  *
  * PHP version 7
  *
@@ -20,51 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
-
-use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+namespace VuFind\Validator;
 
 /**
- * Related helper factory.
+ * Extension of Zend\Validator\Csrf with token counting/clearing functions added.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RelatedFactory implements FactoryInterface
+class Csrf extends \Zend\Validator\Csrf
 {
     /**
-     * Create an object
+     * How many tokens are currently stored in the session?
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @return int
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+    public function getTokenCount()
+    {
+        return count($this->getSession()->tokenList ?? []);
+    }
+
+    /**
+     * Keep only the most recent N tokens.
+     *
+     * @param int $limit Number of tokens to keep.
+     *
+     * @return void
+     */
+    public function trimTokenList($limit)
+    {
+        $session = $this->getSession();
+        if ($limit < 1) {
+            // Reset the array if necessary:
+            $session->tokenList = [];
+        } elseif ($limit < $this->getTokenCount()) {
+            // Trim the array if necessary:
+            $session->tokenList
+                = array_slice($session->tokenList, -1 * $limit, null, true);
         }
-        return new $requestedName(
-            $container->get('VuFind\Related\PluginManager'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Search\Options\PluginManager')
-        );
     }
 }

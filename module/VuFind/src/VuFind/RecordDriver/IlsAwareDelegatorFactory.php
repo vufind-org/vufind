@@ -54,11 +54,6 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
     public function __invoke(ContainerInterface $container, $name,
         callable $callback, array $options = null
     ) {
-        /**
-         * The wrapped session handler.
-         *
-         * @var HandlerInterface $handler
-         */
         $driver = call_user_func($callback);
 
         // Attach the ILS if at least one backend supports it:

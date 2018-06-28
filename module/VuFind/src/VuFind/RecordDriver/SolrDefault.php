@@ -271,7 +271,8 @@ class SolrDefault extends DefaultRecord
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
-        return $this->searchService->search('Solr', $query, 0, 0, $params)
+        return $this->searchService
+            ->search($this->sourceIdentifier, $query, 0, 0, $params)
             ->getTotal();
     }
 
