@@ -1,8 +1,8 @@
 <?=$this->doctype('HTML5')?>
+<?php // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
 <!-- START of: finna - layout/layout.phtml -->
 <?php $currentTabClass = $this->layout()->currentTabId ? ' tab-' . preg_replace('/[^a-z0-9]/', '', strtolower($this->layout()->currentTabId)) : '' ?>
-<?php // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
-<html lang="<?=$this->layout()->userLang?>">
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?$this->headThemeResources()?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
