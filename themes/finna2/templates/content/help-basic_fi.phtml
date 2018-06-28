@@ -1,5 +1,5 @@
 <!-- START of: finna - content/help-basic_fi.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
     <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
 <?php endif; ?>
 <div>
@@ -27,11 +27,11 @@
       <p>fraasi on hyvä laittaa aina lainausmerkkeihin, jotta haku ei tulkitse sanoja erillisiksi</p>
       <pre class="code">lapset kesä</pre>
       <p>sama kuin kirjoittaisi lapset AND kesä, haku antaa aineistoja liittyen sekä lapsiin että kesään</p>
-      <pre class="code">maaseutu OR maatila</pre> 
+      <pre class="code">maaseutu OR maatila</pre>
       <p>haussa ilmenee tuloksia liittyen maaseutuun tai maatiloihin</p>
-      <pre class="code">"kivi aleksis"</pre> 
+      <pre class="code">"kivi aleksis"</pre>
       <p>tekijä lainausmerkkeihin, sukunimi mielellään ensin</p>
-      <pre class="code">tieto*</pre> 
+      <pre class="code">tieto*</pre>
       <p>tähtimerkki katkaisee sanan, jolloin hakutuloksiin voi tulla useita päätteitä: tietokone, tiedot, tietojenkäsittely</p>
       <p>Kun kirjoitat hakupalkkiin esimerkiksi kirjan nimeä, järjestelmä ennakoi hakemaasi sanaa tarjoamalla vaihtoehtoja, joista saatat myös löytää etsimäsi suoraan.</p>
       <p><strong>Lisäohjeita hakulauseen muodostamisesta löytyy <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">hakulauseen muotoilu</a> -osiosta.</strong></p>

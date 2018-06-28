@@ -1,5 +1,5 @@
 <!-- START of: finna - content/help_syntax_fi.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
     <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-syntax'])?>
 <?php endif; ?>
 <div>
@@ -14,7 +14,7 @@
       <p>Esimerkki:</p>
       <pre class="code">ruokavalio AND (dieetti OR elämäntapa)</pre>
       <h3>AND</h3>
-      <p>Jos käytät AND-operaattoria saat kyselyn tuloksena hakutulokset, joissa esiintyvät kaikki hakukenttiin kirjoitetut termit.</p> 
+      <p>Jos käytät AND-operaattoria saat kyselyn tuloksena hakutulokset, joissa esiintyvät kaikki hakukenttiin kirjoitetut termit.</p>
       <p>Esimerkki:</p>
       <pre class="code">Karisto Seppälä</pre>
       <h3>OR</h3>
@@ -30,7 +30,7 @@
     </div>
     <div id="wildcardsearch" class="content-section">
       <h2>Hakusanan katkaisu tai kirjaimen korvaaminen jokerimerkillä</h2>
-      <p>Hakusanan voi katkaista sanan lopusta tähtimerkillä: 
+      <p>Hakusanan voi katkaista sanan lopusta tähtimerkillä:
       <pre class="code">kilpail*</pre>
       <p>(haku hakee silloin mm. muodot: kilpailu, kilpailut, kilpailun)</p>
       <p>Hakusanan keskellä * korvaa yhden tai useamman merkin:
@@ -68,7 +68,7 @@
       <p>Jos haluat hakutulokseen vain tietyn tekijän teokset kirjoita tekijän nimi lainausmerkkeihin:</p>
       <pre class="code">”sukunimi etunimi”</pre>
       <p>Tarkennetussa haussa voit kohdistaa haun suoraan <strong>Tekijä</strong>-kenttään, kirjoita myös silloin nimi muodossa: <i>”sukunimi etunimi”</i>.
-      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>      
+      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>
     </div>
     <div id="isbn-issn-search" class="content-section">
       <h2>ISBN/ISSN -haku</h2>
@@ -81,7 +81,7 @@
       <p>tai</p>
       <pre class="code">07828195</pre>
       <p>Tarkennetussa haussa voit kohdistaa haun ISBN/ISSN-kenttään.</p>
-      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>    
+      <p>Hakusi tuloksia voit tarkentaa hakutuloksissa sivupalkin <strong>Rajaa hakua</strong> -suodattimilla.</p>
     </div>
     <div id="additionaloperators" class="content-section">
       <h2>Edistyneet lisäoperaattorit</h2>

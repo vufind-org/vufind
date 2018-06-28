@@ -1,6 +1,6 @@
 <!-- START of: finna - content/help_advanced_en-gb.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
-    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
 <?php endif; ?>
 <div>
   <div class="sidebar left">
@@ -11,7 +11,7 @@
       <p><a href="<?=$this->url('search-advanced')?>">Advanced search</a> provides a number of search boxes for entering search terms and phrases.</p>
       <p>For example, you can search by title, author and role or subject. When you narrow your search by “Author and role,” you can enter the author’s name and their role, for example, <i>Jörn Donner</i> writer. Thus your search results will only contain books written by <i>Donner</i>, but not the films he has directed. Organisations may also have a role connected to the source material, for example as a creator of an archive.</p>
       <p>You can conduct a search with multiple search terms by using several search fields or groups at once. The same Boolean operators (AND, OR, NOT) apply to the search terms used in a search group. The drop-down menu located next to the search fields defines the Boolean operator within the search group in question as follows:</p>
-      <p><strong>All search terms (AND)</strong> — Returns results that contain all of the terms in the search fields.</p> 
+      <p><strong>All search terms (AND)</strong> — Returns results that contain all of the terms in the search fields.</p>
       <p><strong>Any search term (OR)</strong> — Returns results that contain one or more of the search terms. (There will be more results than with a search using AND.)</p>
       <p><strong>Without any of the search terms (NOT)</strong> — Returns results that don’t contain any of the terms entered in the search fields. You can use this function when you want results that don’t contain a specific search term at all. Please note that you will need a separate search group if you also want to define terms contained in the source material.</p>
       <p><strong>The Add a search field</strong> –button adds a new search field.</p>

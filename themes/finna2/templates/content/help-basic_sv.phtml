@@ -1,5 +1,5 @@
 <!-- START of: finna - content/help-basic_sv.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
     <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
 <?php endif; ?>
 <div>
@@ -26,11 +26,11 @@
       <p>liknande fraser är alltid bra att skriva inom citationstecken, så att sökningen inte tolkar orden separat</p>
       <pre class="code">barn sommar</pre>
       <p>samma som barn AND sommar; sökningen tar fram material som anknyter både till barn och till sommar</p>
-      <pre class="code">landsbygd OR bondgård</pre> 
+      <pre class="code">landsbygd OR bondgård</pre>
       <p>sökningen ger resultat som anknyter till landsbygden eller bondgårdar</p>
-      <pre class="code">"kivi aleksis"</pre> 
+      <pre class="code">"kivi aleksis"</pre>
       <p>upphovsmän skrivs inom citationstecken, helst med tillnamnet först</p>
-      <pre class="code">data*</pre> 
+      <pre class="code">data*</pre>
       <p>asterisken bryter av ordet och sökresultaten kan innehålla flera olika ändelser: t.ex. databas, databehandling, dataskydd</p>
       <p>När du i sökrutan skriver in t.ex. en boktitel, förutser systemet ordet som du söker genom att föreslå alternativ, bland vilka du kanske direkt hittar det du söker.</p>
       <p><strong>Närmare anvisningar för formulering av sökfraser finns i delen <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">söksyntax</a>.</strong></p>

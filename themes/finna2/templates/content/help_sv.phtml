@@ -1,6 +1,6 @@
 <!-- START of: finna - content/help_sv.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
-  <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help'])?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+  <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help'])?>
 <?php endif; ?>
 <div>
   <div class="sidebar left">
@@ -8,8 +8,8 @@
     </div>
   </div>
   <div class="mainbody right">
-    <?php if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
-      <?=$this->render('Content/Additions/helpBegin.phtml')?>
+    <?php if ($this->resolver('content/Additions/helpBegin.phtml')): ?>
+      <?=$this->render('content/Additions/helpBegin.phtml')?>
     <?php endif; ?>
     <div id="begin1" class="content-section">
       <h2>Hur börjar jag söka i Finna?</h2>
@@ -34,8 +34,8 @@
       <p>En del av materialet är nedladdningsbart. Kom dock alltid ihåg att kontrollera t.ex bildernas användningsrättigheter i materialets egna uppgifter.</p>
       <p>Material kan användas t.ex. som stöd i undervisning och inlärning eller för hobbyverksamhet.</p>
     </div>
-    <?php if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
-      <?=$this->render('Content/Additions/helpEnd.phtml')?>
+    <?php if ($this->resolver('content/Additions/helpEnd.phtml')): ?>
+      <?=$this->render('content/Additions/helpEnd.phtml')?>
     <?php endif; ?>
   </div>
 </div>

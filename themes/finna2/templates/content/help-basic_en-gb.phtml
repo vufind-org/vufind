@@ -1,5 +1,5 @@
 <!-- START of: finna - content/help-basic_en.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
     <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-basic'])?>
 <?php endif; ?>
 <div>
@@ -25,11 +25,11 @@
       <p>It’s always a good idea to put phrases like these in quotes so that Finna doesn’t interpret your search as separate words</p>
       <pre class="code">children summer</pre>
       <p>This search is the same as entering children AND summer; the search will include all results related to children and summer</p>
-      <pre class="code">countryside OR farm</pre> 
+      <pre class="code">countryside OR farm</pre>
       <p>The search results will include results related to the countryside or to farms</p>
-      <pre class="code">"kivi aleksis"</pre> 
+      <pre class="code">"kivi aleksis"</pre>
       <p>The author’s name should be in quotes, and ideally the last name should be entered first</p>
-      <pre class="code">know*</pre> 
+      <pre class="code">know*</pre>
       <p>The asterisk truncates words so that the search may return results with a number of different endings, e.g. knowledge and know-how</p>
       <p>If, for example, you enter the name of a book in the search box, Finna predicts your search terms by offering results that may allow you to find your book directly.</p>
       <p><strong>You can find more instructions on forming search phrases in  <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">the Search syntax section</a>.</strong></p>

@@ -1,5 +1,5 @@
 <!-- START of: finna - content/help-syntax_en-gb.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
     <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-syntax'])?>
 <?php endif; ?>
 <div>
@@ -75,7 +75,7 @@
     </div>
     <div id="fuzzysearches" class="content-section">
       <h2>Fuzzy searches</h2>
-      <p>A fuzzy search generates results in which words similar to the actual search word also appear. 
+      <p>A fuzzy search generates results in which words similar to the actual search word also appear.
       </p>
       <p>~ carries out a fuzzy search when used as the last character in a single-term search.
       </p>
@@ -86,7 +86,7 @@
       <p>The closer the value is to one, the more similar the term will be to the original term.  roam~0.8
       </p>
       <pre class="code">roam~0.8</pre>
-      <p>The default value of the parameter is 0.5 if it is not separately defined for a fuzzy search. 
+      <p>The default value of the parameter is 0.5 if it is not separately defined for a fuzzy search.
       </p>
     </div>
 

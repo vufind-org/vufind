@@ -1,6 +1,6 @@
 <!-- START of: finna - content/help_advanced_sv.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
-    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
 <?php endif; ?>
 <div>
   <div class="sidebar left">
@@ -11,7 +11,7 @@
       <p>I <a href="<?=$this->url('search-advanced')?>">avancerad sökning</a> finns det flera sökfält där du kan skriva in sökord och sökmeningar.</p>
       <p>Du kan välja att söka på exempelvis titel, upphovsman och roll eller ämne. Om du väljer ”Upphovsman och roll” kan du skriva in namn och upphovsroll, t.ex. <i>Jörn Donner</i> författare. Då ger sökresultaten bara böcker som <i>Donner</i> skrivit, inte filmer som han regisserat. Också organisationer kan ha en roll i att skapa material, t.ex. som arkivbildare.</p>
       <p>Du kan kombinera flera sökord i din sökning geno¬m att samtidigt använda flera sökfält eller sökgrupper. Samma booleska operatorer (AND, OR, NOT) tillämpas alltid på sökorden inom sökgruppen. I Sök-rullgardinsmenyn intill sökfälten kan du definiera den booleska operatorn inom den aktuella sökgruppen:</p>
-      <p><strong>Med alla sökord (AND)</strong> — Ger sökresultat som motsvarar innehållet i alla sökfält.</p> 
+      <p><strong>Med alla sökord (AND)</strong> — Ger sökresultat som motsvarar innehållet i alla sökfält.</p>
       <p><strong>Med något av sökorden (OR)</strong> — Ger sökresultat som motsvarar ett eller flera av sökorden. (Fler sökresultat än med AND-sökning.)</p>
       <p><strong>Med inget av sökorden (NOT)</strong> — Ger sökresultat som inte innehåller något av sökorden. Det lönar sig att använda det här alternativet om du vill att något sökord inte alls ska ingå i sökningen. Observera att det behövs en separat sökgrupp för det här, om du också vill definiera sökord som ska ingå i materialet.</p>
       <p>Med knappen <strong>Lägg till sökfält</strong> kan du lägga till ett nytt sökfält i formuläret.</p>

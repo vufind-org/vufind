@@ -1,6 +1,6 @@
 <!-- START of: finna - content/help_advanced_fi.phtml -->
-<?php if ($this->resolver('Content/help-tabs.phtml')): ?>
-    <?=$this->render('Content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-advanced'])?>
 <?php endif; ?>
 <div>
   <div class="sidebar left">
@@ -11,7 +11,7 @@
       <p><a href="<?=$this->url('search-advanced')?>">Tarkennetussa haussa</a> kohdassa <strong>Hakuehdot</strong> on useita <strong>hakukenttiä</strong>, joihin voi kirjoittaa hakusanoja ja hakulausekkeita.</p>
       <p>Voit kohdistaa haun kaikkiin hakukenttiin tai täsmentää kohdistusta yhteen hakukenttään (esim. nimeke, tekijä ja rooli tai aihe). Tekijä ja rooli -kohdistuskenttään voit kirjoittaa tekijän nimen ja tekijäroolin, esimerkiksi <i>Jörn Donner</i> kirjoittaja, mikäli haluaa etsiä vain <i>Donnerin</i> kirjoittamia kirjoja, mutta ei hänen ohjaamiaan elokuvia. Myös organisaatioilla voi olla aineiston tekemiseen liittyvä rooli, esimerkiksi arkistonmuodostajana.</p>
       <p>Useita hakusanoja yhdistelevä haku onnistuu käyttämällä useampaa hakukenttää tai hakuryhmää samanaikaisesti. Hakuryhmän sisällä oleviin hakusanoihin sovelletaan aina samaa boolen operaattoria (AND, OR, NOT). Hakukenttien vieressä oleva Hae-alasvetovalikko määrittelee, miten useita hakukenttiä sisältävä kysely käsitellään kyseisen hakuryhmän sisällä:</p>
-      <p><strong>Kaikilla hakusanoilla (AND)</strong> — Tuottaa hakutuloksia, jotka täsmäävät kaikkien hakukenttien sisältöön.</p> 
+      <p><strong>Kaikilla hakusanoilla (AND)</strong> — Tuottaa hakutuloksia, jotka täsmäävät kaikkien hakukenttien sisältöön.</p>
       <p><strong>Millä tahansa hakusanalla (OR)</strong> — Tuottaa hakutuloksia, jotka täsmäävät yhden tai useamman hakukentän sisältöön.</p>
       <p><strong>Ei millään hakusanoista (NOT)</strong> — Tuottaa hakutuloksia, joissa ei esiinny yhdenkään hakukentän sisältöä. Tätä kannattaa käyttää, jos ei halua jonkin tietyn hakusanan sisältyvän lainkaan hakuun. Huomaa, että tämän käyttöön tarvitsee erillisen hakuryhmän, jos haluaa määritellä myös aineistoon sisältyviä kuvailutietoja.</p>
       <p><strong>Lisää hakukenttä</strong> –painikkeella lomakkeelle pystyy lisäämään uuden hakukentän.</p>
