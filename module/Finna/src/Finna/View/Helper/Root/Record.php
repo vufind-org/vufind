@@ -168,15 +168,16 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getLink($type, $lookfor, $params = [])
     {
-        $searchAction = isset($this->getView()->browse) && $this->getView()->browse
-            ? 'browse-' . $this->getView()->browse
-            : 'search-results'
-        ;
+        $searchAction = !empty($this->getView()->browse)
+            ? 'browse-' . $this->getView()->browse : '';
         $params = $params ?? [];
         $params = array_merge(
             $params,
-            ['lookfor' => $lookfor,
-             'searchAction' => $searchAction]
+            [
+                'driver' => $this->driver,
+                'lookfor' => $lookfor,
+                'searchAction' => $searchAction
+            ]
         );
         $result = $this->renderTemplate(
             'link-' . $type . '.phtml', $params

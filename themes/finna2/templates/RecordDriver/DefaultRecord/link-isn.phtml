@@ -1,1 +1,1 @@
-<?php // No ending line feed ?><?=$this->url($this->searchAction ?: 'search-results')?>?lookfor=%22<?=urlencode($this->lookfor)?>%22&amp;type=ISN
+<?php // No ending line feed ?><?=$this->url($this->searchAction ?: $this->searchOptions($this->driver->getSourceIdentifier())->getSearchAction())?>?lookfor=%22<?=urlencode($this->lookfor)?>%22&amp;type=ISN
