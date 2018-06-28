@@ -272,22 +272,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         // Set up CSRF:
-        $sessionManager = $this->serviceLocator->get('Zend\Session\SessionManager');
-        $this->csrf = new \Zend\Validator\Csrf(
-            [
-                'session' => new \Zend\Session\Container(
-                    'csrf', $sessionManager
-                ),
-                'salt' => isset($this->config->Security->HMACkey)
-                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
-            ]
-        );
+        $csrfValidator = $this->serviceLocator->get('VuFind\Validator\Csrf');
 
         if ($this->formWasSubmitted('submit', false)) {
             $csrf = $this->getRequest()->getPost()->get('csrf');
-            if (!$this->csrf->isValid($csrf)) {
+            if (!$csrfValidator->isValid($csrf)) {
                 throw new \Exception('An error has occurred');
             }
+            // After successful token verification, clear list to shrink session:
+            $csrfValidator->trimTokenList(0);
             $catalog = $this->getILS();
             $result = $catalog->purgeTransactionHistory($patron);
             $this->flashMessenger()->addMessage(
@@ -297,7 +290,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $view = $this->createViewModel();
-        $view->csrf = $this->csrf->getHash(true);
+        $view->csrf = $csrfValidator->getHash(true);
 
         return $view;
     }

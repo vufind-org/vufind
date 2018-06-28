@@ -263,7 +263,6 @@ $config = [
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
 
             'Zend\Session\SessionManager' => 'Finna\Session\ManagerFactory',
-            'Zend\Validator\Csrf' => 'Finna\Service\CsrfValidatorFactory',
         ],
         'aliases' => [
             'VuFind\Auth\Manager' => 'Finna\Auth\Manager',

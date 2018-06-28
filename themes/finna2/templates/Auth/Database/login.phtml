@@ -5,7 +5,7 @@
     <div class="login-col">
       <?=$this->auth()->getLoginFields()?>
       <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
-      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash())?>" />
       <div class="form-group">
         <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
       </div>
