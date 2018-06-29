@@ -51,7 +51,7 @@
   <?php endif; ?>
   <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
 <?php endif; ?>
-<?php foreach ($holdings['holdings'] as $holding): ?>
+<?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
   <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
   <?php if (isset($holding['locationhref']) && $holding['locationhref']): ?>
