@@ -519,7 +519,7 @@ class Backend extends AbstractBackend
         $autocompleteData = $this->cache->getItem('edsAutocomplete');
         if (isset($autocompleteData)) {
             $currentToken =  $autocompleteData['token'] ?? '';
-            $expirationTime = $authTokenData['expiration'] ?? 0;
+            $expirationTime = $autocompleteData['expiration'] ?? 0;
             $this->debugPrint(
                 'Cached Authentication data: '
                 . "$currentToken, expiration time: $expirationTime"
