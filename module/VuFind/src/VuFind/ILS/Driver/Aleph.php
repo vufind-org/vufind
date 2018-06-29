@@ -335,6 +335,13 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     protected $dateConverter = null;
 
     /**
+     * The base URL, where the REST DLF API is running
+     *
+     * @var string
+     */
+    protected $dlfbaseurl = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
@@ -388,6 +395,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->xserver_enabled = false;
         }
         $this->dlfport = $this->config['Catalog']['dlfport'];
+        if (isset($this->config['Catalog']['dlfbaseurl'])) {
+            $this->dlfbaseurl = $this->config['Catalog']['dlfbaseurl'];
+        }
         $this->sublibadm = $this->config['sublibadm'];
         if (isset($this->config['duedates'])) {
             $this->duedates = $this->config['duedates'];
@@ -483,7 +493,11 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         foreach ($path_elements as $path_element) {
             $path .= $path_element . "/";
         }
-        $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
+        if ($this->dlfbaseurl === null) {
+            $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
+        } else {
+            $url = $this->dlfbaseurl . $path;
+        }
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
         $replyCode = (string)$result->{'reply-code'};
