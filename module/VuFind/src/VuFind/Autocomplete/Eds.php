@@ -55,14 +55,7 @@ class Eds implements AutocompleteInterface
      *
      * @var string
      */
-    protected $domain;
-
-    /**
-     * Default Eds domain 
-     *
-     * @var string
-     */
-    protected $defaultDomain = 'rawqueries';
+    protected $domain = 'rawqueries';
 
     /**
      * Search object family to use
@@ -128,7 +121,7 @@ class Eds implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        $this->domain = (isset($params) && !empty($params)) ?
-            $params : $this->defaultDomain;
+        // Only change the value if it is not empty:
+        $this->domain = !empty($params) ? $params : $this->domain;
     }
 }
