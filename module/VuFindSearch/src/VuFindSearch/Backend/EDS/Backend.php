@@ -190,9 +190,6 @@ class Backend extends AbstractBackend
         if (isset($config->Autocomplete->enabled)) {
             $this->autocomplete = $config->Autocomplete->enabled;
         }
-        if (isset($config->Autocomplete->idx)) {
-            $this->autocomplete_idx = $config->Autocomplete->idx;
-        }
 
         // Save default profile value, since profile property may be overriden:
         $this->defaultProfile = $this->profile;
@@ -408,10 +405,11 @@ class Backend extends AbstractBackend
      * Get popular terms using the autocomplete API.
      *
      * @param string $query simple query string
+     * @param string $domain fits to the query
      *
      * @return array of terms 
      */
-    public function autocomplete($query)
+    public function autocomplete($query,$domain)
     {
         // Todo:
         // get autocomplete Token, Url, CustId
@@ -420,7 +418,7 @@ class Backend extends AbstractBackend
         $autocompleteUrl = $autocompleteData['url'];
         $autocompleteCustId = $autocompleteData['custid'];
         // get indicated domain/data type from EDS.ini
-        $autocompleteType = $this->autocomplete_idx;
+        $autocompleteType = $domain;
         // build request 
         $url = $autocompleteUrl . '?idx=' . $autocompleteType .
         '&token=' . urlencode($autocompleteToken) . 

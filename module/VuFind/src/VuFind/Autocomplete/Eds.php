@@ -43,6 +43,27 @@ namespace VuFind\Autocomplete;
  */
 class Eds implements AutocompleteInterface
 {
+   /**
+     * Autocomplete handler
+     *
+     * @var string
+     */
+    protected $handler;
+
+    /**
+     * Eds domain  
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
+     * Default Eds domain 
+     *
+     * @var string
+     */
+    protected $defaultDomain = 'rawqueries';
+
     /**
      * Search object family to use
      *
@@ -80,9 +101,6 @@ class Eds implements AutocompleteInterface
         // Initialize return array:
         $results = ["TEST1","TEST2","TEST3"];
 
-        // Send back results:
-        //return array_unique($results);
-
         // perhaps this method can look like this
         // ToDo
 
@@ -92,7 +110,7 @@ class Eds implements AutocompleteInterface
 
         try {
             // Perform the autocomplete search:
-            $results = $this->backend->autocomplete($query);
+            $results = $this->backend->autocomplete($query,$this->domain);
 
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
@@ -110,5 +128,7 @@ class Eds implements AutocompleteInterface
      */
     public function setConfig($params)
     {
+        $this->domain = (isset($params) && !empty($params)) ?
+            $params : $this->defaultDomain;
     }
 }
