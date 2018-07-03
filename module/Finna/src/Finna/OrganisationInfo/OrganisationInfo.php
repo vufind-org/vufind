@@ -279,8 +279,6 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         $startDate = date('Y-m-d', $startDate);
         $endDate = date('Y-m-d', $endDate);
 
-        $url = $this->config->General->url;
-
         if ($params['action'] == 'lookup') {
             $link = $params['link'];
             $parentName = $params['parentName'];
@@ -683,8 +681,10 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
         if (!$response) {
-            $client = $this->http->createClient($url);
-            $result = $client->setMethod('GET')->send();
+            $client = $this->http->createClient(
+                $url, \Zend\Http\Request::METHOD_GET, 10
+            );
+            $result = $client->send();
             if ($result->isSuccess()) {
                 if ($result->getStatusCode() != 200) {
                     $this->logError(
