@@ -261,6 +261,9 @@ defaultRequiredDate = 0:1:0
 ;acceptTermsText = "I accept the terms in any language."
 ;acceptTermsText[en-gb] = "I accept the terms in English."
 
+; Optional colon-separated list of allowed pickup location IDs.
+;pickUpLocations = "123:124:125"
+
 ; This section lists the valid patron id prefixes for UB (ILL in VuFind) requests,
 ; and maps them to the their Voyager UB library IDs. Any patron of another library
 ; with a prefix listed here may attempt a UB request in this system.
