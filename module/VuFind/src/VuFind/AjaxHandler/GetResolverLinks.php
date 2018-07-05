@@ -96,7 +96,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -109,8 +109,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR,
-                500
+                self::STATUS_HTTP_ERROR
             );
         }
         $resolver = new Connection($this->pluginManager->get($resolverType));
@@ -162,6 +161,6 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $html = $this->renderer->render('ajax/resolverLinks.phtml', $view);
 
         // output HTML encoded in JSON object
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }

@@ -84,7 +84,7 @@ class ManagerFactory implements FactoryInterface
         $sessionManager = $container->get('Zend\Session\SessionManager');
         $pm = $container->get('VuFind\Auth\PluginManager');
         $cookies = $container->get('VuFind\Cookie\CookieManager');
-        $csrf = $container->get('Zend\Validator\Csrf');
+        $csrf = $container->get('VuFind\Validator\Csrf');
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(

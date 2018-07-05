@@ -4,7 +4,7 @@
  * the alphabetical browse database generator, since Windows sort does not
  * support deduplication. Assumed presorted
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

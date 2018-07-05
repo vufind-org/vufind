@@ -60,7 +60,8 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <?php $sidebarList = $this->related()->getList($this->driver); ?>
+  <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : '' ?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
@@ -106,7 +107,7 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?php foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?php foreach ($sidebarList as $current): ?>
       <?=$this->related()->render($current)?>
     <?php endforeach; ?>
   </div>

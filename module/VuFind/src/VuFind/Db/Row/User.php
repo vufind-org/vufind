@@ -237,12 +237,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $listId     Filter for tags tied to a specific list (null for no
      * filter).
      * @param string $source     Filter for tags tied to a specific record source.
+     * (null for no filter).
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getTags($resourceId = null, $listId = null,
-        $source = DEFAULT_SEARCH_BACKEND
-    ) {
+    public function getTags($resourceId = null, $listId = null, $source = null)
+    {
         return $this->getDbTable('Tags')
             ->getForUser($this->id, $resourceId, $listId, $source);
     }
@@ -255,13 +255,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * for no filter).
      * @param int    $listId     Filter for tags tied to a specific list (null for no
      * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
+     * @param string $source     Filter for tags tied to a specific record source
+     * (null for no filter).
      *
      * @return string
      */
-    public function getTagString($resourceId = null, $listId = null,
-        $source = DEFAULT_SEARCH_BACKEND
-    ) {
+    public function getTagString($resourceId = null, $listId = null, $source = null)
+    {
         $myTagList = $this->getTags($resourceId, $listId, $source);
         $tagStr = '';
         if (count($myTagList) > 0) {

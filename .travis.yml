@@ -12,7 +12,7 @@ before_script:
   - phpenv config-rm xdebug.ini
   - phpenv rehash
   - composer install
-  - npm install -g eslint@"<3.0.0"
+  - npm install -g eslint@"<5.0.0"
 
 cache:
   directories:

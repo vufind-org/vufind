@@ -1,11 +1,10 @@
 <?php
 /**
- * CSRF Validator factory.
+ * Cover controller factory.
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Service;
+namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * CSRF Validator factory.
+ * Cover controller factory.
  *
  * @category VuFind
- * @package  Service
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class CsrfValidatorFactory implements FactoryInterface
+class CoverControllerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,15 +59,12 @@ class CsrfValidatorFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $sessionManager = $container->get('Zend\Session\SessionManager');
         return new $requestedName(
-            [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
-            ]
+            $container->get('VuFind\Cover\Loader'),
+            $container->get('VuFind\Cover\CachingProxy'),
+            $container->get('VuFind\Session\Settings')
         );
     }
 }

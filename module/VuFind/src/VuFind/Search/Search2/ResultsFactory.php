@@ -1,6 +1,6 @@
 <?php
 /**
- * Summon FacetCache Factory.
+ * Factory for Search2 results objects.
  *
  * PHP version 7
  *
@@ -20,35 +20,48 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Summon
+ * @package  Search_Search2
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Search\Summon;
+namespace VuFind\Search\Search2;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Summon FacetCache Factory.
+ * Factory for Search2 results objects.
  *
  * @category VuFind
- * @package  Search_Summon
+ * @package  Search_Search2
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
+class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
 {
     /**
-     * Create a results object.
+     * Create an object
      *
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return \VuFind\Search\Base\Results
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    protected function getResults(ContainerInterface $container)
-    {
-        return $container->get('VuFind\Search\Results\PluginManager')->get('Summon');
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $solr = parent::__invoke($container, $requestedName, $options);
+        $config = $container->get('VuFind\Config\PluginManager')->get('Search2');
+        $solr->setSpellingProcessor(
+            new \VuFind\Search\Solr\SpellingProcessor($config->Spelling ?? null)
+        );
+        return $solr;
     }
 }

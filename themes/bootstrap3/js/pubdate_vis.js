@@ -18,15 +18,19 @@ function PadDigits(number, totalDigits) {
 function loadVis(facetFields, searchParams, baseURL, zooming) {
   // Get colors from CSS
   var cssColorSettings = {
-    'background-color': '#fff', // background of box
-    'fill': '#eee',             // box fill color
-    'stroke': '#265680',        // box outline color
-    'outline-color': '#c38835'  // selection color
+    // background of box
+    'background-color': '#fff',
+    // box fill color
+    'fill': '#eee',
+    // box outline color
+    'stroke': '#265680',
+    // selection color
+    'outline-color': '#c38835'
   };
   var $dateVisColorSettings = $('#dateVisColorSettings');
   for (var rule in cssColorSettings) {
     if ($dateVisColorSettings.css(rule)) {
-      var match = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/);
+      var match = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^)]+\)|#[a-fA-F0-9]+/);
       if (null != match) {
         cssColorSettings[rule] = match[0];
       }
@@ -55,7 +59,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
   var url = baseURL + '/AJAX/json?method=getVisData&facetFields=' + encodeURIComponent(facetFields) + '&' + searchParams;
   $.getJSON(url, function getVisDataJSON(data) {
-    $.each(data.data, function getVisDataEach(key, val) {
+    $.each(data.data.facets, function getVisDataEach(key, val) {
       //check if there is data to display, if there isn't hide the box
       if (val.data === undefined || val.data.length === 0) {
         return;

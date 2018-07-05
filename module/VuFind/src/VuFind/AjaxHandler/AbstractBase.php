@@ -66,17 +66,14 @@ abstract class AbstractBase implements AjaxHandlerInterface
     /**
      * Format a response array.
      *
-     * @param mixed  $response Response data
-     * @param string $status   Internal status code (see constants in interface;
-     * defaults to OK)
-     * @param int    $httpCode HTTP status code (omit for default)
+     * @param mixed $response Response data
+     * @param int   $httpCode HTTP status code (omit for default)
      *
      * @return array
      */
-    protected function formatResponse($response, $status = self::STATUS_OK,
-        $httpCode = null
-    ) {
-        $arr = [$response, $status];
+    protected function formatResponse($response, $httpCode = null)
+    {
+        $arr = [$response];
         if ($httpCode !== null) {
             $arr[] = $httpCode;
         }

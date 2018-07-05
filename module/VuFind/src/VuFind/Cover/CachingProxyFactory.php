@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for SolrMarc record drivers.
+ * Cover caching proxy factory.
  *
  * PHP version 7
  *
@@ -20,25 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Cover_Generator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for SolrMarc record drivers.
+ * Cover caching proxy factory.
  *
  * @category VuFind
- * @package  RecordDrivers
+ * @package  Cover_Generator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrMarcFactory extends SolrDefaultFactory
+class CachingProxyFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -57,14 +58,16 @@ class SolrMarcFactory extends SolrDefaultFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $driver = parent::__invoke($container, $requestedName, $options);
-        if ($container->has('VuFind\ILS\Connection')) {
-            $driver->attachILS(
-                $container->get('VuFind\ILS\Connection'),
-                $container->get('VuFind\ILS\Logic\Holds'),
-                $container->get('VuFind\ILS\Logic\TitleHolds')
-            );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return $driver;
+        $cacheDir = $container->get('VuFind\Cache\Manager')
+            ->getCache('cover')->getOptions()->getCacheDir();
+        $client = $container->get('VuFindHttp\HttpService')->createClient();
+        $config = $container->get('VuFind\Config\PluginManager')->get('config')
+            ->toArray();
+        $whitelist = isset($config['Content']['coverproxyCache'])
+            ? (array)$config['Content']['coverproxyCache'] : [];
+        return new $requestedName($client, $cacheDir . '/proxy', $whitelist);
     }
 }
