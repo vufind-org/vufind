@@ -144,13 +144,6 @@ class Backend extends AbstractBackend
     protected $autocomplete = false;
 
     /**
-     * Which domain/data type is used? 
-     *
-     * @var string
-     */
-    protected $autocomplete_idx = 'rawqueries';
-
-    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
@@ -411,13 +404,12 @@ class Backend extends AbstractBackend
      */
     public function autocomplete($query,$domain)
     {
-        // Todo:
         // get autocomplete Token, Url, CustId
         $autocompleteToken = $this->getAutocompleteToken();
         $autocompleteData = $this->cache->getItem('edsAutocomplete');
         $autocompleteUrl = $autocompleteData['url'];
         $autocompleteCustId = $autocompleteData['custid'];
-        // get indicated domain/data type from EDS.ini
+        // get indicated domain/data type from $domain 
         $autocompleteType = $domain;
         // build request 
         $url = $autocompleteUrl . '?idx=' . $autocompleteType .
@@ -518,10 +510,10 @@ class Backend extends AbstractBackend
         if (isset($autocompleteData)) {
             $currentToken =  $autocompleteData['token'] ?? '';
             $expirationTime = $autocompleteData['expiration'] ?? 0;
-            $this->debugPrint(
-                'Cached Authentication data: '
-                . "$currentToken, expiration time: $expirationTime"
-            );
+            // $this->debugPrint(
+            //    'Cached Authentication data: '
+            //    . "$currentToken, expiration time: $expirationTime"
+            // );
 
             // Check to see if the token expiration time is greater than the current
             // time.  If the token is expired or within 5 minutes of expiring,
@@ -536,10 +528,10 @@ class Backend extends AbstractBackend
         $orgId = $this->orgId;
         $params = ['autocomplete'];
         if (!empty($username) && !empty($password)) {
-            $this->debugPrint(
-                'Calling Authenticate with username: '
-                . "$username, password: XXXXXXXX, orgid: $orgId "
-            );
+            // $this->debugPrint(
+            //    'Calling Authenticate with username: '
+            //    . "$username, password: XXXXXXXX, orgid: $orgId "
+            // );
             $results = $this->client->authenticate(
             $username, $password, $orgId, $params);
             $autoresult = $results['Autocomplete'];
@@ -547,13 +539,14 @@ class Backend extends AbstractBackend
             $timeout = $autoresult['TokenTimeOut'] + time();
             $custid = $autoresult['CustId'];
             $url = $autoresult['Url'];
-            $this->debugPrint(
-                'Autocomplete data token: '
-                . "$token, custid: $custid, url: $url "
-            );
+            // $this->debugPrint(
+            //    'Autocomplete data token: '
+            //    . "$token, custid: $custid, url: $url "
+            // );
 
             $authTokenData = ['token' => $token, 'expiration' => $timeout, 
             'url' => $url, 'custid' => $custid];
+            // store token, expiration, url and custid in cache.
             $this->cache->setItem('edsAutocomplete', $authTokenData);
         }
         return $token;
@@ -569,9 +562,11 @@ class Backend extends AbstractBackend
     protected function parseAutocomplete($msg)
     {
         $result = [];
-        foreach ($msg["terms"] as $value) {
-           $result[] = $value["term"];
-           $this->debugPrint("Term : " . $value["term"]);
+        if (isset($msg["terms"]) && is_array($msg["terms"])) {
+           foreach ($msg["terms"] as $value) {
+              $result[] = $value["term"];
+              // $this->debugPrint("Term : " . $value["term"]);
+           }
         }
         return $result; 
     }

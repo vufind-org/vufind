@@ -43,13 +43,6 @@ namespace VuFind\Autocomplete;
  */
 class Eds implements AutocompleteInterface
 {
-   /**
-     * Autocomplete handler
-     *
-     * @var string
-     */
-    protected $handler;
-
     /**
      * Eds domain  
      *
@@ -92,10 +85,7 @@ class Eds implements AutocompleteInterface
     public function getSuggestions($query)
     {
         // Initialize return array:
-        $results = ["TEST1","TEST2","TEST3"];
-
-        // perhaps this method can look like this
-        // ToDo
+        $results = [];
 
         if (!is_object($this->backend)) {
             throw new \Exception('Please set configuration first.');
