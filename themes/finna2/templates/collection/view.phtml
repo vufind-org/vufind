@@ -119,7 +119,8 @@
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tab_classes = [];
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tab_classes = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                     $tab_classes[] = 'active';
@@ -132,12 +133,12 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
               if (strtolower($tab) == 'details') { $tab_classes[] = 'hidden-xs tab-right'; }
             ?>
-            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+            <li class="<?=implode(' ', $tab_classes)?>" data-tab="<?=$tabName?>">
             <a class="<?=strtolower($tab) ?>" aria-label="<?=$this->escapeHtmlAttr($tab)?>"
               href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?>
               data-background<?php endif ?>>
               <?php if (strtolower($tab) == 'details'): ?><i class="fa fa-lg fa-<?=$this->escapeHtmlAttr($tab)?>"></i><?php endif; ?>
-              <?php if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><?php endif; ?><?php if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?>
+              <?php if (strtolower($tab) != 'details'): ?><?=$this->transEsc($desc)?><?php endif; ?><?php if (strtolower($tab) == 'usercomments') : ?> (<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?>
             </a>
             </li>
           <?php endforeach; ?>
@@ -174,13 +175,13 @@
          if (!$obj->isVisible()) { $accordion_classes[] = 'hidden'; }
          if (!$obj->supportsAjax()) { $accordion_classes[] = 'noajax'; }
        ?>
-       <div <?=count($accordion_classes) > 0 ? ' class="' . implode(' ', $accordion_classes) . '"' : ''?>>
+       <div class="<?=implode(' ', $accordion_classes)?>">
          <div class="accordion-toggle">
            <a data-tab="<?=strtolower($accordion) ?>" class="accordion-title"
              href="<?=$this->recordLink()->getTabUrl($this->driver, $accordion)?>#tabnav"<?php if ($obj->supportsAjax() && in_array($accordion, $this->backgroundTabs)):?>
              data-background<?php endif ?>
            >
-             <span class="title"><?=$this->transEsc($desc)?><?php if (strtolower($accordion) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?></span>
+             <span class="title"><?=$this->transEsc($desc)?><?php if (strtolower($accordion) == 'usercomments') : ?> (<span class="count"><?= count($this->driver->getComments()) ?></span>)<?php endif; ?></span>
              <i class="icon"></i>
            </a>
          </div>
