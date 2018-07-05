@@ -51,12 +51,9 @@ class EdsTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockBackend($id = 'EDS')
     {
-        $backend = $this->getMockBuilder('VuFindSearch\Backend\EDS\Backend')
+        return $this->getMockBuilder('VuFindSearch\Backend\EDS\Backend')
+            ->setMethods(['autocomplete'])
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
-        return $backend;
     }
 
     /**
@@ -66,9 +63,29 @@ class EdsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetSuggestions()
     {
-        $eds = new Eds($this->getMockBackend());
-        // Todo: implement check for getSuggestions
+        $backend = $this->getMockBackend();
+        $eds = new Eds($backend);
+        $backend->expects($this->once())
+            ->method('autocomplete')
+            ->with($this->equalTo('query'), $this->equalTo('rawqueries'))
+            ->will($this->returnValue([1, 2, 3]));
+        $this->assertEquals([1, 2, 3], $eds->getSuggestions('query'));
     }
 
-
+    /**
+     * Test getSuggestions with non-default configuration.
+     *
+     * @return void
+     */
+    public function testGetSuggestionsWithNonDefaultConfiguration()
+    {
+        $backend = $this->getMockBackend();
+        $eds = new Eds($backend);
+        $eds->setConfig('holdings');
+        $backend->expects($this->once())
+            ->method('autocomplete')
+            ->with($this->equalTo('query'), $this->equalTo('holdings'))
+            ->will($this->returnValue([4, 5]));
+        $this->assertEquals([4, 5], $eds->getSuggestions('query'));
+    }
 }
