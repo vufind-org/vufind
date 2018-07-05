@@ -1157,8 +1157,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * Ref: https://developers.exlibrisgroup.com/alma/apis/users
-     * POST /almaws/v1/users/{user_id}/requests
+     * Place a hold request via Alma API. This could be a title level request or
+     * an item level request.
+     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
      *
      * @param array $holdDetails An associative array w/ atleast patron and item_id
      *
@@ -1169,114 +1170,89 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	// Check for title or item level request
     	$level = $holdDetails['level'] ?? 'item';
     	
+    	// Get information that is valid for both, item level requests and title
+    	// level requests.
+	    $mmsId = $holdDetails['id'];
+	    $holId = $holdDetails['holding_id'];
+	    $itmId = $holdDetails['item_id'];
+	    $patronCatUsername = $holdDetails['patron']['cat_username'];
+	    $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
+	    $comment = $holdDetails['comment'] ?? null;
+	    $requiredBy = (isset($holdDetails['requiredBy']))
+	    	? $this->dateConverter->convertFromDisplayDate(
+	    			'Y-m-d',
+	    			$holdDetails['requiredBy']).'Z'
+	    	: null;
+	    
+	    // Create body for API request
+	    $body = [];
+	    $body['request_type'] = 'HOLD';
+	    $body['pickup_location_type'] = 'LIBRARY';
+	    $body['pickup_location_library'] = $pickupLocation;
+	    $body['comment'] = $comment;
+	    $body['last_interest_date'] = $requiredBy;
+	    
+	    // Remove "null" values from body array
+	    $body = array_filter($body);
+
+	    // Check if we have a title level request or an item level request
     	if ($level === 'title') {
-    		echo '<pre>';
-    		print_r('Title level request');
-    		echo '</pre>';
-    		
-    		echo '<pre>';
-    		print_r($holdDetails);
-    		echo '</pre>';
-    		
-    		
+    		// Add description if we have one for title level requests as Alma
+    		// needs it under certain circumstances. See: https://developers.
+    		// exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+	        $description = isset($holdDetails['description']) ?? null;
+	        if ($description) {
+	           $body['description'] = $description;
+	        }
+ 
+			// Create HTTP client with Alma API URL for title level requests
     		$client = $this->httpService->createClient(
-	            $this->baseUrl . '/bibs/' . $holdDetails['id']
+	            $this->baseUrl . '/bibs/' . urlencode($mmsId)
 	            . '/requests?apiKey=' . urlencode($this->apiKey)
-	            . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
+	            . '&user_id=' . urlencode($patronCatUsername)
 	            . '&format=json'
 	        );
-    		
-	        $client->setHeaders(
-	            [
-	                'Content-type: application/json',
-	                'Accept: application/json'
-	            ]
-	        );
-	        
-	        $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        
-	        $body = ['request_type' => 'HOLD'];
-	        $body['description'] = '????'; // GET DESCRIPTION HERE - MAYBE FROM HMACKeys???
-	         if (isset($holdDetails['pickUpLocation'])) {
-	            $body['pickup_location_type'] = 'LIBRARY';
-	            $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
-	        }
-	        //$body['material_type'] = ???;
-	        if (isset($holdDetails['requiredBy'])) {
-	            $date = $this->dateConverter->convertFromDisplayDate(
-	                'Y-m-d',
-	                $holdDetails['requiredBy']
-	            );
-	            $body['last_interest_date'] = $date;
-	        }
-	        
-	        if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
-	            $body['comment'] = $holdDetails['comment'];
-	        }
-	        
-	        echo '<pre>';
-	        print_r(json_encode($body));
-	        echo '</pre>';
-	        $client->setRawBody(json_encode($body));
-        
-        
-        
-        
     	} else {
-    		echo '<pre>';
-    		print_r('ITEM level request');
-    		echo '</pre>';
+    		// Create HTTP client with Alma API URL for item level requests
+    		$client = $this->httpService->createClient(
+            $this->baseUrl . '/bibs/' . urlencode($mmsId)
+	            . '/holdings/' . urlencode($holId)
+	            . '/items/' . urlencode($itmId)
+	            . '/requests?apiKey=' . urlencode($this->apiKey)
+	            . '&user_id=' . urlencode($patronCatUsername)
+	            . '&format=json'
+	        );
     	}
 
-    	return;
-    	
-    	
-        $client = $this->httpService->createClient(
-            $this->baseUrl . '/bibs/' . $holdDetails['id']
-            . '/holdings/' . urlencode($holdDetails['holding_id'])
-            . '/items/' . urlencode($holdDetails['item_id'])
-            . '/requests?apiKey=' . urlencode($this->apiKey)
-            . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
-            . '&format=json'
-        );
-        $client->setHeaders(
-            [
-                'Content-type: application/json',
-                'Accept: application/json'
-            ]
-        );
+    	// Set headers
+        $client->setHeaders([
+        	'Content-type: application/json',
+        	'Accept: application/json'
+        ]);
+        
+        // Set HTTP method
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $body = ['request_type' => 'HOLD'];
-        if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
-            $body['comment'] = $holdDetails['comment'];
-        }
-        if (isset($holdDetails['requiredBy'])) {
-            $date = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
-            $body['last_interest_date'] = $date;
-        }
-        if (isset($holdDetails['pickUpLocation'])) {
-            $body['pickup_location_type'] = 'LIBRARY';
-            $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
-        }
-        $client->setRawBody(json_encode($body));
+        
+        // Set body
+	    $client->setRawBody(json_encode($body));
+	    
+	    // Send API call and get response
         $response = $client->send();
 
+        // Check for success
         if ($response->isSuccess()) {
-            return [
-                'success' => true,
-                'status' => 'hold_request_success'
-            ];
+            return ['success' => true];
         } else {
             // TODO: Throw an error
             error_log($response->getBody());
         }
+        
+        // Get error message
         $error = json_decode($response->getBody());
         if (!$error) {
             $error = simplexml_load_string($response->getBody());
         }
+        
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
