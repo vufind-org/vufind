@@ -1396,17 +1396,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * }
      */
 
-    /**
-     * @param string $bibID Bibligraphic ID
-     *
-     * @return boolean
-     * /
-     * public function hasHoldings($bibID) {
-     * // https://developers.exlibrisgroup.com/alma/apis/bibs
-     * // GET /almaws/v1/bibs/{mms_id}/holdings
-     * }
-     */
-
     /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ================== */
 
     /**
