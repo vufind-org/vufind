@@ -277,6 +277,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             ? false
                             : true;
 
+                        $number = ++$copyCount;
+                        $description = null;
+                        if ($item->item_data->description != null
+                            && !empty($item->item_data->description)
+                        ) {
+                            $number = (string)$item->item_data->description;
+                            $description = (string)$item->item_data->description;
+                        }
+
                         // For some data we need to do additional API calls
                         // due to the Alma API architecture
                         $duedate = ($requested) ? 'requested' : null;
@@ -302,12 +311,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'callnumber' => (string)$item->holding_data->call_number,
                             'duedate' => $duedate,
                             'returnDate' => false, // TODO: support recent returns
-                            'number' => ++$copyCount,
+                            'number' => $number,//++$copyCount,
                             'barcode' => empty($barcode) ? 'n/a' : $barcode,
                             'item_notes' => $itemNotes,
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
-                            'addLink' => $addLink
+                            'addLink' => $addLink,
+                               // For Alma title-level hold requests
+                            'description' => $description
                         ];
                     }
                 }
@@ -711,7 +722,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
                 "checkout" => $this->dateConverter->convert(
-                    'Y-m-d H:i', 'm-d-Y', $checkout
+                    'Y-m-d H:i',
+                    'm-d-Y',
+                    $checkout
                 ),
                 "fine"     => (string)$fee->type['desc']
             ];
@@ -862,6 +875,164 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * Get transactions of the current patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return string[]    Transaction information as array or empty array if the
+     *                  patron has no transactions.
+     *
+     * @author Michael Birkner
+     */
+    public function getMyTransactions($patron)
+    {
+        // Defining the return value
+        $returnArray = [];
+
+        // Get the patrons user name
+        $patronUserName = $patron['cat_username'];
+
+        // Create a timestamp for calculating the due / overdue status
+        $nowTS = mktime();
+
+        // Create parameters for the API call
+        // INFO: "order_by" does not seem to work as expected!
+        //       This is an Alma API problem.
+        $params = [
+            'limit' => '100',
+            'order_by' => 'due_date',
+            'direction' => 'DESC',
+            'expand' => 'renewable'
+        ];
+
+        // Get user loans from Alma API
+        $apiResult = $this->makeRequest(
+            '/users/' . $patronUserName . '/loans/',
+            $params
+        );
+
+        // If there is an API result, process it
+        if ($apiResult) {
+            // Iterate over all item loans
+            foreach ($apiResult->item_loan as $itemLoan) {
+                $loan['duedate'] = $this->parseDate(
+                    (string)$itemLoan->due_date,
+                    true
+                );
+                //$loan['dueTime'] = ;
+                $loan['dueStatus'] = null; // Calculated below
+                $loan['id'] = (string)$itemLoan->mms_id;
+                //$loan['source'] = 'Solr';
+                $loan['barcode'] = (string)$itemLoan->item_barcode;
+                //$loan['renew'] = ;
+                //$loan['renewLimit'] = ;
+                //$loan['request'] = ;
+                //$loan['volume'] = ;
+                $loan['publication_year'] = (string)$itemLoan->publication_year;
+                $loan['renewable']
+                    = (strtolower((string)$itemLoan->renewable) == 'true')
+                    ? true
+                    : false;
+                //$loan['message'] = ;
+                $loan['title'] = (string)$itemLoan->title;
+                $loan['item_id'] = (string)$itemLoan->loan_id;
+                $loan['institution_name'] = (string)$itemLoan->library;
+                //$loan['isbn'] = ;
+                //$loan['issn'] = ;
+                //$loan['oclc'] = ;
+                //$loan['upc'] = ;
+                $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
+
+                // Calculate due status
+                $dueDateTS = strtotime($loan['duedate']);
+                if ($nowTS > $dueDateTS) {
+                    // Loan is overdue
+                    $loan['dueStatus'] = 'overdue';
+                } elseif (($dueDateTS - $nowTS) < 86400) {
+                    // Due date within one day
+                    $loan['dueStatus'] = 'due';
+                }
+
+                $returnArray[] = $loan;
+            }
+        }
+
+        return $returnArray;
+    }
+
+    /**
+     * Get Alma loan IDs for use in renewMyItems.
+     *
+     * @param array $checkOutDetails An array from getMyTransactions
+     *
+     * @return string The Alma loan ID for this loan
+     *
+     * @author Michael Birkner
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+        $loanId = $checkOutDetails['item_id'];
+        return $loanId;
+    }
+
+    /**
+     * Renew loans via Alma API.
+     *
+     * @param array $renewDetails An array with the IDs of the loans returned by
+     *                            getRenewDetails and the patron information
+     *                            returned by patronLogin.
+     *
+     * @return array[] An array with the renewal details and a success or error
+     *                 message.
+     *
+     * @author Michael Birkner
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $returnArray = [];
+        $patronUserName = $renewDetails['patron']['cat_username'];
+
+        foreach ($renewDetails['details'] as $loanId) {
+            // Create an empty array that holds the information for a renewal
+            $renewal = [];
+
+            try {
+                // POST the renewals to Alma
+                $apiResult = $this->makeRequest(
+                    '/users/' . $patronUserName . '/loans/' . $loanId . '/?op=renew',
+                    [],
+                    [],
+                    'POST'
+                );
+
+                // Add information to the renewal array
+                $blocks = false;
+                $renewal[$loanId]['success'] = true;
+                $renewal[$loanId]['new_date'] = $this->parseDate(
+                    (string)$apiResult->due_date,
+                    true
+                );
+                //$renewal[$loanId]['new_time'] = ;
+                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
+                $renewal[$loanId]['sysMessage'] = 'renew_success';
+
+                // Add the renewal to the return array
+                $returnArray['details'] = $renewal;
+            } catch (ILSException $ilsEx) {
+                // Add the empty renewal array to the return array
+                $returnArray['details'] = $renewal;
+
+                // Add a message that can be translated
+                $blocks[] = 'renew_fail';
+            }
+        }
+
+        $returnArray['blocks'] = $blocks;
+
+        return $returnArray;
+    }
+
+    /**
      * Get Status
      *
      * This is responsible for retrieving the status information of a certain
@@ -985,60 +1156,106 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * Ref: https://developers.exlibrisgroup.com/alma/apis/users
-     * POST /almaws/v1/users/{user_id}/requests
+     * Place a hold request via Alma API. This could be a title level request or
+     * an item level request.
      *
      * @param array $holdDetails An associative array w/ atleast patron and item_id
      *
      * @return array success: bool, sysMessage: string
+     *
+     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
      */
     public function placeHold($holdDetails)
     {
-        $client = $this->httpService->createClient(
-            $this->baseUrl . '/bibs/' . $holdDetails['id']
-            . '/holdings/' . urlencode($holdDetails['holding_id'])
-            . '/items/' . urlencode($holdDetails['item_id'])
-            . '/requests?apiKey=' . urlencode($this->apiKey)
-            . '&user_id=' . urlencode($holdDetails['patron']['cat_username'])
-            . '&format=json'
-        );
+        // Check for title or item level request
+        $level = $holdDetails['level'] ?? 'item';
+
+        // Get information that is valid for both, item level requests and title
+        // level requests.
+        $mmsId = $holdDetails['id'];
+        $holId = $holdDetails['holding_id'];
+        $itmId = $holdDetails['item_id'];
+        $patronCatUsername = $holdDetails['patron']['cat_username'];
+        $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
+        $comment = $holdDetails['comment'] ?? null;
+        $requiredBy = (isset($holdDetails['requiredBy']))
+        ? $this->dateConverter->convertFromDisplayDate(
+            'Y-m-d',
+            $holdDetails['requiredBy']
+        ) . 'Z'
+        : null;
+
+        // Create body for API request
+        $body = [];
+        $body['request_type'] = 'HOLD';
+        $body['pickup_location_type'] = 'LIBRARY';
+        $body['pickup_location_library'] = $pickupLocation;
+        $body['comment'] = $comment;
+        $body['last_interest_date'] = $requiredBy;
+
+        // Remove "null" values from body array
+        $body = array_filter($body);
+
+        // Check if we have a title level request or an item level request
+        if ($level === 'title') {
+            // Add description if we have one for title level requests as Alma
+            // needs it under certain circumstances. See: https://developers.
+            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+            $description = isset($holdDetails['description']) ?? null;
+            if ($description) {
+                $body['description'] = $description;
+            }
+
+            // Create HTTP client with Alma API URL for title level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        } else {
+            // Create HTTP client with Alma API URL for item level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/holdings/' . urlencode($holId)
+                . '/items/' . urlencode($itmId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        }
+
+        // Set headers
         $client->setHeaders(
             [
-                'Content-type: application/json',
-                'Accept: application/json'
+            'Content-type: application/json',
+            'Accept: application/json'
             ]
         );
+
+        // Set HTTP method
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $body = ['request_type' => 'HOLD'];
-        if (isset($holdDetails['comment']) && !empty($holdDetails['comment'])) {
-            $body['comment'] = $holdDetails['comment'];
-        }
-        if (isset($holdDetails['requiredBy'])) {
-            $date = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            );
-            $body['last_interest_date'] = $date;
-        }
-        if (isset($holdDetails['pickUpLocation'])) {
-            $body['pickup_location_type'] = 'LIBRARY';
-            $body['pickup_location_library'] = $holdDetails['pickUpLocation'];
-        }
+
+        // Set body
         $client->setRawBody(json_encode($body));
+
+        // Send API call and get response
         $response = $client->send();
 
+        // Check for success
         if ($response->isSuccess()) {
-            return [
-                'success' => true,
-                'status' => 'hold_request_success'
-            ];
+            return ['success' => true];
         } else {
             // TODO: Throw an error
             error_log($response->getBody());
         }
+
+        // Get error message
         $error = json_decode($response->getBody());
         if (!$error) {
             $error = simplexml_load_string($response->getBody());
         }
+
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
