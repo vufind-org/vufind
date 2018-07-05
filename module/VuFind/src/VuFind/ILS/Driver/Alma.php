@@ -30,7 +30,6 @@ namespace VuFind\ILS\Driver;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Http\Headers;
-use VuFind\ChannelProvider\RecentlyReturned;
 
 /**
  * Alma ILS Driver
@@ -277,14 +276,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $requested = ((string)$item->item_data->requested == 'false')
                             ? false
                             : true;
-                       
+
                         $number = ++$copyCount;
                         $description = null;
                         if ($item->item_data->description != null
-                        	&& !empty($item->item_data->description))
-                        {
-                        	$number = (string)$item->item_data->description;
-                        	$description = (string)$item->item_data->description;
+                            && !empty($item->item_data->description)
+                        ) {
+                            $number = (string)$item->item_data->description;
+                            $description = (string)$item->item_data->description;
                         }
 
                         // For some data we need to do additional API calls
@@ -318,8 +317,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
                             'addLink' => $addLink,
-                       		// For Alma title-level hold requests
-                        	'description' => $description
+                               // For Alma title-level hold requests
+                            'description' => $description
                         ];
                     }
                 }
@@ -874,7 +873,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         return $holdList;
     }
-    
+
     /**
      * Get transactions of the current patron.
      *
@@ -889,13 +888,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // Defining the return value
         $returnArray = [];
-        
+
         // Get the patrons user name
         $patronUserName = $patron['cat_username'];
-        
+
         // Create a timestamp for calculating the due / overdue status
         $nowTS = mktime();
-        
+
         // Create parameters for the API call
         // INFO: "order_by" does not seem to work as expected!
         //       This is an Alma API problem.
@@ -905,13 +904,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             'direction' => 'DESC',
             'expand' => 'renewable'
         ];
-        
+
         // Get user loans from Alma API
         $apiResult = $this->makeRequest(
-            '/users/'.$patronUserName.'/loans/',
+            '/users/' . $patronUserName . '/loans/',
             $params
         );
-        
+
         // If there is an API result, process it
         if ($apiResult) {
             // Iterate over all item loans
@@ -943,7 +942,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 //$loan['oclc'] = ;
                 //$loan['upc'] = ;
                 $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
-                
+
                 // Calculate due status
                 $dueDateTS = strtotime($loan['duedate']);
                 if ($nowTS > $dueDateTS) {
@@ -953,14 +952,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     // Due date within one day
                     $loan['dueStatus'] = 'due';
                 }
-                
+
                 $returnArray[] = $loan;
             }
         }
-        
+
         return $returnArray;
     }
-    
+
     /**
      * Get Alma loan IDs for use in renewMyItems.
      *
@@ -975,7 +974,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $loanId = $checkOutDetails['item_id'];
         return $loanId;
     }
-    
+
     /**
      * Renew loans via Alma API.
      *
@@ -992,20 +991,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         $returnArray = [];
         $patronUserName = $renewDetails['patron']['cat_username'];
-        
+
         foreach ($renewDetails['details'] as $loanId) {
             // Create an empty array that holds the information for a renewal
             $renewal = [];
-            
+
             try {
                 // POST the renewals to Alma
                 $apiResult = $this->makeRequest(
-                    '/users/'.$patronUserName.'/loans/'.$loanId.'/?op=renew',
-                    array(),
-                    array(),
+                    '/users/' . $patronUserName . '/loans/' . $loanId . '/?op=renew',
+                    [],
+                    [],
                     'POST'
                 );
-                
+
                 // Add information to the renewal array
                 $blocks = false;
                 $renewal[$loanId]['success'] = true;
@@ -1016,23 +1015,23 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 //$renewal[$loanId]['new_time'] = ;
                 $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
                 $renewal[$loanId]['sysMessage'] = 'renew_success';
-                
+
                 // Add the renewal to the return array
                 $returnArray['details'] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
                 $returnArray['details'] = $renewal;
-                
+
                 // Add a message that can be translated
                 $blocks[] = 'renew_fail';
             }
         }
-        
+
         $returnArray['blocks'] = $blocks;
-        
+
         return $returnArray;
     }
-    
+
     /**
      * Get Status
      *
@@ -1159,84 +1158,88 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Place a hold request via Alma API. This could be a title level request or
      * an item level request.
-     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
      *
      * @param array $holdDetails An associative array w/ atleast patron and item_id
      *
      * @return array success: bool, sysMessage: string
+     *
+     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
      */
     public function placeHold($holdDetails)
     {
-    	// Check for title or item level request
-    	$level = $holdDetails['level'] ?? 'item';
-    	
-    	// Get information that is valid for both, item level requests and title
-    	// level requests.
-	    $mmsId = $holdDetails['id'];
-	    $holId = $holdDetails['holding_id'];
-	    $itmId = $holdDetails['item_id'];
-	    $patronCatUsername = $holdDetails['patron']['cat_username'];
-	    $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
-	    $comment = $holdDetails['comment'] ?? null;
-	    $requiredBy = (isset($holdDetails['requiredBy']))
-	    	? $this->dateConverter->convertFromDisplayDate(
-	    			'Y-m-d',
-	    			$holdDetails['requiredBy']).'Z'
-	    	: null;
-	    
-	    // Create body for API request
-	    $body = [];
-	    $body['request_type'] = 'HOLD';
-	    $body['pickup_location_type'] = 'LIBRARY';
-	    $body['pickup_location_library'] = $pickupLocation;
-	    $body['comment'] = $comment;
-	    $body['last_interest_date'] = $requiredBy;
-	    
-	    // Remove "null" values from body array
-	    $body = array_filter($body);
+        // Check for title or item level request
+        $level = $holdDetails['level'] ?? 'item';
 
-	    // Check if we have a title level request or an item level request
-    	if ($level === 'title') {
-    		// Add description if we have one for title level requests as Alma
-    		// needs it under certain circumstances. See: https://developers.
-    		// exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
-	        $description = isset($holdDetails['description']) ?? null;
-	        if ($description) {
-	           $body['description'] = $description;
-	        }
- 
-			// Create HTTP client with Alma API URL for title level requests
-    		$client = $this->httpService->createClient(
-	            $this->baseUrl . '/bibs/' . urlencode($mmsId)
-	            . '/requests?apiKey=' . urlencode($this->apiKey)
-	            . '&user_id=' . urlencode($patronCatUsername)
-	            . '&format=json'
-	        );
-    	} else {
-    		// Create HTTP client with Alma API URL for item level requests
-    		$client = $this->httpService->createClient(
-            $this->baseUrl . '/bibs/' . urlencode($mmsId)
-	            . '/holdings/' . urlencode($holId)
-	            . '/items/' . urlencode($itmId)
-	            . '/requests?apiKey=' . urlencode($this->apiKey)
-	            . '&user_id=' . urlencode($patronCatUsername)
-	            . '&format=json'
-	        );
-    	}
+        // Get information that is valid for both, item level requests and title
+        // level requests.
+        $mmsId = $holdDetails['id'];
+        $holId = $holdDetails['holding_id'];
+        $itmId = $holdDetails['item_id'];
+        $patronCatUsername = $holdDetails['patron']['cat_username'];
+        $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
+        $comment = $holdDetails['comment'] ?? null;
+        $requiredBy = (isset($holdDetails['requiredBy']))
+        ? $this->dateConverter->convertFromDisplayDate(
+            'Y-m-d',
+            $holdDetails['requiredBy']
+        ) . 'Z'
+        : null;
 
-    	// Set headers
-        $client->setHeaders([
-        	'Content-type: application/json',
-        	'Accept: application/json'
-        ]);
-        
+        // Create body for API request
+        $body = [];
+        $body['request_type'] = 'HOLD';
+        $body['pickup_location_type'] = 'LIBRARY';
+        $body['pickup_location_library'] = $pickupLocation;
+        $body['comment'] = $comment;
+        $body['last_interest_date'] = $requiredBy;
+
+        // Remove "null" values from body array
+        $body = array_filter($body);
+
+        // Check if we have a title level request or an item level request
+        if ($level === 'title') {
+            // Add description if we have one for title level requests as Alma
+            // needs it under certain circumstances. See: https://developers.
+            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+            $description = isset($holdDetails['description']) ?? null;
+            if ($description) {
+                $body['description'] = $description;
+            }
+
+            // Create HTTP client with Alma API URL for title level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        } else {
+            // Create HTTP client with Alma API URL for item level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/holdings/' . urlencode($holId)
+                . '/items/' . urlencode($itmId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        }
+
+        // Set headers
+        $client->setHeaders(
+            [
+            'Content-type: application/json',
+            'Accept: application/json'
+            ]
+        );
+
         // Set HTTP method
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        
+
         // Set body
-	    $client->setRawBody(json_encode($body));
-	    
-	    // Send API call and get response
+        $client->setRawBody(json_encode($body));
+
+        // Send API call and get response
         $response = $client->send();
 
         // Check for success
@@ -1246,13 +1249,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // TODO: Throw an error
             error_log($response->getBody());
         }
-        
+
         // Get error message
         $error = json_decode($response->getBody());
         if (!$error) {
             $error = simplexml_load_string($response->getBody());
         }
-        
+
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
