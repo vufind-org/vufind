@@ -222,7 +222,6 @@ abstract class Base
         return $this->call($url, null, null, 'GET', null);
     }
 
-
     /**
      * Generate an authentication token with a valid EBSCO EDS Api account
      *
@@ -233,8 +232,9 @@ abstract class Base
      *
      * @return array
      */
-    public function authenticate($username = null, $password = null, 
-        $orgid = null, $params = null) {
+    public function authenticate($username = null, $password = null,
+        $orgid = null, $params = null)
+    {
         $this->debugPrint(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );

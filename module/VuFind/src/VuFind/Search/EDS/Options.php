@@ -141,7 +141,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->Autocomplete->enabled)) {
             $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
         }
-
     }
 
     /**

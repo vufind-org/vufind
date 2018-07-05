@@ -137,7 +137,7 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
-     * Is autocomplete true or false (default) 
+     * Is autocomplete true or false (default)
      *
      * @var bool
      */
@@ -400,28 +400,27 @@ class Backend extends AbstractBackend
      * @param string $query simple query string
      * @param string $domain fits to the query
      *
-     * @return array of terms 
+     * @return array of terms
      */
-    public function autocomplete($query,$domain)
+    public function autocomplete($query, $domain)
     {
         // get autocomplete Token, Url, CustId
         $autocompleteToken = $this->getAutocompleteToken();
         $autocompleteData = $this->cache->getItem('edsAutocomplete');
         $autocompleteUrl = $autocompleteData['url'];
         $autocompleteCustId = $autocompleteData['custid'];
-        // get indicated domain/data type from $domain 
+        // get indicated domain/data type from $domain
         $autocompleteType = $domain;
-        // build request 
+        // build request
         $url = $autocompleteUrl . '?idx=' . $autocompleteType .
-        '&token=' . urlencode($autocompleteToken) . 
+        '&token=' . urlencode($autocompleteToken) .
         '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
         $autocompleteCustId . '"]}]&term=' . urlencode($query);
         $this->debugPrint("Url autocomplete: " . $url);
         $autocompleteresponse =  $this->client->autocomplete($url);
         // parse result and build array of terms
-        return $this->parseAutocomplete($autocompleteresponse); 
+        return $this->parseAutocomplete($autocompleteresponse);
     }
-
 
     /// Internal API
 
@@ -489,13 +488,13 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Obtain the autocomplete authentication to use with the EDS API from cache  
+     * Obtain the autocomplete authentication to use with the EDS API from cache
      * if it exists. If not, then generate a new one.
      *
-     * @param bool $isInvalid whether or not the the current autocomplete token 
+     * @param bool $isInvalid whether or not the the current autocomplete token
      * is invalid
      *
-     * @return string autocompleteToken 
+     * @return string autocompleteToken
      */
     protected function getAutocompleteToken($isInvalid = false)
     {
@@ -544,7 +543,7 @@ class Backend extends AbstractBackend
             //    . "$token, custid: $custid, url: $url "
             // );
 
-            $authTokenData = ['token' => $token, 'expiration' => $timeout, 
+            $authTokenData = ['token' => $token, 'expiration' => $timeout,
             'url' => $url, 'custid' => $custid];
             // store token, expiration, url and custid in cache.
             $this->cache->setItem('edsAutocomplete', $authTokenData);
@@ -555,22 +554,21 @@ class Backend extends AbstractBackend
     /**
      * Parse autocomplete response from API in an array of terms
      *
-     * @param array $msg Response from API 
+     * @param array $msg Response from API
      *
-     * @return array of terms 
+     * @return array of terms
      */
     protected function parseAutocomplete($msg)
     {
         $result = [];
         if (isset($msg["terms"]) && is_array($msg["terms"])) {
-           foreach ($msg["terms"] as $value) {
-              $result[] = $value["term"];
-              // $this->debugPrint("Term : " . $value["term"]);
-           }
+            foreach ($msg["terms"] as $value) {
+                $result[] = $value["term"];
+                // $this->debugPrint("Term : " . $value["term"]);
+            }
         }
-        return $result; 
+        return $result;
     }
-
 
     /**
      * Print a message if debug is enabled.

@@ -44,7 +44,7 @@ namespace VuFind\Autocomplete;
 class Eds implements AutocompleteInterface
 {
     /**
-     * Eds domain  
+     * Eds domain
      *
      * @var string
      */
@@ -60,7 +60,7 @@ class Eds implements AutocompleteInterface
     /**
      * Results plugin manager
      *
-     * @var \VuFindSearch\Backend\EDS\Backend 
+     * @var \VuFindSearch\Backend\EDS\Backend
      */
     protected $backend;
 
@@ -93,8 +93,7 @@ class Eds implements AutocompleteInterface
 
         try {
             // Perform the autocomplete search:
-            $results = $this->backend->autocomplete($query,$this->domain);
-
+            $results = $this->backend->autocomplete($query, $this->domain);
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }

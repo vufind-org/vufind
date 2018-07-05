@@ -68,7 +68,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $back->setIdentifier('bla');
 
         $coll = $back->autocomplete('bla');
-        // ToDo: impelement the test if the fixtures for autocomplete 
+        // ToDo: impelement the test if the fixtures for autocomplete
         // generates the corret answer
     }
 
