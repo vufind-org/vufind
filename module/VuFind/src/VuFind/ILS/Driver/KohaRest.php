@@ -449,18 +449,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $transactions = [];
         foreach ($result as $entry) {
-            $item = $this->getItem($entry['itemnumber']);
-            $volume = $item['enumchron'] ?? '';
-            $title = '';
-            if (!empty($item['biblionumber'])) {
-                $bib = $this->getBibRecord($item['biblionumber']);
-                if (!empty($bib['title'])) {
-                    $title = $bib['title'];
+            try {
+                $item = $this->getItem($entry['itemnumber']);
+                $volume = $item['enumchron'] ?? '';
+                $title = '';
+                if (!empty($item['biblionumber'])) {
+                    $bib = $this->getBibRecord($item['biblionumber']);
+                    if (!empty($bib['title'])) {
+                        $title = $bib['title'];
+                    }
+                    if (!empty($bib['title_remainder'])) {
+                        $title .= ' ' . $bib['title_remainder'];
+                        $title = trim($title);
+                    }
                 }
-                if (!empty($bib['title_remainder'])) {
-                    $title .= ' ' . $bib['title_remainder'];
-                    $title = trim($title);
-                }
+            } catch (ILSException $e) {
+                // Not a fatal error, but we can't display the loan properly
+                $item = [];
+                $volume = '';
+                $title = '[item ' . $entry['itemnumber'] . ' cannot be displayed]';
             }
 
             $dueStatus = false;
