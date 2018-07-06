@@ -499,10 +499,6 @@ class Backend extends AbstractBackend
         if (isset($autocompleteData)) {
             $currentToken =  $autocompleteData['token'] ?? '';
             $expirationTime = $autocompleteData['expiration'] ?? 0;
-            // $this->debugPrint(
-            //    'Cached Authentication data: '
-            //    . "$currentToken, expiration time: $expirationTime"
-            // );
 
             // Check to see if the token expiration time is greater than the current
             // time.  If the token is expired or within 5 minutes of expiring,
@@ -517,10 +513,6 @@ class Backend extends AbstractBackend
         $orgId = $this->orgId;
         $params = ['autocomplete'];
         if (!empty($username) && !empty($password)) {
-            // $this->debugPrint(
-            //    'Calling Authenticate with username: '
-            //    . "$username, password: XXXXXXXX, orgid: $orgId "
-            // );
             $results = $this->client
                 ->authenticate($username, $password, $orgId, $params);
             $autoresult = $results['Autocomplete'];
@@ -528,10 +520,6 @@ class Backend extends AbstractBackend
             $timeout = $autoresult['TokenTimeOut'] + time();
             $custid = $autoresult['CustId'];
             $url = $autoresult['Url'];
-            // $this->debugPrint(
-            //    'Autocomplete data token: '
-            //    . "$token, custid: $custid, url: $url "
-            // );
 
             $authTokenData = ['token' => $token, 'expiration' => $timeout,
             'url' => $url, 'custid' => $custid];
