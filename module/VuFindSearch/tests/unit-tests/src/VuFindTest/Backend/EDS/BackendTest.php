@@ -50,21 +50,23 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testAutocomplete()
     {
-        $conn = $this->getConnectorMock(['autocomplete']);
+        $conn = $this->getConnectorMock(['call']);
+        $expectedUri = 'http://foo?idx=rawdata&token=auth1234'
+            . '&filters=[{"name"%3A"custid"%2C"values"%3A["foo"]}]&term=bla';
         $conn->expects($this->once())
-            ->method('autocomplete')
+            ->method('call')
+            ->with($this->equalTo($expectedUri))
             ->will($this->returnValue($this->loadResponse('autocomplete')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, [],
-            ['getAuthenticationToken', 'getSessionToken']
+            $conn, $this->getRCFactory(), null, null, [], ['getAutocompleteData']
         );
+        $autocompleteData = [
+            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
+        ];
         $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+            ->method('getAutocompleteData')
+            ->will($this->returnValue($autocompleteData));
 
         $coll = $back->autocomplete('bla', 'rawdata');
         // check count
