@@ -127,8 +127,7 @@ finna.comments = (function finnaComments() {
   }
 
   function updateAverageRating(rating, count) {
-    var rating = $(this).find('.rating');
-    if (rating.length) {
+    if ($(this).find('.rating').length) {
       $('.rating-average .rating').rating('rate', rating);
       $('.rating-average .count>span').text(count);
     }
