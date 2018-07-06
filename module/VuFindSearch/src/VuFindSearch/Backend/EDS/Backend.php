@@ -137,13 +137,6 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
-     * Is autocomplete true or false (default)
-     *
-     * @var bool
-     */
-    protected $autocomplete = false;
-
-    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
@@ -179,9 +172,6 @@ class Backend extends AbstractBackend
         }
         if (isset($config->EBSCO_Account->organization_id)) {
             $this->orgId = $config->EBSCO_Account->organization_id;
-        }
-        if (isset($config->Autocomplete->enabled)) {
-            $this->autocomplete = $config->Autocomplete->enabled;
         }
 
         // Save default profile value, since profile property may be overriden:
