@@ -1731,11 +1731,14 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
-            $csrf = $this->serviceLocator->get('Zend\Validator\Csrf');
+            $csrf = $this->serviceLocator->get('VuFind\Validator\Csrf');
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
                 );
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
             }
             $user->delete(
                 $config->Authentication->delete_comments_with_user ?? true
