@@ -222,7 +222,7 @@ abstract class Base
     public function authenticate($username = null, $password = null, $orgid = null)
     {
         $this->debugPrint(
-            "Authenticating: username: $username, password: $password, orgid: $orgid"
+            "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
         $org = $orgid ?? $this->orgId;

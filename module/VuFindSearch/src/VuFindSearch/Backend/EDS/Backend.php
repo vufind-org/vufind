@@ -438,7 +438,7 @@ class Backend extends AbstractBackend
         if (!empty($username) && !empty($password)) {
             $this->debugPrint(
                 'Calling Authenticate with username: '
-                . "$username, password: $password, orgid: $orgId "
+                . "$username, password: XXXXXXXX, orgid: $orgId "
             );
             $results = $this->client->authenticate($username, $password, $orgId);
             $token = $results['AuthToken'];
