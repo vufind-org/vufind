@@ -211,15 +211,45 @@ abstract class Base
     }
 
     /**
+     * Parse autocomplete response from API in an array of terms
+     *
+     * @param array $msg Response from API
+     *
+     * @return array of terms
+     */
+    protected function parseAutocomplete($msg)
+    {
+        $result = [];
+        if (isset($msg["terms"]) && is_array($msg["terms"])) {
+            foreach ($msg["terms"] as $value) {
+                $result[] = $value["term"];
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Execute an EdsApi autocomplete
      *
-     * @param string $url URL to fetch
+     * @param string $query Search term
+     * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
+     * @param array  $data  Autocomplete API details (from authenticating with
+     * 'autocomplete' option set -- requires token, custid and url keys).
+     * @param bool   $raw   Should we return the results raw (true) or processed
+     * (false)?
      *
      * @return array An array of autocomplete terns as returned from the api
      */
-    public function autocomplete($url)
+    public function autocomplete($query, $type, $data, $raw = false)
     {
-        return $this->call($url, null, null, 'GET', null);
+        // build request
+        $url = $data['url'] . '?idx=' . urlencode($type) .
+            '&token=' . urlencode($data['token']) .
+            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
+            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        $this->debugPrint("Autocomplete URL: " . $url);
+        $response = $this->call($url, null, null, 'GET', null);
+        return $raw ? $response : $this->parseAutocomplete($response);
     }
 
     /**

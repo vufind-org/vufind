@@ -387,29 +387,16 @@ class Backend extends AbstractBackend
     /**
      * Get popular terms using the autocomplete API.
      *
-     * @param string $query  simple query string
-     * @param string $domain fits to the query
+     * @param string $query  Simple query string
+     * @param string $domain Autocomplete type (e.g. 'rawqueries' or 'holdings')
      *
      * @return array of terms
      */
-    public function autocomplete($query, $domain)
+    public function autocomplete($query, $domain = 'rawqueries')
     {
         // get autocomplete Token, Url, CustId
-        $autocompleteToken = $this->getAutocompleteToken();
-        $autocompleteData = $this->cache->getItem('edsAutocomplete');
-        $autocompleteUrl = $autocompleteData['url'];
-        $autocompleteCustId = $autocompleteData['custid'];
-        // get indicated domain/data type from $domain
-        $autocompleteType = $domain;
-        // build request
-        $url = $autocompleteUrl . '?idx=' . $autocompleteType .
-        '&token=' . urlencode($autocompleteToken) .
-        '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
-        $autocompleteCustId . '"]}]&term=' . urlencode($query);
-        $this->debugPrint("Url autocomplete: " . $url);
-        $autocompleteresponse =  $this->client->autocomplete($url);
-        // parse result and build array of terms
-        return $this->parseAutocomplete($autocompleteresponse);
+        return $this->client
+            ->autocomplete($query, $domain, $this->getAutocompleteData());
     }
 
     /// Internal API
@@ -479,24 +466,20 @@ class Backend extends AbstractBackend
 
     /**
      * Obtain the autocomplete authentication to use with the EDS API from cache
-     * if it exists. If not, then generate a new one.
+     * if it exists. If not, then generate a new set.
      *
-     * @param bool $isInvalid whether or not the the current autocomplete token
-     * is invalid
+     * @param bool $isInvalid whether or not the the current autocomplete data
+     * is invalid and should be regenerated
      *
-     * @return string autocompleteToken
+     * @return array autocomplete data
      */
-    protected function getAutocompleteToken($isInvalid = false)
+    protected function getAutocompleteData($isInvalid = false)
     {
-        $token = null;
-        if ($this->ipAuth) {
-            return $token;
-        }
         if ($isInvalid) {
             $this->cache->setItem('edsAutocomplete', null);
         }
         $autocompleteData = $this->cache->getItem('edsAutocomplete');
-        if (isset($autocompleteData)) {
+        if (!empty($autocompleteData)) {
             $currentToken =  $autocompleteData['token'] ?? '';
             $expirationTime = $autocompleteData['expiration'] ?? 0;
 
@@ -504,47 +487,30 @@ class Backend extends AbstractBackend
             // time.  If the token is expired or within 5 minutes of expiring,
             // generate a new one.
             if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
-                return $currentToken;
+                return $autocompleteData;
             }
         }
 
         $username = $this->userName;
         $password = $this->password;
-        $orgId = $this->orgId;
-        $params = ['autocomplete'];
         if (!empty($username) && !empty($password)) {
             $results = $this->client
-                ->authenticate($username, $password, $orgId, $params);
-            $autoresult = $results['Autocomplete'];
-            $token = $autoresult['Token'];
-            $timeout = $autoresult['TokenTimeOut'] + time();
-            $custid = $autoresult['CustId'];
-            $url = $autoresult['Url'];
+                ->authenticate($username, $password, $this->orgId, ['autocomplete']);
+            $autoresult = $results['Autocomplete'] ?? [];
+            if (isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
+                && isset($autoresult['CustId']) && isset($autoresult['Url'])
+            ) {
+                $token = $autoresult['Token'];
+                $expiration = $autoresult['TokenTimeOut'] + time();
+                $custid = $autoresult['CustId'];
+                $url = $autoresult['Url'];
 
-            $authTokenData = ['token' => $token, 'expiration' => $timeout,
-            'url' => $url, 'custid' => $custid];
-            // store token, expiration, url and custid in cache.
-            $this->cache->setItem('edsAutocomplete', $authTokenData);
-        }
-        return $token;
-    }
-
-    /**
-     * Parse autocomplete response from API in an array of terms
-     *
-     * @param array $msg Response from API
-     *
-     * @return array of terms
-     */
-    protected function parseAutocomplete($msg)
-    {
-        $result = [];
-        if (isset($msg["terms"]) && is_array($msg["terms"])) {
-            foreach ($msg["terms"] as $value) {
-                $result[] = $value["term"];
+                $autocompleteData = compact('token', 'expiration', 'url', 'custid');
+                // store token, expiration, url and custid in cache.
+                $this->cache->setItem('edsAutocomplete', $autocompleteData);
             }
         }
-        return $result;
+        return $autocompleteData;
     }
 
     /**
