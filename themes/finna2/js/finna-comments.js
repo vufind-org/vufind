@@ -127,8 +127,11 @@ finna.comments = (function finnaComments() {
   }
 
   function updateAverageRating(rating, count) {
-    $('.rating-average .rating').rating('rate', rating);
-    $('.rating-average .count>span').text(count);
+    var rating = $(this).find('.rating');
+    if (rating.length) {
+      $('.rating-average .rating').rating('rate', rating);
+      $('.rating-average .count>span').text(count);
+    }
   }
 
   function initEditComment(allowCommenting, allowRating) {
