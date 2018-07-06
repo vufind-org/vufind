@@ -87,7 +87,7 @@ class User extends \VuFind\Db\Table\User
                 $where = $select->where->equalTo('email', $email);
                 // Allow retrieval by email only on users registered with database
                 // method to keep e.g. Shibboleth accounts intact.
-                $where->and->equalTo('finna_auth_method', 'database');
+                $where->and->equalTo('auth_method', 'database');
                 // Limit by institution code if set
                 if (isset($this->config->Site->institution)) {
                     $prefix = $this->config->Site->institution . ':';

@@ -135,9 +135,9 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 . ($view->url ? $view->url : '-') . "\n";
             if ($user) {
                 $loginMethod = $this->translate(
-                    'login_method_' . $user->finna_auth_method,
+                    'login_method_' . $user->auth_method,
                     null,
-                    $user->finna_auth_method
+                    $user->auth_method
                 );
                 $email_message .= $this->translate('feedback_user_login_method')
                     . ": $loginMethod\n";

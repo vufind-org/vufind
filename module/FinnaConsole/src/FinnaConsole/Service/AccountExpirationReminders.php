@@ -410,7 +410,7 @@ class AccountExpirationReminders extends AbstractService
             $firstName = $userName;
         }
         $params = [
-            'loginMethod' => strtolower($user->finna_auth_method),
+            'loginMethod' => strtolower($user->auth_method),
             'username' => $userName,
             'firstname' => $firstName,
             'expirationDate' =>  $expirationDatetime->format('d.m.Y'),
