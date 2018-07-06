@@ -65,11 +65,13 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $back->expects($this->any())
             ->method('getSessionToken')
             ->will($this->returnValue('sess1234'));
-        $back->setIdentifier('bla');
 
-        $coll = $back->autocomplete('bla');
-        // ToDo: impelement the test if the fixtures for autocomplete
-        // generates the corret answer
+        $coll = $back->autocomplete('bla','rawdata');
+        // check count 
+        $this->assertCount(10, $coll);
+        foreach ($coll as $value) {
+            $this->assertEquals('bla', substr($value,0,3));
+        }
     }
 
     /**
