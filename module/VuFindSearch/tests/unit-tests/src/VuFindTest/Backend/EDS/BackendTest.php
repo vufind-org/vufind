@@ -66,11 +66,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             ->method('getSessionToken')
             ->will($this->returnValue('sess1234'));
 
-        $coll = $back->autocomplete('bla','rawdata');
-        // check count 
+        $coll = $back->autocomplete('bla', 'rawdata');
+        // check count
         $this->assertCount(10, $coll);
         foreach ($coll as $value) {
-            $this->assertEquals('bla', substr($value,0,3));
+            $this->assertEquals('bla', substr($value, 0, 3));
         }
     }
 
