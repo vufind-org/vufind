@@ -542,7 +542,6 @@ class Backend extends AbstractBackend
         if (isset($msg["terms"]) && is_array($msg["terms"])) {
             foreach ($msg["terms"] as $value) {
                 $result[] = $value["term"];
-                // $this->debugPrint("Term : " . $value["term"]);
             }
         }
         return $result;
