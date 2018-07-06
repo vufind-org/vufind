@@ -397,7 +397,7 @@ class Backend extends AbstractBackend
     /**
      * Get popular terms using the autocomplete API.
      *
-     * @param string $query simple query string
+     * @param string $query  simple query string
      * @param string $domain fits to the query
      *
      * @return array of terms
@@ -531,8 +531,8 @@ class Backend extends AbstractBackend
             //    'Calling Authenticate with username: '
             //    . "$username, password: XXXXXXXX, orgid: $orgId "
             // );
-            $results = $this->client->authenticate(
-            $username, $password, $orgId, $params);
+            $results = $this->client
+                ->authenticate($username, $password, $orgId, $params);
             $autoresult = $results['Autocomplete'];
             $token = $autoresult['Token'];
             $timeout = $autoresult['TokenTimeOut'] + time();

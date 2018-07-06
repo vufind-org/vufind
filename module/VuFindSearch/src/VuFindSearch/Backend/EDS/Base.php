@@ -213,7 +213,7 @@ abstract class Base
     /**
      * Execute an EdsApi autocomplete
      *
-     * @param string             $url
+     * @param string $url URL to fetch
      *
      * @return array An array of autocomplete terns as returned from the api
      */
@@ -233,8 +233,8 @@ abstract class Base
      * @return array
      */
     public function authenticate($username = null, $password = null,
-        $orgid = null, $params = null)
-    {
+        $orgid = null, $params = null
+    ) {
         $this->debugPrint(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
