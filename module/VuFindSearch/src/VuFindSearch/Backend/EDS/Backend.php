@@ -475,6 +475,10 @@ class Backend extends AbstractBackend
      */
     protected function getAutocompleteData($isInvalid = false)
     {
+        // Autocomplete is currently unsupported with IP authentication
+        if ($this->ipAuth) {
+            return null;
+        }
         if ($isInvalid) {
             $this->cache->setItem('edsAutocomplete', null);
         }
