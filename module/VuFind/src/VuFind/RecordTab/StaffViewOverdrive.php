@@ -1,10 +1,10 @@
 <?php
 /**
- * Summon FacetCache Factory.
+ * Staff view (array dump) tab
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,35 +20,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Summon
+ * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-namespace VuFind\Search\Summon;
-
-use Interop\Container\ContainerInterface;
+namespace VuFind\RecordTab;
 
 /**
- * Summon FacetCache Factory.
+ * Staff view (array dump) tab
  *
  * @category VuFind
- * @package  Search_Summon
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  RecordTabs
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class FacetCacheFactory extends \VuFind\Search\Base\FacetCacheFactory
+class StaffViewOverdrive extends AbstractBase
 {
     /**
-     * Create a results object.
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return \VuFind\Search\Base\Results
+     * Constructor
      */
-    protected function getResults(ContainerInterface $container)
+    public function __construct()
     {
-        return $container->get('VuFind\Search\Results\PluginManager')->get('Summon');
+        $this->accessPermission = 'access.StaffViewTab';
+    }
+
+    /**
+     * Get the on-screen description for this tab.
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return 'Staff View';
     }
 }

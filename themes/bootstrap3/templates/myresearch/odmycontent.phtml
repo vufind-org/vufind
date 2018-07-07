@@ -19,7 +19,10 @@
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
-          if ($cover):
+  ?>
+          <div id="record<?echo $rec_id; ?>" class="result">
+   <?php
+         if ($cover):
             ob_start(); ?>
             <div class="media-<?php echo $thumbnailAlignment ?> <?php echo $this->escapeHtmlAttr($coverDetails['size'])?>">
               <?php echo $cover ?>
@@ -43,7 +46,7 @@
                           <?php echo $this->transEsc('by')?>:
                            <a href="<?php echo $this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?php echo $this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?php echo $this->transEsc('more_authors_abbrev')?>
                          <?php endif; ?><br/>
-                         <?php endif; ?>
+                    <?php endif; ?>
                  <div><?php echo $this->transEsc('od_expires_on',['%%due_date%%'=>$resource['checkout']->expires])?></div> 
                  
                  <div class="pull-right">
@@ -53,15 +56,16 @@
                       href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"><i class="fa fa arrow-to-right " aria-hidden="true"></i>
                       <?php echo $this->transEsc('od_but_return')?></a>
                    <?php endif;?>
-                     <a class="btn btn-primary downloadTitle" 
-                      data-lightbox title="<?php echo $this->transEsc('od_but_download')?>" 
-                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=download"; ?>"><i class="fa fa-fw fa-download" aria-hidden="true"></i>
-                      <?php echo $this->transEsc('od_but_download')?></a>
+                     <a class="btn btn-primary getTitle"
+                      data-lightbox title="<?php echo $this->transEsc('od_but_gettitle')?>"
+                      href="<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm"; ?>"><i class="fa fa-fw fa-download" aria-hidden="true"></i>
+                      <?php echo $this->transEsc('od_but_gettitle')?></a>
+
                  </div>
            </div>
         </div>
  
-           
+          </div>
            
            <?php endforeach;?>
             
@@ -75,6 +79,9 @@
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
+  ?>
+    <div id="record<?echo $rec_id; ?>" class="result">
+        <?php
           if ($cover):
             ob_start(); ?>
             <div class="media-<?php echo $thumbnailAlignment ?> <?php echo $this->escapeHtmlAttr($coverDetails['size'])?>">
@@ -112,6 +119,7 @@
                 </div>
              </div>
            </div>
+    </div>
   <?php endforeach;?>
   
   

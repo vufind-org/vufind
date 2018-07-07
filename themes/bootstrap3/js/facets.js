@@ -6,25 +6,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
   $(data).each(function facetNodesEach() {
     var $html = $('<div/>').addClass('facet');
-    if (!this.isApplied && counts) {
-      if (allowExclude) {
-        $html.addClass('excludable');
-        var excludeUrl = currentPath + this.exclude;
-        var $a = $('<a/>')
-          .addClass('exclude')
-          .attr('href', excludeUrl)
-          .attr('title', excludeTitle);
-        $('<i/>').addClass('fa fa-times').appendTo($a);
-        $a.appendTo($html);
-      }
-      $('<span/>')
-        .addClass('badge')
-        .text(
-          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
-        )
-        .appendTo($html);
-    }
-
     var url = currentPath + this.href;
     var $item = $('<span/>')
       .addClass('main text' + (this.isApplied ? ' applied' : ''))
@@ -48,6 +29,25 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
     $item.append(this.displayText);
     $item.appendTo($html);
+
+    if (!this.isApplied && counts) {
+      $('<span/>')
+        .addClass('badge')
+        .text(
+          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+        )
+        .appendTo($html);
+
+      if (allowExclude) {
+        var excludeUrl = currentPath + this.exclude;
+        var $a = $('<a/>')
+          .addClass('exclude')
+          .attr('href', excludeUrl)
+          .attr('title', excludeTitle);
+        $('<i/>').addClass('fa fa-times').appendTo($a);
+        $a.appendTo($html);
+      }
+    }
 
     $html = $('<div/>').append($html);
 
@@ -88,6 +88,7 @@ function initFacetTree(treeNode, inSidebar)
     return false;
   });
 
+  var source = treeNode.data('source');
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');
   var currentPath = treeNode.data('path');
@@ -104,31 +105,30 @@ function initFacetTree(treeNode, inSidebar)
   $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
+      source: source,
       facetName: facet,
       facetSort: sort,
       facetOperator: operator
     },
     function getFacetData(response/*, textStatus*/) {
-      if (response.status === "OK") {
-        var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
-        treeNode.find('.fa-spinner').parent().remove();
-        if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-            treeNode.find('a.exclude').click(function excludeLinkClick(e) {
-              $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-              window.location = this.href;
-              e.preventDefault();
-              return false;
-            });
+      var results = buildFacetNodes(response.data.facets, currentPath, allowExclude, excludeTitle, inSidebar);
+      treeNode.find('.fa-spinner').parent().remove();
+      if (inSidebar) {
+        treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+          treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+          treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+            $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+            window.location = this.href;
+            e.preventDefault();
+            return false;
           });
-        }
-        treeNode.jstree({
-          'core': {
-            'data': results
-          }
         });
       }
+      treeNode.jstree({
+        'core': {
+          'data': results
+        }
+      });
     }
   );
 }

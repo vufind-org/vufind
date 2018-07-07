@@ -1,199 +1,251 @@
-<?php if($action=="checkout"): ?>
-
-
-    <div class="media">
-        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-            <?php /* Display thumbnail if appropriate: */ ?>
-            <?php if($cover): ?>
-                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-            <?php endif; ?>
-        </div>
+<div class="odaction">
+ <div class="media clearfix">
+     <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+         <?php if($cover): ?>
+             <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
+         <?php endif; ?>
+     </div>
+     <div class="media-body">
     <h1>
-    <div class="odbrand">
-      <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
-    </div>
-    <?php echo $this->transEsc("od_checkout"); ?></h1>
-    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-        <div class="">
-            <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-            <?php foreach($formats as $key=>$format):?>
-            <ul><li><?php echo $key?></li></ul>
-            <?php endforeach;?>
-        </div>
-        <div class="pull-right">
-        <button type="button" class="btn btn-default " data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-        
-        <a class='btn btn-primary btn-lg' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=doCheckout"?>'>
-            <?php echo $this->transEsc("od_but_checkout_s"); ?>
-        </a>
-        </div>
-    </div>
-
-<?php elseif($action=="hold"):    ?> 
-
-
-    <div class="media">
-        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-            <?php /* Display thumbnail if appropriate: */ ?>
-            <?php if($cover): ?>
-                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-            <?php endif; ?>
-        </div>
-    
-    <h1>
-        <div class="odbrand">
+        <div class="odbrand pull-left">
           <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
         </div>
-        <?php echo $this->transEsc("od_hold"); ?>
+        <div>
+        <?php echo $this->transEsc($actionTitleCode); ?>
+        </div>
     </h1>
-    
-    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-        <div class="">
-            <form class="form-record-hold" method="post" name="placeHold">
-              <div class="form-group hold-required-by">
-              <label class="control-label">email</label>
-              <input id="email" name="email" value="" size="" class="form-control" type="text">
-              </div>
+
+
+    <h2 class="title"><?php echo $this->escapeHtml($title)?></h2>
+
+     <?php if (!empty($listAuthors)): ?>
+       <div class="authors">
+         <?php echo $this->transEsc('by')?>:
+         <?php echo $this->escapeHtml($listAuthors[0])?>
+          <?php if (count($listAuthors) > 1): ?>, <?php echo $this->transEsc('more_authors_abbrev')?><?php endif; ?>
+       </div>
+     <?php endif; ?>
+ </div>
+
+    <div class="action <?php echo $action ?>">
+
+    <?php if($action=="checkoutConfirm"): ?>
+        <?php  if($result->status):?>
+            <div class="odformats">
+                <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+                <?php foreach($formats as $key=>$format):?>
+                <ul><li><?php echo $key?></li></ul>
+                <?php endforeach;?>
+            </div>
+            <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
+            <div class="pull-right">
+
+                <input name="doAction" value="doCheckout" type="hidden">
+                <input class="btn btn-primary" name="doCheckout" value="<?php echo $this->transEsc("od_but_checkout_s"); ?>" type="submit">
+            </div>
+            </form>
+        <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
+            <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+                <div class="moreInfo">
+                    <?php echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$result->data->checkout->expires]); ?>
+                </div>
+            </div>
+        <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
+            <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+                <div class="moreInfo">
+                    <?php echo $this->transEsc("od_is_on_hold");
+                    if($hold->holdReadyForCheckout):
+                        echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$result->data->hold->holdExpires]);
+                    else:
+                        echo $this->transEsc("od_hold_queue",
+                            ["%%holdPosition%%"=>$result->data->hold->holdListPosition,
+                                "%%numberOfHolds%%"=>$result->data->hold->numberOfHolds]);
+                    endif;?>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+                <div class="moreInfo"><?php echo $result->msg?></div>
+            </div>
+
+        <?php endif;?>
+    <?php elseif($action=="holdConfirm"):    ?>
+
+        <?php  if($result->status):?>
+     <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
+         <div class="form-group hold-required-by">
+             <label class="control-label"><?php echo $this->transEsc("Email Address"); ?></label>
+             <input id="email" name="email" value="" size="" class="form-control" type="text">
+         </div>
+         <div class="form-group pull-right">
+             <input name="doAction" value="placeHold" type="hidden">
+             <input class="btn btn-primary" name="placeHold" value="<?php echo $this->transEsc("od_but_hold_s"); ?>" type="submit">
+         </div>
+     </form>
+        <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
+        <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+            <div class="moreInfo">
+                <?php echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$result->data->checkout->expires]); ?>
+            </div>
+        </div>
+        <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
+        <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+            <div class="moreInfo">
+                <?php echo $this->transEsc("od_is_on_hold");
+                if($hold->holdReadyForCheckout):
+                    echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$result->data->hold->holdExpires]);
+                else:
+                    echo $this->transEsc("od_hold_queue",
+                        ["%%holdPosition%%"=>$result->data->hold->holdListPosition,
+                            "%%numberOfHolds%%"=>$result->data->hold->numberOfHolds]);
+                endif;?>
+            </div>
+        </div>
+        <?php else: ?>
+        <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+            <div class="moreInfo"><?php echo $result->msg?></div>
+        </div>
+
+        <?php endif;?>
+
+    <?php elseif($action=="cancelHoldConfirm"): ?>
+            <form class="" method="POST" name="cancelHold" data-lightbox-onclose="VuFind.refreshPage">
+
                 <div class="form-group pull-right">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-                    <input name="action" value="placeHold" type="hidden">
-                    <input class="btn btn-primary" name="placeHold" value="Place Hold" type="submit">
-                 </div>
+                    <input name="doAction" value="cancelHold" type="hidden">
+                    <input class="btn btn-primary" name="cancelHold" value="<?php echo $this->transEsc("od_but_cancel_hold"); ?>" type="submit">
+                </div>
             </form>
-        </div>
-    </div>
 
 
-<?php elseif($action=="cancelHoldConfirm"):    ?>
-    <div class="media">
-        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-            <?php /* Display thumbnail if appropriate: */ ?>
-            <?php if($cover): ?>
-                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-            <?php endif; ?>
-        </div>
-    
-    <h1>
-        <div class="odbrand">
-          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
-        </div>
-        <?php echo $this->transEsc("od_cancel_hold"); ?>
-    </h1>
-    
-    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-        <div class="">
-            <form class="form-record-hold" method="post" name="cancelHold">
+    <?php elseif($action=="returnTitleConfirm"): ?>
+        <form class="" method="POST" name="returnTitle" data-lightbox-onclose="VuFind.refreshPage">
+            <div class="pull-right">
 
-                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-            <a class='btn btn-primary' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=cancelHold"?>'>
-                <?php echo $this->transEsc("od_but_cancel_hold"); ?>
-            </a>
-            </form>
-        </div>
-    </div>
+                <input name="doAction" value="returnTitle" type="hidden">
+                <input class="btn btn-primary" name="returnTitle" value="<?php echo $this->transEsc("od_but_return"); ?>" type="submit">
+            </div>
+        </form>
 
+    <?php elseif($action=="getTitleConfirm"): ?>
 
-<?php elseif($action=="returnTitleConfirm"):    ?>
-    <div class="media">
-        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-            <?php /* Display thumbnail if appropriate: */ ?>
-            <?php if($cover): ?>
-                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-            <?php endif; ?>
-        </div>
-    
-    <h1>
-        <div class="odbrand">
-          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
-        </div>
-        <?php echo $this->transEsc("od_early_return"); ?>
-    </h1>
-    
-    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-    <div class="pull-right">
-         <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-        <a class='btn btn-primary btn-lg' href='<?php echo $this->url ('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=returnTitle"?>'>
-            <?php echo $this->transEsc("od_but_return"); ?>
-        </a>
-    </div>
-    </div>
+            <div class="pull-right">
 
+                <input name="doAction" value="getTitle" type="hidden">
+                <div class="odformats">
+                    <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+                    <?php foreach($formats as $key=>$format):
+                        //$od_id = $this->driver->getOverdriveID();
+                        //$rec_id = $this->driver->getUniqueID();
+                        ?>
+                        <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?php echo $key ?>" type="submit"> -->
+                        <a data-lightbox-ignore class="btn btn-primary" target="_blank"
+                           href="<?php echo $this->url('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
+                            <?php echo $format ?></a>
+                    <?php endforeach;?>
+                </div>
+            </div>
+            <form class="" method="POST" name="getTitle" data-lightbox-onclose="VuFind.refreshPage"></form>
 
+    <?php elseif($action =='placeHold'): ?>
+        <?php  if($result->status):?>
+            <div class="alert alert-success"><i class='fa fa-check'></i>
+            <?php echo $this->transEsc("od_hold_place_success", ["%%holdListPosition%%"=>$result->data->holdListPosition]); ?>
+            </div>
 
-    
-<?php elseif($action =='placeHold'): ?>
-    <?php  if($result['result']):?>
-      <div class="alert alert-success"><i class='fa fa-check'></i>
-        <?php echo $this->transEsc("od_hold_place_success", ["%%holdListPosition%%"=>$result['data']['holdListPosition']]); ?>
-      </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-    <?php else: ?>
-      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <?php else: ?>
+        <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
         <?php echo $this->transEsc("od_hold_place_failure") ?>
-        <div class="moreInfo"><?php echo $result['data']['moreInfo'] ?></div>
-      </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-     <?php endif;
-   elseif($action =='cancelHold'): ?>
-    <?php  if($result->status):?>
-      <div class="alert alert-success"><i class='fa fa-check'></i>
-        <?php echo $this->transEsc("od_hold_cancel_success"); ?>
-      </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-    <?php else: ?>
-      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
-        <?php echo $this->transEsc("od_hold_cancel_failure") ?>
-        <div class="moreInfo"><?php echo $result->msg?></div>
-      </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-<?php    endif;
-   elseif($action=="doCheckout"): ?>
-       <div class="media">
-        <div class="pull-right <?php echo $this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-            <?php /* Display thumbnail if appropriate: */ ?>
-            <?php if($cover): ?>
-                <img alt="Cover Image"  class="recordcover" src="<?php echo $cover?>">
-            <?php endif; ?>
+            <div class="moreInfo"><?php echo $result->msg?></div>
         </div>
-    
-    <h1>
-        <div class="odbrand">
-          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+
+         <?php endif;?>
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
         </div>
-        <?php echo $this->transEsc("od_checkout"); ?>
-    </h1>
-    
-    <h2><div class="title"><?php echo $this->escapeHtml($title)?></div></h2>
-   
-    <?php  if($result['result']):?>
+
+        <?php elseif($action =='cancelHold'): ?>
+        <?php  if($result->status):?>
+          <div class="alert alert-success"><i class='fa fa-check'></i>
+            <?php echo $this->transEsc("od_hold_cancel_success"); ?>
+          </div>
+
+        <?php else: ?>
+          <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+            <?php echo $this->transEsc("od_hold_cancel_failure") ?>
+            <div class="moreInfo"><?php echo $result->msg?></div>
+          </div>
+        <?php  endif;?>
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        </div>
+
+    <?php elseif($action=="doCheckout"): ?>
+        <?php  if($result->status):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
-        <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%'=>$result['data']['expires']]); ?>
+        <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%'=>$result->data->expires]); ?>
       </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        <!--
+            <div class="odformats">
+                <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+                <?php foreach($formats as $key=>$format):?>
+                    <button type="button" class="btn btn-primary" aria-hidden="true"><?php echo $key?></button>
+
+                <?php endforeach;?>
+            </div>
+            -->
+            <div class="odformats">
+                <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
+                <?php foreach($formats as $key=>$format):
+                    //$od_id = $this->driver->getOverdriveID();
+                    //$rec_id = $this->driver->getUniqueID();
+                    ?>
+                    <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?php echo $key ?>" type="submit"> -->
+                    <a data-lightbox-ignore class="btn btn-primary" target="_blank"
+                       href="<?php echo $this->url('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
+                        <?php echo $format->name ?></a>
+                <?php endforeach;?>
+            </div>
+
     <?php else: ?>
       <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
         <?php echo $this->transEsc("od_docheckout_failure"); ?>
-         <div class="moreInfo"><?php echo $result['data']['moreInfo'] ?></div>
+          <div class="moreInfo"><?php echo $result->msg?></div>
       </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
     <?php endif;?>
-    </div>
-   
-   
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        </div>
 
- <?php    elseif($action=="returnTitle"): ?>
-    <?php  if($result->status):?>
+    <?php elseif($action=="returnTitle"): ?>
+    <?php if($result->status):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
         <?php echo $this->transEsc("od_return_success"); ?>
       </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
     <?php else: ?>
       <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
         <?php echo $this->transEsc("od_return_failure"); ?>
          <div class="moreInfo"><?php echo $result->msg ?></div>
       </div>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
-    <?php endif;?>   
+        <?php endif;?>
+
+        <?php elseif($action=="getTitle"): ?>
+    <?php if($result->status):?>
+            <div class="alert alert-success"><i class='fa fa-check'></i>
+                <?php echo $this->transEsc("od_return_success"); ?>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+                <?php echo $this->transEsc("od_gettitle_failure"); ?>
+                <div class="moreInfo"><?php echo $result->msg ?></div>
+            </div>
+
+    <?php endif;?>
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
+        </div>
  <?php endif; ?>
 
-
+ </div><!--end .action-->
+ </div> <!--end .media-->
+</div><!--end .odaction-->

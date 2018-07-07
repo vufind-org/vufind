@@ -355,13 +355,15 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @param string $facetList     Config section containing fields to activate
      * @param string $facetSettings Config section containing related settings
-     * @param string $cfgFile       Name of configuration to load
+     * @param string $cfgFile       Name of configuration to load (null to load
+     * default facets configuration).
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader->get($cfgFile);
+        $config = $this->configLoader
+            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         // Special case -- when most settings are in Results_Settings, the limits
         // can be found in Facet_Settings.
         $limitSection = ($facetSettings === 'Results_Settings')
@@ -377,10 +379,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initAdvancedFacets()
     {
-        $success = $this
-            ->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
         // If no configuration was found, set up defaults instead:
-        if (!$success) {
+        if (!$this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings')) {
             $defaults = ['Language' => 'Language', 'ContentType' => 'Format'];
             foreach ($defaults as $key => $value) {
                 $this->addFacet($key, $value);
@@ -396,9 +396,7 @@ class Params extends \VuFind\Search\Base\Params
     public function initHomePageFacets()
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
-        $homeSuccess = $this
-            ->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings', 'Summon');
-        if (!$homeSuccess) {
+        if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
             $this->initAdvancedFacets();
         }
     }
@@ -410,7 +408,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initBasicFacets()
     {
-        $this->initFacetList('Facets', 'Results_Settings', 'Summon');
+        $this->initFacetList('Facets', 'Results_Settings');
     }
 
     /**
@@ -437,6 +435,6 @@ class Params extends \VuFind\Search\Base\Params
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }
-        $this->initCheckboxFacets('CheckboxFacets', 'Summon');
+        $this->initCheckboxFacets();
     }
 }

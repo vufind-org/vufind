@@ -32,6 +32,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         logError as error;
     }
 
+    /**
+     * @var \VuFind\DigitalContent\OverdriveConnector $connector Overdrive Connector
+     */
     protected $connector;
 
     /**
@@ -64,12 +67,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             return $patron;
         }
 
+        //TODO get hold and checkoutlimit using the Patron Info API
+
         //get the current Overdrive checkouts
         //for this user and add to our array of IDS
-        $checkouts = $this->connector->getCheckouts($patron, true);
+        $checkouts = $this->connector->getCheckouts(true);
 
         //get the current Overdrive holds for this user and add to our array of IDS
-        $holds = $this->connector->getHolds($patron, true);
+        $holds = $this->connector->getHolds(true);
 
         $mycheckouts = array();
 
@@ -77,7 +82,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $mycheckout['checkout'] = $checkout;
             $mycheckout['record']
                 = $this->serviceLocator->get('VuFind\Record\Loader')
-                ->load(strtolower($checkout->reserveId));
+                    ->load(strtolower($checkout->reserveId));
             $mycheckouts[] = $mycheckout;
         }
 
@@ -86,7 +91,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $myhold['hold'] = $hold;
             $myhold['record']
                 = $this->serviceLocator->get('VuFind\Record\Loader')
-                ->load(strtolower($hold->reserveId));
+                    ->load(strtolower($hold->reserveId));
             $myholds[] = $myhold;
         }
         $this->debug("view model");
@@ -150,53 +155,128 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $action = $this->params()->fromQuery('action');
 
         //place hold action comes in through the form
-        if (null !== $this->params()->fromPost('placeHold')) {
-            $action = "placeHold";
+        if (null !== $this->params()->fromPost('doAction')) {
+            $action = $this->params()->fromPost('doAction');
         }
+
+        //place hold action comes in through the form
+        if (null !== $this->params()->fromPost('getTitleFormat')) {
+            $format = $this->params()->fromPost('getTitleFormat');
+        }
+
+        $format = $this->params()->fromQuery('getTitleFormat');
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
         //load the Record Driver.  Should be a SolrOverdrive  driver.
         $driver = $this->serviceLocator->get('VuFind\Record\Loader')->load($rec_id);
+
         $formats = $driver->getDigitalFormats();
         $title = $driver->getTitle();
         $cover = $driver->getThumbnail('small');
-
+        $listAuthors = $driver->getPrimaryAuthors();
         if (!$action) {
             //double check the availability in case it
             //has changed since the page was loaded.
             $avail = $driver->getOverdriveAvailability();
-            //if($avail->copiesOwned >0){
             if ($avail->copiesAvailable > 0) {
-                $action = "checkout";
+                $action = "checkoutConfirm";
             } else {
-                $action = "hold";
+                $action = "holdConfirm";
+
             }
-            //}else{
-            //create some kind of notification to user that something went wrong
-            //}
+        }
+
+        if($action=="checkoutConfirm"){
+            $result = $this->connector->getResultObject();
+            //check to make sure they don't already have this checked out
+            //shouldn't need to refresh.
+            if($checkout = $this->connector->getCheckout($od_id, false)){
+               $result->status = false;
+               $result->data->checkout = $checkout;
+               $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
+            }elseif ($hold  = $this->connector->getHold($od_id,false)){
+                $result->status = false;
+                $result->data->hold = $hold;
+                $result->code = "OD_CODE_ALREADY_ON_HOLD";
+            }else{
+                $result->status = true;
+            }
+            $actionTitleCode = "od_checkout";
+
+        } elseif ($action == "holdConfirm") {
+            $result = $this->connector->getResultObject();
+            //check to make sure they don't already have this checked out
+            //check to make sure they don't already have this checked out
+            //shouldn't need to refresh.
+            if($checkout = $this->connector->getCheckout($od_id, false)){
+                $result->status = false;
+                $result->data->checkout = $checkout;
+                $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
+                $this->debug("title already checked out: $od_id");
+            }elseif ($hold  = $this->connector->getHold($od_id,false)){
+                $result->status = false;
+                $result->data->hold = $hold;
+                $result->code = "OD_CODE_ALREADY_ON_HOLD";
+                $this->debug("title already on hold: $od_id");
+            }else{
+                $result->status = true;
+            }
+            $actionTitleCode = "od_hold";
+
+        } elseif ($action == "cancelHoldConfirm") {
+            $actionTitleCode = "od_cancel_hold";
+
         } elseif ($action == "returnTitleConfirm") {
-            $this->debug("confirming return title");
-        } elseif ($action == "returnTitle") {
-            $this->debug("returning title using OD connector");
-            $result = $this->connector->returnResource($od_id);
-        } elseif ($action == "placeHold") {
-            $email = $this->params()->fromPost('email');
-            $this->debug("placing Hold through OD now using email: $email");
-            $result = $this->connector->placeOverDriveHold($od_id, $email);
-        } elseif ($action == "cancelHold") {
-            $this->debug("canceling Hold through OD now");
-            $result = $this->connector->cancelHold($od_id);
+            $actionTitleCode = "od_early_return";
+
+        } elseif ($action == "getTitleConfirm") {
+            //$checkout = $this->connector->getCheckout($od_id, false);
+            //get only formats that are available...
+            $formats = $driver->getAvailableDigitalFormats();
+            $actionTitleCode = "od_get_title";
+
         } elseif ($action == "doCheckout") {
-            $this->debug("doing Checkout through OD now");
+            $actionTitleCode = "od_checkout";
             $result = $this->connector->doOverdriveCheckout($od_id);
+
+
+        } elseif ($action == "placeHold") {
+            $actionTitleCode = "od_hold";
+            $email = $this->params()->fromPost('email');
+            $result = $this->connector->placeOverDriveHold($od_id, $email);
+
+        } elseif ($action == "cancelHold") {
+            $actionTitleCode = "od_cancel_hold";
+            $result = $this->connector->cancelHold($od_id);
+
+        } elseif ($action == "returnTitle") {
+            $actionTitleCode = "od_early_return";
+            $result = $this->connector->returnResource($od_id);
+
+        } elseif ($action == "getTitle") {
+            $actionTitleCode = "od_get_title";
+            //need to get server name etc.  maybe this: getServerUrl();
+            $this->debug("Here:".$this->getServerUrl('overdrive-hold'));
+            $result = $this->connector->getDownloadLink($od_id, $format, $this->getServerUrl('overdrive-hold'));
+            if($result->status){
+                //Redirect to resource
+                $url = $result->data->downloadLink;
+                $this->debug("redirecting to: $url");
+                //$this->redirect()
+                //$this->redirect()->toUrl($url);
+                header("Location: $url");
+                exit();
+            }
+
         } else {
-            $this->debug("action not defined: $action");
+            $this->logWarning("overdrive action not defined: $action");
         }
 
         $view = $this->createViewModel(
             compact(
                 'od_id', 'rec_id', 'action',
-                'result', 'formats', 'cover', 'title'
+                'result', 'formats', 'cover', 'title', 'actionTitleCode',
+                'listAuthors'
             )
         );
 

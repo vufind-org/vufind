@@ -597,7 +597,7 @@ $config = [
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewArray',
+                    'Details' => 'StaffViewOverdrive',
                 ],
                 'defaultTab' => null,
             ],

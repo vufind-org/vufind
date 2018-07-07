@@ -305,5 +305,5 @@ class Factory
             $loader = null;
         }
         return new Formats($loader, static::getHideSetting($config, 'formats'));
-    }    
+    }
 }

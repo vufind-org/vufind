@@ -43,7 +43,6 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
   });
 
-  
   // Initialize marker clusters with icon colors
   var markerClusters = new L.MarkerClusterGroup({
     iconCreateFunction: function icf(cluster) {
@@ -63,6 +62,88 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       return new L.DivIcon({ html: '<div><span><b>' + childCount + '</b></span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
     }
   });
+
+  // Handle user interaction with markers and rectangles
+  //----------------------------------------------------//
+  function onClick() {
+    mapSearch.eachLayer(function msl(layer) {
+      if (layer.options.id === "mRect") {
+        mapSearch.removeLayer(layer);
+      }
+    });
+
+    // Reset previously selected features to inactive color - RED
+    if (clickedIDs.length > 0) {
+      markerClusters.eachLayer(function mcl(layer){
+        if (layer.options.recID === clickedIDs[0]) {
+          layer.options.recStatus = 'inactive';
+          layer._popup.setContent(layer.options.recPopup);
+          if (layer.options.recType === "rectangle") {
+            layer.setIcon(redRectIcon);
+          } else {
+            layer.setIcon(redIcon);
+          } 
+        } 
+      });
+      clickedIDs = []; 
+      clickedBounds = [];
+    }
+    
+    //Handle current feature selection
+    //Change color of all features with thisID to BLUE
+    var thisID = this.options.recID;
+    clickedIDs.push(thisID);
+    var j = 0;
+    markerClusters.eachLayer(function mc(layer){
+      if (layer.options.recID === thisID) {
+        j = j++;
+        layer.options.recStatus = 'active';
+        if (layer.options.recType === "rectangle") {
+          layer.setIcon(blueRectIcon);
+        } else {
+          layer.setIcon(blueIcon);
+        }
+        clickedBounds.push([layer.getLatLng().lat, layer.getLatLng().lng]);
+        if (layer.options.recType === "rectangle") {
+          // create rectangle from options and show
+          var mRect_sw = L.latLng([layer.options.recS, layer.options.recW]);
+          var mRect_ne = L.latLng([layer.options.recN, layer.options.recE]);
+          var mRect = L.rectangle([[mRect_sw, mRect_ne]], {
+            color: '#3388ff',
+            fillOcpacity: 0.1,
+            weight: 2,
+            id: 'mRect'
+          });
+          mRect.bindPopup(L.popup().setContent(layer.options.rmPopup));
+          var mrBounds = mRect.getBounds();
+          clickedBounds.push([
+            [mrBounds.getSouthWest().lat, mrBounds.getSouthWest().lng],
+            [mrBounds.getNorthEast().lat, mrBounds.getNorthEast().lng]
+          ]);
+          mapSearch.addLayer(mRect);
+        }
+      }
+    });
+    markerClusters.refreshClusters();
+
+    // Check if there are multiple markers at this location
+    // If so, update popup to show title for all rectangles by
+    // combining popup content.
+    thisID = this.options.recID;
+    var thisLat = this.getLatLng().lat;
+    var thisLng = this.getLatLng().lng;
+    var updatePopup = [this._popup.getContent()];
+    markerClusters.eachLayer(function mc(layer){
+      var mLat = layer.getLatLng().lat;
+      var mLng = layer.getLatLng().lng;
+      var mPopup = layer._popup.getContent();
+      if ((mLat === thisLat && mLng === thisLng) && updatePopup.indexOf(mPopup) < 0) {
+        updatePopup.push(mPopup);
+      }
+    });
+    this._popup.setContent(updatePopup.join(" "));
+  }
+
   // Searchbox
   //-------------------------------------//
   // Retrieve searchbox coordinates 
@@ -229,87 +310,6 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     drawnItemsLayer.clearLayers();
     new L.Draw.Rectangle(mapSearch, drawnItems.options.rectangle).enable();
   };
-  
-  // Handle user interaction with markers and rectangles
-  //----------------------------------------------------//
-  function onClick() {
-    mapSearch.eachLayer(function msl(layer) {
-      if (layer.options.id === "mRect") {
-        mapSearch.removeLayer(layer);
-      }
-    });
-
-    // Reset previously selected features to inactive color - RED
-    if (clickedIDs.length > 0) {
-      markerClusters.eachLayer(function mcl(layer){
-        if (layer.options.recID === clickedIDs[0]) {
-          layer.options.recStatus = 'inactive';
-          layer._popup.setContent(layer.options.recPopup);
-          if (layer.options.recType === "rectangle") {
-            layer.setIcon(redRectIcon);
-          } else {
-            layer.setIcon(redIcon);
-          } 
-        } 
-      });
-      clickedIDs = []; 
-      clickedBounds = [];
-    }
-    
-    //Handle current feature selection
-    //Change color of all features with thisID to BLUE
-    var thisID = this.options.recID;
-    clickedIDs.push(thisID);
-    var j = 0;
-    markerClusters.eachLayer(function mc(layer){
-      if (layer.options.recID === thisID) {
-        j = j++;
-        layer.options.recStatus = 'active';
-        if (layer.options.recType === "rectangle") {
-          layer.setIcon(blueRectIcon);
-        } else {
-          layer.setIcon(blueIcon);
-        }
-        clickedBounds.push([layer.getLatLng().lat, layer.getLatLng().lng]);
-        if (layer.options.recType === "rectangle") {
-          // create rectangle from options and show
-          var mRect_sw = L.latLng([layer.options.recS, layer.options.recW]);
-          var mRect_ne = L.latLng([layer.options.recN, layer.options.recE]);
-          var mRect = L.rectangle([[mRect_sw, mRect_ne]], {
-            color: '#3388ff',
-            fillOcpacity: 0.1,
-            weight: 2,
-            id: 'mRect'
-          });
-          mRect.bindPopup(L.popup().setContent(layer.options.rmPopup));
-          var mrBounds = mRect.getBounds();
-          clickedBounds.push([
-            [mrBounds.getSouthWest().lat, mrBounds.getSouthWest().lng],
-            [mrBounds.getNorthEast().lat, mrBounds.getNorthEast().lng]
-          ]);
-          mapSearch.addLayer(mRect);
-        }
-      }
-    });
-    markerClusters.refreshClusters();
-
-    // Check if there are multiple markers at this location
-    // If so, update popup to show title for all rectangles by
-    // combining popup content.
-    thisID = this.options.recID;
-    var thisLat = this.getLatLng().lat;
-    var thisLng = this.getLatLng().lng;
-    var updatePopup = [this._popup.getContent()];
-    markerClusters.eachLayer(function mc(layer){
-      var mLat = layer.getLatLng().lat;
-      var mLng = layer.getLatLng().lng;
-      var mPopup = layer._popup.getContent();
-      if ((mLat === thisLat && mLng === thisLng) && updatePopup.indexOf(mPopup) < 0) {
-        updatePopup.push(mPopup);
-      }
-    });
-    this._popup.setContent(updatePopup.join(" "));
-  }
   
   // If user clicks on map anywhere turn all features to inactive color - RED
   // and reset clicked arrays

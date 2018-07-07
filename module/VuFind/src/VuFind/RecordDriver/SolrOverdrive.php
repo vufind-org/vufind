@@ -30,6 +30,7 @@
 
 namespace VuFind\RecordDriver;
 
+
 use Zend\Log\LoggerAwareInterface;
 
 /**
@@ -53,6 +54,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @var \VuFind\DigitalContent\OverdriveConnector
      */
     protected $connector;
+    /**
+     * @var
+     */
     protected $config;
 
     /**
@@ -65,8 +69,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function __construct(
         $mainConfig = null, $recordConfig = null,
         $connector = null
-    )
-    {
+    ) {
         $this->connector = $connector;
         $this->config = $connector->getConfig();
         parent::__construct($mainConfig, $recordConfig, null);
@@ -74,77 +77,169 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $this->debug("SolrOverdrive Rec Driver constructed");
     }
 
-
+    /**
+     * @param string $format
+     * @param null $baseUrl
+     * @param null $recordLink
+     *
+     * @return mixed|void
+     *
+     * public function getXML($format, $baseUrl = null, $recordLink = null)
+     * {
+     * $xml = parent::getXML('marc21');
+     *
+     * //return \VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21');
+     * }
+     */
+    /**
+     * @return bool
+     */
     public function supportsOpenUrl()
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function supportsCoinsOpenUrl()
     {
         return false;
     }
 
+
+    public function getAvailableDigitalFormats()
+    {
+        $formats = array();
+        //$allFormats = $this->getDigitalFormats();
+        $formatNames = $this->connector->getFormatNames();
+        $od_id = $this->getOverdriveID();
+
+        if ($checkout = $this->connector->getCheckout($od_id, false)) {
+            //$this->debug("hereiam" . print_r($checkout, true));
+            //if we are already locked in, then we need free ones and locked in ones.
+            if ($checkout->isFormatLockedIn) {
+                foreach ($checkout->formats as $format) {
+                    $formatType = $format->formatType;
+                    $formats[$formatType] = $formatNames[$formatType];
+                }
+                //if we aren't locked in, we can show all formats
+            } else {
+
+                foreach ($this->getDigitalFormats() as $format) {
+                    $formats[$format->id] = $format->name;
+                }
+            }
+        }
+        return $formats;
+    }
+
     /**
-     * Get an array of all the formats associated with the record.
+     * Get Formats
      *
-     * @return array
+     * @param string $overDriveId Overdrive ReserveID
+     *
+     * @return array Array of formats.
      */
     public function getDigitalFormats()
     {
-        $results = array();
-        $jsonData = $this->fields['fullrecord'];
-        $data = json_decode($jsonData, false);
-        //$this->debug("formats: ".print_r($data->formats,true));
-        if (isset($data->formats)) {
-            foreach ($data->formats as $format) {
-                $results[$format->name] = array(
-                    "File Size" => $format->fileSize,
-                    "Parts" => $format->partCount
-                );
-            }
+        $formats = array();
+        $od_id = $this->getOverdriveID();
+
+        ///if ($availableOnly) {
+
+        //} else {
+        if ($this->config->isMarc) {
+            $od_id = $this->getOverdriveID();
+            $fulldata = $this->connector->getMetadata(array($od_id));
+            $data = $fulldata[strtolower($od_id)];
+        } else {
+            $jsonData = $this->fields['fullrecord'];
+            $data = json_decode($jsonData, false);
         }
-        $this->debug("returning formats array:" . print_r($results, true));
+
+        foreach ($data->formats as $format) {
+            $formats[$format->id] = $format;
+        }
+        //}
+        //$this->debug("Formats: " . print_r($formats, true));
+        return $formats;
+    }
+
+
+    /**
+     * Get an array of all the formats associated with the record. This array
+     * is designed to be used in a template. For lower level
+     *
+     * @return array
+     */
+    public function getFormattedDigitalFormats()
+    {
+
+        $results = array();
+        foreach ($this->getDigitalFormats() as $format) {
+            $tmpresults = array();
+            if ($format->fileSize > 0) {
+                if ($format->fileSize > 1000000) {
+                    $size = round($format->fileSize / 1000000);
+                    $size .= " GB";
+                } elseif ($format->fileSize > 1000) {
+                    $size = round($format->fileSize / 1000);
+                    $size .= " MB";
+                } else {
+                    $size = $format->fileSize;
+                    $size .= " KB";
+                }
+                $tmpresults["File Size"] = $size;
+
+
+            }
+            if ($format->partCount) {
+                $tmpresults["Parts"] = $format->partCount;
+            }
+            if ($format->identifiers) {
+                foreach ($format->identifiers as $id) {
+                    if (in_array($id->type, ["ISBN", "ASIN"])) {
+                        $tmpresults[$id->type] = $id->value;
+                    }
+                }
+            }
+            if ($format->onSaleDate) {
+                $tmpresults["Release Date"] = $format->onSaleDate;
+            }
+            $results[$format->name] = $tmpresults;
+        }
+        //}
+
+        //$this->debug("returning formats array:" . print_r($results, true));
         return $results;
     }
 
-    /*
-    Notes for later: the sample links look like this (all formats seem to have same links):
-    formats->[x]['samples'] => Array
-        (
-            [0] => Array
-                (
-                    [source] => From the book
-                    [formatType] => ebook-epub-adobe
-                    [url] => https://excerpts.cdn.overdrive.com/FormatType-410/2389-1/D76/1EB/5F/ArtofWarTheOldestMilitaryTreatiseinth9781620114650.epub
-                )
-
-            [1] => Array
-                (
-                    [source] => From the book
-                    [formatType] => ebook-overdrive
-                    [url] => https://samples.overdrive.com/?crid=D761EB5F-B0F9-4711-880E-4F58484A52DE&.epub-sample.overdrive.com
-                )
-
-        )
-    
-    
-    public function getPreviewLinks(){
+    public function getPreviewLinks()
+    {
         $results = array();
-        $jsonData = $this->fields['fullrecord'];
-        $data = json_decode($jsonData, false);
-
-        if (isset($data->formats)) {
-            foreach ($data->formats as $format) {
-                $results['sample] = array(
-                    "File Size" => $format->fileSize,
-                    "Parts" => $format->partCount
-                );
-            }
+        if ($this->getIsMarc()) {
+            $od_id = $this->getOverdriveID();
+            $fulldata = $this->connector->getMetadata(array($od_id));
+            $data = $fulldata[strtolower($od_id)];
+        } else {
+            $jsonData = $this->fields['fullrecord'];
+            $data = json_decode($jsonData, false);
         }
 
+        if (isset($data->formats[0]->samples[0])) {
+            //$format = $data->formats[0]->samples[0];
+            foreach ($data->formats[0]->samples as $format) {
+              if($format->formatType=='audiobook-overdrive' ||
+                  $format->formatType=='ebook-overdrive'){
+                  $results = $format;
+              }
+            }
+        }
+        $this->debug("previewlinks:" . print_r($results, true));
+        return $results;
     }
-    */
+
 
     /**
      * Returns true if the record supports real-time AJAX status lookups.
@@ -195,15 +290,21 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getOverdriveID()
     {
         $result = 0;
+        //$marc = $this->getMarcRecord();
+        //$this->debug("marc: ".print_r($marc,true));
+        //$this->config->isMarc = true;
+
         if ($this->config) {
             if ($this->config->isMarc) {
-                $field = $this->conf->idField;
-                $subfield = $this->conf->idSubfield;
+                $field = $this->config->idField;
+                $subfield = $this->confif->idSubfield;
                 $result = $this->getFieldArray($field, $subfield)[0];
+                $this->debug("odid from marc: $result");
             } else {
                 $result = $this->getUniqueID();
             }
         }
+        $this->debug("odid: $result");
         return $result;
     }
 
@@ -227,7 +328,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getOverdriveAvailability()
     {
         $overDriveId = $this->getOverdriveID();
-        $this->debug("idb4: $overDriveId");
+        //$this->debug("idb4: $overDriveId");
         return $this->connector->getAvailability($overDriveId);
     }
 
@@ -244,6 +345,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $this->debug(" ischeckout", array(), true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
+        // $this->debug("res: " . print_r($result, true));
         if ($result->status) {
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
@@ -260,6 +362,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         //if it didn't work, an error should be logged from the connector
         return false;
     }
+
 
     /**
      * Is Held
@@ -299,8 +402,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
@@ -335,24 +438,21 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
     public
     function getGeneralNotes()
     {
+        //return $this->getDigitalFormats();
+        if ($this->config->isMarc) {
+            return parent::getGeneralNotes();
+        } else {
 
-        $results = array();
-        $jsonData = $this->fields['fullrecord'];
-        $data = json_decode($jsonData, false);
-        if (isset($data->formats)) {
-            foreach ($data->formats as $format) {
-                $results[] = $format->name;
-            }
+            return false;
         }
-        return array("Formats" => $results);
     }
 
     /**
@@ -367,8 +467,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * thumbnail:200
      * cover150Wide:150
@@ -377,11 +477,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return type Description.
      */
-    public
-    function getThumbnail(
+    public function getThumbnail(
         $size = 'small'
-    )
-    {
+    ) {
         if ($size == 'large') {
             $cover = "cover300Wide";
         } elseif ($size == 'medium') {
@@ -391,15 +489,27 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         } else {
             $cover = "cover";
         }
-        $result = false;
-        $jsonData = $this->fields['fullrecord'];
-        $data = json_decode($jsonData, false);
+
+        //if the record is marc then the cover links probably aren't there.
+        if ($this->config->isMarc) {
+            $od_id = $this->getOverdriveID();
+            $fulldata = $this->connector->getMetadata(array($od_id));
+            $data = $fulldata[strtolower($od_id)];
+        } else {
+            $result = false;
+            $jsonData = $this->fields['fullrecord'];
+            $data = json_decode($jsonData, false);
+        }
+
         if (isset($data->images)) {
             if (isset($data->images->{$cover})) {
                 $result = $data->images->{$cover}->href;
             }
         }
+        //$this->debug("thumbnaildata: ".print_r($fulldata,true));
+        //$this->debug("thumbnail: $result");
         return $result;
+
     }
 
     /**
@@ -414,15 +524,21 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
     public
     function getSummary()
     {
-        return array("Summary" => $this->fields["description"]);
+        if ($this->config->isMarc) {
+            return parent::getSummary();
+        } else {
+            $desc = $this->fields["description"];
+            $newDesc = preg_replace('/<br(\s+)?\/?>/i', "\n", $desc);
+            return array("Summary" => $newDesc);
+        }
     }
 
     /**
@@ -437,8 +553,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
@@ -446,9 +562,66 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     function getRawData()
     {
 
-        $jsonData = $this->fields['fullrecord'];
-        $data = json_decode($jsonData, true);
-        return $data;
+        if ($this->config->isMarc) {
+            return parent::getRawData();
+            /*            $xml = parent::getXML('marc21');
+
+                        $json = json_encode(simplexml_load_string($xml));
+                        $data = json_decode($json,TRUE);
+                        $this->debug("rawmarc: ".print_r($data,true));
+                        return $data;*/
+        } else {
+            $jsonData = $this->fields['fullrecord'];
+            $data = json_decode($jsonData, true);
+            return $data;
+        }
+
+    }
+
+    /**
+     *
+     */
+    public function getIsMarc()
+    {
+        $this->debug("ismarc: " . $this->config->isMarc);
+        return $this->config->isMarc;
+    }
+
+    /**
+     * @param bool $extended
+     *
+     * @return array
+     */
+    public function getAllSubjectHeadings($extended = false)
+    {
+        if ($this->config) {
+            if ($this->config->isMarc) {
+                return parent::getAllSubjectHeadings($extended);
+            } else {
+                $headings = [];
+                foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
+                    if (isset($this->fields[$field])) {
+                        $headings = array_merge(
+                            $headings, $this->fields[$field]
+                        );
+                    }
+                }
+
+                // The default index schema doesn't currently store subject headings in a
+                // broken-down format, so we'll just send each value as a single chunk.
+                // Other record drivers (i.e. SolrMarc) can offer this data in a more
+                // granular format.
+                $callback = function ($i) use ($extended) {
+                    return $extended
+                        ? ['heading' => [$i], 'type' => '', 'source' => '']
+                        : [$i];
+                };
+                return array_map($callback, array_unique($headings));
+
+            }
+        } else {
+            return array();
+        }
     }
 
     /**
@@ -463,15 +636,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
     public
     function getFormattedRawData()
     {
-        $this->debug("findme");
+
         $result = array();
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
@@ -498,8 +671,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @global type $varname Description.
      * @global type $varname Description.
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
