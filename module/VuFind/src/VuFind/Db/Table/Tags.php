@@ -312,7 +312,7 @@ class Tags extends Gateway
                     'ur.list_id', 'rt.list_id',
                     Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
                 );
-            
+
             if (null !== $source) {
                 $select->where->equalTo('r.source', $source);
             }

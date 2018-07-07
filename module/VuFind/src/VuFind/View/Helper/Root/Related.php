@@ -27,6 +27,10 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Related\PluginManager as RelatedManager;
+use VuFind\Search\Options\PluginManager as OptionsManager;
+
 /**
  * Related records view helper
  *
@@ -39,21 +43,58 @@ namespace VuFind\View\Helper\Root;
 class Related extends AbstractClassBasedTemplateRenderer
 {
     /**
+     * Config manager
+     *
+     * @var ConfigManager
+     */
+    protected $configManager;
+
+    /**
+     * Plugin manager for search options.
+     *
+     * @var OptionsManager
+     */
+    protected $optionsManager;
+
+    /**
      * Plugin manager for related record modules.
      *
-     * @var \VuFind\Related\PluginManager
+     * @var RelatedManager
      */
     protected $pluginManager;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Related\PluginManager $pluginManager Plugin manager for related
-     * record modules.
+     * @param RelatedManager $pluginManager Plugin manager for related record modules
+     * @param ConfigManager  $cm            Configuration manager
+     * @param OptionsManager $om            Search options manager
      */
-    public function __construct(\VuFind\Related\PluginManager $pluginManager)
-    {
+    public function __construct(RelatedManager $pluginManager,
+        ConfigManager $cm, OptionsManager $om
+    ) {
         $this->pluginManager = $pluginManager;
+        $this->configManager = $cm;
+        $this->optionsManager = $om;
+    }
+
+    /**
+     * Given a record source ID, return the appropriate related record configuration.
+     *
+     * @param string $source Source identifier
+     *
+     * @return array
+     */
+    protected function getConfigForSource($source)
+    {
+        $options = $this->optionsManager->get($source);
+        $configName = $options->getSearchIni();
+        // Special case -- default Solr stores [Record] section in config.ini
+        if ($configName === 'searches') {
+            $configName = 'config';
+        }
+        $config = $this->configManager->get($configName);
+        return $config->Record->related ?? [];
     }
 
     /**
@@ -65,7 +106,21 @@ class Related extends AbstractClassBasedTemplateRenderer
      */
     public function getList(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        return $driver->getRelated($this->pluginManager);
+        $retVal = [];
+        $config = $this->getConfigForSource($driver->getSourceIdentifier());
+        foreach ($config as $current) {
+            $parts = explode(':', $current);
+            $type = $parts[0];
+            $params = $parts[1] ?? null;
+            if ($this->pluginManager->has($type)) {
+                $plugin = $this->pluginManager->get($type);
+                $plugin->init($params, $driver);
+                $retVal[] = $plugin;
+            } else {
+                throw new \Exception("Related module {$type} does not exist.");
+            }
+        }
+        return $retVal;
     }
 
     /**

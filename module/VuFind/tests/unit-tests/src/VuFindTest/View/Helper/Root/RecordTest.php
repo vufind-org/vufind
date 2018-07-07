@@ -256,8 +256,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetLink()
     {
         $context = $this->getMockContext();
+        $callback = function ($arr) {
+            return $arr['lookfor'] === 'foo';
+        };
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(['lookfor' => 'foo']))
+            ->with($this->callback($callback))
             ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
             ->with($this->equalTo(['bar' => 'baz']));

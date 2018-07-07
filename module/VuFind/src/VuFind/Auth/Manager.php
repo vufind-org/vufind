@@ -31,9 +31,9 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Validator\Csrf;
 use Zend\Config\Config;
 use Zend\Session\SessionManager;
-use Zend\Validator\Csrf;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -442,11 +442,15 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * If no CSRF token currently exists, or should be regenerated, generates one.
      *
      * @param bool $regenerate Should we regenerate token? (default false)
+     * @param int  $maxTokens  The maximum number of tokens to store in the
+     * session.
      *
      * @return string
      */
-    public function getCsrfHash($regenerate = false)
+    public function getCsrfHash($regenerate = false, $maxTokens = 5)
     {
+        // Reset token store if we've overflowed the limit:
+        $this->csrf->trimTokenList($maxTokens);
         return $this->csrf->getHash($regenerate);
     }
 
@@ -553,11 +557,14 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->getAuth()->preLoginCheck($request);
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
-            && !$this->csrf->isValid($request->getPost()->get('csrf'))
-        ) {
-            $this->getAuth()->resetState();
-            throw new AuthException('authentication_error_technical');
+        if (!$this->getAuth()->getSessionInitiator(null)) {
+            if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
+                $this->getAuth()->resetState();
+                throw new AuthException('authentication_error_technical');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
+            }
         }
 
         // Perform authentication:
