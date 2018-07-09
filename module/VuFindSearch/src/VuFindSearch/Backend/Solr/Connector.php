@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 
+use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use VuFindSearch\Backend\Exception\RequestErrorException;
@@ -410,9 +411,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        // If we got this far, everything failed -- throw the most recent
-        // exception caught above.
-        throw $exception;
+        // If we got this far, everything failed -- throw a BackendException with
+        // the most recent exception caught above set as the previous exception.
+        throw new BackendException('Problem connecting to Solr.', null, $exception);
     }
 
     /**
