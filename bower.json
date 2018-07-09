@@ -11,7 +11,8 @@
     "bootstrap-validator": "0.10.2",
     "flot": "0.8.3",
     "jquery": "2.1.1",
-    "jquery.dotdotdot": "1.8.1"
+    "jquery.dotdotdot": "1.8.1",
+    "jstree": "3.0.0"
   },
   "install": {
     "options":  {
@@ -20,8 +21,10 @@
     "base": "themes/bootstrap3",
     "path": {
       "css": "css/vendor",
+      "gif": "css/vendor",
       "js": "js/vendor",
-      "less": "less/vendor"
+      "less": "less/vendor",
+      "png": "css/vendor"
     },
     "sources": {
       "bootstrap": {
@@ -42,7 +45,13 @@
         ]
       },
       "jquery": "bower_components/jquery/dist/jquery.min.js",
-      "jquery.dotdotdot": "bower_components/jquery.dotdotdot/src/jquery.dotdotdot.min.js"
+      "jquery.dotdotdot": "bower_components/jquery.dotdotdot/src/jquery.dotdotdot.min.js",
+      "jstree": {
+        "mapping": [
+          {"bower_components/jstree/dist/jstree.min.js": "jsTree/jstree.min.js"},
+          {"bower_components/jstree/dist/themes/default/**": "../../js/vendor/jsTree/themes/default"}
+        ]
+      }
     }
   }
 }
