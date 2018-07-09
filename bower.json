@@ -13,7 +13,8 @@
     "jquery": "2.1.1",
     "jquery.dotdotdot": "1.8.1",
     "jstree": "3.0.0",
-    "leaflet": "1.3.1"
+    "leaflet": "1.3.1",
+    "leaflet-draw": "1.0.2"
   },
   "install": {
     "options":  {
@@ -58,6 +59,11 @@
         "mapping": [
           {"bower_components/leaflet/dist/**": "leaflet"},
           {"bower_components/leaflet/dist/images": "leaflet/images"}
+        ]
+      },
+      "leaflet-draw": {
+        "mapping": [
+          {"bower_components/leaflet-draw/dist/**": "leaflet"}
         ]
       }
     }
