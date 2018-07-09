@@ -383,6 +383,8 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * BackendException to standardize upstream handling.
      *
      * @param \Exception $ex Exception
+     *
+     * @return \Exception
      */
     protected function forceToBackendException($ex)
     {
