@@ -63,8 +63,9 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
-  var _constrainLink; // function declarations to avoid style warnings
-  var _formSubmit;    // about circular references
+  // function declarations to avoid style warnings about circular references
+  var _constrainLink;
+  var _formSubmit;
   function render(content) {
     if (!content.match) {
       return;
@@ -136,27 +137,31 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
-        if (jq_xhr.status === 205) {
-          VuFind.refreshPage();
-          return;
-        }
-        var testDiv = $('<div/>').html(content);
-        var errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
-        // Place Hold error isolation
-        if (obj.url.match(/\/Record\/.*(Hold|Request)\?/)) {
-          if (errorMsgs.length && testDiv.find('.record').length) {
-            var msgs = errorMsgs.toArray().map(function getAlertHtml(el) {
-              return el.innerHTML;
-            }).join('<br/>');
-            showAlert(msgs, 'danger');
-            return false;
+        var errorMsgs = [];
+        if (jq_xhr.status !== 205) {
+          var testDiv = $('<div/>').html(content);
+          errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
+          // Place Hold error isolation
+          if (obj.url.match(/\/Record\/.*(Hold|Request)\?/)) {
+            if (errorMsgs.length && testDiv.find('.record').length) {
+              var msgs = errorMsgs.toArray().map(function getAlertHtml(el) {
+                return el.innerHTML;
+              }).join('<br/>');
+              showAlert(msgs, 'danger');
+              return false;
+            }
           }
         }
-        if ( // Close the lightbox after deliberate login
-          obj.method && (                                            // is a form
-            obj.url.match(/catalogLogin/)                            // catalog login for holds
-            || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)  // or that matches login/create account
-          ) && errorMsgs.length === 0                                // skip failed logins
+        // Close the lightbox after deliberate login provided that:
+        // - is a form
+        // - catalog login for holds
+        // - or that matches login/create account
+        // - not a failed login
+        if (
+          obj.method && (
+            obj.url.match(/catalogLogin/)
+            || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
+          ) && errorMsgs.length === 0
         ) {
 
           var eventResult = _emit('VuFind.lightbox.login', {
@@ -172,6 +177,10 @@ VuFind.register('lightbox', function Lightbox() {
             VuFind.lightbox.refreshOnClose = true;
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
+        }
+        if (jq_xhr.status === 205) {
+          VuFind.refreshPage();
+          return;
         }
         render(content);
       })
@@ -221,7 +230,7 @@ VuFind.register('lightbox', function Lightbox() {
     if (typeof $(this).data('lightboxIgnore') != 'undefined'
       || typeof this.attributes.href === 'undefined'
       || this.attributes.href.value.charAt(0) === '#'
-      || this.href.match(/^[a-zA-Z]+\:[^\/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+      || this.href.match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
     ) {
       return true;
     }

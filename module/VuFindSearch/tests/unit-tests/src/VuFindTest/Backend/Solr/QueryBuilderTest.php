@@ -75,10 +75,9 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             ['^10', '10'],                       // invalid boosts
             ['test^ test^6', 'test test6'],      // invalid boosts
             ['test^1 test^2', 'test^1 test^2'],  // valid boosts
-            ['this / that', 'this that'],        // freestanding slash
+            ['this / that', 'this "/" that'],    // freestanding slash
             ['/ this', 'this'],                  // leading slash
             ['title /', 'title'],                // trailing slash
-            ['this - that', 'this that'],        // freestanding hyphen
             ['- this', 'this'],                  // leading hyphen
             ['title -', 'title'],                // trailing hyphen
             ['AND', 'and'],                      // freestanding operator

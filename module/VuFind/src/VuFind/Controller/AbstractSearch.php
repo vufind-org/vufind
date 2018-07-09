@@ -243,6 +243,18 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -718,7 +730,7 @@ class AbstractSearch extends AbstractBase
             [$facet], false, $limit, $sort, $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
-        $list = $facets[$facet]['data']['list'];
+        $list = $facets[$facet]['data']['list'] ?? [];
         $params->activateAllFacets();
         $facetLabel = $params->getFacetLabel($facet);
 
@@ -731,7 +743,7 @@ class AbstractSearch extends AbstractBase
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
-                'anotherPage' => $facets[$facet]['more'],
+                'anotherPage' => $facets[$facet]['more'] ?? '',
                 'sort' => $sort,
                 'sortOptions' => $facetSortOptions,
                 'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),

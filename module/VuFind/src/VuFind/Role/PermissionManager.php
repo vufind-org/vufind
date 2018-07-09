@@ -93,7 +93,7 @@ class PermissionManager
      */
     public function permissionRuleExists($context)
     {
-        foreach ($this->config as $key => $value) {
+        foreach ($this->config as $value) {
             if (!isset($value['permission'])) {
                 continue;
             }

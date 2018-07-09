@@ -92,7 +92,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel();
+        return parent::homeAction();
     }
 
     /**

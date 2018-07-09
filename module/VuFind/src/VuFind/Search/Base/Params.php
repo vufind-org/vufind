@@ -1714,13 +1714,15 @@ class Params
      *
      * @param string $facetList     Config section containing fields to activate
      * @param string $facetSettings Config section containing related settings
-     * @param string $cfgFile       Name of configuration to load
+     * @param string $cfgFile       Name of configuration to load (null to load
+     * default facets configuration).
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader->get($cfgFile);
+        $config = $this->configLoader
+            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         if (!isset($config->$facetList)) {
             return false;
         }
@@ -1753,14 +1755,16 @@ class Params
      * Initialize checkbox facet settings for the specified configuration sections.
      *
      * @param string $facetList Config section containing fields to activate
-     * @param string $cfgFile   Name of configuration to load
+     * @param string $cfgFile   Name of configuration to load (null to load
+     * default facets configuration).
      *
      * @return bool             True if facets set, false if no settings found
      */
     protected function initCheckboxFacets($facetList = 'CheckboxFacets',
-        $cfgFile = 'facets'
+        $cfgFile = null
     ) {
-        $config = $this->configLoader->get($cfgFile);
+        $config = $this->configLoader
+            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         if (empty($config->$facetList)) {
             return false;
         }

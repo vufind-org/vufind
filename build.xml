@@ -25,10 +25,10 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="7.2.1" />
+  <property name="solr_version" value="7.3.1" />
   <property name="phpdoc_version" value="2.9.0" />
 
-  <property name="version" value="4.1.2" />
+  <property name="version" value="5.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -137,6 +137,7 @@
     </if>
     <!-- Run phpdoc -->
     <mkdir dir="${builddir}/apidocs" />
+    <!-- Old embedded version; no longer works correctly...
     <phpdoc2 title="VuFind API Documentation"
       pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
       destdir="${builddir}/apidocs">
@@ -144,6 +145,8 @@
         <include name="module/*/src/**/*.php" />
       </fileset>
     </phpdoc2>
+    -->
+    <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
   </target>
 
   <!-- PHPUnit -->

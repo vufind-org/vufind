@@ -123,6 +123,12 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
             $parts = $this->parseSetting($current);
+            // Special case for media with paretheses
+            // ie. (min-width: 768px)
+            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
+                $parts[1] .= ':' . $parts[2];
+                array_splice($parts, 2, 1);
+            }
             $headLink()->prependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
