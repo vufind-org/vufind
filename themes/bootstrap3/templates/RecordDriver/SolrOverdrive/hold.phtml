@@ -6,17 +6,17 @@
          <?php endif; ?>
      </div>
      <div class="media-body">
-    <h1>
+    <h2>
         <div class="odbrand pull-left">
-          <img src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
+          <img class="media-left" src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
         </div>
         <div>
         <?php echo $this->transEsc($actionTitleCode); ?>
         </div>
-    </h1>
+    </h2>
 
 
-    <h2 class="title"><?php echo $this->escapeHtml($title)?></h2>
+    <h3 class="title"><?php echo $this->escapeHtml($title)?></h3>
 
      <?php if (!empty($listAuthors)): ?>
        <div class="authors">

@@ -54,8 +54,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @var \VuFind\DigitalContent\OverdriveConnector
      */
     protected $connector;
+
     /**
-     * @var
+     * @var object
      */
     protected $config;
 
@@ -77,20 +78,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $this->debug("SolrOverdrive Rec Driver constructed");
     }
 
-    /**
-     * @param string $format
-     * @param null $baseUrl
-     * @param null $recordLink
-     *
-     * @return mixed|void
-     *
-     * public function getXML($format, $baseUrl = null, $recordLink = null)
-     * {
-     * $xml = parent::getXML('marc21');
-     *
-     * //return \VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21');
-     * }
-     */
+
     /**
      * @return bool
      */
@@ -108,6 +96,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
 
+    /**
+     * Get Available Digital Formats
+     *
+     * Return the digital download formats that are available for linking to.
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getAvailableDigitalFormats()
     {
         $formats = array();
@@ -116,7 +112,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $od_id = $this->getOverdriveID();
 
         if ($checkout = $this->connector->getCheckout($od_id, false)) {
-            //$this->debug("hereiam" . print_r($checkout, true));
             //if we are already locked in, then we need free ones and locked in ones.
             if ($checkout->isFormatLockedIn) {
                 foreach ($checkout->formats as $format) {
@@ -137,18 +132,16 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Get Formats
      *
+     * Returns an array of digital formats for this resource.
+     *
      * @param string $overDriveId Overdrive ReserveID
      *
      * @return array Array of formats.
+     * @throws \Exception
      */
     public function getDigitalFormats()
     {
         $formats = array();
-        $od_id = $this->getOverdriveID();
-
-        ///if ($availableOnly) {
-
-        //} else {
         if ($this->config->isMarc) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata(array($od_id));
@@ -161,17 +154,17 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         foreach ($data->formats as $format) {
             $formats[$format->id] = $format;
         }
-        //}
-        //$this->debug("Formats: " . print_r($formats, true));
+
         return $formats;
     }
 
 
     /**
      * Get an array of all the formats associated with the record. This array
-     * is designed to be used in a template. For lower level
+     * is designed to be used in a template.
      *
      * @return array
+     * @throws \Exception
      */
     public function getFormattedDigitalFormats()
     {
@@ -215,6 +208,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return $results;
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function getPreviewLinks()
     {
         $results = array();
@@ -230,10 +227,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if (isset($data->formats[0]->samples[0])) {
             //$format = $data->formats[0]->samples[0];
             foreach ($data->formats[0]->samples as $format) {
-              if($format->formatType=='audiobook-overdrive' ||
-                  $format->formatType=='ebook-overdrive'){
-                  $results = $format;
-              }
+                if ($format->formatType == 'audiobook-overdrive'
+                    || $format->formatType == 'ebook-overdrive'
+                ) {
+                    $results = $format;
+                }
             }
         }
         $this->debug("previewlinks:" . print_r($results, true));
@@ -248,6 +246,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
+        //TODO add this as an overdrive configuration to turn it off
         return true;
     }
 
@@ -290,45 +289,33 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getOverdriveID()
     {
         $result = 0;
-        //$marc = $this->getMarcRecord();
-        //$this->debug("marc: ".print_r($marc,true));
-        //$this->config->isMarc = true;
 
         if ($this->config) {
             if ($this->config->isMarc) {
                 $field = $this->config->idField;
                 $subfield = $this->confif->idSubfield;
-                $result = $this->getFieldArray($field, $subfield)[0];
-                $this->debug("odid from marc: $result");
+                $result = strtolower(
+                    $this->getFieldArray($field, $subfield)[0]
+                );
+
             } else {
-                $result = $this->getUniqueID();
+                $result = strtolower($this->getUniqueID());
             }
         }
         $this->debug("odid: $result");
         return $result;
     }
 
-
-    /*    public function getUniqueID()
-        {
-            if (!isset($this->fields['id'])) {
-                throw new \Exception('ID not set!');
-            }
-            //$this->debug("id: " . $this->fields['id']);
-
-            return $this->fields['id'];
-        }*/
-
     /**
      * Returns the availability for the current record
      *
      * @return object|bool returns an object with the info in it (see URL above)
      * or false if there was a problem.
+     * @throws \Exception
      */
     public function getOverdriveAvailability()
     {
         $overDriveId = $this->getOverdriveID();
-        //$this->debug("idb4: $overDriveId");
         return $this->connector->getAvailability($overDriveId);
     }
 
@@ -336,31 +323,32 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * isCheckedOut   Is this resource already checked out to the user?
      *
-     *
-     * @return object|bool Returns the checkout information if currently checked out
+     * @return object Returns the checkout information if currently checked out
      *    by this user or false if not.
+     * @throws \Exception
      */
     public function isCheckedOut()
     {
         $this->debug(" ischeckout", array(), true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
-        // $this->debug("res: " . print_r($result, true));
         if ($result->status) {
+            $checkedout = false;
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
-                $this->debug(
-                    strtolower($checkout->reserveId) . " == " . $overdriveID
-                );
                 if (strtolower($checkout->reserveId) == $overdriveID) {
-                    $this->debug("overdrive checkout found");
-                    return $checkout;
+                    $checkedout = true;
+                    $result->status = true;
+                    $result->data = $checkout;
                 }
+            }
+            if (!$checkedout) {
+                $result->data = false;
             }
 
         }
         //if it didn't work, an error should be logged from the connector
-        return false;
+        return $result;
     }
 
 
@@ -390,31 +378,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Overdrvie Checkout.
-     *
-     * Passthru to the connector for checking out the current record.
-     * NoteToSelf: Do we need ID? Don't we know the id?
-     *
-     * @since 5.0
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @return type Description.
-     */
-    public function doOverdriveCheckout($overDriveId, $user = false)
-    {
-        return $this->connector->doOverdriveCheckout(
-            $overDriveId, $user = false
-        );
-    }
-
-    /**
      *  this will be reomved after I fix my data to have short titles
      */
     public function getBreadcrumb()
@@ -427,26 +390,24 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * summary
-     *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @return type Description.
+     *  this will be reomved after I fix my data to have short titles
      */
-    public
-    function getGeneralNotes()
+    public function getShortTitle()
     {
-        //return $this->getDigitalFormats();
+        if (!parent::getShortTitle()) {
+            return $this->getTitle();
+        } else {
+            return $this->getShortTitle();
+        }
+    }
+
+    /**
+     * Get general notes on the record.
+     *
+     * @return array
+     */
+    public function getGeneralNotes()
+    {
         if ($this->config->isMarc) {
             return parent::getGeneralNotes();
         } else {
@@ -506,60 +467,34 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result = $data->images->{$cover}->href;
             }
         }
-        //$this->debug("thumbnaildata: ".print_r($fulldata,true));
-        //$this->debug("thumbnail: $result");
         return $result;
-
     }
 
     /**
-     * summary
+     * Get an array of summary strings for the record.
      *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return array
      */
-    public
-    function getSummary()
+    public function getSummary()
     {
         if ($this->config->isMarc) {
             return parent::getSummary();
         } else {
             $desc = $this->fields["description"];
-            $newDesc = preg_replace('/<br(\s+)?\/?>/i', "\n", $desc);
+
+            $newDesc = preg_replace("/&#8217;/i", "", $desc);
+            $newDesc = strip_tags($newDesc);
             return array("Summary" => $newDesc);
         }
     }
 
     /**
-     * summary
+     * Retrieve raw data from object (primarily for use in staff view and
+     * autocomplete; avoid using whenever possible).
      *
-     * Description.
-     *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return mixed
      */
-    public
-    function getRawData()
+    public function getRawData()
     {
 
         if ($this->config->isMarc) {
@@ -579,7 +514,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Is Marc Based Record
      *
+     * Return whether this is a marc-based record.
+     *
+     * @return bool
      */
     public function getIsMarc()
     {
@@ -588,7 +527,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * @param bool $extended
+     * Get all subject headings associated with this record.  Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
      *
      * @return array
      */
@@ -625,7 +572,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * summary
+     * Get Formatted Raw Data
      *
      * Description.
      *
@@ -641,8 +588,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return type Description.
      */
-    public
-    function getFormattedRawData()
+    public function getFormattedRawData()
     {
 
         $result = array();
@@ -676,8 +622,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return type Description.
      */
-    public
-    function getRealTimeTitleHold()
+    public function getRealTimeTitleHold()
     {
         $od_id = $this->getOverdriveID();
         $rec_id = $this->getUniqueID();

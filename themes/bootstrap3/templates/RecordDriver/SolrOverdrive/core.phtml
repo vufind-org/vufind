@@ -2,74 +2,93 @@
 $avail = $this->driver->getOverdriveAvailability();
 $previews = $this->driver->getPreviewLinks();
 $this->OverdrivePreview =false;
+$user = $this->auth()->isLoggedIn();
+
 if($previews->url){
     $this->OverdrivePreview ="<a href=\"{$previews->url}\" target=\"_blank\" class=\"btn btn-primary\">Sample</a>";
 }
 $this->OverdriveAvail = false;
+//if we didn't get availability, we can't show the proper action buttons
 if($avail):
     $od_id = $this->driver->getOverdriveID();
     $rec_id = $this->driver->getUniqueID();
     $hold_url = $this->url ('overdrive-hold');
     $checkedOut = $isOnHold = false;
-    $checkedOut = $this->driver->isCheckedOut();
-    if(!$checkedOut){
-        $hold = $this->driver->isHeld($user);
-    }
-    $odaction = '<div class="hold pull-right">';
 
-    if($checkedOut):
-        $odaction .= "<div class=\"od_status checkedout alert alert-info\">
-                      {$this->transEsc("od_is_checkedout",["%%due_date%%"=>$checkedOut->expires])}
-                      </div>";
+    //if($user):
+        $checkedOutResult = $this->driver->isCheckedOut();
+        //if the result of the check is false and the user is logged, in that
+        //probably means that there was a connection failure
+        if(!$checkedOutResult->status && $user):
+            $odaction = "<div class=\"hold pull-right\"><div class=\"alert alert-warning\">
+                          {$this->transEsc("od_code_connection_failed")}
+                          </div></div>";
+        else:
+            $checkedOut = $checkedOutResult->data;
+            if(!$checkedOut){
+                $hold = $this->driver->isHeld($user);
+            }
+            $odaction = '<div class="hold pull-right">';
 
-        if($checkedOut->isReturnable):
-            $odaction .= "<a class=\"btn btn-primary returnTitle\" 
-                  data-lightbox title='{$this->transEsc("od_but_return")}' 
-                  href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm\"><i class='fa fa arrow-to-right' aria-hidden='true'></i>
-                  {$this->transEsc('od_but_return')}</a>";
-        endif;
+            if($checkedOut):
+                $odaction .= "<div class=\"od_status checkedout alert alert-info\">
+                              {$this->transEsc("od_is_checkedout",["%%due_date%%"=>$checkedOut->expires])}
+                              </div>";
 
-        $odaction .= "<a class=\"btn btn-primary getTitle\"
-                    data-lightbox title=\"{$this->transEsc('od_but_gettitle')}\"
-                    href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm\"><i class=\"fa fa arrow-to-right\" aria-hidden=\"true\"></i>
-                    {$this->transEsc('od_but_gettitle')}</a>";
+                if($checkedOut->isReturnable):
+                    $odaction .= "<a class=\"btn btn-primary returnTitle\" 
+                          data-lightbox title='{$this->transEsc("od_but_return")}' 
+                          href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm\"><i class='fa fa arrow-to-right' aria-hidden='true'></i>
+                          {$this->transEsc('od_but_return')}</a>";
+                endif;
 
-        elseif($hold):
+                $odaction .= "<a class=\"btn btn-primary getTitle\"
+                            data-lightbox title=\"{$this->transEsc('od_but_gettitle')}\"
+                            href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm\"><i class=\"fa fa arrow-to-right\" aria-hidden=\"true\"></i>
+                            {$this->transEsc('od_but_gettitle')}</a>";
 
-            $odaction .= "<div class=\"od_status onhold  alert alert-info\">
-                         {$this->transEsc('od_is_on_hold')}";
-                  if($hold->holdReadyForCheckout){
-                      $odaction .=  $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$hold->holdExpires]);
-                  }else{
-                      $odaction .=  $this->transEsc("od_hold_queue", ["%%holdPosition%%"=>$hold->holdListPosition, "%%numberOfHolds%%"=>$hold->numberOfHolds]);
-                  }
+                elseif($hold):
 
-           $odaction .= "</div>
-                  
-           <a class=\"btn btn-primary placehold\" 
-              data-lightbox title=\"{$this->transEsc('request_place_text')}\" 
-              href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm\"><i class=\"fa fa-flag\" aria-hidden=\"true\"></i>&nbsp; 
-              {$this->transEsc('od_but_cancel_hold')}</a>";
-       else:
-           //user does not already have it on hold or checked out.
-           /*NOTE: its possible to have no copies owned which means that the library needs to add it back to the collection */
-                  if($avail->copiesAvailable):
-                      $odaction .= "<a class=\"btn btn-primary checkout\" data-lightbox 
-                        title=\"{$this->transEsc('request_place_text')}\" 
-                        href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm\">
-                        <i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>
-                        {$this->transEsc('od_but_checkout')}</a>";
-                  else:
+                    $odaction .= "<div class=\"od_status onhold  alert alert-info\">
+                                 {$this->transEsc('od_is_on_hold')}";
+                          if($hold->holdReadyForCheckout){
+                              $odaction .=  $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$hold->holdExpires]);
+                          }else{
+                              $odaction .=  $this->transEsc("od_hold_queue", ["%%holdPosition%%"=>$hold->holdListPosition, "%%numberOfHolds%%"=>$hold->numberOfHolds]);
+                          }
 
-                      $odaction .= "<a class=\"btn btn-primary placehold\" data-lightbox title=\"{$this->transEsc('request_place_text')}\" 
-                        href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm\"><i class=\"fa fa-flag\" aria-hidden=\"true\"></i>&nbsp
-                        {$this->transEsc('od_but_hold')}</a>";
-                 endif;
+                   $odaction .= "</div>
+                          
+                   <a class=\"btn btn-primary placehold\" 
+                      data-lightbox title=\"{$this->transEsc('request_place_text')}\" 
+                      href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm\"><i class=\"fa fa-flag\" aria-hidden=\"true\"></i>&nbsp; 
+                      {$this->transEsc('od_but_cancel_hold')}</a>";
+               else:
+                   //user does not already have it on hold or checked out.
+                   /*NOTE: its possible to have no copies owned which means that the library needs to add it back to the collection */
+                          if($avail->copiesAvailable):
+                              $odaction .= "<a class=\"btn btn-primary checkout\" data-lightbox 
+                                title=\"{$this->transEsc('request_place_text')}\" 
+                                href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm\">
+                                <i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>
+                                {$this->transEsc('od_but_checkout')}</a>";
+                          else:
 
-    endif;  //end if checked out
-    $odaction .= "</div>
+                              $odaction .= "<a class=\"btn btn-primary placehold\" data-lightbox title=\"{$this->transEsc('request_place_text')}\" 
+                                href=\"$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm\"><i class=\"fa fa-flag\" aria-hidden=\"true\"></i>&nbsp
+                                {$this->transEsc('od_but_hold')}</a>";
+                         endif;
+
+            endif;  //end if checked out
+            $odaction .= "</div>";
+         endif; //end no checkout error
+   //endif;  // logged in check.
+endif; //end if avail
+
+if($avail):
+    $odaction .= "
        <div class=\"availability\">
-         <div class=\"odbrand pull-left\">
+         <div class=\"odbrand pull-left media-left\">
            <img  src=\"https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_42x42_rgb.jpg\">
          </div>
          <div class=\"copies\"><strong>{$this->transEsc("od_avail_total")}</strong> {$avail->copiesOwned}</div>
@@ -77,7 +96,7 @@ if($avail):
          <div class=\"holds\"><strong>{$this->transEsc("od_avail_holds")}</strong> {$avail->numberOfHolds}</div>
         </div>";
     $this->OverdriveAvail = $odaction;
-    endif; //end if avail
+endif; //end if avail
 
-//echo $this->render('RecordDriver/DefaultRecord/core.phtml', ['OverDriveMarkup' => '<p>findeme</p>']);
-echo $this->render('RecordDriver/DefaultRecord/core.phtml');
+
+echo $this->render('RecordDriver/DefaultRecord/core.phtml');?>

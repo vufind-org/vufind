@@ -2,15 +2,30 @@
 //json response. array of html strings
 //todo check result first
 $jsonResult = new stdClass;
-$jsonResult->status="OK";
 $data = array();
-foreach($result->availability as $avail):
-  $current['full_status'] = "<p><div class='copies'><strong>Total Copies</strong> ".$avail->copiesOwned."</div>
-                        <div class='avail'><strong>Available</strong> ".$avail->copiesAvailable."</div>
-                        <div class='holds'><strong>Holds</strong> ".$avail->numberOfHolds."</div></p>";
-  $current['id'] = $avail->reserveId;
-                        
-  $data[] = $current;                      
+$isError = false;
+if(!$this->result->status){
+    //we must have had a connection error.
+    $isError = true;
+}
+foreach($ids as $id):
+    $current['status'] = "OK";
+    $current['id'] = $id;
+    if($isError){
+
+        $current['error'] = $this->transEsc('status_unknown_message');
+        $current['full_status'] = "";
+    }else {
+        $avail = $this->result->data[$id];
+        $current['full_status']
+            = "<p><div class='copies'><strong>Total Copies</strong> "
+            . $avail->copiesOwned . "</div>
+                        <div class='avail'><strong>Available</strong> "
+            . $avail->copiesAvailable . "</div>
+                        <div class='holds'><strong>Holds</strong> "
+            . $avail->numberOfHolds . "</div></p>";
+    }
+  $data[] = $current;
 endforeach;
 $jsonResult->data = $data;
 echo json_encode($jsonResult);

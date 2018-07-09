@@ -90,10 +90,9 @@ var ItemStatusHandler = {
 
     checkItemStatusDone: function checkItemStatusDone(response) {
         var data = response.data;
-        for (var j = 0; j < data.statuses.length; j++) {
-            var status = data.statuses[j];
-            displayItemStatus(status, this.itemStatusEls[status.id]);
-            this.itemStatusIds.splice(this.itemStatusIds.indexOf(status.id), 1);
+        for (var j = 0; j < data.length; j++) {
+            displayItemStatus(data[j], this.itemStatusEls[data[j].id]);
+            this.itemStatusIds.splice(this.itemStatusIds.indexOf(data[j].id), 1);
         }
     },
     itemStatusFail: function itemStatusFail(response, textStatus) {
@@ -138,7 +137,7 @@ var ItemStatusHandler = {
 var OdItemStatusHandler=Object.create(ItemStatusHandler);
     OdItemStatusHandler.url = '/Overdrive/getStatus';
     OdItemStatusHandler.itemStatusDelay = 200;
-    OdItemStatusHandler.name = "odh";
+    OdItemStatusHandler.name = "overdrive";
     OdItemStatusHandler.itemStatusIds = [];
     OdItemStatusHandler.itemStatusEls = [];
 
@@ -162,9 +161,11 @@ function checkItemStatus(el) {
     if ($item.find('.handler-name').length > 0) {
         handlerName = $item.find('.handler-name').val();
     }
-    if ($item.data("handler-name")) {
-        handlerName = $item.data("handler-name");
+
+    if ($item.data("handlerName")) {
+        handlerName = $item.data("handlerName");
     }
+
     //queue the element into the handler
     checkItemHandlers[handlerName].itemQueueAjax(id, $item);
 }

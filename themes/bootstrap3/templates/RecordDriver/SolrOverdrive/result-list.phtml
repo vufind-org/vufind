@@ -13,7 +13,7 @@
 <?php endif; ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getOverdriveID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-<input type="hidden" value="overdrive" class="hiddenHandler" />
+<input type="hidden" value="overdrive" class="handler-name" />
 <div class="media" data-handler-name="overdrive">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
@@ -77,8 +77,12 @@
         </div>
       <?php endif; ?>
 
+        <div class="callnumAndLocation ajax-availability hidden">
       <?php if($this->driver->supportsAjaxStatus()):?>
-               <div class="status callnumAndLocation hidden">Status</div>
+          <div class="callnum ajax-availability hidden status">
+              <?=$this->transEsc('Loading')?>...<br/>
+          </div>
+
       <?php elseif($avail = $this->driver->getOverdriveAvailability()): ?>
             <div class="availability">
              <div class='copies'><strong><?php echo $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
@@ -87,7 +91,7 @@
             </div>
            
        <?php endif; ?>
-           <div class="callnumAndLocation ajax-availability hidden"></div>
+    </div>
            
            <div class="result-formats">
              <span class="format book"><?=$this->driver->getFormats()[0]?></span>

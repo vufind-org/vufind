@@ -35,10 +35,6 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 
-//remove outside calls requring user
-//migrate to result obj instead of array
-
-
 /**
  * OverdriveConnector
  *
@@ -205,7 +201,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         }
         if ($conf = $this->getConfig()) {
             $productsKey = $this->getProductsKey();
-
             $baseUrl = $conf->discURL;
             $availabilityUrl = "$baseUrl/v2/collections/$productsKey/products/";
             $availabilityUrl .= "$overDriveId/availability";
@@ -228,6 +223,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     public function getAvailabilityBulk($overDriveIds = array())
     {
+        $result = $this->getResultObject();
         $res = false;
         if (count($overDriveIds) < 1) {
             $this->logWarning("no overdrive content ID was passed in.");
@@ -242,8 +238,17 @@ class OverdriveConnector implements LoggerAwareInterface,
             $availabilityUrl = $baseUrl . $availabilityPath .
                 implode(",", $overDriveIds);
             $res = $this->callUrl($availabilityUrl);
+            if (!$res) {
+                $result->code = 'od_code_connection_failed';
+            } else {
+                $result->status = true;
+                foreach ($res->availability as $item) {
+                    $result->data[strtolower($item->reserveId)] = $item;
+                }
+            }
         }
-        return $res;
+        $this->debug("availres: " . print_r($result, true));
+        return $result;
     }
 
     /**
@@ -320,15 +325,17 @@ class OverdriveConnector implements LoggerAwareInterface,
                     $result->data->formats = $response->formats;
                     //add the checkout to the session cache
                     $this->sessionContainer->checkouts[] = $response;
-                    $this->debug("allcheckouts:".print_r($this->sessionContainer->checkouts,true));
+                    $this->debug(
+                        "allcheckouts:" . print_r(
+                            $this->sessionContainer->checkouts, true
+                        )
+                    );
                 } else {
                     //todo: translate
                     $result->msg = $response->message;
                 }
             } else {
-                //todo: translate
-                $result->msg
-                    = 'There was an unexpected error while connecting to Overdrive.';
+                $result->code = 'od_code_connection_failed';
             }
         }
         return $result;
@@ -380,9 +387,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                     $holdResult->msg = $response->message;
                 }
             } else {
-                //todo: translate
-                $holdResult->msg
-                    = 'There was an unexpected error while connecting to Overdrive.';
+                $holdResult->code = 'od_code_connection_failed';
             }
         }
         return $holdResult;
@@ -483,17 +488,18 @@ class OverdriveConnector implements LoggerAwareInterface,
         //or it is locked in and they are requesting the format that
         //is already locked in.
         if ($template = $this->getLinkTemplate($checkout, $format)) {
-            $this->debug("template: ".print_r($template,true));
+            $this->debug("template: " . print_r($template, true));
             $downloadLink = $template->downloadLink->href;
             $this->debug("found the link: $downloadLink");
-        }elseif (!$checkout->isFormatLockedIn) {
-        //if we get this far, and the checkout is not locked in, then we should
-        //lock it in and try again
+        } elseif (!$checkout->isFormatLockedIn) {
+            //if we get this far, and the checkout is not locked in, then we should
+            //lock it in and try again
 
             $lockinResult = $this->lockinResource($overDriveId, $format);
             if ($lockinResult->status) {
                 //$this->debug("download link found.");
-                $downloadLink = $lockinResult->data->linkTemplates->downloadLink->href;
+                $downloadLink
+                    = $lockinResult->data->linkTemplates->downloadLink->href;
                 $this->debug("(locked in. found the link: $downloadLink");
                 //$result->status = true;
                 //return $result;
@@ -513,8 +519,8 @@ class OverdriveConnector implements LoggerAwareInterface,
 
         if ($downloadLink) {
             $this->debug("dll true");
-            $url = str_replace("{errorpageurl}",$errorURL, $downloadLink);
-            $url = str_replace("{odreadauthurl}",$errorURL, $url);
+            $url = str_replace("{errorpageurl}", $errorURL, $downloadLink);
+            $url = str_replace("{odreadauthurl}", $errorURL, $url);
             $this->debug("getting download link using: $url");
             $response = $this->callPatronUrl(
                 $user["cat_username"],
@@ -523,29 +529,32 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if (!empty($response)) {
                 if (isset($response->links)) {
-                    $this->debug("content link found:".$response->links->contentlink->href);
+                    $this->debug(
+                        "content link found:"
+                        . $response->links->contentlink->href
+                    );
                     $result->status = true;
                     $result->data->downloadLink
                         = $response->links->contentlink->href;
                 } else {
-                    $this->debug("problem getting link:".$response->message);
+                    $this->debug("problem getting link:" . $response->message);
                     $result->msg
                         = "Could not get download link for resourceID [$overDriveId]: "
                         . $response->message;
                 }
             } else {
                 //todo: translate
-                $result->msg = "Could not lock in Overdrive resourceID " .
-                    "[$overDriveId]: There was an unexpected error while " .
-                    "connecting to Overdrive.";
+                $result->code = 'od_code_connection_failed';
             }
-        }else {
+        } else {
             $this->debug("dll false");
         }
         return $result;
     }
 
     /**
+     * Return the link template for a particular format
+     *
      * @param $checkout
      * @param $format
      *
@@ -628,9 +637,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
             } else {
                 //todo: translate
-                $result->msg = "Could not lock in Overdrive resourceID " .
-                    "[$overDriveId]: There was an unexpected error while " .
-                    "connecting to Overdrive.";
+                $result->code = 'od_code_connection_failed';
             }
         }
 
@@ -680,18 +687,19 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
 
-    public function getFormatNames(){
+    public function getFormatNames()
+    {
         return array(
-            'ebook-kindle'=>"Kindle Book",
-            'ebook-overdrive'=>"OverDrive Read eBook",
-            'ebook-epub-adobe'=>"Adobe EPUB eBook",
-            'ebook-epub-open'=>"Open EPUB eBook",
-            'ebook-pdf-adobe'=>"Adobe PDF eBook",
-            'ebook-pdf-open'=>"Open PDF eBook",
-            'ebook-mediado'=>"MediaDo Reader eBook",
-            'audiobook-overdrive'=>"OverDrive Listen audiobook",
-            'audiobook-mp3'=>"MP3 audiobook",
-            'video-streaming'=>"streaming video file",
+            'ebook-kindle' => "Kindle Book",
+            'ebook-overdrive' => "OverDrive Read eBook",
+            'ebook-epub-adobe' => "Adobe EPUB eBook",
+            'ebook-epub-open' => "Open EPUB eBook",
+            'ebook-pdf-adobe' => "Adobe PDF eBook",
+            'ebook-pdf-open' => "Open PDF eBook",
+            'ebook-mediado' => "MediaDo Reader eBook",
+            'audiobook-overdrive' => "OverDrive Listen audiobook",
+            'audiobook-mp3' => "MP3 audiobook",
+            'video-streaming' => "streaming video file",
         );
     }
 
@@ -748,7 +756,10 @@ class OverdriveConnector implements LoggerAwareInterface,
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
 
-                if (strtolower($checkout->reserveId) == strtolower($overDriveId)) {
+                if (strtolower($checkout->reserveId) == strtolower(
+                        $overDriveId
+                    )
+                ) {
                     return $checkout;
                 }
             }
@@ -838,9 +849,7 @@ class OverdriveConnector implements LoggerAwareInterface,
 
                     $this->sessionContainer->checkouts = $response->checkouts;
                 } else {
-                    $result->message
-                        = 'There was an unexpected error while ".
-                      "connecting to Overdrive.';
+                    $result->code = 'od_code_connection_failed';
                 }
             }
         } else {
@@ -907,9 +916,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                     }
                     $this->sessionContainer->holds = $response->holds;
                 } else {
-                    $result->message
-                        = 'There was an unexpected error while ".
-                      "connecting to Overdrive.';
+                    $result->code = 'od_code_connection_failed';
                 }
             }
         } else {
@@ -961,7 +968,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $client->setMethod($requestType);
             $client->setUri($url);
             try {
-
+                //throw new Exception('testException');
                 $response = $client->send();
             } catch (Exception $ex) {
                 $this->error(
