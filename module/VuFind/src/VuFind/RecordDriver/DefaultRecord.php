@@ -505,6 +505,8 @@ class DefaultRecord extends AbstractBase
      * @param string $field Field name
      *
      * @return mixed        Caption if found, false if none available.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getSnippetCaption($field)
     {
@@ -1387,6 +1389,8 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed An associative array of hierarchy trees on success
      * (id => title), false if no hierarchies found
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHierarchyTrees($hierarchyID = false)
     {
