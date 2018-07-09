@@ -94,11 +94,9 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Is CAPTCHA valid? (Also returns true if CAPTCHA is disabled).
      *
-     * @param Params $params Parameter helper from controller
-     *
      * @return bool
      */
-    protected function checkCaptcha(Params $params)
+    protected function checkCaptcha()
     {
         // Not enabled? Report success!
         if (!$this->recaptcha->active('userComments')) {
@@ -142,7 +140,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        if (!$this->checkCaptcha($params)) {
+        if (!$this->checkCaptcha()) {
             return $this->formatResponse(
                 $this->translate('recaptcha_not_passed'),
                 self::STATUS_HTTP_FORBIDDEN
