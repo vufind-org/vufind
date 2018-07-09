@@ -16,7 +16,8 @@
     "jstree": "3.0.0",
     "leaflet": "1.3.1",
     "leaflet-draw": "1.0.2",
-    "leaflet.markercluster": "1.3.0"
+    "leaflet.markercluster": "1.3.0",
+    "seiyria-bootstrap-slider": "9.7.0"
   },
   "install": {
     "options":  {
@@ -42,6 +43,7 @@
       },
       "bootstrapaccessibilityplugin": {
         "mapping": [
+          {"bower_components/bootstrapaccessibilityplugin/plugins/css/bootstrap-accessibility.css": "bootstrap-accessibility.css"},
           {"bower_components/bootstrapaccessibilityplugin/plugins/js/bootstrap-accessibility.min.js": "bootstrap-accessibility.min.js"}
         ]
       },
@@ -77,6 +79,12 @@
       "leaflet.markercluster": {
         "mapping": [
           {"bower_components/leaflet.markercluster/dist/**": "leaflet"}
+        ]
+      },
+      "seiyria-bootstrap-slider": {
+        "mapping": [
+          {"bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css": "bootstrap-slider.min.css"},
+          {"bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js": "bootstrap-slider.min.js"}
         ]
       }
     }
