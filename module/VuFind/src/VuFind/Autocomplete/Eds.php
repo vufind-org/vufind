@@ -84,20 +84,13 @@ class Eds implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
-        // Initialize return array:
-        $results = [];
-
-        if (!is_object($this->backend)) {
-            throw new \Exception('Please set configuration first.');
-        }
-
         try {
             // Perform the autocomplete search:
             $results = $this->backend->autocomplete($query, $this->domain);
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return isset($results) ? array_unique($results) : [];
+        return is_array($results ?? null) ? array_unique($results) : [];
     }
 
     /**
