@@ -116,6 +116,14 @@ class AlmaController extends AbstractBase
             && !empty($request->getContent())
             && $requestMethod == 'POST'
         ) {
+            try {
+                $this->checkMessageSignature($request);
+            } catch (\VuFind\Exception\Forbidden $ex) {
+                return $this->createJsonResponse(
+                    'Access to Alma Webhook is forbidden. ' .
+                    'The message signature is not correct.', 403
+                );
+            }
             $requestBodyJson = json_decode($request->getContent());
         }
 
@@ -433,5 +441,60 @@ class AlmaController extends AbstractBase
         $this->accessPermission = $accessPermission;
         $this->accessDeniedBehavior = 'exception';
         $this->validateAccessPermission($this->getEvent());
+    }
+
+    /**
+     * Signing and hashing the body content of the Alma POST request with the
+     * webhook secret in Alma.ini. The calculated hash value must be the same as
+     * the 'X-Exl-Signature' in the request header. This is a security measure to
+     * be sure that the request comes from Alma.
+     *
+     * @param \Zend\Stdlib\RequestInterface $request The request from Alma.
+     *
+     * @throws \VuFind\Exception\Forbidden                Throws forbidden exception
+     *                                                     if hash values are not the
+     *                                                     same.
+     *
+     * @return void
+     */
+    protected function checkMessageSignature(\Zend\Stdlib\RequestInterface $request)
+    {
+        // Get request content
+        $requestBodyString = $request->getContent();
+
+        // Get hashed message signature from request header of Alma webhook request
+        $almaSignature = ($request->getHeaders()->get('X-Exl-Signature'))
+        ? $request->getHeaders()->get('X-Exl-Signature')->getFieldValue()
+        : null;
+
+        // Get the webhook secret defined in Alma.ini
+        $secretConfig = $this->configAlma->Webhook->secret ?? null;
+
+        // Calculate hmac-sha256 hash from request body we get from Alma webhook and
+        // sign it with the Alma webhook secret from Alma.ini
+        $calculatedHash = base64_encode(
+            hash_hmac(
+                'sha256',
+                $requestBodyString,
+                $secretConfig,
+                true
+            )
+        );
+
+        // Check for correct signature
+        if ($almaSignature != $calculatedHash) {
+            error_log(
+                '[Alma] Unauthorized: Signature value not correct! ' .
+                'Hash from Alma: "' . $almaSignature . '". ' .
+                'Calculated hash: "' . $calculatedHash . '". ' .
+                'Body content for calculating the hash was: ' .
+                '"' . json_encode(
+                    json_decode($requestBodyString),
+                    JSON_UNESCAPED_UNICODE |
+                        JSON_UNESCAPED_SLASHES
+                ) . '"'
+            );
+            throw new \VuFind\Exception\Forbidden;
+        }
     }
 }
