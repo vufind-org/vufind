@@ -33,6 +33,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
+     * Overdrive Connector
+     *
      * @var \VuFind\DigitalContent\OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
@@ -86,7 +88,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $mycheckout['checkout'] = $checkout;
                 $mycheckout['record']
                     = $this->serviceLocator->get('VuFind\Record\Loader')
-                    ->load(strtolower($checkout->reserveId));
+                        ->load(strtolower($checkout->reserveId));
                 $checkouts[] = $mycheckout;
             }
         }
@@ -104,7 +106,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $myhold['hold'] = $hold;
                 $myhold['record']
                     = $this->serviceLocator->get('VuFind\Record\Loader')
-                    ->load(strtolower($hold->reserveId));
+                        ->load(strtolower($hold->reserveId));
                 $holds[] = $myhold;
             }
         }

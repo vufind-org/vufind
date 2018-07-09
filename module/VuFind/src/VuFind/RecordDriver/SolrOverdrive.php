@@ -51,11 +51,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
 
     /**
+     * Overdrive Connector
+     *
      * @var \VuFind\DigitalContent\OverdriveConnector
      */
     protected $connector;
 
     /**
+     * Overdrive Configuration Object
+     *
      * @var object
      */
     protected $config;
@@ -63,9 +67,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config mainConfig VuFind main configuration
+     * @param \Zend\Config\Config $mainConfig VuFind main configuration
      * @param \Zend\Config\Config $recordConfig Record-specific configuration
-     * @param \VuFind\DigitalContent\OverdriveConnector Overdrive Connector
+     * @param \VuFind\DigitalContent\OverdriveConnector $connector Overdrive Connector
      */
     public function __construct(
         $mainConfig = null, $recordConfig = null,
@@ -133,8 +137,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Get Formats
      *
      * Returns an array of digital formats for this resource.
-     *
-     * @param string $overDriveId Overdrive ReserveID
      *
      * @return array Array of formats.
      * @throws \Exception
@@ -282,7 +284,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Returns the Overdrive ID (or resource ID) for the current item. Note: for
      * records in marc format, this may be different than the Solr Record ID
      *
-     *
      * @return string OverdriveID
      * @throws \Exception
      */
@@ -321,7 +322,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
 
     /**
-     * isCheckedOut   Is this resource already checked out to the user?
+     * Is Checked Out
+     *
+     * Is this resource already checked out to the user?
      *
      * @return object Returns the checkout information if currently checked out
      *    by this user or false if not.
@@ -356,12 +359,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Is Held
      * Checks to see if the current record is on hold through Overcdrive.
      *
-     * @param $user
-     *
      * @return object|bool Returns the hold info if on hold or false if not.
      * @throws \Exception
      */
-    public function isHeld($user)
+    public function isHeld()
     {
         $overDriveId = $this->getOverdriveID();
         $result = $this->connector->getHolds(true);
@@ -378,7 +379,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     *  this will be reomved after I fix my data to have short titles
+     *  This will be removed after I fix my data to have short titles
      */
     public function getBreadcrumb()
     {
@@ -390,7 +391,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     *  this will be reomved after I fix my data to have short titles
+     *  This will be reomved after I fix my data to have short titles
      */
     public function getShortTitle()
     {
@@ -417,26 +418,16 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * summary
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
-     * Description.
+     * @param string $size Size of thumbnail (small, medium or large -- small is
+     * default).
      *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * thumbnail:200
-     * cover150Wide:150
-     * cover:100
-     * cover300Wide:300
-     *
-     * @return type Description.
+     * @return string|array|bool
+     * @throws \Exception
      */
     public function getThumbnail(
         $size = 'small'
@@ -499,12 +490,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if ($this->config->isMarc) {
             return parent::getRawData();
-            /*            $xml = parent::getXML('marc21');
-
-                        $json = json_encode(simplexml_load_string($xml));
-                        $data = json_decode($json,TRUE);
-                        $this->debug("rawmarc: ".print_r($data,true));
-                        return $data;*/
         } else {
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, true);
@@ -554,10 +539,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     }
                 }
 
-                // The default index schema doesn't currently store subject headings in a
-                // broken-down format, so we'll just send each value as a single chunk.
-                // Other record drivers (i.e. SolrMarc) can offer this data in a more
-                // granular format.
+                // The default index schema doesn't currently store subject
+                // headings in a
+                // broken-down format, so we'll just send each value as a
+                // single chunk.
+                // Other record drivers (i.e. SolrMarc) can offer this data
+                // in a more granular format.
                 $callback = function ($i) use ($extended) {
                     return $extended
                         ? ['heading' => [$i], 'type' => '', 'source' => '']

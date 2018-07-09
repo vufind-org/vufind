@@ -22,10 +22,11 @@
  * @category VuFind
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Brent Palmer <brent-palmer@icpl.org>  
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Interop\Container\ContainerInterface;
@@ -36,18 +37,19 @@ use Interop\Container\ContainerInterface;
  * @category VuFind
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Brent Palmer <brent-palmer@icpl.org> 
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OverdriveConnectorFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class OverdriveConnectorFactory implements
+    \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param ContainerInterface $container Service manager
+     * @param string $requestedName Service being created
+     * @param null|array $options Extra options (optional)
      *
      * @return object
      *
@@ -56,17 +58,21 @@ class OverdriveConnectorFactory implements \Zend\ServiceManager\Factory\FactoryI
      * creating a service.
      * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $odConfig = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
+        $odConfig = $container->get('VuFind\Config\PluginManager')->get(
+            'Overdrive'
+        );
         $auth = $container->get('VuFind\Auth\ILSAuthenticator');
         $session = new \Zend\Session\Container(
-            'DigitalContent\OverdriveController', $container->get('Zend\Session\SessionManager')
+            'DigitalContent\OverdriveController',
+            $container->get('Zend\Session\SessionManager')
         );
         return new $requestedName($config, $odConfig, $session, $auth);
     }

@@ -9,7 +9,8 @@ $config = [
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\OverdriveController' =>
+                'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
             'Admin' => 'VuFindAdmin\Controller\AdminController',

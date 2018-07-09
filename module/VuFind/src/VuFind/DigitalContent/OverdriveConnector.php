@@ -190,7 +190,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @return object|bool  Standard object with availability info
      *
-     * @link  https://developer.overdrive.com/apis/library-availability-new
+     * @link https://developer.overdrive.com/apis/library-availability-new
      */
     public function getAvailability($overDriveId)
     {
@@ -288,7 +288,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Overdrive Checkout
      * Processes a request to checkout a title from Overdrive
      *
-     * @param  string $overDriveId The overdrive id for the title
+     * @param string $overDriveId The overdrive id for the title
      *
      * @return object $result Results of the call.
      */
@@ -345,7 +345,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string email The email overdrive should use for notif
+     * @param string $email The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -538,9 +538,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                         = $response->links->contentlink->href;
                 } else {
                     $this->debug("problem getting link:" . $response->message);
-                    $result->msg
-                        = "Could not get download link for resourceID [$overDriveId]: "
-                        . $response->message;
+                    $result->msg = "Could not get download link for ".
+                        "resourceID [$overDriveId]: ". $response->message;
                 }
             } else {
                 //todo: translate
@@ -555,10 +554,10 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Return the link template for a particular format
      *
-     * @param $checkout
-     * @param $format
+     * @param object $checkout Checkout object
+     * @param string $format Format to return
      *
-     * @return bool
+     * @return string the link template for this format.
      */
     protected function getLinkTemplate($checkout, $format)
     {
@@ -687,6 +686,13 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
 
+    /**
+     * Get Format Names
+     *
+     * Get the Overdrive format names as a hash
+     *
+     * @return array Format names.
+     */
     public function getFormatNames()
     {
         return array(
@@ -723,9 +729,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             $productsKey = $this->getProductsKey();
             $baseUrl = $conf->discURL;
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
-            $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
-                    ",", $overDriveIds
-                );
+            $metadataUrl .= "bulkmetadata?reserveIds=" . implode(",",
+                $overDriveIds);
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
             foreach ($md as $item) {

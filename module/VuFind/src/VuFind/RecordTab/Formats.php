@@ -33,7 +33,7 @@ namespace VuFind\RecordTab;
  * @category VuFind
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Brent Palmer <brent-palmer@icpl.org
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
