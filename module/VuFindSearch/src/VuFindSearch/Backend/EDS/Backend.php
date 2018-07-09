@@ -394,7 +394,6 @@ class Backend extends AbstractBackend
      */
     public function autocomplete($query, $domain = 'rawqueries')
     {
-        // get autocomplete Token, Url, CustId
         return $this->client
             ->autocomplete($query, $domain, $this->getAutocompleteData());
     }
