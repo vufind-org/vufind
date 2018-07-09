@@ -271,7 +271,6 @@ abstract class Base
         $url = $this->authHost . '/uidauth';
         $org = $orgid ?? $this->orgId;
         $authInfo = [];
-        $authParam = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
         }
