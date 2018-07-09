@@ -34,8 +34,9 @@ use InvalidArgumentException;
 
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
+use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
+
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
 use VuFindSearch\ParamBag;
@@ -378,6 +379,24 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * If an unexpected exception type was received, wrap it in a generic
+     * BackendException to standardize upstream handling.
+     *
+     * @param \Exception $ex Exception
+     */
+    protected function forceToBackendException($ex)
+    {
+        // Don't wrap specific backend exceptions....
+        if ($ex instanceof RemoteErrorException
+            || $ex instanceof RequestErrorException
+            || $ex instanceof HttpErrorException
+        ) {
+            return $ex;
+        }
+        return new BackendException('Problem connecting to Solr.', null, $ex);
+    }
+
+    /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
      * @param string   $method    HTTP method to use
@@ -405,7 +424,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                 return $this->send($client);
             } catch (\Exception $ex) {
                 if ($this->isRethrowableSolrException($ex)) {
-                    throw $ex;
+                    throw $this->forceToBackendException($ex);
                 }
                 $exception = $ex;
             }
@@ -413,7 +432,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
 
         // If we got this far, everything failed -- throw a BackendException with
         // the most recent exception caught above set as the previous exception.
-        throw new BackendException('Problem connecting to Solr.', null, $exception);
+        throw $this->forceToBackendException($exception);
     }
 
     /**
