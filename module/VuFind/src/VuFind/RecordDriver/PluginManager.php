@@ -165,8 +165,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function getSolrRecord($data, $defaultType = 'SolrDefault')
     {
         if (isset($data['record_format']) || isset($data['recordtype'])) {
-            $format = isset($data['record_format'])
-                ? $data['record_format'] : $data['recordtype'];
+            $format = $data['record_format'] ?? $data['recordtype'];
             $key = 'Solr' . ucwords($format);
             $recordType = $this->has($key) ? $key : $defaultType;
         } else {
