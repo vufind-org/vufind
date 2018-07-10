@@ -150,13 +150,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set other GET parameters
             if ($method == 'GET') {
                 $client->setParameterGet($paramsGet);
-            }
-
-            // Set POST parameters
-            if ($method == 'POST') {
-                $client->setParameterPost($paramsPost);
+            } else {
                 // Always set API key as GET parameter
                 $client->setParameterGet(['apiKey' => $paramsGet['apiKey']]);
+
+                // Set POST parameters
+                if ($method == 'POST') {
+                    $client->setParameterPost($paramsPost);
+                }
             }
 
             // Set body if applicable
@@ -180,7 +181,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Check for error
         if ($result->isServerError()) {
-            throw new ILSException('HTTP error code: ' . $statusCode);
+            throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
         $answer = $result->getBody();
@@ -191,7 +192,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             if (!$xml && $result->isServerError()) {
                 throw new ILSException(
                     'XML is not valid or HTTP error, URL: ' . $url .
-                    ', HTTP status code: ' . $statusCode
+                    ', HTTP status code: ' . $statusCode, $statusCode
                 );
             }
             $returnValue = $xml;
@@ -205,7 +206,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             );
             throw new ILSException(
                 'Alma error message: ' . $almaErrorMsg . ' | HTTP error code: ' .
-                $statusCode
+                $statusCode, $statusCode
             );
         }
 
@@ -792,6 +793,92 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ];
         }
         return $holdList;
+    }
+
+    /**
+     * Cancel hold requests.
+     *
+     * @param array $cancelDetails An associative array with two keys: patron
+     *                             (array returned by the driver's
+     *                             patronLogin method) and details (an array
+     *                             of strings eturned by the driver's
+     *                             getCancelHoldDetails method)
+     *
+     * @return array                Associative array containing with keys 'count'
+     *                                 (number of items successfully cancelled) and
+     *                                 'items' (array of successfull cancellations).
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $returnArray = [];
+        $patronId = $cancelDetails['patron']['cat_username'];
+        $count = 0;
+
+        foreach ($cancelDetails['details'] as $requestId) {
+            $item = [];
+            try {
+                // Get some details of the requested items as we need them below.
+                // We only can get them from an API request.
+                $requestDetails = $this->makeRequest(
+                    $this->baseUrl .
+                        '/users/' . urlencode($patronId) .
+                        '/requests/' . urlencode($requestId)
+                );
+
+                $mmsId = (isset($requestDetails->mms_id))
+                          ? (string)$requestDetails->mms_id
+                          : (string)$requestDetails->mms_id;
+
+                // Delete the request in Alma
+                $apiResult = $this->makeRequest(
+                    $this->baseUrl .
+                    '/users/' . urlencode($patronId) .
+                    '/requests/' . urlencode($requestId),
+                    ['reason' => 'CancelledAtPatronRequest'],
+                    [],
+                    'DELETE'
+                );
+
+                // Adding to "count" variable and setting values to return array
+                $count++;
+                $item[$mmsId]['success'] = true;
+                $item[$mmsId]['status'] = 'hold_cancel_success';
+            } catch (ILSException $e) {
+                if (isset($apiResult['xml'])) {
+                    $almaErrorCode = $apiResult['xml']->errorList->error->errorCode;
+                    $sysMessage = $apiResult['xml']->errorList->error->errorMessage;
+                } else {
+                    $almaErrorCode = 'No error code available';
+                    $sysMessage = 'HTTP status code: ' .
+                         ($e->getCode() ?? 'Code not available');
+                }
+                $item[$mmsId]['success'] = false;
+                $item[$mmsId]['status'] = 'hold_cancel_fail';
+                $item[$mmsId]['sysMessage'] = $sysMessage . '. ' .
+                         'Alma MMS ID: ' . $mmsId . '. ' .
+                         'Alma request ID: ' . $requestId . '. ' .
+                         'Alma error code: ' . $almaErrorCode;
+            }
+
+            $returnArray['items'] = $item;
+        }
+
+        $returnArray['count'] = $count;
+
+        return $returnArray;
+    }
+
+    /**
+     * Get details of a single hold request.
+     *
+     * @param array $holdDetails One of the item arrays returned by the
+     *                           getMyHolds method
+     *
+     * @return string            The Alma request ID
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        return $holdDetails['id'];
     }
 
     /**
