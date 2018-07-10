@@ -561,7 +561,7 @@ $config = [
                 ],
                 'defaultTab' => null,
             ],
-            'VuFind\RecordDriver\SolrAuth' => [
+            'VuFind\RecordDriver\SolrAuthMarc' => [
                 'tabs' => [
                     'Details' => 'StaffViewMARC',
                  ],

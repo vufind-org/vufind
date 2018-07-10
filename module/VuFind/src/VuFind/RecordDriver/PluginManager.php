@@ -154,22 +154,37 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Convenience method to retrieve a populated Solr record driver.
      *
-     * @param array $data Raw Solr data
+     * @param array  $data        Raw Solr data
+     * @param string $defaultType Default record type
      *
      * @return AbstractBase
      */
-    public function getSolrRecord($data)
+    public function getSolrRecord($data, $defaultType = 'SolrDefault')
     {
-        if (isset($data['recordtype'])) {
-            $key = 'Solr' . ucwords($data['recordtype']);
-            $recordType = $this->has($key) ? $key : 'SolrDefault';
+        if (isset($data['record_format']) || isset($data['recordtype'])) {
+            $format = isset($data['record_format'])
+                ? $data['record_format'] : $data['recordtype'];
+            $key = 'Solr' . ucwords($format);
+            $recordType = $this->has($key) ? $key : $defaultType;
         } else {
-            $recordType = 'SolrDefault';
+            $recordType = $defaultType;
         }
 
         // Build the object:
         $driver = $this->get($recordType);
         $driver->setRawData($data);
         return $driver;
+    }
+
+    /**
+     * Convenience method to retrieve a populated Solr authority record driver.
+     *
+     * @param array $data Raw Solr data
+     *
+     * @return AbstractBase
+     */
+    public function getSolrAuthRecord($data)
+    {
+        return $this->getSolrRecord($data, 'SolrAuthMarc');
     }
 }
