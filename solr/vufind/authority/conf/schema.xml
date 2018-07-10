@@ -29,11 +29,13 @@
     <field name="fullrecord" type="string" indexed="false" stored="true"/>
     <field name="marc_error" type="string" indexed="false" stored="true" multiValued="true"/>
     <field name="allfields" type="text" indexed="true" stored="false" multiValued="true"/>
+    <field name="record_format" type="string" indexed="true" stored="true"/>
 
     <!-- Extra identifiers - where did authority record originate? -->
     <field name="source" type="string" indexed="true" stored="true"/>
     <field name="record_type" type="string" indexed="true" stored="true"/>
     <field name="lccn" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- String Fields for Exact Match / Faceting -->
     <field name="heading" type="string" indexed="true" stored="true"/>

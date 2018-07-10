@@ -75,12 +75,7 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
     {
         $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
-        $callback = function ($data) use ($manager) {
-            $driver = $manager->get('SolrAuth');
-            $driver->setRawData($data);
-            return $driver;
-        };
-        $factory = new RecordCollectionFactory($callback);
+        $factory = new RecordCollectionFactory([$manager, 'getSolrAuthRecord']);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
     }
