@@ -1,10 +1,10 @@
 <?php
 /**
- * Generic Syndetics content plugin factory.
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <jochen.lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content;
+namespace VuFind\Autocomplete;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Generic Syndetics content plugin factory.
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
  * @category VuFind
- * @package  Content
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <jochen.lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractSyndeticsFactory implements FactoryInterface
+class EdsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -54,26 +55,14 @@ class AbstractSyndeticsFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-
-        // Special case: if the class name ends in Plus, we need to strip off
-        // the "Plus" and instead configure the base Syndetics class into "plus"
-        // mode.
-        $plus = substr($requestedName, -4) === 'Plus';
-        $className = $plus
-            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
-
-        return new $className(
-            isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
-            $plus,
-            isset($config->Syndetics->timeout) ? $config->Syndetics->timeout : 10
+        return new $requestedName(
+            $container->get('VuFind\Search\BackendManager')->get('EDS')
         );
     }
 }

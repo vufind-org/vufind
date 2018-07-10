@@ -164,7 +164,9 @@ class ListItems extends AbstractChannelProvider
     protected function buildListChannels($channelToken)
     {
         $channels = [];
-        foreach ($this->getLists() as $list) {
+        $lists = $channelToken
+            ? $this->getListsById([$channelToken]) : $this->getLists();
+        foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
             if ($tokenOnly || count($channel['contents']) > 0) {
@@ -175,19 +177,35 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
+     * Get a list of lists, identified by ID; filter to public lists only.
+     *
+     * @param array $ids IDs to retrieve
+     *
+     * @return array
+     */
+    protected function getListsById($ids)
+    {
+        $lists = [];
+        foreach ($ids as $id) {
+            $list = $this->userList->getExisting($id);
+            if ($list->public) {
+                $lists[] = $list;
+            }
+        }
+        return $lists;
+    }
+
+    /**
      * Get a list of public lists to display:
      *
      * @return array
      */
     protected function getLists()
     {
-        $lists = [];
-        foreach ($this->ids as $id) {
-            $list = $this->userList->getExisting($id);
-            if ($list->public) {
-                $lists[] = $list;
-            }
-        }
+        // First fetch hard-coded IDs:
+        $lists = $this->getListsById($this->ids);
+
+        // Next add public lists if necessary:
         if ($this->displayPublicLists) {
             $ids = $this->ids;
             $callback = function ($select) use ($ids) {
@@ -200,6 +218,7 @@ class ListItems extends AbstractChannelProvider
                 $lists[] = $list;
             }
         }
+
         return $lists;
     }
 

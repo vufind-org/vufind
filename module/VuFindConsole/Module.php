@@ -79,6 +79,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      * @param Console $console Console adapter
      *
      * @return string|null
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsoleBanner(Console $console)
     {

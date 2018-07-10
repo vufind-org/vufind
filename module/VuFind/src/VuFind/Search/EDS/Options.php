@@ -137,6 +137,10 @@ class Options extends \VuFind\Search\Base\Options
                 $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
             );
         }
+        // Load autocomplete preference:
+        if (isset($searchSettings->Autocomplete->enabled)) {
+            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        }
     }
 
     /**
