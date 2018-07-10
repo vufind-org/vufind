@@ -188,6 +188,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     public function getSolrAuthRecord($data)
     {
-        return $this->getSolrRecord($data, 'SolrAuth', 'Marc');
+        return $this->getSolrRecord($data, 'SolrAuth');
     }
 }
