@@ -51,7 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'missing' => 'VuFind\RecordDriver\Missing',
         'pazpar2' => 'VuFind\RecordDriver\Pazpar2',
         'primo' => 'VuFind\RecordDriver\Primo',
-        'solrauth' => 'VuFind\RecordDriver\SolrAuth',
+        'solrauthdefault' => 'VuFind\RecordDriver\SolrAuthDefault',
         'solrauthmarc' => 'VuFind\RecordDriver\SolrAuthMarc',
         'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
         'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
@@ -60,6 +60,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrweb' => 'VuFind\RecordDriver\SolrWeb',
         'summon' => 'VuFind\RecordDriver\Summon',
         'worldcat' => 'VuFind\RecordDriver\WorldCat',
+
+        'VuFind\RecordDriver\SolrAuth' => 'VuFind\RecordDriver\SolrAuthDefault',
     ];
 
     /**
@@ -90,7 +92,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\RecordDriver\Pazpar2' =>
             'VuFind\RecordDriver\NameBasedConfigFactory',
         'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\SolrAuth' =>
+        'VuFind\RecordDriver\SolrAuthDefault' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrAuthMarc' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
@@ -157,20 +159,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Convenience method to retrieve a populated Solr record driver.
      *
-     * @param array  $data        Raw Solr data
-     * @param string $defaultType Default record type
+     * @param array  $data             Raw Solr data
+     * @param string $keyPrefix        Record class name prefix
+     * @param string $defaultKeySuffix Default key suffix
      *
      * @return AbstractBase
      */
-    public function getSolrRecord($data, $defaultType = 'SolrDefault')
-    {
-        if (isset($data['record_format']) || isset($data['recordtype'])) {
-            $format = $data['record_format'] ?? $data['recordtype'];
-            $key = 'Solr' . ucwords($format);
-            $recordType = $this->has($key) ? $key : $defaultType;
-        } else {
-            $recordType = $defaultType;
-        }
+    public function getSolrRecord($data, $keyPrefix = 'Solr',
+        $defaultKeySuffix = 'Default'
+    ) {
+        $key = $keyPrefix . ucwords(
+            $data['record_format'] ?? $data['recordtype'] ?? $defaultKeySuffix
+        );
+        $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
         // Build the object:
         $driver = $this->get($recordType);
@@ -187,6 +188,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     public function getSolrAuthRecord($data)
     {
-        return $this->getSolrRecord($data, 'SolrAuthMarc');
+        return $this->getSolrRecord($data, 'SolrAuth', 'Marc');
     }
 }
