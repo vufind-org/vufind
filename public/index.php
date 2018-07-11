@@ -1,6 +1,4 @@
 <?php
-use Zend\Loader\AutoloaderFactory;
-
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($xhprof)) {
