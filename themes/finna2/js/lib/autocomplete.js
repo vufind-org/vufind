@@ -157,9 +157,6 @@
         function search(input, element) {
             if (searchTimer) { clearInterval(searchTimer); }
             if (input.val().length >= options.minLength) {
-                element.html('<i class="item loading">'+options.loadingString+'</i>');
-                show();
-                align(input, $.fn.autocompleteFinna.element);
                 var ajaxDelay = $.fn.autocompleteFinna.options.ajaxDelay;
                 if (ajaxDelay < 1500) {
                     ajaxDelay = 1500;
@@ -170,6 +167,10 @@
                             return;
                         }
                         clearInterval(searchTimer);
+
+                        element.html('<i class="item loading">'+options.loadingString+'</i>');
+                        show();
+                        align(input, $.fn.autocompleteFinna.element);
 
                         var term = [];
                         term.push(input.val());
@@ -219,10 +220,19 @@
             var datums = suggestions = [];
             if (data.length) {
                 // Suggestions
-                suggestions = $.map(data[0], function(obj, i) {
-                    datums.push({label: obj, css: 'suggestion', type: 'suggestion'});
-                return obj;
-                });
+                if (typeof data[0] === 'string') {
+                    // Basic suggestions
+                    suggestions = $.map(data, function(obj, i) {
+                        datums.push({label: obj, css: 'suggestion', type: 'suggestion'});
+                        return obj;
+                    });
+                } else {
+                    // Extended suggestions
+                    suggestions = $.map(data[0], function(obj, i) {
+                        datums.push({label: obj, css: 'suggestion', type: 'suggestion'});
+                        return obj;
+                    });
+                }
             }
 
             // Filters
@@ -238,7 +248,7 @@
             }
 
             // Facets
-            if (data.length > 1) {
+            if (data.length > 1 && typeof data[0] !== 'string') {
                 $.each(data[1], function (facet, data) {
                     $.map(data, function (item, i) {
                         var label = item[0] + ' (' + item[1] + ')';
