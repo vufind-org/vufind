@@ -1,6 +1,6 @@
 <?php
 /**
- * Solr autocomplete test class.
+ * Eds autocomplete test class.
  *
  * PHP version 7
  *
