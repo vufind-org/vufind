@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class SolrAuth extends SolrMarc
+class SolrAuthDefault extends SolrDefault
 {
     /**
      * Get the short (pre-subtitle) title of the record.
@@ -81,25 +81,5 @@ class SolrAuth extends SolrMarc
         return isset($this->fields['use_for'])
             && is_array($this->fields['use_for'])
             ? $this->fields['use_for'] : [];
-    }
-
-    /**
-     * Get a raw LCCN (not normalized).  Returns false if none available.
-     *
-     * @return string|bool
-     */
-    public function getRawLCCN()
-    {
-        $lccn = $this->getFirstFieldValue('010');
-        if (!empty($lccn)) {
-            return $lccn;
-        }
-        $lccns = $this->getFieldArray('700', ['0']);
-        foreach ($lccns as $lccn) {
-            if (substr($lccn, 0, '5') == '(DLC)') {
-                return substr($lccn, 5);
-            }
-        }
-        return false;
     }
 }
