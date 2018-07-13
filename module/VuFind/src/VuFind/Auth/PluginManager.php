@@ -66,10 +66,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'VuFind\Auth\AlmaDatabase' => 'VuFind\Auth\Factory::getAlmaDatabase',
         'VuFind\Auth\CAS' => 'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Auth\ChoiceAuth' => 'VuFind\Auth\Factory::getChoiceAuth',
         'VuFind\Auth\Database' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Auth\AlmaDatabase' => 'VuFind\Auth\Factory::getAlmaDatabase',
         'VuFind\Auth\Facebook' => 'VuFind\Auth\Factory::getFacebook',
         'VuFind\Auth\ILS' => 'VuFind\Auth\Factory::getILS',
         'VuFind\Auth\LDAP' => 'Zend\ServiceManager\Factory\InvokableFactory',
