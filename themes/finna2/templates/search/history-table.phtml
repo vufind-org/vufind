@@ -7,7 +7,7 @@
     <th class="history-limits"><?=$this->transEsc("history_limits")?></th>
     <?php if ($this->primo()->isAvailable()) : ?><th class="history-search-index"><?=$this->transEsc("history_search_index")?></th><?php endif; ?>
     <th class="history-results"><?=$this->transEsc("history_results")?></th>
-    <?php if ($this->showSaved): ?><th class="history-schedule"><?=$this->transEsc("history_schedule")?></th><?php endif; ?>
+    <th class="history-schedule"><?=$this->transEsc("history_schedule")?></th>
     <th class="history-save"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
   </tr>
   <?php foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
@@ -49,22 +49,19 @@
 
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
 
-
-      <?php if ($this->showSaved): ?>
       <td class="history-schedule">
-          <?php if (isset($this->schedule[$info->getSearchId()])): ?>
-          <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
-          <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
-            <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEsc("history_schedule")?>">
-              <option value="0"<?=($schedule == 0) ? (' selected') : ('')?>><?=$this->transEsc("schedule_none")?></option>
-              <option value="1"<?=($schedule == 1) ? (' selected') : ('')?>><?=$this->transEsc("schedule_daily")?></option>
-              <option value="2"<?=($schedule == 2) ? (' selected') : ('')?>><?=$this->transEsc("schedule_weekly")?></option>
-            </select>
-            <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
-          </form>
-          <?php else: ?>
-          <span class="disable"><?=$this->transEsc("cannot set")?></span>
-          <?php endif; ?>
+      <?php if (isset($this->schedule[$info->getSearchId()])): ?>
+        <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
+        <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+          <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEsc("history_schedule")?>">
+            <option value="0"<?=($schedule == 0) ? (' selected') : ('')?>><?=$this->transEsc("schedule_none")?></option>
+            <option value="1"<?=($schedule == 1) ? (' selected') : ('')?>><?=$this->transEsc("schedule_daily")?></option>
+            <option value="2"<?=($schedule == 2) ? (' selected') : ('')?>><?=$this->transEsc("schedule_weekly")?></option>
+          </select>
+          <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
+        </form>
+      <?php else: ?>
+        <span class="disable"><?=$this->transEsc("cannot set")?></span>
       <?php endif; ?>
       <?php if ($schedule == 1 || $schedule == 2): ?>
       <script>
@@ -73,11 +70,11 @@
       </td>
       <?php endif; ?>
       <td class="history-save">
-        <?php if ($this->showSaved): ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Delete');?></span><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>
-        <?php else: ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Save');?></span><i class="fa fa-plus-big" aria-hidden="true"></i></a>
-        <?php endif; ?>
+      <?php if ($this->showSaved): ?>
+        <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Delete');?></span><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>
+      <?php else: ?>
+        <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Save');?></span><i class="fa fa-plus-big" aria-hidden="true"></i></a>
+      <?php endif; ?>
       </td>
     </tr>
   <?php endforeach; ?>

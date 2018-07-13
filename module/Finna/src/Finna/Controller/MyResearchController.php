@@ -24,6 +24,7 @@
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -37,6 +38,7 @@ namespace Finna\Controller;
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -779,11 +781,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($schedule !== false && $sid !== false) {
             $search = $this->getTable('Search');
             $baseurl = rtrim($this->getServerUrl('home'), '/');
-            $row = $search->select(
-                ['id' => $sid, 'user_id' => $user->id]
+            $savedRow = $search->select(
+                ['id' => $sid, 'user_id' => $user->id, 'saved' => 1]
             )->current();
-            if ($row) {
-                $row->setSchedule($schedule, $baseurl);
+            if ($savedRow) {
+                $savedRow->setSchedule($schedule, $baseurl);
+            } else {
+                $this->setSavedFlagSecurely($sid, true, $user->id);
+                $historyRow = $search->select(
+                    ['id' => $sid, 'user_id' => $user->id]
+                )->current();
+                $historyRow->setSchedule($schedule, $baseurl);
             }
             return $this->redirect()->toRoute('search-history');
         } else {
