@@ -45,6 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'aleph' => 'VuFind\ILS\Driver\Aleph',
+        'alma' => 'VuFind\ILS\Driver\Alma',
         'amicus' => 'VuFind\ILS\Driver\Amicus',
         'daia' => 'VuFind\ILS\Driver\DAIA',
         'demo' => 'VuFind\ILS\Driver\Demo',
@@ -78,6 +79,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'VuFind\ILS\Driver\Aleph' => 'VuFind\ILS\Driver\AlephFactory',
+        'VuFind\ILS\Driver\Alma' => 'VuFind\ILS\Driver\AlmaFactory',
         'VuFind\ILS\Driver\Amicus' => 'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\ILS\Driver\DAIA' =>
             'VuFind\ILS\Driver\DriverWithDateConverterFactory',
