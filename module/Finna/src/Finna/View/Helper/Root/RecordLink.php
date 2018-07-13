@@ -55,4 +55,25 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
         }
         return '';
     }
+
+    /**
+     * Given an array representing a related record (which may be a bib ID or OCLC
+     * number), this helper renders a URL linking to that record.
+     *
+     * @param array  $link   Link information from record model
+     * @param bool   $escape Should we escape the rendered URL?
+     * @param string $source Source ID for backend being used to retrieve records
+     *
+     * @return string       URL derived from link information
+     */
+    public function related($link, $escape = true, $source = DEFAULT_SEARCH_BACKEND)
+    {
+        $result = parent::related($link, $escape, $source);
+
+        $driver = $this->getView()->plugin('record')->getDriver();
+        $result .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($driver->getSourceIdentifier());
+
+        return $result;
+    }
 }
