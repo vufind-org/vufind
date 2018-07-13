@@ -449,26 +449,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $transactions = [];
         foreach ($result as $entry) {
-            try {
-                $item = $this->getItem($entry['itemnumber']);
-                $volume = $item['enumchron'] ?? '';
-                $title = '';
-                if (!empty($item['biblionumber'])) {
-                    $bib = $this->getBibRecord($item['biblionumber']);
-                    if (!empty($bib['title'])) {
-                        $title = $bib['title'];
-                    }
-                    if (!empty($bib['title_remainder'])) {
-                        $title .= ' ' . $bib['title_remainder'];
-                        $title = trim($title);
-                    }
-                }
-            } catch (ILSException $e) {
-                // Not a fatal error, but we can't display the loan properly
-                $item = [];
-                $volume = '';
-                $title = '[item ' . $entry['itemnumber'] . ' cannot be displayed]';
-            }
+            list($biblionumber, $title, $volume)
+                = $this->getCheckoutInformation($entry);
 
             $dueStatus = false;
             $now = time();
@@ -490,7 +472,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $transaction = [
-                'id' => $item['biblionumber'] ?? '',
+                'id' => $biblionumber,
                 'checkout_id' => $entry['issue_id'],
                 'item_id' => $entry['itemnumber'],
                 'title' => $title,
@@ -614,23 +596,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         ];
 
         foreach ($transactions['records'] as $entry) {
-            try {
-                $item = $this->getItem($entry['itemnumber']);
-            } catch (\Exception $e) {
-                $item = [];
-            }
-            $volume = $item['enumchron'] ?? '';
-            $title = '';
-            if (!empty($item['biblionumber'])) {
-                $bib = $this->getBibRecord($item['biblionumber']);
-                if (!empty($bib['title'])) {
-                    $title = $bib['title'];
-                }
-                if (!empty($bib['title_remainder'])) {
-                    $title .= ' ' . $bib['title_remainder'];
-                    $title = trim($title);
-                }
-            }
+            list($biblionumber, $title, $volume)
+                = $this->getCheckoutInformation($entry);
 
             $dueStatus = false;
             $now = time();
@@ -644,7 +611,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $transaction = [
-                'id' => $item['biblionumber'] ?? '',
+                'id' => $biblionumber,
                 'checkout_id' => $entry['issue_id'],
                 'item_id' => $entry['itemnumber'],
                 'title' => $title,
@@ -1882,5 +1849,52 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
         return 'hold_error_blocked';
+    }
+
+    /**
+     * Get item and title information for a checkout
+     *
+     * @param array $entry Checkout entry
+     *
+     * @return array biblionumber, title and volume
+     */
+    protected function getCheckoutInformation($entry)
+    {
+        if (isset($entry['biblionumber'])) {
+            // New fields available
+            $biblionumber = $entry['biblionumber'];
+            $title = $entry['title'];
+            if (!empty($empty['title_remainder'])) {
+                $title .= ' ' . $entry['title_remainder'];
+                $title = trim($title);
+            }
+            $volume = $entry['enumchron'];
+        } else {
+            // TODO remove when no longer needed
+            try {
+                $item = $this->getItem($entry['itemnumber']);
+                $volume = $item['enumchron'] ?? '';
+                $title = '';
+                $biblionumber = '';
+                if (!empty($item['biblionumber'])) {
+                    $biblionumber = $item['biblionumber'];
+                    $bib = $this->getBibRecord($biblionumber);
+                    if (!empty($bib['title'])) {
+                        $title = $bib['title'];
+                    }
+                    if (!empty($bib['title_remainder'])) {
+                        $title .= ' ' . $bib['title_remainder'];
+                        $title = trim($title);
+                    }
+                }
+            } catch (ILSException $e) {
+                // Not a fatal error, but we can't display the loan properly
+                $biblionumber = '';
+                $volume = '';
+                $title = '[item ' . $entry['itemnumber']
+                    . ' cannot be displayed]';
+            }
+        }
+        return [$biblionumber, $title, $volume];
     }
 }
