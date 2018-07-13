@@ -112,7 +112,7 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
                 $results = $this->searchRunner->run(
                     ['lookfor' => $lookfor], 'Solr',
                     function ($runner, $params, $searchId) {
-                        $params->setLimit(100);
+                        $params->setLimit(1000);
                         $params->setPage(1);
                         $params->resetFacetConfig();
                         $options = $params->getOptions();
