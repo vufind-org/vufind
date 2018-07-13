@@ -27,6 +27,8 @@
  */
 namespace FinnaConsole\Service;
 
+use Zend\Stdlib\RequestInterface as Request;
+
 /**
  * Interface console services.
  *
@@ -41,9 +43,10 @@ interface ConsoleServiceInterface
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments
+     * @param Request $request   Full request
      *
      * @return void|boolean success
      */
-    public function run($arguments);
+    public function run($arguments, Request $request);
 }

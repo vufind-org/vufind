@@ -119,6 +119,23 @@ class Factory
     }
 
     /**
+     * Construct the console service for importing comments.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\ImportComments
+     */
+    public static function getImportComments(ServiceManager $sm)
+    {
+        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        return new ImportComments(
+            $tableManager->get('Comments'),
+            $tableManager->get('CommentsRecord'),
+            $tableManager->get('Resource')
+        );
+    }
+
+    /**
      * Construct the console service for sending scheduled alerts.
      *
      * @param ServiceManager $sm Service manager.

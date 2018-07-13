@@ -122,6 +122,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Import comments
+     *
+     * @return \Zend\Console\Response
+     */
+    public function importCommentsAction()
+    {
+        return $this->runService('Finna\ImportComments');
+    }
+
+    /**
      * Process unregistered online paymenets.
      *
      * @return \Zend\Console\Response
@@ -189,7 +199,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $sl->setShared('VuFind\Mailer', false);
         $service = $sl->get($service);
         $service->initLogging();
-        return $service->run($arguments)
+        return $service->run($arguments, $this->getRequest())
             ? $this->getSuccessResponse()
             : $this->getFailureResponse();
     }
