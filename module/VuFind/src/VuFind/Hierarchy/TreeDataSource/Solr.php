@@ -195,6 +195,10 @@ class Solr extends AbstractBase
             $parents = isset($current->hierarchy_parent_id)
                 ? $current->hierarchy_parent_id : [];
             foreach ($parents as $parentId) {
+                if ($current->id === $parentId) {
+                    // Ignore circular reference
+                    continue;
+                }
                 if (!isset($map[$parentId])) {
                     $map[$parentId] = [$current];
                 } else {

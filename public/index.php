@@ -1,6 +1,4 @@
 <?php
-use Zend\Loader\AutoloaderFactory;
-
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($xhprof)) {
@@ -65,18 +63,8 @@ if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
 }
 
-// Support for ZF2_PATH environment variable
-if ($zf2Path = getenv('ZF2_PATH')) {
-    if (isset($loader)) {
-        $loader->add('Zend', $zf2Path . '/Zend');
-    } else {
-        include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-        AutoloaderFactory::factory();
-    }
-}
-
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load ZF2.');
+    throw new RuntimeException('Unable to load Zend Framework autoloader.');
 }
 
 // Run the application!

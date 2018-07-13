@@ -49,7 +49,9 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      * @param callable           $callback  Service callback
      * @param array|null         $options   Service options
      *
-     * @return SecureDelegator
+     * @return AbstractBase
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $name,
         callable $callback, array $options = null
