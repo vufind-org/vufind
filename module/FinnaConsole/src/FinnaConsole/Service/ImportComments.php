@@ -132,6 +132,8 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
                 : strtotime($data[1]);
             $timestampStr = date('Y-m-d H:i:s', $timestamp);
             $commentString = $data[2];
+            $commentString = str_replace("\r", '', $commentString);
+            $commentString = preg_replace('/\\\\([^\\\\])/', '\1', $commentString);
             $rating = $data[3] ?? null;
             if (null !== $rating && ($rating < 0 || $rating > 5)) {
                 die("Invalid rating $rating on row $count\n");
