@@ -1148,13 +1148,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getStatuses($ids)
     {
         $results = [];
-        $copyCount = 0;
         $params = [
             'mms_id' => implode(',', $ids),
             'expand' => 'p_avail,e_avail,d_avail'
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
-            foreach ($bibs as $num => $bib) {
+            foreach ($bibs as $bib) {
                 $marc = new \File_MARCXML(
                     $bib->record->asXML(),
                     \File_MARCXML::SOURCE_STRING
@@ -1355,11 +1354,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by the patronLogin
-     *                      method.
+     * @param array $patron Patron information returned by the patronLogin method.
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickupLocations($patron)
     {
@@ -1401,6 +1401,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @return array With key BIB_ID - The record ID of the current reserve item.
      *               Not currently used:
      *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($courseID, $instructorID, $departmentID)
     {
