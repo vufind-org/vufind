@@ -1,5 +1,5 @@
 .row-home {
-    background: transparent url(/themes/krimdok2/images/background_fid.jpg) no-repeat;
+    background: transparent url(/themes/krimdok2/images/background_fid_alpha.jpg) no-repeat;
     /*background: transparent url(/themes/krimdok2/images/crimescene.jpg) no-repeat;*/
     /*background: transparent url(/themes/krimdok2/images/panzerknacker.jpg) no-repeat;*/
     background-position: center center;
@@ -7,12 +7,26 @@
     background-size: cover;
 }
 
-.panel-inverse {
-    a {
-        color: white;
-    }
+.panel-inverse a {
+    color: white;
+    text-decoration: underline;
 }
 
 .logo-img {
     display: none !important;
+}
+
+.panel-button {
+  height: 49%;
+
+  .btn-primary {
+    .sublabel {
+        font-size: 0.8em;
+    }
+  }
+}
+
+.btn-panel-more {
+    background-color: @brand-primary;
+    color: white;
 }
