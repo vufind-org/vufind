@@ -61,6 +61,10 @@ class SummonFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName();
+        $backendManager = $container->get('VuFind\Search\BackendManager');
+        return new $requestedName(
+            $container->get('VuFind\Db\Table\PluginManager')->get('resource'),
+            $backendManager->get('Summon')->getConnector()
+        );
     }
 }

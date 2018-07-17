@@ -27,6 +27,9 @@
  */
 namespace VuFind\Record\FallbackLoader;
 
+use SerialsSolutions\Summon\Zend2 as Connector;
+use VuFind\Db\Table\Resource;
+
 /**
  * Summon record fallback loader
  *
@@ -39,10 +42,26 @@ namespace VuFind\Record\FallbackLoader;
 class Summon implements FallbackLoaderInterface
 {
     /**
+     * Resource table
+     *
+     * @var Resource
+     */
+    protected $table;
+
+    /**
+     * Summon connector
+     *
+     * @var Connector
+     */
+    protected $connector;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Resource $table, Connector $connector)
     {
+        $this->table = $table;
+        $this->connector = $connector;
     }
 
     /**
@@ -74,6 +93,11 @@ class Summon implements FallbackLoaderInterface
      */
     protected function fetchSingleRecord($id)
     {
+        $resource = $this->table->findResource($id, 'Summon');
+        if ($resource) {
+            $bookmark = $resource->extra_metadata;
+            // TODO: use bookmark to retrieve from connector
+        }
         return null;
     }
 }
