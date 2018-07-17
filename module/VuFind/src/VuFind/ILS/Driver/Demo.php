@@ -463,6 +463,11 @@ class Demo extends AbstractBase
                     $currentItem['position'] = $pos;
                 } else {
                     $currentItem['available'] = true;
+                    if (rand() % 3 != 1) {
+                        $lastDate = strtotime('now + 3 days');
+                        $currentItem['last_pickup_date'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $lastDate);
+                    }
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
