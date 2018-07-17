@@ -146,7 +146,7 @@ class Summon extends DefaultRecord
      */
     public function getExtraResourceMetadata()
     {
-        return $this->fields['BookMark'] ?? null;
+        return $this->fields['BookMark'][0] ?? null;
     }
 
     /**
