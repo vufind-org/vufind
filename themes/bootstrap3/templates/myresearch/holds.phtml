@@ -149,7 +149,13 @@
             <?php endif; ?>
 
             <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
-              <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
+              <div class="text-success">
+                <?php if (!empty($ilsDetails['last_pickup_date'])): ?>
+                  <?=$this->transEsc('hold_available_until', ['%%date%%' => $ilsDetails['last_pickup_date']]) ?>
+                <?php else: ?>
+                  <?=$this->transEsc('hold_available') ?>
+                <?php endif; ?>
+              </div>
             <?php elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
               <div class="text-success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
             <?php elseif (isset($ilsDetails['position'])): ?>

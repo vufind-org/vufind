@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -142,6 +142,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     ];
 
     /**
+     * Available API version
+     *
+     * @var int
+     */
+    protected $apiVersion = 5;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -220,6 +227,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $this->itemStatusMappings = array_merge(
                 $this->itemStatusMappings, $this->config['ItemStatusMappings']
             );
+        }
+
+        if (isset($this->config['Catalog']['api_version'])) {
+            $this->apiVersion = $this->config['Catalog']['api_version'];
         }
 
         // Init session cache for session-specific data
@@ -711,12 +722,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getMyHolds($patron)
     {
+        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
+            . ',recordType,priority,priorityQueueLength';
+        if ($this->apiVersion >= 5) {
+            $fields .= ',pickupByDate';
+        }
         $result = $this->makeRequest(
             ['v3', 'patrons', $patron['id'], 'holds'],
             [
                 'limit' => 10000,
-                'fields' => 'id,record,frozen,placed,location,pickupLocation'
-                    . ',status,recordType,priority,priorityQueueLength'
+                'fields' => $fields
             ],
             'GET',
             $patron
@@ -762,6 +777,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $position = ($entry['priority'] + 1) . ' / '
                     . $entry['priorityQueueLength'];
             }
+            $lastPickup = !empty($entry['pickupByDate'])
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['pickupByDate']
+                ) : '';
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
@@ -770,6 +789,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
                 ),
+                'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
                 'in_transit' => $entry['status']['code'] == 't',
