@@ -123,8 +123,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'Building' => ['foo', new TranslatableString('bar', 'xyzzy')],
                 'AllSubjectHeadings' => [['heading' => 'subject']],
                 'DeduplicatedAuthors' => [
-                    'primary' => ['Ms. A' => 'Editor'],
-                    'secondary' => ['Mr. B' => '', 'Mr. C' => ''],
+                    'primary' => ['Ms. A' => ['role' => ['Editor']]],
+                    'secondary' => ['Mr. B' => [], 'Mr. C' => []],
                 ],
             ]
         );
@@ -164,8 +164,8 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'recordPage' => 'http://record',
                 'subjectsExtended' => [['heading' => 'subject']],
                 'authors' => [
-                    'primary' => ['Ms. A' => 'Editor'],
-                    'secondary' => ['Mr. B' => '', 'Mr. C' => ''],
+                    'primary' => ['Ms. A' => ['role' => ['Editor']]],
+                    'secondary' => ['Mr. B' => [], 'Mr. C' => []],
                 ],
             ],
         ];
