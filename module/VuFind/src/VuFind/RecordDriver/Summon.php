@@ -138,6 +138,18 @@ class Summon extends DefaultRecord
     }
 
     /**
+     * Get extra metadata to store in the resource table. In this instance,
+     * we use the BookMark value so that it can be used to recover expired
+     * records in favorite lists.
+     *
+     * @return string
+     */
+    public function getExtraResourceMetadata()
+    {
+        return $this->fields['BookMark'] ?? null;
+    }
+
+    /**
      * Get an array of all the formats associated with the record.
      *
      * @return array
