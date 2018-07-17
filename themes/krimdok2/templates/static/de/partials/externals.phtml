@@ -1,14 +1,12 @@
-<div class="col-xs-6 col-sm-3 panel-buttons">
+<div class="col-xs-12 col-sm-6 col-md-3  panel-buttons">
     <div class="row panel-button">
-        <a target="_blank" href="http://idb.ub.uni-tuebingen.de/digitue/krimdok/" class="btn btn-primary">DigiKrimDok</a>
+        <a href="<?=$this->url('content-page', ['page' => 'fulltexts']) ?>" class="btn btn-primary">
+            <p>Volltexte<br/><br/><font class="sublabel">E-books,<br/>digitalisierte Werke<br/>und Online-Publikationen</font></p>
+        </a>
     </div>
     <div class="row panel-button">
-        <a target="_blank" href="http://publikationen.uni-tuebingen.de/xmlui/handle/10900/56358?locale-attribute=de" class="btn btn-primary">KrimDok Repository</a>
-    </div>
-    <div class="row panel-button">
-        <a href="http://krimdok.uni-tuebingen.de/AcquisitionRequest/Create" class="btn btn-primary">Anschaffungsvorschlag</a>
-    </div>
-    <div class="row panel-button">
-        <a href="mailto:fidkrim@ifk.uni-tuebingen.de" class="btn btn-primary">Kontakt zum FID</a>
+        <a href="<?=$this->url('content-page', ['page' => 'journals']) ?>" class="btn btn-primary">
+            <p>Zeitschriften<br/><br/><font class="sublabel">Informationen<br/>und Alerting</font></p>
+        </a>
     </div>
 </div>

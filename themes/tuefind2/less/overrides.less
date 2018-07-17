@@ -55,7 +55,7 @@ a.navbar-brand, nav > .nav > li > a {
   float: right;
 }
 
-section.section-home {
+.section-home {
   background: transparent;
   /*max-height: 500px;*/
 }
@@ -63,7 +63,8 @@ section.section-home {
 
 .panel-home {
   width: 60%;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   min-height: 600px;
 
   h1 {
@@ -423,7 +424,7 @@ ul .dropdown-menu {
 }
 
 .title {
-  margin-top: 40px;
+  padding-top: 40px;
 }
 
 /* adjust height of the Logo Image */
@@ -517,10 +518,15 @@ mark {
 
 .badge {
   color: @white;
+  background-color: @brand-secondary;
 }
 
 .badge-light {
   color: @black;
+}
+
+.label {
+    background-color: @brand-secondary;
 }
 
 .nav-pills li {

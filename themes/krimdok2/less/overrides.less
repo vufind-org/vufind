@@ -1,18 +1,31 @@
-.row-home {
-    background: transparent url(/themes/krimdok2/images/background_fid.jpg) no-repeat;
-    /*background: transparent url(/themes/krimdok2/images/crimescene.jpg) no-repeat;*/
-    /*background: transparent url(/themes/krimdok2/images/panzerknacker.jpg) no-repeat;*/
-    background-position: center center;
-    /*background-size: contain;*/
-    background-size: cover;
+.panel-home {
+    min-height: 300px;
 }
 
-.panel-inverse {
-    a {
-        color: white;
-    }
+.section-home {
+    background-color: @gray-200;
+}
+
+.panel-inverse a {
+    color: white;
+    text-decoration: underline;
 }
 
 .logo-img {
     display: none !important;
+}
+
+.panel-button {
+  height: 49%;
+
+  .btn-primary {
+    .sublabel {
+        font-size: 0.8em;
+    }
+  }
+}
+
+.btn-panel-more {
+    background-color: @brand-primary;
+    color: white;
 }
