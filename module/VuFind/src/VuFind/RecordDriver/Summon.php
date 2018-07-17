@@ -637,4 +637,14 @@ class Summon extends DefaultRecord
     {
         return (bool)($this->fields['hasFullText'] ?? false);
     }
+
+    /**
+     * Is this an open access record?
+     *
+     * @return bool
+     */
+    public function isOpenAccess()
+    {
+        return (bool)($this->fields['IsOpenAccess'] ?? false);
+    }
 }
