@@ -30,6 +30,7 @@
 namespace VuFind\Record;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\Service as SearchService;
 
@@ -69,18 +70,28 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $recordCache;
 
     /**
+     * Fallback record loader
+     *
+     * @var FallbackLoader
+     */
+    protected $fallbackLoader;
+
+    /**
      * Constructor
      *
-     * @param SearchService $searchService Search service
-     * @param RecordFactory $recordFactory Record loader
-     * @param Cache         $recordCache   Record Cache
+     * @param SearchService  $searchService  Search service
+     * @param RecordFactory  $recordFactory  Record loader
+     * @param Cache          $recordCache    Record Cache
+     * @param FallbackLoader $fallbackLoader Fallback record loader
      */
     public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory, Cache $recordCache = null
+        RecordFactory $recordFactory, Cache $recordCache = null,
+        FallbackLoader $fallbackLoader = null
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
         $this->recordCache = $recordCache;
+        $this->fallbackLoader = $fallbackLoader;
     }
 
     /**
@@ -182,6 +193,19 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             }
         }
 
+        $retVal = $genuineRecords;
+        if (!empty($ids) && $this->fallbackLoader
+            && $this->fallbackLoader->has($source)
+        ) {
+            foreach ($this->fallbackLoader->get($source)->load($ids) as $record) {
+                $retVal[] = $record;
+                $key = array_search($record->getUniqueId(), $ids);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
+            }
+        }
+
         if (!empty($ids) && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
@@ -190,7 +214,6 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
 
         // Merge records found in cache and records loaded from original $source
-        $retVal = $genuineRecords;
         foreach ($cachedRecords as $cachedRecord) {
             $retVal[] = $cachedRecord;
         }

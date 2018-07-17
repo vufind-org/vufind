@@ -1,6 +1,6 @@
 <?php
 /**
- * Record loader factory.
+ * Summon record fallback loader factory
  *
  * PHP version 7
  *
@@ -23,23 +23,23 @@
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-namespace VuFind\Record;
+namespace VuFind\Record\FallbackLoader;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Record loader factory.
+ * Summon record fallback loader factory
  *
  * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class LoaderFactory implements FactoryInterface
+class SummonFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,11 +61,6 @@ class LoaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get('VuFindSearch\Service'),
-            $container->get('VuFind\RecordDriver\PluginManager'),
-            $container->get('VuFind\Record\Cache'),
-            $container->get('VuFind\Record\FallbackLoader\PluginManager')
-        );
+        return new $requestedName();
     }
 }
