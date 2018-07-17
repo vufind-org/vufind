@@ -52,8 +52,10 @@ class BaseFormatter
     {
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
-                $this->filterArrayValues($value);
-                $this->resetArrayIndices($value);
+                if ($key !== 'authors'){
+                    $this->filterArrayValues($value);
+                    $this->resetArrayIndices($value);
+                }
             }
 
             if ((is_array($value) && empty($value))
