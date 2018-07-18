@@ -81,9 +81,9 @@ class Summon implements FallbackLoaderInterface
     {
         $retVal = [];
         foreach ($ids as $id) {
-            $record = $this->fetchSingleRecord($id);
-            if (is_object($record)) {
-                $retVal[$id] = $record;
+            foreach ($this->fetchSingleRecord($id) as $record) {
+                $record->setPreviousUniqueId($id);
+                $retVal[] = $record;
             }
         }
         return $retVal;
@@ -94,7 +94,7 @@ class Summon implements FallbackLoaderInterface
      *
      * @param string $id ID to load
      *
-     * @return \VuFind\RecordDriver\AbstractBase|null
+     * @return \VuFindSearch\Response\RecordCollectionInterface|null
      */
     protected function fetchSingleRecord($id)
     {
@@ -104,12 +104,7 @@ class Summon implements FallbackLoaderInterface
             $params = new ParamBag(
                 ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
             );
-            $result = $this->backend->retrieve($bookmark, $params);
-
-            // Return first record, if any...
-            foreach ($result as $record) {
-                return $record;
-            }
+            return $this->backend->retrieve($bookmark, $params);
         }
         return null;
     }

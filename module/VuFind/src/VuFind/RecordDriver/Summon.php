@@ -58,6 +58,35 @@ class Summon extends DefaultRecord
     protected $dateConverter = null;
 
     /**
+     * Previous unique ID (if applicable).
+     *
+     * @var string
+     */
+    protected $previousUniqueId = null;
+
+    /**
+     * Get previous unique ID (or null if not applicable).
+     *
+     * @return string
+     */
+    public function getPreviousUniqueId()
+    {
+        return $this->previousUniqueId;
+    }
+
+    /**
+     * Set previous unique ID
+     *
+     * @param string $id ID to set
+     *
+     * @return void
+     */
+    public function setPreviousUniqueId($id)
+    {
+        $this->previousUniqueId = $id;
+    }
+
+    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
