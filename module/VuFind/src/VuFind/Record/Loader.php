@@ -202,7 +202,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $key = array_search($record->getUniqueId(), $ids);
                 if ($key !== false) {
                     unset($ids[$key]);
-                } else if ($oldId = $record->tryMethod('getPreviousUniqueId')) {
+                } elseif ($oldId = $record->tryMethod('getPreviousUniqueId')) {
                     $key2 = array_search($record->getUniqueId(), $ids);
                     if ($key2 !== false) {
                         unset($ids[$key2]);
@@ -274,7 +274,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 // will return a record with a different ID.
                 if (isset($details[$id])) {
                     $retVal[$details[$id]] = $current;
-                } else if ($oldId = $current->tryMethod('getPreviousUniqueId')) {
+                } elseif ($oldId = $current->tryMethod('getPreviousUniqueId')) {
                     if (isset($details[$oldId])) {
                         $retVal[$details[$oldId]] = $current;
                     }
