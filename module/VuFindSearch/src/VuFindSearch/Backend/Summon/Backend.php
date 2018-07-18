@@ -135,6 +135,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     public function retrieve($id, ParamBag $params = null)
     {
         $finalParams = $params ?: new ParamBag();
+        // We normally look up by ID, but we occasionally need to use bookmarks:
         $idType = $finalParams->get('summonIdType')[0] ?? Connector::IDENTIFIER_ID;
         try {
             $response = $this->connector->getRecord($id, false, $idType);
