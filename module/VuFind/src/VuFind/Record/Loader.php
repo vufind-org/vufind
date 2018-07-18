@@ -262,9 +262,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function loadBatch($ids, $tolerateBackendExceptions = false)
     {
-        // Sort the IDs by source -- we'll create an associative array indexed by
-        // source and record ID which points to the desired position of the indexed
-        // record in the final return array:
+        // Create an IdList object to help sort the IDs by source:
         $idList = new IdList($ids);
 
         // Retrieve the records and put them back in order:
