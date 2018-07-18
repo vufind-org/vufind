@@ -134,8 +134,9 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $finalParams = $params ?: new ParamBag();
+        $idType = $finalParams->get('summonIdType')[0] ?? Connector::IDENTIFIER_ID;
         try {
-            $idType = $params->get('summonIdType')[0] ?? Connector::IDENTIFIER_ID;
             $response = $this->connector->getRecord($id, false, $idType);
         } catch (SummonException $e) {
             throw new BackendException(
