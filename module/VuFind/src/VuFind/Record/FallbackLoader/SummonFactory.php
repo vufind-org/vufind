@@ -64,7 +64,7 @@ class SummonFactory implements FactoryInterface
         $backendManager = $container->get('VuFind\Search\BackendManager');
         return new $requestedName(
             $container->get('VuFind\Db\Table\PluginManager')->get('resource'),
-            $backendManager->get('Summon')->getConnector()
+            $backendManager->get('Summon')
         );
     }
 }

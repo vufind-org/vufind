@@ -29,6 +29,8 @@ namespace VuFind\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFind\Db\Table\Resource;
+use VuFindSearch\Backend\Summon\Backend;
+use VuFindSearch\ParamBag;
 
 /**
  * Summon record fallback loader
@@ -49,19 +51,22 @@ class Summon implements FallbackLoaderInterface
     protected $table;
 
     /**
-     * Summon connector
+     * Summon backend
      *
-     * @var Connector
+     * @var Backend
      */
-    protected $connector;
+    protected $backend;
 
     /**
      * Constructor
+     *
+     * @param Resource $table   Resource database table object
+     * @param Backend  $backend Summon search backend
      */
-    public function __construct(Resource $table, Connector $connector)
+    public function __construct(Resource $table, Backend $backend)
     {
         $this->table = $table;
-        $this->connector = $connector;
+        $this->backend = $backend;
     }
 
     /**
@@ -85,18 +90,26 @@ class Summon implements FallbackLoaderInterface
     }
 
     /**
-     * Fetch a single record.
+     * Fetch a single record (null if not found).
      *
      * @param string $id ID to load
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return \VuFind\RecordDriver\AbstractBase|null
      */
     protected function fetchSingleRecord($id)
     {
         $resource = $this->table->findResource($id, 'Summon');
         if ($resource) {
             $bookmark = $resource->extra_metadata;
-            // TODO: use bookmark to retrieve from connector
+            $params = new ParamBag(
+                ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
+            );
+            $result = $this->backend->retrieve($bookmark, $params);
+
+            // Return first record, if any...
+            foreach ($result as $record) {
+                return $record;
+            }
         }
         return null;
     }
