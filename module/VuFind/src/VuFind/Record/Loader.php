@@ -71,9 +71,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param SearchService  $searchService  Search service
-     * @param RecordFactory  $recordFactory  Record loader
-     * @param Cache          $recordCache    Record Cache
+     * @param SearchService $searchService Search service
+     * @param RecordFactory $recordFactory Record loader
+     * @param Cache         $recordCache   Record Cache
      */
     public function __construct(SearchService $searchService,
         RecordFactory $recordFactory, Cache $recordCache = null
