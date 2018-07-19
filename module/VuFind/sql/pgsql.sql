@@ -31,7 +31,7 @@ title varchar(255) NOT NULL DEFAULT '',
 author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
 source varchar(50) NOT NULL DEFAULT 'Solr',
-extra_metadata varchar(256) DEFAULT NULL,
+extra_metadata varchar(512) DEFAULT NULL,
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);
