@@ -221,7 +221,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Build a "missing record" driver.
      *
-     * @param array $details Associative array of record details (from an IdList)
+     * @param array $details Associative array of record details (from a
+     * SourceAndIdList)
      *
      * @return \VuFind\RecordDriver\Missing
      */
@@ -254,17 +255,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function loadBatch($ids, $tolerateBackendExceptions = false)
     {
-        // Create an IdList object to help sort the IDs by source:
-        $idList = new IdList($ids);
+        // Create a SourceAndIdList object to help sort the IDs by source:
+        $list = new SourceAndIdList($ids);
 
         // Retrieve the records and put them back in order:
         $retVal = [];
-        foreach ($idList->getIdsBySource() as $source => $currentIds) {
+        foreach ($list->getIdsBySource() as $source => $currentIds) {
             $records = $this->loadBatchForSource(
                 $currentIds, $source, $tolerateBackendExceptions
             );
             foreach ($records as $current) {
-                $position = $idList->getRecordPosition($current);
+                $position = $list->getRecordPosition($current);
                 if ($position !== false) {
                     $retVal[$position] = $current;
                 }
@@ -273,7 +274,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         // Check for missing records and fill gaps with \VuFind\RecordDriver\Missing
         // objects:
-        foreach ($idList->getAll() as $i => $details) {
+        foreach ($list->getAll() as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
                 $retVal[$i] = $this->buildMissingRecord($details);
             }
