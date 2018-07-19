@@ -156,25 +156,23 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateBackendExceptions = false
     ) {
+        $list = new Checklist($ids);
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
             // Try to load records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
-                $key = array_search($cachedRecord->getUniqueId(), $ids);
-                if ($key !== false) {
-                    unset($ids[$key]);
-                }
+                $list->check($cachedRecord->getUniqueId());
             }
         }
 
         // Try to load the uncached records from the original $source
         $genuineRecords = [];
-        if (!empty($ids)) {
+        if ($list->hasUnchecked()) {
             try {
-                $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
-                    ->getRecords();
+                $genuineRecords = $this->searchService
+                    ->retrieveBatch($source, $list->getUnchecked())->getRecords();
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
@@ -186,36 +184,30 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             }
 
             foreach ($genuineRecords as $genuineRecord) {
-                $key = array_search($genuineRecord->getUniqueId(), $ids);
-                if ($key !== false) {
-                    unset($ids[$key]);
-                }
+                $list->check($genuineRecord->getUniqueId());
             }
         }
 
         $retVal = $genuineRecords;
-        if (!empty($ids) && $this->fallbackLoader
+        if ($list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
-            foreach ($this->fallbackLoader->get($source)->load($ids) as $record) {
+            $fallbackRecords = $this->fallbackLoader->get($source)
+                ->load($list->getUnchecked());
+            foreach ($fallbackRecords as $record) {
                 $retVal[] = $record;
-                $key = array_search($record->getUniqueId(), $ids);
-                if ($key !== false) {
-                    unset($ids[$key]);
-                } elseif ($oldId = $record->tryMethod('getPreviousUniqueId')) {
-                    $key2 = array_search($record->getUniqueId(), $ids);
-                    if ($key2 !== false) {
-                        unset($ids[$key2]);
-                    }
+                if (!$list->check($record->getUniqueId())) {
+                    $list->check($record->tryMethod('getPreviousUniqueId'));
                 }
             }
         }
 
-        if (!empty($ids) && null !== $this->recordCache
+        if ($list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable
-            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+            $cachedRecords = $this->recordCache
+                ->lookupBatch($list->getUnchecked(), $source);
         }
 
         // Merge records found in cache and records loaded from original $source
