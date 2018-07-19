@@ -229,7 +229,7 @@ class Resource extends Gateway
      * @param string $newId  Revised record ID
      * @param string $source Record source
      *
-     * return  void
+     * @return void
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
