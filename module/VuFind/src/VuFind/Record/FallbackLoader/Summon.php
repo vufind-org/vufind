@@ -82,7 +82,7 @@ class Summon implements FallbackLoaderInterface
         $retVal = [];
         foreach ($ids as $id) {
             foreach ($this->fetchSingleRecord($id) as $record) {
-                $record->setPreviousUniqueId($id);
+                $this->updateRecord($record, $id);
                 $retVal[] = $record;
             }
         }
@@ -107,5 +107,23 @@ class Summon implements FallbackLoaderInterface
             return $this->backend->retrieve($bookmark, $params);
         }
         return null;
+    }
+
+    /**
+     * When a record ID has changed, update the record driver and database to
+     * reflect the changes.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record     Record to update
+     * @param string                            $previousId Old ID of record
+     *
+     * @return void
+     */
+    protected function updateRecord($record, $previousId)
+    {
+        // Update the record driver with knowledge of the previous identifier...
+        $record->setPreviousUniqueId($previousId);
+
+        // Update the database to replace the obsolete identifier...
+        $this->table->updateRecordId($previousId, $record->getUniqueId(), 'Summon');
     }
 }
