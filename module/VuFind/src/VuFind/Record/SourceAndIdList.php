@@ -57,8 +57,8 @@ class SourceAndIdList
     /**
      * Constructor
      *
-     * @param $ids Array of associative arrays with id/source keys or strings in
-     * source|id format. In associative array formats, there is also an optional
+     * @param array $ids Array of associative arrays with id/source keys or strings
+     * in source|id format. In associative array formats, there is also an optional
      * "extra_fields" key which can be used to pass in data formatted as if it
      * belongs to the Solr schema; this is used to create a mock driver object if
      * the real data source is unavailable.
