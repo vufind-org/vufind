@@ -55,6 +55,9 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   }
+  function close() {
+    _modal.modal('hide');
+  }
 
   /**
    * Update content
@@ -80,7 +83,7 @@ VuFind.register('lightbox', function Lightbox() {
       var href = alerts.find('.download').attr('href');
       if (typeof href !== 'undefined') {
         location.href = href;
-        _modal.modal('hide');
+        close();
       } else {
         showAlert(msgs, 'success');
       }
@@ -386,6 +389,7 @@ VuFind.register('lightbox', function Lightbox() {
     ajax: ajax,
     alert: showAlert,
     bind: bind,
+    close: close,
     flashMessage: flashMessage,
     reload: reload,
     render: render,
