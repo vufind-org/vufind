@@ -264,6 +264,9 @@ class Resource extends Gateway
             if (isset($tableObjects['resourcetags'])) {
                 $tableObjects['resourcetags']->deduplicate();
             }
+            if (isset($tableObjects['userresource'])) {
+                $tableObjects['userresource']->deduplicate();
+            }
         }
     }
 
