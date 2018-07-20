@@ -27,6 +27,7 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\BrowZine\Connector;
 use Zend\Mvc\Controller\Plugin\Params;
 
@@ -39,8 +40,10 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookup extends AbstractBase
+class DoiLookup extends AbstractBase implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * BrowZine connector
      *
@@ -69,7 +72,14 @@ class DoiLookup extends AbstractBase
     {
         $response = [];
         foreach ((array)$params->fromQuery('doi', []) as $doi) {
-            $response[$doi] = $this->connector->lookupDoi($doi);
+            $data = $this->connector->lookupDoi($doi)['data'] ?? null;
+            if (isset($data['browzineWebLink'])) {
+                $response[$doi] = [
+                    'link' => $data['browzineWebLink'],
+                    'label' => $this->translate('View Complete Issue'),
+                    'data' => $data,
+                ];
+            }
         }
         return $this->formatResponse($response);
     }
