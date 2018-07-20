@@ -242,8 +242,10 @@ class Resource extends Gateway
             // Does the new ID already exist?
             if ($newResource = $this->findResource($newId, $source)) {
                 // Special case: merge new ID and old ID:
+                $tableObjects = [];
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
-                    $this->getDbTable($table)->update(
+                    $tableObjects[$table] = $this->getDbTable($table);
+                    $tableObjects[$table]->update(
                         ['resource_id' => $newResource->id],
                         ['resource_id' => $resource->id]
                     );
@@ -257,7 +259,11 @@ class Resource extends Gateway
             // Done -- commit the transaction:
             $connection->commit();
 
-            // TODO -- work on deduplication where necessary.
+            // Deduplicate rows where necessary (this can be safely done outside
+            // of the transaction):
+            if (isset($tableObjects['resourcetags'])) {
+                $tableObjects['resourcetags']->deduplicate();
+            }
         }
     }
 
