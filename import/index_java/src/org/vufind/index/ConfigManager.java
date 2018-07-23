@@ -73,7 +73,7 @@ public class ConfigManager
         // VuFind's import subdirectory:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
-            vufindHome = "..";
+            vufindHome = "/usr/local/vufind";
         }
 
         // Check for VuFind 2.0's local directory environment variable:
@@ -137,7 +137,8 @@ public class ConfigManager
                 ini.load(new FileReader(findConfigFile(filename)));
                 configCache.putIfAbsent(filename, ini);
             } catch (Throwable e) {
-                dieWithError("Unable to access " + filename);
+                String fullPath = findConfigFile(filename);
+                dieWithError("Unable to access " + fullPath);
             }
         }
         return configCache.get(filename);
