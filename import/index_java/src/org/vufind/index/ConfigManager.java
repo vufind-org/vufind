@@ -137,7 +137,7 @@ public class ConfigManager
                 ini.load(new FileReader(findConfigFile(filename)));
                 configCache.putIfAbsent(filename, ini);
             } catch (Throwable e) {
-                String fullPath = findConfigFile(filename);
+                String fullPath = findConfigFile(filename).getAbsolutePath();
                 dieWithError("Unable to access " + fullPath);
             }
         }
