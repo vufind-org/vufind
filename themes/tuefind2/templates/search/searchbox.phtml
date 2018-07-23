@@ -35,17 +35,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
     <section class="section-home">
         <div class="panel-home">
             <script>
-            /**
-             * TueFind:
-             *
-             * - resize the box if we are not on the default page anymore (detect by url length)
-             * - code needs to be here, else (e.g. document.onload) it first pops out and then pops back again,
-             *   which looks strange and also screws up with anchors
-             */
-            var parts = window.location.href.split('/');
-            if (parts.length > 4) {
-                $('.panel-home').css("min-height", 300);
-            }
+                Tuefind.ChangeSearchboxHeight();
             </script>
 
             <div class="searchbox col-12 mx-auto">
