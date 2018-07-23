@@ -58,6 +58,9 @@ class AbstractSyndeticsFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
+        if ($options !== null) {
+            throw new \Exception('Unexpected options sent to factory!');
+        }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Special case: if the class name ends in Plus, we need to strip off

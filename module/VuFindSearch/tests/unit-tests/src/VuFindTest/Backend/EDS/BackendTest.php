@@ -44,6 +44,39 @@ use VuFindSearch\Query\Query;
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Test performing an autocomplete
+     *
+     * @return void
+     */
+    public function testAutocomplete()
+    {
+        $conn = $this->getConnectorMock(['call']);
+        $expectedUri = 'http://foo?idx=rawdata&token=auth1234'
+            . '&filters=[{"name"%3A"custid"%2C"values"%3A["foo"]}]&term=bla';
+        $conn->expects($this->once())
+            ->method('call')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($this->loadResponse('autocomplete')));
+
+        $back = $this->getBackend(
+            $conn, $this->getRCFactory(), null, null, [], ['getAutocompleteData']
+        );
+        $autocompleteData = [
+            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
+        ];
+        $back->expects($this->any())
+            ->method('getAutocompleteData')
+            ->will($this->returnValue($autocompleteData));
+
+        $coll = $back->autocomplete('bla', 'rawdata');
+        // check count
+        $this->assertCount(10, $coll);
+        foreach ($coll as $value) {
+            $this->assertEquals('bla', substr($value, 0, 3));
+        }
+    }
+
+    /**
      * Test retrieving a record.
      *
      * @return void

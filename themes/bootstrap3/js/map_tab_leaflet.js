@@ -36,16 +36,16 @@ function loadMapTab(mapData, mapGraticule, basemap) {
         label_coords = split_coords[1] + "<br>" + split_coords[2];
       }
       // Construct the entire label string
-      if (label_coords && label_name) {
-        label = '<strong>' + label_name + '</strong>' + 
-          '<br>Coordinates:<br>' + label_coords;
-      } else if (label_name) {
-        label = '<strong>' + label_name + '</strong>';
-      } else if (label_coords) {
-        label = "Coordinates:<br>" + label_coords;
-      } else {
-        label = "No information available.";
+      var labelParts = [];
+      if (label_name) {
+        labelParts[labelParts.length] = '<strong>' + label_name + '</strong>';
       }
+      if (label_coords) {
+        labelParts[labelParts.length] = VuFind.translate('Coordinates') + ":<br>"
+          + label_coords;
+      }
+      label = labelParts.length > 0
+        ? labelParts.join('<br>') : VuFind.translate('no_description');
       // Get coordinate data
       var west = mapData[i][0];
       var south = mapData[i][1];

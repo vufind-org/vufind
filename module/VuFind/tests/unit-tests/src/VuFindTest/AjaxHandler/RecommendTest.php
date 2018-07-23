@@ -62,6 +62,6 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->will($this->returnValue($viewHelper));
         $handler = new Recommend($ss, $rm, $r, $view);
         $params = $this->getParamsHelper(['mod' => 'foo']);
-        $this->assertEquals([null, 'OK'], $handler->handleRequest($params));
+        $this->assertEquals([null], $handler->handleRequest($params));
     }
 }

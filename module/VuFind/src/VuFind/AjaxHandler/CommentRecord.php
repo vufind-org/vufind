@@ -94,11 +94,9 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Is CAPTCHA valid? (Also returns true if CAPTCHA is disabled).
      *
-     * @param Params $params Parameter helper from controller
-     *
      * @return bool
      */
-    protected function checkCaptcha(Params $params)
+    protected function checkCaptcha()
     {
         // Not enabled? Report success!
         if (!$this->recaptcha->active('userComments')) {
@@ -113,7 +111,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -121,16 +119,14 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
         if ($this->user === false) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
+                self::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -140,20 +136,19 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (empty($id) || empty($comment)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
+                self::STATUS_HTTP_BAD_REQUEST
             );
         }
 
-        if (!$this->checkCaptcha($params)) {
+        if (!$this->checkCaptcha()) {
             return $this->formatResponse(
                 $this->translate('recaptcha_not_passed'),
-                self::STATUS_ERROR,
-                403
+                self::STATUS_HTTP_FORBIDDEN
             );
         }
 
         $resource = $this->table->findResource($id, $source);
-        return $this->formatResponse($resource->addComment($comment, $this->user));
+        $commentId = $resource->addComment($comment, $this->user);
+        return $this->formatResponse(compact('commentId'));
     }
 }

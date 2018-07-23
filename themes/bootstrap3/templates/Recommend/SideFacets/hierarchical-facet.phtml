@@ -19,6 +19,7 @@ JS;
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php endif; ?>
 <li id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
+    data-source="<?=$this->escapeHtml($this->searchClassId)?>"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
     data-path="<?=$this->currentPath()?>"
     data-exclude="<?=$this->allowExclude?>"

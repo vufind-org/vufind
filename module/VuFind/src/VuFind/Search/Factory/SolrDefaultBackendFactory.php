@@ -61,7 +61,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
      */
     protected function getSolrCore()
     {
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
         return isset($config->Index->default_core)
             ? $config->Index->default_core : 'biblio';
     }

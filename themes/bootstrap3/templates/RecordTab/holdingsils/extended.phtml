@@ -66,6 +66,7 @@
             <?php if ($holding['link'] ?? false): ?>
               <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->recordLink()->getRequestUrl($holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
             <?php endif; ?>
+            <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
           </span>
         <?php endif; ?>
       </div>
