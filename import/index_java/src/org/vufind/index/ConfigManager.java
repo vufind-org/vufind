@@ -73,7 +73,7 @@ public class ConfigManager
         // VuFind's import subdirectory:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
-            vufindHome = "/usr/local/vufind";
+            vufindHome = System.getProperty("user.dir");
         }
 
         // Check for VuFind 2.0's local directory environment variable:
