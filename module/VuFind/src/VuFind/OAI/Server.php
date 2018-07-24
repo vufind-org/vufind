@@ -732,9 +732,9 @@ class Server
         // Apply filters as needed.
         if (!empty($set)) {
             if (isset($this->setQueries[$set])) {
-                // use hidden filter here to allow for complex queries;
-                // plain old addFilter expects simple field:value queries.
-                $params->addHiddenFilter($this->setQueries[$set]);
+                // Put parentheses around the query so that it does not get
+                // parsed as a simple field:value filter.
+                $params->addFilter('(' . $this->setQueries[$set] . ')');
             } elseif (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
