@@ -12,6 +12,15 @@ div.title {
     display: none;
 }
 
+.panel-default a:not(.btn) {
+    color: @gray-900;
+    :hover {
+        color: @brand-primary;
+        text-decoration-color: @brand-primary;
+        text-decoration: underline;
+    }
+}
+
 .panel-inverse a {
     color: white;
     text-decoration: underline;
@@ -22,13 +31,29 @@ div.title {
 }
 
 .panel-button {
-  height: 49%;
+  height: 48%;
 
   .btn-primary {
+    p {
+        font-size: 20px;
+    }
+
     .sublabel {
-        font-size: 0.8em;
+        font-size: 16px;
     }
   }
+}
+
+.panel-button-top {
+    position: absolute;
+    top: 0;
+    margin-top: 0px;
+}
+
+.panel-button-bottom {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 0px;
 }
 
 .btn-panel-more {
