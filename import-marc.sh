@@ -52,7 +52,6 @@ then
   INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
 fi
 
-
 ##################################################
 # Set SOLRCORE
 ##################################################
@@ -61,15 +60,20 @@ then
   EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.core.name=$SOLRCORE"
 fi
 
-
 ##################################################
-# Set VUFIND_HOME
+# Set VUFIND_HOME and VUFIND_LOCAL_DIR
 ##################################################
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=$(pwd)
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  VUFIND_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 fi
 
+if [ -z "$VUFIND_LOCAL_DIR" ]
+then
+  VUFIND_LOCAL_DIR="$VUFIND_HOME/local"
+fi
 
 #####################################################
 # Build java command
