@@ -72,7 +72,7 @@ fi
 
 if [ -z "$VUFIND_LOCAL_DIR" ]
 then
-  echo "VUFIND_LOCAL_DIR environment variable is not set. Is this intentional?"
+  echo "WARNING: VUFIND_LOCAL_DIR environment variable is not set. Is this intentional?"
 fi
 
 #####################################################
