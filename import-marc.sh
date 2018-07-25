@@ -61,7 +61,7 @@ then
 fi
 
 ##################################################
-# Set VUFIND_HOME and VUFIND_LOCAL_DIR
+# Set VUFIND_HOME
 ##################################################
 if [ -z "$VUFIND_HOME" ]
 then
