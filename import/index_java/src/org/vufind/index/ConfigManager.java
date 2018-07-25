@@ -66,14 +66,15 @@ public class ConfigManager
      * Given the base name of a configuration file, locate the full path.
      * @param filename base name of a configuration file
      */
-    private File findConfigFile(String filename)
+    private File findConfigFile(String filename) throws IllegalStateException
     {
         // Find VuFind's home directory in the environment; if it's not available,
         // try using a relative path on the assumption that we are currently in
         // VuFind's import subdirectory:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
-            vufindHome = System.getProperty("user.dir");
+            // this shouldn't happen since import-marc.sh now always 
+            throw new IllegalStateException("VUFIND_HOME must be set");
         }
 
         // Check for VuFind 2.0's local directory environment variable:

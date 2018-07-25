@@ -72,7 +72,7 @@ fi
 
 if [ -z "$VUFIND_LOCAL_DIR" ]
 then
-  VUFIND_LOCAL_DIR="$VUFIND_HOME/local"
+  echo "VUFIND_LOCAL_DIR environment variable is not set. Is this intentional?"
 fi
 
 #####################################################
