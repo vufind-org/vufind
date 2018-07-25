@@ -27,7 +27,6 @@ VuFind.register('lightbox', function Lightbox() {
   }
   function _emit(msg, _details) {
     var details = _details || {};
-    // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
     var event;
     try {
       event = new CustomEvent(msg, {
@@ -36,6 +35,7 @@ VuFind.register('lightbox', function Lightbox() {
         cancelable: true
       });
     } catch (e) {
+      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
       event = document.createEvent('CustomEvent');
       event.initCustomEvent(msg, true, true, details);
     }
@@ -284,6 +284,10 @@ VuFind.register('lightbox', function Lightbox() {
     _clickedButton = null;
     var buttonData = { name: 'submit', value: 1 };
     if (submit.length > 0) {
+      if (typeof submit.data('lightbox-close') !== 'undefined') {
+        close();
+        return false;
+      }
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
