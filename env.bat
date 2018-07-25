@@ -1,1 +1,1 @@
-@set VUFIND_HOME="%~dp0%~1"
+@set VUFIND_HOME=%~dp0%~1
