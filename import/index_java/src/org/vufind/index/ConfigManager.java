@@ -73,7 +73,7 @@ public class ConfigManager
         // VuFind's import subdirectory:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
-            // this shouldn't happen since import-marc.sh now always 
+            // this shouldn't happen since import-marc.sh and .bat always set VUFIND_HOME
             throw new IllegalStateException("VUFIND_HOME must be set");
         }
 
