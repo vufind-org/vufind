@@ -134,12 +134,19 @@ public class ConfigManager
         // Retrieve the file if it is not already cached.
         if (!configCache.containsKey(filename)) {
             Ini ini = new Ini();
+            File configFile = null;
             try {
-                ini.load(new FileReader(findConfigFile(filename)));
-                configCache.putIfAbsent(filename, ini);
+                configFile = findConfigFile(filename);
             } catch (Throwable e) {
-                String fullPath = findConfigFile(filename).getAbsolutePath();
-                dieWithError("Unable to access " + fullPath);
+                dieWithError("Unable to locate " + filename);
+            }
+            try {
+                if (configFile != null) {
+                    ini.load(new FileReader(configFile));
+                    configCache.putIfAbsent(filename, ini);
+                }
+            } catch (Throwable e) {
+                dieWithError("Unable to access " + configFile.getAbsolutePath());
             }
         }
         return configCache.get(filename);
