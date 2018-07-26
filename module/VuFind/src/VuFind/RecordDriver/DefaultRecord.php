@@ -1453,7 +1453,7 @@ class DefaultRecord extends AbstractBase
             $xml->addChild('title', htmlspecialchars($this->getTitle()), $dc);
             $authors = $this->getDeduplicatedAuthors();
             foreach ($authors as $list) {
-                foreach ((array)$list as $author) {
+                foreach (array_keys($list) as $author) {
                     $xml->addChild('creator', htmlspecialchars($author), $dc);
                 }
             }
