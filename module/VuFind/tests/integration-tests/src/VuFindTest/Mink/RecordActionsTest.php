@@ -2,7 +2,7 @@
 /**
  * Mink record actions test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -70,11 +70,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function gotoRecord()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $page = $this->performSearch('Dewey');
         $this->findCss($page, '.result a.title')->click();
         return $page;
     }
@@ -230,6 +226,25 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.logoutOptions a.logout')->click();
+    }
+
+    /**
+     * Test searching for one of the tags created above.
+     */
+    public function testTagSearch()
+    {
+        // First try an undefined tag:
+        $page = $this->performSearch('tag-not-in-system', 'tag');
+        $this->assertEquals('No Results!', $this->findCss($page, 'h2')->getText());
+        // Now try a tag defined earlier:
+        $page = $this->performSearch('five', 'tag');
+        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $this->assertEquals(
+            $expected, substr(
+                $this->findCss($page, '.search-stats')->getText(), 0,
+                strlen($expected)
+            )
+        );
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * Unit tests for handler map base class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend;
 
-use VuFindSearch\ParamBag;
+use PHPUnit\Framework\TestCase;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use VuFindSearch\ParamBag;
 
 /**
  * Unit tests for handler map base class.

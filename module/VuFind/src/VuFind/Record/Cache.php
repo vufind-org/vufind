@@ -2,7 +2,7 @@
 /**
  * Record Cache
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) University of Freiburg 2014.
  * Copyright (C) The National Library of Finland 2015.
@@ -28,9 +28,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Record;
-use VuFind\Db\Table\Record as Record,
-    VuFind\RecordDriver\PluginManager as RecordFactory,
-    Zend\Config\Config as Config;
+
+use VuFind\Db\Table\Record as Record;
+use VuFind\RecordDriver\PluginManager as RecordFactory;
+use Zend\Config\Config as Config;
 
 /**
  * Record Cache

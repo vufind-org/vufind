@@ -1,0 +1,56 @@
+<?php
+  $toggleUrl = $this->facet['isApplied']
+    ? $this->urlBase . $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
+    : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
+
+  $hasSubLinks = $this->exclude && !$this->facet['isApplied'];
+
+  $classList = ['facet', 'js-facet-item'];
+  if (!empty($this->moreClass)) {
+    $classList[] = $this->moreClass;
+  }
+  if ($this->facet['isApplied']) {
+    $classList[] = 'active';
+  }
+
+  $displayText = '-';
+  if (!empty($this->facet['displayText'])) {
+    $displayText = $this->escapeHtml($this->facet['displayText']);
+  } elseif (!empty($this->facet['value'])) {
+    $displayText = $this->escapeHtml($this->facet['value']);
+  }
+
+  if ($this->facet['operator'] == 'OR') {
+    $displayText =
+      '<i class="fa ' . ($this->facet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o') . '" aria-hidden="true"></i> '
+      . $displayText;
+  }
+?>
+<?php if ($hasSubLinks): ?>
+  <li class="<?=implode(' ', $classList) ?>">
+<?php else: ?>
+  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
+<?php endif; ?>
+
+  <?php if ($hasSubLinks): ?>
+    <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
+      <?=$displayText ?>
+    </a>
+  <?php else: ?>
+    <span class="text">
+      <?=$displayText ?>
+    </span>
+  <?php endif; ?>
+
+  <?php if (!$this->facet['isApplied']): ?>
+    <span class="badge">
+      <?=$this->localizedNumber($this->facet['count']) ?>
+    </span>
+  <?php endif; ?>
+
+  <?php if ($this->exclude && !$this->facet['isApplied']): ?>
+    <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
+  <?php endif; ?>
+
+<?=$hasSubLinks ? '</li>' : '</a>'; ?>

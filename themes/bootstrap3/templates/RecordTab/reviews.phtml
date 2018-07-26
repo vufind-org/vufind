@@ -1,32 +1,32 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Reviews') . ': ' . $this->driver->getBreadcrumb());
 
     // Grab review data:
     $reviews = $this->tab->getContent();
 ?>
-<? if (count($reviews) > 0): ?>
-  <? foreach ($reviews as $provider => $list): ?>
-    <? foreach ($list as $review): ?>
-      <? if (isset($review['Summary']) && !empty($review['Summary'])): ?>
+<?php if (count($reviews) > 0): ?>
+  <?php foreach ($reviews as $provider => $list): ?>
+    <?php foreach ($list as $review): ?>
+      <?php if (isset($review['Summary']) && !empty($review['Summary'])): ?>
         <p>
-          <? if (isset($review['Rating'])): ?>
+          <?php if (isset($review['Rating'])): ?>
             <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars"/>
-          <? endif; ?>
+          <?php endif; ?>
           <strong><?=$review['Summary']?></strong> <?=isset($review['Date']) ? strftime('%B %e, %Y', strtotime($review['Date'])) : ''?>
         </p>
-      <? endif; ?>
-      <? if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><? endif; ?>
+      <?php endif; ?>
+      <?php if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><?php endif; ?>
       <p class="summary">
-        <?=isset($review['Content']) ? $review['Content'] : ''?>
-        <? if ((!isset($review['Content']) || empty($review['Content'])) && isset($review['ReviewURL'])): ?>
+        <?=$review['Content'] ?? ''?>
+        <?php if ((!isset($review['Content']) || empty($review['Content'])) && isset($review['ReviewURL'])): ?>
           <a target="new" href="<?=$this->escapeHtmlAttr($review['ReviewURL'])?>"><?=$this->transEsc('Read the full review online...')?></a>
-        <? endif; ?>
+        <?php endif; ?>
       </p>
-      <?=isset($review['Copyright']) ? $review['Copyright'] : ''?>
+      <?=$review['Copyright'] ?? ''?>
       <hr/>
-    <? endforeach; ?>
-  <? endforeach; ?>
-<? else: ?>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+<?php else: ?>
   <?=$this->transEsc('No reviews were found for this record')?>.
-<? endif; ?>
+<?php endif; ?>

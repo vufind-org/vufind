@@ -2,7 +2,7 @@
 /**
  * Zend\Feed\Entry extension for Dublin Core
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore;
+
 use Zend\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
 
 /**

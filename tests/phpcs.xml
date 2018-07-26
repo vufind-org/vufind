@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="VuFind Coding Standards" namespace="VuFind\PHPCS">
+  <description>Coding standards for VuFind.</description>
+  <file>../module</file>
+  <exclude-pattern>module/[^/]+/config/*</exclude-pattern>
+  <exclude-pattern>module/[^/]+/tests/*</exclude-pattern>
+  <arg name="extensions" value="php"/>
+  <rule ref="PEAR">
+    <exclude name="PEAR.Commenting.FunctionComment.ParamCommentAlignment" />
+  </rule>
+</ruleset>

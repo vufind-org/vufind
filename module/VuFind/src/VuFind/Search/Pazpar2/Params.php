@@ -2,7 +2,7 @@
 /**
  * Pazpar2 Search Parameters
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Pazpar2;
+
 use VuFindSearch\ParamBag;
 
 /**

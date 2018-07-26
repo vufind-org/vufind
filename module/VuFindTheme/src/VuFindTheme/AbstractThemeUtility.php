@@ -2,7 +2,7 @@
 /**
  * Abstract base class to hold shared logic for theme utilities.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -96,7 +96,7 @@ abstract class AbstractThemeUtility
                 if (!$this->copyDir("$src/$current", "$dest/$current")) {
                     return false;
                 }
-            } else if (!file_exists("$dest/$current")
+            } elseif (!file_exists("$dest/$current")
                 && !copy("$src/$current", "$dest/$current")
             ) {
                 return $this->setLastError(
@@ -126,7 +126,7 @@ abstract class AbstractThemeUtility
                 if (!$this->deleteDir("$path/$current")) {
                     return false;
                 }
-            } else if (!unlink("$path/$current")) {
+            } elseif (!unlink("$path/$current")) {
                 return $this->setLastError("Cannot delete $path/$current");
             }
         }

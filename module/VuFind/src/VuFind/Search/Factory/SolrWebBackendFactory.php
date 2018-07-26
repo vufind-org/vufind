@@ -3,7 +3,7 @@
 /**
  * Factory for the website SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -27,8 +27,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
  * Factory for the website SOLR backend.
@@ -67,15 +68,17 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     /**
      * Get the Solr URL.
      *
+     * @param string $config name of configuration file (null for default)
+     *
      * @return string
      */
-    protected function getSolrUrl()
+    protected function getSolrUrl($config = null)
     {
-        // Allow the searchConfig to override the default config if set.
-        $webconfig = $this->config->get($this->searchConfig);
-        return isset($webconfig->Index->url)
-            ? $webconfig->Index->url . '/' . $this->getSolrCore()
-            : parent::getSolrUrl();
+        // Only override parent default if valid value present in config:
+        $configToCheck = $config ?? $this->searchConfig;
+        $webConfig = $this->config->get($configToCheck);
+        $finalConfig = isset($webConfig->Index->url) ? $configToCheck : null;
+        return parent::getSolrUrl($finalConfig);
     }
 
     /**
@@ -88,7 +91,7 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);

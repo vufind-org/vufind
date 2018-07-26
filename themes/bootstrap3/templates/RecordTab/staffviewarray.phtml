@@ -1,17 +1,16 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="citation table table-striped">
-  <? foreach ($this->driver->getRawData() as $field => $values): ?>
+  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
       <td>
-        <? if (!is_array($values)) { $values = [$values]; } ?>
-        <? foreach ($values as $value): ?>
+        <?php foreach ((array)$values as $value): ?>
           <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </table>

@@ -3,7 +3,7 @@
 /**
  * Unit tests for WorldCat query builder
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\WorldCat;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for WorldCat query builder
@@ -40,7 +40,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryBuilderTest extends PHPUnit_Framework_TestCase
+class QueryBuilderTest extends TestCase
 {
     /**
      * Test query parsing.

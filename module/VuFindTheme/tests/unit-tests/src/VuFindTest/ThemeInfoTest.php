@@ -2,7 +2,7 @@
 /**
  * ThemeInfo Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -49,7 +50,7 @@ class ThemeInfoTest extends Unit\TestCase
     /**
      * Constructor
      */
-    public function __construct()
+    public function setUp()
     {
         $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
     }

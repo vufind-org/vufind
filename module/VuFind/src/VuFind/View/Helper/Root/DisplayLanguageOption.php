@@ -2,7 +2,7 @@
 /**
  * DisplayLanguageOption view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\I18n\Translator\TranslatorInterface;
 
 /**
@@ -59,7 +60,7 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
                 'ExtendedIni', null, 'default', 'native'
             );
             $this->translator->setLocale('native');
-        } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+        } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
             if (!extension_loaded('intl')) {
                 throw new \Exception(
                     'Translation broken due to missing PHP intl extension.'

@@ -2,7 +2,7 @@
 /**
  * VuFind Api module.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -26,8 +26,6 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindApi;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Api module.

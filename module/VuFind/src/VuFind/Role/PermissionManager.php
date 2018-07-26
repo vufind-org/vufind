@@ -2,7 +2,7 @@
 /**
  * Permission Manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\Role;
+
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
@@ -92,7 +93,7 @@ class PermissionManager
      */
     public function permissionRuleExists($context)
     {
-        foreach ($this->config as $key => $value) {
+        foreach ($this->config as $value) {
             if (!isset($value['permission'])) {
                 continue;
             }

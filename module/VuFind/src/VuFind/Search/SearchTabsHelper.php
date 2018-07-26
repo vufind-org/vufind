@@ -2,7 +2,7 @@
 /**
  * "Search tabs" helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2016.
@@ -28,7 +28,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search;
-use VuFind\Search\Results\PluginManager, Zend\View\Helper\Url, Zend\Http\Request;
+
+use VuFind\Search\Results\PluginManager;
+use Zend\Http\Request;
 
 /**
  * "Search tabs" helper

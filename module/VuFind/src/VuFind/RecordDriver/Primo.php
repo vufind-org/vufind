@@ -2,7 +2,7 @@
 /**
  * Model for Primo Central records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,15 +36,8 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Primo extends SolrDefault
+class Primo extends DefaultRecord
 {
-    /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter = null;
-
     /**
      * Get the short (pre-subtitle) title of the record.
      *

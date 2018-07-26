@@ -2,7 +2,7 @@
 /**
  * HeadThemeResources view helper Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper;
-use VuFindTheme\ResourceContainer, VuFindTheme\View\Helper\HeadThemeResources;
+
+use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\HeadThemeResources;
 
 /**
  * HeadThemeResources view helper Test Class
@@ -92,13 +94,13 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     {
         $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
         $view->expects($this->at(0))->method('plugin')
-            ->with($this->equalTo('headmeta'))
+            ->with($this->equalTo('headMeta'))
             ->will($this->returnValue($this->getMockHeadMeta()));
         $view->expects($this->at(1))->method('plugin')
-            ->with($this->equalTo('headlink'))
+            ->with($this->equalTo('headLink'))
             ->will($this->returnValue($this->getMockHeadLink()));
         $view->expects($this->at(2))->method('plugin')
-            ->with($this->equalTo('headscript'))
+            ->with($this->equalTo('headScript'))
             ->will($this->returnValue($this->getMockHeadScript()));
         return $view;
     }

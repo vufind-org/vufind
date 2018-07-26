@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo connector.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,13 +28,13 @@
  */
 namespace VuFindTest\Backend\Primo;
 
+use InvalidArgumentException;
+
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Connector;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
-
-use PHPUnit_Framework_TestCase;
-use InvalidArgumentException;
 
 /**
  * Unit tests for Primo connector.
@@ -45,7 +45,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConnectorTest extends PHPUnit_Framework_TestCase
+class ConnectorTest extends TestCase
 {
     /**
      * Test default timeout value

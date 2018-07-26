@@ -2,7 +2,7 @@
 /**
  * Primo Central Search Parameters
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Primo;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -112,8 +113,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function activateAllFacets($preferredSection = false)
     {
-        $this->initFacetList('Facets', 'Results_Settings', 'Primo');
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Primo');
-        $this->initCheckboxFacets('CheckboxFacets', 'Primo');
+        $this->initFacetList('Facets', 'Results_Settings');
+        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
+        $this->initCheckboxFacets();
     }
 }

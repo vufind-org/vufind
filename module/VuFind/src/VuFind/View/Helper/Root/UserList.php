@@ -2,7 +2,7 @@
 /**
  * List view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
+
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * List view helper

@@ -3,7 +3,7 @@
 /**
  * Parameter bag.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -74,6 +74,16 @@ class ParamBag implements \Countable
     public function get($name)
     {
         return isset($this->params[$name]) ? $this->params[$name] : null;
+    }
+
+    /**
+     * Count parameters in internal array. Needed for Countable interface.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->params);
     }
 
     /**
@@ -237,15 +247,5 @@ class ParamBag implements \Countable
             }
         }
         return $request;
-    }
-
-    /**
-     * Get a count of parameters set in the bag.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->params);
     }
 }

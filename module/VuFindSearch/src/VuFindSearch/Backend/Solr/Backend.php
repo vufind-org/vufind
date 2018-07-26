@@ -2,7 +2,7 @@
 /**
  * SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,25 +27,25 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-
-use VuFindSearch\ParamBag;
-
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
-use VuFindSearch\Backend\Solr\Response\Json\Terms;
-
 use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Feature\SimilarInterface;
-use VuFindSearch\Feature\RetrieveBatchInterface;
-use VuFindSearch\Feature\RandomInterface;
-
 use VuFindSearch\Backend\Exception\BackendException;
+
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
+use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
+
+use VuFindSearch\Feature\RandomInterface;
+
+use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Feature\SimilarInterface;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
+
+use VuFindSearch\Query\Query;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * SOLR backend.
@@ -420,8 +420,7 @@ class Backend extends AbstractBackend
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );
         }
-        $qtime = isset($response['responseHeader']['QTime'])
-            ? $response['responseHeader']['QTime'] : 'n/a';
+        $qtime = $response['responseHeader']['QTime'] ?? 'n/a';
         $this->log('debug', 'Deserialized SOLR response', ['qtime' => $qtime]);
         return $response;
     }

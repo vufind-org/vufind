@@ -14,6 +14,15 @@ $config = [
             'newitems' => 'KrimDok\Controller\Plugin\Factory::getNewItems',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'KrimDok\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+        ],
+        'aliases' => [
+            'VuFind\RecordDriverPluginManager' => 'KrimDok\RecordDriver\PluginManager',
+            'VuFind\RecordDriver\PluginManager' => 'KrimDok\RecordDriver\PluginManager',
+        ],
+    ],
     'vufind' => [
         'plugin_managers' => [
             'ils_driver' => [

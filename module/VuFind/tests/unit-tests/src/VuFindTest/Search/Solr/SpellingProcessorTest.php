@@ -3,7 +3,7 @@
 /**
  * Unit tests for spelling processor.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -130,8 +130,8 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->getFixture('spell1');
         $query = $this->getFixture('query1');
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
+        $params = $this->getServiceManager()
+            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
@@ -192,8 +192,8 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->getFixture('spell1');
         $query = $this->getFixture('query1');
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
+        $params = $this->getServiceManager()
+            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $config = new Config(['expand' => false, 'phrase' => true]);
         $sp = new SpellingProcessor($config);
@@ -428,8 +428,8 @@ class SpellingProcessorTest extends TestCase
     {
         $spelling = $this->getFixture('spell' . $testNum);
         $query = $this->getFixture('query' . $testNum);
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
+        $params = $this->getServiceManager()
+            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
         $this->setProperty($params, 'query', $query);
         $sp = new SpellingProcessor(new Config($config));
         $suggestions = $sp->getSuggestions($spelling, $query);

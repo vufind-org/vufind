@@ -1,4 +1,4 @@
-<?
+<?php
   $url = $this->driver->getUrl();
 ?>
 <div class="media">
@@ -10,20 +10,20 @@
     </div>
 
     <div class="resultItemLine2">
-      <? $snippet = $this->driver->getHighlightedSnippet(); ?>
-      <? $summary = $this->driver->getSummary(); ?>
-      <? if (!empty($snippet)): ?>
+      <?php $snippet = $this->driver->getHighlightedSnippet(); ?>
+      <?php $summary = $this->driver->getSummary(); ?>
+      <?php if (!empty($snippet)): ?>
         <?=$this->highlight($snippet['snippet'])?>
-      <? elseif (!empty($summary)): ?>
+      <?php elseif (!empty($summary)): ?>
         <?=$this->escapeHtml($summary[0])?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
 
     <div class="resultItemLine3">
       <?=$this->escapeHtml($url)?>
-      <? $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
-        <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(array('T', 'Z'), ' ', $lastMod)))?>
-      <? endif; ?>
+      <?php $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
+        <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(['T', 'Z'], ' ', $lastMod)))?>
+      <?php endif; ?>
     </div>
   </div>
 </div>

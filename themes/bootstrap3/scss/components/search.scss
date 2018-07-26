@@ -304,3 +304,24 @@ body.rtl {
   font-size: inherit;
   font-style: italic;
 }
+
+/* ------ TOP FACETS ------ */
+.top-title {
+  display: inline-block;
+  padding-top: .5rem;
+  padding-left: .5rem;
+  font-weight: bold;
+  color: #000;
+}
+.top-title .fa {
+  width: 1rem;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .top-title { padding-top: 0; }
+  .top-title .fa { display: none; }
+  .top-facets .collapse {
+    display: block;
+    height: auto !important;
+  }
+}

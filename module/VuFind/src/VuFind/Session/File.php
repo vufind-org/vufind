@@ -2,7 +2,7 @@
 /**
  * File-based session handler
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -116,7 +116,7 @@ class File extends AbstractBase
         // Perform file-specific cleanup:
         $sess_file = $this->getPath() . '/sess_' . $sess_id;
         if (file_exists($sess_file)) {
-            return(unlink($sess_file));
+            return unlink($sess_file);
         }
         return true;
     }

@@ -2,7 +2,7 @@
 /**
  * Mink bulk action test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -135,6 +136,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
         $this->snooze();
@@ -150,10 +152,11 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
-        $this->findCss($page, '.modal #email_message')->setValue('message');
-        $this->findCss($page, '.modal #email_to')
-            ->setValue('demian.katz@villanova.edu');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
+        $this->findCssAndSetValue($page, '.modal #email_message', 'message');
+        $this->findCssAndSetValue(
+            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+        );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         /* TODO: add back this check when everything is working (as of this
@@ -179,6 +182,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
         $this->snooze();
@@ -225,6 +229,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
         $this->snooze();
@@ -259,6 +264,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try clicking without selecting anything:
         $button->click();
+        $this->snooze();
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
         $this->snooze();

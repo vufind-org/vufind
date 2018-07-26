@@ -2,9 +2,9 @@
 /**
  * Piwik view helper
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -76,7 +76,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Router object
      *
-     * @var Zend\Mvc\Router\Http\RouteMatch
+     * @var Zend\Router\Http\RouteMatch
      */
     protected $router;
 
@@ -111,7 +111,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      * if a single value, the Piwik site ID -- for backward compatibility)
      * @param bool                             $customVars Whether to track
      * additional information in custom variables
-     * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
+     * @param Zend\Router\Http\RouteMatch      $router     Request
      * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
     public function __construct($url, $options, $customVars, $router, $request)
@@ -122,8 +122,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         if (is_array($options)) {
             $this->siteId = $options['siteId'];
-            $this->searchPrefix = isset($options['searchPrefix'])
-                ? $options['searchPrefix'] : '';
+            $this->searchPrefix = $options['searchPrefix'] ?? '';
         } else {
             $this->siteId = $options;
         }
@@ -258,10 +257,11 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
-        if ('layout/lightbox' === $viewModel->getCurrent()->getTemplate()) {
+        $current = $viewModel->getCurrent();
+        if (null === $current || 'layout/lightbox' === $current->getTemplate()) {
             return null;
         }
-        $children = $viewModel->getCurrent()->getChildren();
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $template = $children[0]->getTemplate();
             if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
@@ -305,8 +305,16 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getRecordDriver()
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $children = $viewModel->getCurrent()->getChildren();
+        $view = $this->getView();
+        $viewModel = $view->plugin('view_model');
+        $current = $viewModel->getCurrent();
+        if (null === $current) {
+            $driver = $view->vars('driver');
+            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+                return $driver;
+            }
+        }
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $driver = $children[0]->getVariable('driver');
             if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {

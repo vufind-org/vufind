@@ -1,19 +1,20 @@
-<?
+<?php
     $data = $this->recommend->getRecommendations();
     $results = $this->recommend->getResults();
+    $displayQuery = $results->getParams()->getDisplayQuery();
+    $that = $this;
+    $callback = function ($heading) use ($results, $displayQuery, $that) {
+        // Generate a new search URL that replaces the user's current term
+        // with the authority term:
+        $url = $that->url($results->getOptions()->getSearchAction())
+            . $results->getUrlQuery()->replaceTerm($displayQuery, $heading);
+        return "<a href=\"$url\">" . $that->escapeHtml($heading) . '</a>';
+    };
+    $content = implode(', ', array_map($callback, $data));
 ?>
-<? if (is_array($data) && !empty($data)): ?>
+<?php if (!empty($content)): ?>
   <div class="authoritybox">
     <div><strong><?=$this->transEsc('See also')?>:</strong></div>
-    <div>
-      <? for ($i = 0; $i < count($data); $i++): ?>
-        <?
-            // Generate a new search URL that replaces the user's current term with the authority term:
-            $url = $this->url($results->getOptions()->getSearchAction())
-                . $results->getUrlQuery()->replaceTerm($results->getParams()->getDisplayQuery(), $data[$i]['heading']);
-        ?>
-        <a href="<?=$url?>"><?=$this->escapeHtml($data[$i]['heading'])?></a><? if ($i != count($data) - 1): ?>, <? endif; ?>
-      <? endfor; ?>
-    </div>
+    <div><?=$content?></div>
   </div>
-<? endif; ?>
+<?php endif; ?>

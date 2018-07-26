@@ -2,7 +2,7 @@
 /**
  * Citation view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Exception\Date as DateException;
+
+use VuFind\Date\DateException;
 
 /**
  * Citation view helper
@@ -119,9 +120,9 @@ class Citation extends \Zend\View\Helper\AbstractHelper
         $this->details = [
             'authors' => $this->prepareAuthors($authors),
             'title' => trim($title), 'subtitle' => trim($subtitle),
-            'pubPlace' => isset($pubPlaces[0]) ? $pubPlaces[0] : null,
-            'pubName' => isset($publishers[0]) ? $publishers[0] : null,
-            'pubDate' => isset($pubDates[0]) ? $pubDates[0] : null,
+            'pubPlace' => $pubPlaces[0] ?? null,
+            'pubName' => $publishers[0] ?? null,
+            'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
             'journal' => $driver->tryMethod('getContainerTitle')
         ];
@@ -507,7 +508,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     protected function isPunctuated($string)
     {
         $punctuation = ['.', '?', '!'];
-        return (in_array(substr($string, -1), $punctuation));
+        return in_array(substr($string, -1), $punctuation);
     }
 
     /**
@@ -637,7 +638,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 $i++;
             }
         }
-        return (empty($authorStr) ? false : $authorStr);
+        return empty($authorStr) ? false : $authorStr;
     }
 
     /**
@@ -719,7 +720,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 }
             }
         }
-        return (empty($authorStr) ? false : $this->stripPunctuation($authorStr));
+        return empty($authorStr) ? false : $this->stripPunctuation($authorStr);
     }
 
     /**

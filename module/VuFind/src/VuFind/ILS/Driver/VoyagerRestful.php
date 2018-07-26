@@ -2,7 +2,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -30,8 +30,11 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Date\DateException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -47,6 +50,9 @@ use PDO, PDOException, VuFind\Exception\Date as DateException,
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
@@ -585,11 +591,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        $holdType = isset($data['holdtype']) ? $data['holdtype'] : 'auto';
-        $level = isset($data['level']) ? $data['level'] : 'copy';
+        $holdType = $data['holdtype'] ?? 'auto';
+        $level = $data['level'] ?? 'copy';
         $mode = ('title' == $level) ? $this->titleHoldsMode : $this->holdsMode;
         if ('driver' == $mode && 'auto' == $holdType) {
-            $itemID = isset($data['item_id']) ? $data['item_id'] : false;
+            $itemID = $data['item_id'] ?? false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
             if (!$result) {
                 return false;
@@ -625,7 +631,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        $level = isset($data['level']) ? $data['level'] : 'copy';
+        $level = $data['level'] ?? 'copy';
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
@@ -1253,6 +1259,7 @@ EOT;
      *
      * @return array              An array of renewal information keyed by item ID
      */
+
     /**
      * Renew My Items
      *
@@ -1426,7 +1433,6 @@ EOT;
         $itemId = false
     ) {
         if (!empty($bibId) && !empty($patronId) && !empty($request)) {
-
             $hierarchy = [];
 
             // Build Hierarchy
@@ -1911,8 +1917,7 @@ EOT;
                             continue 2;
                         }
                         foreach ($copyFields as $field) {
-                            $hold[$field] = isset($apiHold[$field])
-                                ? $apiHold[$field] : '';
+                            $hold[$field] = $apiHold[$field] ?? '';
                         }
                         break;
                     }
@@ -1944,8 +1949,8 @@ EOT;
             ? $holdDetails['level'] : 'copy';
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
-        $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
-        $comment = isset($holdDetails['comment']) ? $holdDetails['comment'] : '';
+        $itemId = $holdDetails['item_id'] ?? false;
+        $comment = $holdDetails['comment'] ?? '';
         $bibId = $holdDetails['id'];
 
         // Request was initiated before patron was logged in -
@@ -1994,12 +1999,11 @@ EOT;
             return $this->holdError('hold_invalid_request_group');
         }
 
-            // Optional check that the bib has items
+        // Optional check that the bib has items
         if ($this->checkItemsExist) {
             $exist = $this->itemsExist(
                 $bibId,
-                isset($holdDetails['requestGroupId'])
-                ? $holdDetails['requestGroupId'] : null
+                $holdDetails['requestGroupId'] ?? null
             );
             if (!$exist) {
                 return $this->holdError('hold_no_items');
@@ -2018,8 +2022,7 @@ EOT;
             ) {
                 $available = $this->itemsAvailable(
                     $bibId,
-                    isset($holdDetails['requestGroupId'])
-                    ? $holdDetails['requestGroupId'] : null
+                    $holdDetails['requestGroupId'] ?? null
                 );
                 if ($available) {
                     return $this->holdError('hold_items_available');
@@ -2079,7 +2082,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = $this->ws_dbKey . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2111,7 +2114,6 @@ EOT;
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false, 'status' => 'hold_cancel_fail'
@@ -2156,9 +2158,7 @@ EOT;
      */
     public function getRenewDetails($checkOutDetails)
     {
-        $renewDetails = (isset($checkOutDetails['institution_dbkey'])
-            ? $checkOutDetails['institution_dbkey']
-            : '')
+        $renewDetails = ($checkOutDetails['institution_dbkey'] ?? '')
             . '|' . $checkOutDetails['item_id'];
         return $renewDetails;
     }
@@ -2229,7 +2229,7 @@ EOT;
                     if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
                         if ($now > $dueTimeStamp) {
                             $dueStatus = 'overdue';
-                        } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                        } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                             $dueStatus = 'due';
                         }
                     }
@@ -2466,9 +2466,9 @@ EOT;
         $patron = $details['patron'];
         $level = isset($details['level']) && !empty($details['level'])
             ? $details['level'] : 'copy';
-        $itemId = isset($details['item_id']) ? $details['item_id'] : false;
-        $mfhdId = isset($details['holdings_id']) ? $details['holdings_id'] : false;
-        $comment = isset($details['comment']) ? $details['comment'] : '';
+        $itemId = $details['item_id'] ?? false;
+        $mfhdId = $details['holdings_id'] ?? false;
+        $comment = $details['comment'] ?? '';
         $bibId = $details['id'];
 
         // Make Sure Pick Up Location is Valid
@@ -2576,7 +2576,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -2608,7 +2608,6 @@ EOT;
                         : 'storage_retrieval_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,
@@ -2635,10 +2634,7 @@ EOT;
     public function getCancelStorageRetrievalRequestDetails($details)
     {
         $details
-            = (isset($details['institution_dbkey'])
-                ? $details['institution_dbkey']
-                : ''
-            )
+            = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']
             . '|' . $details['reqnum'];
         return $details;
@@ -2854,7 +2850,7 @@ EOT;
             return false;
         }
 
-        $level = isset($data['level']) ? $data['level'] : 'copy';
+        $level = $data['level'] ?? 'copy';
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
@@ -3023,7 +3019,7 @@ EOT;
         $pickupLibrary = $this->encodeXML($details['pickUpLibrary']);
         $itemId = $this->encodeXML($details['item_id'] . '.' . $details['id']);
         $comment = $this->encodeXML(
-            isset($details['comment']) ? $details['comment'] : ''
+            $details['comment'] ?? ''
         );
         $bibId = $this->encodeXML($details['id']);
         $bibDbName = $this->encodeXML($this->config['Catalog']['database']);
@@ -3175,7 +3171,7 @@ EOT;
         foreach ($details as $cancelDetails) {
             list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
 
-             // Create Rest API Cancel Key
+            // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
 
             // Build Hierarchy
@@ -3213,7 +3209,6 @@ EOT;
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
                 ];
-
             } else {
                 $response[$itemId] = [
                     'success' => false,
@@ -3240,9 +3235,7 @@ EOT;
      */
     public function getCancelILLRequestDetails($details)
     {
-        $details = (isset($details['institution_dbkey'])
-            ? $details['institution_dbkey']
-            : '')
+        $details = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']
             . '|' . $details['type']
             . '|' . $details['reqnum'];
