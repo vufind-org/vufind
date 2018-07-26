@@ -138,7 +138,7 @@ public class ConfigManager
             try {
                 configFile = findConfigFile(filename);
             } catch (IllegalStateException e) {
-                dieWithError("Illegal State VUFIND_HOME not set");
+                dieWithError("Illegal State: " + e.getMessage());
             } catch (Throwable e) {
                 dieWithError("Unable to locate " + filename);
             }
