@@ -615,10 +615,11 @@ class MyResearchController extends AbstractBase
      */
     protected function processEditSubmit($user, $driver, $listID)
     {
-        $lists = $this->params()->fromPost('lists');
+        $lists = $this->params()->fromPost('lists', []);
         $tagParser = $this->serviceLocator->get('VuFind\Tags');
         $favorites = $this->serviceLocator
             ->get('VuFind\Favorites\FavoritesService');
+        $didSomething = false;
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
             $favorites->save(
@@ -629,13 +630,17 @@ class MyResearchController extends AbstractBase
                 ],
                 $user, $driver
             );
+            $didSomething = true;
         }
         // add to a new list?
         $addToList = $this->params()->fromPost('addToList');
         if ($addToList > -1) {
+            $didSomething = true;
             $favorites->save(['list' => $addToList], $user, $driver);
         }
-        $this->flashMessenger()->addMessage('edit_list_success', 'success');
+        if ($didSomething) {
+            $this->flashMessenger()->addMessage('edit_list_success', 'success');
+        }
 
         $newUrl = null === $listID
             ? $this->url()->fromRoute('myresearch-favorites')
