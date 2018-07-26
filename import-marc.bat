@@ -108,7 +108,7 @@ for %%a in (%VUFIND_HOME%\import\solrmarc_core_*.jar) do set JAR_FILE=%%a
 rem #####################################################
 rem # Execute Importer
 rem #####################################################
-set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\dist\solrj-lib %1
+set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Duser.VUFIND_HOME=%VUFIND_HOME% %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\dist\solrj-lib %1
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%
