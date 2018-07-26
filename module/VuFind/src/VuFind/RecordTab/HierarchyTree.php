@@ -2,7 +2,7 @@
 /**
  * HierarchyTree tab
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -191,7 +191,7 @@ class HierarchyTree extends AbstractBase
     public function searchActive()
     {
         $config = $this->getConfig();
-        return (!isset($config->Hierarchy->search) || $config->Hierarchy->search);
+        return !isset($config->Hierarchy->search) || $config->Hierarchy->search;
     }
 
     /**

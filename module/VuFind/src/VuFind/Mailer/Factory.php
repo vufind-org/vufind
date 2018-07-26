@@ -2,7 +2,7 @@
 /**
  * Factory for instantiating Mailer objects
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -26,9 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
+
+use Interop\Container\ContainerInterface;
 use Zend\Mail\Transport\InMemory;
-use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Mail\Transport\Smtp;
+use Zend\Mail\Transport\SmtpOptions;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Mailer objects
@@ -41,7 +44,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @codeCoverageIgnore
  */
-class Factory implements \Zend\ServiceManager\FactoryInterface
+class Factory implements FactoryInterface
 {
     /**
      * Build the mail transport object.
@@ -83,18 +86,34 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
     }
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public function createService(ServiceLocatorInterface $sm)
-    {
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+
         // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($this->getTransport($config));
+        $class = new $requestedName($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }

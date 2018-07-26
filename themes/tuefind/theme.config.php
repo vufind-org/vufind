@@ -3,8 +3,9 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
-            'helptext' => 'TueFind\View\Helper\Root\Factory::getHelpText',
-            'tuefind' => 'TueFind\View\Helper\TueFind\Factory::getTueFind',
+            'helptext' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'tuefind' => 'TueFind\View\Helper\TueFind\Factory',
         ],
     ],
     'css' => [

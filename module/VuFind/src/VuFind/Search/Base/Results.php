@@ -2,7 +2,7 @@
 /**
  * Abstract results search model.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
+
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
@@ -167,7 +168,7 @@ abstract class Results
     public function __clone()
     {
         if (is_object($this->params)) {
-            $this->params = clone($this->params);
+            $this->params = clone $this->params;
         }
         $this->helpers = [];
     }
@@ -300,7 +301,7 @@ abstract class Results
      */
     public function getResultTotal()
     {
-        if (is_null($this->resultTotal)) {
+        if (null === $this->resultTotal) {
             $this->performAndProcessSearch();
         }
         return $this->resultTotal;
@@ -368,7 +369,7 @@ abstract class Results
      */
     public function getResults()
     {
-        if (is_null($this->results)) {
+        if (null === $this->results) {
             $this->performAndProcessSearch();
         }
         return $this->results;
@@ -394,7 +395,7 @@ abstract class Results
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
         // is called...  blow up if somebody tries to get data that is not yet
         // available.
-        if (is_null($this->savedSearch)) {
+        if (null === $this->savedSearch) {
             throw new \Exception(
                 'Cannot retrieve save status before updateSaveStatus is called.'
             );
@@ -449,7 +450,7 @@ abstract class Results
      */
     public function getQuerySpeed()
     {
-        if (is_null($this->queryTime)) {
+        if (null === $this->queryTime) {
             $this->performAndProcessSearch();
         }
         return $this->queryTime;
@@ -462,7 +463,7 @@ abstract class Results
      */
     public function getStartTime()
     {
-        if (is_null($this->queryStartTime)) {
+        if (null === $this->queryStartTime) {
             $this->performAndProcessSearch();
         }
         return $this->queryStartTime;
@@ -499,7 +500,7 @@ abstract class Results
      */
     public function getRawSuggestions()
     {
-        if (is_null($this->suggestions)) {
+        if (null === $this->suggestions) {
             $this->performAndProcessSearch();
         }
         return $this->suggestions;

@@ -2,7 +2,7 @@
 /**
  * Wikipedia connection class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Connection;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -454,9 +455,7 @@ class Wikipedia implements TranslatorAwareInterface
             $imageUrl = $this->getWikipediaImageURL($imageName);
             if ($imageUrl != false) {
                 $info['image'] = $imageUrl;
-                $info['altimage'] = isset($imageCaption)
-                    ? $imageCaption
-                    : $name;
+                $info['altimage'] = $imageCaption ?? $name;
             }
         }
 
@@ -505,6 +504,6 @@ class Wikipedia implements TranslatorAwareInterface
             }
         }
 
-        return isset($imageUrl) ? $imageUrl : false;
+        return $imageUrl ?? false;
     }
 }

@@ -3,7 +3,7 @@
 /**
  * ResultScroller controller plugin tests.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -380,7 +380,8 @@ class ResultScrollerTest extends TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results) {
+    protected function getMockResultScroller($results)
+    {
         $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
             ->disableOriginalConstructor()->getMock();
         return new ResultScrollerMock($mockManager, $results);

@@ -2,7 +2,7 @@
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend\Pazpar2;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFindSearch\ParamBag;
 
 use Zend\Http\Request;
 
@@ -122,7 +122,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         // Don't change input when manipulating parameters:
-        $params = (null === $data) ? new ParamBag() : clone($data);
+        $params = (null === $data) ? new ParamBag() : clone $data;
 
         // Add session and command:
         if ($this->session) {

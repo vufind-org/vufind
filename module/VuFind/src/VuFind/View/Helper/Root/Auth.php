@@ -2,7 +2,7 @@
 /**
  * Authentication view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Exception\RuntimeException;
+
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Authentication view helper
@@ -37,7 +38,7 @@ use Zend\View\Exception\RuntimeException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Zend\View\Helper\AbstractHelper
+class Auth extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Authentication manager
@@ -47,13 +48,23 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     protected $manager;
 
     /**
+     * ILS Authenticator
+     *
+     * @var \VuFind\Auth\ILSAuthenticator
+     */
+    protected $ilsAuthenticator;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager $manager Authentication manager
+     * @param \VuFind\Auth\Manager          $manager          Authentication manager
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
      */
-    public function __construct(\VuFind\Auth\Manager $manager)
-    {
+    public function __construct(\VuFind\Auth\Manager $manager,
+        \VuFind\Auth\ILSAuthenticator $ilsAuthenticator
+    ) {
         $this->manager = $manager;
+        $this->ilsAuthenticator = $ilsAuthenticator;
     }
 
     /**
@@ -68,37 +79,9 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     {
         // Get the current auth module's class name
         $className = $this->getManager()->getAuthClassForTemplateRendering();
-
-        // Set up the needed context in the view:
-        $contextHelper = $this->getView()->plugin('context');
+        $template = 'Auth/%s/' . $name;
         $context['topClass'] = $this->getBriefClass($className);
-        $oldContext = $contextHelper($this->getView())->apply($context);
-
-        // Start a loop in case we need to use a parent class' name to find the
-        // appropriate template.
-        $topClassName = $className; // for error message
-        $resolver = $this->getView()->resolver();
-        while (true) {
-            // Guess the template name for the current class:
-            $template = 'Auth/' . $this->getBriefClass($className) . '/' . $name;
-            if ($resolver->resolve($template)) {
-                // Try to render the template....
-                $html = $this->getView()->render($template);
-                $contextHelper($this->getView())->restore($oldContext);
-                return $html;
-            } else {
-                // If the template doesn't exist, let's see if we can inherit a
-                // template from a parent class:
-                $className = get_parent_class($className);
-                if (empty($className)) {
-                    // No more parent classes left to try?  Throw an exception!
-                    throw new RuntimeException(
-                        'Cannot find ' . $name . ' template for auth module: '
-                        . $topClassName
-                    );
-                }
-            }
-        }
+        return $this->renderClassTemplate($template, $className, $context);
     }
 
     /**
@@ -135,6 +118,20 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get ILS patron record for the currently logged-in user.
+     *
+     * @return array|bool Patron array if available, false otherwise.
+     */
+    public function getILSPatron()
+    {
+        try {
+            return $this->ilsAuthenticator->storedCatalogLogin();
+        } catch (ILSException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Render the login form fields.
      *
      * @param array $context Context for rendering template
@@ -168,19 +165,6 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     public function getLoginDesc($context = [])
     {
         return $this->renderTemplate('logindesc.phtml', $context);
-    }
-
-    /**
-     * Helper to grab the end of the class name
-     *
-     * @param string $className Class name to abbreviate
-     *
-     * @return string
-     */
-    protected function getBriefClass($className)
-    {
-        $classParts = explode('\\', $className);
-        return array_pop($classParts);
     }
 
     /**

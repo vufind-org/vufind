@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Library Cards'));
 
@@ -10,28 +10,29 @@
   <?=$this->flashmessages()?>
 
   <h2><?=$this->transEsc('Library Cards')?></h2>
-  <? if ($this->libraryCards->count() == 0): ?>
+  <?php if ($this->libraryCards->count() == 0): ?>
     <div><?=$this->transEsc('You do not have any library cards')?></div>
-  <? else: ?>
-    <table class="table table-striped" summary="<?=$this->transEsc('Library Cards')?>">
+  <?php else: ?>
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$this->transEsc('Library Cards')?></caption>
     <tr>
       <th><?=$this->transEsc('Library Card Name')?></th>
-      <? if ($this->multipleTargets): ?>
+      <?php if ($this->multipleTargets): ?>
       <th><?=$this->transEsc('login_target')?></th>
-      <? endif; ?>
+      <?php endif; ?>
       <th><?=$this->transEsc('Username')?></th>
       <th>&nbsp;</th>
     </tr>
-    <? foreach ($this->libraryCards as $record): ?>
+    <?php foreach ($this->libraryCards as $record): ?>
       <tr>
         <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <? $username = $record['cat_username']; if ($this->multipleTargets): ?>
-          <? $target = ''; ?>
-          <? if (strstr($username, '.')): ?>
-            <? list($target, $username) = explode('.', $username, 2); ?>
-          <? endif; ?>
+        <?php $username = $record['cat_username']; if ($this->multipleTargets): ?>
+          <?php $target = ''; ?>
+          <?php if (strstr($username, '.')): ?>
+            <?php list($target, $username) = explode('.', $username, 2); ?>
+          <?php endif; ?>
           <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
-        <? endif; ?>
+        <?php endif; ?>
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <div class="btn-group">
@@ -46,9 +47,9 @@
           </div>
         </td>
       </tr>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     </table>
-  <? endif; ?>
+  <?php endif; ?>
 
   <div class="btn-group">
     <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>

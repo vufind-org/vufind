@@ -1,4 +1,4 @@
-<?
+<?php
     $this->headTitle($this->translate('Language'));
 ?>
 
@@ -8,21 +8,21 @@
 
 <table class="table table-striped">
   <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
-  <? foreach ($details as $langCode => $diffs): ?>
-    <?
+  <?php foreach ($details as $langCode => $diffs): ?>
+    <?php
       $extraCount = count($diffs['notInL1']);
       $missingCount = count($diffs['notInL2']);
     ?>
     <tr>
       <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=$missingCount ?><? if($missingCount > 0): ?> (<a href="#" onclick="return diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
-      <td><?=$extraCount ?><? if($extraCount > 0): ?> (<a href="#" onclick="return diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<? endif; ?></td>
+      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<a href="#" onclick="return diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<?php endif; ?></td>
+      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<a href="#" onclick="return diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<?php endif; ?></td>
       <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
       <td><?=count($diffs['helpFiles'])?></td>
     </tr>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </table>
-<?
+<?php
   $json = json_encode($details);
   $script = <<<JS
   function createDiffManager() {

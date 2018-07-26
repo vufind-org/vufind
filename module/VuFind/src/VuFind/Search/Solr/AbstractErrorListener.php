@@ -3,7 +3,7 @@
 /**
  * Abstract base class of SOLR error listeners.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,12 +28,12 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
+use SplObjectStorage;
 
-use Zend\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\EventInterface;
 
-use SplObjectStorage;
+use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Abstract base class of SOLR error listeners.

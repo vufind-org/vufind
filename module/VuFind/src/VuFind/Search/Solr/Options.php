@@ -2,7 +2,7 @@
 /**
  * Solr aspect of the Search Multi-class (Options)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -38,6 +38,8 @@ namespace VuFind\Search\Solr;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
     /**
      * Available sort options for facets
      *
@@ -102,9 +104,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->RSS->sort)) {
             $this->rssSort = $searchSettings->RSS->sort;
         }
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
-        }
         if (isset($searchSettings->General->default_handler)) {
             $this->defaultHandler = $searchSettings->General->default_handler;
         }
@@ -142,16 +141,10 @@ class Options extends \VuFind\Search\Base\Options
                 'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
                 'title' => 'sort_title'];
         }
-        // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
-        } else {
-            $this->viewOptions = ['list' => 'List'];
-        }
+
+        // Set up views
+        $this->initViewOptions($searchSettings);
+
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($searchSettings->List->view)) {
             $this->listviewOption = $searchSettings->List->view;
@@ -193,7 +186,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load Spelling preferences
-        $config = $configLoader->get('config');
+        $config = $configLoader->get($this->mainIni);
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }

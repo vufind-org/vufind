@@ -2,7 +2,7 @@
 /**
  * Search options plugin factory
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\Search\Options;
-use Zend\ServiceManager\ServiceLocatorInterface;
+
+use Interop\Container\ContainerInterface;
 
 /**
  * Search options plugin factory
@@ -51,18 +52,18 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     /**
      * Create a service for the specified name.
      *
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $name           Name of service
-     * @param string                  $requestedName  Unfiltered name of service
+     * @param ContainerInterface $container     Service container
+     * @param string             $requestedName Name of service
+     * @param array              $options       Options (unused)
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
     ) {
-        $class = $this->getClassName($name, $requestedName);
-        return new $class(
-            $serviceLocator->getServiceLocator()->get('VuFind\Config')
-        );
+        $class = $this->getClassName($requestedName);
+        return new $class($container->get('VuFind\Config\PluginManager'));
     }
 }

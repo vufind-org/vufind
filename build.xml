@@ -25,18 +25,15 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="6.4.2" />
-  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
+  <property name="solr_version" value="7.3.1" />
+  <property name="phpdoc_version" value="2.9.0" />
 
-
-  <property name="version" value="4.1.3" />
+  <property name="version" value="5.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
     <property name="mysqlpwswitch" value="-p" />
   </then></if>
-
-  <includepath classpath="${srcdir}/vendor/phpdocumentor" />
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -93,19 +90,24 @@
   </target>
 
   <!-- PHP CodeSniffer -->
+  <target name="phpcbf">
+    <exec command="${srcdir}/vendor/bin/phpcbf --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
   <target name="phpcs">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
   </target>
   <target name="phpcs-console">
-    <exec command="${srcdir}/vendor/bin/phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php ${srcdir}/module" escape="false" passthru="true" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs -vvv" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs -vvv" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix --config=${srcdir}/tests/vufind_templates.php_cs --dry-run -vvv --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- ESLint -->
@@ -121,13 +123,30 @@
 
   <!-- PHP API Documentation -->
   <target name="phpdoc">
-    <mkdir dir="${builddir}/apidocs"/>
+    <!-- GET phpDocumentor.phar -->
+    <if>
+      <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+      <then>
+        <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
+        <chmod mode="0755">
+          <fileset dir="${srcdir}/vendor/bin">
+            <include name="phpDocumentor-${phpdoc_version}.phar" />
+          </fileset>
+        </chmod>
+      </then>
+    </if>
+    <!-- Run phpdoc -->
+    <mkdir dir="${builddir}/apidocs" />
+    <!-- Old embedded version; no longer works correctly...
     <phpdoc2 title="VuFind API Documentation"
+      pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
       destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/*/src/**/*.php" />
       </fileset>
     </phpdoc2>
+    -->
+    <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
   </target>
 
   <!-- PHPUnit -->
@@ -164,9 +183,10 @@
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
-        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${tmp}" />
+        <mkdir dir="${builddir}/solr" />
+        <untar file="${srcdir}/downloads/solr-${solr_version}.tgz" todir="${builddir}/solr" />
         <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
-        <move file="${tmp}/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <move file="${builddir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
         <!-- make scripts executable -->
         <chmod mode="0755">
           <fileset dir="${srcdir}/solr/vendor/bin">

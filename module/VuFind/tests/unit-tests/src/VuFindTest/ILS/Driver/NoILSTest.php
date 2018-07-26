@@ -2,7 +2,7 @@
 /**
  * ILS driver test
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\NoILS;
 
 /**

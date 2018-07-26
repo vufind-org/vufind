@@ -2,7 +2,7 @@
 /**
  * Evergreen ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Evergreen
@@ -56,7 +59,7 @@ class Evergreen extends AbstractBase
      */
     protected $dbName;
 
-     /**
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -188,7 +191,7 @@ HERE;
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -350,7 +353,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -394,7 +397,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -451,7 +454,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -582,23 +585,23 @@ HERE;
      */
     //public function placeHold($holdDetails)
     //{
-        // Need to check asset.copy.status -> config.copy_status.holdable = true
-        // If it is holdable, place hold in action.hold_request:
-        // request_time to now, current_copy to asset.copy.id,
-        // usr to action.usr.id of requesting patron,
-        // phone_notify to phone number, email_notify to t/f
-        // set pickup_lib too?
+    // Need to check asset.copy.status -> config.copy_status.holdable = true
+    // If it is holdable, place hold in action.hold_request:
+    // request_time to now, current_copy to asset.copy.id,
+    // usr to action.usr.id of requesting patron,
+    // phone_notify to phone number, email_notify to t/f
+    // set pickup_lib too?
 
-        /*
-        $sql = "";
+    /*
+    $sql = "";
 
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-        } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
-        }
-        */
+    try {
+        $sqlStmt = $this->db->prepare($sql);
+        $sqlStmt->execute();
+    } catch (PDOException $e) {
+        throw new ILSException($e->getMessage());
+    }
+    */
     //}
 
     /**

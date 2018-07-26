@@ -3,7 +3,7 @@
 /**
  * Record router tests.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,8 +30,8 @@ namespace VuFindTest\Record;
 
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use Zend\Config\Config;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Config\Config;
 
 /**
  * Record router tests.

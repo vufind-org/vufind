@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up convenience variables:
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
@@ -19,165 +19,109 @@
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
-<? if (!empty($holdings['blocks'])):?>
+<?php if (!empty($holdings['blocks'])):?>
   <div id="account-block-msg" class="alert alert-danger">
     <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', $holdings['blocks'])]) ?>
   </div>
-<? endif; ?>
+<?php endif; ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
-<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
-  <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
-    <? if (!$user): ?>
+<?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <?php if (!$user): ?>
       <div class="alert alert-info">
         <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true" data-lightbox><?=$this->transEsc("hold_login")?></a>
       </div>
-    <? elseif (!$user->cat_username): ?>
+    <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
         <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
       </div>
-    <? endif; ?>
-  <? endif; ?>
-<? endif; ?>
-<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+    <?php endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
   <a class="placehold" data-lightbox title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
-<? endif; ?>
-<? if (!empty($urls) || $openUrlActive): ?>
+<?php endif; ?>
+<?php if (!empty($urls) || $openUrlActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
-  <? if (!empty($urls)): ?>
-    <? foreach ($urls as $current): ?>
+  <?php if (!empty($urls)): ?>
+    <?php foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
-    <? endforeach; ?>
-  <? endif; ?>
-  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
-<? endif; ?>
-<? foreach ($holdings['holdings'] as $holding): ?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+  <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
+<?php endif; ?>
+<?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
-  <? $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
-  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+  <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
+  <?php if (isset($holding['locationhref']) && $holding['locationhref']): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
-  <? else: ?>
+  <?php else: ?>
     <?=$locationText?>
-  <? endif; ?>
+  <?php endif; ?>
 </h3>
-<table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
-  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
+<table class="table table-striped">
+  <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
-      <? foreach ($callNos as $callNo): ?>
-        <? if ($this->callnumberHandler): ?>
+      <?php foreach ($callNos as $callNo): ?>
+        <?php if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo) ?>"><?=$this->escapeHtml($callNo)?></a>
-        <? else: ?>
+        <?php else: ?>
           <?=$this->escapeHtml($callNo)?>
-        <? endif; ?>
+        <?php endif; ?>
         <br />
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </td>
   </tr>
-  <? endif; ?>
-  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+  <?php endif; ?>
+  <?php if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
     <tr>
-      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <?php // Translation for summary is a special case for backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
-        <? foreach ($textFields as $current): ?>
+        <?php foreach ($textFields as $current): ?>
           <?=$this->escapeHtml($current)?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endforeach; endif; ?>
-  <? foreach ($holding['items'] as $row): ?>
-    <?
-      // AJAX Check record?
-      $check = isset($row['check']) && $row['check'];
-      $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
-      $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
+  <?php endforeach; endif; ?>
+  <?php foreach ($holding['items'] as $row): ?>
+    <?php
+        try {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
+                ['holding' => $row]
+            );
+        } catch (Exception $e) {
+            echo $this->context($this)->renderInContext(
+                'RecordTab/holdingsils/standard.phtml',
+                ['holding' => $row]
+            );
+        }
     ?>
-    <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-      <tr vocab="http://schema.org/" typeof="Offer">
-        <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
-        <td>
-          <? if ($row['reserve'] == "Y"): ?>
-            <link property="availability" href="http://schema.org/InStoreOnly" />
-            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
-          <? endif; ?>
-          <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
-            <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
-          <? else: ?>
-            <? if ($row['availability']): ?>
-              <? /* Begin Available Items (Holds) */ ?>
-               <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
-              <? if (isset($row['link']) && $row['link']): ?>
-                <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
-              <? endif; ?>
-              <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
-                <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
-              <? endif; ?>
-              <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
-                <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
-              <? endif; ?>
-            <? else: ?>
-              <? /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
-              <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
-              <? if (isset($row['duedate']) && $row['duedate']): ?>
-                &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
-              <? endif; ?>
-              <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-                <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
-              <? endif; ?>
-              <? if (isset($row['link']) && $row['link']): ?>
-                <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
-              <? endif; ?>
-            <? endif; ?>
-            <? if (isset($row['item_notes'])): ?>
-              <div class="item-notes">
-                <b><?=$this->transEsc("Item Notes")?>:</b>
-                <ul>
-                  <? foreach ($row['item_notes'] as $item_note): ?>
-                    <li><?=$this->escapeHtml($item_note) ?></li>
-                  <? endforeach; ?>
-                </ul>
-              </div>
-            <? endif; ?>
-          <? endif; ?>
-          <? /* Embed item structured data: library, barcode, call number */ ?>
-          <? if ($row['location']): ?>
-            <meta property="seller" content="<?=$this->escapeHtmlAttr($row['location'])?>" />
-          <? endif; ?>
-          <? if ($row['barcode']): ?>
-            <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($row['barcode'])?>" />
-          <? endif; ?>
-          <? if ($row['callnumber']): ?>
-            <meta property="sku" content="<?=$this->escapeHtmlAttr($row['callnumber'])?>" />
-          <? endif; ?>
-          <? /* Declare that the item is to be borrowed, not for sale */ ?>
-            <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
-            <link property="itemOffered" href="#record" />
-        </td>
-      </tr>
-    <? endif; ?>
-  <? endforeach; ?>
-  <? if (!empty($holding['purchase_history'])): ?>
+  <?php endforeach; ?>
+  <?php if (!empty($holding['purchase_history'])): ?>
     <tr>
       <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
       <td>
-        <? foreach ($holding['purchase_history'] as $current): ?>
+        <?php foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br/>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </td>
     </tr>
-  <? endif; ?>
+  <?php endif; ?>
 </table>
-<? endforeach; ?>
+<?php endforeach; ?>
 
-<? $history = $this->driver->getRealTimeHistory(); ?>
-<? if (is_array($history) && !empty($history)): ?>
-<h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
-<table class="table table-striped">
-  <? foreach ($history as $row): ?>
-    <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
-  <? endforeach; ?>
-</table>
-<? endif; ?>
+<?php $history = $this->driver->getRealTimeHistory(); ?>
+<?php if (is_array($history) && !empty($history)): ?>
+  <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
+  <table class="table table-striped">
+    <?php foreach ($history as $row): ?>
+      <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
+    <?php endforeach; ?>
+  </table>
+<?php endif; ?>

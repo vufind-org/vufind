@@ -2,7 +2,7 @@
 /**
  * ILS authentication test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -98,7 +98,9 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $driver = $this->getMockDriver();
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
-        $driverManager = new \VuFind\ILS\Driver\PluginManager();
+        $driverManager = new \VuFind\ILS\Driver\PluginManager(
+            $this->getServiceManager()
+        );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock('VuFind\Config\PluginManager');
         $mockConfigReader->expects($this->any())->method('get')
@@ -111,7 +113,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $authenticator
         );
         $auth->setDbTableManager(
-            $this->getServiceManager()->get('VuFind\DbTablePluginManager')
+            $this->getServiceManager()->get('VuFind\Db\Table\PluginManager')
         );
         $auth->getCatalog()->setDriver($driver);
         return $auth;
@@ -149,10 +151,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuth()->authenticate($request);
     }
@@ -161,10 +164,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuth()->authenticate($request);
     }
@@ -173,6 +177,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with technical error.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testBadLoginResponse()
     {
@@ -183,7 +189,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
             ->will($this->returnValue($response));
-        $this->setExpectedException('VuFind\Exception\Auth');
         $this->getAuth($driver)->authenticate($this->getLoginRequest());
     }
 

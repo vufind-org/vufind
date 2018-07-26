@@ -2,7 +2,7 @@
 /**
  * Factory for instantiating content loaders
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -50,9 +51,8 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentAuthorNotesPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\Content\AuthorNotes\PluginManager');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $providers = isset($config->Content->authorNotes)
             ? $config->Content->authorNotes : '';
         return new Loader($loader, $providers);
@@ -67,9 +67,8 @@ class Factory
      */
     public static function getExcerpts(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentExcerptsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\Content\Excerpts\PluginManager');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $providers = isset($config->Content->excerpts)
             ? $config->Content->excerpts : '';
         return new Loader($loader, $providers);
@@ -84,11 +83,42 @@ class Factory
      */
     public static function getReviews(ServiceManager $sm)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentReviewsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $loader = $sm->get('VuFind\Content\Reviews\PluginManager');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $providers = isset($config->Content->reviews)
             ? $config->Content->reviews : '';
+        return new Loader($loader, $providers);
+    }
+
+    /**
+     * Create Summaries loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getSummaries(ServiceManager $sm)
+    {
+        $loader = $sm->get('VuFind\Content\Summaries\PluginManager');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $providers = isset($config->Content->summaries)
+            ? $config->Content->summaries : '';
+        return new Loader($loader, $providers);
+    }
+
+    /**
+     * Create TOC loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getTOC(ServiceManager $sm)
+    {
+        $loader = $sm->get('VuFind\Content\TOC\PluginManager');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $providers = isset($config->Content->toc)
+            ? $config->Content->toc : '';
         return new Loader($loader, $providers);
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Mink cart test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -59,9 +60,9 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     {
         $page = $this->getChannelsPage();
         // Channels are here
-        $this->findCss($page, 'div.channel');
+        $this->findCss($page, 'div.channel-wrapper');
         // Check number of channels
-        $channels = $page->findAll('css', 'div.channel');
+        $channels = $page->findAll('css', 'div.channel-wrapper');
         $this->assertEquals(6, count($channels));
         // Make sure search input matches url
         $this->assertEquals(
@@ -76,15 +77,15 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddChannels()
     {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel');
+        $channel = $this->findCss($page, 'div.channel-wrapper');
         // Initial counts
-        $this->assertEquals(6, count($page->findAll('css', 'div.channel')));
+        $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
         $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
         // Click first add button
         $this->findCss($channel, '.add-btn')->click();
         $this->snooze();
         // Post count
-        $this->assertEquals(8, count($page->findAll('css', 'div.channel')));
+        $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
         $this->assertEquals(6, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
     }
 
@@ -94,9 +95,13 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
     public function testSwitchToSearch()
     {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel');
+        $channel = $this->findCss($page, 'div.channel-wrapper');
+        // Click dropdown to display links
+        $this->findCss($channel, '.dropdown')->click();
+        $this->snooze();
         // Click link to go to search results
         $this->findCss($channel, '.channel_search')->click();
+        $this->snooze();
         // Make sure the search translated
         $this->assertEquals(
             'building:"weird_ids.mrc"',
@@ -104,7 +109,7 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Check facet
         $this->assertEquals(
-            'Suggested Topics: Adult children of aging parents',
+            'Clear Filter Suggested Topics: Adult children of aging parents',
             $this->findCss($page, '.active-filters .facet')->getText()
         );
     }

@@ -3,7 +3,7 @@
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Leipzig University Library 2014.
  *
@@ -29,8 +29,9 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
-    Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
+
+use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being

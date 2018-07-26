@@ -2,7 +2,7 @@
 /**
  * MultiAuth Authentication plugin
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
+
+use VuFind\Db\Row\User;
+use VuFind\Exception\Auth as AuthException;
 use Zend\Http\PhpEnvironment\Request;
 
 /**

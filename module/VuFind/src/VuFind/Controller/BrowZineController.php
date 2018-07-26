@@ -2,7 +2,7 @@
 /**
  * BrowZine Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -48,16 +49,6 @@ class BrowZineController extends AbstractSearch
     {
         $this->searchClassId = 'BrowZine';
         parent::__construct($sm);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel();
     }
 
     /**

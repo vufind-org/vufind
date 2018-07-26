@@ -2,7 +2,7 @@
 /**
  * OpenLibrarySubjects Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Connection\OpenLibrary;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -200,9 +202,9 @@ class OpenLibrarySubjects implements RecommendInterface,
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');
-        if (!is_null($from) && !is_null($to)) {
+        if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
-        } else if (is_object($params)) {
+        } elseif (is_object($params)) {
             $currentFilters = $params->getFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);

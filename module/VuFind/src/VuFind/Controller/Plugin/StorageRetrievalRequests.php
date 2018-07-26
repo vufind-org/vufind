@@ -2,7 +2,7 @@
 /**
  * VuFind Action Helper - Storage Retrieval Requests Support Methods
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2014.
@@ -101,7 +101,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed

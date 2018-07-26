@@ -4,19 +4,14 @@ namespace IxTheo\Search\Factory;
 use IxTheo\Search\Backend\Solr\Backend;
 use IxTheo\Search\Backend\Solr\LuceneSyntaxHelper;
 use IxTheo\Search\Backend\Solr\QueryBuilder;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
-class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBackendFactory
+class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBackendFactory implements TranslatorAwareInterface
 {
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Create the SOLR backend.
@@ -33,7 +28,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
@@ -47,9 +42,9 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
      */
     protected function createConnector()
     {
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
 
-        $current_lang = $this->serviceLocator->get('Vufind\Translator')->getLocale();
+        $current_lang = $this->getTranslatorLocale();
 
         // On the Solr side we use different naming scheme
         // so map traditional and simplified chinese accordingly
@@ -61,7 +56,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
             'select' => [
                 'fallback' => true,
                 'defaults' => ['fl' => '*,score', 'lang' => $current_lang],
-                'appends'  => ['fq' => [], 'defType' => 'multiLanguageQueryParser'],
+                'appends'  => ['fq' => [], 'defType' => 'multiLanguageQueryParser', 'df' => 'allfields'],
             ],
             'term' => [
                 'functions' => ['terms'],
@@ -92,7 +87,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
         $defaultDismax = isset($config->Index->default_dismax_handler)
                          ? $config->Index->default_dismax_handler : 'dismax';
         $builder = new QueryBuilder($specs, $defaultDismax);

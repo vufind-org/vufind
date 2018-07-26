@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hide Facet Value Listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindTest\Unit\TestCase;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
+use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 
 /**

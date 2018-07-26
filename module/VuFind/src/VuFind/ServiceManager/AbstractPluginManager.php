@@ -2,7 +2,7 @@
 /**
  * VuFind Plugin Manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ServiceManager;
-use Zend\ServiceManager\AbstractPluginManager as Base,
-    Zend\ServiceManager\ConfigInterface,
-    Zend\ServiceManager\DelegatorFactoryInterface,
-    Zend\ServiceManager\Exception\RuntimeException as ServiceManagerRuntimeException;
+
+use Zend\ServiceManager\AbstractPluginManager as Base;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
  * VuFind Plugin Manager
@@ -44,6 +43,8 @@ use Zend\ServiceManager\AbstractPluginManager as Base,
  */
 abstract class AbstractPluginManager extends Base
 {
+    use LowerCaseServiceNameTrait;
+
     /**
      * Constructor
      *
@@ -58,7 +59,7 @@ abstract class AbstractPluginManager extends Base
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
         $this->addInitializer(
-            ['VuFind\ServiceManager\Initializer', 'initPlugin'], false
+            'VuFind\ServiceManager\ServiceInitializer', false
         );
     }
 
@@ -70,18 +71,14 @@ abstract class AbstractPluginManager extends Base
      *
      * @param mixed $plugin Plugin to validate
      *
-     * @throws ServiceManagerRuntimeException if invalid
+     * @throws InvalidServiceException if invalid
      * @return void
      */
-    public function validatePlugin($plugin)
+    public function validate($plugin)
     {
-        if ($plugin instanceof DelegatorFactoryInterface) {
-            return;
-        }
-        
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {
-            throw new ServiceManagerRuntimeException(
+            throw new InvalidServiceException(
                 'Plugin ' . get_class($plugin) . ' does not belong to '
                 . $expectedInterface
             );

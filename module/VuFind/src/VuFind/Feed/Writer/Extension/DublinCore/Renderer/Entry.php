@@ -2,7 +2,7 @@
 /**
  * Zend\Feed\Renderer\Entry extension for Dublin Core
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore\Renderer;
-use DOMDocument, DOMElement,
-    Zend\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
+
+use DOMDocument;
+use DOMElement;
+use Zend\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 
 /**
  * Zend\Feed\Renderer\Entry extension for Dublin Core

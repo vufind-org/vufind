@@ -2,7 +2,7 @@
 /**
  * Configuration-Based Hierarchy Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -56,7 +56,7 @@ class ConfigurationBased extends AbstractBase
     {
         $treeConfigDriver = isset($this->config->HierarchyTree->show)
             ? $this->config->HierarchyTree->show : false;
-        return ($this->enabled && $treeConfigDriver);
+        return $this->enabled && $treeConfigDriver;
     }
 
     /**
@@ -124,6 +124,7 @@ class ConfigurationBased extends AbstractBase
         return isset($this->config->HierarchyTree)
             ? $this->config->HierarchyTree->toArray() : [];
     }
+
     /**
      * Get Collection Link Type from the config file
      *

@@ -2,7 +2,7 @@
 /**
  * LibraryCards Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -192,6 +192,16 @@ class LibraryCardsController extends AbstractBase
         $cardID = $this->params()->fromQuery('cardID');
         $user->activateLibraryCard($cardID);
 
+        // Connect to the ILS and check that the credentials are correct:
+        $catalog = $this->getILS();
+        $patron = $catalog->patronLogin(
+            $user->cat_username, $user->getCatPassword()
+        );
+        if (!$patron) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_invalid', 'error');
+        }
+
         $this->setFollowupUrlToReferer();
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
@@ -239,7 +249,7 @@ class LibraryCardsController extends AbstractBase
             $user->saveLibraryCard(
                 $id == 'NEW' ? null : $id, $cardName, $username, $password
             );
-        } catch(\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             return false;
         }

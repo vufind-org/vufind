@@ -2,7 +2,7 @@
 /**
  * Hold Logic Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection,
-    VuFind\Exception\ILS as ILSException;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
@@ -120,10 +121,8 @@ class Holds
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
                 'items' => $items,
-                'location' => isset($items[0]['location'])
-                    ? $items[0]['location'] : '',
-                'locationhref' => isset($items[0]['locationhref'])
-                    ? $items[0]['locationhref'] : ''
+                'location' => $items[0]['location'] ?? '',
+                'locationhref' => $items[0]['locationhref'] ?? ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -217,7 +216,7 @@ class Holds
 
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
-            } else if ($mode == "driver") {
+            } elseif ($mode == "driver") {
                 $holdings = $this->driverHoldings($result, $config, !empty($blocks));
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);
@@ -340,7 +339,7 @@ class Holds
                             = ($holds_override && isset($copy['holdOverride']))
                             ? $copy['holdOverride'] : $type;
 
-                        switch($currentType) {
+                        switch ($currentType) {
                         case "all":
                             $addlink = true; // always provide link
                             break;
@@ -522,8 +521,7 @@ class Holds
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
-            'source' => isset($details['source'])
-                ? $details['source'] : DEFAULT_SEARCH_BACKEND,
+            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
         ];
     }

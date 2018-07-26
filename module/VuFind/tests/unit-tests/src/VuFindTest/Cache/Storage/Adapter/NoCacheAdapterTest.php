@@ -3,7 +3,7 @@
 /**
  * Unit tests for VuFind NoCacheAdapter.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Cache\Storage\Adapter;
 
-use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
+use PHPUnit\Framework\TestCase;
 
-use PHPUnit_Framework_TestCase;
+use VuFind\Cache\Storage\Adapter\NoCacheAdapter;
 
 /**
  * Unit tests for VuFind NoCacheAdapter.
@@ -41,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoCacheAdapterTest extends PHPUnit_Framework_TestCase
+class NoCacheAdapterTest extends TestCase
 {
     /**
      * Test that an item is not stored.
@@ -52,6 +52,6 @@ class NoCacheAdapterTest extends PHPUnit_Framework_TestCase
     {
         $cache = new NoCacheAdapter();
         $cache->setItem('key', 'value');
-        $this->assertFalse((boolean)$cache->hasItem('key'));
+        $this->assertFalse((bool)$cache->hasItem('key'));
     }
 }

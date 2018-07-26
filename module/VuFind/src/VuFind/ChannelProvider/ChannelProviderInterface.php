@@ -2,7 +2,7 @@
 /**
  * Channel provider interface.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 
 /**
  * Channel provider interface.

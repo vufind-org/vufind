@@ -2,7 +2,7 @@
 /**
  * Database authentication class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,7 +28,11 @@
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException, Zend\Crypt\Password\Bcrypt;
+
+use VuFind\Db\Table\User as UserTable;
+use VuFind\Exception\Auth as AuthException;
+use Zend\Crypt\Password\Bcrypt;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication class
@@ -60,8 +64,7 @@ class Database extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
@@ -100,66 +103,36 @@ class Database extends AbstractBase
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
     {
-        // Ensure that all expected parameters are populated to avoid notices
-        // in the code below.
-        $params = [
-            'firstname' => '', 'lastname' => '', 'username' => '',
-            'password' => '', 'password2' => '', 'email' => ''
-        ];
-        foreach ($params as $param => $default) {
-            $params[$param] = $request->getPost()->get($param, $default);
-        }
+        // Collect POST parameters from request
+        $params = $this->collectParamsFromRequest($request);
 
-        // Validate Input
+        // Validate username and password
         $this->validateUsernameAndPassword($params);
 
-        // Invalid Email Check
-        $validator = new \Zend\Validator\EmailAddress();
-        if (!$validator->isValid($params['email'])) {
-            throw new AuthException('Email address is invalid');
-        }
-        if (!$this->emailAllowed($params['email'])) {
-            throw new AuthException('authentication_error_creation_blocked');
-        }
+        // Get the user table
+        $userTable = $this->getUserTable();
 
-        // Make sure we have a unique username
-        $table = $this->getUserTable();
-        if ($table->getByUsername($params['username'], false)) {
-            throw new AuthException('That username is already taken');
-        }
-        // Make sure we have a unique email
-        if ($table->getByEmail($params['email'])) {
-            throw new AuthException('That email address is already used');
-        }
+        // Make sure parameters are correct
+        $this->validateParams($params, $userTable);
 
         // If we got this far, we're ready to create the account:
-        $user = $table->createRowForUsername($params['username']);
-        $user->firstname = $params['firstname'];
-        $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
+        $user = $this->createUserFromParams($params, $userTable);
         $user->save();
+
         return $user;
     }
 
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
@@ -221,7 +194,7 @@ class Database extends AbstractBase
      * Check that the user's password matches the provided value.
      *
      * @param string $password Password to check.
-     * @param object $userRow  The user row.  We pass this instead of the password
+     * @param object $userRow  The user row. We pass this instead of the password
      * because we may need to check different values depending on the password
      * hashing configuration.
      *
@@ -322,4 +295,86 @@ class Database extends AbstractBase
         }
         return $policy;
     }
+
+    /**
+     * Collect parameters from request and populate them.
+     *
+     * @param Request $request Request object containing new account details.
+     *
+     * @return string[]
+     */
+    protected function collectParamsFromRequest($request)
+    {
+        // Ensure that all expected parameters are populated to avoid notices
+        // in the code below.
+        $params = [
+            'firstname' => '', 'lastname' => '', 'username' => '',
+            'password' => '', 'password2' => '', 'email' => ''
+        ];
+        foreach ($params as $param => $default) {
+            $params[$param] = $request->getPost()->get($param, $default);
+        }
+
+        return $params;
+    }
+
+    /**
+     * Validate parameters.
+     *
+     * @param string[]  $params Parameters returned from collectParamsFromRequest()
+     * @param UserTable $table  The VuFind user table
+     *
+     * @throws AuthException
+     *
+     * @return void
+     */
+    protected function validateParams($params, $table)
+    {
+        // Invalid Email Check
+        $validator = new \Zend\Validator\EmailAddress();
+        if (!$validator->isValid($params['email'])) {
+            throw new AuthException('Email address is invalid');
+        }
+
+        // Check if Email is on whitelist (if applicable)
+        if (!$this->emailAllowed($params['email'])) {
+            throw new AuthException('authentication_error_creation_blocked');
+        }
+
+        // Make sure we have a unique username
+        if ($table->getByUsername($params['username'], false)) {
+            throw new AuthException('That username is already taken');
+        }
+
+        // Make sure we have a unique email
+        if ($table->getByEmail($params['email'])) {
+            throw new AuthException('That email address is already used');
+        }
+    }
+
+    /**
+     * Create a user row object from given parametes.
+     *
+     * @param string[]  $params Parameters returned from collectParamsFromRequest()
+     * @param UserTable $table  The VuFind user table
+     *
+     * @return \VuFind\Db\Row\User A user row object
+     */
+    protected function createUserFromParams($params, $table)
+    {
+        $user = $table->createRowForUsername($params['username']);
+        $user->firstname = $params['firstname'];
+        $user->lastname = $params['lastname'];
+        $user->email = $params['email'];
+        if ($this->passwordHashingEnabled()) {
+            $bcrypt = new Bcrypt();
+            $user->pass_hash = $bcrypt->create($params['password']);
+        } else {
+            $user->password = $params['password'];
+        }
+
+        return $user;
+    }
 }
+?>
+

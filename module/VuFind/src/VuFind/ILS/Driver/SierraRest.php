@@ -2,7 +2,7 @@
 /**
  * III Sierra REST API driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016-2017.
  *
@@ -26,11 +26,12 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
+
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
-use VuFind\Exception\VuFind\Exception;
 
 /**
  * III Sierra REST API driver
@@ -44,6 +45,7 @@ use VuFind\Exception\VuFind\Exception;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
@@ -505,7 +507,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber'
+                    . ',callNumber,barcode'
             ],
             'GET',
             $patron
@@ -519,6 +521,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'id' => '',
                 'checkout_id' => $this->extractId($entry['id']),
                 'item_id' => $this->extractId($entry['item']),
+                'barcode' => $entry['barcode'],
                 'duedate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['dueDate']
                 ),
@@ -616,6 +619,85 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historic transactions (i.e. checked
+     * out items) by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's historic transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $pageSize = $params['limit'] ?? 50;
+        $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
+        $sortOrder = isset($params['sort']) && 'checkout asc' === $params['sort']
+            ? 'asc' : 'desc';
+        $result = $this->makeRequest(
+            ['v3', 'patrons', $patron['id'], 'checkouts', 'history'],
+            [
+                'limit' => $pageSize,
+                'offset' => $offset,
+                'sortField' => 'outDate',
+                'sortOrder' => $sortOrder,
+                'fields' => 'item,outDate'
+            ],
+            'GET',
+            $patron
+        );
+        if (isset($result['code'])) {
+            return [
+                'success' => false,
+                'status' => 146 === $result['code']
+                    ? 'ils_transaction_history_disabled'
+                    : 'ils_connection_failed'
+            ];
+        }
+        $transactions = [];
+        foreach ($result['entries'] as $entry) {
+            $transaction = [
+                'id' => '',
+                'item_id' => $this->extractId($entry['item']),
+                'checkoutDate' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['outDate']
+                )
+            ];
+            // Fetch item information
+            $item = $this->makeRequest(
+                ['v3', 'items', $transaction['item_id']],
+                ['fields' => 'bibIds,varFields'],
+                'GET',
+                $patron
+            );
+            $transaction['volume'] = $this->extractVolume($item);
+            if (!empty($item['bibIds'])) {
+                $transaction['id'] = $item['bibIds'][0];
+
+                // Fetch bib information
+                $bib = $this->getBibRecord(
+                    $transaction['id'], 'title,publishYear', $patron
+                );
+                if (!empty($bib['title'])) {
+                    $transaction['title'] = $bib['title'];
+                }
+                if (!empty($bib['publishYear'])) {
+                    $transaction['publication_year'] = $bib['publishYear'];
+                }
+            }
+            $transactions[] = $transaction;
+        }
+
+        return [
+            'count' => $result['total'] ?? 0,
+            'transactions' => $transactions
+        ];
+    }
+
+    /**
      * Get Patron Holds
      *
      * This is responsible for retrieving all holds by a specific patron.
@@ -668,9 +750,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!empty($bibId)) {
                 // Fetch bib information
                 $bib = $this->getBibRecord($bibId, 'title,publishYear', $patron);
-                $title = isset($bib['title']) ? $bib['title'] : '';
-                $publicationYear = isset($bib['publishYear']) ? $bib['publishYear']
-                    : '';
+                $title = $bib['title'] ?? '';
+                $publicationYear = $bib['publishYear'] ?? '';
             }
             $available = in_array($entry['status']['code'], ['b', 'j', 'i']);
             if ($entry['priority'] >= $entry['priorityQueueLength']) {
@@ -795,7 +876,41 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return $locations;
         }
 
-        return [];
+        $result = $this->makeRequest(
+            ['v4', 'branches', 'pickupLocations'],
+            [
+                'limit' => 10000,
+                'offset' => 0,
+                'fields' => 'code,name',
+                'language' => $this->getTranslatorLocale()
+            ],
+            'GET',
+            $patron
+        );
+        if (isset($result['code'])) {
+            // An error was returned
+            $this->error(
+                "Request for pickup locations returned error code: {$result['code']}"
+                . ", HTTP status: {$result['httpStatus']}, name: {$result['name']}"
+            );
+            throw new ILSException('Problem with Sierra REST API.');
+        }
+        if (empty($result)) {
+            return [];
+        }
+
+        $locations = [];
+        foreach ($result as $entry) {
+            $locations[] = [
+                'locationID' => $entry['code'],
+                'locationDisplay' => $this->translateLocation(
+                    ['code' => $entry['code'], 'name' => $entry['name']]
+                )
+            ];
+        }
+
+        usort($locations, [$this, 'pickupLocationSortFunction']);
+        return $locations;
     }
 
     /**
@@ -836,8 +951,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if ($this->getPatronBlocks($patron)) {
             return false;
         }
-        $level = isset($data['level']) ? $data['level'] : 'copy';
-        if ('title' == $data['level']) {
+        $level = $data['level'] ?? 'copy';
+        if ('title' === $level) {
             $bib = $this->getBibRecord($id, 'bibLevel', $patron);
             if (!isset($bib['bibLevel']['code'])
                 || !in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
@@ -868,8 +983,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ? $holdDetails['level'] : 'copy';
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
-        $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
-        $comment = isset($holdDetails['comment']) ? $holdDetails['comment'] : '';
+        $itemId = $holdDetails['item_id'] ?? false;
+        $comment = $holdDetails['comment'] ?? '';
         $bibId = $holdDetails['id'];
 
         // Convert last interest date from Display Format to Sierra's required format
@@ -911,13 +1026,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'recordType' => $level == 'copy' ? 'i' : 'b',
             'recordNumber' => (int)($level == 'copy' ? $itemId : $bibId),
             'pickupLocation' => $pickUpLocation,
-            'neededBy' => $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            )
+            'neededBy' => $lastInterestDate
         ];
+        if ($comment) {
+            $request['note'] = $comment;
+        }
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'holds', 'requests'],
+            [$comment ? 'v4' : 'v3', 'patrons', $patron['id'], 'holds', 'requests'],
             json_encode($request),
             'POST',
             $patron
@@ -993,7 +1109,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $bibId = $item['bibIds'][0];
                     // Fetch bib information
                     $bib = $this->getBibRecord($bibId, 'title,publishYear', $patron);
-                    $title = isset($bib['title']) ? $bib['title'] : '';
+                    $title = $bib['title'] ?? '';
                 }
             }
 
@@ -1077,6 +1193,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getConfig($function, $params = null)
     {
+        if ('getMyTransactionHistory' === $function) {
+            if (empty($this->config['TransactionHistory']['enabled'])) {
+                return false;
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc'
+                ],
+                'default_sort' => 'checkout desc'
+            ];
+        }
         return isset($this->config[$function])
             ? $this->config[$function] : false;
     }
@@ -1095,9 +1224,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function supportsMethod($method, $params)
     {
-        // Special case: change password is only available if properly configured.
+        // Changing password is only available if properly configured.
         if ($method == 'changePassword') {
             return isset($this->config['changePassword']);
+        }
+        // Loan history is only available if properly configured
+        if ($method == 'getMyTransactionHistory') {
+            return !empty($this->config['TransactionHistory']['enabled']);
         }
         return is_callable([$this, $method]);
     }
@@ -1615,7 +1748,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function isHoldable($item)
     {
         if (!empty($this->validHoldStatuses)) {
-            list($status, $duedate, $notes) = $this->getItemStatus($item);
+            list($status) = $this->getItemStatus($item);
             if (!in_array($status, $this->validHoldStatuses)) {
                 return false;
             }
@@ -1697,6 +1830,23 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = strcmp($a['location'], $b['location']);
         if ($result == 0) {
             $result = $a['sort'] - $b['sort'];
+        }
+        return $result;
+    }
+
+    /**
+     * Pickup location sort function
+     *
+     * @param array $a First pickup location record to compare
+     * @param array $b Second pickup location record to compare
+     *
+     * @return int
+     */
+    protected function pickupLocationSortFunction($a, $b)
+    {
+        $result = strcmp($a['locationDisplay'], $b['locationDisplay']);
+        if ($result == 0) {
+            $result = $a['locationID'] - $b['locationID'];
         }
         return $result;
     }

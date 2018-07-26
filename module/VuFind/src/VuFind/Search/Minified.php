@@ -2,7 +2,7 @@
 /**
  * VuFind Minified Search Object
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -76,7 +76,12 @@ class Minified
     /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
      */
-    public $id, $i, $s, $r, $ty, $cl;
+    public $id;
+    public $i;
+    public $s;
+    public $r;
+    public $ty;
+    public $cl;
 
     /**
      * Constructor. Building minified object from the
@@ -138,7 +143,7 @@ class Minified
         // search class ID for the object we're about to construct:
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
-            switch($this->ty) {
+            switch ($this->ty) {
             case 'Summon':
             case 'SummonAdvanced':
                 $this->cl = 'Summon';

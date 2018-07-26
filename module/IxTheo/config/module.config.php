@@ -40,30 +40,15 @@ $config = [
                     'solrmarc' => 'IxTheo\RecordDriver\Factory::getSolrMarc',
                 ],
             ],
-            'search_backend' => [
-            	'factories' => [
-                    'Solr' => 'IxTheo\Search\Factory\SolrDefaultBackendFactory',
-                ],
-            ],
             'search_options' => [
                 'factories' => [
-                    'KeywordChainSearch' => 'IxTheo\Search\Options\Factory::getKeywordChainSearch',
                     'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
-                    'Solr' => 'IxTheo\Search\Options\Factory::getSolr',
                     'Subscriptions' => 'IxTheo\Search\Options\Factory::getSubscriptions',
-                ],
-            ],
-            'search_params' => [
-                'abstract_factories' => ['IxTheo\Search\Params\PluginFactory'],
-                'factories' => [
-                    'solr' => 'IxTheo\Search\Params\Factory::getSolr',
                 ],
             ],
             'search_results' => [
                 'factories' => [
-                    'KeywordChainSearch' => 'IxTheo\Search\Results\Factory::getKeywordChainSearch',
                     'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
-                    'solr' => 'IxTheo\Search\Results\Factory::getSolr',
                     'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
                 ],
             ],
@@ -87,11 +72,19 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'alphabrowse' => 'IxTheo\Controller\Factory::getAlphabrowseController',
-            'browse' => 'IxTheo\Controller\Factory::getBrowseController',
-            'KeywordChainSearch' => 'IxTheo\Controller\Factory::getKeywordChainSearchController',
-            'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
-            'record' => 'IxTheo\Controller\Factory::getRecordController',
+            'IxTheo\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
+            'IxTheo\Controller\BrowseController' => 'VuFind\Controller\BrowseControllerFactory',
+            'IxTheo\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'IxTheo\Controller\RecordController' => 'VuFind\Controller\RecordControllerFactory',
+            'IxTheo\Controller\Search\KeywordChainSearchController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
+            'browse' => 'IxTheo\Controller\BrowseController',
+            'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
+            'Keywordchainsearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
+            'MyResearch' => 'IxTheo\Controller\MyResearchController',
+            'record' => 'IxTheo\Controller\RecordController',
         ],
     ],
     'controller_plugins' => [
@@ -104,6 +97,18 @@ $config = [
         'factories' => [
             'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
+            'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
+            'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+        ],
+        'aliases' => [
+            'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
+            'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
+            'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
+            'VuFind\Search\Params\PluginManager' => 'IxTheo\Search\Params\PluginManager',
+            'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
         ],
     ],
 ];

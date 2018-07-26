@@ -2,7 +2,7 @@
 
 namespace TueFind\View\Helper\TueFind;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 
 /**
  * General View Helper for TueFind, containing miscellaneous functions
@@ -12,10 +12,10 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
-    protected $sm;
+    protected $container;
 
-    public function __construct(ServiceManager $sm) {
-        $this->sm = $sm;
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
     }
 
     /**
@@ -35,7 +35,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      * @return string
      */
     function getControllerName() {
-        return $this->sm->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch()->getParam('controller', 'index');
+        return $this->container->get('application')->getMvcEvent()->getRouteMatch()->getParam('controller', 'index');
     }
 
     /**
@@ -76,7 +76,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $team_email = isset($config->Site->email_team) ? $config->Site->email_team : '';
         return $team_email;
     }
-    
+
    /**
     * Appropriately format the roles for authors
     * @param array roles
