@@ -71,7 +71,7 @@ public class ConfigManager
         // Find VuFind's home directory in the environment; if it's not available,
         // try using a relative path on the assumption that we are currently in
         // VuFind's import subdirectory:
-        String vufindHome = System.getProperty("user.VUFIND_HOME");
+        String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
             // this shouldn't happen since import-marc.sh and .bat always set VUFIND_HOME
             throw new IllegalStateException("VUFIND_HOME must be set");
@@ -137,6 +137,8 @@ public class ConfigManager
             File configFile = null;
             try {
                 configFile = findConfigFile(filename);
+            } catch (IllegalStateException e) {
+                dieWithError("Illegal State VUFIND_HOME not set");
             } catch (Throwable e) {
                 dieWithError("Unable to locate " + filename);
             }
