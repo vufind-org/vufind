@@ -50,14 +50,10 @@ class HelpText extends \VuFind\View\Helper\Root\HelpText
         $oldContext = $this->contextHelper
             ->apply(null === $context ? [] : $context);
 
-        // Sanitize the template name to include only alphanumeric characters
-        // or underscores.
-        $safe_topic = preg_replace('/[^\w]/', '', $name);
-
         // Clear warnings
         $this->warnings = [];
 
-        $tpl_result = $this->getTemplate($safe_topic, $directory);
+        $tpl_result = $this->getTemplate($name, $directory);
         if ($tpl_result === false) {
             $html = false;
         } else {
