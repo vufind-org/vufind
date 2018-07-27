@@ -107,8 +107,8 @@ class Doi extends \Zend\View\Helper\AbstractHelper
     public function renderTemplate($imagebased = null)
     {
         // Build parameters needed to display the control:
-        $params = [
-        ];
+        $doi = $this->recordDriver->tryMethod('getCleanDOI');
+        $params = compact('doi');
 
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(

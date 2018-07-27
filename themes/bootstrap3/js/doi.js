@@ -2,9 +2,29 @@
 VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var element = $(el);
-    // Extract the OpenURL associated with the clicked element:
-    var doi = element.children('.doiLink');
-    alert('DOI!');
+    var doi = [];
+    element.find('.doiLink').each(function (i, el) {
+      doi[doi.length] = $(el).data('doi');
+    });
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({
+      method: 'doiLookup',
+      doi: doi,
+    });
+    $.ajax({
+      dataType: 'json',
+      url: url
+    })
+      .done(function embedDoiLinksDone(response) {
+        element.find('.doiLink').each(function (i, el) {
+          var doi = $(el).data('doi');
+          if ("undefined" !== response.data[doi]) {
+            var newLink = $('<a />');
+            newLink.attr('href', response.data[doi].link);
+            newLink.text(response.data[doi].label);
+            $(el).empty().append(newLink);
+          }
+        });
+      });
   }
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
