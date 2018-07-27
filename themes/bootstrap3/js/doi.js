@@ -6,6 +6,9 @@ VuFind.register('doi', function Doi() {
     element.find('.doiLink').each(function (i, el) {
       doi[doi.length] = $(el).data('doi');
     });
+    if (doi.length == 0) {
+      return;
+    }
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
       method: 'doiLookup',
       doi: doi,
