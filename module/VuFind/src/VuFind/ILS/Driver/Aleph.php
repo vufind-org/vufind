@@ -318,7 +318,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @var AlephTranslator
      */
-    protected $translator = false;
+    protected $alephTranslator = false;
 
     /**
      * Cache manager
@@ -408,12 +408,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             ) {
                 $cache = $this->cacheManager
                     ->getCache($this->config['Cache']['type']);
-                $this->translator = $cache->getItem('alephTranslator');
+                $this->alephTranslator = $cache->getItem('alephTranslator');
             }
-            if ($this->translator == false) {
-                $this->translator = new AlephTranslator($this->config);
+            if ($this->alephTranslator == false) {
+                $this->alephTranslator = new AlephTranslator($this->config);
                 if (isset($cache)) {
-                    $cache->setItem('alephTranslator', $this->translator);
+                    $cache->setItem('alephTranslator', $this->alephTranslator);
                 }
             }
         }
@@ -740,8 +740,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $item_process_status = (string)$item->{'z30-item-process-status-code'};
             $sub_library_code    = (string)$item->{'z30-sub-library-code'}; // $slc
             $z30 = $item->z30;
-            if ($this->translator) {
-                $item_status = $this->translator->tab15Translate(
+            if ($this->alephTranslator) {
+                $item_status = $this->alephTranslator->tab15Translate(
                     $sub_library_code, $item_status, $item_process_status
                 );
             } else {
@@ -759,9 +759,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             //$reserve = ($item_status['request'] == 'C')?'N':'Y';
             $collection = (string)$z30->{'z30-collection'};
             $collection_desc = ['desc' => $collection];
-            if ($this->translator) {
+            if ($this->alephTranslator) {
                 $collection_code = (string)$item->{'z30-collection-code'};
-                $collection_desc = $this->translator->tab40Translate(
+                $collection_desc = $this->alephTranslator->tab40Translate(
                     $collection_code, $sub_library_code
                 );
             }
