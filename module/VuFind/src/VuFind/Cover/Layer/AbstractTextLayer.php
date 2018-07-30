@@ -86,6 +86,10 @@ abstract class AbstractTextLayer extends AbstractLayer
     protected function drawText($im, $settings, $text, $y, $font, $fontSize, $mcolor,
         $scolor = false, $align = null
     ) {
+        // In case the text contains non-normalized UTF-8, fix that for proper
+        // display:
+        $text = \Normalizer::normalize($text);
+
         // If the wrap width is smaller than the image width, we want to account
         // for this when right or left aligning to maintain padding on the image.
         $wrapGap = ($settings->width - $settings->wrapWidth) / 2;
