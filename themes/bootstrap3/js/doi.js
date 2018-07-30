@@ -3,10 +3,10 @@ VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var element = $(el);
     var doi = [];
-    element.find('.doiLink').each(function (i, el) {
-      doi[doi.length] = $(el).data('doi');
+    element.find('.doiLink').each(function extractDoiData(i, doiLinkEl) {
+      doi[doi.length] = $(doiLinkEl).data('doi');
     });
-    if (doi.length == 0) {
+    if (doi.length === 0) {
       return;
     }
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
@@ -18,13 +18,13 @@ VuFind.register('doi', function Doi() {
       url: url
     })
       .done(function embedDoiLinksDone(response) {
-        element.find('.doiLink').each(function (i, el) {
-          var doi = $(el).data('doi');
+        element.find('.doiLink').each(function populateDoiLinks(i, doiEl) {
+          var doi = $(doiEl).data('doi');
           if ("undefined" !== response.data[doi]) {
             var newLink = $('<a />');
             newLink.attr('href', response.data[doi].link);
             newLink.text(response.data[doi].label);
-            $(el).empty().append(newLink);
+            $(doiEl).empty().append(newLink);
           }
         });
       });
