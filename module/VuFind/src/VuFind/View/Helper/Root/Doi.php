@@ -27,8 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Resolver\Driver\PluginManager;
-
 /**
  * DOI view helper
  *
