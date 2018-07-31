@@ -19,11 +19,11 @@ VuFind.register('doi', function Doi() {
     })
       .done(function embedDoiLinksDone(response) {
         element.find('.doiLink').each(function populateDoiLinks(i, doiEl) {
-          var doi = $(doiEl).data('doi');
-          if ("undefined" !== response.data[doi]) {
+          var currentDoi = $(doiEl).data('doi');
+          if ("undefined" !== response.data[currentDoi]) {
             var newLink = $('<a />');
-            newLink.attr('href', response.data[doi].link);
-            newLink.text(response.data[doi].label);
+            newLink.attr('href', response.data[currentDoi].link);
+            newLink.text(response.data[currentDoi].label);
             $(doiEl).empty().append(newLink);
           }
         });
