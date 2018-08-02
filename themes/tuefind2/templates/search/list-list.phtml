@@ -1,29 +1,14 @@
-<?
-/*********************************************
-*
-* list-list.phtml
-*
-* displays the search result as a list.
-*
-*************************************/
- if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-
-<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
-  || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
-
-<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
-  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
-  <div id="result<?=$i++ ?>" class="row result clearfix <?=$i%2==1?' panel-gray ':' panel-body '?> w-100">
-    <div class="col-xs-3 col-sm-1 hidden-print">
-      <label>
-        <? if ($showCheckboxes): ?>
-          <?=$this->record($current)->getCheckbox()?>
-        <? endif; ?>
-        <?=$recordNumber?>
-      </label>
+<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<? $i = $this->indexStart; ?>
+<? foreach ($this->results->getResults() as $current): ?>
+  <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
+  <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?> <?=$i%2==1?' panel-gray ':' panel-body '?>">
+    <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+      <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
+    <? endif; ?>
+    <div class="record-number">
+      <?=$recordNumber ?>
     </div>
-      <div class="col-xs-9 col-sm-11">
-          <?=$this->record($current)->getSearchResult('list') //see contents in RecordDriver/SolrDefault/result-list.phtml ?>
-      </div>
+    <?=$this->record($current)->getSearchResult('list')?>
   </div>
 <? endforeach; ?>

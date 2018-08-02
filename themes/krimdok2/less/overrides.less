@@ -12,6 +12,29 @@ div.title {
     display: none;
 }
 
+div#content {
+    min-height: 300px;
+}
+
+.panel-button a {
+    font-size: 1.2em;
+}
+
+.panel-default {
+    /*padding-left: 5px;
+    padding-right: 5px;
+    background: transparent;*/
+}
+
+.panel-default-link {
+    color: @gray-900;
+    :hover {
+        color: @brand-primary;
+        text-decoration-color: @brand-primary;
+        text-decoration: underline;
+    }
+}
+
 .panel-inverse a {
     color: white;
     text-decoration: underline;
@@ -21,17 +44,24 @@ div.title {
     display: none !important;
 }
 
-.panel-button {
-  height: 49%;
-
-  .btn-primary {
-    .sublabel {
-        font-size: 0.8em;
-    }
-  }
-}
-
 .btn-panel-more {
     background-color: @brand-primary;
     color: white;
+}
+
+.breadcrumb-wrapper {
+    display: none;
+}
+
+.mainbody {
+    padding-top: 10px;
+}
+
+.glyphicon-envelope {
+    font-size: 25px;
+}
+
+mark {
+    /*background: transparent;
+    color: @brand-tertiary;*/
 }
