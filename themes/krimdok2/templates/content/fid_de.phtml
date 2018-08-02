@@ -111,7 +111,7 @@ Wichtigstes Rechercheinstrument zu allen Arten des Literaturbestandes sowie zu w
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <a data-toggle="collapse" href="#contact">
+        <a id="contact_toggle" data-toggle="collapse" href="#contact">
             <h4 class="panel-title">
                 Kontakt und Ansprechpersonen im FID Kriminologie
             </h4>
@@ -129,4 +129,9 @@ Wichtigstes Rechercheinstrument zu allen Arten des Literaturbestandes sowie zu w
             </p>
         </div>
     </div>
+    <script>
+        // auto-expand if anchor is given, e.g. if linked from footer
+        if (window.location.href.includes("#contact"))
+            $('#contact_toggle').click();
+    </script>
 </div>
