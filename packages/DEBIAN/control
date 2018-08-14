@@ -16,6 +16,7 @@ Depends: apache2,
          php-json,
          php-ldap,
          php-mysql,
+         php-soap,
          php-xml
 Maintainer: VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>
 Homepage: http://vufind.org/
