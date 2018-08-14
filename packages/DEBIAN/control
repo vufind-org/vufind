@@ -9,14 +9,15 @@ Depends: apache2,
          libapache2-mod-php5 | php-mbstring,
          mysql-server | virtual-mysql-server-core,
          php-pear,
-         php5 | php,
-         php5-dev | php-dev,
-         php5-gd | php-gd,
-         php5-intl | php-intl,
-         php5-json | php-json,
-         php5-ldap | php-ldap,
-         php5-mysql | php-mysql,
-         php5-xsl | php-xml
+         php,
+         php-dev,
+         php-gd,
+         php-intl,
+         php-json,
+         php-ldap,
+         php-mysql,
+         php-soap,
+         php-xml
 Maintainer: VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>
 Homepage: http://vufind.org/
 Description: A library resource discovery portal
