@@ -4,10 +4,12 @@ $(document).ready(function() {
   $('#groupPlaceHolder').removeClass('hidden');
   $('#new_search_template').addClass('hidden').detach().appendTo('[role="main"]');
   $('#new_search_template').find('.adv-search').removeAttr('id');
+  $('#new_search_template').find('.form-control').removeAttr('id');
   $('#new_search_template').find('input').removeAttr('value');
   $('#new_search_template').find('option').removeAttr('selected');
   $('#new_group_template').addClass('hidden').detach().appendTo('[role="main"]');
   $('#new_group_template').find('.adv-group').removeAttr('id');
+  $('#new_group_template').find('.form-control').removeAttr('id');
   $('#new_group_template .adv-search').remove();
   $('#advSearchForm .no-js').remove();
   // Build page
