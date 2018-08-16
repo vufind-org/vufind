@@ -125,6 +125,26 @@ a.navbar-brand, nav > .nav > li > a {
   border-radius: @input-border-radius 0 0 @input-border-radius;
 }
 
+.searchForm_select {
+
+    select {
+        display: block;
+        width: 100%;
+        border: none;
+        padding: 2px 38px 2px 2px;
+        background: url("/themes/tuefind2/images/select.png") right center no-repeat;
+        background-color: white;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    /* for IE and Edge */
+    select::-ms-expand {
+        display: none;
+    }
+}
+
 .search-button {
   border: 1px solid @table-border-color;
 }
@@ -434,7 +454,7 @@ ul .dropdown-menu {
 }
 
 .custom-select {
-  background: @white !important;
+  background: @white;
 }
 
 /* breadcrumbs */
