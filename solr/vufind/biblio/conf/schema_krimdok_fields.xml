@@ -24,7 +24,7 @@
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
 
     <!-- COMMON copyFields -->
-    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField"/>
+    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
 
     <!-- CUSTOM copyFields - only IxTheo/RelBib -->
     <copyField source="topic" dest="topic_browse"/>
