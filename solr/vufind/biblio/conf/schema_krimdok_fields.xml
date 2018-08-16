@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
-    <!-- COMMON -->
+    <!-- COMMON fields -->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//field)"/>
 
-    <!-- CUSTOM - only KrimDok -->
+    <!-- CUSTOM fields - only KrimDok -->
     <field name="abr" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="article_page_range" type="string" indexed="true" stored="true"/>
     <field name="available_for_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
@@ -22,6 +22,10 @@
     <field name="pndnum" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="signature" type="signaturestring" indexed="true" stored="true" multiValued="true"/>
     <field name="tue_local_indexed_date" type="date" indexed="true" stored="true"/>
-    <!-- CopyFields for Alphabetic Browse -->
+
+    <!-- COMMON copyFields -->
+    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField"/>
+
+    <!-- CUSTOM copyFields - only IxTheo/RelBib -->
     <copyField source="topic" dest="topic_browse"/>
 </fields>

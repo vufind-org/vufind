@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
-    <!-- COMMON -->
+    <!-- COMMON fields -->
     <field name="container_ids_and_titles" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_superior_work" type="boolean" indexed="false" stored="true" multiValued="false"/>
     <field name="issue" type="string" indexed="true" stored="true" multiValued="false"/>
@@ -18,5 +18,6 @@
     <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
 
+    <!-- COMMON copyFields -->
     <copyField source="record_selector" dest="rs"/>
 </fields>
