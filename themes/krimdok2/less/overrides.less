@@ -16,10 +16,9 @@ div.title {
     font-size: 1.2em;
 }
 
-.panel-default {
-    /*padding-left: 5px;
-    padding-right: 5px;
-    background: transparent;*/
+.panel-default, .panel-inverse, .panel-buttons {
+   border: 5px solid @gray-200;
+   -webkit-box-shadow: none;
 }
 
 .panel-default-link {
@@ -31,9 +30,11 @@ div.title {
     }
 }
 
-.panel-inverse a {
-    color: white;
-    text-decoration: underline;
+.panel-inverse {
+    a {
+        color: white;
+        text-decoration: underline;
+    }
 }
 
 .logo-img {
