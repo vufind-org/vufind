@@ -145,25 +145,23 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateBackendExceptions = false
     ) {
+        $list = new Checklist($ids);
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
             // Try to load records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
-                $key = array_search($cachedRecord->getUniqueId(), $ids);
-                if ($key !== false) {
-                    unset($ids[$key]);
-                }
+                $list->check($cachedRecord->getUniqueId());
             }
         }
 
         // Try to load the uncached records from the original $source
         $genuineRecords = [];
-        if (!empty($ids)) {
+        if ($list->hasUnchecked()) {
             try {
-                $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
-                    ->getRecords();
+                $genuineRecords = $this->searchService
+                    ->retrieveBatch($source, $list->getUnchecked())->getRecords();
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
@@ -175,18 +173,16 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             }
 
             foreach ($genuineRecords as $genuineRecord) {
-                $key = array_search($genuineRecord->getUniqueId(), $ids);
-                if ($key !== false) {
-                    unset($ids[$key]);
-                }
+                $list->check($genuineRecord->getUniqueId());
             }
         }
 
-        if (!empty($ids) && null !== $this->recordCache
+        if ($list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable
-            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+            $cachedRecords = $this->recordCache
+                ->lookupBatch($list->getUnchecked(), $source);
         }
 
         // Merge records found in cache and records loaded from original $source
@@ -196,6 +192,24 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
 
         return $retVal;
+    }
+
+    /**
+     * Build a "missing record" driver.
+     *
+     * @param array $details Associative array of record details (from a
+     * SourceAndIdList)
+     *
+     * @return \VuFind\RecordDriver\Missing
+     */
+    protected function buildMissingRecord($details)
+    {
+        $fields = $details['extra_fields'] ?? [];
+        $fields['id'] = $details['id'];
+        $record = $this->recordFactory->get('Missing');
+        $record->setRawData($fields);
+        $record->setSourceIdentifier($details['source']);
+        return $record;
     }
 
     /**
@@ -217,48 +231,28 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function loadBatch($ids, $tolerateBackendExceptions = false)
     {
-        // Sort the IDs by source -- we'll create an associative array indexed by
-        // source and record ID which points to the desired position of the indexed
-        // record in the final return array:
-        $idBySource = [];
-        foreach ($ids as $i => $details) {
-            // Convert source|id string to array if necessary:
-            if (!is_array($details)) {
-                $parts = explode('|', $details, 2);
-                $ids[$i] = $details = [
-                    'source' => $parts[0], 'id' => $parts[1]
-                ];
-            }
-            $idBySource[$details['source']][$details['id']] = $i;
-        }
+        // Create a SourceAndIdList object to help sort the IDs by source:
+        $list = new SourceAndIdList($ids);
 
         // Retrieve the records and put them back in order:
         $retVal = [];
-        foreach ($idBySource as $source => $details) {
+        foreach ($list->getIdsBySource() as $source => $currentIds) {
             $records = $this->loadBatchForSource(
-                array_keys($details), $source, $tolerateBackendExceptions
+                $currentIds, $source, $tolerateBackendExceptions
             );
             foreach ($records as $current) {
-                $id = $current->getUniqueId();
-                // In theory, we should be able to assume that $details[$id] is
-                // set... but in practice, we can't make that assumption. In some
-                // cases, Summon IDs will change, and requests for an old ID value
-                // will return a record with a different ID.
-                if (isset($details[$id])) {
-                    $retVal[$details[$id]] = $current;
+                $position = $list->getRecordPosition($current);
+                if ($position !== false) {
+                    $retVal[$position] = $current;
                 }
             }
         }
 
         // Check for missing records and fill gaps with \VuFind\RecordDriver\Missing
         // objects:
-        foreach ($ids as $i => $details) {
+        foreach ($list->getAll() as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
-                $fields = $details['extra_fields'] ?? [];
-                $fields['id'] = $details['id'];
-                $retVal[$i] = $this->recordFactory->get('Missing');
-                $retVal[$i]->setRawData($fields);
-                $retVal[$i]->setSourceIdentifier($details['source']);
+                $retVal[$i] = $this->buildMissingRecord($details);
             }
         }
 

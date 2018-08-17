@@ -52,7 +52,6 @@ then
   INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
 fi
 
-
 ##################################################
 # Set SOLRCORE
 ##################################################
@@ -61,15 +60,20 @@ then
   EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.core.name=$SOLRCORE"
 fi
 
-
 ##################################################
 # Set VUFIND_HOME
 ##################################################
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME="/usr/local/vufind"
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  export VUFIND_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 fi
 
+if [ -z "$VUFIND_LOCAL_DIR" ]
+then
+  echo "WARNING: VUFIND_LOCAL_DIR environment variable is not set. Is this intentional?"
+fi
 
 #####################################################
 # Build java command
