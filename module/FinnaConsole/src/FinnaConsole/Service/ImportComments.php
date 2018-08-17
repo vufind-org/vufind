@@ -138,7 +138,8 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
             } else {
                 $commentString = $data[2];
                 $commentString = str_replace("\r", '', $commentString);
-                $commentString = preg_replace('/\\\\([^\\\\])/', '\1', $commentString);
+                $commentString
+                    = preg_replace('/\\\\([^\\\\])/', '\1', $commentString);
                 $rating = $data[3] ?? null;
             }
             if (null !== $rating && ($rating < 0 || $rating > 5)) {
