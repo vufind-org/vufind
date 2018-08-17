@@ -501,7 +501,7 @@ finna.layout = (function finnaLayout() {
     $('#login_target').change(function onChangeLoginTarget() {
       var target = $('#login_target').val();
       var field = $('#login_' + (topClass ? topClass + '_' : '') + 'secondary_username');
-      if (labels[target] === '') {
+      if ((typeof labels[target] === 'undefined') || labels[target] === '') {
         field.val('');
         field.closest('.form-group').hide();
       } else {
