@@ -98,6 +98,7 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
         $sourceId = $request->getParam('source');
         $importFile = $request->getParam('file');
         $this->logFile = $request->getParam('log');
+        $onlyRatings = !empty($request->getParam('onlyratings'));
 
         if (!$sourceId || !$importFile || !$this->logFile) {
             echo $this->usage();
@@ -131,10 +132,15 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
                 ? $defaultTimestamp + $count
                 : strtotime($data[1]);
             $timestampStr = date('Y-m-d H:i:s', $timestamp);
-            $commentString = $data[2];
-            $commentString = str_replace("\r", '', $commentString);
-            $commentString = preg_replace('/\\\\([^\\\\])/', '\1', $commentString);
-            $rating = $data[3] ?? null;
+            if ($onlyRatings) {
+                $commentString = '';
+                $rating = $data[2] ?? null;
+            } else {
+                $commentString = $data[2];
+                $commentString = str_replace("\r", '', $commentString);
+                $commentString = preg_replace('/\\\\([^\\\\])/', '\1', $commentString);
+                $rating = $data[3] ?? null;
+            }
             if (null !== $rating && ($rating < 0 || $rating > 5)) {
                 die("Invalid rating $rating on row $count\n");
             }
@@ -151,23 +157,24 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
                 continue;
             }
 
-            $comments = $this->commentsTable->getForResource($recordId);
-
             // Check for duplicates
-            foreach ($comments as $comment) {
-                if ($comment->created == $timestampStr
-                    && $comment->comment == $commentString
-                ) {
-                    $this->log(
-                        "Comment on row $count for $recordId already exists"
-                    );
-                    continue 2;
+            if (!$onlyRatings) {
+                $comments = $this->commentsTable->getForResource($recordId);
+                foreach ($comments as $comment) {
+                    if ($comment->created == $timestampStr
+                        && $comment->comment == $commentString
+                    ) {
+                        $this->log(
+                            "Comment on row $count for $recordId already exists"
+                        );
+                        continue 2;
+                    }
                 }
             }
 
             $row = $this->commentsTable->createRow();
             $row->resource_id = $resource->id;
-            $row->comment = $commentString;
+            $row->comment = $commentString ?? '';
             $row->created = $timestampStr;
             if (null !== $rating) {
                 $row->finna_rating = $rating;
@@ -204,7 +211,7 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
         return <<<EOT
 Usage:
   php index.php util import_comments --source=<datasource_id> --file=<file>
-      --log=<logfile> [--defaultdate=<date>]
+      --log=<logfile> [--defaultdate=<date>] [--onlyratings]
 
   Imports comments from a CSV file.
     datasource_id Datasource ID in the index
@@ -212,6 +219,7 @@ Usage:
     logfile       Log file for results
     defaultdate   Date to use for records without a valid timestamp
                   (defaults to today)
+    onlyratings   The file contains only ratings
 
 EOT;
     }
