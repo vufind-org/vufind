@@ -33,7 +33,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     if (!this.isApplied && counts) {
       $('<span/>')
         .addClass('badge')
-        .text(
+        .html(
           this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
         )
         .appendTo($html);
