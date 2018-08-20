@@ -1043,6 +1043,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'GET',
             $patron
         );
+        if (empty($result[0]['item_availabilities'])) {
+            return [];
+        }
 
         $statuses = [];
         foreach ($result[0]['item_availabilities'] as $i => $item) {
