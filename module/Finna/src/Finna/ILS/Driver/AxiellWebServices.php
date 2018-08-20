@@ -1004,7 +1004,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                            'onRefDesk' => 'On Reference Desk',
                            'overdueLoan' => 'overdueLoan',
                            'ordered' => 'Ordered',
-                           'returnedToday' => 'returnedToday',
+                           'returnedToday' => 'Returned today',
                            'inTransfer' => 'In Transit'
                         ];
 
