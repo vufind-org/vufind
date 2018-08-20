@@ -102,6 +102,22 @@ class SolrDefaultTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test Dublin Core conversion.
+     *
+     * @return void
+     */
+    public function testDublinCore()
+    {
+        $expected = <<<XML
+<?xml version="1.0"?>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:title>La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /</dc:title><dc:creator>Vico, Giambattista, 1668-1744.</dc:creator><dc:creator>Pandolfi, Claudia.</dc:creator><dc:language>Italian</dc:language><dc:language>Latin</dc:language><dc:publisher>Centro di Studi Vichiani,</dc:publisher><dc:date>1992</dc:date><dc:subject>Naples (Kingdom) History Spanish rule, 1442-1707 Sources</dc:subject></oai_dc:dc>
+
+XML;
+        $xml = $this->getDriver()->getXML('oai_dc');
+        $this->assertEquals($expected, $xml);
+    }
+
+    /**
      * Get a record driver with fake data.
      *
      * @param array $overrides Fixture fields to override.
