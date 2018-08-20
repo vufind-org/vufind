@@ -40,7 +40,10 @@
     <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
   <? else: ?>
     <span class="badge">
-        <?= $this->tuefind()->isUnassigned($thisFacet['displayText']) ? $this->tuefind()->getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' : $this->localizedNumber($thisFacet['count'])?>
+        <?= ($this->tuefind()->isUnassigned($thisFacet['displayText']) &&
+             !($thisFacet['operator'] == 'OR' && $this->tuefind()->atLeastOneFacetChosen($this->cluster['list']))) ?
+             $this->tuefind()->getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' :
+             $this->localizedNumber($thisFacet['count'])?>
     </span>
   <? endif; ?>
 
