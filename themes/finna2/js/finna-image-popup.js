@@ -252,8 +252,9 @@ finna.imagePopup = (function finnaImagePopup() {
               var url = VuFind.path + '/AJAX/JSON?method=getDescription&id=' + id;
               $.getJSON(url)
                 .done(function onGetDescriptionDone(response) {
-                  if (response.data.length > 0) {
-                    summaryHolder.find('> div p').html(response.data);
+                  var data = response.data.html;
+                  if (data.length > 0) {
+                    summaryHolder.find('> div p').html(data);
                     finna.layout.initTruncate(summaryHolder);
                     summaryHolder.removeClass('loading');
                   }
