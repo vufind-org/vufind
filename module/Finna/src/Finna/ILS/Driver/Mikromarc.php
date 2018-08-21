@@ -1482,8 +1482,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             $available = $item['ItemStatus'] === 'AvailableForLoan';
             $statusCode = $this->getItemStatusCode($item);
             $organisationTotal[$unit['branch']] = [
-               'reservations' => $item['ReservationQueueLength'],
-               'displayText' => $statusCode
+               'reservations' => $item['ReservationQueueLength']
             ];
 
             $unit = $this->getLibraryUnit($unitId);
@@ -1499,7 +1498,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'branch_id' => $unit['branch'],
                 'availability' => $available,
                 'status' => $statusCode,
-                'status_array' => [$statusCode],
                 'reserve' => 'N',
                 'callnumber' => $item['Shelf'],
                 'duedate' => null,
