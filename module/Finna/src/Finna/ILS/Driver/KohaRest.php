@@ -1072,15 +1072,18 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $duedate = null;
             }
 
+            $location = $this->getItemLocationName($item);
+            $callnumber = $this->getItemCallNumber($item);
             $entry = [
                 'id' => $id,
+                'holdings_id' => "$location/$callnumber",
                 'item_id' => $item['itemnumber'],
-                'location' => $this->getItemLocationName($item),
+                'location' => $location,
                 'availability' => $available,
                 'status' => $status,
                 'status_array' => $statusCodes,
                 'reserve' => 'N',
-                'callnumber' => $this->getItemCallNumber($item),
+                'callnumber' => $callnumber,
                 'duedate' => $duedate,
                 'number' => $item['enumchron'],
                 'barcode' => $item['barcode'],
