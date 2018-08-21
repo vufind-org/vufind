@@ -74,6 +74,7 @@ class AuthenticationStrategy implements PermissionProviderInterface
     {
         $authManager = $this->serviceLocator->get('VuFind\AuthManager');
         $auth = $authManager->getActiveAuth();
+        $permissions = [];
 
         // Check if current authentication strategy is authorizable
         $selected = $auth->getSelectedAuthOption();
@@ -89,21 +90,44 @@ class AuthenticationStrategy implements PermissionProviderInterface
             $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
             try {
                 $patron = $ilsAuth->storedCatalogLogin();
-                if (!$patron) {
-                    return [];
-                }
-                $functionConfig = $connection->checkFunction(
-                    'getPatronAuthorizationStatus', $patron
-                );
-                if (!$functionConfig
-                    || $connection->getPatronAuthorizationStatus($patron)
-                ) {
-                    return ['loggedin'];
+                if ($patron) {
+                    $functionConfig = $connection->checkFunction(
+                        'getPatronAuthorizationStatus',
+                        $patron
+                    );
+                    if ($functionConfig
+                        && !$connection->getPatronAuthorizationStatus($patron)
+                    ) {
+                        return ['loggedin'];
+                    }
                 }
             } catch (ILSException $e) {
-                return [];
             }
         }
+
+        if (in_array($selected, ['ILS', 'MultiILS'])
+            && in_array('ILS-staff', $options)
+        ) {
+            // Check ILS for staff user
+            $connection = $this->serviceLocator->get('VuFind\ILSConnection');
+            $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
+            try {
+                $patron = $ilsAuth->storedCatalogLogin();
+                if ($patron) {
+                    $functionConfig = $connection->checkFunction(
+                        'getPatronStaffAuthorizationStatus',
+                        $patron
+                    );
+                    if ($functionConfig
+                        && $connection->getPatronStaffAuthorizationStatus($patron)
+                    ) {
+                        return ['loggedin'];
+                    }
+                }
+            } catch (ILSException $e) {
+            }
+        }
+
         return [];
     }
 }

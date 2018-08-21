@@ -12,3 +12,11 @@ override_full_sections = ""
 ;ipRange[] = ::1
 ;permission[] = access.api.Search
 ;permission[] = access.api.Record
+
+; Acess to Staff UI Link
+;[access.finna.StaffUiLink]
+;require = ANY
+;ipRange[] = 127.0.0.1
+;ipRange[] = ::1
+;role = staff
+;permission[] = access.finna.StaffUiLink

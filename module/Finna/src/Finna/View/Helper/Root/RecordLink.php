@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2017.
+ * Copyright (C) The National Library of Finland 2017-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Anna Niku <anna.niku@gofore.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,11 +34,31 @@ namespace Finna\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Anna Niku <anna.niku@gofore.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class RecordLink extends \VuFind\View\Helper\Root\RecordLink
 {
+    /**
+     * Data source configuration
+     *
+     * @var array
+     */
+    protected $datasourceConfig;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Record\Router $router Record router
+     * @param array                 $config Configuration for search box
+     */
+    public function __construct(\VuFind\Record\Router $router, $config)
+    {
+        parent::__construct($router);
+        $this->datasourceConfig = $config;
+    }
+
     /**
      * Returns 'data-embed-iframe' if url is vimeo or youtube url
      *
@@ -75,5 +96,29 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
             ->getCurrentHiddenFilterParams($driver->getSourceIdentifier());
 
         return $result;
+    }
+
+    /**
+     * Return URL of the record in staff interface if available
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return string
+     */
+    public function getStaffUiUrl($driver)
+    {
+        $parts = explode('.', $driver->getUniqueId(), 2);
+
+        if (!isset($parts[1])) {
+            return '';
+        }
+        $source = $parts[0];
+        $id = $parts[1];
+
+        if (!empty($this->datasourceConfig[$source]['staffUiUrl'])) {
+            $url = $this->datasourceConfig[$source]['staffUiUrl'];
+            return str_replace('%%id%%', $id, $url);
+        }
+        return '';
     }
 }

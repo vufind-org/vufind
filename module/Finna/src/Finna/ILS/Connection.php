@@ -172,6 +172,33 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check for Staff User Authorization Status
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports getting
+     * staff user authorization status.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values for getting authorization status; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetPatronStaffAuthorizationStatus(
+        $functionConfig, $params
+    ) {
+        $capability = $this->checkCapability(
+            'getPatronStaffAuthorizationStatus', [$params ?: []]
+        );
+        if ($capability) {
+            return ['function' => 'getPatronStaffAuthorizationStatus'];
+        }
+        return false;
+    }
+
+    /**
      * Check for updateAddress
      *
      * A support method for checkFunction(). This is responsible for checking

@@ -1394,6 +1394,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $this->sessionCache->patronCookie = $response->getCookie();
         $result = json_decode($response->getBody(), true);
         $this->sessionCache->patronId = $result['borrowernumber'];
+        $this->sessionCache->patronPermissions = $result['permissions'];
         return true;
     }
 

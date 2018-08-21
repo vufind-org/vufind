@@ -15,10 +15,14 @@ feedbackEmail = email@somewhere.invalid
 mainView = web
 institution = Library
 ;disablePatronFunctions = true
-; You can select Btj, Syndetics, LibraryThing, Summon, Amazon, Booksite, OpenLibrary,
-; Contentcafe and/or Google Books.
-;   Note: Summon service takes a Serials Solutions client key, NOT Summon API key!
-;coverimages = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID,NatLibFi,BookyFi,BTJ:customerId
+; You can select BTJ, Syndetics, LibraryThing, Summon, Amazon, Booksite, OpenLibrary,
+; Contentcafe and/or Google Books. These settings are used in addition to the ones
+; defined in config.ini
+;coverimages = BTJ:customerId
+; Link template for linking to the staff UI. Note that staff UI link is available
+; only for users with the access.finna.StaffUiLink permission.
+staffUiUrl = "https://server-address/cgi-bin/koha/catalogue/detail.pl?biblionumber=%%id%%"
+
 
 ; Online payment
 onlinePayment['handler'] = ''

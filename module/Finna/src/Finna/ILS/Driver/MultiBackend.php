@@ -111,6 +111,25 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Check if patron belongs to staff.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return bool True if patron is staff, false if not
+     */
+    public function getPatronStaffAuthorizationStatus($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->getPatronStaffAuthorizationStatus(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Update patron's phone number
      *
      * @param array  $patron Patron array

@@ -926,6 +926,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         ) {
             return !empty($this->config['PasswordRecovery']['enabled'])
                 ? $this->config['PasswordRecovery'] : false;
+        } elseif ('getPatronStaffAuthorizationStatus' === $function) {
+            return ['enabled' => true];
         }
         return parent::getConfig($function, $params);
     }
@@ -1346,6 +1348,30 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             "$prefix$code",
             null,
             $description
+        );
+    }
+
+    /**
+     * Check if patron belongs to staff.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return bool True if patron is staff, false if not
+     */
+    public function getPatronStaffAuthorizationStatus($patron)
+    {
+        $username = $patron['cat_username'];
+        if ($this->sessionCache->patron != $username) {
+            if (!$this->renewPatronCookie($patron)) {
+                return false;
+            }
+        }
+
+        return !empty(
+            array_intersect(
+                ['superlibrarian', 'catalogue'],
+                $this->sessionCache->patronPermissions
+            )
         );
     }
 }
