@@ -1504,12 +1504,13 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'barcode' => $item['Barcode'],
                 'item_notes' => [isset($items['notes']) ? $item['notes'] : null],
             ];
-            if ($patron && $this->itemHoldAllowed($item)) {
+            if ($patron && $this->itemHoldAllowed($item) && $item['PermitLoan']) {
                 $entry['is_holdable'] = true;
                 $entry['level'] = 'copy';
                 $entry['addLink'] = true;
             } else {
                 $entry['is_holdable'] = false;
+                $entry['status'] = 'On Reference Desk';
             }
 
             $statuses[] = $entry;
