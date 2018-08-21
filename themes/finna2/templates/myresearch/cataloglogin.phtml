@@ -46,6 +46,15 @@
       <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Save')?>">
     </div>
   </form>
+  <?php if (empty($this->card->id)): ?>
+    <?php
+      $language = $this->layout()->userLang;
+      if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+        $language = 'en-gb';
+      }
+    ?>
+    <?=$this->partial("librarycards/library_card_terms_$language.phtml"); ?>
+  <?php endif; ?>
 <?php
   $labels = [];
   $manager = $this->auth()->getManager();
