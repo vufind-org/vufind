@@ -176,8 +176,12 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                     ?? $urls['small'];
             }
 
-            $description = isset($daogrp->daodesc->p) ? $daogrp->daodesc->p
-                : $daogrp->daodesc;
+            if (isset($daogrp->dapdesc->p) && $daogrp->dapdesc->p != 'Fotografi') {
+                $description = $daogrp->dapdesc->p;
+            } else {
+                $description = '';
+            }
+
             $result[] = [
                 'urls' => $urls,
                 'description' => (string)$description,
