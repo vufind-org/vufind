@@ -1577,7 +1577,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
            'holdable' => $holdable,
            'availability' => null,
            'callnumber' => null,
-           'location' => null
+           'location' => null,
+           'groupBranches' => false
         ];
     }
 

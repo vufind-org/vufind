@@ -30,7 +30,7 @@ foreach ($holdings as &$holding) {
 }
 $this->statusItems = $holdings;
 
-$groupBranches = isset($this->statusItems[0]['branch']);
+$groupBranches = $summary['groupBranches'] ?? isset($this->statusItems[0]['branch']);
 $journal = isset($this->statusItems[0]['journalInfo']);
 
 if ($groupBranches) {
