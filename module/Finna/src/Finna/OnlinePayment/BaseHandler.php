@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  OnlinePayment
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
@@ -147,6 +148,9 @@ abstract class BaseHandler implements OnlinePaymentHandlerInterface,
 
         $feeTable = $this->getTable('fee');
         foreach ($fines as $fine) {
+            // Sanitize fine strings
+            $fine['fine'] = iconv('UTF-8', 'UTF-8//IGNORE', $fine['fine'] ?? '');
+            $fine['title'] = iconv('UTF-8', 'UTF-8//IGNORE', $fine['title'] ?? '');
             if (!$feeTable->addFee($t->id, $fine, $t->user_id, $t->currency)) {
                 $this->logger->err(
                     $this->getName() . ': error adding fee to transaction.'
