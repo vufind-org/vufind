@@ -167,7 +167,7 @@
           <?php endif; ?>
           <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
             <p><?=$this->transEsc('Image Rights Default') ?>
-            <p><a href="<?=$this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See also terms and conditions') ?></a>
+            <p><a href="<?=$this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See terms and conditions') ?></a>
           <?php endif; ?>
           <?php if (!empty($rights['copyright']) && (isset($rights['description']))): ?>
             </div>

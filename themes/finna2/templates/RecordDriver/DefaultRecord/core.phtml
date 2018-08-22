@@ -91,11 +91,11 @@
     <?php endif; ?>
 
     <div class="record-rating text-left">
-      <div class="rating-stars">
-        <div onclick="$('a.usercomments').click();">
-          <?=$this->record($this->driver)->getRating()?>
+        <div class="rating-stars">
+          <div onclick="$('a.usercomments').click();">
+            <?=$this->record($this->driver)->getRating()?>
+          </div>
         </div>
-      </div>
     </div>
     <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
     <div>

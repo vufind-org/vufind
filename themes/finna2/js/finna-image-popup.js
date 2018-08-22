@@ -340,9 +340,14 @@ finna.imagePopup = (function finnaImagePopup() {
           initThumbnailNavi();
           initRecordImage();
         } else {
-          $(this).closest('a.image-popup-trigger')
-            .addClass('disable')
-            .unbind('click').click(function onClickPopupTrigger() { return false; });
+          $(this).closest('.recordcover-holder').hide();
+          $('.access-rights p').first().hide();
+          $('.image-rights').hide();
+          $('.media-left > .organisation-menu').hide();
+
+          if( $('.access-rights').has('.more-link') ) {
+            $('.access-rights > .more-link').hide();
+          }
         }
       });
     }
