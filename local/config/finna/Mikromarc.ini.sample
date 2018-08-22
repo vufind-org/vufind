@@ -30,6 +30,9 @@ extraHoldFields = pickUpLocation
 ; List of ItemStatus codes, that will block possibility to place hold on that record when found.
 notAllowedForHold = ClaimedReturnedOrNeverBorrowed:Lost:SuppliedReturnNotRequired:MissingOverDue:Withdrawn:Discarded:Other
 
+; Change this value to true/false to enable visibility of hold button on all copies
+ShowLinkOnCopy = false
+
 [Holdings]
 ; By default the holdings location list is sorted alphabetically. This setting can be
 ; used to manually set the order by entering location IDs as a colon-separated list.

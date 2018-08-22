@@ -1507,7 +1507,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             if ($patron && $this->itemHoldAllowed($item) && $item['PermitLoan']) {
                 $entry['is_holdable'] = true;
                 $entry['level'] = 'copy';
-                $entry['addLink'] = true;
+                $entry['addLink'] = !empty($this->config['Holds']['ShowLinkOnCopy']);
             } else {
                 $entry['is_holdable'] = false;
                 $entry['status'] = 'On Reference Desk';
