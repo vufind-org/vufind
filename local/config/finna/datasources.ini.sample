@@ -44,3 +44,5 @@ onlinePayment['productCode'] = ''
 onlinePayment['transactionFeeProductCode'] = 'Transaction'
 ; Product code mappings from the fine types to product codes
 onlinePayment['productCodeMappings'] = 'Overdue=demo_003:Long Overdue=demo_004'
+; Mappings to languages supported by the service
+;onlinePayment['supportedLanguages'] = 'fi=fi:en=en'

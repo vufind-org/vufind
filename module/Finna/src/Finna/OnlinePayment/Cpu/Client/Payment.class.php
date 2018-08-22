@@ -21,7 +21,7 @@ class Cpu_Client_Payment
      *
      * @var string
      */
-    public $ApiVersion = '2.0';
+    public $ApiVersion = '2.1.2';
 
     /**
      * Payment identification created by client system.
@@ -95,6 +95,13 @@ class Cpu_Client_Payment
      * @var string
      */
     public $LastName = null;
+
+    /**
+     * UI Language
+     *
+     * @var string
+     */
+    public $Language = null;
 
     /**
      * Constructor initialises object.
@@ -199,6 +206,10 @@ class Cpu_Client_Payment
                 $string .= $this->LastName . $separator;
             }
 
+            if ($this->Language != null) {
+                $string .= $this->Language . $separator;
+            }
+
             $string .= $this->ReturnAddress . $separator;
             $string .= $this->NotificationAddress . $separator;
             $string .= $secret_key;
@@ -259,6 +270,10 @@ class Cpu_Client_Payment
 
         if ($this->LastName != null) {
             $ret['LastName'] = $this->LastName;
+        }
+
+        if ($this->Language != null) {
+            $ret['Language'] = $this->Language;
         }
 
         $ret['ReturnAddress'] = $this->ReturnAddress;

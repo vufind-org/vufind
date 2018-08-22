@@ -156,6 +156,10 @@ class Cpu_Client
                 $string .= $payment->LastName . $separator;
             }
 
+            if ($payment->Language != null) {
+                $string .= $payment->Language . $separator;
+            }
+
             $string .= $payment->ReturnAddress . $separator;
             $string .= $payment->NotificationAddress . $separator;
             $string .= $secret_key;

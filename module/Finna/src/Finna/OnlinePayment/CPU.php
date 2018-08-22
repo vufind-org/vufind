@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -108,6 +108,22 @@ class CPU extends BaseHandler
         }
         $payment->LastName = empty($lastname) ? 'ei tietoa' : $lastname;
 
+        $locale = $this->translator->getLocale();
+        list($lang) = explode('-', $locale);
+        if (!empty($this->config->supportedLanguages)) {
+            $languageMappings = [];
+            foreach (explode(':', $this->config->supportedLanguages) as $item) {
+                $parts = explode('=', $item, 2);
+                if (count($parts) != 2) {
+                    continue;
+                }
+                $languageMappings[trim($parts[0])] = trim($parts[1]);
+            }
+            if (isset($languageMappings[$lang])) {
+                $payment->Language = $languageMappings[$lang];
+            }
+        }
+
         $payment->Description
             = isset($this->config->paymentDescription)
             ? $this->config->paymentDescription : '';
@@ -144,16 +160,20 @@ class CPU extends BaseHandler
                 }
             }
             if (!empty($fine['title'])) {
+                $fineDesc .= ' ('
+                    . substr($fine['title'], 0, 100 - 4 - strlen($fineDesc))
+                    . ')';
+            }
+            if ($fineDesc) {
                 // Get rid of characters that cannot be converted to ISO-8859-1 since
                 // CPU apparently can't handle them properly.
-                $title = iconv(
-                    'ISO-8859-1', 'UTF-8',
-                    iconv('UTF-8', 'ISO-8859-1//IGNORE', $fine['title'])
+                $fineDesc = iconv(
+                    'ISO-8859-1',
+                    'UTF-8',
+                    iconv('UTF-8', 'ISO-8859-1//IGNORE', $fineDesc)
                 );
-                $fineDesc .= ' ('
-                    . substr($title, 0, 100 - 4 - strlen($fineDesc))
-                . ')';
             }
+
             $code = $productCodeMappings[$fineType] ?? $productCode;
             $product = new \Cpu_Client_Product(
                 $code, 1, $fine['balance'], $fineDesc ?: null
