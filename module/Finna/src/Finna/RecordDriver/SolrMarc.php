@@ -43,13 +43,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     use SolrFinna;
 
     /**
-     * Datasource configuration
-     *
-     * @var \Zend\Config\Config
-     */
-    protected $datasourceConfig;
-
-    /**
      * Fields that may contain subject headings, and their descriptions
      *
      * @var array
@@ -65,6 +58,22 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         '653' => '',
         '656' => 'occupation'
     ];
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
+     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     */
+    public function __construct($mainConfig = null, $recordConfig = null,
+        $searchSettings = null
+    ) {
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
+        $this->searchSettings = $searchSettings;
+    }
 
     /**
      * Return access restriction notes for the record.

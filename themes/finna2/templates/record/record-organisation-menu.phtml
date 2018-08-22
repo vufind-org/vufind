@@ -4,7 +4,6 @@
    $mergedData = $this->driver->tryMethod('getMergedRecordData');
    $recordType = $this->driver->tryMethod('getRecordType');
 ?>
-<?php $dedupData = $this->driver->getDedupData(); ?>
 <div class="recordProvidedBy">
   <h4 class="record-organisation-header">
     <?php if ($mergedData && count($mergedData['records']) > 1): ?>
