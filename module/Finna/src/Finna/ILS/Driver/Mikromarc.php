@@ -1510,10 +1510,14 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 $entry['branch'] = $this->translate("Copy");
             }
 
-            if ($patron && $this->itemHoldAllowed($item) && $item['PermitLoan']) {
+            if ($this->itemHoldAllowed($item) && $item['PermitLoan']) {
                 $entry['is_holdable'] = true;
-                $entry['level'] = 'copy';
-                $entry['addLink'] = !empty($this->config['Holds']['ShowLinkOnCopy']);
+                if ($patron) {
+                    $entry['level'] = 'copy';
+                    $entry['addLink'] = !empty(
+                        $this->config['Holds']['ShowLinkOnCopy']
+                    );
+                }
             } else {
                 $entry['is_holdable'] = false;
                 $entry['status'] = 'On Reference Desk';
