@@ -2,7 +2,7 @@
 /**
  * Search params plugin factory
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Params;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Search params plugin factory
@@ -52,22 +52,23 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     /**
      * Create a service for the specified name.
      *
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $name           Name of service
-     * @param string                  $requestedName  Unfiltered name of service
-     * @param array                   $extraParams    Extra constructor parameters
-     * (to follow the Options object and config loader)
+     * @param ContainerInterface $container     Service container
+     * @param string             $requestedName Name of service
+     * @param array              $extras        Extra options
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName, array $extraParams = []
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $extras = null
     ) {
-        $options = $serviceLocator->getServiceLocator()
-            ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
-        $class = $this->getClassName($name, $requestedName);
-        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
+        $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
+        $options = $container->get('VuFind\Search\Options\PluginManager')
+            ->get($optionsService);
+        $class = $this->getClassName($requestedName);
+        $configLoader = $container->get('VuFind\Config\PluginManager');
         // Clone the options instance in case caller modifies it:
-        return new $class(clone $options, $configLoader, ...$extraParams);
+        return new $class(clone $options, $configLoader, ...($extras ?: []));
     }
 }

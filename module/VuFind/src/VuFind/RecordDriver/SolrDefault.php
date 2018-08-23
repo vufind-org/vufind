@@ -3,7 +3,7 @@
  * Default model for Solr records -- used when a more specific model based on
  * the recordtype field cannot be found.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -271,7 +271,8 @@ class SolrDefault extends DefaultRecord
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
-        return $this->searchService->search('Solr', $query, 0, 0, $params)
+        return $this->searchService
+            ->search($this->sourceIdentifier, $query, 0, 0, $params)
             ->getTotal();
     }
 

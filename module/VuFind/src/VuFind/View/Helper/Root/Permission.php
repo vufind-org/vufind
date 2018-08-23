@@ -2,7 +2,7 @@
 /**
  * Permission helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -115,7 +115,7 @@ class Permission extends AbstractHelper
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);
 
-        switch (isset($displayLogic['action']) ? $displayLogic['action'] : '') {
+        switch ($displayLogic['action'] ?? '') {
         case 'showMessage':
             return $this->view->transEsc($displayLogic['value']);
         case 'showTemplate':

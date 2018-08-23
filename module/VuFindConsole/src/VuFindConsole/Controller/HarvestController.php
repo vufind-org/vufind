@@ -2,7 +2,7 @@
 /**
  * CLI Controller Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -77,13 +77,15 @@ class HarvestController extends AbstractBase
 
         // Get default options, add the default --ini setting if missing:
         $opts = HarvesterConsoleRunner::getDefaultOptions();
+        $opts->setArguments($this->getRequest()->getParam('params'));
         if (!$opts->getOption('ini')) {
             $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
             $opts->addArguments(['--ini=' . $ini]);
         }
 
         // Get the default VuFind HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
 
         // Run the job!
         $runner = new HarvesterConsoleRunner(

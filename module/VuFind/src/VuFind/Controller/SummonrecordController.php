@@ -2,7 +2,7 @@
 /**
  * Summon Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -63,7 +63,8 @@ class SummonrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('Summon');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('Summon');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }

@@ -2,7 +2,7 @@
 /**
  * Zend\Feed\Renderer\Feed extension for Open Search
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *

@@ -3,7 +3,7 @@
 /**
  * Parameter bag.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -41,7 +41,7 @@ namespace VuFindSearch;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ParamBag
+class ParamBag implements \Countable
 {
     /**
      * Parameters
@@ -74,6 +74,16 @@ class ParamBag
     public function get($name)
     {
         return isset($this->params[$name]) ? $this->params[$name] : null;
+    }
+
+    /**
+     * Count parameters in internal array. Needed for Countable interface.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->params);
     }
 
     /**

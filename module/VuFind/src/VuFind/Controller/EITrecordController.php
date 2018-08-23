@@ -2,7 +2,7 @@
 /**
  * EIT Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -66,7 +66,8 @@ class EITrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('EIT');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EIT');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }

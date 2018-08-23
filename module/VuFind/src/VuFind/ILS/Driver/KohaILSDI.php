@@ -2,7 +2,7 @@
 /**
  * KohaILSDI ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Alex Sassmannshausen, PTFS Europe 2014.
  *
@@ -30,7 +30,7 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Log\LoggerInterface;
 
@@ -49,7 +49,9 @@ use Zend\Log\LoggerInterface;
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    use CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -324,7 +326,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->ilsBaseUrl) . $suffix
         );
     }
@@ -668,7 +670,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
-        $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
+        $request_location   = $patron['ip'] ?? "127.0.0.1";
         $bib_id             = $holdDetails['id'];
         $item_id            = $holdDetails['item_id'];
         $pickup_location    = !empty($holdDetails['pickUpLocation'])
@@ -734,23 +736,23 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //TODO - test this new functionality
         /*
         if ( $level == "title" ) {
-        	$rsp2 = $this->makeIlsdiRequest("HoldTitle",
-        			array("patron_id" => $patron_id,
-        				  "bib_id" => $bib_id,
-        				  "request_location" => $request_location,
-        				  "pickup_location" => $pickup_location,
-        				  "pickup_expiry_date" => $needed_before_date,
-        				  "needed_before_date" => $needed_before_date
-        			));
+            $rsp2 = $this->makeIlsdiRequest("HoldTitle",
+                    array("patron_id" => $patron_id,
+                          "bib_id" => $bib_id,
+                          "request_location" => $request_location,
+                          "pickup_location" => $pickup_location,
+                          "pickup_expiry_date" => $needed_before_date,
+                          "needed_before_date" => $needed_before_date
+                    ));
         } else {
-        	$rsp2 = $this->makeIlsdiRequest("HoldItem",
-        			array("patron_id" => $patron_id,
-        				  "bib_id" => $bib_id,
-        				  "item_id" => $item_id,
-        				  "pickup_location" => $pickup_location,
-        				  "pickup_expiry_date" => $needed_before_date,
-        				  "needed_before_date" => $needed_before_date
-        			));
+            $rsp2 = $this->makeIlsdiRequest("HoldItem",
+                    array("patron_id" => $patron_id,
+                          "bib_id" => $bib_id,
+                          "item_id" => $item_id,
+                          "pickup_location" => $pickup_location,
+                          "pickup_expiry_date" => $needed_before_date,
+                          "needed_before_date" => $needed_before_date
+                    ));
         }
         */
         $this->debug("Title: " . $rsp->{'title'});
@@ -779,7 +781,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -805,6 +807,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
+            i.enumchron AS ENUMCHRON,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
             i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
@@ -978,6 +981,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       => (null == $rowItem['COPYNO'])
                     ? '' : $rowItem['COPYNO'],
+                'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
@@ -1072,7 +1076,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -1169,7 +1173,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     'balance'    => $row['balance'],
                     'createdate' => $this->displayDate($row['createdat']),
                     'duedate'    => $this->displayDate($row['duedate']),
-                    'id'         => isset($row['id']) ? $row['id'] : -1,
+                    'id'         => $row['id'] ?? -1,
                 ];
             }
             return $transactionLst;
@@ -1185,7 +1189,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -1225,7 +1229,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1407,7 +1411,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron The patron array from patronLogin
      * @param array $params Parameters
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -1489,7 +1493,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

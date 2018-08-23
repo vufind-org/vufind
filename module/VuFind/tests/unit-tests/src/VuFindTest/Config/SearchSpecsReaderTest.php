@@ -2,7 +2,7 @@
 /**
  * Config SearchSpecsReader Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -94,7 +94,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
         $specs = $reader->get('searchspecs.yaml');
         $this->assertTrue(
             isset($specs['Author']['DismaxFields'])
@@ -109,7 +109,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }

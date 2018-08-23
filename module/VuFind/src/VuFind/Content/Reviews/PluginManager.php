@@ -2,7 +2,7 @@
 /**
  * Reviews content loader plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,42 @@ namespace VuFind\Content\Reviews;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'amazon' => 'VuFind\Content\Reviews\Amazon',
+        'amazoneditorial' => 'VuFind\Content\Reviews\AmazonEditorial',
+        'booksite' => 'VuFind\Content\Reviews\Booksite',
+        'demo' => 'VuFind\Content\Reviews\Demo',
+        'guardian' => 'VuFind\Content\Reviews\Guardian',
+        'syndetics' => 'VuFind\Content\Reviews\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\Reviews\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\Reviews\Amazon' => 'VuFind\Content\AbstractAmazonFactory',
+        'VuFind\Content\Reviews\AmazonEditorial' =>
+            'VuFind\Content\AbstractAmazonFactory',
+        'VuFind\Content\Reviews\Booksite' =>
+            'VuFind\Content\Reviews\BooksiteFactory',
+        'VuFind\Content\Reviews\Demo' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Content\Reviews\Guardian' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Content\Reviews\Syndetics' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\Reviews\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

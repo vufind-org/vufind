@@ -3,7 +3,7 @@
 /**
  * Registry for search backends.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -39,6 +39,41 @@ namespace VuFind\Search;
  */
 class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        // Allow Solr core names to be used as aliases for services:
+        'authority' => 'SolrAuth',
+        'biblio' => 'Solr',
+        'reserves' => 'SolrReserves',
+        // Legacy:
+        'VuFind' => 'Solr',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'BrowZine' => 'VuFind\Search\Factory\BrowZineBackendFactory',
+        'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
+        'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
+        'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
+        'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
+        'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
+        'Search2' => 'VuFind\Search\Factory\Search2BackendFactory',
+        'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+        'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
+        'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
+        'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
+        'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
+        'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+    ];
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

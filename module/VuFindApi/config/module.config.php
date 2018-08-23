@@ -15,7 +15,7 @@ $config = [
     'router' => [
         'routes' => [
             'apiHome' => [
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => 'Zend\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api[/v1][/]',
@@ -26,7 +26,7 @@ $config = [
                 ],
             ],
             'searchApiv1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/search',
@@ -37,7 +37,7 @@ $config = [
                 ]
             ],
             'recordApiv1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/record',

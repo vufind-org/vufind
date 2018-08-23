@@ -2,7 +2,7 @@
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -223,7 +223,7 @@ class Results extends BaseResults
     protected function getTagFilters()
     {
         $filters = $this->getParams()->getFilters();
-        return isset($filters['tags']) ? $filters['tags'] : [];
+        return $filters['tags'] ?? [];
     }
 
     /**
@@ -239,7 +239,7 @@ class Results extends BaseResults
             // Check the filters for a list ID, and load the corresponding object
             // if one is found:
             $filters = $this->getParams()->getFilters();
-            $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
+            $listId = $filters['lists'][0] ?? null;
             $this->list = (null === $listId)
                 ? null : $this->listTable->getExisting($listId);
         }

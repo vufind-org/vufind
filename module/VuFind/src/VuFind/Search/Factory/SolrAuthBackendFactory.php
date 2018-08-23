@@ -3,7 +3,7 @@
 /**
  * Factory for the authority SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -48,10 +48,20 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = 'authority';
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
         $this->facetConfig = 'authority';
+    }
+
+    /**
+     * Get the Solr core.
+     *
+     * @return string
+     */
+    protected function getSolrCore()
+    {
+        $config = $this->config->get($this->mainConfig);
+        return $config->Index->default_authority_core ?? 'authority';
     }
 
     /**
@@ -64,13 +74,8 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
-        $callback = function ($data) use ($manager) {
-            $driver = $manager->get('SolrAuth');
-            $driver->setRawData($data);
-            return $driver;
-        };
-        $factory = new RecordCollectionFactory($callback);
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $factory = new RecordCollectionFactory([$manager, 'getSolrAuthRecord']);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
     }

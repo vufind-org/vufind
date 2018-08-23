@@ -2,7 +2,7 @@
 /**
  * SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -420,8 +420,7 @@ class Backend extends AbstractBackend
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );
         }
-        $qtime = isset($response['responseHeader']['QTime'])
-            ? $response['responseHeader']['QTime'] : 'n/a';
+        $qtime = $response['responseHeader']['QTime'] ?? 'n/a';
         $this->log('debug', 'Deserialized SOLR response', ['qtime' => $qtime]);
         return $response;
     }

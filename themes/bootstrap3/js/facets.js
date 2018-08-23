@@ -1,45 +1,62 @@
-/*global htmlEncode, VuFind */
+/*global VuFind */
 /*exported collapseTopFacets, initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
 
   $(data).each(function facetNodesEach() {
-    var html = '';
-    if (!this.isApplied && counts) {
-      html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'));
-      if (allowExclude) {
-        var excludeURL = currentPath + this.exclude;
-        excludeURL.replace("'", "\\'");
-        // Just to be safe
-        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" title="' + VuFind.translate('Selected') + '"></i></a>';
-      }
-      html += '</span>';
-    }
-
+    var $html = $('<div/>').addClass('facet');
     var url = currentPath + this.href;
-    // Just to be safe
-    url.replace("'", "\\'");
-    html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" role="menuitem" title="' + htmlEncode(this.displayText) + '"'
-      + ' onclick="document.location.href=\'' + url + '\'; return false;">';
+    var $item = $('<span/>')
+      .addClass('main text' + (this.isApplied ? ' applied' : ''))
+      .attr('role', 'menuitem')
+      .attr('title', this.displayText);
+
+    var $i = $('<i/>').addClass('fa');
     if (this.operator === 'OR') {
       if (this.isApplied) {
-        html += '<i class="fa fa-check-square-o" title="' + VuFind.translate('Selected') + '"></i>';
+        $i.addClass('fa-check-square-o').attr('title', VuFind.translate('Selected'));
       } else {
-        html += '<i class="fa fa-square-o" aria-hidden="true"></i>';
+        $i.addClass('fa-square-o').attr('aria-hidden', 'true');
       }
+      $i.appendTo($item);
+      $item.append(' ');
     } else if (this.isApplied) {
-      html += '<i class="fa fa-check pull-right" title="' + VuFind.translate('Selected') + '"></i>';
+      $i.addClass('fa-check pull-right').attr('title', VuFind.translate('Selected'));
+      $i.appendTo($item);
+      $item.append(' ');
     }
-    html += ' ' + this.displayText;
-    html += '</span>';
+
+    $item.append(this.displayText);
+    $item.appendTo($html);
+
+    if (!this.isApplied && counts) {
+      $('<span/>')
+        .addClass('badge')
+        .text(
+          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+        )
+        .appendTo($html);
+
+      if (allowExclude) {
+        var excludeUrl = currentPath + this.exclude;
+        var $a = $('<a/>')
+          .addClass('exclude')
+          .attr('href', excludeUrl)
+          .attr('title', excludeTitle);
+        $('<i/>').addClass('fa fa-times').appendTo($a);
+        $a.appendTo($html);
+      }
+    }
+
+    $html = $('<div/>').append($html);
 
     var children = null;
     if (typeof this.children !== 'undefined' && this.children.length > 0) {
       children = buildFacetNodes(this.children, currentPath, allowExclude, excludeTitle, counts);
     }
     json.push({
-      'text': html,
+      'text': $html.html(),
       'children': children,
       'applied': this.isApplied,
       'state': {
@@ -65,11 +82,13 @@ function initFacetTree(treeNode, inSidebar)
 
   // Enable keyboard navigation also when a screen reader is active
   treeNode.bind('select_node.jstree', function selectNode(event, data) {
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
     window.location = data.node.data.url;
     event.preventDefault();
     return false;
   });
 
+  var source = treeNode.data('source');
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');
   var currentPath = treeNode.data('path');
@@ -86,25 +105,30 @@ function initFacetTree(treeNode, inSidebar)
   $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
+      source: source,
       facetName: facet,
       facetSort: sort,
       facetOperator: operator
     },
     function getFacetData(response/*, textStatus*/) {
-      if (response.status === "OK") {
-        var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
-        treeNode.find('.fa-spinner').parent().remove();
-        if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+      var results = buildFacetNodes(response.data.facets, currentPath, allowExclude, excludeTitle, inSidebar);
+      treeNode.find('.fa-spinner').parent().remove();
+      if (inSidebar) {
+        treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+          treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+          treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+            $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+            window.location = this.href;
+            e.preventDefault();
+            return false;
           });
-        }
-        treeNode.jstree({
-          'core': {
-            'data': results
-          }
         });
       }
+      treeNode.jstree({
+        'core': {
+          'data': results
+        }
+      });
     }
   );
 }

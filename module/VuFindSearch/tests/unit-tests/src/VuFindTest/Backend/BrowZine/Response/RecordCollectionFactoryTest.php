@@ -3,7 +3,7 @@
 /**
  * Unit tests for BrowZine record collection factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\BrowZine\Response;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
 /**
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
+class RecordCollectionFactoryTest extends TestCase
 {
     /**
      * Test that the factory creates a collection.
@@ -49,7 +49,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testFactory()
     {
-        $resp = ['data' => [[], [], []]];
+        $resp = ['data' => [['id' => 1], ['id' => 2], ['id' => 3]]];
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory($resp);
         $this->assertEquals(3, count($coll));

@@ -2,7 +2,7 @@
 /**
  * Command-line tool to begin VuFind installation process
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -50,7 +50,7 @@ try {
         'module-name=s' =>
            'What module name would you like to use? Use disabled, to not use',
         'basepath=s' =>
-           'What base path should be used in VuFind\'s URL? [/vufind]',
+           "What base path should be used in VuFind's URL? [{$basePath}]",
         'multisite-w' =>
            'Specify we are going to setup a multisite. Options: directory and host',
         'hostname=s' =>

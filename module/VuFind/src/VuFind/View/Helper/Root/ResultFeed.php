@@ -2,7 +2,7 @@
 /**
  * "Results as feed" view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -108,7 +108,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
-            $currentPath = $this->getView()->plugin('currentpath')->__invoke();
+            $currentPath = $this->getView()->plugin('currentPath')->__invoke();
         }
         $serverUrl = $this->getView()->plugin('serverurl');
         $baseUrl = $serverUrl($currentPath);
@@ -238,10 +238,10 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordlink');
+        $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
-        } catch (\Zend\Mvc\Router\Exception\RuntimeException $e) {
+        } catch (\Zend\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');

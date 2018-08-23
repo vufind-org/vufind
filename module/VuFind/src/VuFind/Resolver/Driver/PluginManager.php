@@ -2,7 +2,7 @@
 /**
  * Resolver driver plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,54 @@ namespace VuFind\Resolver\Driver;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        '360link' => 'VuFind\Resolver\Driver\Threesixtylink',
+        'demo' => 'VuFind\Resolver\Driver\Demo',
+        'ezb' => 'VuFind\Resolver\Driver\Ezb',
+        'sfx' => 'VuFind\Resolver\Driver\Sfx',
+        'redi' => 'VuFind\Resolver\Driver\Redi',
+        'threesixtylink' => 'VuFind\Resolver\Driver\Threesixtylink',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Resolver\Driver\Threesixtylink' =>
+            'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+        'VuFind\Resolver\Driver\Demo' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Resolver\Driver\Ezb' =>
+            'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+        'VuFind\Resolver\Driver\Sfx' =>
+            'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+        'VuFind\Resolver\Driver\Redi' =>
+            'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory('VuFind\Resolver\Driver\PluginFactory');
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

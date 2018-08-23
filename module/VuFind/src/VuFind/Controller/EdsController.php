@@ -2,7 +2,7 @@
 /**
  * Eds Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,7 +59,8 @@ class EdsController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EDS');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
@@ -91,7 +92,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel();
+        return parent::homeAction();
     }
 
     /**

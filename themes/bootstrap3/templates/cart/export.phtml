@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Export Favorites'));
 
@@ -11,44 +11,44 @@
 
 <?=$this->flashmessages()?>
 
-<? if (!empty($this->exportOptions)): ?>
+<?php if (!empty($this->exportOptions)): ?>
   <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
-    <? foreach ($this->records as $current): ?>
+    <?php foreach ($this->records as $current): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
-    <? endforeach; ?>
+    <?php endforeach; ?>
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('Title')?>:</label>
-      <? if(count($this->records) > 1): ?>
+      <?php if(count($this->records) > 1): ?>
         <button type="button" class="btn btn-default hidden" data-toggle="collapse" data-target="#itemhide">
           <?=count($this->records) . ' ' . $this->transEsc('items') ?>
         </button>
         <div id="itemhide" class="collapse in">
           <ul>
-            <? foreach ($this->records as $current): ?>
+            <?php foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
-            <? endforeach; ?>
+            <?php endforeach; ?>
           </ul>
         </div>
-      <? else: ?>
+      <?php else: ?>
         <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
     <div class="form-group">
     <label for="format" class="control-label"><?=$this->transEsc('Format')?>:</label>
       <select name="format" id="format" class="form-control">
-        <? $firstOption = null; ?>
-        <? foreach ($this->exportOptions as $exportOption): ?>
-          <? if ($firstOption == null) $firstOption = $exportOption; ?>
-          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<? if($this->export()->needsRedirect($exportOption)): ?> data-redirect<? endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
-        <? endforeach; ?>
+        <?php $firstOption = null; ?>
+        <?php foreach ($this->exportOptions as $exportOption): ?>
+          <?php if ($firstOption == null) $firstOption = $exportOption; ?>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+        <?php endforeach; ?>
       </select>
     </div>
     <div class="form-group">
-      <input class="export btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"<? if($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<? endif; ?>/>
+      <input class="export btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"<?php if($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<?php endif; ?>/>
     </div>
   </form>
-<? endif; ?>
-<?
+<?php endif; ?>
+<?php
   $script = <<<JS
   $('button.btn.hidden').removeClass('hidden');
   $('#itemhide').removeClass('in');

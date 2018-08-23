@@ -2,7 +2,7 @@
 /**
  * Redirect Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -39,7 +39,7 @@ use Zend\Mvc\Application;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class RedirectController extends \Zend\Mvc\Controller\AbstractActionController
+class RedirectController extends AbstractBase
 {
     /**
      * Get a usage message with the help of the RouteNotFoundStrategy.

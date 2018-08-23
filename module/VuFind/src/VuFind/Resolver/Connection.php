@@ -2,7 +2,7 @@
 /**
  * Link Resolver Driver Wrapper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Royal Holloway, University of London
  *

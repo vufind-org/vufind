@@ -2,7 +2,7 @@
 /**
  * Channels Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
+use VuFind\ChannelProvider\ChannelLoader;
 
 /**
  * Channels Class
@@ -43,31 +43,20 @@ use Zend\Config\Config;
 class ChannelsController extends AbstractBase
 {
     /**
-     * Retrieve channel information for the Channels/Home page.
+     * Channel loader
      *
-     * @param array  $providers     Array of channel providers
-     * @param string $searchClassId Search class ID
-     * @param string $token         Channel token
-     *
-     * @return array
+     * @var ChannelLoader
      */
-    protected function getHomeChannels($providers, $searchClassId, $token)
-    {
-        $callback = function ($runner, $params, $searchClassId) use ($providers) {
-            foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
-            }
-        };
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
-        $results = $runner->run([], $searchClassId, $callback);
+    protected $loader;
 
-        $channels = [];
-        foreach ($providers as $provider) {
-            $channels = array_merge(
-                $channels, $provider->getFromSearch($results, $token)
-            );
-        }
-        return $channels;
+    /**
+     * Constructor
+     *
+     * @param ChannelLoader $loader Channel loader
+     */
+    public function __construct(ChannelLoader $loader)
+    {
+        $this->loader = $loader;
     }
 
     /**
@@ -77,33 +66,11 @@ class ChannelsController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = $this->getConfig('channels');
-        $defaultSearchClassId = isset($config->General->default_home_source)
-            ? $config->General->default_home_source : DEFAULT_SEARCH_BACKEND;
-        $searchClassId = $this->params()->fromQuery('source', $defaultSearchClassId);
-        $providerIds = isset($config->{"source.$searchClassId"}->home)
-            ? $config->{"source.$searchClassId"}->home->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $config);
-
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $activeChannel = $this->params()->fromQuery('channelProvider');
         $token = $this->params()->fromQuery('channelToken');
-        if (isset($config->General->cache_home_channels)
-            && $config->General->cache_home_channels
-        ) {
-            $parts = [implode(',', $providerIds), $searchClassId, $token];
-            $cacheKey = 'homeChannels-' . md5(implode('-', $parts));
-            $cache = $this->serviceLocator->get('VuFind\CacheManager')
-                ->getCache('object');
-        } else {
-            $cacheKey = false;
-        }
-        $channels = $cacheKey ? $cache->getItem($cacheKey) : false;
-        if (!$channels) {
-            $channels = $this->getHomeChannels($providers, $searchClassId, $token);
-            if ($cacheKey) {
-                $cache->setItem($cacheKey, $channels);
-            }
-        }
-        return $this->createViewModel(compact('token', 'channels'));
+        $context = $this->loader->getHomeContext($token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 
     /**
@@ -113,25 +80,13 @@ class ChannelsController extends AbstractBase
      */
     public function recordAction()
     {
-        $view = $this->createViewModel();
-
-        $loader = $this->getRecordLoader();
+        $recordId = $this->params()->fromQuery('id');
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-        $view->driver = $loader->load($this->params()->fromQuery('id'), $source);
-
-        $config = $this->getConfig('channels');
-        $providerIds = isset($config->{"source.$source"}->record)
-            ? $config->{"source.$source"}->record->toArray() : [];
-        $view->channels = [];
-        $view->token = $this->params()->fromQuery('channelToken');
-        $providers = $this->getChannelProviderArray($providerIds, $config);
-        foreach ($providers as $provider) {
-            $view->channels = array_merge(
-                $view->channels,
-                $provider->getFromRecord($view->driver, $view->token)
-            );
-        }
-        return $view;
+        $activeChannel = $this->params()->fromQuery('channelProvider');
+        $token = $this->params()->fromQuery('channelToken');
+        $context = $this->loader
+            ->getRecordContext($recordId, $token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 
     /**
@@ -141,89 +96,14 @@ class ChannelsController extends AbstractBase
      */
     public function searchAction()
     {
-        $view = $this->createViewModel();
-
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
-
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $searchClassId = $this->params()
-            ->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-
-        $config = $this->getConfig('channels');
-        $providerIds = isset($config->{"source.$searchClassId"}->search)
-            ? $config->{"source.$searchClassId"}->search->toArray() : [];
-        $providers = $this->getChannelProviderArray($providerIds, $config);
-
-        $callback = function ($runner, $params, $searchClassId) use ($providers) {
-            foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
-            }
-        };
-        $view->results = $runner->run($request, $searchClassId, $callback);
-
-        $view->channels = [];
-        $view->lookfor = $this->params()->fromQuery('lookfor');
-        $view->token = $this->params()->fromQuery('channelToken');
-        foreach ($providers as $provider) {
-            $view->channels = array_merge(
-                $view->channels,
-                $provider->getFromSearch($view->results, $view->token)
-            );
-        }
-        return $view;
-    }
-
-    /**
-     * Get an array of channel providers matching the provided IDs (or just one,
-     * if the channelProvider GET parameter is set).
-     *
-     * @param array  $providerIds Array of IDs to load
-     * @param Config $config      Channel configuration
-     *
-     * @return array
-     */
-    protected function getChannelProviderArray($providerIds, $config)
-    {
-        $id = $this->params()->fromQuery('channelProvider');
-        if (!empty($id) && in_array($id, $providerIds)) {
-            return [$this->getChannelProvider($id, $config)];
-        }
-        $results = [];
-        foreach ($providerIds as $id) {
-            $results[] = $this->getChannelProvider($id, $config);
-        }
-        return $results;
-    }
-
-    /**
-     * Convenience method to retrieve a channel provider.
-     *
-     * @param string $providerId Channel provider name and optional config
-     * (colon-delimited)
-     * @param Config $config     Channel configuration
-     *
-     * @return \VuFind\ChannelProvider\ChannelProviderInterface
-     */
-    protected function getChannelProvider($providerId, Config $config)
-    {
-        // The provider ID consists of a service name and an optional config
-        // section -- break out the relevant parts:
-        list($serviceName, $configSection) = explode(':', $providerId . ':');
-
-        // Load configuration, using default value if necessary:
-        if (empty($configSection)) {
-            $configSection = "provider.$serviceName";
-        }
-        $options = isset($config->{$configSection})
-            ? $config->{$configSection}->toArray() : [];
-
-        // Load the service, and configure appropriately:
-        $provider = $this->serviceLocator
-            ->get('VuFind\ChannelProviderPluginManager')->get($serviceName);
-        $provider->setProviderId($providerId);
-        $provider->setOptions($options);
-        return $provider;
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $activeChannel = $this->params()->fromQuery('channelProvider');
+        $token = $this->params()->fromQuery('channelToken');
+        $context = $this->loader
+            ->getSearchContext($request, $token, $activeChannel, $source);
+        return $this->createViewModel($context);
     }
 }

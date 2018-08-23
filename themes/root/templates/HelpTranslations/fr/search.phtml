@@ -22,18 +22,18 @@
   <dd>
     <p>La troncature est un signe qui remplace une ou plusieurs lettres d'un mot.</p>
     <p><strong>?</strong> (point d'interrogation) représente n'importe quel caractère unique.</p>
-    <p>Par example, pour rechercher "texte" ou "teste" vous pouvez utiliser:</p>
+    <p>Par exemple, pour rechercher "texte" ou "teste" vous pouvez utiliser:</p>
     <pre class="code">te?t</pre>
-    <p>Pour remplacer 0 ou plus de letters d'un mot utilisez <strong>*</strong>
+    <p>Pour remplacer 0 ou plus de lettres d'un mot utilisez <strong>*</strong>
        (astérisque).</p>
-    <p>Par example pour rechercher "testes", "teste", "testez" vous pouvez
+    <p>Par exemple pour rechercher "testes", "teste", "testez" vous pouvez
        utilisez</p>
     <pre class="code">test*</pre>
     <p>L'astérisque représente n'importe quelle chaîne de caractères et peut être
        placé à n'importe quelle place.</p>
     <pre class="code">te*t</pre>
-    <p>Notez: Il n'est pas possible d'utilier l'astérisque ou le point
-       d'interrogation comme premier signe dans une recherche</p>
+    <p>Notez: Il n'est pas possible d'utiliser l'astérisque ou le point
+       d'interrogation comme premier signe dans une recherche.</p>
   </dd>
   
   <dt><a name="Fuzzy Searches"></a>Recherches floues</dt>
@@ -41,10 +41,10 @@
     <p>Utilisez le tilde <strong>~</strong> à la fin d'un mot. Par exemple, pour
        chercher un mot semblable à "amant" vous utilisez la recherche floue:
        <pre class="code">amant~</pre>
-       <p>Cette recherche trouvera des termes comme diamant ou aimant</p>
-       <p>Un paramètre suplémentaire définit le niveau de similarité. La
+       <p>Cette recherche trouvera des termes comme "diamant" ou "aimant"</p>
+       <p>Un paramètre supplémentaire définit le niveau de similarité. La
           valeur du paramètre peut être entre 0 et 1. Plus le chiffre est proche
-          de 1, plus les mots utilisés pour la recherche sont similaire au mot
+          de 1, plus les mots utilisés pour la recherche sont similaires au mot
           de départ. Exemple:</p>
     <pre class="code">amant~0.8</pre>
     <p>La valeur du paramètre par défaut est 0.5</p>
@@ -77,7 +77,7 @@
   <dt><a name="Boosting a Term"></a>Valoriser un terme</dt>
   <dd>
     <p>
-      Pour donner à un terme une importance plus élevé dans la recheche utilisez
+      Pour donner à un terme une importance plus élevé dans la recherche utilisez
       l'accent circonflexe<strong>^</strong>. Par exemple, si vous essayez la
       recherche suivante,
     </p>
@@ -90,43 +90,43 @@
     <p>
       Les opérateurs booléens permettent de combiner des recherches afin de les
       expliciter et/ou de les affiner. Les opérateurs booléens suivant sont
-      possible:
-      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> and <strong>-</strong>.
+      possibles:
+      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> et <strong>-</strong>.
     </p>
-    <p>Notez: Les opérateurs booléens doivent être ecrit en lettre majuscules</p>
+    <p>Notez: Les opérateurs booléens doivent être écrit en lettre majuscules</p>
     <dl>
       <dt><a name="AND"></a>AND</dt>
       <dd>
-          <p>L'oppérateur <strong>AND</strong> est l'opérateur par défaut. Ce
-           qui veut dire, que si vous faitez une recherche avec deux termes sans
-           l'opérateur AND, le moteur de recherche utilse automatiquement
+          <p>L'opérateur AND est l'opérateur par défaut. Ce
+           qui veut dire, que si vous faites une recherche avec deux termes sans
+           l'opérateur AND, le moteur de recherche utilise automatiquement
            l'opérateur AND.
            
-           Utilisez <strong>AND</strong> pour croiser plusieurs termes de 
+           Utilisez AND pour croiser plusieurs termes de
              recherche. Vous obtiendrez les notices bibliographiques qui
              contiennent tous les mots recherchés. Il permet d'affiner la
              recherche ou de réduire le nombre de réponses.</p>
-        <p>Example, les resultats contiendront "Théodore Monod" et "désert" si vous
-           utilisez la recherche suicante:</p>
+        <p>Par exemple, les résultats contiendront "Théodore Monod" et "désert" si vous
+           utilisez la recherche suivante:</p>
         <pre class="code">"Théodore Monod" désert</pre>
         <p>ou</p>
         <pre class="code">"Théodore Monod" AND désert</pre>
       </dd>
       <dt><a name="+"></a>+</dt>
       <dd>
-        <p>Pour obtenir des resultats avec un certain terme en utilisant plusieurs
+        <p>Pour obtenir des résultats avec un certain terme en utilisant plusieurs
             termes dans une recherche, utilisez le signe plus <strong>+</strong>.
             Placez le signe plus devant le mot que vous voulez rechercher.
         </p>
-        <p>Par exemple, si vous voulez des resultats qui contiennent "miau" et
+        <p>Par exemple, si vous voulez des résultats qui contiennent "miaou" et
             peut être "chat", utilisez la recherche suivante:
         </p>
-        <pre class="code">+miau chat</pre>
+        <pre class="code">+miaou chat</pre>
       </dd>
       <dt><a name="OR"></a>OR</dt>
       <dd>
         <p>
-           Au moins l'un de termes reliès par OR doit être présent dans le
+           Au moins l'un de termes reliés par OR doit être présent dans le
            résultat.</p>
         <p>Pour rechercher un document qui présente le terme "miammiam le croissant"
            ou seulement le terme "croissant", utilisez la recherche suivante:
@@ -136,18 +136,18 @@
       <dt><a name="NOT"></a>NOT</dt>
       <dd>
         <p>L'opérateur NOT permet d'exclure des termes de la recherche.</p>
-        <p>Pour obtenir des resultats qui contiennent le terme "raton" mais pas
-            "laveur", utilisez la recherche suivantes: </p>
+        <p>Pour obtenir des résultats qui contiennent le terme "raton" mais pas
+            "laveur", utilisez la recherche suivante: </p>
         <pre class="code">"raton" NOT "laveur"</pre>
         <p>Notez: L'opérateur NOT ne peut pas être utilisé avec un seul terme.
-           L'exemple suivant donne aucun resultat:</p>
+           L'exemple suivant donne aucun résultat:</p>
         <pre class="code">NOT inconnus</pre>
       </dd>
       <dt><a name="-"></a>-</dt>
       <dd>
         <p>Le signe moins <strong>-</strong> permet d'exclure le terme de la
-           recherche qui se situe derriere l'opérateur.</p>
-        <p>Pour rechercher tous les documents qui contiennent le term
+           recherche qui se situe derrière l'opérateur.</p>
+        <p>Pour rechercher tous les documents qui contiennent le terme
            "Valéry" mais pas "Giscard" utilisez la recherche suivante: </p>
         <pre class="code">Valéry -Giscard</pre>
       </dd>

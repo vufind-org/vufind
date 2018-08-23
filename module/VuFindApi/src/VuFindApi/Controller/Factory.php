@@ -2,7 +2,7 @@
 /**
  * Factory for controllers.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -54,7 +54,7 @@ class Factory
     public static function getApiController(ServiceManager $sm)
     {
         $controller = new ApiController($sm);
-        $controller->addApi($sm->get('SearchApi'));
+        $controller->addApi($sm->get('ControllerManager')->get('SearchApi'));
         return $controller;
     }
 
@@ -67,9 +67,9 @@ class Factory
      */
     public static function getSearchApiController(ServiceManager $sm)
     {
-        $recordFields = $sm->getServiceLocator()
-            ->get('VuFind\YamlReader')->get('SearchApiRecordFields.yaml');
-        $helperManager = $sm->getServiceLocator()->get('ViewHelperManager');
+        $recordFields = $sm->get('VuFind\Config\YamlReader')
+            ->get('SearchApiRecordFields.yaml');
+        $helperManager = $sm->get('ViewHelperManager');
         $rf = new RecordFormatter($recordFields, $helperManager);
         $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;

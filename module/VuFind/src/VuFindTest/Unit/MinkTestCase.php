@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -305,6 +305,28 @@ abstract class MinkTestCase extends DbTestCase
             }
         }
         return false;
+    }
+
+    /**
+     * Search for the specified query.
+     *
+     * @param string $query   Search term(s)
+     * @param string $handler Search type (optional)
+     *
+     * @return \Behat\Mink\Element\Element
+     */
+    protected function performSearch($query, $handler = null)
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        if ($handler) {
+            $this->findCss($page, '#searchForm_type')->setValue($handler);
+        }
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->snooze();
+        return $page;
     }
 
     /**
