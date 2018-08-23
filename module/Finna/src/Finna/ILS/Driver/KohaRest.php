@@ -1076,14 +1076,12 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
             $location = $this->getItemLocationName($item);
             $callnumber = $this->getItemCallNumber($item);
-            if (!empty($item['sub_description'])) {
-                $location .= ', ' . $item['sub_description'];
-            }
+            $sublocation = $item['sub_description'] ?? '';
             $entry = [
                 'id' => $id,
-                'holdings_id' => "$location/$callnumber",
                 'item_id' => $item['itemnumber'],
                 'location' => $location,
+                'department' => $sublocation,
                 'availability' => $available,
                 'status' => $status,
                 'status_array' => $statusCodes,

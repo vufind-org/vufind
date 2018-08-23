@@ -303,19 +303,26 @@
       $block = !$check && isset($row['addLink']) && $row['addLink'] === 'block';
       $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'] === 'block';
       $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'] === 'block';
+      $currentDepartment = '';
     ?>
     <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?>">
-      <?php if (isset($row['branch']) && isset($row['department'])): ?>
+      <?php if (isset($row['branch']) || isset($row['department'])): ?>
         <?php
-          $parts = [
-            '<span class="branch">' . $this->escapeHtml($row['branch']) . '</span>',
-            '<span class="department">' . $this->escapeHtml($row['department']) . '</span>'
-          ];
+          $parts = [];
+          if (!empty($row['branch'])) {
+            $parts[] = '<span class="branch">' . $this->escapeHtml($row['branch']) . '</span>';
+          }
+          if (!empty($row['department'])) {
+            $parts[] = '<span class="department">' . $this->escapeHtml($row['department']) . '</span>';
+          }
           if (!empty($row['callnumber']) && count($callnumbers) > 1) {
             $parts[] = '<span class="callnumber">' . $this->escapeHtml($row['callnumber']) . '</span>';
           }
         ?>
         <div class="copy-title">
+          <?php if (!$branches): ?>
+            <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
+          <?php endif; ?>
           <?=implode(', ', $parts);?>
         </div>
       <?php else: ?>
