@@ -2,18 +2,26 @@
 <?php $this->headTitle($this->translate('Terms')); $this->content()->setHeading($this->translate('Terms')); ?>
 
 <div class="page-content">
-  <p>För användningen av materialet gäller följande villkor:
+  <p>Följande villkor gäller för materialets användning:
   </p>
   <ul class="list-bullets">
-    <li><strong id="image_rights">Bilder:</strong> I Finna kan det finnas bilder av t.ex. museiföremål, konstverk eller fotografier. Om du vill publicera en sådan bild eller använda bilden i offentligheten måste du följa de användningsvillkor som anges. Om du använder en bild offentligt, bör du nämna upphovsman och källa. Om informationen om användningsrättigheter saknas eller om du är osäker på om du har rätt att använda en bild, ska du kontakta organisationen som har gett tillgång till materialet via Finna. Om du vill använda pärmbilden till en bok, ska du skicka en förfrågan med Finnas <a href="<?=$this->url('feedback-home')?>">allmänna responsblanketten</a>.
+    <li><strong>Digitalt material:</strong> Användningsrättigheterna för digitala bilder och annat material som finns i Finna varierar. Kontrollera informationen om användarrättigheterna som finns i samband med materialet och följ de givna anvisningarna. Om du använder materialet offentligt, ska du i regel ange upphovsman och källa.<br><br> 
+    <div class="example-image-area">
+      <img src="<?=$this->imageLink('terms_example_sv.png')?>" alt="Example" />
+      <p><small>Bild: Exempel på länk till kontaktformuläret på en materialsida i Finna. På bilden syns också länken till organisationens egen sida i Finna.</small></p>
+    </div>
+    Om det inte finns någon information om användarrättigheter eller om du är osäker på vilka rättigheter som gäller materialet, kontakta organisationen som ansvarar för materialet. Det går att göra via kontaktformuläret som finns vid respektive material på webbplatsen Finna.fi.<br><br>
+
+    På organisationernas sidor i Finna finns information om rättigheter och begränsningar för materialanvändningen samt kontaktuppgifter för att få närmare information. Du kommer till organisationernas sidor t.ex. via 
+    delen <a href="https://finna.fi/Content/organisations?lng=sv" target="_blank">Organisationer som medverkar i Finna.</a><br><br>
+
+    Det flesta omslagsbilder som visas i Finna är skyddade enligt lagen om upphovsrätt och användning av dem måste avtalas separat med förlaget eller materialets förmedlare.<br><br>
     </li>
-    <li><strong>Digitaliserat material:</strong> Finna ger länken till den organisation som förvaltar det digitaliserade materialet. Materialet på organisationens webbplats kan omfattas av rättigheter eller begränsningar som regleras i lag eller avtal. Information om rättigheterna och begränsningarna finns på den förvaltande organisationens webbplats.
-    </li>
-    <li><strong>Metadata:</strong> I regel kan metadata i anknytning till sökresultat användas fritt. Undantag är sammandrag och bakpärmstexter till böcker som ingår i metadata och metadata som producerats av Finnas användare, vilka kan omfattas av en tredje parts upphovsrätt.
+    <li><strong>Metadata:</strong> Metadata som ges i samband med sökresultaten på <a href="https://finna.fi/?lng=sv" target="_blank">Finna.fi</a> kan i regel användas fritt. Undantag är sammandrag, böckers baksidestexter och metadata som producerats av Finnas användare, vilka kan omfattas av en tredje parts upphovsrätt. Metadata på Finnas övriga användargränssnitt och e-resurser kan ha användningsbegränsningar.
     </li>
   </ul>
 
-  <p>Geokodningen av materialet har gjorts med öppen data i OpenStreetMap, licensierad med <a href="http://opendatacommons.org/licenses/odbl/" target="_blank">Open Data Commons Open Database</a> license.
+  <p>Geokodningen av materialet har gjorts med öppna data i OpenStreetMap som har licens från <a href="http://opendatacommons.org/licenses/odbl/" target="_blank">Open Data Commons Open Database</a>.
   </p>
 
 </div>
