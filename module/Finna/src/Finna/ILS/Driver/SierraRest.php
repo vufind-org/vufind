@@ -109,7 +109,7 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             'GET',
             $patron
         );
-        if (isset($result['code'])) {
+        if (!empty($result['code'])) {
             // An error was returned
             $this->error(
                 "Request for pickup locations returned error code: {$result['code']}"
@@ -217,10 +217,12 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             $patron
         );
 
-        if (isset($result['code']) && $result['code'] != 0) {
+        if (!empty($result['code'])) {
             return [
                 'success' => false,
-                'status' => $this->formatErrorMessage($result['description'])
+                'status' => $this->formatErrorMessage(
+                    $result['description'] ?? $result['name']
+                )
             ];
         }
         return ['success' => true];
@@ -253,10 +255,12 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             $patron
         );
 
-        if (isset($result['code']) && $result['code'] != 0) {
+        if (!empty($result['code'])) {
             return [
                 'success' => false,
-                'status' => $this->formatErrorMessage($result['description'])
+                'status' => $this->formatErrorMessage(
+                    $result['description'] ?? $result['name']
+                )
             ];
         }
         return ['success' => true];
