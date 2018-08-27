@@ -162,17 +162,17 @@ section.section-home {
 }
 
 
-@media (max-width: 1199px) {
+@media (max-width: @screen-md-max) {
   .background {
     height: 135px;
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: @screen-sm-max) {
   header .container.navbar {margin-bottom: 20px;}
 }
 
-@media (max-width: 767px) {
+@media (max-width: @screen-xs-max) {
   header .container.navbar {margin-bottom: 0px;}
   .panel-home h1 {
     padding: 0 @padding-base-horizontal;
@@ -219,7 +219,7 @@ section.section-home {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: @screen-sm-min) {
   .form-control {
     max-width: 100%;
   }
