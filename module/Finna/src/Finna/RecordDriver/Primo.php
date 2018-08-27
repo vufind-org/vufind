@@ -163,20 +163,34 @@ class Primo extends \VuFind\RecordDriver\Primo
 
         $links = ['linktorsrc' => false, 'backlink' => true];
         foreach ($links as $link => $citation) {
+            $url = '';
             if (isset($rec->links->{$link})) {
                 $url = (string)$rec->links->{$link};
                 $parts = explode('$$', $url);
                 $url = substr($parts[1], 1);
-
                 $urlParts = parse_url($url);
-                $urls[] = [
-                   'url' => $url,
-                   'urlShort' => $urlParts['host'] ?? $url,
-                   'citation' => $citation
-                ];
-                break;
+                if (empty($urlParts['host'])) {
+                    $url = '';
+                }
             }
+            if ('' === $url && !empty($this->fields['resource_urls'][$link])) {
+                $url = (string)$this->fields['resource_urls'][$link];
+                $urlParts = parse_url($url);
+                if (empty($urlParts['host'])) {
+                    $url = '';
+                }
+            }
+            if (empty($url)) {
+                continue;
+            }
+            $urls[] = [
+                'url' => $url,
+                'urlShort' => $urlParts['host'],
+                'citation' => $citation
+            ];
+            break;
         }
+
         return $urls;
     }
 

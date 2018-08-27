@@ -212,6 +212,15 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 unset($res['documents'][$i]['url']);
             }
 
+            // Set any resource url
+            // Get the URL, which has a separate namespace
+            $sear = $doc->children($namespaces['sear']);
+            foreach ((array)$sear->LINKS as $type => $urls) {
+                foreach ((array)$urls as $url) {
+                    $res['documents'][$i]['resource_urls'][$type] = (string)$url;
+                }
+            }
+
             // Prefix records id's
             $res['documents'][$i]['recordid']
                 = 'pci.' . $res['documents'][$i]['recordid'];
