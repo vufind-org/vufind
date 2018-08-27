@@ -4,6 +4,7 @@ return [
     'helpers' => [
         'factories' => [
             'helptext' => 'TueFind\View\Helper\Root\Factory::getHelpText',
+            'piwik' => 'TueFind\View\Helper\Root\Factory::getPiwik',
             'tuefind' => 'TueFind\View\Helper\TueFind\Factory::getTueFind',
         ],
     ],
