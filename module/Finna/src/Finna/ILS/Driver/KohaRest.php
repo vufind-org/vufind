@@ -1045,12 +1045,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'GET',
             $patron
         );
-        if (empty($result[0]['item_availabilities'])) {
-            return [];
-        }
 
         $statuses = [];
-        foreach ($result[0]['item_availabilities'] as $i => $item) {
+        foreach ($result[0]['item_availabilities'] ?? [] as $i => $item) {
             // $holding is a reference!
             unset($holding);
             if (!empty($item['holding_id'])
@@ -1194,7 +1191,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $marcRecord = $holding['_marcRecord'] ?? null;
         if (!isset($holding['_marcRecord'])) {
-            foreach ($holding['holdings_metadatas'] as $metadata) {
+            foreach ($holding['holdings_metadata'] ?? [$holding['metadata']]
+                as $metadata
+            ) {
                 if ('marcxml' === $metadata['format']
                     && 'MARC21' === $metadata['marcflavour']
                 ) {
