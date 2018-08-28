@@ -64,15 +64,6 @@ finna.imagePopup = (function finnaImagePopup() {
       initRecordImage();
       e.preventDefault();
     });
-
-    // Open image-popup from medium size record image.
-    $('.image-popup-trigger').click(function onClickPopupTrigger(e) {
-      if ($(this).hasClass('no-image')) {
-        return;
-      }
-      openPopup($(this));
-      e.preventDefault();
-    });
   }
 
   // Copied from finna-mylist.js to avoid dependency
@@ -344,8 +335,7 @@ finna.imagePopup = (function finnaImagePopup() {
           $('.access-rights p').first().hide();
           $('.image-rights').hide();
           $('.media-left > .organisation-menu').hide();
-
-          if( $('.access-rights').has('.more-link') ) {
+          if ( $('.access-rights').has('.more-link') ) {
             $('.access-rights > .more-link').hide();
           }
         }
@@ -368,6 +358,33 @@ finna.imagePopup = (function finnaImagePopup() {
     }
   }
 
+  function initImageCheck() {
+    $('.image-popup-trigger img').each(function setupImagePopup() {
+      $(this).one('load', function onLoadImage() {
+        // Don't hide anything if we have multiple images
+        var navi = $(this).closest('.image-popup-navi');
+        if (navi && navi.length > 1) {
+          return;
+        }
+        if (this.naturalWidth && this.naturalWidth === 10 && this.naturalHeight === 10) {
+          $(this).parent().addClass('no-image');
+          $(this).closest('a.image-popup-trigger').unbind('click');
+          $('.record.large-image-layout').addClass('no-image-layout').removeClass('large-image-layout');
+          $('.large-image-sidebar').addClass('visible-xs');
+          $('.record-main').addClass('mainbody left');
+          var href = $(this).parent().attr('href');
+          $(this).parent().attr({'href': href.split('#')[0], 'title': ''});
+          $(this).parents('.grid').addClass('no-image');
+          $('.rating-stars').addClass('hidden-xs');
+        }
+      }).each(function loadImage() {
+        if (this.complete) {
+          $(this).load();
+        }
+      });
+    });
+  }
+
   function init() {
     if (module !== 'record') {
       initThumbnailNavi();
@@ -383,6 +400,7 @@ finna.imagePopup = (function finnaImagePopup() {
     $.extend(true, $.magnificPopup.defaults, {
       tLoading: VuFind.translate('loading') + '...'
     });
+    initImageCheck();
   }
 
   var my = {
@@ -391,4 +409,3 @@ finna.imagePopup = (function finnaImagePopup() {
 
   return my;
 })();
-
