@@ -33,7 +33,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     if (!this.isApplied && counts) {
       $('<span/>')
         .addClass('badge')
-        .text(
+        .html(
           this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
         )
         .appendTo($html);
@@ -155,11 +155,11 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       var sort = $(button).data('sort');
       var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').text(VuFind.translate('loading') + '...');
+        list.find('.js-facet-next-page').html(VuFind.translate('loading') + '...');
         $.ajax(button.href + '&layout=lightbox')
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').text(VuFind.translate('more') + ' ...');
+            list.find('.js-facet-next-page').html(VuFind.translate('more') + ' ...');
           });
       }
       $('.full-facet-list').addClass('hidden');
@@ -182,7 +182,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         return false;
       }
       button.attr('disabled', 1);
-      button.text(VuFind.translate('loading') + '...');
+      button.html(VuFind.translate('loading') + '...');
       $.ajax(this.href + '&layout=lightbox')
         .done(function facetLightboxMoreDone(data) {
           var htmlDiv = $('<div>' + data + '</div>');
@@ -191,7 +191,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.text(VuFind.translate('more') + ' ...');
+            button.html(VuFind.translate('more') + ' ...');
             button.removeAttr('disabled');
           } else {
             button.remove();

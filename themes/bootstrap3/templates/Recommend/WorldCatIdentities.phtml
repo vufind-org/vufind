@@ -4,8 +4,8 @@
     <dl>
       <?php $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
         <?php if (++$i == 4): ?>
-          <dd id="moreWCIdents"><a href="#" onclick="moreFacets('WCIdents'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
-          <span class="hidden" id="narrowGroupHidden_WCIdents">
+          <dd id="more-WCIdents"><a href="#" onclick="moreFacets('WCIdents'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+          <span class="hidden WCIdents">
         <?php endif; ?>
         <dd>
         <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>
@@ -14,7 +14,8 @@
           <dd><?=$this->transEsc('Related Subjects')?>:</dd>
           <?php $j = 0; foreach ($subjects as $subj): ?>
             <?php if (++$j == 3): ?>
-              <dd id="moreWCIdents<?=$i?>"><a href="#" onclick="moreFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+              <dd id="more-WCIdents<?=$i?>"><a href="#" onclick="moreFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+              <span class="hidden WCIdents<?=$i?>">
             <?php endif; ?>
             <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
           <?php endforeach; ?>

@@ -77,6 +77,6 @@ class ILSAuthenticatorFactory implements FactoryInterface
         };
         $cfg = $container->get('ProxyManager\Configuration');
         $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
+        return $factory->createProxy($requestedName, $callback);
     }
 }
