@@ -8,7 +8,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "3.3.7",
-    "bootstrapaccessibilityplugin": "1.0.4",
+    "bootstrapaccessibilityplugin": "1.0.7",
     "bootstrap-validator": "0.10.2",
     "flot": "0.8.3",
     "jquery": "2.1.1",
