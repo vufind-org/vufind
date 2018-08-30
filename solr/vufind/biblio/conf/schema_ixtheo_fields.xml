@@ -38,6 +38,7 @@
     <field name="geographic_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="ids" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
@@ -138,6 +139,7 @@
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
 
     <!-- CUSTOM copyFields - only IxTheo/RelBib -->
+    <copyField source="id" dest="ids"/>
     <copyField source="key_word_chain_bag_de" dest="topic_all"/>
     <copyField source="key_word_chain_bag_de" dest="topic_de"/>
     <copyField source="key_word_chain_bag_el" dest="topic_all"/>
