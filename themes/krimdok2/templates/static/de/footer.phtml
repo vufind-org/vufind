@@ -1,12 +1,12 @@
-<div class="container">
-    <?=$this->HelpText()->render('supporters', null, 'static')?>
-</div>
 <div class="container" id="footer-bottom">
-    <div class="row">
-        <div class="col-xs-12 col-md-6 col-lg-6 copyright">
+    <div class="row row-eq-height">
+        <div class="col-xs-12 col-md-3 copyright">
             <?=$this->HelpText()->render('copyright', null, 'static')?>
         </div>
-        <div class="col-xs-12 col-md-6 col-lg-6 footer-menu">
+        <div class="col-xs-12 col-md-3 ">
+            <?=$this->HelpText()->render('supporters', null, 'static')?>
+        </div>
+        <div class="col-xs-12 col-md-6 footer-menu">
             <ul class="footer-menu">
                 <li><a href="<?=$this->url('content-page', ['page' => 'fid'])?>#contact"><?=$this->translate('Contact');?></a></li>
                 <li><a href="<?=$this->url('content-page', ['page' => 'Impressum'])?>"><?=$this->translate('Imprint');?></a></li>
