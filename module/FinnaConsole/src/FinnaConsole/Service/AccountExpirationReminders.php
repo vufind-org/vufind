@@ -33,6 +33,7 @@ use DateInterval;
 use DateTime;
 use Zend\Db\Sql\Select;
 use Zend\ServiceManager\ServiceManager;
+use Zend\Stdlib\RequestInterface as Request;
 
 use Zend\View\Resolver\AggregateResolver;
 use Zend\View\Resolver\TemplatePathStack;
@@ -183,11 +184,12 @@ class AccountExpirationReminders extends AbstractService
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments.
+     * @param Request $request   Full request
      *
      * @return boolean success
      */
-    public function run($arguments)
+    public function run($arguments, Request $request)
     {
         if (!$this->collectScriptArguments($arguments)) {
             $this->msg($this->getUsage());

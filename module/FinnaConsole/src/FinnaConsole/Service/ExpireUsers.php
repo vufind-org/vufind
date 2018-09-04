@@ -30,6 +30,8 @@ namespace FinnaConsole\Service;
 
 use Zend\Db\Sql\Select;
 
+use Zend\Stdlib\RequestInterface as Request;
+
 /**
  * Console service for anonymizing expired user accounts.
  *
@@ -69,11 +71,12 @@ class ExpireUsers extends AbstractService
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments.
+     * @param Request $request   Full request
      *
      * @return boolean success
      */
-    public function run($arguments)
+    public function run($arguments, Request $request)
     {
         if (!isset($arguments[0]) || (int)$arguments[0] < 180) {
             echo "Usage:\n  php index.php util expire_users <days>\n\n"

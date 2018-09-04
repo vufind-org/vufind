@@ -31,6 +31,8 @@ namespace FinnaConsole\Service;
 use Finna\Db\Row\User;
 use Finna\Db\Table\Transaction;
 
+use Zend\Stdlib\RequestInterface as Request;
+
 /**
  * Console service for processing unregistered online payments.
  *
@@ -161,11 +163,12 @@ class OnlinePaymentMonitor extends AbstractService
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments.
+     * @param Request $request   Full request
      *
      * @return boolean success
      */
-    public function run($arguments)
+    public function run($arguments, Request $request)
     {
         if (count($arguments) < 3) {
             echo $this->usage();

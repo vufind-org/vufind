@@ -29,6 +29,8 @@ namespace FinnaConsole\Service;
 
 use Zend\Db\Sql\Select;
 
+use Zend\Stdlib\RequestInterface as Request;
+
 /**
  * Console service for verifying record links.
  *
@@ -78,11 +80,12 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments.
+     * @param Request $request   Full request
      *
      * @return boolean success
      */
-    public function run($arguments)
+    public function run($arguments, Request $request)
     {
         $this->msg('Record link verification started');
         $count = $fixed = 0;
