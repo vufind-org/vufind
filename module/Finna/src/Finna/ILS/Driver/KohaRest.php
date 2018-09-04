@@ -1319,6 +1319,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function translateLocation($location, $default = null)
     {
+        if (empty($location)) {
+            return null !== $default ? $default : '';
+        }
         $prefix = 'location_';
         if (!empty($this->config['Catalog']['id'])) {
             $prefix .= $this->config['Catalog']['id'] . '_';
