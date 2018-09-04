@@ -265,18 +265,27 @@ ul .dropdown-menu {
 }
 
 /* Footer Menu */
-.footer-menu li {
-  list-style-type: none;
-  margin: 0 10px;
-  display: inline;
+.footer-menu {
+    padding-left: 10px;
 
-  a {
-    text-decoration: none;
-  }
+    li {
+        list-style-type: none;
+        margin: 0 10px;
+        display: inline;
 
-  a:hover {
-      text-decoration: underline !important;
-  }
+        a {
+          color: @gray-600;
+          text-decoration: none;
+        }
+
+        a:hover {
+          color: @gray-500;
+          text-decoration: underline !important;
+        }
+    }
+}
+.footer-menu {
+
 }
 
 /* Footer Bottom */
@@ -574,18 +583,6 @@ hr {
 .bottom-menu li {
   a, a:hover{
     color: @gray-600;
-  }
-}
-
-/* Footer Menu */
-.footer-menu li {
-
-  a {
-    color: @gray-600;
-  }
-
-  a:hover {
-      color: @gray-500;
   }
 }
 
