@@ -265,18 +265,27 @@ ul .dropdown-menu {
 }
 
 /* Footer Menu */
-.footer-menu li {
-  list-style-type: none;
-  margin: 0 10px;
-  display: inline;
+.footer-menu {
+    padding-left: 10px;
 
-  a {
-    text-decoration: none;
-  }
+    li {
+        list-style-type: none;
+        margin: 0 10px;
+        display: inline;
 
-  a:hover {
-      text-decoration: underline !important;
-  }
+        a {
+          color: @gray-600;
+          text-decoration: none;
+        }
+
+        a:hover {
+          color: @gray-500;
+          text-decoration: underline !important;
+        }
+    }
+}
+.footer-menu {
+
 }
 
 /* Footer Bottom */
@@ -338,8 +347,10 @@ ul .dropdown-menu {
   background-color: #32414B;
   color: #fff;
   bottom: 0;
+  right: 0;
   position: absolute;
   margin-bottom: 10px;
+  margin-right: 10px;
   &::after {
     font-family: fontAwesome;
     content: "\00a0\00a0\f061";
@@ -358,8 +369,10 @@ ul .dropdown-menu {
   border-color: theme-color("primary");
   color: theme-color("primary");
   bottom: 0;
+  right: 0;
   position: absolute;
   margin-bottom: 10px;
+  margin-right: 10px;
   &::after {
     font-family: fontAwesome;
     content: "\00a0\00a0\f061";
@@ -573,18 +586,6 @@ hr {
   }
 }
 
-/* Footer Menu */
-.footer-menu li {
-
-  a {
-    color: @gray-600;
-  }
-
-  a:hover {
-      color: @gray-500;
-  }
-}
-
 /* Panels */
 .panel-gray {
   background: #F5F5F5;
@@ -605,4 +606,9 @@ hr {
 
 #advSearchForm .sidebar {
     padding-top: 26px;
+}
+
+.row-home {
+    background: transparent url(/themes/tuefind2/images/searchbar.jpg) no-repeat;
+    background-position: center center;
 }
