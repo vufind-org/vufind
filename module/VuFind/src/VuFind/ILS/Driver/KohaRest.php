@@ -128,6 +128,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Whether to display home branch instead of holding branch
+     *
+     * @var bool
+     */
+    protected $useHomeBranch = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -179,6 +186,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->feeTypeMappings, $this->config['FeeTypeMappings']
             );
         }
+
+        $this->useHomeBranch = !empty($this->config['Holdings']['use_home_branch']);
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -1783,8 +1792,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $branchId = null !== $item['holdingbranch'] ? $item['holdingbranch']
-            : $item['homebranch'];
+        $branchId = (!$this->useHomeBranch && null !== $item['holdingbranch'])
+            ? $item['holdingbranch'] : $item['homebranch'];
         $name = $this->translate("location_$branchId");
         if ($name === "location_$branchId") {
             $branches = $this->getCachedData('branches');

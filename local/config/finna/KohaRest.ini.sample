@@ -59,6 +59,8 @@ summary = "863abiz:866az"
 supplements = "867az"
 ; Fields to include in indexes. Default is none.
 indexes = "868az"
+; Whether to display home branch instead of holding branch. Default is false.
+;use_home_branch = true
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
