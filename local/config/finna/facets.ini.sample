@@ -7,6 +7,7 @@ sector_str_mv      = Sector
 building           = Organisation
 ;building_sub_str_mv = Department
 format             = Format
+;format_ext_str_mv  = Format
 
 ; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
 ;callnumber-first    = "Call Number"
@@ -56,6 +57,7 @@ hierarchical[] = building
 hierarchical[] = format
 hierarchical[] = sector_str_mv
 hierarchical[] = category_str_mv
+hierarchical[] = format_ext_str_mv
 ; Sort options for hierarchical facets:
 ; How hierarchical facets are sorted. Default is result count, but alternative ways
 ; can be specified:
@@ -197,6 +199,7 @@ translated_facets[] = subtitle_lng_str_mv
 translated_facets[] = category_str_mv
 translated_facets[] = usage_rights_str_mv
 translated_facets[] = major_genre_str_mv
+translated_facets[] = format_ext_str_mv
 
 ; Prefix to be used in facet translation to avoid mixing facet strings with other
 ; translated content
