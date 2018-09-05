@@ -2,6 +2,9 @@
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links = JSON.parse(elem.dataset.linkJson);
+    if (links.length === 0) {
+      return;
+    }
     var $cont = $(
       '<div class="dropdown">' +
       '  <button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
