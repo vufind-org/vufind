@@ -310,7 +310,6 @@ class ScheduledAlerts extends AbstractService
             = $this->serviceManager
                 ->get('VuFind\Search\BackendManager')->get('Solr');
         $viewManager = $this->serviceManager->get('ViewManager');
-        $viewModel = $viewManager->getViewModel();
         $renderer = $this->serviceManager->get('ViewRenderer');
         $emailer = $this->serviceManager->get('VuFind\Mailer');
         $translator = $renderer->plugin('translate');
