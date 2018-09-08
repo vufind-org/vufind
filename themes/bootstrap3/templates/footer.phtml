@@ -23,6 +23,9 @@
         <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
         <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
         <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
+        <?php if ($this->config()->get('Overdrive')->Overdrive->ODHelpLink?? false):?>
+          <li><a href="<?php echo $this->config()->get('Overdrive')->Overdrive->ODHelpLink; ?>"><?=$this->transEsc('od_help_linktext')?></a></li>
+        <?php endif; ?>
       </ul>
     </div>
   </div>

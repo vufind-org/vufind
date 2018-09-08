@@ -12,6 +12,9 @@
           <img class="media-left" src="https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_28x28_rgb.jpg">
       </div>
       <?php echo $this->transEsc('od_content')?></h2>
+  <p class="od_help"><i class="fa fa-fw fa-question-circle" aria-hidden="true"></i>
+    <?php echo $this->translate('od_mycontent_help',['%%url%%'=>$this->config()->get('Overdrive')->Overdrive->ODHelpLink]); ?></p>
+    
   <?php echo $this->flashmessages()?>
 
   <h3><?php echo $this->transEsc('od_loans')?></h3>
