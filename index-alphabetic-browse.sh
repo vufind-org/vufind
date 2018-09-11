@@ -10,10 +10,21 @@ else
   JAVA="java"
 fi
 
+
+##################################################
+# Set VUFIND_HOME
+##################################################
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=`dirname $0`
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"
+  if [ -z "$VUFIND_HOME" ]
+  then
+    exit 1
+  fi
 fi
+
 
 if [ -z "$SOLR_HOME" ]
 then
