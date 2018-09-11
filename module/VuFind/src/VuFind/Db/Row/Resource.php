@@ -197,7 +197,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         }
 
         if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
-            $this->extra_metadata = mb_substr($extra, 0, 512, 'UTF-8');
+            $this->extra_metadata = json_encode($extra);
         }
         return $this;
     }

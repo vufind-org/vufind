@@ -99,8 +99,8 @@ class Summon implements FallbackLoaderInterface
     protected function fetchSingleRecord($id)
     {
         $resource = $this->table->findResource($id, 'Summon');
-        if ($resource) {
-            $bookmark = $resource->extra_metadata;
+        if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
+            $bookmark = $extra['bookmark'] ?? null;
             $params = new ParamBag(
                 ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
             );
