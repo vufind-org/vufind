@@ -74,6 +74,7 @@ CREATE TABLE `resource` (
   `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
+  `extra_metadata` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

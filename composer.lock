@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2de76da807eebd174adf10ac0713ffa5",
+    "content-hash": "82a765a499e6baa6261b9dbd74c9f849",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1628,16 +1628,16 @@
         },
         {
             "name": "serialssolutions/summon",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
-                "reference": "170beb3b0505f2047613b101213379537e651ea2"
+                "reference": "d12150c53585e9b4275888754846da81c12acd71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/summon/Summon.php/zipball/170beb3b0505f2047613b101213379537e651ea2",
-                "reference": "170beb3b0505f2047613b101213379537e651ea2",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/d12150c53585e9b4275888754846da81c12acd71",
+                "reference": "d12150c53585e9b4275888754846da81c12acd71",
                 "shasum": ""
             },
             "type": "library",
@@ -1657,7 +1657,7 @@
                 }
             ],
             "description": "Library for interacting with Serials Solutions' Summon API.",
-            "time": "2017-05-17T20:36:35+00:00"
+            "time": "2018-07-18T14:28:58+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
