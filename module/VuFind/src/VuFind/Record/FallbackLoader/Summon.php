@@ -94,19 +94,21 @@ class Summon implements FallbackLoaderInterface
      *
      * @param string $id ID to load
      *
-     * @return \VuFindSearch\Response\RecordCollectionInterface|null
+     * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     protected function fetchSingleRecord($id)
     {
         $resource = $this->table->findResource($id, 'Summon');
         if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
-            $bookmark = $extra['bookmark'] ?? null;
-            $params = new ParamBag(
-                ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
-            );
-            return $this->backend->retrieve($bookmark, $params);
+            $bookmark = $extra['bookmark'] ?? '';
+            if (strlen($bookmark) > 0) {
+                $params = new ParamBag(
+                    ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
+                );
+                return $this->backend->retrieve($bookmark, $params);
+            }
         }
-        return null;
+        return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);
     }
 
     /**
