@@ -176,9 +176,16 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                     'pageSize' => $pageSize
                 ]
             );
-            $next = $this->createRecordCollection(
-                $this->connector->query($query)
-            );
+            try {
+                $batch = $this->connector->query($query);
+            } catch (SummonException $e) {
+                throw new BackendException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
+            }
+            $next = $this->createRecordCollection($batch);
             if (!$results) {
                 $results = $next;
             } else {
