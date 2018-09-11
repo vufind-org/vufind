@@ -116,6 +116,12 @@ class Bootstrapper
             $action = $routeMatch->getParam('action');
             if (($controller == 'AJAX' && $action != 'SystemStatus')
                 || ($controller == 'Record' && $action == 'AjaxTab')
+                || ($controller == 'Record' && $action == 'Holdings')
+                || ($controller == 'Record' && $action == 'Details')
+                || ($controller == 'Record' && $action == 'Map')
+                || ($controller == 'Record' && $action == 'UserComments')
+                || ($controller == 'Record' && $action == 'Similar')
+                || ($controller == 'QRCode')
             ) {
                 $response = $event->getResponse();
                 $response->setStatusCode(403);
