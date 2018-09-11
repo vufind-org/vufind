@@ -3,4 +3,4 @@
 --
 
 ALTER TABLE "resource"
-  ADD COLUMN extra_metadata varchar(512) DEFAULT NULL;
+  ADD COLUMN extra_metadata text DEFAULT NULL;
