@@ -6,27 +6,29 @@
 
     <?= $this->record($this->driver)->renderTemplate('record-image-navi.phtml', ['images' => $images, 'type' => $type]); ?>
 
-    <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
-    <div class="recordcover-container">
-      <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview') . ': ' . $this->escapeHtmlAttr($this->driver->getTitle())?>">
-        <?php if (count($images) <= 1): ?>
+    <?php if (!$this->userAgent()->isBot()): ?>
+      <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
+        <div class="recordcover-container">
+          <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview') . ': ' . $this->escapeHtmlAttr($this->driver->getTitle())?>">
+            <?php if (count($images) <= 1): ?>
+              <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+            <?php endif; ?>
+            <?php if (!empty($images[0]['urls']['large']) && $this->layout()->templateDir == 'record' && $largeImageLayout): ?>
+              <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['large']);?>"/>
+            <?php else: ?>
+              <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['medium']);?>"/>
+            <?php endif; ?>
+            <?php if (isset($images[0]['large'])): ?>
+            <i class="fa fa-magnify hidden-print"></i>
+            <?php endif; ?>
+          </a>
+        </div>
+      <?php else: ?>
+        <a class="image-popup-trigger no-image" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-        <?php endif; ?>
-        <?php if (!empty($images[0]['urls']['large']) && $this->layout()->templateDir == 'record' && $largeImageLayout): ?>
-          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['large']);?>"/>
-        <?php else: ?>
-          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['medium']);?>"/>
-        <?php endif; ?>
-        <?php if (isset($images[0]['large'])): ?>
-         <i class="fa fa-magnify hidden-print"></i>
-         <?php endif; ?>
-      </a>
-    </div>
-    <?php else: ?>
-      <a class="image-popup-trigger no-image" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
-        <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      </a>
+          <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        </a>
+      <?php endif; ?>
     <?php endif; ?>
   </div>
   <?php if ($type != 'list' && $type != 'list grid'): ?>

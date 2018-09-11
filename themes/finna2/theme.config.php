@@ -56,6 +56,7 @@ return [
             'Finna\View\Helper\Root\Translation' => 'Finna\View\Helper\Root\TranslationFactory',
             'Finna\View\Helper\Root\TranslationEmpty' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\TruncateUrl' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'Finna\View\Helper\Root\UserAgent' => 'Finna\View\Helper\Root\UserAgentFactory',
             'Finna\View\Helper\Root\UserPublicName' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
@@ -99,6 +100,7 @@ return [
             'translation' => 'Finna\View\Helper\Root\Translation',
             'translationEmpty' => 'Finna\View\Helper\Root\TranslationEmpty',
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
+            'userAgent' => 'Finna\View\Helper\Root\UserAgent',
             'userPublicName' => 'Finna\View\Helper\Root\UserPublicName',
 
             // Overrides
