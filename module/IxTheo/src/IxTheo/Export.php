@@ -9,18 +9,6 @@ use Zend\Config\Config;
 class Export extends \VuFind\Export
 {
     /**
-     * Constructor
-     *
-     * @param Config $mainConfig   Main VuFind configuration
-     * @param Config $exportConfig Export-specific configuration
-     */
-    public function __construct(Config $mainConfig, Config $exportConfig)
-    {
-        parent::__construct($mainConfig, $exportConfig);
-    }
-
-
-    /**
      * Build callback URL for export.
      *
      * @param string $format   Export format being used

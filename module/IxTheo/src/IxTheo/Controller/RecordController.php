@@ -169,20 +169,19 @@ class RecordController extends \VuFind\Controller\RecordController
         // the redirect now (unless we're being called back from that service!):
         if ($export->needsRedirect($format)
             && !$this->params()->fromQuery('callback')
-        ) {
-           if ($export->useExportOutputAsParameter($format)) {
-               $query_parameter = ($this->getViewRenderer()->plugin('record')($driver))->getExport($format);
-               return $this->redirect()
-                ->toUrl($export->getRedirectUrl($format, $query_parameter));
-           }
-           else {
-            // Build callback URL:
-            $parts = explode('?', $this->getServerUrl(true));
-            $callback = $parts[0] . '?callback=1&style=' . urlencode($format);
-            return $this->redirect()
-                ->toUrl($export->getRedirectUrl($format, $callback));
-           }
-
+        )  {
+            if ($export->useExportOutputAsParameter($format)) {
+                $query_parameter = ($this->getViewRenderer()->plugin('record')($driver))->getExport($format);
+                return $this->redirect()
+                 ->toUrl($export->getRedirectUrl($format, $query_parameter));
+            }
+            else {
+             // Build callback URL:
+             $parts = explode('?', $this->getServerUrl(true));
+             $callback = $parts[0] . '?callback=1&style=' . urlencode($format);
+             return $this->redirect()
+                 ->toUrl($export->getRedirectUrl($format, $callback));
+            }
         }
 
         // Send appropriate HTTP headers for requested format:
