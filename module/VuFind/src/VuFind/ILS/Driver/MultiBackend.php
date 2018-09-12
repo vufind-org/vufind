@@ -207,6 +207,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         // Process each group
         $results = [];
         foreach ($grouped as $source => $current) {
+            // Get statuses only if a driver is configured for this source
             if ($current['driver']) {
                 $localIds = array_map(
                     function ($id) {
@@ -217,15 +218,12 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 try {
                     $statuses = $current['driver']->getStatuses($localIds);
                 } catch (ILSException $e) {
-                    $statuses = [];
-                    foreach ($localIds as $id) {
-                        $statuses[] = [
-                            [
-                                'id' => $id,
-                                'error' => 'An error has occurred'
-                            ]
-                        ];
-                    }
+                    $statuses = array_map(
+                        function ($id) {
+                            return ['id' => $id, 'error' => 'An error has occurred'];
+                        },
+                        $localIds
+                    );
                 }
                 $statuses = array_map(
                     function ($status) use ($source) {
