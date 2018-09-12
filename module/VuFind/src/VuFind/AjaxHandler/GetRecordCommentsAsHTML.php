@@ -73,7 +73,7 @@ class GetRecordCommentsAsHTML extends AbstractBase
      *
      * @param Params $params Parameter helper from controller
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
     public function handleRequest(Params $params)
     {
@@ -81,8 +81,8 @@ class GetRecordCommentsAsHTML extends AbstractBase
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
-        return $this->formatResponse(
-            $this->renderer->render('record/comments-list.phtml', compact('driver'))
-        );
+        $html = $this->renderer
+            ->render('record/comments-list.phtml', compact('driver'));
+        return $this->formatResponse(compact('html'));
     }
 }

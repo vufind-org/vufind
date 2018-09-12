@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -142,6 +142,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     ];
 
     /**
+     * Available API version
+     *
+     * @var int
+     */
+    protected $apiVersion = 5;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -220,6 +227,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $this->itemStatusMappings = array_merge(
                 $this->itemStatusMappings, $this->config['ItemStatusMappings']
             );
+        }
+
+        if (isset($this->config['Catalog']['api_version'])) {
+            $this->apiVersion = $this->config['Catalog']['api_version'];
         }
 
         // Init session cache for session-specific data
@@ -463,12 +474,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $zip = '';
         $city = '';
         if (!empty($result['names'])) {
-            $name = $result['names'][0];
-            list($lastname, $firstname) = explode(', ', $name, 2);
+            $nameParts = explode(', ', $result['names'][0], 2);
+            $lastname = $nameParts[0];
+            $firstname = $nameParts[1] ?? '';
         }
         if (!empty($result['addresses'][0]['lines'][1])) {
             $address = $result['addresses'][0]['lines'][0];
-            list($zip, $city) = explode(' ', $result['addresses'][0]['lines'][1], 2);
+            $postalParts = explode(' ', $result['addresses'][0]['lines'][1], 2);
+            if (isset($postalParts[1])) {
+                $zip = $postalParts[0];
+                $city = $postalParts[1];
+            } else {
+                $city = $postalParts[0];
+            }
         }
         $expirationDate = !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
@@ -598,7 +616,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $patron
             );
             if (!empty($result['code'])) {
-                $msg = $this->formatErrorMessage($result['description']);
+                $msg = $this->formatErrorMessage(
+                    $result['description'] ?? $result['name']
+                );
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => false,
@@ -649,7 +669,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'GET',
             $patron
         );
-        if (isset($result['code'])) {
+        if (!empty($result['code'])) {
             return [
                 'success' => false,
                 'status' => 146 === $result['code']
@@ -711,12 +731,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getMyHolds($patron)
     {
+        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
+            . ',recordType,priority,priorityQueueLength';
+        if ($this->apiVersion >= 5) {
+            $fields .= ',pickupByDate';
+        }
         $result = $this->makeRequest(
             ['v3', 'patrons', $patron['id'], 'holds'],
             [
                 'limit' => 10000,
-                'fields' => 'id,record,frozen,placed,location,pickupLocation'
-                    . ',status,recordType,priority,priorityQueueLength'
+                'fields' => $fields
             ],
             'GET',
             $patron
@@ -762,6 +786,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $position = ($entry['priority'] + 1) . ' / '
                     . $entry['priorityQueueLength'];
             }
+            $lastPickup = !empty($entry['pickupByDate'])
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['pickupByDate']
+                ) : '';
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
@@ -770,6 +798,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
                 ),
+                'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
                 'in_transit' => $entry['status']['code'] == 't',
@@ -818,11 +847,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v3', 'patrons', 'holds', $holdId], [], 'DELETE', $patron
+                ['v5', 'patrons', 'holds', $holdId], [], 'DELETE', $patron
             );
 
             if (!empty($result['code'])) {
-                $msg = $this->formatErrorMessage($result['description']);
+                $msg = $this->formatErrorMessage(
+                    $result['description'] ?? $result['name']
+                );
                 $response[$holdId] = [
                     'item_id' => $holdId,
                     'success' => false,
@@ -887,7 +918,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'GET',
             $patron
         );
-        if (isset($result['code'])) {
+        if (!empty($result['code'])) {
             // An error was returned
             $this->error(
                 "Request for pickup locations returned error code: {$result['code']}"
@@ -1040,7 +1071,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         );
 
         if (!empty($result['code'])) {
-            return $this->holdError($result['description']);
+            return $this->holdError($result['description'] ?? $result['name']);
         }
         return ['success' => true];
     }
@@ -1171,10 +1202,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $patron
         );
 
-        if (isset($result['code']) && $result['code'] != 0) {
+        if (!empty($result['code'])) {
             return [
                 'success' => false,
-                'status' => $this->formatErrorMessage($result['description'])
+                'status' => $this->formatErrorMessage(
+                    $result['description'] ?? $result['name']
+                )
             ];
         }
         return ['success' => true, 'status' => 'change_password_ok'];

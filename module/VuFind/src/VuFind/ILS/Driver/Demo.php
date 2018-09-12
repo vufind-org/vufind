@@ -34,7 +34,7 @@
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -463,6 +463,11 @@ class Demo extends AbstractBase
                     $currentItem['position'] = $pos;
                 } else {
                     $currentItem['available'] = true;
+                    if (rand() % 3 != 1) {
+                        $lastDate = strtotime('now + 3 days');
+                        $currentItem['last_pickup_date'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $lastDate);
+                    }
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
@@ -625,6 +630,7 @@ class Demo extends AbstractBase
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
 
+        $issue = 1;
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
@@ -640,6 +646,10 @@ class Demo extends AbstractBase
             for ($j = 1; $j <= $summCount; $j++) {
                 $status[$i]['summary'][] = "Item $itemNum summary $j";
             }
+            $volume = intdiv($issue, 4) + 1;
+            $seriesIssue = $issue % 4;
+            $issue = $issue + 1;
+            $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
         // Send back final value:

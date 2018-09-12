@@ -297,11 +297,12 @@ class Server
      * @param object           $record     A record driver object
      * @param string           $format     Metadata format to obtain (false for none)
      * @param bool             $headerOnly Only attach the header?
+     * @param string           $set        Currently active set
      *
      * @return bool
      */
     protected function attachNonDeleted($container, $record, $format,
-        $headerOnly = false
+        $headerOnly = false, $set = ''
     ) {
         // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
@@ -324,9 +325,12 @@ class Server
         // Check for sets:
         $fields = $record->getRawData();
         if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = $fields[$this->setField];
+            $sets = (array)$fields[$this->setField];
         } else {
             $sets = [];
+        }
+        if (!empty($set)) {
+            $sets = array_unique(array_merge($sets, [$set]));
         }
 
         // Get modification date:
@@ -598,14 +602,14 @@ class Server
         $solrLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
 
         // Get non-deleted records from the Solr index:
+        $set = $params['set'] ?? '';
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit,
-            $params['set'] ?? ''
+            $from, $until, $solrOffset, $solrLimit, $set
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
-            if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly)) {
+            if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set)) {
                 $this->unexpectedError('Cannot load document');
             }
             $currentCursor++;
@@ -732,9 +736,9 @@ class Server
         // Apply filters as needed.
         if (!empty($set)) {
             if (isset($this->setQueries[$set])) {
-                // use hidden filter here to allow for complex queries;
-                // plain old addFilter expects simple field:value queries.
-                $params->addHiddenFilter($this->setQueries[$set]);
+                // Put parentheses around the query so that it does not get
+                // parsed as a simple field:value filter.
+                $params->addFilter('(' . $this->setQueries[$set] . ')');
             } elseif (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'

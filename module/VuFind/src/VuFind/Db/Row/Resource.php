@@ -27,7 +27,7 @@
  */
 namespace VuFind\Db\Row;
 
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 /**
@@ -196,6 +196,9 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $this->year = intval($year);
         }
 
+        if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
+            $this->extra_metadata = json_encode($extra);
+        }
         return $this;
     }
 }

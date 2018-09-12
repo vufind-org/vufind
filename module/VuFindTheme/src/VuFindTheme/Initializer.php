@@ -87,6 +87,13 @@ class Initializer
     protected $cookieManager;
 
     /**
+     * A static flag used to determine if the theme has been initialized
+     *
+     * @var bool
+     */
+    protected static $themeInitialized = false;
+
+    /**
      * Constructor
      *
      * @param Config   $config Configuration object containing these keys:
@@ -180,6 +187,12 @@ class Initializer
      */
     public function init()
     {
+        // Make sure to initialize the theme just once
+        if (self::$themeInitialized) {
+            return;
+        }
+        self::$themeInitialized = true;
+
         // Determine the current theme:
         $currentTheme = $this->pickTheme($this->event->getRequest());
 

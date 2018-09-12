@@ -85,13 +85,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context       Context helper
-     * @param array                            $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager                    $pluginManager Resolver plugin manager
-     * @param \Zend\Config\Config              $config        VuFind OpenURL config
+     * @param Context             $context       Context helper
+     * @param array               $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager       $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config $config        VuFind OpenURL config
      */
-    public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, PluginManager $pluginManager, $config = null
+    public function __construct(Context $context, $openUrlRules,
+        PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
@@ -100,9 +100,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Render appropriate UI controls for an OpenURL link.
+     * Set up context for helper
      *
-     * @param \VuFind\RecordDriver $driver The current recorddriver
+     * @param \VuFind\RecordDriver $driver The current record driver
      * @param string               $area   OpenURL context ('results', 'record'
      *  or 'holdings'
      *

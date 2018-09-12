@@ -58,6 +58,35 @@ class Summon extends DefaultRecord
     protected $dateConverter = null;
 
     /**
+     * Previous unique ID (if applicable).
+     *
+     * @var string
+     */
+    protected $previousUniqueId = null;
+
+    /**
+     * Get previous unique ID (or null if not applicable).
+     *
+     * @return string
+     */
+    public function getPreviousUniqueId()
+    {
+        return $this->previousUniqueId;
+    }
+
+    /**
+     * Set previous unique ID
+     *
+     * @param string $id ID to set
+     *
+     * @return void
+     */
+    public function setPreviousUniqueId($id)
+    {
+        $this->previousUniqueId = $id;
+    }
+
+    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
@@ -135,6 +164,19 @@ class Summon extends DefaultRecord
     {
         return isset($this->fields['Edition']) ?
             $this->fields['Edition'][0] : '';
+    }
+
+    /**
+     * Get extra metadata to store in the resource table. In this instance,
+     * we use the BookMark value so that it can be used to recover expired
+     * records in favorite lists.
+     *
+     * @return string
+     */
+    public function getExtraResourceMetadata()
+    {
+        return isset($this->fields['BookMark'][0])
+            ? ['bookmark' => $this->fields['BookMark'][0]] : null;
     }
 
     /**
@@ -499,11 +541,9 @@ class Summon extends DefaultRecord
     public function getURLs()
     {
         if (isset($this->fields['link'])) {
+            $msg = $this->hasFullText() ? 'Get full text' : 'Get more information';
             return [
-                [
-                    'url' => $this->fields['link'],
-                    'desc' => $this->translate('Get full text')
-                ]
+                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)]
             ];
         }
         $retVal = [];
@@ -628,5 +668,25 @@ class Summon extends DefaultRecord
             }
         }
         return $str;
+    }
+
+    /**
+     * Does this record have full text access?
+     *
+     * @return bool
+     */
+    public function hasFullText()
+    {
+        return (bool)($this->fields['hasFullText'] ?? false);
+    }
+
+    /**
+     * Is this an open access record?
+     *
+     * @return bool
+     */
+    public function isOpenAccess()
+    {
+        return (bool)($this->fields['IsOpenAccess'] ?? false);
     }
 }
