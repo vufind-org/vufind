@@ -9,6 +9,9 @@ VuFind.register('account', function Account() {
   var holdStatus = LOADING;
 
   var _render = function _render() {
+    function formatNumber(num) {
+      return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     var accountIcon = 'fa fa-user-circle';
     // CHECKED OUT COUNTS
     if (checkedOutStatus === null) {
@@ -49,7 +52,7 @@ VuFind.register('account', function Account() {
     // FINES
     if (fineStatus !== null && fineStatus > 0) {
       $('.myresearch-menu .fines-status').html(
-        '<span class="badge overdue">$' + (fineStatus / 100).toFixed(2) + '</span>'
+        '<span class="badge overdue">$' + formatNumber(fineStatus / 100) + '</span>'
       );
       accountIcon = 'fa fa-exclamation-triangle text-danger';
     } else if (fineStatus === LOADING) {
