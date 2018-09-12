@@ -621,7 +621,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                     'U', strtotime($entry['ResValidUntil'])
                 ),
                 'position' => $entry['NumberInQueue'],
-                'available' => $entry['ServiceCode'] === 'ReservationArrived',
+                'available' => ($entry['ServiceCode'] === 'ReservationArrived'
+                    || $entry['ServiceCode'] === 'ReservationNoticeSent')
+                        ? true : false,
                 'requestId' => $entry['Id']
             ];
             if (!empty($entry['MarcRecordTitle'])) {
