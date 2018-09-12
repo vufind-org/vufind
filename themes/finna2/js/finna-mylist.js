@@ -181,11 +181,14 @@ finna.myList = (function finnaMyList() {
   }
 
   function newListAdded(data) {
+    var title = data.title;
+    var newTitle = (title.length > 20) ? title.substring(0, 20) + '...' : title;
+
     // update add-to-list select
     $('#add-to-list')
       .append($('<option></option>')
         .attr('value', data.id)
-        .text(data.title));
+        .text(newTitle));
 
     refreshLists();
   }

@@ -29,7 +29,8 @@
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <?php foreach ($lists as $l): ?>
           <?php if ($list && $list->id == $l->id) { continue; } ?>
-          <option value="<?= $l->id; ?>"><?= $this->escapeHtml($l->title); ?></option>
+          <?php $title = $this->truncate($l->title, 20) ?>
+          <option value="<?= $l->id; ?>"><?= $this->escapeHtml($title); ?></option>
           <?php endforeach; ?>
         </select>
         <i id="add-to-list-spinner" class="fa fa-spinner fa-spin hidden"></i>
