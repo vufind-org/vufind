@@ -2,7 +2,7 @@
 /**
  * Mink cart test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -200,6 +200,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
+        $this->snooze();
         $this->addCurrentPageToCartUsingButtons($page);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
@@ -556,10 +557,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
-        $this->findCss($page, '.modal #email_message')->setValue('message');
-        $this->findCss($page, '.modal #email_to')
-            ->setValue('demian.katz@villanova.edu');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
+        $this->findCssAndSetValue($page, '.modal #email_message', 'message');
+        $this->findCssAndSetValue(
+            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+        );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         // Check for confirmation message

@@ -18,45 +18,45 @@
         <?=$this->translate('Username')?>
         <select name="user_id" id="user_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
-          <? foreach($this->uniqueUsers as $user):?>
-            <option value="<?= $user['user_id'] ?>"<? if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<? endif;?>>
+          <?php foreach($this->uniqueUsers as $user):?>
+            <option value="<?= $user['user_id'] ?>"<?php if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<?php endif;?>>
               <?=$user['username'] ?>
             </option>
-          <? endforeach;?>
+          <?php endforeach;?>
         </select>
       </label>
       <label for="tag_id">
         <?=$this->translate('Tag')?>
         <select name="tag_id" id="tag_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
-          <? foreach($this->uniqueTags as $tag):?>
-          <option value="<?= $tag['tag_id'] ?>"<? if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<? endif;?>>
+          <?php foreach($this->uniqueTags as $tag):?>
+          <option value="<?= $tag['tag_id'] ?>"<?php if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<?php endif;?>>
               <?=$tag['tag'] ?>
           </option>
-          <? endforeach;?>
+          <?php endforeach;?>
         </select>
       </label>
       <label for="resource_id">
         <?=$this->translate('Title')?>
         <select name="resource_id" id="resource_id" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
-          <? foreach($this->uniqueResources as $resource):?>
-          <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<? if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<? endif;?>>
+          <?php foreach($this->uniqueResources as $resource):?>
+          <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<?php if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<?php endif;?>>
               <?=$this->truncate($resource['title'], 80) ?> (<?=$resource['resource_id'] ?>)
           </option>
-          <? endforeach;?>
+          <?php endforeach;?>
         </select>
       </label>
       <label for="taglistsubmit">
         <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
-        <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
+        <?php if((isset($this->params['user_id']) && null !== $this->params['user_id']) || (isset($this->params['tag_id']) && null !== $this->params['tag_id']) || (isset($this->params['resource_id']) && null !== $this->params['resource_id'])):?>
           <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
-        <? endif;?>
+        <?php endif;?>
       </label>
     </div>
   </form>
 
-  <? if(count($this->results) > 0):?>
+  <?php if(count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="user_id" value="<?=isset($this->params['user_id']) ? $this->params['user_id'] : '' ?>" />
       <input type="hidden" name="tag_id" value="<?=isset($this->params['tag_id']) ? $this->params['tag_id'] : '' ?>" />
@@ -70,7 +70,7 @@
           <th><?=$this->translate('Title')?></th>
         </tr>
 
-        <? foreach ($this->results as $tag): ?>
+        <?php foreach ($this->results as $tag): ?>
           <tr>
             <td>
               <label for="<?=$this->prefix?>checkbox_<?=$tag['id']?>">
@@ -82,7 +82,7 @@
             <td><?=$tag->username ?> (<?= $tag->user_id?>)</td>
             <td><?=$tag->title?> (<?= $tag->resource_id?>)</td>
           </tr>
-        <? endforeach;?>
+        <?php endforeach;?>
       </table>
 
       <input type="submit" name="deleteSelected" value="<?=$this->transEsc('delete_selected')?>" class="btn btn-default">
@@ -91,9 +91,9 @@
 
     </form>
     <?=$this->paginationControl($this->results, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
-  <? else:?>
+  <?php else:?>
     <p><?=$this->translate('tag_filter_empty')?></p>
-  <? endif;?>
+  <?php endif;?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

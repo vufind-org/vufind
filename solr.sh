@@ -42,8 +42,15 @@ usage()
 # Set VUFIND_HOME
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=$(dirname "$0")
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"
+  if [ -z "$VUFIND_HOME" ]
+  then
+    exit 1
+  fi
 fi
+
 
 if [ -z "$SOLR_HOME" ]
 then
@@ -81,4 +88,4 @@ then
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"
+"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"

@@ -2,7 +2,7 @@
 /**
  * ILS driver test
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -137,9 +137,11 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->driver = $this->createConnector();
     }

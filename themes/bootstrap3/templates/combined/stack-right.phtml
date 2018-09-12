@@ -1,8 +1,8 @@
 <div class="combined-search-container">
-  <? $columnIndex = 0; ?>
+  <?php $columnIndex = 0; ?>
   <div class="combined-column">
-    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-      <?
+    <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+      <?php
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
@@ -12,7 +12,7 @@
           'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions
         ];
       ?>
-      <?
+      <?php
         if (
           (!isset($currentSearch['ajax']) || !$currentSearch['ajax'])                    // AJAX column
           && (isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty']) // set to hide when empty
@@ -22,14 +22,14 @@
         }
       ?>
       <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>" class="combined-list">
-        <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+        <?php $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
-      <? $columnIndex ++; ?>
-      <? if ($columnIndex < $columns): ?>
+      <?php $columnIndex ++; ?>
+      <?php if ($columnIndex < $columns): ?>
     </div>
     <div class="combined-column">
-      <? endif; ?>
-    <? endforeach; ?>
+      <?php endif; ?>
+    <?php endforeach; ?>
   </div>
 </div>

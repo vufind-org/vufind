@@ -8,7 +8,7 @@
  *
  * -!!!!-This script is specifically for trees built for JSTree from Solr.-!!!!-
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) National Library of Ireland 2012.
  *

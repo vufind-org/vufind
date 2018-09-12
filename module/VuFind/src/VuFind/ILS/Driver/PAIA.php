@@ -2,7 +2,7 @@
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Oliver Goldschmidt, Magda Roos, Till Kinstler, André Lahmann 2013,
  * 2014, 2015.
@@ -81,7 +81,7 @@ class PAIA extends DAIA
     /**
      * SessionManager
      *
-     * @var \VuFind\SessionManager
+     * @var \Zend\Session\SessionManager
      */
     protected $sessionManager;
 
@@ -123,7 +123,7 @@ class PAIA extends DAIA
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->baseUrl . $this->paiaURL) . $suffix
         );
     }
@@ -331,10 +331,8 @@ class PAIA extends DAIA
                 'success'    => false,
                 'status'     => $array_response['error'],
                 'sysMessage' =>
-                    isset($array_response['error'])
-                        ? $array_response['error'] : ' ' .
-                    isset($array_response['error_description'])
-                        ? $array_response['error_description'] : ' '
+                    $array_response['error'] ?? ' ' .
+                    $array_response['error_description'] ?? ' '
             ];
         } elseif (isset($array_response['patron'])
             && $array_response['patron'] === $post_data['patron']
@@ -594,18 +592,18 @@ class PAIA extends DAIA
         if (isset($fees['fee'])) {
             foreach ($fees['fee'] as $fee) {
                 $result = [
-                    // fee.amount 	1..1 	money 	amount of a single fee
+                    // fee.amount    1..1   money    amount of a single fee
                     'amount'      => $feeConverter($fee['amount']),
                     'checkout'    => '',
-                    // fee.feetype 	0..1 	string 	textual description of the type
+                    // fee.feetype   0..1   string   textual description of the type
                     // of service that caused the fee
-                    'fine'    => (isset($fee['feetype']) ? $fee['feetype'] : null),
+                    'fine'    => ($fee['feetype'] ?? null),
                     'balance' => $feeConverter($fee['amount']),
-                    // fee.date 	0..1 	date 	date when the fee was claimed
+                    // fee.date      0..1   date     date when the fee was claimed
                     'createdate'  => (isset($fee['date'])
                         ? $this->convertDate($fee['date']) : null),
                     'duedate' => '',
-                    // fee.edition 	0..1 	URI 	edition that caused the fee
+                    // fee.edition   0..1   URI      edition that caused the fee
                     'id' => (isset($fee['edition'])
                         ? $this->getAlternativeItemId($fee['edition']) : ''),
                 ];
@@ -636,16 +634,13 @@ class PAIA extends DAIA
         }
 
         // custom PAIA fields
-        // fee.about 	0..1 	string 	textual information about the fee
-        // fee.item 	0..1 	URI 	item that caused the fee
-        // fee.feeid 	0..1 	URI 	URI of the type of service that
+        // fee.about     0..1     string    textual information about the fee
+        // fee.item      0..1     URI       item that caused the fee
+        // fee.feeid     0..1     URI       URI of the type of service that
         // caused the fee
-        $additionalData['feeid']      = (isset($fee['feeid'])
-            ? $fee['feeid'] : null);
-        $additionalData['about']      = (isset($fee['about'])
-            ? $fee['about'] : null);
-        $additionalData['item']       = (isset($fee['item'])
-            ? $fee['item'] : null);
+        $additionalData['feeid']      = ($fee['feeid'] ?? null);
+        $additionalData['about']      = ($fee['about'] ?? null);
+        $additionalData['item']       = ($fee['item'] ?? null);
 
         return $additionalData;
     }
@@ -699,7 +694,7 @@ class PAIA extends DAIA
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => isset($patron['status']) ? $patron['status'] : null,
+                'statuscode' => $patron['status'] ?? null,
                 'canWrite'   => in_array('write_items', $this->getScope()),
             ];
         }
@@ -816,7 +811,7 @@ class PAIA extends DAIA
      */
     protected function getCallNumber($doc)
     {
-        return isset($doc['label']) ? $doc['label'] : null;
+        return $doc['label'] ?? null;
     }
 
     /**
@@ -1200,8 +1195,7 @@ class PAIA extends DAIA
         $user['id']        = $patron;
         $user['firstname'] = $firstname;
         $user['lastname']  = $lastname;
-        $user['email']     = (isset($user_response['email'])
-            ? $user_response['email'] : '');
+        $user['email']     = ($user_response['email'] ?? '');
         $user['major']     = null;
         $user['college']   = null;
         // add other information from PAIA - we don't want anything to get lost
@@ -1246,7 +1240,7 @@ class PAIA extends DAIA
         $result = [];
 
         // item (0..1) URI of a particular copy
-        $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
+        $result['item_id'] = ($doc['item'] ?? '');
 
         $result['cancel_details']
             = (isset($doc['cancancel']) && $doc['cancancel'])
@@ -1261,16 +1255,16 @@ class PAIA extends DAIA
         $result['type'] = $this->paiaStatusString($doc['status']);
 
         // storage (0..1) textual description of location of the document
-        $result['location'] = (isset($doc['storage']) ? $doc['storage'] : null);
+        $result['location'] = ($doc['storage'] ?? null);
 
         // queue (0..1) number of waiting requests for the document or item
-        $result['position'] =  (isset($doc['queue']) ? $doc['queue'] : null);
+        $result['position'] =  ($doc['queue'] ?? null);
 
         // only true if status == 4
         $result['available'] = false;
 
         // about (0..1) textual description of the document
-        $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
+        $result['title'] = ($doc['about'] ?? null);
 
         // PAIA custom field
         // label (0..1) call number, shelf mark or similar item label
@@ -1379,11 +1373,10 @@ class PAIA extends DAIA
         foreach ($items as $doc) {
             $result = [];
             // canrenew (0..1) whether a document can be renewed (bool)
-            $result['renewable'] = (isset($doc['canrenew'])
-                ? $doc['canrenew'] : false);
+            $result['renewable'] = ($doc['canrenew'] ?? false);
 
             // item (0..1) URI of a particular copy
-            $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
+            $result['item_id'] = ($doc['item'] ?? '');
 
             $result['renew_details']
                 = (isset($doc['canrenew']) && $doc['canrenew'])
@@ -1398,17 +1391,17 @@ class PAIA extends DAIA
             // requested (0..1) URI that was originally requested
 
             // about (0..1) textual description of the document
-            $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
+            $result['title'] = ($doc['about'] ?? null);
 
             // queue (0..1) number of waiting requests for the document or item
-            $result['request'] = (isset($doc['queue']) ? $doc['queue'] : null);
+            $result['request'] = ($doc['queue'] ?? null);
 
             // renewals (0..1) number of times the document has been renewed
-            $result['renew'] = (isset($doc['renewals']) ? $doc['renewals'] : null);
+            $result['renew'] = ($doc['renewals'] ?? null);
 
             // reminder (0..1) number of times the patron has been reminded
             $result['reminder'] = (
-                isset($doc['reminder']) ? $doc['reminder'] : null
+                $doc['reminder'] ?? null
             );
 
             // custom PAIA field
@@ -1428,11 +1421,10 @@ class PAIA extends DAIA
             // canceled
 
             // error (0..1) error message, for instance if a request was rejected
-            $result['message'] = (isset($doc['error']) ? $doc['error'] : '');
+            $result['message'] = ($doc['error'] ?? '');
 
             // storage (0..1) textual description of location of the document
-            $result['borrowingLocation'] = (isset($doc['storage'])
-                ? $doc['storage'] : '');
+            $result['borrowingLocation'] = ($doc['storage'] ?? '');
 
             // storageid (0..1) location URI
 
@@ -1661,11 +1653,9 @@ class PAIA extends DAIA
             $session = $this->getSession();
 
             $session->patron
-                = isset($responseArray['patron'])
-                ? $responseArray['patron'] : null;
+                = $responseArray['patron'] ?? null;
             $session->access_token
-                = isset($responseArray['access_token'])
-                ? $responseArray['access_token'] : null;
+                = $responseArray['access_token'] ?? null;
             $session->scope
                 = isset($responseArray['scope'])
                 ? explode(' ', $responseArray['scope']) : null;

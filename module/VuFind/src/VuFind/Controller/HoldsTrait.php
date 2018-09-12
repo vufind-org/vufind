@@ -2,7 +2,7 @@
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -165,7 +165,7 @@ trait HoldsTrait
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -192,8 +192,7 @@ trait HoldsTrait
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => isset($checkHolds['helpText'])
-                    ? $checkHolds['helpText'] : null
+                'helpText' => $checkHolds['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/hold');

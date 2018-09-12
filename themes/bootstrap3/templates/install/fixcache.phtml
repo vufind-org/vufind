@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('auto_configure_title'));
 
@@ -14,9 +14,9 @@
 <p>In Linux, try this command (note that you may need to prefix with "sudo" on some flavors):</p>
 
 <pre>
-  <? if (isset($this->runningUser)): ?>
+  <?php if (isset($this->runningUser)): ?>
     chown <?=$this->escapeHtml($this->runningUser)?>:<?=$this->escapeHtml($this->runningUser)?> <?=$this->escapeHtml($this->cacheDir)?>
-  <? else: ?>
+  <?php else: ?>
     chmod 777 <?=$this->escapeHtml($this->cacheDir)?>
-  <? endif; ?>
+  <?php endif; ?>
 </pre>

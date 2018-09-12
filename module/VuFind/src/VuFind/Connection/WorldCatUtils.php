@@ -2,7 +2,7 @@
 /**
  * World Cat Utilities
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -207,7 +207,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 
         // Collect subjects for current name:
         $retVal = [];
-        if (!is_null($subjects) && count($subjects) > 0) {
+        if (null !== $subjects && count($subjects) > 0) {
             foreach ($subjects as $currentSubject) {
                 if ($currentSubject['tag'] == '650') {
                     $text = (string)$currentSubject;

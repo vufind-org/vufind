@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Advanced Search'));
 
@@ -27,20 +27,20 @@
   <input type="hidden" name="join" value="AND" />
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Advanced Search')?></h3>
-    <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
-    <? if ($groups !== false) {
+    <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+    <?php if ($groups !== false) {
         $numGroups = count($groups);
       }
       if (!isset($numGroups) || $numGroups < 3) {
         $numGroups = 1;
       }
     ?>
-    <? for ($i = 0; $i < $numGroups; $i++): ?>
+    <?php for ($i = 0; $i < $numGroups; $i++): ?>
       <input type="hidden" name="bool<?=$i?>[]" value="AND" />
       <div class="primo adv-group" id="group<?=$i?>">
         <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</label>
         <div class="search-container">
-          <?
+          <?php
             if (isset($groups[$i])) {
               $currentGroup = $groups[$i]->getQueries();
               $numRows = count($currentGroup);
@@ -51,37 +51,37 @@
               $numRows = 3;
             }
           ?>
-          <? for ($j = 0; $j < $numRows; $j++): ?>
-            <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
+          <?php for ($j = 0; $j < $numRows; $j++): ?>
+            <?php $currRow = $currentGroup[$j] ?? false; ?>
             <div class="search">
               <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
-                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </select>
               <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
-                <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                <?php foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                <? endforeach; ?>
+                <?php endforeach; ?>
               </select>
                 <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input"/>
             </div>
-          <? endfor; ?>
+          <?php endfor; ?>
         </div>
       </div>
-    <? endfor; ?>
-    <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
-    <? if (!empty($lastSort)): ?>
+    <?php endfor; ?>
+    <?php $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
+    <?php if (!empty($lastSort)): ?>
       <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
-    <? endif; ?>
+    <?php endif; ?>
     <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <? if ($hasDefaultsApplied): ?>
+    <?php if ($hasDefaultsApplied): ?>
       <input type="hidden" name="dfApplied" value="1" />
-    <? endif ?>
-    <? if (!empty($searchFilters)): ?>
+    <?php endif ?>
+    <?php if (!empty($searchFilters)): ?>
       <h4><?=$this->transEsc("adv_search_filters")?></h4>
       <ul class="list-group">
         <li class="list-group-item">
@@ -93,11 +93,11 @@
           </div>
         </li>
       </ul>
-      <? foreach ($searchFilters as $field => $data): ?>
+      <?php foreach ($searchFilters as $field => $data): ?>
         <div>
           <ul class="list-group">
             <li class="list-group-item title"><?=$this->transEsc($field)?></li>
-            <? foreach ($data as $value): ?>
+            <?php foreach ($data as $value): ?>
               <li class="list-group-item">
                 <div class="checkbox">
                   <label>
@@ -105,10 +105,10 @@
                   </label>
                 </div>
               </li>
-            <? endforeach; ?>
+            <?php endforeach; ?>
           </ul>
         </div>
-      <? endforeach; ?>
-    <? endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </form>

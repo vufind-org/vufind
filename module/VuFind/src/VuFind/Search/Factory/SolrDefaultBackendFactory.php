@@ -3,7 +3,7 @@
 /**
  * Factory for the default SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -61,7 +61,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
      */
     protected function getSolrCore()
     {
-        $config = $this->config->get('config');
+        $config = $this->config->get($this->mainConfig);
         return isset($config->Index->default_core)
             ? $config->Index->default_core : 'biblio';
     }
@@ -76,7 +76,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
         $backend->setRecordCollectionFactory($factory);
         return $backend;

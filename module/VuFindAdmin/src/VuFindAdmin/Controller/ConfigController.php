@@ -2,7 +2,7 @@
 /**
  * Admin Configuration Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -70,7 +70,8 @@ class ConfigController extends AbstractAdmin
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            $this->serviceLocator->get('VuFind\Config')->reload('config');
+            $this->serviceLocator->get('VuFind\Config\PluginManager')
+                ->reload('config');
         } else {
             $this->flashMessenger()->addMessage(
                 'Could not enable auto-configuration; check permissions on '

@@ -1,9 +1,9 @@
 <div class="combined-search-container">
-  <? $columnIndex = 0; ?>
-  <? $rightColumns = []; ?>
+  <?php $columnIndex = 0; ?>
+  <?php $rightColumns = []; ?>
   <div class="combined-column">
-    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-      <?
+    <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+      <?php
         $viewParams = [
           'searchClassId' => $searchClassId,
           'currentSearch' => $currentSearch,
@@ -13,7 +13,7 @@
           'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions
         ];
       ?>
-      <?
+      <?php
         if (
           (!isset($currentSearch['ajax']) || !$currentSearch['ajax'])                    // AJAX column
           && (isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty']) // set to hide when empty
@@ -22,8 +22,8 @@
           continue;
         }
       ?>
-      <? $columnIndex ++; ?>
-      <?
+      <?php $columnIndex ++; ?>
+      <?php
         if ($columnIndex > 0 && $columnIndex < $columns) {
           $viewParams['domId'] = $currentSearch['domId'];
           if (isset($currentSearch['ajax'])) {
@@ -34,17 +34,17 @@
         }
       ?>
       <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>" class="combined-list">
-        <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+        <?php $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
       </div>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </div>
-  <? foreach ($rightColumns as $colParams): ?>
+  <?php foreach ($rightColumns as $colParams): ?>
     <div class="combined-column">
       <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
-        <? $templateSuffix = (isset($colParams['ajax']) && $colParams['ajax']) ? 'ajax' : 'list'; ?>
+        <?php $templateSuffix = (isset($colParams['ajax']) && $colParams['ajax']) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
       </div>
     </div>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </div>

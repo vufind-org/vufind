@@ -113,6 +113,11 @@ footer {
     float: right;
     padding-left: 1rem;
   }
+  .mainbody.solo {
+    width: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 /* ------ Form Errors ------ */
@@ -198,17 +203,6 @@ footer {
   }
 }
 
-/* ------ Collections ------ */
-// Layout
-@media (min-width: 768px) {
-  .collection-hierarchytree { display: flex; }
-  .collection-hierarchytree .tree-panel,
-  #tree-preview {
-    flex-basis: 50%;
-    padding: 1rem;
-  }
-}
-
 /* ------ Devtools ------ */
 .translation-output {
   width: 100%;
@@ -225,18 +219,6 @@ footer {
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
 }
-.top-facets {
-  margin-left: -.5rem;
-  margin-right: -.5rem;
-}
-.top-facets .facet,
-.top-facets .narrow-toggle,
-.top-facets > strong {
-  display: inline-block;
-  padding: .25rem .5rem;
-  white-space: nowrap;
-}
-.top-facets .narrow-toggle { text-decoration: underline; }
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
@@ -307,3 +289,41 @@ span[class^="services-"],
 span[class*=" services-"] span::before { content: ", "; }
 span[class^="services-"],
 span[class*=" services-"] span:first-of-type::before { content: ""; }
+
+/* --- extended holdings --- */
+
+div.holding-details {
+    display: flex;
+
+    .holding-field {
+        flex: 1 1 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .holding-field.barcode,
+    .holding-field.place-hold,
+    .holding-field.storage-retrieval,
+    .holding-field.ill-request,
+    .holding-field.recall {
+        flex: 1 1 0;
+    }
+
+    .holding-field.availability{
+        flex: 2 1 0;
+    }
+
+    .due-date:before {
+        content: "\2013";
+        padding-right: 0.3em;
+    }
+
+    .due-date {
+        white-space: nowrap;
+    }
+}
+
+div.holding-notes {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}

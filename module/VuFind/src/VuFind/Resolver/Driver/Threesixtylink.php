@@ -2,7 +2,7 @@
 /**
  * 360Link Link Resolver Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -101,7 +101,7 @@ class Threesixtylink extends AbstractBase
 
         $xpath = new DOMXpath($xml);
         $linkGroups = $xpath->query("//ssopenurl:linkGroup[@type='holding']");
-        if (!is_null($linkGroups)) {
+        if (null !== $linkGroups) {
             foreach ($linkGroups as $linkGroup) {
                 $record = [];
                 // select the deepest link returned

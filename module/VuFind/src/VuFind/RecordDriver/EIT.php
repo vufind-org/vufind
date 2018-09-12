@@ -2,7 +2,7 @@
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class EIT extends SolrDefault
+class EIT extends DefaultRecord
 {
     /**
      * Used for identifying search backends

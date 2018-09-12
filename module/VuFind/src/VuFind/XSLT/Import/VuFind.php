@@ -2,7 +2,7 @@
 /**
  * XSLT importer support methods.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (c) Demian Katz 2010.
  *
@@ -69,7 +69,7 @@ class VuFind
      */
     public static function getChangeTracker()
     {
-        return static::$serviceLocator->get('VuFind\DbTablePluginManager')
+        return static::$serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get('ChangeTracker');
     }
 
@@ -82,7 +82,8 @@ class VuFind
      */
     public static function getConfig($config = 'config')
     {
-        return static::$serviceLocator->get('VuFind\Config')->get($config);
+        return static::$serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
     }
 
     /**
@@ -354,7 +355,7 @@ class VuFind
                 $map[$key] = trim($parts[1]);
             }
         }
-        return isset($map[$in]) ? $map[$in] : $in;
+        return $map[$in] ?? $in;
     }
 
     /**

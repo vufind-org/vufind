@@ -1,11 +1,11 @@
 /*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
-/*exported ajaxTagUpdate, recordDocReady */
+/*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
 
 /**
  * Functions and event handlers specific to record pages.
  */
 function checkRequestIsValid(element, requestType) {
-  var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
+  var recordId = element.href.match(/\/Record\/([^/]+)\//)[1];
   var vars = deparam(element.href);
   vars.id = recordId;
 
@@ -20,18 +20,18 @@ function checkRequestIsValid(element, requestType) {
     cache: false,
     url: url
   })
-  .done(function checkValidDone(response) {
-    if (response.data.status) {
-      $(element).removeClass('disabled')
-        .attr('title', response.data.msg)
-        .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
-    } else {
+    .done(function checkValidDone(response) {
+      if (response.data.status) {
+        $(element).removeClass('disabled')
+          .attr('title', response.data.msg)
+          .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
+      } else {
+        $(element).remove();
+      }
+    })
+    .fail(function checkValidFail(/*response*/) {
       $(element).remove();
-    }
-  })
-  .fail(function checkValidFail(/*response*/) {
-    $(element).remove();
-  });
+    });
 }
 
 function setUpCheckRequest() {
@@ -52,9 +52,9 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     dataType: 'json',
     url: url
   })
-  .done(function deleteCommentDone(/*response*/) {
-    $($(element).closest('.comment')[0]).remove();
-  });
+    .done(function deleteCommentDone(/*response*/) {
+      $($(element).closest('.comment')[0]).remove();
+    });
 }
 
 function refreshCommentList($target, recordId, recordSource) {
@@ -67,19 +67,19 @@ function refreshCommentList($target, recordId, recordSource) {
     dataType: 'json',
     url: url
   })
-  .done(function refreshCommentListDone(response) {
-    // Update HTML
-    var $commentList = $target.find('.comment-list');
-    $commentList.empty();
-    $commentList.append(response.data);
-    $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
-      var commentId = $(this).attr('id').substr('recordComment'.length);
-      deleteRecordComment(this, recordId, recordSource, commentId);
-      return false;
+    .done(function refreshCommentListDone(response) {
+      // Update HTML
+      var $commentList = $target.find('.comment-list');
+      $commentList.empty();
+      $commentList.append(response.data.html);
+      $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
+        var commentId = $(this).attr('id').substr('recordComment'.length);
+        deleteRecordComment(this, recordId, recordSource, commentId);
+        return false;
+      });
+      $target.find('.comment-form input[type="submit"]').button('reset');
+      resetCaptcha($target);
     });
-    $target.find('.comment-form input[type="submit"]').button('reset');
-    resetCaptcha($target);
-  });
 }
 
 function registerAjaxCommentRecord() {
@@ -106,21 +106,21 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json'
     })
-    .done(function addCommentDone(/*response, textStatus*/) {
-      var $form = $(form);
-      var $tab = $form.closest('.list-tab-content');
-      if (!$tab.length) {
-        $tab = $form.closest('.tab-pane');
-      }
-      refreshCommentList($tab, id, recordSource);
-      $form.find('textarea[name="comment"]').val('');
-      $form.find('input[type="submit"]').button('loading');
-      resetCaptcha($form);
-    })
-    .fail(function addCommentFail(response, textStatus) {
-      if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
-    });
+      .done(function addCommentDone(/*response, textStatus*/) {
+        var $form = $(form);
+        var $tab = $form.closest('.list-tab-content');
+        if (!$tab.length) {
+          $tab = $form.closest('.tab-pane');
+        }
+        refreshCommentList($tab, id, recordSource);
+        $form.find('textarea[name="comment"]').val('');
+        $form.find('input[type="submit"]').button('loading');
+        resetCaptcha($form);
+      })
+      .fail(function addCommentFail(response, textStatus) {
+        if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
+        VuFind.lightbox.alert(response.responseJSON.data, 'danger');
+      });
     return false;
   });
   // Delete links
@@ -138,11 +138,6 @@ function registerTabEvents() {
   registerAjaxCommentRecord();
   // Render recaptcha
   recaptchaOnLoad();
-  // Delete links
-  $('.delete').click(function commentTabDeleteClick() {
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
-    return false;
-  });
 
   setUpCheckRequest();
 
@@ -165,23 +160,23 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     type: 'POST',
     data: {tab: tabid}
   })
-  .always(function ajaxLoadTabDone(data) {
-    if (typeof data === 'object') {
-      $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
-    } else {
-      $newTab.html(data);
-    }
-    registerTabEvents();
-    if (typeof syn_get_widget === "function") {
-      syn_get_widget();
-    }
-    if (typeof setHash == 'undefined' || setHash) {
-      window.location.hash = tabid;
-    } else {
-      removeHashFromLocation();
-    }
-    setupJumpMenus($newTab);
-  });
+    .always(function ajaxLoadTabDone(data) {
+      if (typeof data === 'object') {
+        $newTab.html(data.responseText ? data.responseText : VuFind.translate('error_occurred'));
+      } else {
+        $newTab.html(data);
+      }
+      registerTabEvents();
+      if (typeof syn_get_widget === "function") {
+        syn_get_widget();
+      }
+      if (typeof setHash == 'undefined' || setHash) {
+        window.location.hash = tabid;
+      } else {
+        removeHashFromLocation();
+      }
+      setupJumpMenus($newTab);
+    });
   return false;
 }
 
@@ -198,19 +193,22 @@ function refreshTagList(_target, _loggedin) {
       source: recordSource
     });
     $.ajax({
-      dataType: 'html',
+      dataType: 'json',
       url: url
     })
-    .done(function getRecordTagsDone(response) {
-      $tagList.empty();
-      $tagList.replaceWith(response);
-      if (loggedin) {
-        $tagList.addClass('loggedin');
-      } else {
-        $tagList.removeClass('loggedin');
-      }
-    });
+      .done(function getRecordTagsDone(response) {
+        $tagList.empty();
+        $tagList.replaceWith(response.data.html);
+        if (loggedin) {
+          $tagList.addClass('loggedin');
+        } else {
+          $tagList.removeClass('loggedin');
+        }
+      });
   }
+}
+function refreshTagListCallback() {
+  refreshTagList(false, true);
 }
 
 function ajaxTagUpdate(_link, tag, _remove) {
@@ -229,9 +227,9 @@ function ajaxTagUpdate(_link, tag, _remove) {
       remove: remove
     }
   })
-  .always(function tagRecordAlways() {
-    refreshTagList($target, false);
-  });
+    .always(function tagRecordAlways() {
+      refreshTagList($target, false);
+    });
 }
 
 function getNewRecordTab(tabid) {
@@ -248,7 +246,7 @@ function backgroundLoadTab(tabid) {
 }
 
 function applyRecordTabHash() {
-  var activeTab = $('.record-tabs li.active a').attr('class');
+  var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
     ? window.location.hash.toLowerCase() : '';
@@ -257,7 +255,7 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.' + newTab.substr(1)).click();
+    $('.' + newTab.substr(1) + ' a').click();
   }
 }
 
@@ -270,7 +268,7 @@ function recordDocReady() {
     if ($li.hasClass('active')) {
       return true;
     }
-    var tabid = this.className;
+    var tabid = $li.attr('data-tab');
     var $top = $(this).closest('.record-tabs');
     // if we're flagged to skip AJAX for this tab, we need special behavior:
     if ($li.hasClass('noajax')) {

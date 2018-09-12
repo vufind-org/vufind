@@ -2,7 +2,7 @@
 /**
  * OpenLibrarySubjects Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -202,7 +202,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');
-        if (!is_null($from) && !is_null($to)) {
+        if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
         } elseif (is_object($params)) {
             $currentFilters = $params->getFilters();

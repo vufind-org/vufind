@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR HandlerMap.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,7 +30,7 @@ namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 use RuntimeException;
 use VuFindSearch\Backend\Solr\HandlerMap;

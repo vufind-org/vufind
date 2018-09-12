@@ -2,7 +2,7 @@
 /**
  * Favorites aspect of the Search Multi-class (Options)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -52,7 +52,7 @@ class Options extends \VuFind\Search\Base\Options
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
         ];
-        $config = $configLoader->get('config');
+        $config = $configLoader->get($this->mainIni);
         if (isset($config->Social->lists_default_limit)) {
             $this->defaultLimit = $config->Social->lists_default_limit;
         }

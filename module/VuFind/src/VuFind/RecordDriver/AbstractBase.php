@@ -2,7 +2,7 @@
 /**
  * Abstract base record model.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -294,41 +294,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getSourceIdentifier()
     {
         return $this->sourceIdentifier;
-    }
-
-    /**
-     * Return an array of related record suggestion objects (implementing the
-     * \VuFind\Related\RelatedInterface) based on the current record.
-     *
-     * @param \VuFind\Related\PluginManager $factory Related module plugin factory
-     * @param array                         $types   Array of relationship types to
-     * load; each entry should be a service name (i.e. 'Similar' or 'Editions')
-     * optionally followed by a colon-separated list of parameters to pass to the
-     * constructor.  If the parameter is set to null instead of an array, default
-     * settings will be loaded from config.ini.
-     *
-     * @return array
-     */
-    public function getRelated(\VuFind\Related\PluginManager $factory, $types = null)
-    {
-        if (is_null($types)) {
-            $types = isset($this->recordConfig->Record->related) ?
-                $this->recordConfig->Record->related : [];
-        }
-        $retVal = [];
-        foreach ($types as $current) {
-            $parts = explode(':', $current);
-            $type = $parts[0];
-            $params = isset($parts[1]) ? $parts[1] : null;
-            if ($factory->has($type)) {
-                $plugin = $factory->get($type);
-                $plugin->init($params, $this);
-                $retVal[] = $plugin;
-            } else {
-                throw new \Exception("Related module {$type} does not exist.");
-            }
-        }
-        return $retVal;
     }
 
     /**

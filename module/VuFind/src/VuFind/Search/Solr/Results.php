@@ -2,7 +2,7 @@
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -232,7 +232,7 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
+        if (null === $filter) {
             $filter = $this->getParams()->getFacetConfig();
         }
 
@@ -243,7 +243,7 @@ class Results extends \VuFind\Search\Base\Results
         $fieldFacets = $this->responseFacets->getFieldFacets();
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
+            $data = $fieldFacets[$field] ?? [];
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;

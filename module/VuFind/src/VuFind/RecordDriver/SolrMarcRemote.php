@@ -3,7 +3,7 @@
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Leipzig University Library 2014.
  *

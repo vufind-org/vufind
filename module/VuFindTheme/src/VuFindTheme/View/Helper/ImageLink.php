@@ -2,7 +2,7 @@
 /**
  * Image link view helper (extended for VuFind's theme system)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -68,7 +68,7 @@ class ImageLink extends \Zend\View\Helper\AbstractHelper
         $relPath = 'images/' . $image;
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
 
-        if (is_null($currentTheme)) {
+        if (null === $currentTheme) {
             return null;
         }
 

@@ -2,7 +2,7 @@
 /**
  * Search results plugin factory
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Results;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Search results plugin factory
@@ -52,24 +52,25 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     /**
      * Create a service for the specified name.
      *
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $name           Name of service
-     * @param string                  $requestedName  Unfiltered name of service
-     * @param array                   $extraParams    Extra constructor parameters
-     * (to follow the Params, Search and RecordLoader objects)
+     * @param ContainerInterface $container     Service container
+     * @param string             $requestedName Name of service
+     * @param array              $extras        Extra options
      *
      * @return object
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
-        $name, $requestedName, array $extraParams = []
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $extras = null
     ) {
-        $params = $serviceLocator->getServiceLocator()
-            ->get('VuFind\SearchParamsPluginManager')->get($requestedName);
-        $searchService = $serviceLocator->getServiceLocator()
-            ->get('VuFind\Search');
-        $recordLoader = $serviceLocator->getServiceLocator()
-            ->get('VuFind\RecordLoader');
-        $class = $this->getClassName($name, $requestedName);
-        return new $class($params, $searchService, $recordLoader, ...$extraParams);
+        $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
+        $params = $container->get('VuFind\Search\Params\PluginManager')
+            ->get($paramsService);
+        $searchService = $container->get('VuFindSearch\Service');
+        $recordLoader = $container->get('VuFind\Record\Loader');
+        $class = $this->getClassName($requestedName);
+        return new $class(
+            $params, $searchService, $recordLoader, ...($extras ?: [])
+        );
     }
 }

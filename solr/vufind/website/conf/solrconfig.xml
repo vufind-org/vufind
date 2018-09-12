@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>6.4.2</luceneMatchVersion>
+  <luceneMatchVersion>7.3.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -354,7 +354,7 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
-  <requestHandler name="standard" class="solr.StandardRequestHandler" default="true">
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters -->
     <lst name="defaults">
       <str name="echoParams">explicit</str>
@@ -643,6 +643,9 @@
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
+
+  <!-- Mitigate CVE-2017-12629 -->
+  <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>
 
   <!-- config for the admin interface -->
   <admin>

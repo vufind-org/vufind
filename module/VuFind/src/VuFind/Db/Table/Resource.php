@@ -2,7 +2,7 @@
 /**
  * Table Definition for resource
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -174,14 +174,14 @@ class Resource extends Gateway
                 $s->where->equalTo('ur.user_id', $user);
 
                 // Adjust for list if necessary:
-                if (!is_null($list)) {
+                if (null !== $list) {
                     $s->where->equalTo('ur.list_id', $list);
                 }
 
                 if ($offset > 0) {
                     $s->offset($offset);
                 }
-                if (!is_null($limit)) {
+                if (null !== $limit) {
                     $s->limit($limit);
                 }
 
@@ -220,6 +220,54 @@ class Resource extends Gateway
                 ->OR->isNull('year');
         };
         return $this->select($callback);
+    }
+
+    /**
+     * Update the database to reflect a changed record identifier.
+     *
+     * @param string $oldId  Original record ID
+     * @param string $newId  Revised record ID
+     * @param string $source Record source
+     *
+     * @return void
+     */
+    public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
+    {
+        if ($oldId !== $newId
+            && $resource = $this->findResource($oldId, $source)
+        ) {
+            // Do this as a transaction to prevent odd behavior:
+            $connection = $this->getAdapter()->getDriver()->getConnection();
+            $connection->beginTransaction();
+            // Does the new ID already exist?
+            if ($newResource = $this->findResource($newId, $source)) {
+                // Special case: merge new ID and old ID:
+                $tableObjects = [];
+                foreach (['comments', 'userresource', 'resourcetags'] as $table) {
+                    $tableObjects[$table] = $this->getDbTable($table);
+                    $tableObjects[$table]->update(
+                        ['resource_id' => $newResource->id],
+                        ['resource_id' => $resource->id]
+                    );
+                }
+                $resource->delete();
+            } else {
+                // Default case: just update the record ID:
+                $resource->record_id = $newId();
+                $resource->save();
+            }
+            // Done -- commit the transaction:
+            $connection->commit();
+
+            // Deduplicate rows where necessary (this can be safely done outside
+            // of the transaction):
+            if (isset($tableObjects['resourcetags'])) {
+                $tableObjects['resourcetags']->deduplicate();
+            }
+            if (isset($tableObjects['userresource'])) {
+                $tableObjects['userresource']->deduplicate();
+            }
+        }
     }
 
     /**

@@ -2,7 +2,7 @@
 /**
  * Book Bag / Bulk Action Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -149,7 +149,7 @@ class CartController extends AbstractBase
         $this->followup()->retrieveAndClear('cartAction');
         $this->followup()->retrieveAndClear('cartIds');
 
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
@@ -226,7 +226,7 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         // Retrieve ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
 
@@ -267,7 +267,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->serviceLocator->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
@@ -291,7 +291,7 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -323,7 +323,7 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
@@ -340,13 +340,30 @@ class CartController extends AbstractBase
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
+            $exportType = $export->getBulkExportType($format);
+            $params = [
+                'exportType' => $exportType,
+                'format' => $format
+            ];
+            if ('post' === $exportType) {
+                $records = $this->getRecordLoader()->loadBatch($ids);
+                $recordHelper = $this->getViewRenderer()->plugin('record');
+                $parts = [];
+                foreach ($records as $record) {
+                    $parts[] = $recordHelper($record)->getExport($format);
+                }
+
+                $params['postField'] = $export->getPostField($format);
+                $params['postData'] = $export->processGroup($format, $parts);
+                $params['targetWindow'] = $export->getTargetWindow($format);
+                $params['url'] = $export->getRedirectUrl($format, '');
+            } else {
+                $params['url'] = $url;
+            }
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', [
-                        'url' => $url,
-                        'exportType' => $export->getBulkExportType($format)
-                    ]
+                    'cart/export-success.phtml', $params
                 )
             ];
             return $this->redirectToSource('success', $msg);
@@ -416,7 +433,7 @@ class CartController extends AbstractBase
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = is_null($this->params()->fromPost('selectAll'))
+        $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {

@@ -2,7 +2,7 @@
 /**
  * Abstract options search model.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -227,6 +227,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteEnabled = false;
 
     /**
+     * Configuration file to read global settings from
+     *
+     * @var string
+     */
+    protected $mainIni = 'config';
+
+    /**
      * Configuration file to read search settings from
      *
      * @var string
@@ -403,6 +410,17 @@ abstract class Options implements TranslatorAwareInterface
     public function getFacetsIni()
     {
         return $this->facetsIni;
+    }
+
+    /**
+     * Get the name of the ini file used for loading primary settings in this
+     * object.
+     *
+     * @return string
+     */
+    public function getMainIni()
+    {
+        return $this->mainIni;
     }
 
     /**
@@ -636,7 +654,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function spellcheckEnabled($bool = null)
     {
-        if (!is_null($bool)) {
+        if (null !== $bool) {
             $this->spellcheck = $bool;
         }
         return $this->spellcheck;

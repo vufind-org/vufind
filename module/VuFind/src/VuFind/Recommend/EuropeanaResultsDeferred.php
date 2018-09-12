@@ -2,7 +2,7 @@
 /**
  * EuropeanaResultsDeferred Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -96,7 +96,7 @@ class EuropeanaResultsDeferred implements RecommendInterface
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
         for ($i = 0; $i < 4; $i++) {
-            $settings[$i] = isset($settings[$i]) ? $settings[$i] : '';
+            $settings[$i] = $settings[$i] ?? '';
         }
 
         // Collect the best possible search term(s):

@@ -3,7 +3,7 @@
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -58,9 +58,9 @@ abstract class QueryAdapter
     {
         // Use array_key_exists since null is also valid
         if (array_key_exists('l', $search)) {
-            $handler = isset($search['i']) ? $search['i'] : $search['f'];
+            $handler = $search['i'] ?? $search['f'];
             return new Query(
-                $search['l'], $handler, isset($search['o']) ? $search['o'] : null
+                $search['l'], $handler, $search['o'] ?? null
             );
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
@@ -193,7 +193,7 @@ abstract class QueryAdapter
 
                     // Add term to this group
                     $boolArr = $request->get("bool$groupId");
-                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : 'AND';
+                    $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
             }
@@ -248,6 +248,13 @@ abstract class QueryAdapter
                     'b' => $operator
                 ];
                 if (null !== ($op = $current->getOperator())) {
+                    // Some search forms omit the operator for the first element;
+                    // if we have an operator in a subsequent element, we should
+                    // backfill a blank here for consistency; otherwise, VuFind
+                    // may not construct correct search URLs.
+                    if (isset($retVal[0]['f']) && !isset($retVal[0]['o'])) {
+                        $retVal[0]['o'] = '';
+                    }
                     $currentArr['o'] = $op;
                 }
                 $retVal[] = $currentArr;

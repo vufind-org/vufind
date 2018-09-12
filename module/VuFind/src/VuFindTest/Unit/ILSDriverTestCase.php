@@ -3,7 +3,7 @@
 /**
  * Abstract base class for ILS driver test cases.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -50,10 +50,11 @@ abstract class ILSDriverTestCase extends TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\ILS
      */
     public function testMissingConfiguration()
     {
-        $this->setExpectedException('VuFind\Exception\ILS');
         $this->driver->init();
     }
 }

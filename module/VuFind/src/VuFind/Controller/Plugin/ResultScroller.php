@@ -2,7 +2,7 @@
 /**
  * Class for managing "next" and "previous" navigation within result sets.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010
  *
@@ -92,8 +92,8 @@ class ResultScroller extends AbstractPlugin
      */
     public function init($searchObject)
     {
-        // Do nothing if disabled:
-        if (!$this->enabled) {
+        // Do nothing if disabled or search is empty:
+        if (!$this->enabled || $searchObject->getResultTotal() === 0) {
             return false;
         }
 

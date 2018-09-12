@@ -2,7 +2,7 @@
 /**
  * CLI Controller Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -207,14 +207,11 @@ class UtilController extends AbstractBase
                     'id' => $id,
                     'bib_id' => [],
                     'instructor_id' => $instructor_id,
-                    'instructor' => isset($instructors[$instructor_id])
-                        ? $instructors[$instructor_id] : '',
+                    'instructor' => $instructors[$instructor_id] ?? '',
                     'course_id' => $course_id,
-                    'course' => isset($courses[$course_id])
-                        ? $courses[$course_id] : '',
+                    'course' => $courses[$course_id] ?? '',
                     'department_id' => $department_id,
-                    'department' => isset($departments[$department_id])
-                        ? $departments[$department_id] : ''
+                    'department' => $departments[$department_id] ?? ''
                 ];
             }
             $index[$id]['bib_id'][] = $record['BIB_ID'];
@@ -281,7 +278,7 @@ class UtilController extends AbstractBase
     public function sitemapAction()
     {
         // Build sitemap and display appropriate warnings if needed:
-        $configLoader = $this->serviceLocator->get('VuFind\Config');
+        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $generator = new Sitemap(
             $this->serviceLocator->get('VuFind\Search\BackendManager'),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
@@ -425,7 +422,7 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $recordTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $recordTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get('Record');
 
         $count = $recordTable->cleanup();
@@ -605,9 +602,9 @@ class UtilController extends AbstractBase
         }
         $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
-        $recordLoader = $this->serviceLocator->get('VuFind\RecordLoader');
+        $recordLoader = $this->serviceLocator->get('VuFind\Record\Loader');
         $hierarchies = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
         if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
             $hierarchies['hierarchy_top_id']['data']['list'] = [];
@@ -665,23 +662,22 @@ class UtilController extends AbstractBase
      */
     public function cssbuilderAction()
     {
-        $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
-        $cacheManager = $this->serviceLocator->get('VuFind\CacheManager');
+        $cacheManager = $this->serviceLocator->get('VuFind\Cache\Manager');
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
-        $compiler->compile(array_unique($opts->getRemainingArgs()));
+        $compiler->compile(array_unique($this->getRequest()->getParam('themes')));
         return $this->getSuccessResponse();
     }
 
     /**
      * Abstract delete method.
      *
-     * @param string $tableName     Table to operate on.
-     * @param string $successString String for reporting success.
-     * @param string $failString    String for reporting failure.
-     * @param int    $minAge        Minimum age allowed for expiration (also used
-     * as default value).
+     * @param string    $tableName     Table to operate on.
+     * @param string    $successString String for reporting success.
+     * @param string    $failString    String for reporting failure.
+     * @param int|float $minAge        Minimum age allowed for expiration in days
+     * (also used as default value).
      *
      * @return mixed
      */
@@ -691,14 +687,14 @@ class UtilController extends AbstractBase
         $request = $this->getRequest();
 
         // Use command line value as expiration age, or default to $minAge.
-        $daysOld = intval($request->getParam('daysOld', $minAge));
+        $daysOld = floatval($request->getParam('daysOld', $minAge));
 
         // Use command line values for batch size and sleep time if specified.
         $batchSize = $request->getParam('batch', 1000);
         $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < 2) {
+        if ($daysOld < $minAge) {
             Console::writeLine(
                 str_replace(
                     '%%age%%', $minAge,
@@ -826,7 +822,7 @@ class UtilController extends AbstractBase
         }
 
         // Now do the database rewrite:
-        $userTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $userTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
             ->get('User');
         $users = $userTable->select(
             function ($select) {
