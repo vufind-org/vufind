@@ -2,9 +2,9 @@
 /**
  * Multiple Backend Driver.
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2012-2017.
+ * Copyright (C) The National Library of Finland 2012-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -190,11 +190,51 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getStatuses($ids)
     {
-        $items = [];
+        // Group records by source and request statuses from the drivers
+        $grouped = [];
         foreach ($ids as $id) {
-            $items[] = $this->getStatus($id);
+            $source = $this->getSource($id);
+            if (!isset($grouped[$source])) {
+                $driver = $this->getDriver($source);
+                $grouped[$source] = [
+                    'driver' => $driver,
+                    'ids' => []
+                ];
+            }
+            $grouped[$source]['ids'][] = $id;
         }
-        return $items;
+
+        // Process each group
+        $results = [];
+        foreach ($grouped as $source => $current) {
+            // Get statuses only if a driver is configured for this source
+            if ($current['driver']) {
+                $localIds = array_map(
+                    function ($id) {
+                        return $this->getLocalId($id);
+                    },
+                    $current['ids']
+                );
+                try {
+                    $statuses = $current['driver']->getStatuses($localIds);
+                } catch (ILSException $e) {
+                    $statuses = array_map(
+                        function ($id) {
+                            return ['id' => $id, 'error' => 'An error has occurred'];
+                        },
+                        $localIds
+                    );
+                }
+                $statuses = array_map(
+                    function ($status) use ($source) {
+                        return $this->addIdPrefixes($status, $source);
+                    },
+                    $statuses
+                );
+                $results = array_merge($results, $statuses);
+            }
+        }
+        return $results;
     }
 
     /**
@@ -493,7 +533,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getRenewDetails($checkoutDetails)
     {
-        $source = $this->getSource($checkoutDetails['id']);
+        $source = $this->getSource($checkoutDetails['id'] ?? '');
         $driver = $this->getDriver($source);
         if ($driver) {
             $details = $driver->getRenewDetails(
@@ -883,7 +923,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
     public function getCancelHoldDetails($holdDetails)
     {
         $source = $this->getSource(
-            $holdDetails['id'] ? $holdDetails['id'] : $holdDetails['item_id']
+            $holdDetails['id'] ?? $holdDetails['item_id'] ?? ''
         );
         $driver = $this->getDriver($source);
         if ($driver) {
@@ -965,7 +1005,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getCancelStorageRetrievalRequestDetails($details)
     {
-        $source = $this->getSource($details['id']);
+        $source = $this->getSource($details['id'] ?? '');
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
@@ -1172,9 +1212,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getCancelILLRequestDetails($details)
     {
-        $source = $this->getSource(
-            $details['id'] ? $details['id'] : $details['item_id']
-        );
+        $source = $this->getSource($details['id'] ?? $details['item_id'] ?? '');
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(

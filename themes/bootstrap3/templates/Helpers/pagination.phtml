@@ -1,60 +1,60 @@
-<? if ($this->pageCount): ?>
+<?php if ($this->pageCount): ?>
   <ul class="pagination">
     <!-- Previous page link -->
-    <li<? if (isset($this->previous)): ?>>
-      <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+    <li<?php if (isset($this->previous)): ?>>
+      <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         &laquo; <?=$this->translate('Prev')?>
       </a>
-    <? else: ?>
+    <?php else: ?>
        class="disabled"> <span>&laquo; <?=$this->translate('Prev')?></span>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
 
     <!-- First page link -->
-    <li<? if (isset($this->first) && $this->first != $this->current): ?>>
-      <? $newParams = $this->params; $newParams['page'] = $this->first; ?>
+    <li<?php if (isset($this->first) && $this->first != $this->current): ?>>
+      <?php $newParams = $this->params; $newParams['page'] = $this->first; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <?=$this->translate('First')?>
       </a>
-    <? else: ?>
+    <?php else: ?>
        class="disabled"> <span><?=$this->translate('First')?></span>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
 
     <!-- Numbered page links -->
-    <? foreach ($this->pagesInRange as $page): ?>
-      <li<? if ($page != $this->current): ?>>
-        <? $newParams = $this->params; $newParams['page'] = $page; ?>
+    <?php foreach ($this->pagesInRange as $page): ?>
+      <li<?php if ($page != $this->current): ?>>
+        <?php $newParams = $this->params; $newParams['page'] = $page; ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-            <? echo $page; ?>
+            <?=$page?>
         </a>
-      <? else: ?>
-         class="active"> <span><? echo $page; ?></span>
-      <? endif; ?>
+      <?php else: ?>
+         class="active"> <span><?=$page?></span>
+      <?php endif; ?>
       </li>
-    <? endforeach; ?>
+    <?php endforeach; ?>
 
     <!-- Last page link -->
-    <li<? if (isset($this->last) && $this->last != $this->current): ?>>
-      <? $newParams = $this->params; $newParams['page'] = $this->last; ?>
+    <li<?php if (isset($this->last) && $this->last != $this->current): ?>>
+      <?php $newParams = $this->params; $newParams['page'] = $this->last; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <?=$this->translate('Last')?>
       </a>
-    <? else: ?>
+    <?php else: ?>
        class="disabled"> <span><?=$this->translate('Last')?></span>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
 
     <!-- Next page link -->
-    <li<? if (isset($this->next)): ?>>
-      <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+    <li<?php if (isset($this->next)): ?>>
+      <?php $newParams = $this->params; $newParams['page'] = $this->next; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
         <?=$this->translate('Next')?> >
       </a>
-    <? else: ?>
+    <?php else: ?>
        class="disabled"> <span><?=$this->translate('Next')?> &raquo;</span>
-    <? endif; ?>
+    <?php endif; ?>
     </li>
   </ul>
-<? endif; ?>
+<?php endif; ?>

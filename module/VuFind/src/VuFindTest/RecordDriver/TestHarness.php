@@ -2,7 +2,7 @@
 /**
  * Test harness for simulating record drivers (ignore outside of test suite!)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

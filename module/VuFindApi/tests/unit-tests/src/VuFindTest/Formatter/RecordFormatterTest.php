@@ -3,7 +3,7 @@
 /**
  * Unit tests for record formatter.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -68,6 +68,7 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             'subjectsExtended' => [
                 'vufind.method' => 'Formatter::getExtendedSubjectHeadings'
             ],
+            'authors' => ['vufind.method' => 'getDeduplicatedAuthors'],
         ];
     }
 
@@ -78,7 +79,9 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getHelperPluginManager()
     {
-        $hm = new \Zend\View\HelperPluginManager();
+        $hm = new \Zend\View\HelperPluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
 
         $mockRecordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
@@ -119,6 +122,10 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'spelling' => 's',
                 'Building' => ['foo', new TranslatableString('bar', 'xyzzy')],
                 'AllSubjectHeadings' => [['heading' => 'subject']],
+                'DeduplicatedAuthors' => [
+                    'primary' => ['Ms. A' => ['role' => ['Editor']]],
+                    'secondary' => ['Mr. B' => [], 'Mr. C' => []],
+                ],
             ]
         );
         return $driver;
@@ -156,6 +163,10 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
                 'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']],
                 'recordPage' => 'http://record',
                 'subjectsExtended' => [['heading' => 'subject']],
+                'authors' => [
+                    'primary' => ['Ms. A' => ['role' => ['Editor']]],
+                    'secondary' => ['Mr. B' => [], 'Mr. C' => []],
+                ],
             ],
         ];
         $this->assertEquals($expected, $results);
@@ -195,6 +206,7 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
             'buildings' => [],
             'recordPage' => [],
             'subjectsExtended' => [],
+            'authors' => [],
         ];
         $this->assertEquals($expected, $results);
     }

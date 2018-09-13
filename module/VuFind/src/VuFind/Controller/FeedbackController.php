@@ -2,7 +2,7 @@
 /**
  * Feedback Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * @category VuFind
  * @package  Controller
@@ -59,7 +59,7 @@ class FeedbackController extends AbstractBase
             }
 
             // These settings are set in the feedback settion of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $recipient_email = isset($feedback->recipient_email)
@@ -85,7 +85,7 @@ class FeedbackController extends AbstractBase
             // This sets up the email to be sent
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer = $this->serviceLocator->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
                 $mailer->send(
                     new Address($recipient_email, $recipient_name),
                     new Address($sender_email, $sender_name),

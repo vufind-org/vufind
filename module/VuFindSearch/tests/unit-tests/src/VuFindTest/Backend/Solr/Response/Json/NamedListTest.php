@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR NamedList.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\NamedList;
 
 /**

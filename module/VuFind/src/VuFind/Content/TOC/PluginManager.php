@@ -2,7 +2,7 @@
 /**
  * TOC content loader plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -38,6 +38,29 @@ namespace VuFind\Content\TOC;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'demo' => 'VuFind\Content\TOC\Demo',
+        'syndetics' => 'VuFind\Content\TOC\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\TOC\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\TOC\Demo' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Content\TOC\Syndetics' => 'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\TOC\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

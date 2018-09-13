@@ -1,4 +1,4 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
@@ -8,32 +8,32 @@
         . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
 ?>
 <h2><?=$this->transEsc('request_place_text')?></h2>
-<? if ($this->helpText): ?>
+<?php if ($this->helpText): ?>
 <p class="helptext"><?=$this->helpText?></p>
-<? endif; ?>
+<?php endif; ?>
 
 <form class="form-record-hold" method="post" name="placeHold">
   <?=$this->flashmessages()?>
   <label class="control-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
-  <? if (in_array("comments", $this->extraHoldFields)): ?>
+  <?php if (in_array("comments", $this->extraHoldFields)): ?>
     <div class="form-group hold-comment">
       <label class="control-label"><?=$this->transEsc("Comments")?>:</label>
       <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
+  <?php if (in_array("requiredByDate", $this->extraHoldFields)): ?>
     <div class="form-group hold-required-by">
       <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
       <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if ($this->requestGroupNeeded): ?>
+  <?php if ($this->requestGroupNeeded): ?>
     <div class="form-group hold-request-group">
-      <?
+      <?php
         if (isset($this->gatheredDetails['requestGroupId']) && $this->gatheredDetails['requestGroupId'] !== "") {
             $selected = $this->gatheredDetails['requestGroupId'];
         } else {
@@ -42,22 +42,22 @@
      ?>
       <label class="control-label"><?=$this->transEsc("hold_request_group")?>:</label>
       <select id="requestGroupId" name="gatheredDetails[requestGroupId]" class="form-control">
-        <? if ($selected === false): ?>
+        <?php if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_request_group')?>
           </option>
-        <? endif; ?>
-        <? foreach ($this->requestGroups as $group): ?>
+        <?php endif; ?>
+        <?php foreach ($this->requestGroups as $group): ?>
           <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
           </option>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </select>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
-    <?
+  <?php if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
+    <?php
       if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
         $selected = $this->gatheredDetails['pickUpLocation'];
       } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
@@ -66,47 +66,47 @@
         $selected = $this->defaultPickup;
       }
     ?>
-    <? if ($this->requestGroupNeeded): ?>
+    <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
         <label id="pickUpLocationLabel" class="control-label"><i></i> <?=$this->transEsc("pick_up_location")?>:
-          <? if (in_array("requestGroup", $this->extraHoldFields)): ?>
+          <?php if (in_array("requestGroup", $this->extraHoldFields)): ?>
             <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
-          <? endif; ?>
+          <?php endif; ?>
         </label>
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-control">
-          <? if ($selected === false): ?>
+          <?php if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_pickup_location')?>
           </option>
-          <? endif; ?>
+          <?php endif; ?>
         </select>
       </div>
-    <? elseif ($this->pickup): ?>
+    <?php elseif ($this->pickup): ?>
       <div class="form-group hold-pickup-location">
         <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-control">
-          <? if ($selected === false && count($this->pickup) > 1): ?>
+          <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
               <?=$this->transEsc('select_pickup_location')?>
             </option>
-          <? endif; ?>
-          <? foreach ($this->pickup as $lib): ?>
+          <?php endif; ?>
+          <?php foreach ($this->pickup as $lib): ?>
             <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
               <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
             </option>
-          <? endforeach; ?>
+          <?php endforeach; ?>
         </select>
       </div>
-    <? else: ?>
+    <?php else: ?>
       <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
-    <? endif; ?>
-  <? endif; ?>
+    <?php endif; ?>
+  <?php endif; ?>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="placeHold" value="<?=$this->transEsc('request_submit_text')?>"/>
   </div>
 </form>
 
-<?
+<?php
     // Set up hold script; we do this inline instead of in the header for lightbox compatibility:
     $this->inlineScript()->appendFile('hold.js');
 

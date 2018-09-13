@@ -2,7 +2,7 @@
 /**
  * EBSCO Search API abstract base class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -22,12 +22,11 @@
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://edswiki.ebscohost.com/EDS_API_Documentation
  */
 namespace VuFindSearch\Backend\EDS;
-
-require_once dirname(__FILE__) . '/Exception.php';
 
 /**
  * EBSCO Search API abstract base class
@@ -38,7 +37,7 @@ require_once dirname(__FILE__) . '/Exception.php';
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://edswiki.ebscohost.com/EDS_API_Documentation
  */
-abstract class EdsApi_REST_Base
+abstract class Base
 {
     /**
      * A boolean value determining whether to print debug information
@@ -212,21 +211,65 @@ abstract class EdsApi_REST_Base
     }
 
     /**
+     * Parse autocomplete response from API in an array of terms
+     *
+     * @param array $msg Response from API
+     *
+     * @return array of terms
+     */
+    protected function parseAutocomplete($msg)
+    {
+        $result = [];
+        if (isset($msg["terms"]) && is_array($msg["terms"])) {
+            foreach ($msg["terms"] as $value) {
+                $result[] = $value["term"];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Execute an EdsApi autocomplete
+     *
+     * @param string $query Search term
+     * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
+     * @param array  $data  Autocomplete API details (from authenticating with
+     * 'autocomplete' option set -- requires token, custid and url keys).
+     * @param bool   $raw   Should we return the results raw (true) or processed
+     * (false)?
+     *
+     * @return array An array of autocomplete terns as returned from the api
+     */
+    public function autocomplete($query, $type, $data, $raw = false)
+    {
+        // build request
+        $url = $data['url'] . '?idx=' . urlencode($type) .
+            '&token=' . urlencode($data['token']) .
+            '&filters=[{"name"%3A"custid"%2C"values"%3A["' .
+            urlencode($data['custid']) . '"]}]&term=' . urlencode($query);
+        $this->debugPrint("Autocomplete URL: " . $url);
+        $response = $this->call($url, null, null, 'GET', null);
+        return $raw ? $response : $this->parseAutocomplete($response);
+    }
+
+    /**
      * Generate an authentication token with a valid EBSCO EDS Api account
      *
      * @param string $username username associated with an EBSCO EdsApi account
      * @param string $password password associated with an EBSCO EdsApi account
      * @param string $orgid    Organization id the request is initiated from
+     * @param array  $params   optional params (autocomplete)
      *
      * @return array
      */
-    public function authenticate($username = null, $password = null, $orgid = null)
-    {
+    public function authenticate($username = null, $password = null,
+        $orgid = null, $params = null
+    ) {
         $this->debugPrint(
-            "Authenticating: username: $username, password: $password, orgid: $orgid"
+            "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
-        $org = isset($orgid) ? $orgid : $this->orgId;
+        $org = $orgid ?? $this->orgId;
         $authInfo = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
@@ -236,6 +279,9 @@ abstract class EdsApi_REST_Base
         }
         if (isset($org)) {
             $authInfo['orgid'] = $org;
+        }
+        if (isset($params)) {
+            $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
         return $this->call($url, null, null, 'POST', $messageBody);
@@ -288,7 +334,7 @@ abstract class EdsApi_REST_Base
      * @param string $message       Message to POST if $method is POST
      * @param string $messageFormat Format of request $messageBody and responses
      *
-     * @throws \EbscoEdsApiException
+     * @throws ApiException
      * @return object         EDS API response (or an Error object).
      */
     protected function call($baseUrl, $headerParams, $params = [],
@@ -323,7 +369,7 @@ abstract class EdsApi_REST_Base
      *
      * @param array $input The raw response from Summon
      *
-     * @throws EbscoEdsApiException
+     * @throws ApiException
      * @return array       The processed response from EDS API
      */
     protected function process($input)
@@ -331,14 +377,14 @@ abstract class EdsApi_REST_Base
         //process response.
         try {
             $result = json_decode($input, true);
-        } catch (Exception $e) {
-            throw new EbscoEdsApiException(
+        } catch (\Exception $e) {
+            throw new ApiException(
                 'An error occurred when processing EDS Api response: '
                 . $e->getMessage()
             );
         }
         if (!isset($result)) {
-            throw new EbscoEdsApiException('Unknown error processing response');
+            throw new ApiException('Unknown error processing response');
         }
         return $result;
     }

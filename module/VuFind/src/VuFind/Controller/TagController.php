@@ -2,7 +2,7 @@
 /**
  * Tag Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -62,6 +62,6 @@ class TagController extends AbstractSearch
         if (!$this->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled');
         }
-        return $this->resultsAction();
+        return parent::resultsAction();
     }
 }

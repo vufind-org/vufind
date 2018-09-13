@@ -2,7 +2,7 @@
 /**
  * Command-line tool to batch-delete records from the Solr index.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *

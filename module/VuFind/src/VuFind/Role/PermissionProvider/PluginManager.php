@@ -2,7 +2,7 @@
 /**
  * Permission provider plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,43 @@ namespace VuFind\Role\PermissionProvider;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'ipRange' => 'VuFind\Role\PermissionProvider\IpRange',
+        'ipRegEx' => 'VuFind\Role\PermissionProvider\IpRegEx',
+        'role' => 'VuFind\Role\PermissionProvider\Role',
+        'serverParam' => 'VuFind\Role\PermissionProvider\ServerParam',
+        'shibboleth' => 'VuFind\Role\PermissionProvider\Shibboleth',
+        'user' => 'VuFind\Role\PermissionProvider\User',
+        'username' => 'VuFind\Role\PermissionProvider\Username',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Role\PermissionProvider\IpRange' =>
+            'VuFind\Role\PermissionProvider\Factory::getIpRange',
+        'VuFind\Role\PermissionProvider\IpRegEx' =>
+            'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
+        'VuFind\Role\PermissionProvider\Role' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Role\PermissionProvider\ServerParam' =>
+            'VuFind\Role\PermissionProvider\Factory::getServerParam',
+        'VuFind\Role\PermissionProvider\Shibboleth' =>
+            'VuFind\Role\PermissionProvider\Factory::getShibboleth',
+        'VuFind\Role\PermissionProvider\User' =>
+            'VuFind\Role\PermissionProvider\Factory::getUser',
+        'VuFind\Role\PermissionProvider\Username' =>
+            'VuFind\Role\PermissionProvider\Factory::getUsername',
+    ];
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

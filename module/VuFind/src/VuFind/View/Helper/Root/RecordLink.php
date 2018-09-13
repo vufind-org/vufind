@@ -2,7 +2,7 @@
 /**
  * Record link view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,27 +59,29 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
      * Given an array representing a related record (which may be a bib ID or OCLC
      * number), this helper renders a URL linking to that record.
      *
-     * @param array $link   Link information from record model
-     * @param bool  $escape Should we escape the rendered URL?
+     * @param array  $link   Link information from record model
+     * @param bool   $escape Should we escape the rendered URL?
+     * @param string $source Source ID for backend being used to retrieve records
      *
      * @return string       URL derived from link information
      */
-    public function related($link, $escape = true)
+    public function related($link, $escape = true, $source = DEFAULT_SEARCH_BACKEND)
     {
         $urlHelper = $this->getView()->plugin('url');
+        $baseUrl = $urlHelper($this->getSearchActionForSource($source));
         switch ($link['type']) {
         case 'bib':
-            $url = $urlHelper('search-results')
+            $url = $baseUrl
                 . '?lookfor=' . urlencode($link['value'])
                 . '&type=id&jumpto=1';
             break;
         case 'dlc':
-            $url = $urlHelper('search-results')
+            $url = $baseUrl
                 . '?lookfor=' . urlencode('"' . $link['value'] . '"')
                 . '&type=lccn&jumpto=1';
             break;
         case 'isn':
-            $url = $urlHelper('search-results')
+            $url = $baseUrl
                 . '?join=AND&bool0[]=AND&lookfor0[]=%22'
                 . urlencode($link['value'])
                 . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
@@ -87,12 +89,12 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
                 . '%22&type1[]=id&sort=title&view=list';
             break;
         case 'oclc':
-            $url = $urlHelper('search-results')
+            $url = $baseUrl
                 . '?lookfor=' . urlencode($link['value'])
                 . '&type=oclc_num&jumpto=1';
             break;
         case 'title':
-            $url = $urlHelper('search-results')
+            $url = $baseUrl
                 . '?lookfor=' . urlencode($link['value'])
                 . '&type=title';
             break;
@@ -148,8 +150,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     {
         if (is_array($url)) {
             // Assemble URL string from array parts:
-            $source = isset($url['source'])
-                ? $url['source'] : DEFAULT_SEARCH_BACKEND;
+            $source = $url['source'] ?? DEFAULT_SEARCH_BACKEND;
             $finalUrl
                 = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
             if (isset($url['query'])) {
@@ -230,12 +231,26 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     public function getChildRecordSearchUrl($driver)
     {
         $urlHelper = $this->getView()->plugin('url');
-        $url = $urlHelper('search-results')
+        $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
+        $url = $urlHelper($route)
             . '?lookfor='
             . urlencode(addcslashes($driver->getUniqueID(), '"'))
             . '&type=ParentID';
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($url);
+    }
+
+    /**
+     * Given a record source ID, return the route name for searching its backend.
+     *
+     * @param string $source Record source identifier.
+     *
+     * @return string
+     */
+    protected function getSearchActionForSource($source)
+    {
+        $optionsHelper = $this->getView()->plugin('searchOptions');
+        return $optionsHelper->__invoke($source)->getSearchAction();
     }
 }

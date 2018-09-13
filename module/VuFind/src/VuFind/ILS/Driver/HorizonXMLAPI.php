@@ -2,7 +2,7 @@
 /**
  * Horizon ILS Driver (w/ XML API support)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -220,9 +220,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $sql = $this->buildSqlFromArray($sqlArray);
 
             try {
-                $sqlStmt = mssql_query($sql);
+                $sqlStmt = $this->db->query($sql);
 
-                while ($row = mssql_fetch_assoc($sqlStmt)) {
+                foreach ($sqlStmt as $row) {
                     $pickresponse[] = [
                         'locationID'      => $row['LOCATIONID'],
                         'locationDisplay' => $row['LOCATIONDISPLAY']
@@ -284,15 +284,14 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $sql = $this->buildSqlFromArray($sqlArray);
 
             try {
-                $sqlStmt = mssql_query($sql);
+                $sqlStmt = $this->db->query($sql);
 
-                $row = mssql_fetch_assoc($sqlStmt);
-                if ($row) {
+                foreach ($sqlStmt as $row) {
                     $defaultPickUpLocation = $row['LOCATION'];
                     return $defaultPickUpLocation;
-                } else {
-                    return null;
                 }
+                // If we didn't return above, there were no values.
+                return null;
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
             }

@@ -1,0 +1,123 @@
+<?php
+/**
+ * Base class for AjaxHandler tests.
+ *
+ * PHP version 7
+ *
+ * Copyright (C) Villanova University 2018.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+namespace VuFindTest\Unit;
+
+use Zend\Http\Request;
+use Zend\Mvc\Controller\Plugin\Params;
+use Zend\ServiceManager\ServiceManager;
+use Zend\Stdlib\Parameters;
+
+/**
+ * Base class for AjaxHandler tests.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
+{
+    /**
+     * Create a mock service.
+     *
+     * @param string $name    Name of class implementing service
+     * @param array  $methods Methods to mock
+     *
+     * @return object
+     */
+    protected function getMockService($name, $methods = [])
+    {
+        return $this->getMockBuilder($name)
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+    }
+
+    /**
+     * Create mock user object.
+     *
+     * @return \VuFind\Db\Row\User
+     */
+    protected function getMockUser()
+    {
+        return $this->getMockService('VuFind\Db\Row\User');
+    }
+
+    /**
+     * Add a service to a container.
+     *
+     * @param ServiceManager $container Container to populate
+     * @param string         $name      Name of service to create
+     * @param mixed          $value     Value of service (or null to create mock)
+     *
+     * @return void
+     */
+    protected function addServiceToContainer($container, $name, $value = null)
+    {
+        $container->setService($name, $value ?? $this->getMockService($name));
+    }
+
+    /**
+     * Get an auth manager with a value set for isLoggedIn.
+     *
+     * @param \VuFind\Db\Row\User $user Return value for isLoggedIn()
+     *
+     * @return \VuFind\Auth\Manager
+     */
+    protected function getMockAuthManager($user)
+    {
+        $authManager = $this->getMockService('VuFind\Auth\Manager', ['isLoggedIn']);
+        $authManager->expects($this->any())->method('isLoggedIn')
+            ->will($this->returnValue($user));
+        return $authManager;
+    }
+
+    /**
+     * Build a Params helper for testing.
+     *
+     * @param array $get  GET parameters
+     * @param array $post POST parameters
+     *
+     * @return Params
+     */
+    protected function getParamsHelper($get = [], $post = [])
+    {
+        $params = new Params();
+        $request = new Request();
+        $request->setQuery(new Parameters($get));
+        $request->setPost(new Parameters($post));
+        $controller = $this->getMockService(
+            'Zend\Mvc\Controller\AbstractActionController', ['getRequest']
+        );
+        $controller->expects($this->any())->method('getRequest')
+            ->will($this->returnValue($request));
+        $params->setController($controller);
+        return $params;
+    }
+}

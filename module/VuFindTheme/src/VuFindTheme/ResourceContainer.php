@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

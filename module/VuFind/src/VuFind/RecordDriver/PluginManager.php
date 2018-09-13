@@ -2,7 +2,7 @@
 /**
  * Record driver plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,6 +39,76 @@ namespace VuFind\RecordDriver;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'browzine' => 'VuFind\RecordDriver\BrowZine',
+        'eds' => 'VuFind\RecordDriver\EDS',
+        'eit' => 'VuFind\RecordDriver\EIT',
+        'libguides' => 'VuFind\RecordDriver\LibGuides',
+        'missing' => 'VuFind\RecordDriver\Missing',
+        'pazpar2' => 'VuFind\RecordDriver\Pazpar2',
+        'primo' => 'VuFind\RecordDriver\Primo',
+        'solrauth' => 'VuFind\RecordDriver\SolrAuthMarc', // legacy name
+        'solrauthdefault' => 'VuFind\RecordDriver\SolrAuthDefault',
+        'solrauthmarc' => 'VuFind\RecordDriver\SolrAuthMarc',
+        'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
+        'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
+        'solrmarcremote' => 'VuFind\RecordDriver\SolrMarcRemote',
+        'solrreserves' => 'VuFind\RecordDriver\SolrReserves',
+        'solrweb' => 'VuFind\RecordDriver\SolrWeb',
+        'summon' => 'VuFind\RecordDriver\Summon',
+        'worldcat' => 'VuFind\RecordDriver\WorldCat',
+    ];
+
+    /**
+     * Default delegator factories.
+     *
+     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     */
+    protected $delegators = [
+        'VuFind\RecordDriver\SolrMarc' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+        'VuFind\RecordDriver\SolrMarcRemote' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\RecordDriver\BrowZine' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\RecordDriver\EDS' => 'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\EIT' => 'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\LibGuides' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\RecordDriver\Missing' => 'VuFind\RecordDriver\AbstractBaseFactory',
+        'VuFind\RecordDriver\Pazpar2' =>
+            'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
+        'VuFind\RecordDriver\SolrAuthDefault' =>
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
+        'VuFind\RecordDriver\SolrAuthMarc' =>
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
+        'VuFind\RecordDriver\SolrDefault' =>
+            'VuFind\RecordDriver\SolrDefaultFactory',
+        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrDefaultFactory',
+        'VuFind\RecordDriver\SolrMarcRemote' =>
+            'VuFind\RecordDriver\SolrDefaultFactory',
+        'VuFind\RecordDriver\SolrReserves' =>
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
+        'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\SolrWebFactory',
+        'VuFind\RecordDriver\Summon' => 'VuFind\RecordDriver\SummonFactory',
+        'VuFind\RecordDriver\WorldCat' =>
+            'VuFind\RecordDriver\NameBasedConfigFactory',
+    ];
+
+    /**
      * Constructor
      *
      * Make sure plugins are properly initialized.
@@ -52,20 +122,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
+        $this->sharedByDefault = false;
+
+        $this->addAbstractFactory('VuFind\RecordDriver\PluginFactory');
 
         parent::__construct($configOrContainerInstance, $v3config);
 
         // Add an initializer for setting up hierarchies
-        $initializer = function ($instance, $manager) {
+        $initializer = function ($sm, $instance) {
             $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
             if ($hasHierarchyType
                 && is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
-                $sm = $manager->getServiceLocator();
-                if ($sm && $sm->has('VuFind\HierarchyDriverPluginManager')) {
+                if ($sm && $sm->has('VuFind\Hierarchy\Driver\PluginManager')) {
                     $instance->setHierarchyDriverManager(
-                        $sm->get('VuFind\HierarchyDriverPluginManager')
+                        $sm->get('VuFind\Hierarchy\Driver\PluginManager')
                     );
                 }
             }
@@ -87,22 +158,35 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Convenience method to retrieve a populated Solr record driver.
      *
-     * @param array $data Raw Solr data
+     * @param array  $data             Raw Solr data
+     * @param string $keyPrefix        Record class name prefix
+     * @param string $defaultKeySuffix Default key suffix
      *
      * @return AbstractBase
      */
-    public function getSolrRecord($data)
-    {
-        if (isset($data['recordtype'])) {
-            $key = 'Solr' . ucwords($data['recordtype']);
-            $recordType = $this->has($key) ? $key : 'SolrDefault';
-        } else {
-            $recordType = 'SolrDefault';
-        }
+    public function getSolrRecord($data, $keyPrefix = 'Solr',
+        $defaultKeySuffix = 'Default'
+    ) {
+        $key = $keyPrefix . ucwords(
+            $data['record_format'] ?? $data['recordtype'] ?? $defaultKeySuffix
+        );
+        $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
         // Build the object:
         $driver = $this->get($recordType);
         $driver->setRawData($data);
         return $driver;
+    }
+
+    /**
+     * Convenience method to retrieve a populated Solr authority record driver.
+     *
+     * @param array $data Raw Solr data
+     *
+     * @return AbstractBase
+     */
+    public function getSolrAuthRecord($data)
+    {
+        return $this->getSolrRecord($data, 'SolrAuth');
     }
 }

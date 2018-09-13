@@ -2,7 +2,7 @@
 /**
  * ThemeCompiler Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -63,22 +63,15 @@ class ThemeCompilerTest extends Unit\TestCase
     protected $targetPath;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
-        $this->info = new ThemeInfo($this->fixturePath, 'parent');
-        $this->targetPath = $this->info->getBaseDir() . '/compiled';
-    }
-
-    /**
      * Standard setup method.
      *
      * @return void
      */
     public function setUp()
     {
+        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
+        $this->info = new ThemeInfo($this->fixturePath, 'parent');
+        $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
         if (is_dir($this->targetPath)) {
             return $this->markTestSkipped('compiled theme already exists.');
@@ -128,7 +121,7 @@ class ThemeCompilerTest extends Unit\TestCase
                     'foo' => 'fooOverrideFactory',
                     'bar' => 'barFactory',
                 ],
-                'invokables' => [
+                'aliases' => [
                     'xyzzy' => 'Xyzzy',
                 ]
             ],
@@ -186,7 +179,7 @@ class ThemeCompilerTest extends Unit\TestCase
                     'foo' => 'fooOverrideFactory',
                     'bar' => 'barFactory',
                 ],
-                'invokables' => [
+                'aliases' => [
                     'xyzzy' => 'Xyzzy',
                 ]
             ],

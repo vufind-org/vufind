@@ -2,7 +2,7 @@
 /**
  * Facet-driven channel provider.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -105,14 +105,11 @@ class Facets extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->fields = isset($options['fields'])
-            ? $options['fields']
-            : ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
-        $this->maxFieldsToSuggest = isset($options['maxFieldsToSuggest'])
-            ? $options['maxFieldsToSuggest'] : 2;
+        $this->fields = $options['fields']
+            ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
+        $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
         $this->maxValuesToSuggestPerField
-            = isset($options['maxValuesToSuggestPerField'])
-            ? $options['maxValuesToSuggestPerField'] : 2;
+            = $options['maxValuesToSuggestPerField'] ?? 2;
     }
 
     /**

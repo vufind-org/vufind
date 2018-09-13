@@ -2,7 +2,7 @@
 /**
  * Shibboleth Logout Notification API Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -106,7 +106,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         if (empty($row)) {
             return;
         }
-        $sessionManager = $this->serviceLocator->get('VuFind\SessionManager');
+        $sessionManager = $this->serviceLocator->get('Zend\Session\SessionManager');
         $handler = $sessionManager->getSaveHandler();
         $handler->destroy($row['session_id']);
     }

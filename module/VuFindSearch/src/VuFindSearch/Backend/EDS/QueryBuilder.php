@@ -3,7 +3,7 @@
 /**
  * EDS API Querybuilder
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
