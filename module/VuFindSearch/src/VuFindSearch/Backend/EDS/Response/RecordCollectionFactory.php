@@ -92,17 +92,10 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             );
         }
         $collection = new $this->collectionClass($response);
-        //obtain path to records
-        $records = [];
-        if (isset($response['SearchResult'])
-            && isset($response['SearchResult']['Data'])
-            && isset($response['SearchResult']['Data']['Records'])
-        ) {
-            // Format of the search response
-            $records = $response['SearchResult']['Data']['Records'];
-        } elseif (isset($response['Records'])) { // Format of the retrieve response
-            $records = $response['Records'];
-        }
+        // Obtain path to records -- first try format of the search response,
+        // then try format of the retrieve response, then give up with empty array.
+        $records = $response['SearchResult']['Data']['Records']
+            ?? $response['Records'] ?? [];
 
         foreach ($records as $record) {
             $collection->add(call_user_func($this->recordFactory, $record));
