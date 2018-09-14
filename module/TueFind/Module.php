@@ -53,5 +53,6 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
+        BotProtect::CheckRequest($e);
     }
 }
