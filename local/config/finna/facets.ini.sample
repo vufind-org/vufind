@@ -93,6 +93,7 @@ dateRangeVis = search_daterange_mv:main_date_str
 ;edition:1st* = "First Edition"     ; Contrived hypothetical example
 online_boolean:1 = online_material_facet_html
 ;free_online_boolean:1 = free_online_material_facet_html
+source_available_str_mv:* = available_locally_facet_html
 
 ; These settings affect the way the [Results] facets are displayed
 ; If using facets at the top of search results you have more room for text.

@@ -150,7 +150,7 @@ class SolrExtensionsListener
             $this->addDataSourceFilter($event);
             if ($event->getParam('context') == 'search') {
                 $this->addHiddenComponentPartFilter($event);
-                $this->handleOnlineFilters($event);
+                $this->handleAvailabilityFilters($event);
                 $this->addGeoFilterBoost($event);
             }
         }
@@ -350,12 +350,14 @@ class SolrExtensionsListener
     /**
      * Change the online_boolean filter to online_str_mv filter or
      * free_online_boolean to free_online_str_mv filter if deduplication is enabled.
+     * Combine that with source_available_str_mv if no building filter is active
+     * or building_available_str_mv if building filter is active.
      *
      * @param EventInterface $event Event
      *
      * @return void
      */
-    protected function handleOnlineFilters(EventInterface $event)
+    protected function handleAvailabilityFilters(EventInterface $event)
     {
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
@@ -366,24 +368,47 @@ class SolrExtensionsListener
             $params = $event->getParam('params');
             $filters = $params->get('fq');
             if (null !== $filters) {
+                $sources = explode(',', $searchConfig->Records->sources);
+                $sources = array_map(
+                    function ($s) {
+                        return "\"$s\"";
+                    },
+                    $sources
+                );
+
                 foreach ($filters as $key => $value) {
-                    if ($value == 'online_boolean:"1"'
-                        || $value == 'free_online_boolean:"1"'
+                    if ($value === 'online_boolean:"1"'
+                        || $value === 'free_online_boolean:"1"'
                     ) {
                         unset($filters[$key]);
-                        $sources = explode(',', $searchConfig->Records->sources);
-                        $sources = array_map(
-                            function ($s) {
-                                return "\"$s\"";
-                            },
-                            $sources
-                        );
                         $filter = $value == 'online_boolean:"1"'
                             ? 'online_str_mv' : 'free_online_str_mv';
                         $filter .= ':(' . implode(' OR ', $sources) . ')';
                         $filters[] = $filter;
                         $params->set('fq', $filters);
-
+                        break;
+                    }
+                }
+                foreach ($filters as $key => $value) {
+                    if ($value === 'source_available_str_mv:*') {
+                        $buildings = [];
+                        $buildingRegExp
+                            = '/\{!tag=building_filter\}building:\(building:(".*")/';
+                        foreach ($filters as $value2) {
+                            if (preg_match($buildingRegExp, $value2, $matches)) {
+                                $buildings[] = $matches[1];
+                            }
+                        }
+                        unset($filters[$key]);
+                        if ($buildings) {
+                            $filter = 'building_available_str_mv:('
+                                . implode(' OR ', $buildings) . ')';
+                        } else {
+                            $filter = 'source_available_str_mv:('
+                                . implode(' OR ', $sources) . ')';
+                        }
+                        $filters[] = $filter;
+                        $params->set('fq', $filters);
                         break;
                     }
                 }
