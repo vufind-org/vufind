@@ -7,7 +7,8 @@ use \Zend\Mvc\MvcEvent;
 /**
  * Bot protection
  *
- * If a hidden input field with a special name is not empty, then it must have been filled out by a bot.
+ * We assume that a bot unconditionally tries to write to every found field.
+ * So, if a hidden input field with a special name is not empty, then it must have been filled out by a bot.
  * The field exists in the HTML form, but is hidden by CSS.
  */
 class BotProtect {
