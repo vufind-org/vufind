@@ -14,18 +14,8 @@ $config = [
                     'solr' => 'IxTheo\Autocomplete\Factory::getSolr',
                 ],
             ],
-            'db_row' => [
-                'factories' => [
-                    'IxTheoUser' => 'IxTheo\Db\Row\Factory::getIxTheoUser',
-                    'pdasubscription' => 'IxTheo\Db\Row\Factory::getPDASubscription',
-                    'subscription' => 'IxTheo\Db\Row\Factory::getSubscription',
-                ],
-            ],
             'db_table' => [
                 'factories' => [
-                    'IxTheoUser' => 'IxTheo\Db\Table\Factory::getIxTheoUser',
-                    'pdasubscription' => 'IxTheo\Db\Table\Factory::getPDASubscription',
-                    'subscription' => 'IxTheo\Db\Table\Factory::getSubscription',
                     'tags' => 'IxTheo\Db\Table\Factory::getTags',
                 ],
             ],
@@ -99,6 +89,8 @@ $config = [
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
             'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
+            'VuFind\Db\Row\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\Table\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
