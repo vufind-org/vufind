@@ -115,14 +115,18 @@ class SourceAndIdList
         $id = $record->getUniqueId();
         $source = $record->getSourceIdentifier();
 
-        // First check if the primary ID is set; in some cases (e.g. Summon),
-        // the ID may have changed, so also check the prior ID if available.
-        if (isset($this->bySource[$source][$id])) {
-            return $this->bySource[$source][$id];
-        }
+        // In some cases (e.g. Summon), the ID may have changed, so also check the
+        // prior ID if available. We should do this BEFORE checking the primary ID
+        // to ensure that we match the correct record in the edge case where a list
+        // contains both an OLD record ID and the NEW record ID that it has been
+        // replaced with. Checking the old ID first ensures that we don't match the
+        // same position twice for two different records.
         $oldId = $record->tryMethod('getPreviousUniqueId');
         if ($oldId !== null && isset($this->bySource[$source][$oldId])) {
             return $this->bySource[$source][$oldId];
+        }
+        if (isset($this->bySource[$source][$id])) {
+            return $this->bySource[$source][$id];
         }
         return false;
     }

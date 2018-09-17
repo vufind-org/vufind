@@ -12,6 +12,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\Mail as MailException;
 use Zend\Mail\Address;
 
 /**
