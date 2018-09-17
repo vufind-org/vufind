@@ -74,9 +74,16 @@ class DoiLookup extends AbstractBase implements TranslatorAwareInterface
         foreach ((array)$params->fromQuery('doi', []) as $doi) {
             $data = $this->connector->lookupDoi($doi)['data'] ?? null;
             if (isset($data['browzineWebLink'])) {
-                $response[$doi] = [
+                $response[$doi][] = [
                     'link' => $data['browzineWebLink'],
                     'label' => $this->translate('View Complete Issue'),
+                    'data' => $data,
+                ];
+            }
+            if (isset($data['fullTextFile'])) {
+                $response[$doi][] = [
+                    'link' => $data['fullTextFile'],
+                    'label' => $this->translate('PDF Full Text'),
                     'data' => $data,
                 ];
             }
