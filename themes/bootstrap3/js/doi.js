@@ -22,7 +22,7 @@ VuFind.register('doi', function Doi() {
           var currentDoi = $(doiEl).data('doi');
           if ("undefined" !== response.data[currentDoi]) {
             $(doiEl).empty();
-            for (var i in response.data[currentDoi]) {
+            for (var i = 0; i < response.data[currentDoi].length; i++) {
               var newLink = $('<a />');
               newLink.attr('href', response.data[currentDoi][i].link);
               newLink.text(response.data[currentDoi][i].label);
