@@ -18,7 +18,7 @@ VuFind.register('doi', function Doi() {
       url: url
     })
       .done(function embedDoiLinksDone(response) {
-        element.find('.doiLink').each(function populateDoiLinks(i, doiEl) {
+        element.find('.doiLink').each(function populateDoiLinks(x, doiEl) {
           var currentDoi = $(doiEl).data('doi');
           if ("undefined" !== response.data[currentDoi]) {
             $(doiEl).empty();
