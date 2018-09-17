@@ -9,7 +9,6 @@ return [
     'helpers' => [
         'factories' => [
             'citation' => 'IxTheo\View\Helper\Root\Factory::getCitation',
-            'piwik' => 'IxTheo\View\Helper\Root\Factory::getPiwik',
             'record' => 'IxTheo\View\Helper\Root\Factory::getRecord',
         ],
         'invokables' => [

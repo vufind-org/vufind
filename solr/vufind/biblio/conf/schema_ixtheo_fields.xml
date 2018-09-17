@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
-    <!-- COMMON -->
+    <!-- COMMON fields -->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//field)"/>
 
-    <!-- CUSTOM - only IxTheo/RelBib -->
-    <field name="author_synonyms" type="text" indexed="true" stored="true" termVectors="true"/>
+    <!-- CUSTOM fields - only IxTheo/RelBib -->
+    <field name="author_synonyms" type="text" indexed="true" stored="true" termVectors="true" multiValued="true"/>
     <field name="author2_and_role" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="bible_ranges" type="string" indexed="true" stored="true" />
     <field name="corporation" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -38,6 +38,7 @@
     <field name="geographic_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="ids" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
@@ -81,13 +82,11 @@
     <field name="last_modification_time" type="date" indexed="true" stored="true" multiValued="false"/>
     <field name="other_titles" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="publisher_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
-    <field name="record_selector" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="recording_date" type="date" indexed="true" stored="true" multiValued="false"/>
     <field name="relbib_notation" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="relbib_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="reviews" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="reviewed_records" type="text" indexed="false" stored="true" multiValued="true"/>
-    <field name="rs" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_synonyms" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -136,6 +135,11 @@
     <field name="types_and_persistent_identifiers" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="zdb_number" type="string" indexed="true" stored="true" multiValued="false"/>
 
+    <!-- COMMON copyFields-->
+    <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
+
+    <!-- CUSTOM copyFields - only IxTheo/RelBib -->
+    <copyField source="id" dest="ids"/>
     <copyField source="key_word_chain_bag_de" dest="topic_all"/>
     <copyField source="key_word_chain_bag_de" dest="topic_de"/>
     <copyField source="key_word_chain_bag_el" dest="topic_all"/>
@@ -157,7 +161,6 @@
     <copyField source="key_word_chain_bag_ru" dest="topic_all"/>
     <copyField source="key_word_chain_bag_ru" dest="topic_ru"/>
     <copyField source="publisher" dest="publisher_facet"/>
-    <copyField source="record_selector" dest="rs"/>
     <copyField source="topic_de" dest="key_word_chain_bag_de"/>
     <copyField source="topic_de" dest="key_word_chains_de"/>
     <copyField source="topic_de" dest="key_word_chains_sorted_de"/>
@@ -204,5 +207,4 @@
     <copyField source="era_facet_de" dest="topic_browse"/>
     <copyField source="genre_facet_de" dest="topic_browse"/>
     <copyField source="geographic_facet_de" dest="topic_browse"/>
-
 </fields>

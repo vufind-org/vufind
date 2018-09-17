@@ -1,31 +1,90 @@
 .panel-home {
-    min-height: 300px;
+    min-height: 200px;
+    padding-top: 50px;
 }
 
 .section-home {
     background-color: @gray-200;
 }
 
-.panel-inverse a {
-    color: white;
-    text-decoration: underline;
+h1 {
+    font-size: 30px;
+}
+
+div.title {
+    /* will only be visible on low res, see overrides-media.less */
+    display: none;
+}
+
+.panel-button a {
+    font-size: 1.2em;
+}
+
+.panel-default, .panel-inverse, .panel-buttons {
+   border: 5px solid @gray-200;
+   -webkit-box-shadow: none;
+}
+
+.panel-default-link {
+    color: @gray-900;
+    :hover {
+        color: @brand-primary;
+        text-decoration-color: @brand-primary;
+        text-decoration: underline;
+    }
+}
+
+.panel-inverse {
+    a {
+        color: white;
+        text-decoration: underline;
+    }
 }
 
 .logo-img {
     display: none !important;
 }
 
-.panel-button {
-  height: 49%;
-
-  .btn-primary {
-    .sublabel {
-        font-size: 0.8em;
-    }
-  }
-}
-
 .btn-panel-more {
     background-color: @brand-primary;
     color: white;
+}
+
+.breadcrumb-wrapper {
+    display: none;
+}
+
+.mainbody {
+    padding-top: 10px;
+}
+
+.glyphicon-envelope {
+    font-size: 25px;
+}
+
+mark {
+    /*background: transparent;
+    color: @brand-tertiary;*/
+}
+
+.searchtools {
+    display: none;
+}
+
+
+/* TODO: Check if values need to be changed to variables if stakeholder says layout is OK */
+.btn-primary, .btn-panel-more {
+    background-color: #a51e37;
+}
+
+.facet > .text {
+    color: #a51e37;
+}
+
+.facet > .badge {
+    background-color: #7b7d84;
+}
+
+a:hover {
+    color: #a51e37;
 }

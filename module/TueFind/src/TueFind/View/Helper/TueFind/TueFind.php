@@ -61,7 +61,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      */
     function getLocalizedOverallPercentage(\Zend\View\Renderer\PhpRenderer $view,
                                            $count, \VuFind\Search\Solr\Results $results) {
-
         $percentage = $this->getOverallPercentage($count, $results);
         return $percentage > 0.1 ? $view->localizedNumber($percentage, 1) : "&lt; 0.1";
     }
@@ -103,4 +102,18 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
        };
        return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
    }
+
+   /**
+    * Analyze a list of facets if at least one of them is chosen
+    * @param facet list array
+    *
+    * @return bool
+    */
+  function atLeastOneFacetChosen($list) {
+      foreach($list as $i => $thisFacet)
+          if ($thisFacet['isApplied'])
+              return true;
+      return false;
+
+  }
 }

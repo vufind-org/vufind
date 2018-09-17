@@ -1,0 +1,1 @@
+../../krimdok/js/acquisitionrequest.js

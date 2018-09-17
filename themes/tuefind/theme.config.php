@@ -5,6 +5,7 @@ return [
         'factories' => [
             'helptext' => 'TueFind\View\Helper\Root\HelpTextFactory',
             'HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
             'tuefind' => 'TueFind\View\Helper\TueFind\Factory',
         ],
     ],

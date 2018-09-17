@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
-    <!-- COMMON -->
+    <!-- COMMON fields -->
     <field name="container_ids_and_titles" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_superior_work" type="boolean" indexed="false" stored="true" multiValued="false"/>
     <field name="issue" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="journal_issue" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="pages" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="record_selector" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="rvk" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="rs" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="superior_ppn" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="urls_and_material_types" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
@@ -15,4 +17,7 @@
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
+
+    <!-- COMMON copyFields -->
+    <copyField source="record_selector" dest="rs"/>
 </fields>

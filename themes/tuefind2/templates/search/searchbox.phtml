@@ -35,17 +35,7 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
     <section class="section-home">
         <div class="panel-home">
             <script>
-            /**
-             * TueFind:
-             *
-             * - resize the box if we are not on the default page anymore (detect by url length)
-             * - code needs to be here, else (e.g. document.onload) it first pops out and then pops back again,
-             *   which looks strange and also screws up with anchors
-             */
-            var parts = window.location.href.split('/');
-            if (parts.length > 4) {
-                $('.panel-home').css("min-height", 300);
-            }
+                Tuefind.ChangeSearchboxHeight();
             </script>
 
             <div class="searchbox col-12 mx-auto">
@@ -103,7 +93,7 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
                                 <!-- End search input field -->
 
                                 <!-- Begin search select -->
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 searchForm_select">
                                     <? if ($handlerCount > 1): ?>
                                         <select id="searchForm_type" class="form-control form-control-lg custom-select" name="type">
                                             <? foreach ($handlers as $handler): ?>
@@ -119,7 +109,7 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
 
                                 <!-- Begin search button -->
                                 <div class="col-xs-12 col-sm-2">
-                                    <button type="submit" class="btn btn-primary btn-lg search-button "><i
+                                    <button type="submit" class="btn btn-primary search-button"><i
                                                 class="fa fa-search"></i> <?= $this->transEsc("Find") ?></button>
                                 </div>
                                 <!-- Begin search button -->

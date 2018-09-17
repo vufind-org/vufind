@@ -95,8 +95,9 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
+            'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
+            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
