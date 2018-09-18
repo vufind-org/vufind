@@ -53,9 +53,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ldap' => 'VuFind\Auth\LDAP',
         'multiauth' => 'VuFind\Auth\MultiAuth',
         'multiils' => 'VuFind\Auth\MultiILS',
+        'openidconnect' => 'VuFind\Auth\OpenIDConnect',
         'shibboleth' => 'VuFind\Auth\Shibboleth',
         'sip2' => 'VuFind\Auth\SIP2',
-        'openidconnect' => 'VuFind\Auth\OpenIDConnect',
         // for legacy 1.x compatibility
         'db' => 'VuFind\Auth\Database',
         'sip' => 'VuFind\Auth\SIP2',
@@ -76,9 +76,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Auth\LDAP' => 'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Auth\MultiAuth' => 'VuFind\Auth\Factory::getMultiAuth',
         'VuFind\Auth\MultiILS' => 'VuFind\Auth\Factory::getMultiILS',
+        'VuFind\Auth\OpenIDConnect' => 'VuFind\Auth\Factory::getOpenIDConnect',
         'VuFind\Auth\Shibboleth' => 'VuFind\Auth\Factory::getShibboleth',
         'VuFind\Auth\SIP2' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Auth\OpenIDConnect' => 'VuFind\Auth\Factory::getOpenIDConnect',
     ];
 
     /**

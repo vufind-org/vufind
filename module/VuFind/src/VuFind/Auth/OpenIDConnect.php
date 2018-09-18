@@ -28,7 +28,6 @@
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
-use Jumbojett\OpenIDConnectClient;
 
 /**
  * OpenID Connect authentication module.
@@ -176,7 +175,6 @@ class OpenIDConnect extends AbstractBase implements
             'scope' => 'openid',
         ];
 
-        //TODO  make url using httpClient
         $url = $provider->authorization_endpoint . '?' . http_build_query($params, null, '&');
 
         return $url;
@@ -195,7 +193,7 @@ class OpenIDConnect extends AbstractBase implements
         $params = [
            'grant_type' => 'authorization_code',
            'code' => $code,
-           'redirect_uri' => 'http://localhost:4567/vufind/MyResearch/Home', //$this->session->oidcLastUri,
+           'redirect_uri' => $this->session->oidcLastUri,
            'client_id' => $this->config->OpenIDConnect->client_id,
            'client_secret' => $this->config->OpenIDConnect->client_secret,
         ];
