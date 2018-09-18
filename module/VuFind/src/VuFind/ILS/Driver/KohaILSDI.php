@@ -1953,7 +1953,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $salt .= $keyspace[random_int(0, $max)];
         }
         $salt = base64_encode($salt);
-        $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$'.$salt);
+        $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$' . $salt);
         try {
             $stmt = $this->db->prepare($sql);
             $result = $stmt->execute(
@@ -1962,7 +1962,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } catch (Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
-        return [ 
+        return [
             'success' => $result,
             'status' => $result ? 'Password was succesfully changed'
                 : 'Password was not changed'
