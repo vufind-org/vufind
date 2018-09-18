@@ -162,4 +162,3 @@ class Factory
         return new OpenIDConnect($container);
     }
 }
-}
