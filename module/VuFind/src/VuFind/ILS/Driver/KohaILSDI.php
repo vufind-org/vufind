@@ -1927,20 +1927,20 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * changePassword
+     * Change Password
      *
      * This method changes patron's password
      *
-     * @param $patron The patron array from patronLogin
-     * @param $oldPassword
-     * @param $newPassword
+     * @param $details An associative array with three keys
+     *      patron      - The patron array from patronLogin
+     *      oldPassword - Old password
+     *      newPassword - New password
      *
      * @return array  An associative array with keys:
      *      success - boolean, true if change was made
      *      status  - string, A status message - subject to translation
      */
-
-   public function changePassword($detail)
+    public function changePassword($detail)
     {
         if (!$this->db) {
             $this->initDb();
@@ -1956,13 +1956,17 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$'.$salt);
         try {
             $stmt = $this->db->prepare($sql);
-            $result = $stmt->execute([ $newPassword_hashed, $detail['patron']['id'] ]);
+            $result = $stmt->execute([
+                $newPassword_hashed,
+                $detail['patron']['id']
+            ]);
         } catch (Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
         return [ 
             'success' => $result,
-            'status' => $result ? 'Password was succesfully changed' : 'Password was not changed'
+            'status' => $result ? 
+                'Password was succesfully changed' : 'Password was not changed'
         ];
     }
 
