@@ -35,23 +35,6 @@ class Results extends BaseResults
     protected $pdasubscriptionTable = null;
 
     /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
-     * @param SubscriptionTable          $pdasubscriptionTable Subscription table
-     */
-    public function __construct(BaseParams $params,
-        SearchService $searchService, Loader $recordLoader,
-        PDASubscriptionTable $pdasubscriptionTable
-    ) {
-        parent::__construct($params, $searchService, $recordLoader);
-        $this->pdasubscriptionTable = $pdasubscriptionTable;
-    }
-
-    /**
      * Returns the stored list of facets for the last search
      *
      * @param array $filter Array of field => on-screen description listing
@@ -113,5 +96,9 @@ class Results extends BaseResults
             $this->list = $this->pdasubscriptionTable->getAll($this->user->id, $this->getParams()->getSort());
         }
         return $this->list;
+    }
+
+    public function setPDAsubscriptionTable(PDASubscriptionTable $pdasubscriptionTable) {
+        $this->pdasubscriptionTable = $pdasubscriptionTable;
     }
 }

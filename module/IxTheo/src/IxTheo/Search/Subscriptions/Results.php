@@ -34,23 +34,6 @@ class Results extends BaseResults
     protected $subscriptionTable = null;
 
     /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
-     * @param SubscriptionTable          $subscriptionTable Subscription table
-     */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader,
-        SubscriptionTable $subscriptionTable
-    ) {
-        parent::__construct($params, $searchService, $recordLoader);
-        $this->subscriptionTable = $subscriptionTable;
-    }
-
-    /**
      * Returns the stored list of facets for the last search
      *
      * @param array $filter Array of field => on-screen description listing
@@ -73,11 +56,14 @@ class Results extends BaseResults
     {
         $auth = $this->getAuthorizationService();
         $this->user = $auth ? $auth->getIdentity() : false;
-        $list = $this->getListObject();
-
-        if (is_null($list) && !$this->user) {
+        if (!$this->user) {
             throw new ListPermissionException('Cannot retrieve subscriptions without logged in user.');
         }
+        $list = $this->getListObject();
+        if (is_null($list)) {
+            throw new ListPermissionException('Cannot retrieve subscriptions without logged in user.');
+        }
+
         $this->resultTotal = count($list->toArray());
 
         // Apply offset and limit if necessary!
@@ -138,5 +124,9 @@ class Results extends BaseResults
         }
         ksort($results_sorted, SORT_LOCALE_STRING);
         return $results_sorted;
+    }
+
+    public function setSubscriptionTable(SubscriptionTable $subscriptionTable) {
+        $this->subscriptionTable = $subscriptionTable;
     }
 }
