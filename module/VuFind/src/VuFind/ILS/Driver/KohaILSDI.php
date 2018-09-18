@@ -1931,7 +1931,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * This method changes patron's password
      *
-     * @param $details An associative array with three keys
+     * @param array $detail An associative array with three keys
      *      patron      - The patron array from patronLogin
      *      oldPassword - Old password
      *      newPassword - New password
@@ -1956,17 +1956,16 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$'.$salt);
         try {
             $stmt = $this->db->prepare($sql);
-            $result = $stmt->execute([
-                $newPassword_hashed,
-                $detail['patron']['id']
-            ]);
+            $result = $stmt->execute(
+                [ $newPassword_hashed, $detail['patron']['id'] ]
+            );
         } catch (Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
         return [ 
             'success' => $result,
-            'status' => $result ? 
-                'Password was succesfully changed' : 'Password was not changed'
+            'status' => $result ? 'Password was succesfully changed'
+                : 'Password was not changed'
         ];
     }
 
