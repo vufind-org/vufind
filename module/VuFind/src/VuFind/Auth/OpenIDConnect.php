@@ -69,12 +69,21 @@ class OpenIDConnect extends AbstractBase implements
         $this->session = $container;
     }
 
+    /** Get Provider
+     *
+     * Get provider configuration
+     *
+     * @return object
+     */
     protected function getProvider()
     {
         if (!isset($this->provider)) {
-            $url = $this->config->OpenIDConnect->url . ".well-known/openid-configuration";
+            $url = $this->config->OpenIDConnect->url
+                . ".well-known/openid-configuration";
             try {
-                $this->provider = json_decode($this->httpService->get($url)->getBody());
+                $this->provider = json_decode(
+                    $this->httpService->get($url)->getBody()
+                );
             } catch(\Exception $e) {
                 throw new AuthException(
                     "Cannot fetch provider configuration: " . $e->getMessage()
@@ -100,7 +109,8 @@ class OpenIDConnect extends AbstractBase implements
                 || empty($this->config->OpenIDConnect->$param)
             ) {
                 throw new AuthException(
-                    "One or more OpenID Connect parameters are missing. Check your OpenIDConnect.ini!"
+                    "One or more OpenID Connect parameters are missing."
+                    . " Check your OpenIDConnect.ini!"
                 );
             }
         }
@@ -161,8 +171,8 @@ class OpenIDConnect extends AbstractBase implements
         $provider = $this->getProvider();
         $endpoint = $provider->authorization_endpoint;
 
-        $nonce = hash( "sha256", random_bytes(32));
-        $state = hash( "sha256", random_bytes(32));
+        $nonce = hash("sha256", random_bytes(32));
+        $state = hash("sha256", random_bytes(32));
         $this->session->openid_connect_nonce = $nonce;
         $this->session->openid_connect_state = $state;
         $this->session->oidcLastUri = $target;
@@ -175,7 +185,8 @@ class OpenIDConnect extends AbstractBase implements
             'scope' => 'openid',
         ];
 
-        $url = $provider->authorization_endpoint . '?' . http_build_query($params, null, '&');
+        $url = $provider->authorization_endpoint . '?'
+            . http_build_query($params, null, '&');
 
         return $url;
     }
@@ -197,12 +208,25 @@ class OpenIDConnect extends AbstractBase implements
            'client_id' => $this->config->OpenIDConnect->client_id,
            'client_secret' => $this->config->OpenIDConnect->client_secret,
         ];
-        if (in_array('client_secret_basic', $this->getProvider()->token_endpoint_auth_methods_supported)) {
-            $headers = ['Authorization: Basic ' . base64_encode($this->config->OpenIDConnect->client_id . ':' . $this->config->OpenIDConnect->client_secret)]; 
+        if (in_array('client_secret_basic', 
+                $this->getProvider()->token_endpoint_auth_methods_supported)
+        ) {
+            $headers = [
+                'Authorization: Basic ' . base64_encode(
+                    $this->config->OpenIDConnect->client_id . ':' 
+                    . $this->config->OpenIDConnect->client_secret
+                )
+            ]; 
             unset($params['client_secret']);
         }
 
-        $response = $this->httpService->post($url, http_build_query($params, null, '&'), 'application/x-www-form-urlencoded', null, $headers);
+        $response = $this->httpService->post(
+            $url, 
+            http_build_query($params, null, '&'), 
+            'application/x-www-form-urlencoded', 
+            null, 
+            $headers
+        );
         $json = json_decode($response->getBody());
         if (isset($json->error)) {
             throw new AuthException('authentication_error_admin');
@@ -213,7 +237,7 @@ class OpenIDConnect extends AbstractBase implements
     /**
      * Given an access token, look up user details.
      *
-     * @param string $accessToken Access token
+     * @param string $access_token Access token
      *
      * @return array
      */
@@ -224,9 +248,20 @@ class OpenIDConnect extends AbstractBase implements
             'schema' => 'openid',
         ];
         $headers = ['Authorization: Bearer ' . $access_token];
-        return json_decode($this->httpService->get($url, $params, null, $headers)->getBody());
+        return json_decode(
+            $this->httpService->get($url, $params, null, $headers)->getBody()
+        );
     }
 
+
+    /**
+     * Decode JSON Web Token
+     *
+     * @param string $jwt     JWT string
+     * @param int    $section number of part to decode
+     *
+     * @return object
+     */
     protected function decodeJWT($jwt, $section = 0)
     {
         $parts = explode(".", $jwt);
