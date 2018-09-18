@@ -69,8 +69,7 @@ class OpenIDConnect extends AbstractBase implements
         $this->session = $container;
     }
 
-    /** Get Provider
-     *
+    /** 
      * Get provider configuration
      *
      * @return object
@@ -135,9 +134,10 @@ class OpenIDConnect extends AbstractBase implements
         $request_token = $this->getRequestToken($code);
         $state = $request->getQuery()->get('state');
 
-/*        if ($state != $this->session->state) {
-           throw new AuthException('authentication_error_admin');
-        }*/
+        // TODO Check state
+        //if ($state != $this->session->state) {
+        //   throw new AuthException('authentication_error_admin');
+        //}
         unset($this->session->state);
 
         $claims = $this->decodeJWT($request_token->id_token, 1);
@@ -208,8 +208,11 @@ class OpenIDConnect extends AbstractBase implements
            'client_id' => $this->config->OpenIDConnect->client_id,
            'client_secret' => $this->config->OpenIDConnect->client_secret,
         ];
-        if (in_array('client_secret_basic', 
-                $this->getProvider()->token_endpoint_auth_methods_supported)
+        if (
+            in_array(
+                'client_secret_basic', 
+                $this->getProvider()->token_endpoint_auth_methods_supported
+            )
         ) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
