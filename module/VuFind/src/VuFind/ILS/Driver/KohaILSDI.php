@@ -1964,8 +1964,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         return [
             'success' => $result,
-            'status' => $result ? 'Password was succesfully changed'
-                : 'Password was not changed'
+            'status' => $result ? 'new_password_success'
+                : 'password_error_not_unique'
         ];
     }
 
