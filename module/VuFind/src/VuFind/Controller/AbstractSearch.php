@@ -2,7 +2,7 @@
 /**
  * VuFind Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -240,6 +240,18 @@ class AbstractSearch extends AbstractBase
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
+    }
+
+    /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
     }
 
     /**
@@ -645,8 +657,8 @@ class AbstractSearch extends AbstractBase
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
         // Set defaults for missing parameters:
-        $config = isset($params[0]) ? $params[0] : 'facets';
-        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+        $config = $params[0] ?? 'facets';
+        $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
         $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
@@ -718,7 +730,7 @@ class AbstractSearch extends AbstractBase
             [$facet], false, $limit, $sort, $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
-        $list = $facets[$facet]['data']['list'];
+        $list = $facets[$facet]['data']['list'] ?? [];
         $params->activateAllFacets();
         $facetLabel = $params->getFacetLabel($facet);
 
@@ -731,7 +743,7 @@ class AbstractSearch extends AbstractBase
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
-                'anotherPage' => $facets[$facet]['more'],
+                'anotherPage' => $facets[$facet]['more'] ?? '',
                 'sort' => $sort,
                 'sortOptions' => $facetSortOptions,
                 'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),

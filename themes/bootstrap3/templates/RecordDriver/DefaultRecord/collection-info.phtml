@@ -1,56 +1,56 @@
-<? $this->headScript()->appendFile('collection_record.js'); ?>
+<?php $this->headScript()->appendFile('collection_record.js'); ?>
 <div class="media">
-  <?
+  <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
     $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
   ?>
-  <? if ($QRCode || $cover || $preview): ?>
+  <?php if ($QRCode || $cover || $preview): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
-      <? /* Display thumbnail if appropriate: */ ?>
-      <? if($cover): ?>
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if($cover): ?>
         <?=$cover?>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if($QRCode): ?>
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if($QRCode): ?>
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
-      <? endif; ?>
+      <?php endif; ?>
 
-      <? if ($preview): ?><?=$preview?><? endif; ?>
+      <?php if ($preview): ?><?=$preview?><?php endif; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <div class="media-body">
 
     <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
-    <? if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
+    <?php if ($summary): ?>
       <p><?=$this->escapeHtml($summary)?></p>
-    <? endif; ?>
+    <?php endif; ?>
 
-    <? /* Display the lists that this record is saved to */ ?>
+    <?php /* Display the lists that this record is saved to */ ?>
     <div class="savedLists" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
-    <?/* Display Main Details */?>
-    <?
+    <?php /* Display Main Details */ ?>
+    <?php
       $formatter = $this->recordDataFormatter();
       $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
     ?>
-    <? if (!empty($fields)): ?>
+    <?php if (!empty($fields)): ?>
       <table id="collectionInfo" class="table table-striped">
         <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-        <? foreach ($fields as $key => $current): ?>
-          <tr><th><?=$this->transEsc($key)?>:</th><td><?=$current['value']?></td></tr>
-        <? endforeach; ?>
+        <?php foreach ($fields as $current): ?>
+          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+        <?php endforeach; ?>
       </table>
-    <? endif; ?>
-    <?/* End Main Details */?>
+    <?php endif; ?>
+    <?php /* End Main Details */ ?>
   </div>
 </div>

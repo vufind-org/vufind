@@ -3,7 +3,7 @@
 /**
  * Primo Central record collection.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -68,8 +68,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getTotal()
     {
-        return isset($this->response['recordCount'])
-            ? $this->response['recordCount'] : 0;
+        return $this->response['recordCount'] ?? 0;
     }
 
     /**
@@ -79,8 +78,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return isset($this->response['facets'])
-            ? $this->response['facets'] : [];
+        return $this->response['facets'] ?? [];
     }
 
     /**
@@ -92,8 +90,7 @@ class RecordCollection extends AbstractRecordCollection
     {
         $page = isset($this->response['query']['pageNumber'])
             ? $this->response['query']['pageNumber'] - 1 : 0;
-        $size = isset($this->response['query']['pageSize'])
-            ? $this->response['query']['pageSize'] : 0;
+        $size = $this->response['query']['pageSize'] ?? 0;
         return $page * $size;
     }
 }

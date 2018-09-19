@@ -2,7 +2,7 @@
 /**
  * BrowZine Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -49,16 +49,6 @@ class BrowZineController extends AbstractSearch
     {
         $this->searchClassId = 'BrowZine';
         parent::__construct($sm);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        return $this->createViewModel();
     }
 
     /**

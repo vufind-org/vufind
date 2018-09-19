@@ -3,7 +3,7 @@
 /**
  * Parameter bag.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -73,7 +73,7 @@ class ParamBag implements \Countable
      */
     public function get($name)
     {
-        return isset($this->params[$name]) ? $this->params[$name] : null;
+        return $this->params[$name] ?? null;
     }
 
     /**

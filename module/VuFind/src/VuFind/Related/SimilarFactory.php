@@ -2,7 +2,7 @@
 /**
  * Factory for Similar related record module (and subclasses).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -58,6 +58,9 @@ class SimilarFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         return new $requestedName($container->get('VuFindSearch\Service'));
     }
 }

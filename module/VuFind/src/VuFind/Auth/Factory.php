@@ -2,7 +2,7 @@
 /**
  * Factory for authentication services.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -129,6 +129,21 @@ class Factory
     {
         return new Shibboleth(
             $sm->get('Zend\Session\SessionManager')
+        );
+    }
+
+    /**
+     * Construct the AlmaDatabase plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AlmaDatabase
+     */
+    public static function getAlmaDatabase(ServiceManager $sm)
+    {
+        return new AlmaDatabase(
+            $sm->get('VuFind\ILS\Connection'),
+            $sm->get('VuFind\Auth\ILSAuthenticator')
         );
     }
 }

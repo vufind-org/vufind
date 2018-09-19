@@ -3,7 +3,7 @@
 /**
  * VuFind SearchHandler.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -82,7 +82,7 @@ class SearchHandler
     public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
-            $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : [];
+            $this->specs[$key] = $spec[$key] ?? [];
         }
         // Set dismax handler to default if not specified:
         if (empty($this->specs['DismaxHandler'])) {

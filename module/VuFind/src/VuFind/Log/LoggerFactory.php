@@ -2,7 +2,7 @@
 /**
  * Factory for instantiating Logger
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -59,7 +59,7 @@ class LoggerFactory implements FactoryInterface
     ) {
         $parts = explode(':', $config);
         $table_name = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        $error_types = $parts[1] ?? '';
 
         $columnMapping = [
             'priority' => 'priority',
@@ -93,7 +93,7 @@ class LoggerFactory implements FactoryInterface
         // general mailer:
         $parts = explode(':', $config->Logging->email);
         $email = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        $error_types = $parts[1] ?? '';
 
         // use smtp
         $mailer = $container->get('VuFind\Mailer\Mailer');
@@ -118,9 +118,16 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addFileWriters(Logger $logger, $config)
     {
-        $parts = explode(':', $config);
-        $file = $parts[0];
-        $error_types = isset($parts[1]) ? $parts[1] : '';
+        // Make sure to use only the last ':' after second character to avoid trouble
+        // with Windows drive letters (e.g. "c:\something\logfile:error-5")
+        $pos = strrpos($config, ':', 2);
+        if ($pos > 0) {
+            $file = substr($config, 0, $pos);
+            $error_types = substr($config, $pos + 1);
+        } else {
+            $file = $config;
+            $error_types = '';
+        }
 
         // Make Writers
         $filters = explode(',', $error_types);
@@ -268,7 +275,7 @@ class LoggerFactory implements FactoryInterface
         foreach ($filters as $filter) {
             $parts = explode('-', $filter);
             $priority = $parts[0];
-            $verbosity = isset($parts[1]) ? $parts[1] : false;
+            $verbosity = $parts[1] ?? false;
 
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Zend levels.

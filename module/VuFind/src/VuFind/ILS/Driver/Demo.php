@@ -6,7 +6,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014.
@@ -34,7 +34,7 @@
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
-use VuFind\Exception\Date as DateException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -463,6 +463,11 @@ class Demo extends AbstractBase
                     $currentItem['position'] = $pos;
                 } else {
                     $currentItem['available'] = true;
+                    if (rand() % 3 != 1) {
+                        $lastDate = strtotime('now + 3 days');
+                        $currentItem['last_pickup_date'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $lastDate);
+                    }
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
@@ -625,6 +630,7 @@ class Demo extends AbstractBase
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
 
+        $issue = 1;
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
@@ -640,6 +646,10 @@ class Demo extends AbstractBase
             for ($j = 1; $j <= $summCount; $j++) {
                 $status[$i]['summary'][] = "Item $itemNum summary $j";
             }
+            $volume = intdiv($issue, 4) + 1;
+            $seriesIssue = $issue % 4;
+            $issue = $issue + 1;
+            $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
         // Send back final value:
@@ -2193,5 +2203,40 @@ class Demo extends AbstractBase
             ];
         }
         return [];
+    }
+
+    /**
+     * Get bib records for recently returned items.
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days to consider "recently
+     * returned."
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+        $patron = null
+    ) {
+        // This is similar to getNewItems for demo purposes.
+        $results = $this->getNewItems(1, $limit, $maxage);
+        return $results['results'];
+    }
+
+    /**
+     * Get bib records for "trending" items (recently returned with high usage).
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days' worth of data to examine.
+     * @param array $patron Patron Data
+     *
+     * @return array
+     */
+    public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
+    {
+        // This is similar to getRecentlyReturnedBibs for demo purposes.
+        return $this->getRecentlyReturnedBibs($limit, $maxage, $patron);
     }
 }

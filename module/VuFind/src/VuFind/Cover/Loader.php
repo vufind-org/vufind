@@ -2,7 +2,7 @@
 /**
  * Book Cover Generator
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -43,6 +43,14 @@ use VuFindCode\ISBN;
  */
 class Loader extends \VuFind\ImageLoader
 {
+    /**
+     * Class for rendering cover images dynamically if no API match found. Omit
+     * to disable functionality.
+     *
+     * @var Generator
+     */
+    protected $generator = null;
+
     /**
      * Filename constructed from ISBN
      *
@@ -194,19 +202,15 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get Cover Generator Object (or return false if disabled)
+     * Set Cover Generator Object
      *
-     * @return VuFind\Cover\Generator|bool
+     * @param Generator $generator Cover generator
+     *
+     * @return void
      */
-    public function getCoverGenerator()
+    public function setCoverGenerator(Generator $generator)
     {
-        if (isset($this->config->Content->makeDynamicCovers)
-            && $this->config->Content->makeDynamicCovers
-        ) {
-            $settings = $this->getCoverGeneratorSettings();
-            return new \VuFind\Cover\Generator($this->themeTools, $settings);
-        }
-        return false;
+        $this->generator = $generator;
     }
 
     /**
@@ -307,8 +311,9 @@ class Loader extends \VuFind\ImageLoader
         } elseif (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
-            if ($generator = $this->getCoverGenerator()) {
-                $this->image = $generator->generate(
+            if ($this->generator) {
+                $this->generator->setOptions($this->getCoverGeneratorSettings());
+                $this->image = $this->generator->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']
                 );
                 $this->contentType = 'image/png';

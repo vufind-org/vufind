@@ -2,7 +2,7 @@
 /**
  * ILS Authenticator factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -77,6 +77,6 @@ class ILSAuthenticatorFactory implements FactoryInterface
         };
         $cfg = $container->get('ProxyManager\Configuration');
         $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
+        return $factory->createProxy($requestedName, $callback);
     }
 }

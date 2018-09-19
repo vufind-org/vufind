@@ -3,7 +3,7 @@
  * This is a helper that lets the layout know whether or not to include the feedback
  * tab
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

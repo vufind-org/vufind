@@ -2,7 +2,7 @@
 /**
  * Class for accessing OCLC WorldCat search API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Andrew Nagy 2008.
  *
@@ -156,7 +156,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->call('POST', $params->getArrayCopy(), false);
 
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->records->record) ? $xml->records->record : [];
+        $docs = $xml->records->record ?? [];
         $finalDocs = [];
         foreach ($docs as $doc) {
             $finalDocs[] = $doc->recordData->asXML();
@@ -164,7 +164,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
+            'total' => (int)($xml->numberOfRecords ?? 0)
         ];
     }
 }

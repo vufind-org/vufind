@@ -3,7 +3,7 @@
 /**
  * Abstract record collection (implements some shared low-level functionality).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -94,7 +94,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function first()
     {
-        return isset($this->records[0]) ? $this->records[0] : null;
+        return $this->records[0] ?? null;
     }
 
     /**

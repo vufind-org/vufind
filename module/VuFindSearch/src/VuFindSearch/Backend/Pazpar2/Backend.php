@@ -2,7 +2,7 @@
 /**
  * Pazpar2 backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -160,7 +160,7 @@ class Backend extends AbstractBackend
         );
         $response = $this->connector->show($showParams);
 
-        $hits = isset($response->hit) ? $response->hit : [];
+        $hits = $response->hit ?? [];
         $collection = $this->createRecordCollection(
             $hits, intval($response->merged), $offset
         );

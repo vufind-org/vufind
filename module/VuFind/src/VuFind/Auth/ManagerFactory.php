@@ -2,7 +2,7 @@
 /**
  * Authentication Manager factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -84,10 +84,11 @@ class ManagerFactory implements FactoryInterface
         $sessionManager = $container->get('Zend\Session\SessionManager');
         $pm = $container->get('VuFind\Auth\PluginManager');
         $cookies = $container->get('VuFind\Cookie\CookieManager');
+        $csrf = $container->get('VuFind\Validator\Csrf');
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
-            $config, $userTable, $sessionManager, $pm, $cookies
+            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
         );
         $manager->checkForExpiredCredentials();
         return $manager;

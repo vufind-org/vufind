@@ -43,17 +43,26 @@ fi
 
 
 ##################################################
+# Set VUFIND_HOME
+##################################################
+if [ -z "$VUFIND_HOME" ]
+then
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"/../..
+  if [ "$VUFIND_HOME" = /../.. ]
+  then
+    exit 1
+  fi
+fi
+
+
+##################################################
 # Set SOLR_HOME
 ##################################################
 if [ -z "$SOLR_HOME" ]
 then
-  if [ -z "$VUFIND_HOME" ]
-  then
-    echo "You need to set the VUFIND_HOME environmental variable before running this script."
-    exit 1
-  else
-    SOLR_HOME="$VUFIND_HOME/solr"
-  fi
+  SOLR_HOME="$VUFIND_HOME/solr"
 fi
 
 

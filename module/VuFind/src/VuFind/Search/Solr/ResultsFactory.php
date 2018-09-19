@@ -2,7 +2,7 @@
 /**
  * Factory for Solr search results objects.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -59,10 +59,8 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
     ) {
         $solr = parent::__invoke($container, $requestedName, $options);
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $spellConfig = isset($config->Spelling)
-            ? $config->Spelling : null;
         $solr->setSpellingProcessor(
-            new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
+            new \VuFind\Search\Solr\SpellingProcessor($config->Spelling ?? null)
         );
         return $solr;
     }

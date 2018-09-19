@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('Reserves Search'));
 
@@ -22,9 +22,9 @@
 
   <div class="resulthead">
     <div class="pull-left flip">
-      <? $qtime = $this->results->getQuerySpeed(); ?>
-      <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
-        <?
+      <?php $qtime = $this->results->getQuerySpeed(); ?>
+      <?php if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
+        <?php
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
@@ -32,25 +32,25 @@
             '%%lookfor%%' => $this->escapeHtml($reservesLookfor)
           ];
         ?>
-        <?=$this->translate('showing_results_of_for_html', $transParams); ?><? if($qtime): ?>,<? endif; ?>
-      <? endif; ?>
-      <? if ($qtime): ?>
+        <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if($qtime): ?>,<?php endif; ?>
+      <?php endif; ?>
+      <?php if ($qtime): ?>
         <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?>
-      <? endif; ?>
+      <?php endif; ?>
     </div>
 
-    <? if ($recordTotal > 0): ?>
+    <?php if ($recordTotal > 0): ?>
       <div class="pull-right flip">
         <?=$this->render('search/controls/sort.phtml')?>
       </div>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
-  <? if ($recordTotal < 1): ?>
+  <?php if ($recordTotal < 1): ?>
     <p class="error"><?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($reservesLookfor)]) ?></p>
-    <? if (isset($this->parseError)): ?>
+    <?php if (isset($this->parseError)): ?>
       <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
-    <? endif; ?>
-  <? else: ?>
+    <?php endif; ?>
+  <?php else: ?>
     <table class="table table-striped">
     <tr>
       <th class="department"><?=$this->transEsc('Department')?></th>
@@ -58,8 +58,8 @@
       <th class="instructor"><?=$this->transEsc('Instructor')?></th>
       <th class="items"><?=$this->transEsc('Items')?></th>
     </tr>
-    <? foreach ($this->results->getResults() as $record): ?>
-      <?
+    <?php foreach ($this->results->getResults() as $record): ?>
+      <?php
           $url = $this->currentPath() . $this->escapeHtmlAttr(
               '?inst=' . urlencode($record->getInstructorId())
               . '&course=' . urlencode($record->getCourseId())
@@ -72,16 +72,16 @@
         <td class="instructor"><a href="<?=$url?>"><?=$this->escapeHtml($record->getInstructor())?></a></td>
         <td class="items"><?=$this->escapeHtml($record->getItemCount())?></td>
       </tr>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     </table>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 
-<? /* Narrow Search Options */ ?>
+<?php /* Narrow Search Options */ ?>
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <? foreach ($this->results->getRecommendations('side') as $current): ?>
+  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </div>
-<? /* End Narrow Search Options */ ?>
+<?php /* End Narrow Search Options */ ?>

@@ -1,4 +1,4 @@
-<?
+<?php
   $this->headScript()->appendFile("vendor/d3.min.js");
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
@@ -12,7 +12,7 @@
       $toplevelinfo['name'] = $toplevelfacet['value'];
       $toplevelinfo['field'] = $toplevelfacet['field'];
       $toplevelinfo['size'] = $toplevelfacet['count'];
-      $pivot = isset($toplevelfacet['pivot']) ? $toplevelfacet['pivot'] : [];
+      $pivot = $toplevelfacet['pivot'] ?? [];
       foreach($pivot as $secondlevelfacet) {
         $secondlevelinfo = [];
         $secondlevelinfo['name'] = $secondlevelfacet['value'];
@@ -30,7 +30,7 @@
   }
 ?>
 
-<? if (isset($visualFacetSet)): ?>
+<?php if (isset($visualFacetSet)): ?>
   <script type="text/javascript">
   var pivotdata = <?=json_encode($visualFacetSet);?>;
   jQuery(document).ready(function(data) {
@@ -263,4 +263,4 @@ function settitle() {
 
 </script>
 
-<? endif; ?>
+<?php endif; ?>

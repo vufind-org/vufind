@@ -2,7 +2,7 @@
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -128,13 +128,20 @@ class Suggester
             list($name, $params) = explode(':', $module, 2);
             $handler = $this->pluginManager->get($name);
             $handler->setConfig($params);
+        } else {
+            $handler = null;
         }
 
         if (is_callable([$handler, 'addFilters'])) {
             $handler->addFilters($hiddenFilters);
         }
 
-        return (isset($handler) && is_object($handler))
+        // if the handler needs the complete request, pass it on
+        if (is_callable([$handler, 'setRequest'])) {
+            $handler->setRequest($request);
+        }
+
+        return is_object($handler)
             ? array_values($handler->getSuggestions($query)) : [];
     }
 }

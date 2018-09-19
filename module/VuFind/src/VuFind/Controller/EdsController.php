@@ -2,7 +2,7 @@
 /**
  * Eds Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -92,7 +92,7 @@ class EdsController extends AbstractSearch
     public function homeAction()
     {
         $this->setUp();
-        return $this->createViewModel();
+        return parent::homeAction();
     }
 
     /**

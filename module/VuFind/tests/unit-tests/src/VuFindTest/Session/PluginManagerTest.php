@@ -2,7 +2,7 @@
 /**
  * Session Plugin Manager Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,7 +59,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * @return void
      *
      * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to Zend\Session\SaveHandler\SaveHandlerInterface
+     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Session\HandlerInterface
      */
     public function testExpectedInterface()
     {

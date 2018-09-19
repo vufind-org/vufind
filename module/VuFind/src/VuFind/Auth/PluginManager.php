@@ -2,7 +2,7 @@
 /**
  * Auth handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -44,6 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'almadatabase' => 'VuFind\Auth\AlmaDatabase',
         'cas' => 'VuFind\Auth\CAS',
         'choiceauth' => 'VuFind\Auth\ChoiceAuth',
         'database' => 'VuFind\Auth\Database',
@@ -65,6 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'VuFind\Auth\AlmaDatabase' => 'VuFind\Auth\Factory::getAlmaDatabase',
         'VuFind\Auth\CAS' => 'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Auth\ChoiceAuth' => 'VuFind\Auth\Factory::getChoiceAuth',
         'VuFind\Auth\Database' => 'Zend\ServiceManager\Factory\InvokableFactory',

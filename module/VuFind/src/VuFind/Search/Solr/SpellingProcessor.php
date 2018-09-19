@@ -2,7 +2,7 @@
 /**
  * Solr spelling processor.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -47,21 +47,21 @@ class SpellingProcessor
      *
      * @var int
      */
-    protected $spellingLimit = 3;
+    protected $spellingLimit;
 
     /**
      * Spell check words with numbers in them?
      *
      * @var bool
      */
-    protected $spellSkipNumeric = true;
+    protected $spellSkipNumeric;
 
     /**
      * Offer expansions on terms as well as basic replacements?
      *
      * @var bool
      */
-    protected $expand = true;
+    protected $expand;
 
     /**
      * Show the full modified search phrase on screen rather then just the suggested
@@ -69,7 +69,7 @@ class SpellingProcessor
      *
      * @var bool
      */
-    protected $phrase = false;
+    protected $phrase;
 
     /**
      * Constructor
@@ -78,18 +78,10 @@ class SpellingProcessor
      */
     public function __construct($config = null)
     {
-        if (isset($config->limit)) {
-            $this->spellingLimit = $config->limit;
-        }
-        if (isset($config->skip_numeric)) {
-            $this->spellSkipNumeric = $config->skip_numeric;
-        }
-        if (isset($config->expand)) {
-            $this->expand = $config->expand;
-        }
-        if (isset($config->phrase)) {
-            $this->phrase = $config->phrase;
-        }
+        $this->spellingLimit = $config->limit ?? 3;
+        $this->spellSkipNumeric = $config->skip_numeric ?? true;
+        $this->expand = $config->expand ?? true;
+        $this->phrase = $config->phrase ?? false;
     }
 
     /**

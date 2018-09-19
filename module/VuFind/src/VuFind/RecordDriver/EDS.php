@@ -2,7 +2,7 @@
 /**
  * Model for EDS records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -199,8 +199,8 @@ class EDS extends DefaultRecord
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 $items[] = [
-                    'Label' => isset($item['Label']) ? $item['Label'] : '',
-                    'Group' => isset($item['Group']) ? $item['Group'] : '',
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
                 ];
@@ -407,10 +407,10 @@ class EDS extends DefaultRecord
     {
         $linkedString = preg_replace_callback(
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
-            create_function(
-                '$matches',
-                'return "<a href=\'".($matches[0])."\'>".($matches[0])."</a>";'
-            ),
+            function ($matches) {
+                return "<a href='" . $matches[0] . "'>"
+                    . htmlentities($matches[0]) . "</a>";
+            },
             $string
         );
         return $linkedString;

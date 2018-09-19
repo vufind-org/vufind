@@ -3,7 +3,7 @@
 /**
  * Registry for search backends.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -65,6 +65,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
         'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
         'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
+        'Search2' => 'VuFind\Search\Factory\Search2BackendFactory',
         'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
         'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
         'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',

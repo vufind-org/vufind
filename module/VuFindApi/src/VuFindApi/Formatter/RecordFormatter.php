@@ -2,7 +2,7 @@
 /**
  * Record formatter for API responses
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -114,7 +114,7 @@ class RecordFormatter extends BaseFormatter
             return $xml;
         }
         $rawData = $record->tryMethod('getRawData');
-        return isset($rawData['fullrecord']) ? $rawData['fullrecord'] : null;
+        return $rawData['fullrecord'] ?? null;
     }
 
     /**
