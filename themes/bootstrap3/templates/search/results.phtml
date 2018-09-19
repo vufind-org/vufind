@@ -63,11 +63,9 @@
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-<<<<<<< HEAD
         <a class="search-filter-toggle visible-xs" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
           <?=$this->transEsc('Narrow Search') ?> <i class="fa fa-angle-double-right"></i>
         </a>
-      <? else: ?>
       <?php else: ?>
         <h2><?=$this->transEsc('nohit_heading')?></h2>
       <?php endif; ?>
