@@ -1122,8 +1122,14 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 if ($holding['suppress'] || !empty($holding['_hasItems'])) {
                     continue;
                 }
-                $i++;
+                $holdingData = $this->getHoldingData($holding, true);
+                // Don't display a standalone holding unless there's some information
+                // available.
+                if (empty($holdingData)) {
+                    continue;
+                }
 
+                $i++;
                 $callnumber = $this->translateLocation($holding['location']);
                 if ($holding['callnumber']) {
                     $callnumber .= ' ' . $holding['callnumber'];
@@ -1143,7 +1149,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     'callnumber' => $callnumber,
                     'sort' => $i
                 ];
-                $entry += $this->getHoldingData($holding, true);
+                $entry += $holdingData;
 
                 $statuses[] = $entry;
             }
@@ -1210,7 +1216,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
 
         $marcDetails = [
-            'holdings_id' => $holding['holding_id']
         ];
 
         // Get Notes
@@ -1255,6 +1260,11 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             if ($data) {
                 $marcDetails['indexes'] = $data;
             }
+        }
+
+        // Make sure to return an empty array unless we have details to display
+        if (!empty($marcDetails)) {
+            $marcDetails['holdings_id'] = $holding['holding_id'];
         }
 
         return $marcDetails;
