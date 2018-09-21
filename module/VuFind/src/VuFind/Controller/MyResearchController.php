@@ -310,7 +310,7 @@ class MyResearchController extends AbstractBase
     public function logoutAction()
     {
         $config = $this->getConfig();
-        if (isset($config->Site->logOutRoute)) {
+        if (!empty($config->Site->logOutRoute)) {
             $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
         } else {
             $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
