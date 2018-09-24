@@ -46,6 +46,7 @@ use Zend\I18n\Translator\TextDomain;
 class ExtendedIni implements FileLoaderInterface
 {
     const TRACE = '__TRACE__';
+
     /**
      * List of directories to search for language files.
      *
@@ -149,7 +150,7 @@ class ExtendedIni implements FileLoaderInterface
                 $data = $newData;
             }
         }
-        $data[self::TRACE] = implode(":", $this->trace);
+
         return $data;
     }
 
@@ -175,7 +176,6 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function resetLoadedFiles()
     {
-        $this->trace = [];
         $this->loadedFiles = [];
     }
 
@@ -189,12 +189,15 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function loadLanguageLocale($locale, $domain)
     {
+        $this->trace = [];
         $filename = $this->getLanguageFilename($locale, $domain);
         // Load the language file, and throw a fatal exception if it's missing
         // and we're not dealing with text domains. A missing base file is an
         // unexpected, fatal error; a missing domain-specific file is more likely
         // due to the possibility of incomplete translations.
-        return $this->loadLanguageFile($filename, empty($domain));
+        $data = $this->loadLanguageFile($filename, empty($domain));
+        $data[self::TRACE] = implode(":", array_reverse($this->trace));
+        return $data;
     }
 
     /**
@@ -230,27 +233,33 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Support method for loadLanguageFile: recursively load language data.
      *
-     * @param string $path Absolute path to next file in load chain.
+     * @param string   $path  Absolute path to next file in load chain.
+     * @param string[] $trace List of already merged filenames.
      *
      * @return TextDomain
      */
-    protected function loadLanguageData($path)
+    protected function loadLanguageData($path, $trace = [])
     {
+        if (in_array($path, $trace)) {
+            throw new \RuntimeException("Invalid @parent_ini value in $path!");
+        }
+
         if (!isset($this->loadedFiles[$path])) {
             $this->loadedFiles[$path] = $this->reader->getTextDomain($path);
         }
 
         $data = $this->loadedFiles[$path];
+        $trace[] = $path;
 
         if (!isset($data['@parent_ini'])) {
-            $this->trace[] = $path;
+            array_push($this->trace, ...$trace);
             return $data;
         }
 
         $parentPath = realpath(dirname($path) . '/' . $data['@parent_ini']);
         $data->offsetUnset('@parent_ini');
-        $result = $this->loadLanguageData($parentPath)->merge($data);
-        $this->trace[] = $path;
+        $result = $this->loadLanguageData($parentPath, $trace)->merge($data);
+
         return $result;
     }
 }
