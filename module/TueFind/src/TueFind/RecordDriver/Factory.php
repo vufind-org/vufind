@@ -5,6 +5,22 @@ namespace TueFind\RecordDriver;
 class Factory extends \VuFind\RecordDriver\Factory
 {
     /**
+     * Factory for SolrAuth record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrAuth
+     */
+    public static function getSolrAuth(\Zend\ServiceManager\ServiceManager $sm)
+    {
+        return new SolrAuth(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+        );
+    }
+
+    /**
      * Factory for SolrDefault record driver.
      *
      * @param ServiceManager $sm Service manager.
