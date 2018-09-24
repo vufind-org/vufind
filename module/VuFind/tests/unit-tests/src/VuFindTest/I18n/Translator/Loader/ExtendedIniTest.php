@@ -42,18 +42,26 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
 class ExtendedIniTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * @var string
+     */
+    protected $path = __DIR__ . '/../../../../../../fixtures/language';
+
+    public function setUp()
+    {
+        $this->path = realpath($this->path);
+    }
+
+    /**
      * Test translations.
      *
      * @return void
      */
     public function testTranslations()
     {
-        $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-            realpath(__DIR__ . '/../../../../../../fixtures/language/overrides')
-        ];
+        $pathStack = ["$this->path/base", "$this->path/overrides"];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
+        $result->offsetUnset(ExtendedIni::TRACE);
         $this->assertEquals(
             [
                 'blank_line' =>
@@ -77,6 +85,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
+        $result->offsetUnset(ExtendedIni::TRACE);
         $this->assertEquals(
             [
                 'blank_line' =>
@@ -96,14 +105,14 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testFallbackToSelf()
     {
-        $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        ];
+        $pathStack = ["$this->path/base"];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
+        $path = "$this->path/base/fake.ini";
         $this->assertEquals(
             [
                 'test3' => 'test three',
+                ExtendedIni::TRACE => "$path:$path"
             ],
             (array)$result
         );
@@ -116,15 +125,14 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testSelfAsParent()
     {
-        $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        ];
+        $pathStack = ["$this->path/base"];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
+        $path = "$this->path/base/self-parent.ini";
         $this->assertEquals(
             [
-                '@parent_ini' => 'self-parent.ini',
                 'string' => 'bad',
+                ExtendedIni::TRACE => "$path:$path"
             ],
             (array)$result
         );
@@ -137,17 +145,19 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testParentChain()
     {
-        $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        ];
+        $pathStack = ["$this->path/base"];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
+        $trace = array_map(function ($name) {
+            return "$this->path/base/$name.ini";
+        }, ['fake', 'child1', 'child2']);
+
         $this->assertEquals(
             [
-                '@parent_ini' => 'child1.ini',
                 'test1' => 'test 1',
                 'test2' => 'test 2',
                 'test3' => 'test three',
+                ExtendedIni::TRACE => implode(":", $trace)
             ],
             (array)$result
         );
