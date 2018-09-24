@@ -211,7 +211,11 @@
 
                   <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
                     <div class="alert alert-success">
-                      <?=$this->transEsc("hold_available") ?>
+                      <?php if (!empty($ilsDetails['last_pickup_date'])): ?>
+                        <?=$this->transEsc('hold_available_until', ['%%date%%' => $ilsDetails['last_pickup_date']]) ?>
+                      <?php else: ?>
+                        <?=$this->transEsc('hold_available') ?>
+                      <?php endif; ?>
                       <?php if (isset($ilsDetails['pickupnum'])):?>
                       <br />
                       <strong><?=$this->transEsc("Pickup number") ?>:</strong> <?=$this->escapeHtml($ilsDetails['pickupnum']) ?>
