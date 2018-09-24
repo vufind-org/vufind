@@ -1,0 +1,18 @@
+<? $this->layout()->breadcrumbs = false; ?>
+<?
+    $gnd_number = $this->driver->getGNDNumber();
+    if ($gnd_number != null) {
+        ?>
+            <p>
+                Internal Search:<br/>
+                <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Search all titles</a>
+            </p>
+            <p>
+                External Search:<br/>
+                <a target="_blank" href="http://www.deutsche-digitale-bibliothek.de/entity/<?=urlencode($gnd_number)?>">Entity Facts</a><br/>
+                <a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a>
+            </p>
+        <?
+    }
+?>
+<?=$this->record($this->driver)->getTab($this->tabs['Details'])?>
