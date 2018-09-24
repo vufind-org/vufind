@@ -108,11 +108,10 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
         $pathStack = ["$this->path/base"];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
-        $path = "$this->path/base/fake.ini";
         $this->assertEquals(
             [
                 'test3' => 'test three',
-                ExtendedIni::TRACE => "$path:$path"
+                ExtendedIni::TRACE => "$this->path/base/fake.ini"
             ],
             (array)$result
         );
@@ -122,20 +121,14 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test file with self as parent.
      *
      * @return void
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessageRegExp /^Invalid @parent_ini value in/
      */
     public function testSelfAsParent()
     {
         $pathStack = ["$this->path/base"];
         $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('self-parent', null);
-        $path = "$this->path/base/self-parent.ini";
-        $this->assertEquals(
-            [
-                'string' => 'bad',
-                ExtendedIni::TRACE => "$path:$path"
-            ],
-            (array)$result
-        );
+        $loader->load('self-parent', null);
     }
 
     /**
