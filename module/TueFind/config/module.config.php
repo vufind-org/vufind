@@ -39,6 +39,7 @@ $config = [
         'plugin_managers' => [
             'recorddriver' => [
                 'factories' => [
+                    'solrauth' => 'TueFind\RecordDriver\Factory::getSolrAuth',
                     'solrdefault' => 'TueFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'TueFind\RecordDriver\Factory::getSolrMarc',
                 ],
