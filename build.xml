@@ -130,14 +130,6 @@
     <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
-  <!-- JSHint -->
-  <target name="jshint">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
-  </target>
-  <target name="jshint-report">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint.xml" />
-  </target>
-
   <!-- PHP API Documentation -->
   <target name="phpdoc">
     <!-- GET phpDocumentor.phar -->
