@@ -52,83 +52,29 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test translations.
+     * Test directory precendence.
      *
      * @return void
      */
-    public function testTranslations()
+    public function testDirectoryPrecedence()
     {
-        $pathStack = ["$this->path/base", "$this->path/overrides"];
-        $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('en', null);
-        $result->offsetUnset(ExtendedIni::TRACE);
-        $this->assertEquals(
-            [
-                'blank_line' =>
-                    html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
-                'test1' => 'test one',
-                'test2' => 'test two - override',
-            ],
-            (array)$result
-        );
-    }
+        $loader = new ExtendedIni();
+        $loader->setDirs(["$this->path/overrides", "$this->path/base"]);
+        $result = $loader->load('en');
 
-    /**
-     * Test fallback to a different language.
-     *
-     * @return void
-     */
-    public function testFallback()
-    {
-        $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        ];
-        $loader = new ExtendedIni($pathStack, 'en');
-        $result = $loader->load('fake', null);
-        $result->offsetUnset(ExtendedIni::TRACE);
-        $this->assertEquals(
-            [
-                'blank_line' =>
-                    html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
-                'test1' => 'test one',
-                'test2' => 'test two',
-                'test3' => 'test three',
-            ],
-            (array)$result
-        );
-    }
+        $this->assertArraySubset([
+            'list' => [
+                "$this->path/overrides/en.ini",
+                "$this->path/base/en.ini"
+            ]
+        ], $result[ExtendedIni::INFO]);
 
-    /**
-     * Test fallback to the same language.
-     *
-     * @return void
-     */
-    public function testFallbackToSelf()
-    {
-        $pathStack = ["$this->path/base"];
-        $loader = new ExtendedIni($pathStack, 'fake');
-        $result = $loader->load('fake', null);
-        $this->assertEquals(
-            [
-                'test3' => 'test three',
-                ExtendedIni::TRACE => "$this->path/base/fake.ini"
-            ],
-            (array)$result
-        );
-    }
-
-    /**
-     * Test file with self as parent.
-     *
-     * @return void
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessageRegExp /^Invalid @parent_ini value in/
-     */
-    public function testSelfAsParent()
-    {
-        $pathStack = ["$this->path/base"];
-        $loader = new ExtendedIni($pathStack);
-        $loader->load('self-parent', null);
+        $this->assertArraySubset([
+            'blank_line' =>
+                html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
+            'test1'      => 'test one',
+            'test2'      => 'test two - override',
+        ], $result);
     }
 
     /**
@@ -136,37 +82,82 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testParentChain()
+    public function testExtendDirective()
     {
-        $pathStack = ["$this->path/base"];
-        $loader = new ExtendedIni($pathStack);
-        $result = $loader->load('child2', null);
-        $trace = array_map(function ($name) {
-            return "$this->path/base/$name.ini";
-        }, ['fake', 'child1', 'child2']);
+        $loader = new ExtendedIni();
+        $loader->setDirs(["$this->path/base"]);
+        $result = $loader->load('child2');
 
-        $this->assertEquals(
-            [
-                'test1' => 'test 1',
-                'test2' => 'test 2',
-                'test3' => 'test three',
-                ExtendedIni::TRACE => implode(":", $trace)
-            ],
-            (array)$result
-        );
+        $this->assertArraySubset([
+            'list' => [
+                "$this->path/base/child2.ini",
+                "$this->path/base/child1.ini",
+                "$this->path/base/fake.ini",
+            ]
+        ], $result[ExtendedIni::INFO]);
+
+        $this->assertArraySubset([
+            'test1' => 'test 1',
+            'test2' => 'test 2',
+            'test3' => 'test three',
+        ], $result);
     }
 
     /**
-     * Test missing path stack.
-     *
-     * @return void
-     *
-     * @expectedException        Zend\I18n\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Ini file 'en.ini' not found
+     * Test fallback chain.
      */
-    public function testMissingPathStack()
+    public function testFallbacks()
     {
         $loader = new ExtendedIni();
-        $loader->load('en', null);
+        $loader->setDirs(["$this->path/base"]);
+        $loader->setFallbacks(['fb2' => 'fb3', '*' => 'fb4']);
+        $result = $loader->load('fb1');
+        $this->assertArraySubset([
+            'key1' => 'val1', // fb1.ini
+            'key2' => 'val2', // fb2.ini
+            'key3' => 'val3', // fb3.ini
+            'key4' => 'val4', // fb4.ini
+        ], $result);
+    }
+
+    /**
+     * Test exception on circular load chain induced by extensions.
+     *
+     * @return void
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Circular chain of loaded language files.
+     */
+    public function testExceptionOnCircularExtensionChain()
+    {
+        $loader = new ExtendedIni();
+        $loader->setDirs(["$this->path/base"]);
+        $loader->load('circ1');
+    }
+
+    /**
+     * Test exception on circular load chain induced by fallbacks.
+     *
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Circular chain of loaded language files.
+     */
+    public function testExceptionOnCircularFallbackChain()
+    {
+        $loader = new ExtendedIni();
+        $loader->setDirs(["$this->path/base"]);
+        $loader->setFallbacks(['fb2' => 'fb3', '*' => 'fb2']);
+        $loader->load('fb2');
+    }
+
+    /**
+     * Test missing language file.
+     *
+     * @return void
+     */
+    public function testMissingLanguageFile()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("File 'xyz.ini' not found.");
+        $loader = new ExtendedIni();
+        $loader->load('xyz');
     }
 }

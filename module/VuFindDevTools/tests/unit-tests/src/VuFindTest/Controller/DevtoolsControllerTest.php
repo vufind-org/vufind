@@ -70,7 +70,7 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('Zend\I18n\Translator\TextDomain', get_class($en['object']));
 
         // Did the @parent_ini macro get stripped correctly?
-        $this->assertFalse(isset($result['details']['en-gb']['object']['@parent_ini']));
+        $this->assertFalse(isset($result['details']['en-gb']['object']['@fallback']));
 
         // Did the native.ini file get properly ignored?
         $this->assertFalse(isset($result['details']['native']));

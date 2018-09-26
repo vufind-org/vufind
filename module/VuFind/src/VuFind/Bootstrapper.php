@@ -27,6 +27,7 @@
  */
 namespace VuFind;
 
+use VuFind\I18n\Initializer as I18nInitializer;
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Router\Http\RouteMatch;
@@ -217,158 +218,6 @@ class Bootstrapper
     }
 
     /**
-     * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
-     * Returns browser-requested language string or false if none found.
-     *
-     * @return string|bool
-     */
-    public function detectBrowserLanguage()
-    {
-        if (isset($this->config->Site->browserDetectLanguage)
-            && false == $this->config->Site->browserDetectLanguage
-        ) {
-            return false;
-        }
-
-        // break up string into pieces (languages and q factors)
-        preg_match_all(
-            '/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i',
-            $this->event->getRequest()->getServer()->get('HTTP_ACCEPT_LANGUAGE'),
-            $langParse
-        );
-
-        if (!count($langParse[1])) {
-            return false;
-        }
-
-        // create a list like "en" => 0.8
-        $langs = array_combine($langParse[1], $langParse[4]);
-
-        // set default to 1 for any without q factor
-        foreach ($langs as $lang => $val) {
-            if (empty($val)) {
-                $langs[$lang] = 1;
-            }
-        }
-
-        // sort list based on value
-        arsort($langs, SORT_NUMERIC);
-
-        $validLanguages = array_keys($this->config->Languages->toArray());
-
-        // return first valid language
-        foreach (array_keys($langs) as $language) {
-            // Make sure language code is valid
-            $language = strtolower($language);
-            if (in_array($language, $validLanguages)) {
-                return $language;
-            }
-
-            // Make sure language code is valid, reset to default if bad:
-            $langStrip = current(explode("-", $language));
-            if (in_array($langStrip, $validLanguages)) {
-                return $langStrip;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Support method for initLanguage() -- look up all text domains.
-     *
-     * @return array
-     */
-    protected function getTextDomains()
-    {
-        $base = APPLICATION_PATH;
-        $local = LOCAL_OVERRIDE_DIR;
-        $languagePathParts = ["$base/languages"];
-        if (!empty($local)) {
-            $languagePathParts[] = "$local/languages";
-        }
-        $languagePathParts[] = "$base/themes/*/languages";
-
-        $domains = [];
-        foreach ($languagePathParts as $current) {
-            $places = glob($current . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
-            $domains = array_merge($domains, array_map('basename', $places));
-        }
-
-        return array_unique($domains);
-    }
-
-    /**
-     * Set up language handling.
-     *
-     * @return void
-     */
-    protected function initLanguage()
-    {
-        // Language not supported in CLI mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        $config = & $this->config;
-        $browserCallback = [$this, 'detectBrowserLanguage'];
-        $callback = function ($event) use ($config, $browserCallback) {
-            $validBrowserLanguage = call_user_func($browserCallback);
-
-            // Setup Translator
-            $request = $event->getRequest();
-            $sm = $event->getApplication()->getServiceManager();
-            if (($language = $request->getPost()->get('mylang', false))
-                || ($language = $request->getQuery()->get('lng', false))
-            ) {
-                $cookieManager = $sm->get('VuFind\Cookie\CookieManager');
-                $cookieManager->set('language', $language);
-            } elseif (!empty($request->getCookie()->language)) {
-                $language = $request->getCookie()->language;
-            } else {
-                $language = (false !== $validBrowserLanguage)
-                    ? $validBrowserLanguage : $config->Site->language;
-            }
-
-            // Make sure language code is valid, reset to default if bad:
-            if (!in_array($language, array_keys($config->Languages->toArray()))) {
-                $language = $config->Site->language;
-            }
-            try {
-                $translator = $sm->get('Zend\Mvc\I18n\Translator');
-                $translator->setLocale($language)
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language);
-                foreach ($this->getTextDomains() as $domain) {
-                    // Set up text domains using the domain name as the filename;
-                    // this will help the ExtendedIni loader dynamically locate
-                    // the appropriate files.
-                    $translator->addTranslationFile(
-                        'ExtendedIni', $domain, $domain, $language
-                    );
-                }
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
-                if (!extension_loaded('intl')) {
-                    throw new \Exception(
-                        'Translation broken due to missing PHP intl extension.'
-                        . ' Please disable translation or install the extension.'
-                    );
-                }
-            }
-            // Send key values to view:
-            $viewModel = $sm->get('ViewManager')->getViewModel();
-            $viewModel->setVariable('userLang', $language);
-            $viewModel->setVariable('allLangs', $config->Languages);
-            $rtlLangs = isset($config->LanguageSettings->rtl_langs)
-                ? array_map(
-                    'trim', explode(',', $config->LanguageSettings->rtl_langs)
-                ) : [];
-            $viewModel->setVariable('rtl', in_array($language, $rtlLangs));
-        };
-        $this->events->attach('dispatch.error', $callback, 10000);
-        $this->events->attach('dispatch', $callback, 10000);
-    }
-
-    /**
      * Set up theme handling.
      *
      * @return void
@@ -394,6 +243,26 @@ class Bootstrapper
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * Initializes i18n services.
+     *
+     * @return void
+     */
+    protected function initI18n()
+    {
+        // Language not supported in CLI mode:
+        if (Console::isConsole()) {
+            return;
+        }
+
+        $this->events->attach(
+            'dispatch', function (MvcEvent $event) {
+                $event->getApplication()->getServiceManager()
+                    ->get(I18nInitializer::class)->init();
+            }, 5000
+        );
     }
 
     /**

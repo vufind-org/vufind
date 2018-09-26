@@ -29,8 +29,7 @@
  */
 namespace VuFind\I18n\Translator\Loader;
 
-use Zend\I18n\Exception\InvalidArgumentException;
-use Zend\I18n\Translator\Loader\FileLoaderInterface;
+use Zend\I18n\Translator\Loader\RemoteLoaderInterface;
 use Zend\I18n\Translator\TextDomain;
 
 /**
@@ -43,223 +42,205 @@ use Zend\I18n\Translator\TextDomain;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ExtendedIni implements FileLoaderInterface
+class ExtendedIni implements RemoteLoaderInterface
 {
-    const TRACE = '__TRACE__';
+    const EXTEND = '@extend';
+
+    const FALLBACK = '@fallback';
+
+    const INFO = '@info';
 
     /**
-     * List of directories to search for language files.
-     *
-     * @var array
-     */
-    protected $pathStack;
-
-    /**
-     * Fallback locales to use for language strings missing from selected file.
+     * List of absolute paths to directories where language files reside
+     * ordered by descending priority.
      *
      * @var string[]
      */
-    protected $fallbackLocales;
+    protected $dirs = [];
 
     /**
-     * List of files loaded during the current run -- avoids infinite loops and
-     * duplicate loading.
+     * Loaded data indexed by absolute path to language files.
      *
-     * @var TextDomain[]
+     * @var array[]
      */
-    protected $loadedFiles = [];
+    protected $dict = [];
 
     /**
-     * Trace of files correspending to merged text domains.
+     * List of absolute paths to merged language files.
      *
      * @var string[]
      */
-    protected $trace = [];
+    protected $list = [];
 
     /**
-     * Helper for reading .ini files from disk.
+     * Fallback language defined via directive.
+     *
+     * @var null|string
+     */
+    protected $fallback = null;
+
+    /**
+     * Fallback languages defined via configuration.
+     *
+     * @var string[]
+     */
+    protected $fallbacks = [];
+
+    /**
+     * Reader instance for parsing INI files.
      *
      * @var ExtendedIniReader
      */
     protected $reader;
 
     /**
-     * Constructor
-     *
-     * @param array             $pathStack       List of directories to search for
-     *                                           language files.
-     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
-     *                                           language strings missing from
-     *                                           selected file.
-     * @param ExtendedIniReader $reader          Helper for reading .ini files from
-     *                                           disk.
+     * ExtendedIni constructor.
      */
-    public function __construct(
-        $pathStack = [],
-        $fallbackLocales = null,
-        ExtendedIniReader $reader = null
-    ) {
-        $this->pathStack = $pathStack;
-        $this->fallbackLocales = $fallbackLocales;
-        if (!empty($this->fallbackLocales)
-            && !is_array($this->fallbackLocales)
-        ) {
-            $this->fallbackLocales = [$this->fallbackLocales];
-        }
-        $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
+    public function __construct()
+    {
+        $this->reader = new ExtendedIniReader();
     }
 
     /**
-     * Add additional directories to the path stack.
+     * Sets the list of base directories.
      *
-     * @param array|string $pathStack Path stack addition(s).
+     * @param string[] $dirs {@see $dirs}
      *
      * @return void
      */
-    public function addToPathStack($pathStack)
+    public function setDirs(array $dirs)
     {
-        $this->pathStack = array_merge($this->pathStack, (array)$pathStack);
+        $this->dirs = $dirs;
     }
 
     /**
-     * Load method defined by FileLoaderInterface.
+     * Sets the map of fallback languages.
      *
-     * @param string $locale   Locale to read from language file
-     * @param string $filename Relative base path for language file (used for
-     *                         loading text domains; optional)
-     *
-     * @return TextDomain
-     * @throws InvalidArgumentException
-     */
-    public function load($locale, $filename)
-    {
-        // Reset the loaded files list:
-        $this->resetLoadedFiles();
-
-        // Load base data:
-        $data = $this->loadLanguageLocale($locale, $filename);
-
-        // Load fallback data, if any:
-        if (!empty($this->fallbackLocales)) {
-            foreach ($this->fallbackLocales as $fallbackLocale) {
-                $newData = $this->loadLanguageLocale(
-                    $fallbackLocale,
-                    $filename
-                );
-                $newData->merge($data);
-                $data = $newData;
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get the language file name for a language and domain
-     *
-     * @param string $locale Locale name
-     * @param string $domain Text domain (if any)
-     *
-     * @return string
-     */
-    public function getLanguageFilename($locale, $domain)
-    {
-        return empty($domain)
-            ? $locale . '.ini'
-            : $domain . '/' . $locale . '.ini';
-    }
-
-    /**
-     * Reset the loaded file list.
+     * @param string[] $fallbacks {@see $fallbacks}
      *
      * @return void
      */
-    protected function resetLoadedFiles()
+    public function setFallbacks(array $fallbacks)
     {
-        $this->loadedFiles = [];
+        $this->fallbacks = $fallbacks;
     }
 
     /**
-     * Load the language file for a given locale and domain.
+     * Load method defined by RemoteLoaderInterface.
      *
-     * @param string $locale Locale name
-     * @param string $domain Text domain (if any)
+     * @param string $locale     Locale
+     * @param string $textDomain Text domain
      *
      * @return TextDomain
      */
-    protected function loadLanguageLocale($locale, $domain)
+    public function load($locale, $textDomain = 'default')
     {
-        $this->trace = [];
-        $filename = $this->getLanguageFilename($locale, $domain);
-        // Load the language file, and throw a fatal exception if it's missing
-        // and we're not dealing with text domains. A missing base file is an
-        // unexpected, fatal error; a missing domain-specific file is more likely
-        // due to the possibility of incomplete translations.
-        $data = $this->loadLanguageFile($filename, empty($domain));
-        $data[self::TRACE] = implode(":", array_reverse($this->trace));
-        return $data;
-    }
+        $this->dict = $this->list = [];
+        $this->loadLocale($locale, $textDomain, $textDomain === 'default');
 
-    /**
-     * Search the path stack for language files and merge them together.
-     *
-     * @param string $filename    Name of file to search path stack for.
-     * @param bool   $failOnError If true, throw an exception when file not found.
-     *
-     * @return TextDomain
-     */
-    protected function loadLanguageFile($filename, $failOnError = true)
-    {
-        $data = array_reduce(
-            $this->pathStack,
-            function ($data, $basePath) use ($filename) {
-                if (file_exists($path = "$basePath/$filename")) {
-                    $data = $data ?: new TextDomain();
-                    return $data->merge($this->loadLanguageData($path));
-                }
-                return $data;
-            }, false
+        return array_reduce(
+            array_reverse($this->list),
+            function (TextDomain $data, $filename) {
+                return $data->merge($this->dict[$filename]['data']);
+            }, new TextDomain(
+                [
+                    self::INFO => [
+                        'dirs' => $this->dirs,
+                        'list' => $this->list,
+                        'dict' => $this->dict
+                    ]
+                ]
+            )
         );
+    }
 
-        if ($data === false && $failOnError) {
-            throw new InvalidArgumentException(
-                "Ini file '{$filename}' not found"
+    /**
+     * Loads translations for a given locale, text domain.
+     *
+     * @param string $locale     Locale.
+     * @param string $textDomain Text domain.
+     * @param bool   $required   Whether to throw an exception in case locale,
+     *                           text domain cannot be resolved to some file.
+     *
+     * @return void
+     */
+    protected function loadLocale($locale, $textDomain, $required = false)
+    {
+        $exists = false;
+        $basename = "$locale.ini";
+        $this->fallback = null;
+        $relPath = $textDomain === 'default'
+            ? $basename : "$textDomain/$basename";
+
+        foreach ($this->dirs as $dir) {
+            $this->loadFile($absPath = "$dir/$relPath");
+            $exists |= $this->dict[$absPath]['exists'];
+        }
+
+        if ($required && !$exists) {
+            throw new \RuntimeException("File '$relPath' not found.");
+        }
+
+        $catchAll = $this->fallbacks['*'] ?? null;
+        $fallback = $this->fallback ?? $this->fallbacks[$locale]
+            ?? ($locale === $catchAll ? null : $catchAll);
+
+        if ($fallback) {
+            $this->loadLocale($fallback, $textDomain);
+        }
+    }
+
+    /**
+     * Loads a file.
+     *
+     * @param string $path Absolute path to file.
+     *
+     * @return void
+     */
+    protected function loadFile($path)
+    {
+        if (in_array($path, $this->list)) {
+            throw new \RuntimeException(
+                "Circular chain of loaded language files."
             );
         }
 
-        return $data;
+        $this->list[] = $path;
+
+        if (!isset($this->dict[$path])) {
+            $this->readFile($path);
+        }
+
+        if ($extend = $this->dict[$path]['extend']) {
+            $this->loadFile($extend);
+        }
     }
 
     /**
-     * Support method for loadLanguageFile: recursively load language data.
+     * Reads a language file.
      *
-     * @param string   $path  Absolute path to next file in load chain.
-     * @param string[] $trace List of already merged filenames.
+     * @param string $path Absolute path to file.
      *
-     * @return TextDomain
+     * @return void
      */
-    protected function loadLanguageData($path, $trace = [])
+    protected function readFile($path)
     {
-        if (in_array($path, $trace)) {
-            throw new \RuntimeException("Invalid @parent_ini value in $path!");
+        $data = ($exists = is_file($path))
+            ? $this->reader->getTextDomain($path) : new TextDomain();
+
+        if ($fallback = $data[self::FALLBACK] ?? null) {
+            $this->fallback = $this->fallback ?? $fallback;
+            unset($data[self::FALLBACK]);
         }
 
-        if (!isset($this->loadedFiles[$path])) {
-            $this->loadedFiles[$path] = $this->reader->getTextDomain($path);
+        if ($extend = $data[self::EXTEND] ?? null) {
+            $dir = $extend[0] === '/' ? APPLICATION_PATH : dirname($path);
+            $extend = realpath("$dir/$extend");
+            unset($data[self::EXTEND]);
         }
 
-        $data = $this->loadedFiles[$path];
-        $trace[] = $path;
-
-        if (!isset($data['@parent_ini'])) {
-            array_push($this->trace, ...$trace);
-            return $data;
-        }
-
-        $parentPath = realpath(dirname($path) . '/' . $data['@parent_ini']);
-        $data->offsetUnset('@parent_ini');
-        $result = $this->loadLanguageData($parentPath, $trace)->merge($data);
-
-        return $result;
+        $this->dict[$path] = compact(
+            'data', 'exists', 'extend', 'path', 'fallback'
+        );
     }
 }

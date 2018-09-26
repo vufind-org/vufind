@@ -55,30 +55,19 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        try {
-            $this->translator->addTranslationFile(
-                'ExtendedIni', null, 'default', 'native'
-            );
-            $this->translator->setLocale('native');
-        } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
-            if (!extension_loaded('intl')) {
-                throw new \Exception(
-                    'Translation broken due to missing PHP intl extension.'
-                    . ' Please disable translation or install the extension.'
-                );
-            }
-        }
     }
 
     /**
      * Translate a string
      *
-     * @param string $str String to escape and translate
+     * @param string $message String to escape and translate
      *
      * @return string
      */
-    public function __invoke($str)
+    public function __invoke($message)
     {
-        return $this->view->escapeHtml($this->translator->translate($str));
+        return $this->view->escapeHtml(
+            $this->translator->translate($message, 'default', 'native')
+        );
     }
 }

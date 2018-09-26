@@ -27,8 +27,10 @@
  */
 namespace VuFindTheme;
 
+use VuFind\I18n\Initializer as I18nInitializer;
 use Zend\Config\Config;
 use Zend\Console\Console;
+use Zend\Mvc\I18n\Translator;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -430,20 +432,15 @@ class Initializer
         }
 
         if (!empty($pathStack)) {
-            try {
-                $translator = $this->serviceManager->get('Zend\Mvc\I18n\Translator');
-
-                $pm = $translator->getPluginManager();
-                $pm->get('ExtendedIni')->addToPathStack($pathStack);
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
-                // This exception likely indicates that translation is disabled,
-                // so we can't proceed.
-                return;
+            $i18nInitializer = $this->serviceManager->get(I18nInitializer::class);
+            foreach ($pathStack as $path) {
+                $i18nInitializer->addBaseDir($path);
             }
 
             // Override the default cache with a theme-specific cache to avoid
             // key collisions in a multi-theme environment.
             try {
+                $translator = $this->serviceManager->get(Translator::class);
                 $cacheManager = $this->serviceManager->get('VuFind\Cache\Manager');
                 $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
                 $translator->setCache($cacheManager->getCache($cacheName));
