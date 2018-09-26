@@ -67,6 +67,7 @@
     <phingcall target="pdepend"/>
     <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
+    <phingcall target="jshint-report"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
