@@ -162,7 +162,7 @@ VuFind.register('channels', function Channels() {
     return false;
   }
 
-  bindChannelAddMenu = function bindChannelAddMenu(iteration, channel) {
+  bindChannelAddMenu = function bindChannelAddMenuFunc(iteration, channel) {
     var scope = $(channel).parent(".channel-wrapper");
     $(scope).find('.channel-add-menu .dropdown-menu a').click(selectAddedChannel);
     $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
