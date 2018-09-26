@@ -127,6 +127,8 @@ VuFind.register('channels', function Channels() {
       .prependTo($(op).parent(".channel-wrapper"));
   }
 
+  var bindChannelAddMenu; // circular dependency fix for jshint
+
   function selectAddedChannel(e) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       var list = $(e.target).closest('.dropdown-menu');
@@ -160,7 +162,7 @@ VuFind.register('channels', function Channels() {
     return false;
   }
 
-  function bindChannelAddMenu(iteration, channel) {
+  bindChannelAddMenu = function bindChannelAddMenu(iteration, channel) {
     var scope = $(channel).parent(".channel-wrapper");
     $(scope).find('.channel-add-menu .dropdown-menu a').click(selectAddedChannel);
     $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
@@ -169,7 +171,7 @@ VuFind.register('channels', function Channels() {
         links[i].click();
       }
     });
-  }
+  };
 
   function init () {
     $('.channel').each(setupChannelSlider);
