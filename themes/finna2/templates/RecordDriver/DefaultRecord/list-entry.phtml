@@ -144,7 +144,7 @@
               <i class="fa fa-pen icon"></i>
             <?php endif; ?>
             <div class="editable" data-empty="<?= $hasNote ? '0' : '1' ?>" data-markdown="<?=$hasNote && $notes ? $this->escapeHtmlAttr($notes) : ''?>">
-              <?php if (count($listNotes) > 0): ?>
+              <?php if ($notes): ?>
                 <?= $this->markdown()->toHtml($notes); ?>
               <?php else: ?>
                 <?=$this->transEsc('Add note')?>
