@@ -9,14 +9,18 @@
 <?php endif; ?>
 
 <?=$this->flashmessages()?>
-
   <form class="form feedback-form" method="post" name="feedbackRecord" action="<?= $this->recordLink()->getActionUrl($this->driver, 'Feedback') ?>">
     <div>
       <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
       <div class="form-group">
         <div class="feedback-info">
           <label for="feedback_from" class="control-label">
-            <?=$this->transEsc('feedback_recipient_info_record', ['%%institution%%' => $this->organisationDisplayName($this->driver, true)]); ?>
+            <?php if (!$this->translationEmpty('feedback_record_instructions_html')): ?>
+              <?=$this->translate("feedback_record_instructions_html"); ?> <br />
+            <?php endif; ?>
+            <?php if (!$this->translationEmpty('feedback_recipient_info_record')): ?>
+              <?=$this->transEsc('feedback_recipient_info_record', ['%%institution%%' => $this->organisationDisplayName($this->driver, true)]); ?>
+            <?php endif; ?>
           </label>
         </div>
       </div>
