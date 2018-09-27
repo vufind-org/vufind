@@ -131,8 +131,12 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function historyAction()
     {
-        $view = parent::historyAction();
         $user = $this->getUser();
+        if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
+            return $this->forceLogin();
+        }
+
+        $view = parent::historyAction();
         if ($user) {
             $view->alertemail = $user->email;
         }
@@ -153,9 +157,11 @@ class SearchController extends \VuFind\Controller\SearchController
             $schedule[$minSO->getSearchId()] = $current->finna_schedule;
         }
         // Add unsaved searches
-        foreach ($view->unsaved as $search) {
-            if ($search instanceof \Finna\Search\Solr\Results) {
-                $schedule[$search->getSearchId()] = 0;
+        if (!empty($view->unsaved)) {
+            foreach ($view->unsaved as $search) {
+                if ($search instanceof \Finna\Search\Solr\Results) {
+                    $schedule[$search->getSearchId()] = 0;
+                }
             }
         }
         $view->schedule = $schedule;
