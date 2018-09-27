@@ -4,7 +4,7 @@
     <?php foreach ($data as $field): ?>
     <div class="subjectLine" property="keywords">
       <?php $subject = ''; ?>
-      <?php if(count($field) == 1) $field = explode('--', $field); ?>
+      <?php if (is_array($field) && count($field) === 1) $field = explode('--', $field); ?>
       <?php $i = 0; foreach ($field as $subfield): ?>
         <?=($i++ == 0) ? '' : ' &&#8594; '?>
         <?php $subject = trim($subject . ' ' . $subfield); ?>
