@@ -90,8 +90,7 @@ finna.layout = (function finnaLayout() {
 
     function notifyTruncateChange(field) {
       field.find('.truncate-change span').each(function setupTruncateChange(ind, e) {
-        var visible = $(e).position().top <= field.height();
-        $(e).trigger('truncate-change', [visible]);
+        $(e).trigger('truncate-change');
       });
     }
 
@@ -175,14 +174,12 @@ finna.layout = (function finnaLayout() {
 
     // Load truncated record images lazily when parent container is opened
     $('.recordcovers .truncate-change span').each(function addTruncateChangeHandler() {
-      $(this).bind('truncate-change', function onTruncateChange(e, visible) {
-        if (visible) {
-          $(this).unbind('truncate-change');
-          // Postpone loading until the image placeholder is scrolled into viewport
-          $(this).unbind('inview').one('inview', function onInView() {
-            displayTruncatedImage($(this));
-          });
-        }
+      $(this).bind('truncate-change', function onTruncateChange() {
+        $(this).unbind('truncate-change');
+        // Postpone loading until the image placeholder is scrolled into viewport
+        $(this).unbind('inview').one('inview', function onInView() {
+          displayTruncatedImage($(this));
+        });
       });
     });
 
