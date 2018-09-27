@@ -5,7 +5,7 @@
     <div class="subjectLine" property="keywords">
       <?php $subject = ''; ?>
       <?php if (is_array($field) && count($field) === 1) $field = explode('--', $field); ?>
-      <?php $i = 0; foreach ($field as $subfield): ?>
+      <?php $i = 0; foreach ((array)$field as $subfield): ?>
         <?=($i++ == 0) ? '' : ' &&#8594; '?>
         <?php $subject = trim($subject . ' ' . $subfield); ?>
         <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->transEsc($subfield))?></a>
