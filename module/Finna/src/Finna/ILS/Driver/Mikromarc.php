@@ -1567,6 +1567,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             if ($item['is_holdable']) {
                 $holdable = true;
             }
+            $itemsTotal++;
         }
 
         // Since summary data is appended to the holdings array as a fake item,
