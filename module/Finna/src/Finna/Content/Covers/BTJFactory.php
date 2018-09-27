@@ -50,7 +50,7 @@ class BTJFactory extends \VuFind\Service\Factory
     public static function getBTJ(ServiceManager $sm)
     {
         return new \Finna\Content\Covers\BTJ(
-            $sm->getServiceLocator()->get('VuFind\RecordLoader')
+            $sm->get('VuFind\RecordLoader')
         );
     }
 }
