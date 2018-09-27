@@ -270,7 +270,7 @@ class DueDateReminders extends AbstractService
                 "User {$user->username} (id {$user->id})"
                 . ' does not have an email address, bypassing due date reminders'
             );
-            return false;
+            return ['remindLoans' => [], 'errors' => []];
         }
 
         $remindLoans = [];
