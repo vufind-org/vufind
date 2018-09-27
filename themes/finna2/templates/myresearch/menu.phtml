@@ -10,7 +10,6 @@
     $capabilityParams = $patron ? ['patron' => $patron] : [];
     if ($user) {
         $this->layout()->finnaMainHeader .= '<a class="btn btn-sm btn-primary btn-uppercase pull-right" href="' . $this->url('myresearch-logout') . '" title="' . $this->transEsc('Log Out') . '"><i class="fa fa-sign-out fa-lg"></i> ' . $this->transEsc('Log Out') . '</a>';
-        $this->layout()->finnaMainHeader .= '<div>' . $this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card']) . '</div>';
     }
     $this->layout()->finnaMainHeader;
 

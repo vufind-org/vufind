@@ -26,8 +26,7 @@
   }
 }
 .myresearch-profile-header {
-  font-size: @font-size-h3;
-  font-weight: bold;
+  font-size: @font-size-h4;
   padding: 7px 10px;
   background: @gray;
   background: @action-link-color;
@@ -41,16 +40,29 @@
   padding-bottom: 0;
   border: 1px solid @gray-lighter;
   box-shadow: 10px 15px 30px -25px @gray;
+  display: inline-block;
+  width: 100%;
+  &.export-holder {
+    padding: 10px 10px 0px 10px;
+  }
   & #profile_library_form {
     & input {
       min-width: 210px;
-      @media (min-width: @screen-sm-min) {
-        margin-top: -7px;
-      }
     }
   }
   div {
     padding: 8px;
+    &.my-profile-row {
+      display: inline-block;
+      width: 100%;
+      padding: 8px;
+      @media(max-width: @screen-xs-max) {
+        padding: 10px 8px 0px;
+      }
+      >.my-profile-col {
+        padding: 0 8px 0 0;
+      }
+    }
     &.profile-title {
       line-height: 1.5;
       font-weight: bold;
@@ -94,7 +106,17 @@
   padding: 5px 10px;
 }
 
-@media (min-width: @screen-sm ){
+.my-profile-btn {
+  margin: 0px 5px 10px 0px;
+  display: inline-block;
+  @media(max-width: @screen-sm) {
+    width: 100%;
+    float: left !important;
+    display: block;
+  }
+}
+
+@media (min-width: @screen-sm ) {
   .my-profile-col {
     width: 33.33%;
     float: left;
