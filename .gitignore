@@ -46,6 +46,7 @@ local/config/vufind/*.wsdl
 local/httpd-vufind.conf
 local/import/import.properties
 local/import/import_auth.properties
+themes/finna2/css/finna.css
 *.diff
 vufind.bat
 public/swagger-ui
