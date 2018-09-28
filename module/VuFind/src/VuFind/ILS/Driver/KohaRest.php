@@ -1702,7 +1702,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         $blockReason, $this->translate('Borrowing Block Message')
                     );
                 }
-
             }
             $this->putCachedData($cacheId, $blockReason);
         }
