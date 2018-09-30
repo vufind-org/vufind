@@ -479,10 +479,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     protected function doRestDLFRequest($path_elements, $params = null,
         $method = 'GET', $body = null
     ) {
-        $path = '';
-        foreach ($path_elements as $path_element) {
-            $path .= $path_element . "/";
-        }
+        $path = implode('/', $path_elements);
         $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
