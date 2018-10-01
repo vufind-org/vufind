@@ -1,56 +1,36 @@
-<div class="row">
-<div class="col-xs-12">
-  <?= $this->feed("carousel-1"); ?>
-</div> 
+<!-- START of: finna - search/home/home-2_en-gb.phtml -->
+<div>
+  <h2>home-2_en-gb.phtml</h2>
 </div>
+<div>
+  <div class="info-col">
+    <div class="infobox">
+    <h2>TODO Kokeile ulkomaisten tieteellisten aineistojen hakua</h2>
+    <p>TODO Tee sinua kiinnostava haku, ja valitse haun jälkeen ulkomaisten aineistojen välilehti.<p>
+    <p>TODO<small>Ulkomaiset aineistot sisältävät mm. vertaisarvioituja kokotekstejä sekä verkossa saatavilla olevia aineistoja.</small></p>
+    <p><a class="btn btn-primary" role="button" href="<?=$this->url('primo-search');?>?lookfor=Work%20intensification&amp;type=AllFields&amp;filter%5B%5D=tlevel%3A%22online_resources%22"><i class="fa fa-search"></i> Esimerkkihaku</a>
+    </div>
+  </div>
+  <div class="info-col">
+    <div class="infobox">
+      <h2>TODO Uusi lainat </h2>
+      <p><a class="btn btn-primary" role="button" href="<?=$this->url('myresearch-checkedout')?>" title="Kirjaudu sisään"><i class="fa fa-sign-in"></i> Kirjaudu sisään </a> kirjastokortilla tai Haka-tunnuksillasi.</p>
+      <p>Klikkaa uusi kaikki lainat -painiketta.</p>
+      <p>Kaikki uusittavissa olevat lainasi uusitaan.</p>
+    </div>
+  </div>
 
-
-<div class="row">
-<div class="col-sm-6">
-  <div class="infobox">
-  <h2>Renew your loans or make a reservation</h2>
-    <p>
-    In order to renew your loans or make a reservation you need the ID number on your 
-    library card and a four-digit PIN code. <br>You can get a PIN code at any Vaski library.
-     </p>
-    <p>Log in via the link on the top right of the page or 
-<a href="<?=$this->url('myresearch-userlogin')?>"  data-lightbox data-lightbox-onclose="window.location.href="<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'>here</a>.</p> 
+  <div class="info-col">
+    <div class="infobox">
+      <h2>Class infobox styles can be edited  variables.less file</h2>
+      <ul>
+        <li>@home-middle-background = background of full container</li>
+        <li>@infobox-background = infobox background</li>
+        <li>@infobox-border = infobox border</li>
+        <li>@infobox-text-color = text default color</li>
+        <li>@infobox-box-shadow = shadow of infoboxes</li>
+      </ul>
+    </div>
   </div>
 </div>
-
-
-
-<div class="col-sm-6">
-  <div class="infobox">
-  
-<div class="kirjastohaku row">
-    <div class="col-xs-12">
-        <h2><?=$this->transEsc("nostoleft")?></h2>
-    </div>
-    <div class="col-sm-4 col-xs-4">
-        <a href="<?=$this->imageSrc('kartta_etusivu_iso_en.jpg');?>" TARGET="_blank"><img src="<?=$this->imageSrc('Vaski-Suomi.png')?>" width="90px" align="center"></a>
-    </div>
-    <div class="col-sm-8 col-xs-8">
-        <ul class="list-bullets">
-            <li>The web library gives you access to the Vaski Libraries’ joint collections</li>
-            <li>Reserved materials are transported to the library of your choice</li>
-            <li>You can return your loans to any Vaski library</li>
-            <li>The same library card is valid at all Vaski libraries.</li>
-        </ul>
-    </div>
-</div>
-
-    </div>
-</div>
-
-</div>
-
-
-
-
-
-<div class="row">
-   <div class="col-xs-12">
-  <?= $this->feed("nayttelykaruselli"); ?>
-</div>  
-</div>
+<!-- END of: finna - search/home/home-2_en-gb.phtml -->
