@@ -50,8 +50,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPublicationDates()
     {
-        $pubDates = [];
-        $pubDates[0] = "1992";
+        $pubDates = ['1992'];
         $this->assertEquals($pubDates, $this->getDriver()->getPublicationDates());
     }
 
@@ -145,7 +144,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetURLs()
     {
-        $testURL[0] = ['url' => "http://fictional.com/sample/url"];
+        $testURL = [['url' => "http://fictional.com/sample/url"]];
         $this->assertEquals($testURL, $this->getDriver()->getURLs());
     }
 
@@ -196,7 +195,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetSecondaryAuthors()
     {
-        $author2[0] = "Pandolfi, Claudia.";
+        $author2 = ["Pandolfi, Claudia."];
         $this->assertEquals($author2, $this->getDriver()->getSecondaryAuthors());
     }
 
@@ -259,14 +258,14 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCoinsOpenUrl()
     {
-        $coinsOpenUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A" .
-                        "UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co" .
-                        "ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da" .
-                        "te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl" .
-                        "e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F" .
-                        "&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi" .
-                        "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction" .
-                        "al+edition.&rft.isbn=8820737493";
+        $coinsOpenUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A"
+            . "UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co"
+            . "ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da"
+            . "te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl"
+            . "e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F"
+            . "&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi"
+            . "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction"
+            . "al+edition.&rft.isbn=8820737493";
         $this->assertEquals($coinsOpenUrl, $this->getDriver()->getCoinsOpenUrl());
     }
 
@@ -297,7 +296,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetInstitutions()
     {
-        $institution[0] = "MyInstitution";
+        $institution = ["MyInstitution"];
         $this->assertEquals($institution, $this->getDriver()->getInstitutions());
     }
 
@@ -318,7 +317,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPrimaryAuthorsWithHighlighting()
     {
-        $primAuthHighlight[0] = "Vico, Giambattista, 1668-1744.";
+        $primAuthHighlight = ["Vico, Giambattista, 1668-1744."];
         $this->assertEquals($primAuthHighlight, $this->getDriver()->getPrimaryAuthorsWithHighlighting());
     }
 
