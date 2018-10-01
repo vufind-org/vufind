@@ -135,14 +135,8 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     protected function getDriver($overrides = [])
     {
-        $fixture = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
-                )
-            ),
-            true
-        );
+        // Simulate empty response for now:
+        $fixture = ['response' => ['docs' => [[]]]];
 
         $record = new EIT();
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
