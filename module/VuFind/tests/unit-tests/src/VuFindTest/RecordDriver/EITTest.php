@@ -59,11 +59,6 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetBreadcrumb()
     {
-        /*$overrides = [
-            'Header' => [
-                'controlInfo' => ['artinfo' => ['tig' => ['atl' => 'TestBreadCrumb01']]]
-                ]
-        ];*/
         $driver = $this->getDriver();
         $this->assertEquals('', $driver->getBreadcrumb());
     }

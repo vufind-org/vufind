@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\RecordDriver;
 
-use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\EDS;
 
 /**
@@ -50,10 +49,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
      */
     public function testExportDisabled()
     {
-        $defaultRecord = new DefaultRecord();
-        $defaultRecord->setRawData($this->getDriver()->getRawData());
-        $format = $defaultRecord->getSchemaOrgFormats();
-        $this->assertEquals(true, $this->getDriver()->exportDisabled($format));
+        $this->assertEquals(true, $this->getDriver()->exportDisabled('endnote'));
     }
 
     /**
