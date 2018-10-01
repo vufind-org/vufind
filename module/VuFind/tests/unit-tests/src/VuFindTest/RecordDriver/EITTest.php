@@ -1,10 +1,10 @@
 <?php
 /**
- * SolrDefault Record Driver Test Class
+ * EIT Record Driver Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
+ * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -31,13 +31,12 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\EIT;
 
 /**
- * SolrDefault Record Driver Test Class
+ * EIT Record Driver Test Class
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   David Maus <maus@hab.de>
- * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
+ * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -124,7 +123,6 @@ class EITTest extends \VuFindTest\Unit\TestCase
             ]
         ];
         $driver = $this->getDriver($overrides);
-        //var_dump($driver->getPublishers());
         $this->assertEquals([['TestPublisher']], $driver->getPublishers());
     }
 
