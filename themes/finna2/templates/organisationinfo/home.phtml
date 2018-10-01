@@ -135,9 +135,13 @@ JS;
     <div class="map-control-bar">
       <div class="flex-item">
         <form class="form-inline searchbox-office office-search-notifications map-ui">
-          <input id="office-search" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
-          <button class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
-          <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
+          <div class="input-group">
+            <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
+            <span class="input-group-btn">
+              <button class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
+            </span>
+            <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
+          </div>
         </form>
         <div class="autocomplete-container"></div>
       </div>
