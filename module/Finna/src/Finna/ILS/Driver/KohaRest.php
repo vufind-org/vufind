@@ -1090,10 +1090,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             // Turn the holdings into a keyed array
             if (!empty($holdingsResult['holdings'])) {
                 foreach ($holdingsResult['holdings'] as $holding) {
-                    if ($holding['suppress']) {
-                        // Ignore suppressed holdings
-                        continue;
-                    }
                     $holdings[$holding['holding_id']] = $holding;
                 }
             }
@@ -1179,7 +1175,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         // Add holdings that don't have items
         if (!empty($holdings)) {
             foreach ($holdings as $holding) {
-                if (!empty($holding['_hasItems'])) {
+                if ($holding['suppress'] || !empty($holding['_hasItems'])) {
                     continue;
                 }
                 $holdingData = $this->getHoldingData($holding, true);
@@ -1191,7 +1187,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
                 $i++;
                 $location = $this->getBranchName($holding['holdingbranch']);
-                $callnumber = '';
                 if ($this->groupHoldingsByLocation) {
                     $holdingLoc = $this->translateLocation($holding['location']);
                     if ($holdingLoc) {
