@@ -29,7 +29,6 @@
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EIT;
-use VuFind\RecordDriver\DefaultRecord;
 
 /**
  * SolrDefault Record Driver Test Class
@@ -51,9 +50,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetAllSubjectHeadings()
     {
-        $this->assertEquals([],$this->getDriver()->getAllSubjectHeadings());
+        $this->assertEquals([], $this->getDriver()->getAllSubjectHeadings());
     }
-    
+
     /**
      * Test getBreadcrumb for a record.
      *
@@ -69,7 +68,7 @@ class EITTest extends \VuFindTest\Unit\TestCase
         $driver = $this->getDriver();
         $this->assertEquals('', $driver->getBreadcrumb());
     }
-    
+
     /**
      * Test getCleanISSN for a record.
      *
@@ -77,9 +76,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCleanISSN()
     {
-        $this->assertEquals(false,$this->getDriver()->getCleanISSN());
+        $this->assertEquals(false, $this->getDriver()->getCleanISSN());
     }
-    
+
     /**
      * Test getFormats for a record.
      *
@@ -87,9 +86,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetFormats()
     {
-        $this->assertEquals([],$this->getDriver()->getFormats());
+        $this->assertEquals([], $this->getDriver()->getFormats());
     }
-    
+
     /**
      * Test getPrimaryAuthors for a record.
      *
@@ -97,9 +96,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPrimaryAuthors()
     {
-        $this->assertEquals([],$this->getDriver()->getPrimaryAuthors());
+        $this->assertEquals([], $this->getDriver()->getPrimaryAuthors());
     }
-    
+
     /**
      * Test getPublicationDates for a record.
      *
@@ -107,9 +106,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPublicationDates()
     {
-        $this->assertEquals([],$this->getDriver()->getPublicationDates());
+        $this->assertEquals([], $this->getDriver()->getPublicationDates());
     }
-    
+
     /**
      * Test getPublishers for a record.
      *
@@ -126,9 +125,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
         ];
         $driver = $this->getDriver($overrides);
         //var_dump($driver->getPublishers());
-        $this->assertEquals([['TestPublisher']],$driver->getPublishers());
+        $this->assertEquals([['TestPublisher']], $driver->getPublishers());
     }
-    
+
     /**
      * Get a record driver with fake data.
      *

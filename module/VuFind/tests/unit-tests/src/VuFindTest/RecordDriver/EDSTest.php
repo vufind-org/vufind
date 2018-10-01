@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\RecordDriver;
 
-use VuFind\RecordDriver\EDS;
 use VuFind\RecordDriver\DefaultRecord;
+use VuFind\RecordDriver\EDS;
 
 /**
  * SolrDefault Record Driver Test Class
@@ -56,7 +56,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
         $format = $defaultRecord->getSchemaOrgFormats();
         $this->assertEquals(true, $this->getDriver()->exportDisabled($format));
     }
-    
+
     /**
      * Test getUniqueID for a record.
      *
@@ -70,7 +70,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
         $driver = $this->getDriver($overrides);
         $this->assertEquals('TDB123,TAn456', $driver->getUniqueID());
     }
-    
+
     /**
      * Test getShortTitle for a record.
      *
@@ -80,7 +80,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getShortTitle());
     }
-    
+
     /**
      * Test getItemsAbstract for a record.
      *
@@ -90,7 +90,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getItemsAbstract());
     }
-    
+
     /**
      * Test getAccessLevel for a record.
      *
@@ -100,7 +100,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getAccessLevel());
     }
-    
+
     /**
      * Test getItemsAuthors for a record.
      *
@@ -110,7 +110,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getItemsAuthors());
     }
-    
+
     /**
      * Test getCustomLinks for a record.
      *
@@ -120,7 +120,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getCustomLinks());
     }
-    
+
     /**
      * Test getFTCustomLinks for a record.
      *
@@ -130,7 +130,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getFTCustomLinks());
     }
-    
+
     /**
      * Test getDbLabel for a record.
      *
@@ -140,7 +140,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getDbLabel());
     }
-    
+
     /**
      * Test getHTMLFullText for a record.
      *
@@ -150,7 +150,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getHTMLFullText());
     }
-    
+
     /**
      * Test hasHTMLFullTextAvailable for a record.
      *
@@ -160,7 +160,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals(false, $this->getDriver()->hasHTMLFullTextAvailable());
     }
-    
+
     /**
      * Test getItems for a record.
      *
@@ -170,7 +170,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getItems());
     }
-    
+
     /**
      * Test getPLink for a record.
      *
@@ -180,7 +180,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getPLink());
     }
-    
+
     /**
      * Test getPubType for a record.
      *
@@ -190,7 +190,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getPubType());
     }
-    
+
     /**
      * Test getPubTypeId for a record.
      *
@@ -200,7 +200,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getPubTypeId());
     }
-    
+
     /**
      * Test hasPdfAvailable for a record.
      *
@@ -210,7 +210,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals(false, $this->getDriver()->hasPdfAvailable());
     }
-    
+
     /**
      * Test getPdfLink for a record.
      *
@@ -220,7 +220,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals(false, $this->getDriver()->getPdfLink());
     }
-    
+
     /**
      * Test getItemsSubjects for a record.
      *
@@ -230,7 +230,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getItemsSubjects());
     }
-    
+
     /**
      * Test getThumbnail for a record.
      *
@@ -240,7 +240,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals(false, $this->getDriver()->getThumbnail());
     }
-    
+
     /**
      * Test getItemsTitle for a record.
      *
@@ -250,7 +250,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getItemsTitle());
     }
-    
+
     /**
      * Test getTitle for a record.
      *
@@ -260,7 +260,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getTitle());
     }
-    
+
     /**
      * Test getPrimaryAuthors for a record.
      *
@@ -270,7 +270,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getPrimaryAuthors());
     }
-    
+
     /**
      * Test getItemsTitleSource for a record.
      *
@@ -280,7 +280,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('', $this->getDriver()->getItemsTitleSource());
     }
-    
+
     /**
      * Test linkUrls for a record.
      *
@@ -291,7 +291,7 @@ class EDSTest extends \VuFindTest\Unit\TestCase
         $str = "http://fictional.com/sample/url";
         $this->assertEquals("<a href='" . $str . "'>" . $str . "</a>", $this->getDriver()->linkUrls($str));
     }
-    
+
     /**
      * Get a record driver with fake data.
      *

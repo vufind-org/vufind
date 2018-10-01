@@ -65,7 +65,7 @@ class SolrDefaultTest extends \VuFindTest\Unit\TestCase
         $driver = $this->getDriver([], $config);
         $this->assertEquals('bar', $driver->getSnippetCaption('foo'));
     }
-    
+
     /**
      * Test an OpenURL for an article.
      *
@@ -138,7 +138,7 @@ XML;
     {
         $this->assertEquals("", $this->getDriver()->getContainerRecordID());
     }
-    
+
     /**
      * Test getChildRecordCount for a record.
      *
@@ -148,7 +148,7 @@ XML;
     {
         $this->assertEquals(0, $this->getDriver()->getChildRecordCount());
     }
-    
+
     /**
      * Test getHighlightedTitle for a record.
      *
@@ -158,7 +158,7 @@ XML;
     {
         $this->assertEquals("", $this->getDriver()->getHighlightedTitle());
     }
-    
+
     /**
      * Test getHighlightedSnippet for a record.
      *
@@ -166,9 +166,9 @@ XML;
      */
     public function testGetHighlightedSnippet()
     {
-       $this->assertEquals(false, $this->getDriver()->getHighlightedSnippet());
+        $this->assertEquals(false, $this->getDriver()->getHighlightedSnippet());
     }
-    
+
     /**
      * Test HighlightDetails for a record.
      *
@@ -181,7 +181,7 @@ XML;
         $driver->setHighlightDetails($details);
         $this->assertEquals($details, $driver->getHighlightDetails());
     }
-    
+
     /**
      * Test getRawAuthorHighlights for a record.
      *
@@ -191,7 +191,7 @@ XML;
     {
         $this->assertEquals([], $this->getDriver()->getRawAuthorHighlights());
     }
-    
+
     /**
      * Get a record driver with fake data.
      *

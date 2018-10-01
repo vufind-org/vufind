@@ -55,7 +55,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $pubDates[0] = "1992";
         $this->assertEquals($pubDates, $this->getDriver()->getPublicationDates());
     }
-    
+
     /**
      * Test getCoordinateLabels for a record.
      *
@@ -66,7 +66,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $coordinateLabels = [];
         $this->assertEquals($coordinateLabels, $this->getDriver()->getCoordinateLabels());
     }
-    
+
     /**
      * Test getDisplayCoordinates for a record.
      *
@@ -77,7 +77,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $displayCoordinates = [];
         $this->assertEquals($displayCoordinates, $this->getDriver()->getDisplayCoordinates());
     }
-    
+
     /**
      * Test getDisplayCoordinates for a record.
      *
@@ -88,7 +88,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $geoLoc = [];
         $this->assertEquals($geoLoc, $this->getDriver()->getGeoLocation());
     }
-    
+
     /**
      * Test getSchemaOrgFormats for a record.
      *
@@ -98,8 +98,8 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $formats = "Book";
         $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormats());
-    }   
-    
+    }
+
     /**
      * Test getSortTitle for a record.
      *
@@ -109,7 +109,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("congiura dei principi napoletani 1701 :(prima e seconda stesura)", $this->getDriver()->getSortTitle());
     }
-    
+
     /**
      * Test getContainerReference for a record.
      *
@@ -119,7 +119,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("", $this->getDriver()->getContainerReference());
     }
-    
+
     /**
      * Test getThumbnail for a record.
      *
@@ -127,7 +127,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetThumbnail()
     {
-        $thumbnail = array(
+        $thumbnail = [
           'author' => 'Vico, Giambattista, 1668-1744.',
           'callnumber' => '',
           'size' => 'small',
@@ -135,10 +135,10 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
           'recordid' => 'testbug2',
           'source' => 'Solr',
           'isbn' => '8820737493',
-          'oclc' => '30585539');
+          'oclc' => '30585539'];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
-      
+
     /**
      * Test getURLs for a record.
      *
@@ -146,10 +146,10 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetURLs()
     {
-        $testURL[0] = array('url' => "http://fictional.com/sample/url");
+        $testURL[0] = ['url' => "http://fictional.com/sample/url"];
         $this->assertEquals($testURL, $this->getDriver()->getURLs());
     }
-    
+
     /**
      * Test getURLs for a record.
      *
@@ -159,7 +159,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getTOC());
     }
-    
+
     /**
      * Test getSummary for a record.
      *
@@ -169,7 +169,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getSummary());
     }
-    
+
     /**
      * Test getSubtitle for a record.
      *
@@ -179,7 +179,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('(prima e seconda stesura) /', $this->getDriver()->getSubtitle());
     }
-    
+
     /**
      * Test getSecondaryAuthorsRoles for a record.
      *
@@ -189,7 +189,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getSecondaryAuthorsRoles());
     }
-    
+
     /**
      * Test getSecondaryAuthors for a record.
      *
@@ -200,7 +200,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $author2[0] = "Pandolfi, Claudia.";
         $this->assertEquals($author2, $this->getDriver()->getSecondaryAuthors());
     }
-    
+
     /**
      * Test getPublicationDetails for a record.
      *
@@ -208,10 +208,10 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPublicationDetails()
     {
-        $pubDetails = array(new PublicationDetails("","Centro di Studi Vichiani,","1992"));
+        $pubDetails = [new PublicationDetails("", "Centro di Studi Vichiani,", "1992")];
         $this->assertEquals($pubDetails, $this->getDriver()->getPublicationDetails());
     }
-    
+
     /**
      * Test getPrimaryAuthorsRoles for a record.
      *
@@ -221,7 +221,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getPrimaryAuthorsRoles());
     }
-    
+
     /**
      * Test getPrimaryAuthor for a record.
      *
@@ -231,7 +231,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("Vico, Giambattista, 1668-1744.", $this->getDriver()->getPrimaryAuthor());
     }
-    
+
     /**
      * Test getPreviousTitles for a record.
      *
@@ -241,7 +241,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getPreviousTitles());
     }
-    
+
     /**
      * Test getPhysicalDescriptions for a record.
      *
@@ -252,7 +252,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $physical[0] = "296 p. : ill. ; 24 cm.";
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
     }
-    
+
     /**
      * Test getCoinsOpenUrl for a record.
      *
@@ -260,13 +260,13 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCoinsOpenUrl()
     {
-        $coinsOpenUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A" . 
-                        "UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co" . 
-                        "ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da" . 
-                        "te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl" . 
-                        "e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F" . 
-                        "&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi" . 
-                        "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction" . 
+        $coinsOpenUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A" .
+                        "UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co" .
+                        "ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da" .
+                        "te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl" .
+                        "e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F" .
+                        "&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi" .
+                        "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction" .
                         "al+edition.&rft.isbn=8820737493";
         $this->assertEquals($coinsOpenUrl, $this->getDriver()->getCoinsOpenUrl());
     }
@@ -280,7 +280,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getNewerTitles());
     }
-    
+
     /**
      * Test getLCCN for a record.
      *
@@ -290,7 +290,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("", $this->getDriver()->getLCCN());
     }
-    
+
     /**
      * Test getInstitutions for a record.
      *
@@ -301,7 +301,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $institution[0] = "MyInstitution";
         $this->assertEquals($institution, $this->getDriver()->getInstitutions());
     }
-    
+
     /**
      * Test getLastIndexed for a record.
      *
@@ -311,7 +311,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("", $this->getDriver()->getLastIndexed());
     }
-    
+
     /**
      * Test getPrimaryAuthorsWithHighlighting for a record.
      *
@@ -322,7 +322,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $primAuthHighlight[0] = "Vico, Giambattista, 1668-1744.";
         $this->assertEquals($primAuthHighlight, $this->getDriver()->getPrimaryAuthorsWithHighlighting());
     }
-    
+
     /**
      * Test getDateSpan for a record.
      *
@@ -332,7 +332,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getDateSpan());
     }
-    
+
     /**
      * Test getCorporateAuthorsRoles for a record.
      *
@@ -342,7 +342,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals([], $this->getDriver()->getCorporateAuthorsRoles());
     }
-    
+
     /**
      * Test getCorporateAuthors for a record.
      *
@@ -363,7 +363,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $cleanDOI = false;
         $this->assertEquals($cleanDOI, $this->getDriver()->getCleanDOI());
     }
-    
+
     /**
      * Test getCallNumber for a record.
      *
@@ -373,7 +373,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals("", $this->getDriver()->getCallNumber());
     }
-    
+
     /**
      * Test getBreadcrumb for a record.
      *
@@ -384,7 +384,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
         $breadcrumb = "La congiura dei Principi Napoletani 1701 :";
         $this->assertEquals($breadcrumb, $this->getDriver()->getBreadcrumb());
     }
-    
+
     /**
      * Get a record driver with fake data.
      *
