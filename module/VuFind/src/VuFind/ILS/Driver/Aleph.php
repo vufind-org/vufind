@@ -1031,7 +1031,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * Renew My Items
      *
      * Function for attempting to renew a patron's items.  The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
+     * $details['details'] is determined by getRenewDetails().
      *
      * @param array $details An array of data required for renewing items
      * including the Patron ID and an array of renewal IDS
