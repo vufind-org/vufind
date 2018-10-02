@@ -1771,21 +1771,27 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      */
     public function getPickUpLocations($patron, $holdInfo = null)
     {
+        $pickupLocations = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
                 $patron['id'], $holdInfo['id'], $holdInfo['item_id']
             );
-            $pickupLocations = [];
             foreach ($details['pickup-locations'] as $key => $value) {
                 $pickupLocations[] = [
-                    "locationID" => $key, "locationDisplay" => $value
+                    "locationID" => $key,
+                    "locationDisplay" => $value,
                 ];
             }
-            return $pickupLocations;
         } else {
             $default = $this->getDefaultPickUpLocation($patron);
-            return empty($default) ? [] : [$default];
+            if (!empty($default)) {
+                $pickupLocations[] = [
+                    "locationID" => $default,
+                    "locationDisplay" => $default,
+                ];
+            }
         }
+        return $pickupLocations;
     }
 
     /**
