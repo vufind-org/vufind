@@ -269,7 +269,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
      *
      * @return string
      */
-    public function getUnmergedTitleByType($type)
+    public function getUnmergedTitleByType(string $type) : string
     {
         $merge_match_expression = "/^(.*) \/ (\(electronic\)|\(print\)); (.*) \/ (\(electronic\)|\(print\))$/";
         $title = $this->getShortTitle();
@@ -302,7 +302,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
      *
      * @return string
      */
-    public function getUnmergedElectronicTitle()
+    public function getUnmergedElectronicTitle() : string
     {
         return $this->getUnmergedTitleByType("electronic");
     }
@@ -313,7 +313,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
      *
      * @return string
      */
-    public function getUnmergedPrintTitle()
+    public function getUnmergedPrintTitle() : string
     {
         return $this->getUnmergedTitleByType("print");
     }
