@@ -148,7 +148,7 @@
 
   <div class="col-xs-2 right">
     <? $account = $this->auth()->getManager() ?>
-    <? if ($list->editAllowed($account->isLoggedIn())): ?>
+    <? if (isset($list) && $list->editAllowed($account->isLoggedIn())): ?>
        <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
        <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
          $deleteUrl = null === $list_id
