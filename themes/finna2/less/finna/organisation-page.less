@@ -162,21 +162,20 @@
         }
         .expand-map, .contract-map {
             display: inline-block;
-            font-size: 1.1em;
+            font-size: 1em;
             i {
                 margin-left: 20px;
                 margin-right: 0px;
             }
             @media(max-width: @screen-xs-max) {
                 margin-left: -3px;
-                font-size: 1.1em;
+                font-size: 1em;
                 i {
                     margin-right: 2px;
                 }
             }
         }
         .show-all {
-            font-size: 1.1em;
             float: left;
             @media(min-width: @screen-sm-min) {
                 margin-left: 15px;
@@ -199,10 +198,7 @@
         }
     }
 
-    .main-content {
-        margin-top: 25px;
-    }
-    > .container {
+    & > .container {
         padding-bottom: 0px !important;
     }
     .fluid-odd {
@@ -365,10 +361,11 @@
 
         }
         .office-search {
-            h3 {
-                font-size: 21px;
-                padding-top: .8em;
-                padding-bottom: 0em;
+            h2 {
+                margin-bottom: 0.5em;
+                @media(min-width: @screen-sm) {
+                    margin-bottom: 0;
+                }
             }
             .searchbox-office {
                 margin: 10px 0px;
@@ -425,13 +422,18 @@
         .office-quick-information {
             margin-top: 20px;
             margin-bottom: 20px;
-            h2 {
-                font-size: 20px;
+            h3 {
+                margin-top: 0;
+                margin-bottom: 0;
             }
             .office-description {
                 font-size: 1.2em !important;
                 color: @gray-light;
                 margin-bottom: 0;
+            }
+            .open-closed-info {
+                margin-top: 0.5em;
+                margin-bottom: 0.5em;
             }
             @media(min-width: @screen-sm) {
                 .office-title {
@@ -441,6 +443,8 @@
                 .open-closed-info {
                     width: 35%;
                     float: left;
+                    margin-top: 0;
+                    margin-bottom: 0;
                 }
                 .social-button {
                     width: 10%;
@@ -529,7 +533,7 @@
                             line-height: 1.5em;
                         }
                         .text {
-                            max-height: 118px;
+                            max-height: 12em;
                             overflow: hidden;
                             margin-bottom: 20px;
                         }
@@ -589,6 +593,7 @@
                 clear: both;
                 margin-bottom: 20px;
                 li {
+                    font-size: 0.8em;
                     float: left;
                     margin-right: 5px;
                     padding: 7px;
@@ -624,11 +629,6 @@
             }
         }
         .consortium-usage-rights {
-            h3 {
-                font-size: 21px;
-                padding-top: .8em;
-                padding-bottom: 0.3em;
-            }
             .usage-rights-text {
                 margin-bottom: 10px;
                 .no-info {
