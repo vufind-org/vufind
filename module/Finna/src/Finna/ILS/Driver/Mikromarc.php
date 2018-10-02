@@ -1851,7 +1851,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $map = [
            'DuplicateReservationExists' => 'hold_error_duplicate',
            'NoItemsAvailableByTerm' => 'hold_error_denied',
-           'NoItemAvailable' => 'hold_error_denied'
+           'NoItemAvailable' => 'hold_error_denied',
+           'NoTermsPermitLoanOrReservation' => 'hold_error_not_holdable'
         ];
 
         if (isset($map[$message])) {
