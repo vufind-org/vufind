@@ -3,15 +3,17 @@
     // Set up page title:
     $this->headTitle($this->translate('My Fines'));
 
-    // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines']);
-
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Fines') . '</li>';
 
     $user = $this->auth()->isLoggedIn();
 ?>
-<div class="my-research-content">
+
+<!-- Leftside navigationbar -->
+<?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines']); ?>
+
+<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+  <div class="my-research-content">
     <?php if ($user): ?>
       <?php if (!empty($this->registerPayment)): ?>
         <div class="alert alert-info">
@@ -20,7 +22,6 @@
         </div>
       <?php endif; ?>
     <?php endif; ?>
-
     <?php if (!$this->translationEmpty('fines_instructions_html')): ?><p class="no-content-message"><?=$this->translate('fines_instructions_html')?></p><?php endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
@@ -152,6 +153,7 @@
       </div>
       <?php endif; ?>
     <?php endif; ?>
+  </div>
 </div>
 <?php if (isset($this->registerPayment) && $this->registerPayment): ?>
   <?php $this->headScript()->appendFile('finna-online-payment.js'); ?>

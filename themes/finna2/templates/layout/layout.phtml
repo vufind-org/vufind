@@ -295,18 +295,18 @@ JS;
         <?=$this->partial('Helpers/cookie-consent.phtml');?>
       <?php endif; ?>
       <?php if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/', $_SERVER['HTTP_USER_AGENT'])): ?>
-      <div class="container-fluid system-messages">
-        <?=$this->translate('outdated_browser_message_html');?>
-      </div>
+        <div class="container-fluid system-messages">
+          <?=$this->translate('outdated_browser_message_html');?>
+        </div>
       <?php endif; ?>
       <?php if ($messages = $this->systemMessages()): ?>
-      <div class="container-fluid system-messages">
-        <?php foreach ($messages as $message): ?>
-          <div>
-            <?=$message // intentionally not escaped so that markup can be used ?>
-          </div>
-        <?php endforeach; ?>
-      </div>
+        <div class="container-fluid system-messages">
+          <?php foreach ($messages as $message): ?>
+            <div>
+              <?=$message // intentionally not escaped so that markup can be used ?>
+            </div>
+          <?php endforeach; ?>
+        </div>
       <?php endif; ?>
       <div class="container-fluid navbar">
         <div>
@@ -320,9 +320,9 @@ JS;
     </header>
     <section role="search" class="searchContent<?=$currentTabClass?>">
       <h2 class="sr-only"><?=$this->transEsc('Search')?></h2>
-      <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
-          <a class="btn btn-primary btn-uppercase floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
-      <?php endif; ?>
+        <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
+            <a class="btn btn-primary btn-uppercase floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
+        <?php endif; ?>
       <?php if (!empty($this->layout()->infoMessage)): ?>
         <div class="alert alert-info street-info">
           <div class="container">
@@ -401,16 +401,16 @@ JS;
       <?php if (!empty($this->layout()->finnaMainHeader)): ?>
         <div class="finna-main-header">
           <div class="container">
-              <?=$this->layout()->finnaMainHeader?>
+            <?=$this->layout()->finnaMainHeader?>
           </div>
         </div>
       <?php endif; ?>
       <?php if (!empty($this->layout()->finnaMainTabs)): ?>
-      <div class="finna-main-tabs">
-        <div class="container">
+        <div class="finna-main-tabs">
+          <div class="container">
             <?=$this->layout()->finnaMainTabs?>
+          </div>
         </div>
-      </div>
       <?php endif; ?>
       <div id="content" class="container main-content">
         <?=$this->layout()->content ?>

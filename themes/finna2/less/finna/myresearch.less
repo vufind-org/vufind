@@ -8,33 +8,33 @@
   &:nth-child(odd) {
     background: @table-bg-accent;
   }
-  & h3 {
+  h3 {
     margin: 0;
     font-weight: 400;
     font-size: 1.2em;
     margin-bottom: 2px;
   }
-  & .no-checkbox {
+  .no-checkbox {
     font-size: 0.8em;
     color: @gray-light;
   }
-  & .alert {
+  .alert {
     padding: 4px;
     margin-bottom: 3px;
     margin-top: 3px;
   }
   // row for holds information
-  & .holds-status-information, .checkedout-status-information {
+  .holds-status-information, .checkedout-status-information {
     @media(min-width: @screen-sm-min) {
       text-align: right;
     }
   }
-  & .checkboxFilter {
+  .checkboxFilter {
     padding-left: 0;
-    & .checkbox {
+    .checkbox {
       padding-left: 0;
       margin-top: 0;
-      & label {
+      label {
         margin-left: 0;
       }
     }
@@ -44,9 +44,9 @@
 .checkboxFilter.mylist-select-all {
   padding-left: 0;
   padding-top: 2px;
-  & .checkbox {
+  .checkbox {
     padding-left: 0;
-    & label {
+    label {
       margin-left: 0;
     }
   }
@@ -74,7 +74,7 @@
   th,td {
     vertical-align: top;
     padding: 5px;
-    @media(max-width: @screen-sm){
+    @media(max-width: @screen-sm) {
       text-align: left;
     }
     .record-title {
@@ -82,7 +82,7 @@
     }
   }
   .sort-button {
-    @media(max-width: @screen-sm){
+    @media(max-width: @screen-sm) {
       min-width: 100px;
     }
   }
@@ -92,7 +92,7 @@
   .renew-button {
     margin-bottom: 5px;
   }
-  @media(min-width: @screen-sm){
+  @media(min-width: @screen-sm) {
     .half-table-column {
       width: 50%;
       float: left;
@@ -149,7 +149,7 @@
   > h4 {
     margin-left: 10px;
   }
-  & .myresearch-row:last-child {
+  .myresearch-row:last-child {
     box-shadow: none;
   }
 }
@@ -162,29 +162,25 @@
   }
   .my-research-content {
     width: 100%;
-    padding: 20px;
     border-radius: @border-radius-base;
   }
   h1 {
     display: inline-block;
   }
-  & #account-actions {
-    margin: 5px;
-    & #import-export-buttons {
-      margin-right: 10px;
-      a {
-        margin-right: 10px;
-      }
+  #account-actions {
+    margin-bottom: 20px;
+    #import-export-buttons {
+      margin-right: 20px;
     }
     .btn {
       margin-bottom: 5px;
     }
   }
-  & .pickup-location {
+  .pickup-location {
     margin-top: 3px;
     margin-bottom: 3px;
   }
-  & .pickup-locations {
+  .pickup-locations {
     overflow-y: auto;
     max-height: 280px;
     left: auto;
@@ -196,25 +192,25 @@
       left: -40px;
       right: auto;
     }
-    & a {
+    a {
       cursor: pointer;
     }
   }
-  & #card_name {
+  #card_name {
     width: 205px;
   }
 
-  & .markdown.edit {
-    & .CodeMirror {
+  .markdown.edit {
+    .CodeMirror {
       height: 300px;
     }
-    & .markdown-preview {
+    .markdown-preview {
       padding: 10px;
       background: #fafafa;
       height: 300px;
       overflow-y: auto;
       border: 1px solid @gray-lighter;
-      & .preview {
+      .preview {
         position: absolute;
         right: 40px;
         background-color: @body-bg;
@@ -222,9 +218,9 @@
       }
     }
   }
-  & .markdown .editable {
+  .markdown .editable {
     padding: 5px;
-    & > p {
+    > p {
       margin: 0;
     }
   }
@@ -233,11 +229,11 @@
     display: none;
   }
 
-  & .resource-note {
+  .resource-note {
     margin-left: -5px;
   }
 
-  & .checkboxFilter label.checkbox {
+  .checkboxFilter label.checkbox {
     padding-left: 5px;
     color: @gray-light;
   }
@@ -249,24 +245,24 @@
   .paginationSimple {
     margin-left: 5px;
   }
-  & .no-padding-table {
-    & th, td {
+  .no-padding-table {
+    th, td {
       padding: 8px 0;
       vertical-align: middle;
     }
-    & th {
+    th {
       width: 25%;
     }
-    & td {
+    td {
       width: 75%;
     }
   }
 
-  & p.no-content-message {
+  p.no-content-message {
     margin-top: 5px;
   }
-  & .borrowing-block-container {
-    & p.borrowing-block {
+  .borrowing-block-container {
+    p.borrowing-block {
       padding: 0;
       font-weight: bold;
       margin-bottom: 0;
@@ -295,11 +291,11 @@
   @media (max-width:@screen-xs-max) {
     margin-left: -15px;
   }
-  & .checkboxFilter.mylist-select-all {
+  .checkboxFilter.mylist-select-all {
     margin-right: 0;
     margin-top: 8px;
     float: none;
-    & span {
+    span {
       font-size: 11px;
       top: 4px;
       left: ~"-webkit-calc(50% + 10px)";
@@ -309,7 +305,7 @@
       width: 70px;
     }
   }
-  & .checkboxFilter .checkbox label {
+  .checkboxFilter .checkbox label {
     font-size: 13px;
   }
 }
@@ -328,7 +324,7 @@
     border-top: 1px solid @gray-lighter;
     border-bottom: none;
   }
-  & .btn-group {
+  .btn-group {
     margin-top: 3px;
   }
 }
@@ -341,12 +337,12 @@
     width: 50%;
     float: right;
   }
-  & .amount {
+  .amount {
     font-weight: bold;
   }
 
-  & .online-payment-form {
-    & input {
+  .online-payment-form {
+    input {
       margin-left: 20px;
       font-weight: bold;
     }
@@ -373,73 +369,77 @@
       table-layout: fixed;
     }
   }
-  & .headers {
+  .headers {
     background: @gray-ultralight;
     color: @text-color;
   }
-  & .headers th {
+  .headers th {
     background: none;
     border-top: 1px solid #d1d1d1;
     &:last-child {
       border-right: none;
     }
   }
-  & td {
+  td {
     border-right: 1px solid @body-bg;
     vertical-align: middle;
     &:last-child {
       border-right: none;
     }
   }
-  & .user-account-table-title {
+  .user-account-table-title {
     width: 25%;
   }
-  & .total-balance {
+  .total-balance {
     background: none;
     border-top: 2px solid @gray-lighter;
     text-align: right;
     line-height: 2em;
     font-size: 1.2em;
-    & .amount {
+    .amount {
       font-weight: bold;
     }
   }
-  & .balance {
+  .balance {
     text-align: right;
   }
-  & .online-payment-remark {
+  .online-payment-remark {
     font-weight: bold;
   }
-  & tr.payment-data>th {
+  tr.payment-data>th {
     background: @body-bg;
   }
-  & th {
+  th {
     font-size: 1.1em;
   }
-  & .history-time {
+  .history-time {
     width: 20%;
   }
-  & .history-save {
+  .history-save {
     text-align: center;
     width: 15%;
     a {
       color: @action-link-color;
     }
   }
-  & .history-results {
+  .history-results {
     width: 15%;
   }
-  & .actions {
+  .actions {
     width: 15%;
   }
-  & .library-card-actions a {
+  .library-card-actions a {
     display: block;
     margin: 4px 0;
   }
-  & td.history-search-index, td.history-schedule .disable {
+  td.history-search-index, td.history-schedule .disable {
     color: @gray-light;
     font-size: .9em;
   }
+}
+
+.myresearch-body {
+  margin-top: 15px;
 }
 
 .useraccount-nav-mobile {
@@ -451,16 +451,48 @@
   }
 }
 .useraccount-nav {
+  border: solid 1px @gray-lighter;
+  box-shadow: 2px 2px 3px 0 @gray-lighter;
   display: table;
-  width: 100%;
-  & li {
-    float:left;
+  &.list-group {
+    border-radius: 4px;
+  }
+  li {
+    border-top: 1px solid @gray-lighter;
+    float: left;
+    width: 100%;
+
+    .collapsing {
+      -webkit-transition: none;
+      transition: none;
+      display: none;
+    }
+    &.menu-header {
+      background-color: @brand-third;
+      
+      > h4 {
+        text-transform: none;
+        padding: 15px 5px 15px 10px;
+        > i {
+          font-size: 25px;
+          margin-top: -4px;
+        }
+      }
+    }
     a {
-      padding: 10px 5px;
+      padding: 12px 10px;
       margin-right: 0px;
+
+      &:not(.collapsed) {
+        > .caret {
+          transform: rotate(180deg);
+          -ms-transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);   
+        }
+      }
     }
     @media(max-width: @screen-md-max) {
-      max-width: 160px;
       font-size: 14px;
       a {
         padding: 10px;
@@ -469,6 +501,9 @@
     @media(max-width: @screen-sm-max) {
       max-width: 95px;
     }
+  }
+  li:first-child {
+    border-top: transparent;
   }
 }
 
@@ -479,16 +514,15 @@
     width: 45%;
     padding: 10px;
     text-align: center;
-    & a {
+    a {
       border-radius: @border-radius-base;
       background: @link-color;
       color: @body-bg;
     }
   }
 }
-
 .main.template-dir-myresearch.template-name-unsubscribe {
-  & .unsubscribe {
+  .unsubscribe {
     margin-bottom: 20px;
   }
 }

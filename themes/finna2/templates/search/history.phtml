@@ -5,10 +5,9 @@
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 
+  $layoutLoggedIn = $saveSupported && $this->auth()->isLoggedIn();
   // Set up myresearch menu
-  if ($saveSupported && $this->auth()->isLoggedIn()):
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history']);
-  else:
+  if (!$layoutLoggedIn):
     $this->layout()->finnaMainHeader = '<div><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
   endif;
 
@@ -16,30 +15,38 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 ?>
-<div>
-  <?php if ($this->alertemail): ?>
-    <div class="alert alert-info alert-email-notification hidden">
-      <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
-    </div>
-  <?php elseif ($this->auth()->isLoggedIn()): ?>
-    <div class="alert alert-danger alert-email-notification hidden">
-      <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
-    </div>
-  <?php endif; ?>
-  <?=$this->flashmessages();?>
-  <?php if ($saveSupported && !empty($this->saved)): ?>
-    <h2><?=$this->transEsc("history_saved_searches")?></h2>
-    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
-  <?php endif; ?>
 
-  <h2><?=$this->transEsc("history_recent_searches")?></h2>
-  <?php if (!empty($this->unsaved)): ?>
-    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
-    <p class="text-right"><a href="?purge=true"><i class="fa fa-button fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a></p>
-    <br/>
-  <?php else: ?>
-    <h4><?=$this->transEsc("history_no_searches")?></h4>
-    <br>
-  <?php endif; ?>
+<?php if($layoutLoggedIn): ?>
+  <!-- Leftside navigationbar -->
+  <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history']); ?>
+<?php endif; ?>
+
+<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+  <div>
+    <?php if ($this->alertemail): ?>
+      <div class="alert alert-info alert-email-notification hidden">
+        <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+      </div>
+    <?php elseif ($this->auth()->isLoggedIn()): ?>
+      <div class="alert alert-danger alert-email-notification hidden">
+        <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+      </div>
+    <?php endif; ?>
+    <?=$this->flashmessages();?>
+    <?php if ($saveSupported && !empty($this->saved)): ?>
+      <h2><?=$this->transEsc("history_saved_searches")?></h2>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+    <?php endif; ?>
+
+    <h2><?=$this->transEsc("history_recent_searches")?></h2>
+    <?php if (!empty($this->unsaved)): ?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
+      <p class="text-right"><a href="?purge=true"><i class="fa fa-button fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a></p>
+      <br/>
+    <?php else: ?>
+      <h4><?=$this->transEsc("history_no_searches")?></h4>
+      <br>
+    <?php endif; ?>
+  </div>
 </div>
 <!-- END of: finna - search/history.phtml -->

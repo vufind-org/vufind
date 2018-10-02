@@ -1,7 +1,6 @@
 /*global VuFind, finna, SimpleMDE */
 finna.myList = (function finnaMyList() {
 
-  var addNewListLabel = null;
   var editor = null;
   var editableSettings = {'minWidth': 200, 'addToHeight': 100};
   var save = false;
@@ -235,7 +234,6 @@ finna.myList = (function finnaMyList() {
   }
 
   function initEditComponents() {
-    addNewListLabel = $('.add-new-list div').text();
     var isDefaultList = typeof(getActiveListId()) == 'undefined';
 
     // bulk actions
@@ -246,6 +244,9 @@ finna.myList = (function finnaMyList() {
       });
       updateBulkActionsToolbar();
     }
+
+    //Init mobile navigation collapse after list has been reloaded
+    finna.layout.initMobileNarrowSearch();
 
     // Checkbox select all
     $('.checkbox-select-all').unbind('change').change(function onChangeSelectAll() {
@@ -273,8 +274,16 @@ finna.myList = (function finnaMyList() {
 
         function repositionPrompt() {
           var pos = target.offset();
+          var location = target.position();
+          var left = pos.left + target.width();
+          var half = $(window).width() / 2;
+
+          //Our prompt is located on the right side so lets calculate a place in the middle
+          if (location.left > half) {
+            left = half - prompt.width() / 2;
+          }
           prompt.css({
-            'left': pos.left - prompt.width() + target.width(),
+            'left': left,
             'top': pos.top + 30
           });
         }
@@ -290,36 +299,35 @@ finna.myList = (function finnaMyList() {
         prompt.find('.cancel').unbind('click').click(function onClickCancel(ev) {
           $(window).off('resize', repositionPrompt);
           prompt.hide();
+          $('.remove-favorite-list').focus();
           ev.preventDefault();
         });
 
         repositionPrompt();
         initRepositionListener();
         prompt.show();
+        prompt.find('.confirm a').focus();
         e.preventDefault();
       });
     }
 
-    // add new list
-    var newListCallBack = {
-      'start': function onStartNewList(e) {
-        e.target.find('input').val('');
-      },
-      'finish': function onFinishNewList(e) {
-        if (e.value === '' || e.cancel) {
-          $('.add-new-list .name').text(addNewListLabel);
-          return;
-        }
+    $('.add-new-list .icon').on('click', function createNewList() {
+      var newListInput = $('.new-list-input');
+      var newListName = newListInput.val().trim();
 
-        if (e.value !== '') {
-          updateList({'id': 'NEW', 'title': e.value, 'desc': null, 'public': 0}, newListAdded, 'add-list');
-        }
+      if (newListName !== '') {
+        newListInput.off('keyup');
+        $(this).off('click');
+        updateList({'id': 'NEW', 'title': newListName, 'desc': null, 'public': 0}, newListAdded, 'add-list');
+      }  
+    }); 
+
+    //Add new list, listen for keyup enter
+    $(".new-list-input").on('keyup', function invokeCreateNewList(e) {
+      if (e.keyCode === 13) {
+        $('.add-new-list .icon').click();
       }
-    };
-    var target = $('.add-new-list .name');
-    if (target.length > 0) {
-      target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, editableSettings);
-    }
+    });
 
     $('.myresearch-row').each(function initNoteEditor(ind, obj) {
       var editField = $(obj).find('.myresearch-notes .resource-note');
@@ -407,7 +415,7 @@ finna.myList = (function finnaMyList() {
       editor = new SimpleMDE(editorSettings);
       currentVal = editor.value();
 
-      editor.codemirror.on('change', function onChangeEditor(){
+      editor.codemirror.on('change', function onChangeEditor() {
         var html = SimpleMDE.prototype.markdown(editor.value());
         preview.find('.data').html(html);
       });

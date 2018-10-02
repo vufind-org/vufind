@@ -28,6 +28,14 @@
     position: relative;
   }
 }
+@media (max-width: @screen-sm-max) {
+  .template-dir-myresearch .container.main-content > .mainbody,
+  .template-dir-librarycards .container.main-content > .mainbody,
+  .template-name-mylist .container.main-content > .mainbody,
+  .template-name-history .container.main-content > .mainbody {
+    width: 100%;
+  }
+}
 @media (max-width: @screen-xs-max) {
   .media-left {
     float: right;
@@ -75,11 +83,11 @@ mark, .highlight {
       border-top: 1px solid @gray-lighter;
     }
   }
-  & .list-view .publish-year {
+  .list-view .publish-year {
     display: block;
   }
-  & .list-view {
-    & .more-link, & .less-link,  & .less-link-top {
+  .list-view {
+    .more-link, .less-link,  .less-link-top {
       padding-bottom: 0;
     }
   }
@@ -135,13 +143,13 @@ mark, .highlight {
     color: @gray-light;
     font-size: .9em;
   }
-  & a {
+  a {
     color: darken(@link-color, 5%);
   }
 }
 // fix truncate links 1px cutoff on the left
 .available-online-links, .recordURLs {
-  & .truncate-field.truncate-done, & .resolver {
+  .truncate-field.truncate-done, .resolver {
     padding-left: 1px;
   }
 }
@@ -337,7 +345,7 @@ mark, .highlight {
 .searchtools {
   padding-top: 20px;
   padding-bottom: 20px;
-  & a {
+  a {
     color: @finna-searchtools-color;
     font-size: 1.1em;
     font-weight: 600;
@@ -361,19 +369,19 @@ mark, .highlight {
 
 .searchContent {
   background-color: @finna-search-background;
-  & [class^="tooltip-"]>i {
+  [class^="tooltip-"]>i {
     color: @action-link-color;
   }
 }
 
 .template-dir-search.template-name-home {
   position: relative;
-  & .search-form-container {
+  .search-form-container {
     padding-top: 2em;
     padding-bottom: 2em;
     #gradient.vertical(@background-start-color; @background-end-color; @background-start-percent; @background-end-percent);
   }
-  & .searchContent {
+  .searchContent {
     -webkit-overflow-scrolling: touch;
     background-size: cover;
     background-position: center top;
@@ -383,7 +391,7 @@ mark, .highlight {
     @media(max-width:@screen-sm-max) {
       background-size: 150% auto;
       background-position: 50% 0;
-      & .record-view-header > .container {
+      .record-view-header > .container {
         padding-left: 0;
         padding-right: 0;
       }

@@ -16,7 +16,7 @@
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px
   }
-  & .fa-arrow-right, .fa-arrow-left {
+  .fa-arrow-right, .fa-arrow-left {
     color: @body-bg;
     top: 10px;
     left: 8px;
@@ -68,17 +68,17 @@
 
 // fix navbar for logoutoptions
 .finna-navbar .navbar-nav .logoutOptions {
-  @media(max-width: @screen-sm){
+  @media(max-width: @screen-sm) {
     margin: 0;
   }
   a {
     color: @action-link-color;
   }
-  & .dropdown-menu {
+  .dropdown-menu {
     right: 5px;
     left: auto;
-    & > li {
-      & > a {
+    > li {
+      > a {
         color: @text-color;
         width: 250px;
         i {
@@ -92,13 +92,13 @@
     }
   }
   &.card-selection {
-    & h5 {
+    h5 {
       padding-left: 15px;
     }
-    & > a {
+    > a {
       padding-left: 32px;
     }
-    & i.fa-check {
+    i.fa-check {
       margin-left: -17px;
     }
     padding-left: 5px;
@@ -135,7 +135,7 @@
         display: none;
       }
     }
-    @media (max-width: @grid-float-breakpoint){
+    @media (max-width: @grid-float-breakpoint) {
       margin: 0 15px;
     }
   }
@@ -147,7 +147,7 @@
   }
 }
 
-@media(max-width: @grid-float-breakpoint){
+@media(max-width: @grid-float-breakpoint) {
   #loginOptions button {
     background-color: @body-bg;
     a {
@@ -159,7 +159,7 @@
 // content-navigation-menu
 .main.template-dir-content.template-name-content .content-navigation-menu {
   margin: 20px 0px;
-  & h2 {
+  h2 {
     font-size: 1em;
     text-transform: uppercase;
     font-weight: 600;
@@ -200,10 +200,10 @@
 }
 
 .navbar {
-  & .dropdown .dropdown-menu > li > a > div:not(.description) {
+  .dropdown .dropdown-menu > li > a > div:not(.description) {
     font-weight: bold;
   }
-  & .dropdown .dropdown-menu > li > a > div.description {
+  .dropdown .dropdown-menu > li > a > div.description {
     font-size: .9em;
   }
 }
@@ -224,7 +224,7 @@
     font-size: @navbar-logo-height;
     color: @logo-color;
   }
-  & img {
+  img {
     height: @navbar-logo-height;
     width: auto;
   }
@@ -397,7 +397,7 @@
   right: 15px;
   flex-grow: 0;
   flex-shrink: 0;
-  & .dropdown-menu > li > a {
+  .dropdown-menu > li > a {
     white-space: normal;
   }
 }
@@ -448,16 +448,43 @@
   > li {
     border-bottom: 1px solid @gray-lighter;
   }
-  & > li:last-child > a, & li:last-child {
+  > li:last-child > a, li:last-child {
     border-bottom: none;
     .border-bottom-radius(8px);
   }
-  & > li:first-child > a, & li:first-child {
+  > li:first-child > a, li:first-child {
     .border-top-radius(8px);
   }
 
   > li > a {
     padding: 7px 15px;
+  }
+}
+
+.useraccount-nav .dropdown-menu {
+  border: 1px solid @gray-lighter;
+  border-left: none;
+  border-right: none;
+  .box-shadow(none);
+  margin-bottom: 2px;
+  padding: 0;
+  > li {
+    border: none;
+  }
+  > li:last-child > a, li:last-child {
+    .border-bottom-radius(0);
+  }
+  > li:first-child > a, li:first-child {
+    .border-top-radius(0);
+  }
+  > li > a {
+    padding: 10px 15px 10px 20px;
+  }
+  .active a {
+    font-weight: 600;      
+    text-decoration: none;
+    color: @dropdown-link-color;;
+    background-color: @gray-ultralight;
   }
 }
 
@@ -471,11 +498,21 @@
   }
 }
 
+.useraccount-nav .dropdown-menu > li > a {
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+    color: @dropdown-link-color;;
+    background-color: @gray-ultralight;
+  }
+}
+
 // Default styling of Finna Jump menus
 .jumpMenuForm {
   height: 33px;
   margin-bottom: 10px;
-  & label {
+  label {
     font-weight: normal;
     margin-left: 10px;
   }
@@ -487,7 +524,7 @@
   z-index: 1;
   display: inline-block;
   min-width: 60px;
-  & select {
+  select {
     background-color: transparent;
     border: 0 none;
     box-shadow: none;
@@ -505,7 +542,7 @@
       box-shadow: none;
     }
   }
-  & option {
+  option {
     background: @body-bg;
     color: @gray;
     padding: 5px;
@@ -531,7 +568,7 @@
     background-color: @brand-primary;
     padding-top: 0px;
     transition: background-color .1s linear;
-    & option:checked {
+    option:checked {
       background: @btn-primary-bg;
       color: @body-bg;
     }

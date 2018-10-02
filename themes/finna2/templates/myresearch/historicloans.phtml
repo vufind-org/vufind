@@ -3,9 +3,6 @@
     // Set up page title:
     $this->headTitle($this->translate('Loan History'));
 
-    // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'historicLoans']);
-
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
 
@@ -13,7 +10,11 @@
 
     $recordCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions);
 ?>
-<div>
+
+<!-- Leftside navigationbar -->
+<?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'historicLoans']); ?>
+
+<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
   <div class="my-research-content myresearch-grid-list">
     <?php if (!$this->translationEmpty('loan_history_instructions_html')): ?><p class="no-content-message"><?=$this->translate('loan_history_instructions_html')?></p><?php endif; ?>
     <?=$this->flashmessages()?>

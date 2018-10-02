@@ -1,5 +1,5 @@
 // select card dropdown styles
-& .select-card-wrapper {
+.select-card-wrapper {
   font-size: 14px;
   display: inline-block;
   vertical-align: top;
@@ -8,8 +8,7 @@
   margin-left: 5px;
   .dropdown {
     display: inline-block;
-    border-radius: @finna-button-radius;
-    & > a {
+    > a {
       padding: 7px 7px;
       color: black;
       background-color: white;
@@ -21,13 +20,13 @@
         text-decoration: none;
       }
     }
-    & i {
+    i {
       font-size: 12px;
       position: absolute;
       top: 5px;
       right: 11px;
     }
-    & span {
+    span {
       padding-right: 20px;
       font-size: 13px;
       border-radius: 10px;
@@ -40,31 +39,31 @@
     }
   }
 }
-& .myresearch-profile-header, .useraccount-header {
+.myresearch-profile-header, .useraccount-header {
   .select-card-wrapper {
     margin-left: 1em;
-    & .dropdown > a {
+    .dropdown > a {
       background: @body-bg;
       color: @gray;
       border: 1px solid @gray-lighter;
     }
   }
 }
-& .finna-main-header .select-card-wrapper {
+.finna-main-header .select-card-wrapper {
   display: block;
   margin-top: 1em;
   @media (max-width: 600px) {
     text-align: right;
     margin-left: 0px;
-    & li {
+    li {
       text-align: left;
     }
-    & .select-card-label {
+    .select-card-label {
       margin-top: -7px;
     }
   }
   @media (max-width: 350px) {
-    & .select-card-label {
+    .select-card-label {
       display: none;
     }
   }

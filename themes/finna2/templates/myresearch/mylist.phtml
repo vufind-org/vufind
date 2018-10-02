@@ -11,9 +11,6 @@
   // Set up page title:
   $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
-  // Set up myresearch menu
-  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites']);
-
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
@@ -44,17 +41,20 @@
   $user = $this->auth()->isLoggedIn();
   $lists = $user ? $user->getLists() : null;
 ?>
+
+<!-- Leftside navigationbar -->
+<?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites']); ?>
+
 <?php foreach ($this->results->getRecommendations('side') as $current): ?>
   <?=$this->recommend($current)?>
 <?php endforeach; ?>
 
-<div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
-<div>
+<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+  <div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
   <?php if (isset($list)): ?>
     <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
     <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <?php endif; ?>
-  <div class="mainbody right">
     <div class="clearfix mylist-header hidden-print">
       <div>
         <?=$this->flashmessages()?>
@@ -108,13 +108,8 @@
     </div>
     <?php endif;?>
   </div>
-  <div class="sidebar mylist-bar">
-  <?php if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
-  <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]); ?>
-  <?php endif ?>
   </div>
 </div>
-
 <?php if ($user && $list): ?>
   <form class="pull-left delete-list" action="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&confirm=1" method="post">
     <ul class="dropdown-menu">
@@ -124,9 +119,10 @@
     </ul>
   </form>
 <?php endif; ?>
-<div class="mobile-navigation visible-xs hidden-print">
+<div class="mylist-mobile mobile-navigation visible-xs visible-sm hidden-print">
   <ul>
     <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Your Lists')?></li>
   </ul>
 </div>
+
 <!-- END of: finna - myresearch/mylist.phtml -->
