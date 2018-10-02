@@ -264,6 +264,61 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
         return $title;
     }
 
+   /**
+     * Get the title and try to reconstruct the original title for merged records
+     *
+     * @return string
+     */
+    public function getUnmergedTitleByType(string $type) : string
+    {
+        $merge_match_expression = "/^(.*) \/ (\(electronic\)|\(print\)); (.*) \/ (\(electronic\)|\(print\))$/";
+        $title = $this->getShortTitle();
+        if (preg_match($merge_match_expression, $title, $matches))
+            $title = ($matches[2] == "($type)") ? $matches[1] : $matches[3];
+
+        $subtitle = $this->getSubtitle();
+        if (preg_match($merge_match_expression, $subtitle, $matches))
+            $subtitle = ($matches[2] == "($type)") ? $matches[1] : $matches[3];
+        $titleSection = $this->getTitleSection();
+        if (!empty($subtitle)) {
+            if ($title != '') {
+                $separator = preg_match("/^[\\s=]+/", $subtitle) ? " " : ": ";
+                $title .= $separator;
+            }
+            $title .= $subtitle;
+        }
+        if (!empty($titleSection)) {
+            if ($title != '') {
+                $title .= ' / ';
+            }
+            $title .= $titleSection;
+        }
+        return $title;
+    }
+
+
+    /**
+     * Get the title or only the reconstruction of the electronic title if it is a merged record
+     *
+     * @return string
+     */
+    public function getUnmergedElectronicTitle() : string
+    {
+        return $this->getUnmergedTitleByType("electronic");
+    }
+
+
+    /**
+     * Get the title or only the reconstruction of the print title if it is a merged record
+     *
+     * @return string
+     */
+    public function getUnmergedPrintTitle() : string
+    {
+        return $this->getUnmergedTitleByType("print");
+    }
+
+
     /**
      * Return an associative array of URL's mapped to their material types.
      *
