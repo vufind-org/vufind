@@ -75,9 +75,11 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?> float-right">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
-    <? foreach ($this->results->getRecommendations('side') as $current): ?>
-      <?=$this->recommend($current)?>
-    <? endforeach; ?>
+    <? if ($list->editAllowed($account->isLoggedIn())): ?>
+      <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
+      <? foreach ($this->results->getRecommendations('side') as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    <? endif; ?>
   </div>
 </div>
