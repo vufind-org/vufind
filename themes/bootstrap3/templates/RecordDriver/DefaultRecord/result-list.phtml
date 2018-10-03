@@ -121,7 +121,7 @@
           */
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
-        $doi = $this->doi($this->driver, 'holdings');
+        $doi = $this->doi($this->driver, 'results');
         $doiActive = $doi->isActive();
         // Account for replace_other_urls setting
         $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
