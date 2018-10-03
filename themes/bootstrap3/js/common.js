@@ -31,10 +31,11 @@ var VuFind = (function VuFind() {
     if (_submodules.indexOf(name) === -1) {
       _submodules.push(name);
       this[name] = typeof module == 'function' ? module() : module;
-    }
-    // If the object has already initialized, we should auto-init on register:
-    if (_initialized && this[name].init) {
-      this[name].init();
+
+      // If the object has already initialized, we should auto-init on register:
+      if (_initialized && this[name].init) {
+        this[name].init();
+      }
     }
   };
   var init = function init() {
