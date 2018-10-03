@@ -1,9 +1,11 @@
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('Login'));
-
     // Check if this page has been added as a part of another page
     $isPartial = $this->layout()->templateName === 'profile';
+
+    // Set up page title:
+    if (!$isPartial) {
+        $this->headTitle($this->translate('Login'));
+    }
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
