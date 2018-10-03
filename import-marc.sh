@@ -67,7 +67,11 @@ if [ -z "$VUFIND_HOME" ]
 then
   # set VUFIND_HOME to the absolute path of the directory containing this script
   # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
-  export VUFIND_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+  export VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"
+  if [ -z "$VUFIND_HOME" ]
+  then
+    exit 1
+  fi
 fi
 
 if [ -z "$VUFIND_LOCAL_DIR" ]

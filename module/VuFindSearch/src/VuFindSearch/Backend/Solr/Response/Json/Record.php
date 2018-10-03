@@ -101,6 +101,6 @@ class Record implements RecordInterface
      */
     public function __get($name)
     {
-        return isset($this->fields[$name]) ? $this->fields[$name] : null;
+        return $this->fields[$name] ?? null;
     }
 }

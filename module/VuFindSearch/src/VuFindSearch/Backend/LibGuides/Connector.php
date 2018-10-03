@@ -81,14 +81,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @param string     $iid        Institution ID
      * @param HttpClient $client     HTTP client
      * @param float      $apiVersion API version number
+     * @param string     $baseUrl    API base URL (optional)
      */
-    public function __construct($iid, $client, $apiVersion = 1)
+    public function __construct($iid, $client, $apiVersion = 1, $baseUrl = null)
     {
         $this->apiVersion = $apiVersion;
-        if ($this->apiVersion < 2) {
-            $this->host = "http://api.libguides.com/api_search.php?";
+        if (empty($baseUrl)) {
+            $this->host = ($this->apiVersion < 2)
+                ? "http://api.libguides.com/api_search.php?"
+                : "http://lgapi.libapps.com/widgets.php?";
         } else {
-            $this->host = "http://lgapi.libapps.com/widgets.php?";
+            // Ensure appropriate number of question marks:
+            $this->host = rtrim($baseUrl, '?') . '?';
         }
         $this->iid = $iid;
         $this->client = $client;

@@ -68,8 +68,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getTotal()
     {
-        return isset($this->response['recordCount'])
-            ? $this->response['recordCount'] : 0;
+        return $this->response['recordCount'] ?? 0;
     }
 
     /**
@@ -90,7 +89,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-        return isset($this->response['offset'])
-            ? $this->response['offset'] : 0;
+        return $this->response['offset'] ?? 0;
     }
 }
