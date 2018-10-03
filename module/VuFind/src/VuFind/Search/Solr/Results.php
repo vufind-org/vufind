@@ -109,6 +109,13 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $searchService = $this->getSearchService();
+        $cursorMark = $this->getStartOffset();
+        if (null !== $cursorMark) {
+            $params->set('cursorMark', '' === $cursorMark ? '*' : $cursorMark);
+            // Override any default timeAllowed since it cannot be used with
+            // cursorMark
+            $params->set('timeAllowed', -1);
+        }
 
         try {
             $collection = $searchService
@@ -136,6 +143,11 @@ class Results extends \VuFind\Search\Base\Results
         $this->spellingQuery = $spellcheck->getQuery();
         $this->suggestions = $this->getSpellingProcessor()
             ->getSuggestions($spellcheck, $this->getParams()->getQuery());
+
+        // Update current cursorMark
+        if (null !== $cursorMark) {
+            $this->overrideStartOffset($collection->getCursorMark());
+        }
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();

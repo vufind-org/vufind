@@ -67,6 +67,13 @@ abstract class Results
     protected $startRecordOverride = null;
 
     /**
+     * Offset override (only for use in very rare cases)
+     *
+     * @var string
+     */
+    protected $startRecordOffset = null;
+
+    /**
      * Array of results (represented as Record Driver objects) retrieved on latest
      * search
      *
@@ -320,6 +327,18 @@ abstract class Results
     }
 
     /**
+     * Manually override the start offset.
+     *
+     * @param string $offset Backend-specific offset identifier.
+     *
+     * @return void
+     */
+    public function overrideStartOffset($offset)
+    {
+        $this->startRecordOffset = $offset;
+    }
+
+    /**
      * Get record number for start of range represented by current result set.
      *
      * @return int
@@ -360,6 +379,16 @@ abstract class Results
         // If the end of the current page runs past the last record, use total
         // results; otherwise use the last record on this page:
         return ($record > $total) ? $total : $record;
+    }
+
+    /**
+     * Get any custom cursor offset.
+     *
+     * @return string|null
+     */
+    public function getStartOffset()
+    {
+        return $this->startRecordOffset;
     }
 
     /**

@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -39,6 +41,7 @@ use VuFind\SimpleXML;
  * @category VuFind
  * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -177,19 +180,27 @@ class Server
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
-     * @param \Zend\Config\Config                  $config  VuFind configuration
-     * @param string                               $baseURL The base URL for the OAI
-     * server
-     * @param array                                $params  The incoming OAI-PMH
-     * parameters (i.e. $_GET)
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        \Zend\Config\Config $config, $baseURL, $params
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
+    }
+
+    /**
+     * Initialize settings
+     *
+     * @param \Zend\Config\Config $config  VuFind configuration
+     * @param string              $baseURL The base URL for the OAI server
+     * @param array               $params  The incoming OAI-PMH parameters (i.e.
+     * $_GET)
+     *
+     * @return void
+     */
+    public function init(\Zend\Config\Config $config, $baseURL, $params)
+    {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
         $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
@@ -595,31 +606,35 @@ class Server
 
         // Figure out how many Solr records we need to display (and where to start):
         if ($currentCursor >= $deletedCount) {
-            $solrOffset = $currentCursor - $deletedCount;
+            $cursorOffset = $params['offset'] ?? '';
         } else {
-            $solrOffset = 0;
+            $cursorOffset = '';
         }
-        $solrLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
+        $recordLimit = $this->pageSize;
 
         // Get non-deleted records from the Solr index:
         $set = $params['set'] ?? '';
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit, $set
+            $from, $until, $cursorOffset, $recordLimit, $set
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
             if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set)) {
-                $this->unexpectedError('Cannot load document');
+                // Record cannot be returned in the given format
+                continue;
             }
             $currentCursor++;
         }
 
         // If our cursor didn't reach the last record, we need a resumption token!
         $listSize = $deletedCount + $nonDeletedCount;
-        if ($listSize > $currentCursor) {
-            $this->saveResumptionToken($xml, $params, $currentCursor, $listSize);
-        } elseif ($solrOffset > 0) {
+        $nextOffset = $result->getStartOffset();
+        if ($listSize > $currentCursor && $nextOffset !== $cursorOffset) {
+            $this->saveResumptionToken(
+                $xml, $params, $currentCursor, $listSize, $nextOffset
+            );
+        } elseif ('' !== $cursorOffset) {
             // If we reached the end of the list but there is more than one page, we
             // still need to display an empty <resumptionToken> tag:
             $token = $xml->addChild('resumptionToken');
@@ -710,7 +725,7 @@ class Server
      *
      * @param int    $from   Start date.
      * @param int    $until  End date.
-     * @param int    $offset First record to obtain in full detail.
+     * @param string $offset Offset in the full result list.
      * @param int    $limit  Max number of full records to return.
      * @param string $set    Set to limit to (empty string for none).
      *
@@ -725,7 +740,7 @@ class Server
         $params->setLimit($limit);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
-        $params->setSort('last_indexed asc', true);
+        $params->setSort('last_indexed asc, id asc', true);
 
         // Construct a range query based on last indexed time:
         $params->setOverrideQuery(
@@ -747,7 +762,8 @@ class Server
         }
 
         // Perform a Solr search:
-        $results->overrideStartRecord($offset + 1);
+        $results->overrideStartRecord(1);
+        $results->overrideStartOffset($offset);
 
         // Return our results:
         return $results;
@@ -980,15 +996,19 @@ class Server
      * @param int              $currentCursor Current cursor position in search
      * results.
      * @param int              $listSize      Total size of search results.
+     * @param string           $currentOffset Current offset (like $currentCursor but
+     * a backend-specific value).
      *
      * @return void
      */
-    protected function saveResumptionToken($xml, $params, $currentCursor, $listSize)
-    {
+    protected function saveResumptionToken($xml, $params, $currentCursor, $listSize,
+        $currentOffset
+    ) {
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
         $params['cursor'] = $currentCursor;
+        $params['offset'] = $currentOffset;
 
         // Save everything to the database:
         $search = $this->tableManager->get('OaiResumption');
