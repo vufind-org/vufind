@@ -3,7 +3,8 @@ VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var element = $(el);
     var doi = [];
-    element.find('.doiLink').each(function extractDoiData(i, doiLinkEl) {
+    var elements = element.hasClass('doiLink') ? element : element.find('.doiLink');
+    elements.each(function extractDoiData(i, doiLinkEl) {
       var currentDoi = $(doiLinkEl).data('doi');
       if (doi.indexOf(currentDoi) === -1) {
         doi[doi.length] = currentDoi;
@@ -21,7 +22,7 @@ VuFind.register('doi', function Doi() {
       url: url
     })
       .done(function embedDoiLinksDone(response) {
-        element.find('.doiLink').each(function populateDoiLinks(x, doiEl) {
+        elements.each(function populateDoiLinks(x, doiEl) {
           var currentDoi = $(doiEl).data('doi');
           if ("undefined" !== response.data[currentDoi]) {
             $(doiEl).empty();
