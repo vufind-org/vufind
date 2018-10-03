@@ -22,4 +22,4 @@ cache:
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint jshint eslint-finna phpunitfast phpcs-console php-cs-fixer-dryrun
+  - vendor/bin/phing eslint eslint-finna phpunitfast phpcs-console php-cs-fixer-dryrun
