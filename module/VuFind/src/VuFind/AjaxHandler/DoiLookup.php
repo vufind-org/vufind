@@ -28,7 +28,6 @@
 namespace VuFind\AjaxHandler;
 
 use VuFind\DoiLinker\PluginManager;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**
@@ -40,10 +39,8 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookup extends AbstractBase implements TranslatorAwareInterface
+class DoiLookup extends AbstractBase
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
     /**
      * DOI Linker Plugin Manager
      *
