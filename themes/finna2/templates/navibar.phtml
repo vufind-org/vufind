@@ -11,59 +11,55 @@
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
-      
       <ul role="menubar" class="nav navbar-nav navbar-main">
         <?php foreach ($this->navibar()->getMenuItems($this->layout()->userLang) as $key => $val): ?>
-        <?php if (count($val['items']) > 1): ?>
-        <li role="menuitem" class="dropdown" id="<?= $val['label'] ?>">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
-          <ul role="presentation" class="dropdown-menu">
-            <?php foreach ($val['items'] as $itemKey => $itemVal): ?>
-            <?php
-              if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
-               continue;
-              }
-              $url = $itemUrl['url'];
-              $target = !empty($itemUrl['target']) ? $itemUrl['target'] : null;
-              $label = $itemVal['label'];
-              $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
-            ?>
-            <li role="menuitem">
-              <a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$url?>">
-                <div><?= $this->transEsc($label) ?></div>
-                <?php if ($desc): ?>
-                <div class="description" role="note"><?= $this->transEsc($desc) ?></div>
-                <?php endif; ?>
-              </a>
+          <?php if (count($val['items']) > 1): ?>
+            <li role="menuitem" class="dropdown" id="<?= $val['label'] ?>">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
+              <ul role="presentation" class="dropdown-menu">
+                <?php foreach ($val['items'] as $itemKey => $itemVal): ?>
+                <?php
+                  if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
+                    continue;
+                  }
+                  $url = $itemUrl['url'];
+                  $target = !empty($itemUrl['target']) ? $itemUrl['target'] : null;
+                  $label = $itemVal['label'];
+                  $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
+                ?>
+                <li role="menuitem">
+                  <a <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$url?>">
+                    <div><?= $this->transEsc($label) ?></div>
+                    <?php if ($desc): ?>
+                      <div class="description" role="note"><?= $this->transEsc($desc) ?></div>
+                    <?php endif; ?>
+                  </a>
+                </li>
+                <?php endforeach; ?>
+              </ul>
             </li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
-        <?php else:
-          $itemVal = $val['items'][0];
-          if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
-            continue;
-          }
-          $url = $itemUrl['url'];
-          $target = $itemUrl['target'] ?? null;
-          $label = $itemVal['label'];
-        ?>
-        <li><a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
-        <?php endif; ?>
+          <?php else:
+            $itemVal = $val['items'][0];
+            if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
+              continue;
+            }
+            $url = $itemUrl['url'];
+            $target = $itemUrl['target'] ?? null;
+            $label = $itemVal['label'];
+          ?>
+            <li><a <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
+          <?php endif; ?>
         <?php endforeach; ?>
-
         <?php $cart = $this->cart(); if ($cart->isActive()): ?>
           <li id="cartSummary" role="menuitem">
             <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase" aria-hidden="true"></i> <strong><?=count($cart->getItems())?></strong> <span class="sr-only"><?=$this->transEsc('items')?></span></a>
           </li>
         <?php endif; ?>
-
         <?php if ($this->feedback()->tabEnabled()): ?>
           <li role="menuitem">
           <a id="feedback-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc("Feedback")?></a>
         </li>
         <?php endif; ?>
-
         <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
         <li role="presentation" class="dropdown">
           <form method="post" name="themeForm" id="themeForm">
@@ -77,12 +73,10 @@
           </ul>
         </li>
         <?php endif; ?>
-
         <?php if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
           <?=$this->render($template)?>
         <?php endif; ?>
       </ul>
-
       <ul role="menubar" class="nav navbar-nav lang">
         <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
           <?php $i = 1;?>
@@ -96,7 +90,6 @@
           <?php endforeach; ?>
         <?php endif; ?>
       </ul>
-
     <?php //hide login if unavailable ?>
     <?php if (is_object($account) && $account->loginEnabled()): ?>
       <?php $user = $account->isLoggedIn(); ?>
@@ -104,15 +97,15 @@
       <ul role="menubar" class="nav navbar-nav nav-login">
         <li role="menuitem" class="nav-login" id="loginOptions-navi"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
         <?php if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-          <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
+          <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
         <?php else: ?>
           <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
             <div>
-              <a class="btn btn-primary btn-uppercase"><i class="fa fa-sign-in fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
+              <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
             </div>
           <?php else: ?>
             <div>
-              <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-sign-in fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
+              <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
             </div>
           <?php endif; ?>
         <?php endif; ?>
@@ -121,34 +114,65 @@
       <?php endif; ?>
     <?php endif; ?>
     </div>
-
     <ul role="menu" class="nav navbar-nav nav-absolute">
     <?php //hide login/logout if unavailable ?>
     <?php if (is_object($account) && $account->loginEnabled()): ?>
-      <?php $user = $account->isLoggedIn(); ?>
-      <li role="menuitem" class="logoutOptions<?php if (!$user): ?> hidden<?php endif ?>">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg" aria-hidden="true"></i> <span class="username login-text"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span> <b class="caret"></b></a>
-        <ul role="menu" class="dropdown-menu">
-          <li role="menuitem" class="logoutOptions<?php if (!$user): ?> hidden<?php endif ?>">
-            <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user fa-lg" aria-hidden="true"></i><?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
-          </li>
-          <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true']);?>
-          <li role="menuitem" class="logoutOptions<?php if (!$user): ?> hidden<?php endif ?>">
-            <a href="<?=$this->url('myresearch-logout')?>" class="logout" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></strong></a>
-          </li>
-        </ul>
-      </li>
-      <li role="menuitem" id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
+      <?php if ($this->auth()->isLoggedIn()): ?>
+        <li class="logoutOptions">
+          <a href="#" role="menu"  data-toggle="dropdown"aria-expanded="false"><i class="fa fa-user fa-lg" aria-hidden="true"></i> <span class="username login-text"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span><b class="caret"></b></a>
+          <ul id="my-info-dropdown-menu" class="dropdown-menu">
+            <?php if ($user->getLibraryCards()->count() > 0): ?>
+              <li role="menuitem">
+                <a href="<?=$this->url('myresearch-checkedout')?>">
+                  <?=$this->transEsc('Checked Out Items')?>
+                </a>
+              </li>
+              <li role="menuitem">
+                <a href="<?=$this->url('myresearch-holds')?>">
+                  <?=$this->transEsc('Holds and Recalls')?>
+                </a>
+              </li>
+              <li role="menuitem">
+                <a href="<?=$this->url('myresearch-fines')?>">
+                  <?=$this->transEsc('Fines')?>
+                </a>
+              </li>
+            <?php endif; ?>        
+            <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true']);?>
+            <li role="menuitem">
+              <a href="<?=$this->url('search-history')?>?require_login">
+                <?=$this->transEsc('history_saved_searches')?>
+              </a>
+            </li>
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+              <li role ="menuitem">
+                <a href="<?=$this->url('myresearch-favorites')?>">
+                <?=$this->transEsc('Favorites')?>
+                </a>
+              </li>
+            <?php endif; ?>
+            <li role="menuitem">
+              <a href="<?=$this->url('myresearch-profile')?>">
+                <?=$this->transEsc('Profile')?>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="<?=$this->url('myresearch-logout')?>" title="<?=$this->transEsc("Log Out")?>"><?=$this->transEsc("Log Out")?><i class="pull-right fa fa-sign-out fa-lg" aria-hidden="true"></i></a>
+            </li>
+          </ul>
+        </li>
+      <?php endif; ?>
+      <li role="menuitem" id="loginOptions"<?= $account->isLoggedIn() ?  "class='hidden'" : '';?>>
         <?php if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-        <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
+        <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
         <?php else: ?>
           <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
             <div>
-              <a class="btn btn-primary btn-uppercase"><i class="fa fa-sign-in fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
+              <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
             </div>
           <?php else: ?>
             <div>
-              <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-sign-in fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
+              <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
             </div>
           <?php endif; ?>
         <?php endif; ?>

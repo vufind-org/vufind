@@ -877,7 +877,7 @@ finna.layout = (function finnaLayout() {
   }
 
   function initFiltersToggle () {
-    $('.filters-toggle').click(function filterToggleClicked(e){
+    $('.filters-toggle').click(function filterToggleClicked(e) {
       var finnaFilters = $(e.target).closest('.finna-filters');
       var filtersBar = finnaFilters.find('.filters-bar');
       if (filtersBar.hasClass('hidden')) {

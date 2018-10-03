@@ -82,26 +82,13 @@
         color: @text-color;
         width: 250px;
         i {
-          color: @action-link-color;
-          padding-right: 5px;
+          padding-top: 3px;
         }
       }
     }
     @media (max-width: @screen-xxs) {
       right: -30px;
     }
-  }
-  &.card-selection {
-    h5 {
-      padding-left: 15px;
-    }
-    > a {
-      padding-left: 32px;
-    }
-    i.fa-check {
-      margin-left: -17px;
-    }
-    padding-left: 5px;
   }
   .username {
     display: inline-block;
@@ -111,7 +98,6 @@
     white-space: nowrap;
     vertical-align: top;
     font-size: @font-size-base;
-    text-transform: uppercase;
     font-weight: 600;
     @media (max-width: @screen-sm) {
       max-width: 80px;
@@ -134,9 +120,6 @@
       @media (max-width: @screen-xxs) {
         display: none;
       }
-    }
-    @media (max-width: @grid-float-breakpoint) {
-      margin: 0 15px;
     }
   }
   #loginOptions-navi .login-text {
@@ -181,7 +164,6 @@
       top: 0px;
     }
   }
-
   @media (min-width:@screen-lg-min) {
     &.attached {
       width: 262px;
@@ -294,7 +276,6 @@
         border-left: none;
       }
     }
-
     // Dropdowns get custom display when collapsed
     .open:not(.logoutOptions):not(.browsebar-dropdown) .dropdown-menu {
       position: static;
@@ -327,7 +308,6 @@
         }
       }
     }
-
     .open .dropdown-menu {
       position: absolute;
       float: left;
@@ -355,7 +335,6 @@
       }
     }
   }
-
   // Uncollapse the nav
   @media (min-width: @grid-float-breakpoint) {
     flex-grow: 1;
@@ -367,7 +346,6 @@
       margin-bottom: @navbar-height / 4;
     }
   }
-
   .btn {
     vertical-align: baseline;
   }
@@ -380,7 +358,6 @@
     padding: 0 10px;
   }
 }
-
 
 // Menu position and menu carets
 .navbar-nav > li > .dropdown-menu {
@@ -481,7 +458,7 @@
     padding: 10px 15px 10px 20px;
   }
   .active a {
-    font-weight: 600;      
+    font-weight: 600;
     text-decoration: none;
     color: @dropdown-link-color;;
     background-color: @gray-ultralight;
@@ -498,13 +475,56 @@
   }
 }
 
-.useraccount-nav .dropdown-menu > li > a {
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none;
-    color: @dropdown-link-color;;
-    background-color: @gray-ultralight;
+#my-info-dropdown-menu {
+  width: 280px;
+  right: -15%;
+  background-color: white;
+  margin-top: 0;
+  .box-shadow(0 6px 12px rgba(0, 0, 0, .275));
+
+  .card-selection {
+    p {
+      padding-left: 15px;
+      margin-bottom: 0px;
+    }
+    > a {
+      padding-left: 32px;
+    }
+    i.fa-check {
+      margin-left: -17px;
+      color: @brand-primary;
+    }
+  }
+  > li {
+    border-bottom: 1px solid @gray-lighter;
+    line-height: 30px;
+    cursor: pointer;
+
+    > ul {
+      line-height: 20px;
+      > li > a {
+        text-indent: 5%;
+        li {
+          height: 25px;
+        }
+      }
+    }
+    a {
+      width: 100%;
+      &:hover {
+        text-decoration: none;
+        color: @dropdown-link-hover-color;
+        background-color: @dropdown-link-hover-bg;
+      }
+    }
+  }
+
+  > li:last-child > a, li:last-child {
+    border-bottom: none;
+    .border-bottom-radius(8px);
+  }
+  > li:first-child > a, li:first-child {
+    .border-top-radius(8px);
   }
 }
 
@@ -637,7 +657,7 @@
 @media(min-width: @grid-float-breakpoint) {
   .finna-navbar {
     display: flex;
-    .nav.nav-absolute{
+    .nav.nav-absolute {
       position: relative;
     }
     .navbar-collapse {
@@ -652,7 +672,7 @@
 }
 
 .navbar-nav>li>.dropdown-menu {
-  margin-top: -10px;
+  margin-top: -5px;
 }
 
 header {

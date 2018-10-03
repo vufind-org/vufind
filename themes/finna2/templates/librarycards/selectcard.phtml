@@ -4,7 +4,7 @@
     <?php $targetCount = $this->ils()->checkCapability('getLoginDrivers') ? count($this->ils()->getLoginDrivers()) : 1; ?>
     <?php if (isset($loginMenu) && $loginMenu): ?>
       <li role="menuitem" class="logoutOptions card-selection">
-        <h5><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?></h5>
+        <p><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?></p>
         <?php foreach ($cards as $card): ?>
           <?php
             $target = '';
