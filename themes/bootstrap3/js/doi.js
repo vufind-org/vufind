@@ -44,7 +44,7 @@ VuFind.register('doi', function Doi() {
     var container = _container || $('body');
     // assign action to the openUrlWindow link class
     if (typeof Hunt === 'undefined') {
-      embedDoiLinks(container)
+      embedDoiLinks(container);
     } else {
       new Hunt(
         container.find('.doiLink').toArray(),
