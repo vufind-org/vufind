@@ -4,7 +4,10 @@ VuFind.register('doi', function Doi() {
     var element = $(el);
     var doi = [];
     element.find('.doiLink').each(function extractDoiData(i, doiLinkEl) {
-      doi[doi.length] = $(doiLinkEl).data('doi');
+      var currentDoi = $(doiLinkEl).data('doi');
+      if (doi.indexOf(currentDoi) === -1) {
+        doi[doi.length] = currentDoi;
+      }
     });
     if (doi.length === 0) {
       return;
