@@ -115,6 +115,30 @@ class Doi extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Does the configuration indicate that we should display DOI links in
+     * the specified context?
+     *
+     * @return bool
+     */
+    protected function checkContext()
+    {
+        // Doesn't matter the target area if no resolver is specified:
+        if (empty($this->config->resolver)) {
+            return false;
+        }
+
+        // If a setting exists, return that:
+        $key = 'show_in_' . $this->area;
+        if (isset($this->config->$key)) {
+            return $this->config->$key;
+        }
+
+        // If we got this far, use the defaults -- true for results, false for
+        // everywhere else.
+        return $this->area == 'results';
+    }
+
+    /**
      * Public method to check whether OpenURLs are active for current record
      *
      * @return bool
@@ -122,6 +146,6 @@ class Doi extends \Zend\View\Helper\AbstractHelper
     public function isActive()
     {
         $doi = $this->recordDriver->tryMethod('getCleanDOI');
-        return !empty($doi);
+        return !empty($doi) && $this->checkContext();
     }
 }
