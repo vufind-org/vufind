@@ -23,9 +23,11 @@ if ($img):
     <div class="media-body">
       <div class="result-body">
         <div class="title-container">
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
-            <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
-          </a>
+          <h2 class="search-title">
+            <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
+              <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+            </a>
+          </h2>
           <?php if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
             <div class="result-uniform-titles">
               <?php foreach ($uniformTitles as $uniformTitle): ?>

@@ -41,7 +41,7 @@
     &:focus {
       outline: none;
     }
-    & .grid-title {
+    .grid-title {
       position: relative;
       padding: 10px 5px 4px;
       width: 100%;
@@ -54,13 +54,13 @@
       z-index: 10;
       background: transparent;
     }
-    & .dateyeartype p {
+    .dateyeartype p {
       margin-bottom: 0px;
     }
-    & .grid-image {
+    .grid-image {
       overflow: hidden;
     }
-    & a.title {
+    h2.title {
       font-size: 1.15em;
       display: inline-block;
       text-overflow: ellipsis;
@@ -68,50 +68,50 @@
       overflow: hidden;
       width: 99%;
     }
-    & a.fulltext {
+    a.fulltext {
       width: 100%;
       text-overflow: ellipsis;
       white-space: nowrap;
       display: inline-block;
       overflow: hidden;
     }
-    & .save-record-container {
+    .save-record-container {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
       display: none;
     }
-    & .save-record {
+    .save-record {
       float: none;
       font-size: inherit;
     }
-    & .result .status {
+    .result .status {
       position: absolute;
       width: auto;
       bottom: 30px;
       left: auto;
-      & .label  {
+      .label  {
         background-color: #00b270;
         box-shadow: -2px 2px 10px -2px black;
       }
     }
-    & img {
+    img {
       box-shadow: none;
     }
-    & .image-popup-trigger:not(.no-image) {
+    .image-popup-trigger:not(.no-image) {
       max-height: 350px;
       display: block;
       overflow: hidden;
-      & img {
+      img {
         width: auto;
       }
     }
 
     @media (max-width: @screen-xs-max) {
-      & .recordcover {
+      .recordcover {
         width: 100%;
       }
-      & .iconlabel:before {
+      .iconlabel:before {
         display: block;
       }
     }
@@ -148,8 +148,8 @@
     }
   }
   &:not(.touch-device) {
-    & .grid.no-image  {
-      & .grid-title {
+    .grid.no-image  {
+      .grid-title {
         max-height: 43px;
         max-height: 200px;
         box-shadow: 0px 0px 0px;
@@ -162,9 +162,9 @@
         margin: 0;
         background: #fff;
       }
-      & .dateyeartype {
+      .dateyeartype {
         margin-top: -4px;
-        & p {
+        p {
           margin-bottom: 0px;
         }
       }
@@ -175,8 +175,8 @@
   }
 }
 .result-view-grid.touch-device {
-  & .grid {
-    & .grid-title {
+  .grid {
+    .grid-title {
       .opacity(.9);
       position: relative;
       max-height: 200px;
@@ -187,12 +187,12 @@
       top: ~"-moz-calc(100% - 21px)";
       top: ~"calc(100% - 21px)";
     }
-    & .save-record-container, & .fulltext-links {
+    .save-record-container, .fulltext-links {
       display: none;
     }
-    & .dateyeartype {
+    .dateyeartype {
       margin-top: -4px;
-      & p {
+      p {
         margin-bottom: 0;
       }
     }

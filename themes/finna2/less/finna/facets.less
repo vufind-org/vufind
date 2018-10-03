@@ -11,7 +11,7 @@
 .list-group.filters {
   background: @list-group-bg;
   padding: 10px 0px;
-  & .list-group-item.title, .list-group-item.active {
+  .list-group-item.title, .list-group-item.active {
     padding: 5px 10px;
     background: transparent;
     color: @gray;
@@ -28,7 +28,7 @@
 
 .list-group.facet {
   // style Finna facet headers
-  & .list-group-item.title {
+  .list-group-item.title {
     font-size: @font-size-h4;
     margin-bottom: 1px;
     cursor:pointer;
@@ -51,11 +51,8 @@
       right: 8px;
       color: @action-link-color;
     }
-    &:focus {
-      outline:0;
-    }
   }
-  & .collapse, .collapsing {
+  .collapse, .collapsing {
     a {
       background-color: @body-bg;
     }
@@ -79,7 +76,7 @@
     padding-right: 0;
   }
 
-  & a {
+  a {
     color: @link-color;
     &:hover {
       text-decoration: underline;
@@ -92,7 +89,7 @@
       text-transform: uppercase;
       text-decoration: none;
       width: 100%;
-      & i {
+      i {
         font-size: 1.2em;
         font-weight: bold;
         height: 1.2em;
@@ -101,7 +98,7 @@
       }
     }
   }
-  & button.list-group-item.title {
+  button.list-group-item.title {
     font-size: 1em;
     background: @gray-ultralight;
     font-weight: 600;
@@ -113,7 +110,7 @@
     padding: 15px 10px;
   }
 
-  & .list-group-item i.fa.fa-check-square-o {
+  .list-group-item i.fa.fa-check-square-o {
     color: @link-color;
   }
 
@@ -132,8 +129,8 @@
     .jstree-container-ul {
       background: transparent;
       color: @link-color;
-      & > li.active,
-      & > li.active a.jstree-anchor {
+      > li.active,
+      > li.active a.jstree-anchor {
         font-weight: bold;
         color: @link-color;
       }
@@ -152,30 +149,30 @@
   .jstree-facet .jstree-container-ul .jstree-icon {
     color: @gray-light;
   }
-  & .jstree-container-ul .jstree-node.active > a, & a.list-group-item.active {
+  .jstree-container-ul .jstree-node.active > a, a.list-group-item.active {
     &:hover {
       text-decoration: line-through;
     }
   }
-  & .jstree-ocl:before {
+  .jstree-ocl:before {
     font-family: 'icomoon';
     font-size: 1.2em;
     color: @action-link-color;
     margin-left: -12px;
   }
-  & .jstree-open > .jstree-ocl:before {
+  .jstree-open > .jstree-ocl:before {
     content: "\e907";
   }
-  & .jstree-closed > .jstree-ocl:before {
+  .jstree-closed > .jstree-ocl:before {
     content: "\e906";
   }
-  & .jstree-leaf > .jstree-ocl:before {
+  .jstree-leaf > .jstree-ocl:before {
     content: " ";
   }
 
-  // tablet & mobile facet adjustments
+  // tablet mobile facet adjustments
   @media (max-width: @screen-xs-max) {
-    & .facet:not(.facet-group), .usage-right-group {
+    .facet:not(.facet-group), .usage-right-group {
       font-size: 1.15em;
     }
     .narrow-toggle .text {
@@ -217,7 +214,7 @@ h4 + .list-group.facet {
     @media (max-width:@screen-xs-max) {
         padding-left: 30px;
     }
-    & input {
+    input {
         width: 190px;
         @media (min-width: @screen-sm-min) and (max-width:@screen-sm-max) {
             width: 135px;
@@ -247,7 +244,7 @@ span.badge.cb-facet {
     .status {
       float: right;
 
-      body.rtl & { float: left; }
+      body.rtl { float: left; }
     }
     .badge {
       max-height: 19px;
@@ -271,7 +268,7 @@ span.badge.cb-facet {
       content: '\25B2';
       float: right;
 
-      body.rtl & { float: left; }
+      body.rtl { float: left; }
     }
   }
   .collapsed::after {content: '\25BC';}
@@ -287,7 +284,7 @@ span.badge.cb-facet {
     }
   }
 
-  body.rtl & {
+  body.rtl {
     padding-left: 0;
     padding-right: 15px;
   }
@@ -334,21 +331,21 @@ span.badge.cb-facet {
 }
 
 .sidebar {
-  & .list-group-item.facet-info {
+  .list-group-item.facet-info {
     margin-top: 5px;
     margin-left: 20px;
     font-size: 0.9em;
-    & .fa {
+    .fa {
       font-size: 1.5em;
       float: left;
       margin: 5px 5px 0 -20px;
       color: @brand-primary;
     }
-    & .info {
+    .info {
       margin-left: 5px;
       margin-top: -3px;
     }
-    & .more-info {
+    .more-info {
       text-align: right;
       display: block;
       margin-top: 3px;
@@ -369,7 +366,7 @@ span.badge.cb-facet {
       float: left;
       padding: 10px 5px;
       font-size: 0.9em;
-      & i {
+      i {
         color: #fff;
       }
       &:last-child {

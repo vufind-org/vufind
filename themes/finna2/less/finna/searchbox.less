@@ -39,6 +39,9 @@
 }
 
 .finna-filters, .checkboxFilter {
+  .filters {
+    display: inline-block;
+  }
   & .checkbox label input {
     display: none;
   }
@@ -53,6 +56,37 @@
   & .checkbox.checked label:before {
     font-family: 'Fontawesome';
     content: "\f14a";
+  }
+}
+
+.finna-checkbox {
+  display: inline-block;
+
+  > label {
+    display: inline;
+  }
+  input[type=checkbox] {
+    height: 20px;
+    width: 20px;
+    line-height: unset;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid black;
+    border-radius: 4px;
+
+    &:before {
+      content: "";
+      border: 1px solid transparent;
+    }
+    &:checked{
+      background-color: black;
+      &:after{
+        font-family: 'Fontawesome';
+        content: "\f00c";
+        color: white;
+      }
+    }
   }
 }
 

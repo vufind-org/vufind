@@ -11,20 +11,21 @@
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
         </div>
         <div class="title-container">
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?php
-            $summHighlightedTitle = $this->driver->getHighlightedTitle();
-            $summTitle = $this->driver->getTitle();
-            if (!empty($summHighlightedTitle)) {
-              echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } elseif (!empty($summTitle)) {
-              echo $this->escapeHtml($this->truncate($summTitle, 180));
-            } else {
-              echo $this->transEsc('Title not available');
-            }
-          ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
-          </a>
-
+          <h2 class="search-title">
+            <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+            <?php
+              $summHighlightedTitle = $this->driver->getHighlightedTitle();
+              $summTitle = $this->driver->getTitle();
+              if (!empty($summHighlightedTitle)) {
+                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+              } elseif (!empty($summTitle)) {
+                echo $this->escapeHtml($this->truncate($summTitle, 180));
+              } else {
+                echo $this->transEsc('Title not available');
+              }
+            ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+            </a>
+          </h2>
         </div>
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>

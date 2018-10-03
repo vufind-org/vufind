@@ -23,19 +23,22 @@ if ($img):
     <div class="media-body">
       <div class="result-body">
         <div class="title-container">
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?php
-            $summHighlightedTitle = $this->driver->getHighlightedTitle();
-            $summTitle = $this->driver->getTitle();
-            if (!empty($summHighlightedTitle)) {
-              echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } elseif (!empty($summTitle)) {
-              echo $this->escapeHtml($this->truncate($summTitle, 180));
-            } else {
-              echo $this->transEsc('Title not available');
-            }
-          ?>
-          </a><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+          <h2 class="search-title">
+            <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+            <?php
+              $summHighlightedTitle = $this->driver->getHighlightedTitle();
+              $summTitle = $this->driver->getTitle();
+              if (!empty($summHighlightedTitle)) {
+                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+              } elseif (!empty($summTitle)) {
+                echo $this->escapeHtml($this->truncate($summTitle, 180));
+              } else {
+                echo $this->transEsc('Title not available');
+              }
+            ?>
+            </a>
+          </h2>
+          <span class="sr-only"> <?=$this->transEsc('To the record')?></span>
         </div>
 
         <div class="dateyeartype">

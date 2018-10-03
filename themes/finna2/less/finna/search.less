@@ -241,10 +241,12 @@ mark, .highlight {
   .media{
     flex: 1;
   }
-  a.title {
+  h2.title {
     font-size: 1.333em;
     line-height: 1.1em;
     font-weight: 400;
+    margin: 0;
+    padding: 0;
   }
   .left img {max-width:100%; height:auto;}
   @media (max-width:767px) {
@@ -340,6 +342,15 @@ mark, .highlight {
 
 .searchtools-background {
   background: @finna-searchtools-background;
+}
+
+h2 {
+  &.search-title {
+    font-weight: 400;
+    line-height: 1.1em;
+    font-size: 1.333em;
+    margin: 0;
+  }
 }
 
 .searchtools {

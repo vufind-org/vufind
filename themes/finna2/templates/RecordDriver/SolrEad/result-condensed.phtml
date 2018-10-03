@@ -13,19 +13,21 @@
   <div class="condensed-collapse-toggle">
     <div class="condensed-col-title">
       <i class="fa fa-arrow-right"></i>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-      <?php
-      $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } elseif (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-          echo $this->transEsc('Title not available');
-        }
-      ?>
-      </a>
+      <h2 class="title">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+        <?php
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+          $summTitle = $this->driver->getTitle();
+          if (!empty($summHighlightedTitle)) {
+            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+          } elseif (!empty($summTitle)) {
+            echo $this->escapeHtml($this->truncate($summTitle, 180));
+          } else {
+            echo $this->transEsc('Title not available');
+          }
+        ?>
+        </a>
+      </h2>
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <div class="resultHierarchyLinks">

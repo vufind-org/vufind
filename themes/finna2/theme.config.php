@@ -78,6 +78,8 @@ return [
             'inlineScript' => 'FinnaTheme\View\Helper\InlineScript',
             'headTitle' => 'Finna\View\Helper\Root\HeadTitle',
             'holdingsSettings' => 'Finna\View\Helper\Root\HoldingsSettings',
+            //use root highlight so search results use span instead of mark
+            'highlight' => 'VuFind\View\Helper\Root\Highlight',
             'imageSrc' => 'Finna\View\Helper\Root\ImageSrc',
             'indexedTotal' => 'Finna\View\Helper\Root\TotalIndexed',
             'markdown' => 'Finna\View\Helper\Root\Markdown',
