@@ -283,8 +283,59 @@
 }
 
 .useraccount-header {
+  line-height: 1.5;
   font-weight: 600;
   font-size:@font-size-h2;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.payment-row {
+  .online-payment-area {
+    display: inline-block;
+    .online-payment-form {
+      display: inline-block;
+      input {
+        font-weight: bold;
+      }
+    }
+    margin-bottom: 15px;
+  }
+  @media (min-width: @screen-sm) {
+    > img {
+      position: relative;
+      bottom: 100px;
+      float: right;
+    }
+  }
+  @media (max-width: @screen-sm-min) {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 64px;
+    background-color: white;
+    width: 100%;
+    padding: 12px 0px;
+    input[type=submit] {
+      margin-top: 10px;
+    }
+    > img {
+      width: 15%;
+      min-width: 40px;
+      max-width: 60px;
+      margin-top: 10px;
+    }
+  }
+}
+
+.fines-info-area {
+  margin-bottom: 15px;
+  label {
+    display: flex;
+    align-items: center;
+  }
+  .amount {
+    font-weight: bold;
+  }
 }
 
 #renewals .toolbar {
@@ -332,7 +383,7 @@
 .online-payment-data {
   font-size: 1.2em;
   margin-bottom: 40px;
-  padding-right: 25px;
+  padding-right: 8px;
   @media (min-width: @screen-sm) {
     width: 50%;
     float: right;
@@ -340,14 +391,8 @@
   .amount {
     font-weight: bold;
   }
-
-  .online-payment-form {
-    input {
-      margin-left: 20px;
-      font-weight: bold;
-    }
-  }
 }
+
 .online-payment-note {
   margin-bottom: 40px;
   @media (min-width: @screen-sm) {
@@ -361,8 +406,14 @@
   border: 1px solid @gray-lighter;
   border-top: none;
   box-shadow: 0 15px 30px -35px @gray;
+  border-collapse: separate;
   &.online-payment {
     margin-bottom: 15px;
+    td {
+      @media (max-width: @screen-xs-max) {
+        white-space: normal !important;
+      }
+    }
   }
   &.library-cards {
     @media (max-width: @screen-xs-max) {
@@ -388,7 +439,11 @@
     }
   }
   .user-account-table-title {
-    width: 25%;
+    min-width: 25%;
+    @media (max-width: @screen-xs-max) {
+      white-space: normal !important;
+      min-width: 30%;
+    }
   }
   .total-balance {
     background: none;
