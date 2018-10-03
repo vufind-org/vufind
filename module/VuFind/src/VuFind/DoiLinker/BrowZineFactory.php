@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for DoiLookup AJAX handler.
+ * BrowZine DOI linker factory
  *
  * PHP version 7
  *
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\AjaxHandler;
+namespace VuFind\DoiLinker;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for DoiLookup AJAX handler.
+ * BrowZine DOI linker factory
  *
  * @category VuFind
- * @package  AJAX
+ * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class DoiLookupFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BrowZineFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,8 +62,7 @@ class DoiLookupFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $pluginManager = $container->get('VuFind\DoiLinker\PluginManager');
-        return new $requestedName($pluginManager, $config->DOI->resolver ?? null);
+        $backend = $container->get('VuFind\Search\BackendManager')->get('BrowZine');
+        return new $requestedName($backend->getConnector());
     }
 }

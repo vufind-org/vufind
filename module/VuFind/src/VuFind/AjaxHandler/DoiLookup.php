@@ -27,8 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\DoiLinker\PluginManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFindSearch\Backend\BrowZine\Connector;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**
@@ -45,20 +45,29 @@ class DoiLookup extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * BrowZine connector
+     * DOI Linker Plugin Manager
      *
-     * @var Connector
+     * @var PluginManager
      */
-    protected $connector;
+    protected $pluginManager;
+
+    /**
+     * DOI resolver configuration value
+     *
+     * @var string
+     */
+    protected $resolver;
 
     /**
      * Constructor
      *
-     * @param Connector $connector Connector
+     * @param PluginManager $pluginManager DOI Linker Plugin Manager
+     * @param string        $resolver      DOI resolver configuration value
      */
-    public function __construct(Connector $connector)
+    public function __construct(PluginManager $pluginManager, $resolver)
     {
-        $this->connector = $connector;
+        $this->pluginManager = $pluginManager;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -71,22 +80,9 @@ class DoiLookup extends AbstractBase implements TranslatorAwareInterface
     public function handleRequest(Params $params)
     {
         $response = [];
-        foreach ((array)$params->fromQuery('doi', []) as $doi) {
-            $data = $this->connector->lookupDoi($doi)['data'] ?? null;
-            if (!empty($data['browzineWebLink'])) {
-                $response[$doi][] = [
-                    'link' => $data['browzineWebLink'],
-                    'label' => $this->translate('View Complete Issue'),
-                    'data' => $data,
-                ];
-            }
-            if (!empty($data['fullTextFile'])) {
-                $response[$doi][] = [
-                    'link' => $data['fullTextFile'],
-                    'label' => $this->translate('PDF Full Text'),
-                    'data' => $data,
-                ];
-            }
+        if ($this->pluginManager->has($this->resolver)) {
+            $dois = (array)$params->fromQuery('doi', []);
+            $response = $this->pluginManager->get($this->resolver)->getLinks($dois);
         }
         return $this->formatResponse($response);
     }
