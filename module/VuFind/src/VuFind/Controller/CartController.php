@@ -212,7 +212,10 @@ class CartController extends AbstractBase
         } else if (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
-            throw new \Exception('Unrecognized bulk action.');
+            $action = $this->followup()->retrieveAndClear('cartAction', null);
+            if (empty($action)) {
+                throw new \Exception('Unrecognized bulk action.');
+            }
         }
         return $this->forwardTo($controller, $action);
     }
