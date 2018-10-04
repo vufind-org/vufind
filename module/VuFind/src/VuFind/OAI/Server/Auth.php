@@ -49,7 +49,6 @@ class Auth extends Base
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
-     * @param \Zend\Config\Config                  $config  VuFind configuration
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
