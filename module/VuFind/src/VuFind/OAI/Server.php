@@ -604,18 +604,18 @@ class Server
             }
         }
 
-        // Figure out how many Solr records we need to display (and where to start):
-        if ($currentCursor >= $deletedCount) {
-            $cursorOffset = $params['offset'] ?? '';
-        } else {
-            $cursorOffset = '';
-        }
-        $recordLimit = $this->pageSize;
+        // Figure out how many non-deleted records we need to display:
+        $recordLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
+        $cursorMark = $params['cursorMark'] ?? '';
 
         // Get non-deleted records from the Solr index:
         $set = $params['set'] ?? '';
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $cursorOffset, $recordLimit, $set
+            $from,
+            $until,
+            $cursorMark,
+            $recordLimit,
+            $set
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
@@ -626,15 +626,17 @@ class Server
             }
             $currentCursor++;
         }
+        $nextCursorMark = $result->getCursorMark();
 
         // If our cursor didn't reach the last record, we need a resumption token!
         $listSize = $deletedCount + $nonDeletedCount;
-        $nextOffset = $result->getStartOffset();
-        if ($listSize > $currentCursor && $nextOffset !== $cursorOffset) {
+        if ($listSize > $currentCursor
+            && ('' === $cursorMark || $nextCursorMark !== $cursorMark)
+        ) {
             $this->saveResumptionToken(
-                $xml, $params, $currentCursor, $listSize, $nextOffset
+                $xml, $params, $currentCursor, $listSize, $nextCursorMark
             );
-        } elseif ('' !== $cursorOffset) {
+        } elseif ($params['cursor'] > 0) {
             // If we reached the end of the list but there is more than one page, we
             // still need to display an empty <resumptionToken> tag:
             $token = $xml->addChild('resumptionToken');
@@ -723,15 +725,15 @@ class Server
     /**
      * Get an array of information on non-deleted records in the specified range.
      *
-     * @param int    $from   Start date.
-     * @param int    $until  End date.
-     * @param string $offset Offset in the full result list.
-     * @param int    $limit  Max number of full records to return.
-     * @param string $set    Set to limit to (empty string for none).
+     * @param int    $from       Start date.
+     * @param int    $until      End date.
+     * @param string $cursorMark cursorMark for the position in the full result list.
+     * @param int    $limit      Max number of full records to return.
+     * @param string $set        Set to limit to (empty string for none).
      *
      * @return \VuFind\Search\Base\Results Search result object.
      */
-    protected function listRecordsGetNonDeleted($from, $until, $offset, $limit,
+    protected function listRecordsGetNonDeleted($from, $until, $cursorMark, $limit,
         $set = ''
     ) {
         // Set up search parameters:
@@ -763,7 +765,7 @@ class Server
 
         // Perform a Solr search:
         $results->overrideStartRecord(1);
-        $results->overrideStartOffset($offset);
+        $results->setCursorMark($cursorMark);
 
         // Return our results:
         return $results;
@@ -996,19 +998,19 @@ class Server
      * @param int              $currentCursor Current cursor position in search
      * results.
      * @param int              $listSize      Total size of search results.
-     * @param string           $currentOffset Current offset (like $currentCursor but
-     * a backend-specific value).
+     * @param string           $cursorMark    cursorMark for the position in the full
+     * results list.
      *
      * @return void
      */
     protected function saveResumptionToken($xml, $params, $currentCursor, $listSize,
-        $currentOffset
+        $cursorMark
     ) {
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
         $params['cursor'] = $currentCursor;
-        $params['offset'] = $currentOffset;
+        $params['cursorMark'] = $cursorMark;
 
         // Save everything to the database:
         $search = $this->tableManager->get('OaiResumption');

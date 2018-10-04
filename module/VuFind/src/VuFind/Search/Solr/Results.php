@@ -72,6 +72,15 @@ class Results extends \VuFind\Search\Base\Results
     protected $spellingProcessor = null;
 
     /**
+     * CursorMark used for deep paging (e.g. OAI-PMH Server).
+     * Set to '*' to start paging a request and use the new value returned from the
+     * search request for the next request.
+     *
+     * @var null|string
+     */
+    protected $cursorMark = null;
+
+    /**
      * Get spelling processor.
      *
      * @return SpellingProcessor
@@ -97,6 +106,28 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get cursorMark.
+     *
+     * @return null|string
+     */
+    public function getCursorMark()
+    {
+        return $this->cursorMark;
+    }
+
+    /**
+     * Set cursorMark.
+     *
+     * @param null|string $cursorMark New cursor mark
+     *
+     * @return void
+     */
+    public function setCursorMark($cursorMark)
+    {
+        $this->cursorMark = $cursorMark;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -109,7 +140,7 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $searchService = $this->getSearchService();
-        $cursorMark = $this->getStartOffset();
+        $cursorMark = $this->getCursorMark();
         if (null !== $cursorMark) {
             $params->set('cursorMark', '' === $cursorMark ? '*' : $cursorMark);
             // Override any default timeAllowed since it cannot be used with
@@ -146,7 +177,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Update current cursorMark
         if (null !== $cursorMark) {
-            $this->overrideStartOffset($collection->getCursorMark());
+            $this->setCursorMark($collection->getCursorMark());
         }
 
         // Construct record drivers for all the items in the response:
