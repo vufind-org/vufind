@@ -994,7 +994,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
-            //$renew = $item->xpath('@renew');
+            $renew = $item->xpath('@renew');
             //$docno = (string) $z36->{'z36-doc-number'};
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
@@ -1025,7 +1025,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'duedate' => $this->parseDate($due),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
-                'renewable' => true,
+                'renewable' => $renew[0] == "Y",
                 //'create' => $this->parseDate($create)
             ];
         }
