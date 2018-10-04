@@ -360,6 +360,7 @@ $config = [
             'VuFind\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\Net\IpAddressUtils' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
+            'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
