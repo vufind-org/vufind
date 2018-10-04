@@ -1067,13 +1067,16 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $result = [];
         foreach ($details['details'] as $id) {
             try {
-                $this->doRestDLFRequest(
+                $xml = $this->doRestDLFRequest(
                     [
                         'patron', $patron['id'], 'circulationActions', 'loans', $id
                     ],
                     null, 'POST', null
                 );
-                $result[$id] = ['success' => true];
+                $due = (string)$xml->xpath('//new-due-date');
+                $result[$id] = [
+                    'success' => true, 'new_date' => $this->parseDate($due)
+                ];
             } catch (AlephRestfulException $ex) {
                 $result[$id] = [
                     'success' => false, 'sysMessage' => $ex->getMessage()
