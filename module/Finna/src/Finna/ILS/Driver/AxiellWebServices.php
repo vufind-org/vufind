@@ -820,7 +820,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     public function getStatuses($idList)
     {
         $items = [];
-        foreach ($ids as $id) {
+        foreach ($idList as $id) {
             $items[] = $this->getHolding($id);
         }
         return $items;
