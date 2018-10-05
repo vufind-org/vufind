@@ -114,6 +114,7 @@
 
 .navbar {
   max-width: 1300px; // dont fully scale the navigation bar text
+
   .logoutOptions, #loginOptions {
     .login-text {
       padding-left: 0.5em;
@@ -382,6 +383,9 @@
 @media (max-width: @screen-sm-max) {
   .nav.nav-absolute {
     right: @navbar-right;
+    #loginOptions {
+      margin-right: 16px;
+    }
   }
 }
 
@@ -477,9 +481,11 @@
 
 #my-info-dropdown-menu {
   width: 280px;
-  right: -15%;
   background-color: white;
   margin-top: 0;
+  @media (max-width: @screen-xxs) {
+    right: -90%;
+  }
   .box-shadow(0 6px 12px rgba(0, 0, 0, .275));
 
   .card-selection {
