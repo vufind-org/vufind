@@ -30,6 +30,7 @@ namespace VuFind\OAI;
 use SimpleXMLElement;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * OAI Server class
@@ -171,12 +172,28 @@ class Server
     protected $setQueries = [];
 
     /**
+     * Record formatter
+     *
+     * @var RecordFormatter
+     */
+    protected $recordFormatter = null;
+
+    /**
+     * Fields to return when the 'vufind' format is requested. Empty array means the
+     * format is disabled.
+     *
+     * @var array
+     */
+    protected $vufindApiFields = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param RecordFormatter                      $recfmt  Record formatter
      * @param \Zend\Config\Config                  $config  VuFind configuration
      * @param string                               $baseURL The base URL for the OAI
      * server
@@ -185,11 +202,12 @@ class Server
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        \Zend\Config\Config $config, $baseURL, $params
+        RecordFormatter $recfmt, \Zend\Config\Config $config, $baseURL, $params
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
+        $this->recordFormatter = $recfmt;
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
         $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
@@ -307,6 +325,31 @@ class Server
         // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
+        } elseif ('oai_vufind' === $format && $this->vufindApiFields) {
+            $records = $this->recordFormatter->format(
+                [$record], $this->vufindApiFields
+            );
+            $xml = simplexml_load_string(
+                $record
+                    ->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
+            );
+            $child = $xml->addChild(
+                'oai_vufind:metadata',
+                '',
+                $this->metadataFormats['oai_vufind']['namespace']
+            );
+            $child->addAttribute(
+                'xsi:schemaLocation',
+                $this->metadataFormats['oai_vufind']['namespace'],
+                'http://www.w3.org/2001/XMLSchema-instance'
+            );
+            $child->addAttribute('type', 'application/json');
+            // Add as cdata
+            $domNode = dom_import_simplexml($child);
+            $domNode->appendChild(
+                $domNode->ownerDocument->createCDATASection(json_encode($records[0]))
+            );
+            $xml = $xml->asXML();
         } else {
             $xml = $record
                 ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
@@ -496,6 +539,16 @@ class Server
         // Initialize custom sets queries:
         if (isset($config->OAI->set_query)) {
             $this->setQueries = $config->OAI->set_query->toArray();
+        }
+
+        if (!empty($config->OAI->vufind_api_format_fields)) {
+            $this->vufindApiFields = explode(
+                ',', $config->OAI->vufind_api_format_fields
+            );
+            $this->metadataFormats['oai_vufind'] = [
+                'schema' => 'http://vufind.org/oai_vufind-6.0.xsd',
+                'namespace' => 'http://vufind.org/oai_vufind-6.0'
+            ];
         }
     }
 

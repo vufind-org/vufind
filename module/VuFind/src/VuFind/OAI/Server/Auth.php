@@ -28,6 +28,7 @@
 namespace VuFind\OAI\Server;
 
 use VuFind\OAI\Server as Base;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * OAI Server class for Authority core
@@ -49,6 +50,7 @@ class Auth extends Base
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param RecordFormatter                      $recfmt  Record formatter
      * @param \Zend\Config\Config                  $config  VuFind configuration
      * @param string                               $baseURL The base URL for the OAI
      * server
@@ -57,9 +59,11 @@ class Auth extends Base
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        \Zend\Config\Config $config, $baseURL, $params
+        RecordFormatter $recfmt, \Zend\Config\Config $config, $baseURL, $params
     ) {
-        parent::__construct($results, $loader, $tables, $config, $baseURL, $params);
+        parent::__construct(
+            $results, $loader, $tables, $recfmt, $config, $baseURL, $params
+        );
         $this->core = 'authority';
         $this->searchClassId = 'SolrAuth';
     }
