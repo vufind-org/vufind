@@ -620,10 +620,7 @@ class Server
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
-            if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set)) {
-                // Record cannot be returned in the given format
-                continue;
-            }
+            $this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set);
             $currentCursor++;
         }
         $nextCursorMark = $result->getCursorMark();
