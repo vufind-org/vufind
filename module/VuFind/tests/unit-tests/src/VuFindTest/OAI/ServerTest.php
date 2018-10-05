@@ -74,6 +74,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
             $this->getMockTableManager(),
+            $this->getMockRecordFormatter(),
             new \Zend\Config\Config($config),
             $baseURL,
             $params
@@ -112,6 +113,18 @@ class ServerTest extends \VuFindTest\Unit\TestCase
     protected function getMockTableManager()
     {
         return $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Get a mock record formatter
+     *
+     * @return \VuFindApi\Formatter\RecordFormatter
+     */
+    protected function getMockRecordFormatter()
+    {
+        return $this->getMockBuilder('VuFindApi\Formatter\RecordFormatter')
             ->disableOriginalConstructor()
             ->getMock();
     }
