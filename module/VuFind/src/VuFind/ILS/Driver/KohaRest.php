@@ -1421,12 +1421,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemStatusesForBiblio($id, $patron = null)
     {
-        $result = $this->makeRequest(
+        list($code, $result) = $this->makeRequest(
             ['v1', 'availability', 'biblio', 'search'],
             ['biblionumber' => $id],
             'GET',
-            $patron
+            $patron,
+            true
         );
+        if (404 === $code) {
+            return [];
+        }
+        if ($code !== 200) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
         if (empty($result[0]['item_availabilities'])) {
             return [];
         }

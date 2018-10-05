@@ -1081,12 +1081,20 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $holdings = null;
         if (!empty($this->config['Holdings']['use_holding_records'])) {
-            $holdingsResult = $this->makeRequest(
+            list($code, $holdingsResult) = $this->makeRequest(
                 ['v1', 'biblios', $id, 'holdings'],
                 [],
                 'GET',
-                $patron
+                $patron,
+                true
             );
+            if (404 === $code) {
+                return [];
+            }
+            if ($code !== 200) {
+                throw new ILSException('Problem with Koha REST API.');
+            }
+
             // Turn the holdings into a keyed array
             if (!empty($holdingsResult['holdings'])) {
                 foreach ($holdingsResult['holdings'] as $holding) {
@@ -1094,12 +1102,19 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 }
             }
         }
-        $result = $this->makeRequest(
+        list($code, $result) = $this->makeRequest(
             ['v1', 'availability', 'biblio', 'search'],
             ['biblionumber' => $id],
             'GET',
-            $patron
+            $patron,
+            true
         );
+        if (404 === $code) {
+            return [];
+        }
+        if ($code !== 200) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
 
         $statuses = [];
         foreach ($result[0]['item_availabilities'] ?? [] as $i => $item) {
