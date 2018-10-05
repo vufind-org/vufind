@@ -113,7 +113,6 @@
       <input class="searchForm_lookfor form-control search-query<?php if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete-finna searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?= !empty($activeTab) ? ' tab:' . $this->escapeHtmlAttr(str_replace(':', '###', $activeTab)) : ''?><?=!empty($browse) || $activeTab == 'Combined' ? ' onlySuggestions:1' : ''?><?= !$browse && in_array($activeTab, ['Combined','Primo','Summon']) ? ' suggestions:0' : ''?><?= !empty($acHandlers) ? ' handlers:' . implode('|', array_map(function ($h) { return $h['handler']; }, $acHandlers)) : ''?><?= !empty($phrase) ? ' phrase:' . $this->escapeHtmlAttr($phrase) : ''?><?= !empty($acFilters) ? ' filters:' . $this->escapeHtmlAttr(implode('||', array_map(function ($k, $v) { return $k . '|' . $v; }, array_keys($acFilters), $acFilters))) : ''?><?php endif ?>" placeholder="<?=$this->escapeHtmlAttr($placeholder)?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
       <span class="clear-button<?=$this->lookfor ? '' : ' hidden'?>"></span>
       <?php if ($handlerCount > 1): ?>
-        <span class="hidden sr-only"><?=$this->transEsc("Narrow Search")?></span>
         <div class="dropdown form-control type-dropdown">
         <?php
           $label = $handlers[0]['label'];
@@ -127,10 +126,10 @@
           }
         ?>
         <input id="searchForm_type" type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" class="searchForm_type" />
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span><b class="caret"></b></a>
+        <a href="#" class="dropdown-toggle" aria-expanded="false" role="menu" aria-label="<?= $this->transEsc('Narrow Search') ?>" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span><b class="caret"></b></a>
         <ul class="dropdown-menu" data-native-menu="false">
           <?php foreach ($handlers as $handler): ?>
-            <li class="select-type">
+            <li role="menuitem" class="select-type" tabindex="0">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($handler['value'])?>" />
               <span><?=$this->transEsc($handler['label'])?></span>
             </li>
