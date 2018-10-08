@@ -274,14 +274,8 @@ finna.myList = (function finnaMyList() {
 
         function repositionPrompt() {
           var pos = target.offset();
-          var location = target.position();
-          var left = pos.left + target.width();
-          var half = $(window).width() / 2;
+          var left = ($(window).width() / 2) - (prompt.width() / 2);
 
-          //Our prompt is located on the right side so lets calculate a place in the middle
-          if (location.left > half) {
-            left = half - prompt.width() / 2;
-          }
           prompt.css({
             'left': left,
             'top': pos.top + 30

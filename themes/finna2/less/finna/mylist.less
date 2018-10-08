@@ -230,6 +230,9 @@
 
 .useraccount-nav {
   &.nav-tabs-personal {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 30px;
     display: block;
     margin-top: 15px;
     .subtabs.mylist-nav {
@@ -363,7 +366,7 @@ button.caret{
 }
 
 @media(max-width: @screen-sm-max) {
-  .hidden-print.sidebar-on-left.nav-tabs-personal.list-group{
+  .hidden-print.nav-tabs-personal.list-group {
     position: fixed;
     top: 120%;
     transition: top 0.5s ease;
