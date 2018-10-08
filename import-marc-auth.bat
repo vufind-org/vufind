@@ -31,7 +31,7 @@ goto propertiesfound
 set PROPERTIES_FILE=%VUFIND_HOME%\import\import_auth.properties
 :propertiesfound
 
-rem Always use the authority mappings from PROIERTIES_FILE
+rem Always use the authority mappings from PROPERTIES_FILE
 rem if the user specified an override file, add that to the setting.
 set MAPPINGS_FILENAMES=""
 for /f "delims=" %%a in ('findstr "^solr.indexer.properties" %PROPERTIES_FILE%') do set MAPPINGS_FILENAMES=%%a
