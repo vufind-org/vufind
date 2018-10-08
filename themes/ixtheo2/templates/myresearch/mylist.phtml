@@ -33,7 +33,7 @@
       <h2 class="pull-left flip"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
       <div class="pull-right flip">
         <? if (isset($list)): ?>
-          <? if ($list->editAllowed($account->isLoggedIn())): ?>
+          <? if (isset($list) && $list->editAllowed($account->isLoggedIn())): ?>
             <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
             <div class="btn-group">
               <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
@@ -75,9 +75,11 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?> float-right">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
-    <? foreach ($this->results->getRecommendations('side') as $current): ?>
-      <?=$this->recommend($current)?>
-    <? endforeach; ?>
+    <? if ($account->isLoggedIn()): ?>
+      <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
+      <? foreach ($this->results->getRecommendations('side') as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    <? endif; ?>
   </div>
 </div>
