@@ -1,9 +1,13 @@
 <!-- START of: finna - search/searchTabs.phtml -->
+<?php $isManyTabs = (count($searchTabs) > 2) ?>
+<?php if (!$isManyTabs): ?>
+  <div class="tabs-table">
+<?php endif; ?>
 <?php if (!empty($searchTabs)): ?>
-<ul class="nav nav-tabs <?=count($searchTabs) > 2 ? ' many-tabs hidden-xs' : '';?>">
+<ul class="nav nav-tabs <?=$isManyTabs ? ' many-tabs hidden-xs' : '';?>">
     <?php foreach ($searchTabs as $tab): ?>
         <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
-      <li<?=$tab['selected'] ? ' class="active"' : ' class="hidden-print"'?>>
+      <li <?=$tab['selected'] ? 'class="active"' : 'class="hidden-print"'?>>
         <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?><?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName != 'advanced'): ?><span class="<?=$this->transEsc('tooltip-' . $tab['label'])?>" data-toggle="tooltip" data-html="true" data-original-title="<?=$this->transEsc('tooltip_' . $tab['label'] . '_html')?>" data-placement="bottom"> <i class="fa fa-info"></i></span><?php endif; ?></a>
       </li>
     <?php endforeach; ?>
@@ -31,5 +35,8 @@
     </ul>
   </div>
 </div>
+<?php endif; ?>
+<?php if (!$isManyTabs): ?>
+  </div>
 <?php endif; ?>
 <!-- END of: finna - search/searchTabs.phtml -->
