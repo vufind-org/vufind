@@ -139,11 +139,6 @@
               </li>
             <?php endif; ?>        
             <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true']);?>
-            <li role="menuitem">
-              <a href="<?=$this->url('search-history')?>?require_login">
-                <?=$this->transEsc('history_saved_searches')?>
-              </a>
-            </li>
             <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
               <li role ="menuitem">
                 <a href="<?=$this->url('myresearch-favorites')?>">
@@ -151,6 +146,11 @@
                 </a>
               </li>
             <?php endif; ?>
+            <li role="menuitem">
+              <a href="<?=$this->url('search-history')?>?require_login">
+                <?=$this->transEsc('history_saved_searches')?>
+              </a>
+            </li>
             <li role="menuitem">
               <a href="<?=$this->url('myresearch-profile')?>">
                 <?=$this->transEsc('Profile')?>
