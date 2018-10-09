@@ -41,7 +41,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="my-research-content">
     <?php if ($user): ?>
       <?php if (!empty($this->registerPayment)): ?>
@@ -70,7 +70,7 @@
         <div>
           <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline / 100.00);?></span></p>
         </div>
-        <div> 
+        <div>
           <?php if (!empty($transactionFee)): ?>
             <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee / 100.00);?></span></p>
           <?php endif; ?>
@@ -79,7 +79,7 @@
     </div>
     <?php if ($this->onlinePayment): ?>
       <?php if ($this->onlinePaymentEnabled): ?>
-        <div class="fines-info-area payment-row">   
+        <div class="fines-info-area payment-row">
         <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
       <?php elseif (!empty($this->nonPayableReason)): ?>
         <div>

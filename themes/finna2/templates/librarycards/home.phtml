@@ -15,7 +15,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'librarycards']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="my-research-content">
       <?=$this->flashmessages()?>
       <?php if (!$this->translationEmpty('library_cards_instructions_html')): ?><p class="no-content-message"><?=$this->translate('library_cards_instructions_html')?></p><?php endif; ?>

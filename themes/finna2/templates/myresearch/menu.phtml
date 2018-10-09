@@ -159,12 +159,12 @@
         <small> <?=$this->translate('An error has occurred'); ?></small>
       </span>
       <button class="caret"></button>
-    </a>  
+    </a>
     <div class="mylist-bar">
       <?php if($listOpen) : ?>
       <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]);  ?>
       <?php endif; ?>
-    </div> 
+    </div>
   </li>
 <?php endif; ?>
 <li class="menu-history hidden-xs hidden-sm <?=$this->active == 'history' ? ' active' : ''?>">
@@ -216,12 +216,12 @@
       </ul>
     </div>
   </div>
-  <ul class="<?=$this->layoutClass('sidebar')?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
+  <ul class="<?=$this->layoutClass('sidebar-myresearch')?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
     <?=$menuEntries?>
   </ul>
-        
+
   <script>
-     finna.menu.init(); 
+     finna.menu.init();
   </script>
 
 

@@ -50,7 +50,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="my-research-content">
     <div>
       <?php if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><?php endif; ?>

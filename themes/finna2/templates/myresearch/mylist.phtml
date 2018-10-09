@@ -49,7 +49,7 @@
   <?=$this->recommend($current)?>
 <?php endforeach; ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
   <?php if (isset($list)): ?>
     <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />

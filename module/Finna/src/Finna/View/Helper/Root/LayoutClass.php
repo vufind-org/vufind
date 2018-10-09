@@ -51,6 +51,13 @@ class LayoutClass extends \VuFind\View\Helper\Bootstrap3\LayoutClass
      */
     public function __invoke($class)
     {
+        // Special styles for MyResearch to keep menu on left
+        if ('mainbody-myresearch' === $class) {
+            return 'mainbody right myresearch-body';
+        } elseif ('sidebar-myresearch' === $class) {
+            return 'sidebar left hidden-print sidebar-on-left';
+        }
+
         $result = parent::__invoke($class);
         if ($class == 'sidebar' && $this->sidebarOnLeft) {
             $result .= ' sidebar-on-left';

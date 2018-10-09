@@ -12,7 +12,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => '']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <?=$this->flashmessages()?>
 
   <h2><?=$this->transEsc($pageTitle); ?></h2>

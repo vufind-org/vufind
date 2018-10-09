@@ -15,7 +15,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'holds']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> myresearch-body">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="my-research-content">
     <div class="myresearch-grid-list">
       <?php if (!$this->translationEmpty('holds_instructions_html')): ?><p class="no-content-message"><?=$this->translate('holds_instructions_html')?></p><?php endif; ?>
