@@ -69,7 +69,7 @@ class Factory
         return new SearchApiController(
             $sm,
             $sm->get('VuFindApi\Formatter\RecordFormatter'),
-            new FacetFormatter()
+            $sm->get('VuFindApi\Formatter\FacetFormatter')
         );
     }
 }

@@ -15,6 +15,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'VuFindApi\Formatter\FacetFormatter' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
         ],
     ],
