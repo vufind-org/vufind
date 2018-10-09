@@ -27,7 +27,6 @@
  */
 namespace VuFindApi\Controller;
 
-use VuFindApi\Formatter\FacetFormatter;
 use Zend\ServiceManager\ServiceManager;
 
 /**
