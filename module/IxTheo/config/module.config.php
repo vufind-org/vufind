@@ -92,6 +92,7 @@ $config = [
             'KeywordChainSearch' => 'IxTheo\Controller\Factory::getKeywordChainSearchController',
             'MyResearch' => 'IxTheo\Controller\Factory::getMyResearchController',
             'record' => 'IxTheo\Controller\Factory::getRecordController',
+            'classification' => 'IxTheo\Controller\Factory::getClassificationController',
         ],
     ],
     'controller_plugins' => [
@@ -105,6 +106,23 @@ $config = [
             'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
+        ],
+    ],
+    'router' => [
+        'routes' => [
+            'classification' => [
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/classification[/:notation]',
+                    'constraints' => [
+                        'notation' => '[a-zA-Z][a-zA-Z]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Classification',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
         ],
     ],
 ];
@@ -126,6 +144,7 @@ $staticRoutes = [
     'MyResearch/DeleteSubscription',
     'MyResearch/PDASubscriptions',
     'MyResearch/DeletePDASubscription',
+    'Classification/Home'
 ];
 
 $routeGenerator = new \IxTheo\Route\RouteGenerator();
