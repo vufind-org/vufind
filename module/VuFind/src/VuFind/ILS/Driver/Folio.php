@@ -27,8 +27,6 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\BadRequest as BadRequest;
-use VuFind\Exception\Forbidden as Forbidden;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -335,7 +333,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                 'cat_password' => $password,
                 'email' => $profile['personal']['email'],
             ];
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -598,5 +596,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         return [];
     }
+
     // @codingStandardsIgnoreEnd
 }
