@@ -64,7 +64,7 @@ class Initializer
      *
      * @var string[]
      */
-    protected $baseDirs = [];
+    protected $langDirs = [];
 
     /**
      * File loader.
@@ -111,8 +111,8 @@ class Initializer
         $viewModel->setVariable('allLangs', $config->Languages);
         $viewModel->setVariable('rtl', in_array($language, $rtlLangs));
 
-        $this->addBaseDir(APPLICATION_PATH . '/languages');
-        $this->addBaseDir(LOCAL_OVERRIDE_DIR . '/languages');
+        $this->addLanguageDir(APPLICATION_PATH . '/languages');
+        $this->addLanguageDir(LOCAL_OVERRIDE_DIR . '/languages');
     }
 
     /**
@@ -123,7 +123,7 @@ class Initializer
     public function init()
     {
         $cache = $this->translator->getCache();
-        $namespace = md5(implode('', $this->baseDirs));
+        $namespace = md5(implode('', $this->langDirs));
         $cache->getOptions()->setNamespace($namespace);
 
         if (!$cache->hasItem(self::KEY_TEXT_DOMAINS)) {
@@ -136,7 +136,7 @@ class Initializer
             );
         }
 
-        $this->loader->setDirs(array_reverse($this->baseDirs));
+        $this->loader->setDirs(array_reverse($this->langDirs));
     }
 
     /**
@@ -168,13 +168,13 @@ class Initializer
      * Adds a language directory which will have higher priority
      * than all directories added before.
      *
-     * @param string $baseDir Path to directory.
+     * @param string $langDir Path to directory.
      *
      * @return void
      */
-    public function addBaseDir(string $baseDir)
+    public function addLanguageDir(string $langDir)
     {
-        $this->baseDirs[] = realpath($baseDir);
+        $this->langDirs[] = realpath($langDir);
     }
 
     /**
@@ -185,7 +185,7 @@ class Initializer
     protected function detectTextDomains()
     {
         $textDomains = ['default'];
-        foreach ($this->baseDirs as $baseDir) {
+        foreach ($this->langDirs as $baseDir) {
             foreach (glob("$baseDir/*", GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
                 $textDomains[] = basename($dir);
             }
