@@ -18,7 +18,7 @@ Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine
       };
   }
   function make_classification_link($key, $value) {
-      return "<a href=/classification/" . preg_replace("/^ixtheo-/", "", $key) . ">" . $value . "</a>";
+      return '<a href="/classification/' . preg_replace("/^ixtheo-/", "", $key) . '" target="_blank">' . $value . "</a>";
   }
   function make_classification_link_map($map) {
       $link_entries = [];
