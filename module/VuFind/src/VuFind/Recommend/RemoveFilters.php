@@ -95,12 +95,8 @@ class RemoveFilters implements RecommendInterface
     public function process($results)
     {
         $filters = $results->getParams()->getFilterList(false);
-        if (count($filters) > 0) {
-            foreach ($filters as $filter) {
-                foreach ($filter as $f) {
-                    $this->activeFacetsCount++;
-                }
-            }
+        foreach ($filters as $filter) {
+            $this->activeFacetsCount += count($filter);
         }
         $this->results = $results;
     }

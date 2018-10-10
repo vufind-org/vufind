@@ -134,16 +134,16 @@
         }
       };
       var _defaultStaticSort = function _defaultStaticSort(a, b) {
-        // .bind(lcterm)
         return a.match.indexOf(this) - b.match.indexOf(this);
       };
       var _staticGroups = function _staticGroups(lcterm) {
         var matches = [];
+        function isTermMatch(_item) {
+          return _item.match.match(lcterm);
+        }
         for (var i = 0; i < options.static.groups.length; i++) {
           if (typeof options.static.groups[i].label !== 'undefined') {
-            var mitems = options.static.groups[i].items.filter(function staticLabelledGroupFilter(_item) {
-              return _item.match.match(lcterm);
-            });
+            var mitems = options.static.groups[i].items.filter(isTermMatch);
             if (mitems.length > 0) {
               if (typeof options.staticSort === 'function') {
                 mitems.sort(options.staticSort);
@@ -156,9 +156,7 @@
               });
             }
           } else {
-            var ms = options.static.groups[i].filter(function staticGroupFilter(_item) {
-              return _item.match.match(lcterm);
-            });
+            var ms = options.static.groups[i].filter(isTermMatch);
             if (ms.length > 0) {
               if (typeof options.staticSort === 'function') {
                 ms.sort(options.staticSort);

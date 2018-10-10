@@ -18,6 +18,20 @@ $config = [
                     ],
                 ],
             ],
+            'alma-webhook' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Alma/Webhook/[:almaWebhookAction]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Alma',
+                        'action' => 'Webhook',
+                    ],
+                ],
+            ],
             'content-page' => [
                 'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
@@ -106,6 +120,7 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
+            'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -158,6 +173,8 @@ $config = [
         'aliases' => [
             'AJAX' => 'VuFind\Controller\AjaxController',
             'ajax' => 'VuFind\Controller\AjaxController',
+            'Alma' => 'VuFind\Controller\AlmaController',
+            'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'Author' => 'VuFind\Controller\AuthorController',
@@ -329,6 +346,7 @@ $config = [
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
+            'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
@@ -349,6 +367,7 @@ $config = [
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
+            'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'VuFind\Record\Router' => 'VuFind\Record\RouterFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -501,12 +520,14 @@ $config = [
             'cover_layer' => [ /* see VuFind\Cover\Layer\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
+            'doilinker' => [ /* see VuFind\DoiLinker\PluginManager for defaults */ ],
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
             'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
             'hierarchy_treerenderer' => [ /* see VuFind\Hierarchy\TreeRenderer\PluginManager for defaults */ ],
             'ils_driver' => [ /* See VuFind\ILS\Driver\PluginManager for defaults */ ],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
+            'record_fallbackloader' => [ /* See VuFind\Record\FallbackLoader\PluginManager for defaults */ ],
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
             'recordtab' => [ /* See VuFind\RecordTab\PluginManager for defaults */ ],
             'related' => [ /* See VuFind\Related\PluginManager for defaults */ ],
@@ -565,7 +586,13 @@ $config = [
                 ],
                 'defaultTab' => null,
             ],
-            'VuFind\RecordDriver\SolrAuth' => [
+            'VuFind\RecordDriver\SolrAuthDefault' => [
+                'tabs' => [
+                    'Details' => 'StaffViewArray',
+                 ],
+                'defaultTab' => null,
+            ],
+            'VuFind\RecordDriver\SolrAuthMarc' => [
                 'tabs' => [
                     'Details' => 'StaffViewMARC',
                  ],

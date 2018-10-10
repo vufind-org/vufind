@@ -94,7 +94,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function first()
     {
-        return isset($this->records[0]) ? $this->records[0] : null;
+        return $this->records[0] ?? null;
     }
 
     /**

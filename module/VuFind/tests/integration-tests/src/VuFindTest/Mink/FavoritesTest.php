@@ -454,6 +454,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real.
         $this->selectAllItemsInList($page);
         $button->click();
+        $this->snooze();
         $this->findCssAndSetValue($page, '.modal #email_to', 'tester@vufind.org');
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@vufind.org');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
@@ -527,7 +528,54 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that the print control works.
+     * Test that it is possible to email a public list.
+     *
+     * @return void
+     */
+    public function testEmailPublicList()
+    {
+        $page = $this->setupBulkTest();
+
+        // Click on the first list and make it public:
+        $link = $this->findAndAssertLink($page, 'Test List');
+        $link->click();
+        $this->snooze();
+        $button = $this->findAndAssertLink($page, 'Edit List');
+        $button->click();
+        $this->snooze();
+        $this->findCss($page, '#list_public_1')->click(); // radio button
+        $this->findCss($page, 'input[name="submit"]')->click(); // submit button
+        $this->snooze();
+
+        // Now log out:
+        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->snooze();
+
+        // Now try to email the list:
+        $this->selectAllItemsInList($page);
+        $this->findCss($page, '[name=bulkActionForm] .btn-group [name=email]')
+            ->click();
+        $this->snooze();
+
+        // Log in as different user:
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+
+        // Send the email:
+        $this->findCssAndSetValue($page, '.modal #email_to', 'tester@vufind.org');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@vufind.org');
+        $this->findCssAndSetValue($page, '.modal #email_message', 'message');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        // Check for confirmation message
+        $this->assertEquals(
+            'Your item(s) were emailed',
+            $this->findCss($page, '.modal .alert-success')->getText()
+        );
+    }
+
+    /**
+     * Test that the bulk delete control works.
      *
      * @return void
      */

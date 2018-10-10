@@ -5,6 +5,8 @@
 */
 $openUrl = $this->openUrl($this->driver, 'results');
 $openUrlActive = $openUrl->isActive();
+$doi = $this->doi($this->driver, 'results');
+$doiActive = $doi->isActive();
 // Account for replace_other_urls setting
 $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 ?>
@@ -29,10 +31,13 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
         <?=$this->record($this->driver)->getTitleHtml(80)?>
       </a>
-      <?php if ($openUrlActive || !empty($urls)): ?>
+      <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
         <br/><br/>
         <?php if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?><br />
+        <?php endif; ?>
+        <?php if ($doiActive): ?>
+          <?=$doi->renderTemplate()?><br />
         <?php endif; ?>
         <?php if (!is_array($urls)) $urls = []; foreach ($urls as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>

@@ -28,6 +28,14 @@
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\Recommend;
+use VuFind\AjaxHandler\RecommendFactory;
+use VuFind\Recommend\PluginManager;
+use VuFind\Recommend\RecommendInterface;
+use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\Solr\Results;
+use VuFind\Session\Settings;
+use VuFind\View\Helper\Root\Recommend as RecommendHelper;
+use Zend\View\Renderer\PhpRenderer;
 
 /**
  * Recommend test class.
@@ -47,20 +55,37 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponse()
     {
-        $ss = $this->getMockService('VuFind\Session\Settings', ['disableWrite']);
+        // Set up session settings:
+        $ss = $this->container->createMock(Settings::class, ['disableWrite']);
         $ss->expects($this->once())->method('disableWrite');
-        $mockPlugin = $this->getMockService('VuFind\Recommend\RecommendInterface');
-        $rm = $this->getMockService('VuFind\Recommend\PluginManager', ['get']);
+        $this->container->set(Settings::class, $ss);
+
+        // Set up recommend plugin manager:
+        $mockPlugin = $this->container->createMock(RecommendInterface::class);
+        $rm = $this->container->createMock(PluginManager::class, ['get']);
         $rm->expects($this->once())->method('get')->with($this->equalTo('foo'))
             ->will($this->returnValue($mockPlugin));
-        $r = $this->getMockService('VuFind\Search\Solr\Results');
-        $viewHelper = $this->getMockService('VuFind\View\Helper\Root\Recommend');
-        $view = $this
-            ->getMockService('Zend\View\Renderer\PhpRenderer', ['plugin']);
+        $this->container->set(PluginManager::class, $rm);
+
+        // Set up results plugin manager:
+        $resultsManager = $this->container
+            ->createMock(ResultsManager::class, ['get']);
+        $resultsManager->expects($this->once())->method('get')
+            ->with($this->equalTo('Solr'))
+            ->will($this->returnValue($this->container->createMock(Results::class)));
+        $this->container->set(ResultsManager::class, $resultsManager);
+
+        // Set up view helper and renderer:
+        $viewHelper = $this->container->createMock(RecommendHelper::class);
+        $view = $this->container->createMock(PhpRenderer::class, ['plugin']);
         $view->expects($this->once())->method('plugin')
             ->with($this->equalTo('recommend'))
             ->will($this->returnValue($viewHelper));
-        $handler = new Recommend($ss, $rm, $r, $view);
+        $this->container->set('ViewRenderer', $view);
+
+        // Build and test the ajax handler:
+        $factory = new RecommendFactory();
+        $handler = $factory($this->container, Recommend::class);
         $params = $this->getParamsHelper(['mod' => 'foo']);
         $this->assertEquals([null], $handler->handleRequest($params));
     }
