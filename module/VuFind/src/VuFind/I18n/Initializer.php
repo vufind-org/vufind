@@ -50,6 +50,8 @@ use Zend\View\Model\ViewModel;
  */
 class Initializer
 {
+    const KEY_TEXT_DOMAINS = 'TEXT_DOMAINS';
+
     /**
      * Translator.
      *
@@ -121,13 +123,14 @@ class Initializer
     public function init()
     {
         $cache = $this->translator->getCache();
-        $cacheKey = md5(implode('', $this->baseDirs));
+        $namespace = md5(implode('', $this->baseDirs));
+        $cache->getOptions()->setNamespace($namespace);
 
-        if (!$cache->hasItem($cacheKey)) {
-            $cache->setItem($cacheKey, $this->detectTextDomains());
+        if (!$cache->hasItem(self::KEY_TEXT_DOMAINS)) {
+            $cache->setItem(self::KEY_TEXT_DOMAINS, $this->detectTextDomains());
         }
 
-        foreach ($cache->getItem($cacheKey) as $textDomain) {
+        foreach ($cache->getItem(self::KEY_TEXT_DOMAINS) as $textDomain) {
             $this->translator->addRemoteTranslations(
                 ExtendedIni::class, $textDomain
             );
