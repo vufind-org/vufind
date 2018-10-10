@@ -16,7 +16,7 @@
       padding: 0px 5px;
       overflow: hidden;
       text-transform: none;
-      & .adv-search {
+      .adv-search {
         i {
           color: @finna-searchbox-link-color;
         }
@@ -24,10 +24,10 @@
     }
   }
   .pager {
-    & li.pager-text {
+    li.pager-text {
       font-size: 1em;
     }
-    & li > a {
+    li > a {
       padding: 0 5px;        
     }
   }
@@ -42,49 +42,27 @@
   .filters {
     display: inline-block;
   }
-  & .checkbox label input {
-    display: none;
-  }
-  & .checkbox label:before {
-    content: "\f096";
-    font-family: 'Fontawesome';
-    font-size: 20px;
-    vertical-align: -2px;
-    display: inline-block;
-    width: 16px;
-  }
-  & .checkbox.checked label:before {
-    font-family: 'Fontawesome';
-    content: "\f14a";
-  }
-}
-
-.finna-checkbox {
-  display: inline-block;
-
-  > label {
-    display: inline;
-  }
   input[type=checkbox] {
-    height: 20px;
-    width: 20px;
-    line-height: unset;
+    height: 16px;
+    width: 16px;
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
     border: 1px solid black;
     border-radius: 4px;
+    margin: 0px;
+    top: 3px;
 
-    &:before {
-      content: "";
-      border: 1px solid transparent;
-    }
     &:checked{
       background-color: black;
       &:after{
         font-family: 'Fontawesome';
         content: "\f00c";
         color: white;
+        position: absolute;
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: normal;
       }
     }
   }
@@ -110,11 +88,11 @@
     transition: none;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    & .btn-link {
+    .btn-link {
       display: none;
     }
   }
-  & .nav.searchbox {
+  .nav.searchbox {
     margin: 0;
   }
 }
@@ -124,12 +102,12 @@
   font-size: 1em;
   font-weight: 600;
   color: @finna-search-link-color;
-  & i {
+  i {
     vertical-align: text-top;
     font-size: 1.5em;
     margin-right: 5px;
   }
-  & .btn {
+  .btn {
     margin-right: 10px;
   }
   .back-to-search-text {
@@ -209,7 +187,7 @@
   }
   @media(max-width: @screen-md) {
     .pager {
-      & li.pager-text {
+      li.pager-text {
         margin: 0 5px;
       }
     }

@@ -2,23 +2,19 @@
 #sidebar .checkboxFilter {
   padding: 0px;
   margin: 15px 0px;
-  & .checkbox {
-    padding-left: 32px;
-    @media(min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-      padding-left: 26px;
-    }
+  .checkbox {
     margin: 8px 0px;
   }
-  & label {
+  label {
     margin-left: 0px;
     line-height: 1em;
   }
-  & label:before {
+  label:before {
     margin-right: 5px;
     margin-left: -22px;
   }
-  & .badge {
-    margin-top: 3px;
+  .badge {
+    margin-top: 4px;
     @media(min-width: @screen-sm-min) and (max-width: @screen-md-max) {
       max-width: 56px;
       overflow: hidden;
@@ -92,13 +88,13 @@ button.list-group-item {
 
 .list-group {
   &.record-organisation {
-    & h3 {
+    h3 {
       margin-top: 0;
       margin-bottom: 10px;
     }
     padding: 3px 15px 10px;
     margin-bottom: 0px;
-    & a {
+    a {
       font-weight: bold;
     }
   }
@@ -106,11 +102,11 @@ button.list-group-item {
     padding: 0px;
     margin-bottom: 10px;
     background: @list-group-bg;
-    & .record-organisation {
+    .record-organisation {
       background: @body-bg;
       padding: 5px 10px;
     }
-    & .other-organisation-links a {
+    .other-organisation-links a {
       padding: 5px 10px;
       font-weight: bold;
       display: block;
@@ -118,13 +114,13 @@ button.list-group-item {
       text-overflow: ellipsis;
       overflow: hidden;
       }
-    & h5 {
+    h5 {
       margin-top: 0px;
       margin-bottom: 0px;
       padding: 10px;
       font-weight: normal;
     }
-    & a {
+    a {
       line-height: 1em;
     }
     .open-link a {
@@ -136,7 +132,7 @@ button.list-group-item {
         }
       }
     }
-    & .more-link, .less-link, .less-link-top {
+    .more-link, .less-link, .less-link-top {
       padding-left: 10px;
     }
   }
@@ -170,7 +166,7 @@ button.list-group-item {
 }
 
 #side-collapse-first_indexed {
-  & > a {
+  > a {
     display: inline-block;
     min-width: 51%;
   }
@@ -184,13 +180,13 @@ button.list-group-item {
 #first_indexedFilter {
   margin-top: 10px;
   margin-bottom: 10px;
-  & label {
+  label {
 
     @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
       display: block;
     }
   }
-  & .date-picker-button {
+  .date-picker-button {
     margin-left: -12px;
     padding: 6px 10px;
     border-bottom-left-radius: 0px;

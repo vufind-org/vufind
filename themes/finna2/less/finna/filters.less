@@ -17,14 +17,20 @@
 .finna-filters {
   color: @filterContent-text-color;
   padding: 5px 0 5px 0;
-  & .checkbox label {
+  .checkbox label {
     display: inline-block;
     padding: 10px 0px;
+    font-weight: bold;
+    @media (max-width: @screen-sm-min) {
+      float: right;
+      padding: 0px;
+      font-weight: normal;
+    }
   }
-  & .filters-term {
+  .filters-term {
     font-size: 0.8em
   }
-  & .filter-value {
+  .filter-value {
     padding: 5px 10px;
     margin: 5px;
     font-weight: 600;
@@ -33,7 +39,7 @@
     border-radius: @border-radius-large;
     white-space: nowrap;
     display: inline-block;
-    & a {
+    a {
       color: @filters-icon-color;
       margin: 4px;
     }
@@ -42,7 +48,7 @@
     display: inline;
     padding-left: 0;
     padding-right: 0;
-    @media (min-width: @screen-sm-min){
+    @media (min-width: @screen-sm-min) {
       padding-right: 20px;
     }
   }
@@ -53,7 +59,7 @@
 }
 
 .template-name-view .finna-filters {
-  & .filter-value {
+  .filter-value {
     background: @gray-ultralight;
     color: @text-color;
   }
@@ -74,7 +80,7 @@
   }
 }
 
-@media (max-width: @screen-sm){
+@media (max-width: @screen-sm) {
   .filters-title, .filter-value {
     font-size: 80%;
   }

@@ -45,7 +45,7 @@
 <div class="finna-filters hidden-xs">
   <?php if (!isset($isCollectionTab) || !$isCollectionTab): ?>
     <?php $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
-    <div class="finna-checkbox">
+    <div class="checkbox">
       <label>
         <input onChange="$('.finna-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> id="filter-checkbox" class="searchFormKeepFilters"/>
         <?=$this->transEsc("basic_search_keep_filters")?>
