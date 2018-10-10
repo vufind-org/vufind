@@ -148,6 +148,10 @@ class Paytrail extends BaseHandler
         }
         $module->setLastName(empty($lastname) ? 'ei tietoa' : $lastname);
 
+        if ($user->email) {
+            $module->setEmail($user->email);
+        }
+
         if (!isset($this->config->productCode)
             && !isset($this->config->transactionFeeProductCode)
             && !isset($this->config->productCodeMappings)

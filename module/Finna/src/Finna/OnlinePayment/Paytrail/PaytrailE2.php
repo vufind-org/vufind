@@ -131,6 +131,13 @@ class PaytrailE2
     protected $lastName = '';
 
     /**
+     * Payer's email address
+     *
+     * @var string
+     */
+    protected $email = '';
+
+    /**
      * Total amount to pay in cents. Mutually exclusive with $products.
      *
      * @var int
@@ -268,6 +275,18 @@ class PaytrailE2
     }
 
     /**
+     * Set payer's email address
+     *
+     * @param string $email Email address
+     *
+     * @return void
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
      * Set total amount to pay
      *
      * @param int $amount Amount in cents
@@ -358,6 +377,10 @@ class PaytrailE2
 
         if (!empty($this->lastName)) {
             $request['PAYER_PERSON_LASTNAME'] = $this->lastName;
+        }
+
+        if (!empty($this->email)) {
+            $request['PAYER_PERSON_EMAIL'] = $this->email;
         }
 
         if (null !== $this->totalAmount) {
