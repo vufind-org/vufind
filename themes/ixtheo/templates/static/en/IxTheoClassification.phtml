@@ -11,5 +11,29 @@ Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine
   <br />
 </p>
 
+<?$translator = $this->plugin('translate')->getTranslator();
+  function matcher($regex) {
+      return function ($element) use ($regex) {
+          return preg_match($regex, $element);
+      };
+  }
+  $locale = $translator->getLocale();
+  $translations = $translator->getAllMessages('default', $locale);
+  $ixtheo_classes = array_filter($translations->getArrayCopy(), matcher("/^ixtheo-/"),
+                                 ARRAY_FILTER_USE_KEY);
+  // Remove unneeded elements
+  unset($ixtheo_classes['ixtheo-Unassigned']);
+  $superclasses = array_filter($ixtheo_classes, matcher("/^ixtheo-[A-Z]$/"),
+                               ARRAY_FILTER_USE_KEY);
+  $subclasses = array_diff_key($ixtheo_classes, $superclasses);
+  $list = [];
+  foreach($superclasses as $key => $value) {
+      $subcategories_map = array_filter($subclasses, matcher("/^$key/"), ARRAY_FILTER_USE_KEY);
+      array_push($list, $value, array_values($subcategories_map));
+  }
+  echo $this->htmlList($list);
+?>
+
+
 
 
