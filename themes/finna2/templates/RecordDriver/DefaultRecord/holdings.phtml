@@ -37,11 +37,9 @@
         <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
       <?php endif; ?>
     <?php endif; ?>
-    <?php if (!($recordType = $this->driver->tryMethod('getRecordType')) || !in_array($recordType, ['ead', 'forward', 'lido'])): ?>
-      <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-        <?=$this->transEsc('No Holdings Available')?>
-      </div>
-    <?php endif; ?>
+    <div class="no-holdings hidden">
+      <?=$this->transEsc('No Holdings Available')?>
+    </div>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/holdings.phtml -->

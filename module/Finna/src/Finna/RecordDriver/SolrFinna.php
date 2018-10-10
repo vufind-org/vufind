@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library 2015-2017.
+ * Copyright (C) The National Library 2015-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -692,6 +692,27 @@ trait SolrFinna
     public function socialMediaSharingAllowed()
     {
         return true;
+    }
+
+    /**
+     * Returns true if the record supports real-time AJAX status lookups.
+     *
+     * @return bool
+     */
+    public function supportsAjaxStatus()
+    {
+        if (parent::supportsAjaxStatus()) {
+            if ($this->ils) {
+                $driver = $this->ils->getDriver(false);
+                if ($driver instanceof \VuFind\ILS\Driver\MultiBackend) {
+                    $driverConfig = $this->ils->getDriverConfig();
+                    list($source) = explode('.', $this->getUniqueID());
+                    return isset($driverConfig['Drivers'][$source]);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
