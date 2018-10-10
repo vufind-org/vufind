@@ -1,6 +1,6 @@
 <?php
 /**
- * KeepAlive test class.
+ * Base class for tests using a MockContainer.
  *
  * PHP version 7
  *
@@ -25,14 +25,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFindTest\AjaxHandler;
+namespace VuFindTest\Unit;
 
-use VuFind\AjaxHandler\KeepAlive;
-use VuFind\AjaxHandler\KeepAliveFactory;
-use Zend\Session\SessionManager;
+use VuFindTest\Container\MockContainer;
 
 /**
- * KeepAlive test class.
+ * Base class for tests using a MockContainer.
  *
  * @category VuFind
  * @package  Tests
@@ -40,21 +38,22 @@ use Zend\Session\SessionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
+abstract class MockContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the AJAX handler's basic response.
+     * Mock container
+     *
+     * @var MockContainer
+     */
+    protected $container;
+
+    /**
+     * Standard setup method.
      *
      * @return void
      */
-    public function testResponse()
+    public function setUp()
     {
-        $sm = $this->container->createMock(SessionManager::class, ['getId']);
-        $sm->expects($this->once())->method('getId');
-        $this->container->set(SessionManager::class, $sm);
-        $factory = new KeepAliveFactory();
-        $handler = $factory($this->container, KeepAlive::class);
-        $params = new \Zend\Mvc\Controller\Plugin\Params();
-        $this->assertEquals([true], $handler->handleRequest($params));
+        $this->container = new MockContainer($this);
     }
 }
