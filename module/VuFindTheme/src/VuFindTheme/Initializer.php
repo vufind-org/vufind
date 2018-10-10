@@ -30,7 +30,6 @@ namespace VuFindTheme;
 use VuFind\I18n\Initializer as I18nInitializer;
 use Zend\Config\Config;
 use Zend\Console\Console;
-use Zend\Mvc\I18n\Translator;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -409,49 +408,12 @@ class Initializer
             }
         }
 
-        // Add theme specific language files for translation
-        $this->updateTranslator($themes);
-    }
-
-    /**
-     * Support method for setUpThemes() - add theme specific language files for
-     * translation.
-     *
-     * @param array $themes Theme configuration information.
-     *
-     * @return void
-     */
-    protected function updateTranslator($themes)
-    {
-        $pathStack = [];
+        // Add theme specific language directories for translation
+        $baseDir = APPLICATION_PATH . '/themes';
+        $i18n = $this->serviceManager->get(I18nInitializer::class);
         foreach (array_keys($themes) as $theme) {
-            $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';
-            if (is_dir($dir)) {
-                $pathStack[] = $dir;
-            }
-        }
-
-        if (!empty($pathStack)) {
-            $i18nInitializer = $this->serviceManager->get(I18nInitializer::class);
-            foreach ($pathStack as $path) {
-                $i18nInitializer->addBaseDir($path);
-            }
-
-            // Override the default cache with a theme-specific cache to avoid
-            // key collisions in a multi-theme environment.
-            try {
-                $translator = $this->serviceManager->get(Translator::class);
-                $cacheManager = $this->serviceManager->get('VuFind\Cache\Manager');
-                $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
-                $translator->setCache($cacheManager->getCache($cacheName));
-            } catch (\Exception $e) {
-                // Don't let a cache failure kill the whole application, but make
-                // note of it:
-                $logger = $this->serviceManager->get('VuFind\Log\Logger');
-                $logger->debug(
-                    'Problem loading cache: ' . get_class($e) . ' exception: '
-                    . $e->getMessage()
-                );
+            if (is_dir($langDir = "$baseDir/$theme/languages")) {
+                $i18n->addLanguageDir($langDir);
             }
         }
     }
