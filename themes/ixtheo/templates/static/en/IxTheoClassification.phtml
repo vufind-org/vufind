@@ -17,6 +17,15 @@ Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine
           return preg_match($regex, $element);
       };
   }
+  function make_classification_link($key, $value) {
+      return "<a href=/classification/" . preg_replace("/^ixtheo-/", "", $key) . ">" . $value . "</a>";
+  }
+  function make_classification_link_map($map) {
+      $link_entries = [];
+      foreach ($map as $key => $value)
+         array_push($link_entries, make_classification_link($key, $value));
+      return $link_entries;
+  }
   $locale = $translator->getLocale();
   $translations = $translator->getAllMessages('default', $locale);
   $ixtheo_classes = array_filter($translations->getArrayCopy(), matcher("/^ixtheo-/"),
@@ -29,9 +38,10 @@ Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine
   $list = [];
   foreach($superclasses as $key => $value) {
       $subcategories_map = array_filter($subclasses, matcher("/^$key/"), ARRAY_FILTER_USE_KEY);
-      array_push($list, $value, array_values($subcategories_map));
+      array_push($list, make_classification_link($key, $value),
+                 make_classification_link_map($subcategories_map));
   }
-  echo $this->htmlList($list);
+  echo $this->htmlList($list, false, false, false);
 ?>
 
 
