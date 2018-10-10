@@ -75,7 +75,9 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         $headers = []
     ) {
         $client = $this->httpService->createClient(
-            $this->config['API']['base_url'] . $path
+            $this->config['API']['base_url'] . $path,
+            $method,
+            120 // timeout
         );
         error_log($method . ' ' . $this->config['API']['base_url'] . $path);
 
@@ -94,7 +96,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 $client->setParameterPost($params);
             }
         }
-        return $client->setMethod($method)->send();
+        return $client->send();
     }
 
     /**

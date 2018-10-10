@@ -86,7 +86,21 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+    }
 
+    /**
+     * Set the configuration for the driver.
+     *
+     * @param array $config Configuration array (usually loaded from a VuFind .ini
+     * file whose name corresponds with the driver class name).
+     *
+     * @throws ILSException if base url excluded
+     * @return void
+     */
+    public function setConfig($config)
+    {
+        error_log("setConfig");
+        parent::setConfig($config);
         $this->tenant = $this->config['API']['tenant'];
     }
 
@@ -103,12 +117,11 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     protected function preRequest(\Zend\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('X-Okapi-Tenant', $this->tenant);
         if (!$headers->has('Content-Type')) {
             $headers->addHeaderLine('Content-Type', 'application/json');
         }
+        $headers->addHeaderLine('X-Okapi-Tenant', $this->tenant);
         if ($this->token != null) {
-            error_log('add token');
             $headers->addHeaderLine('X-Okapi-Token', $this->token);
         }
         return [$headers, $params];
@@ -121,9 +134,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     protected function renewTenantToken()
     {
-        error_log('renewTenantToken');
+        $this->token = null;
         $auth = [
-            'tenant' => $this->config['API']['tenant'],
             'username' => $this->config['API']['username'],
             'password' => $this->config['API']['password'],
         ];
@@ -163,7 +175,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     public function init()
     {
         $factory = $this->sessionFactory;
-        $this->sessionCache = $factory($this->config['API']['tenant']);
+        $this->sessionCache = $factory($this->tenant);
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
         }
@@ -184,7 +196,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     protected function getItem($itemId)
     {
-        $response = $this->makeRequest('GET', '/inventory/items/' . $itemId);
+        $query = ['query' => '(identifiers="' . $itemId . '")'];
+        $response = $this->makeRequest('GET', '/inventory/instances', $query);
         switch ($response->getStatusCode()) {
         case 400:
             throw new BadRequest($response->getBody());
@@ -196,7 +209,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         case 500:
             throw new ILSException("500: Internal Server Error");
         default:
-            return json_decode($response->getBody());
+            $instances = json_decode($response->getBody());
+            return $instances->instances[0];
         }
     }
 
@@ -254,31 +268,67 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function getHolding($itemId, array $patronLogin = null)
     {
-        $record = $this->getItem($recordId);
+        $record = $this->getItem($itemId);
+        $query = ['query' => '(instanceId="' . $record->id . '")'];
         $holdingResponse = $this->makeRequest(
             'GET',
-            '/holdings-storage/holdings/' . $record->holdingsRecordId
+            '/holdings-storage/holdings',
+            $query
         );
-        $holding = json_decode($holdingResponse->getBody());
-        /*
-        $instance = $this->makeRequest(
-            'GET',
-            '/inventory/instances/' . $holding->instanceId
-        );
-        */
-        $location = $record->permenantLocation->name
-            ?? ($holding->electronicLocation->uri ? "Electronic" : null);
-        $locationhref = $holding->electronicLocation->uri ?? null;
-        return [[
-            'id' => $recordId,
-            'availability' => $record->status->name == 'Available',
-            'status' => $record->status->name,
-            'location' => $location,
-            'locationhref' => $locationhref,
-            'barcode' => $record->barcode ?? '',
-            'callnumber' => $holding->callNumber,
-            'notes' => $record->notes ?? '',
-        ]];
+        switch ($holdingResponse->getStatusCode()) {
+        case 400:
+            throw new BadRequest($holdingResponse->getBody());
+        case 401:
+            throw new Forbidden($holdingResponse->getBody());
+        case 500:
+            throw new ILSException("500: Internal Server Error");
+        }
+        $holdingBody = json_decode($holdingResponse->getBody());
+        $items = [];
+        for ($i = 0; $i < count($holdingBody->holdingsRecords); $i++) {
+            $holding = $holdingBody->holdingsRecords[$i];
+            $locationResponse = $this->makeRequest(
+                'GET',
+                '/locations/' . $holding->permanentLocationId
+            );
+            switch ($locationResponse->getStatusCode()) {
+            case 400:
+                throw new BadRequest($locationResponse->getBody());
+            case 401:
+                throw new Forbidden($locationResponse->getBody());
+            case 500:
+                throw new ILSException("500: Internal Server Error");
+            }
+            $location = json_decode($locationResponse->getBody());
+            error_log($locationResponse->getBody());
+
+            $query = ['query' => '(holdingsRecordId="' . $holding->id . '")'];
+            $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
+            switch ($itemResponse->getStatusCode()) {
+            case 400:
+                throw new BadRequest($itemResponse->getBody());
+            case 401:
+                throw new Forbidden($itemResponse->getBody());
+            case 500:
+                throw new ILSException("500: Internal Server Error");
+            }
+            $itemBody = json_decode($itemResponse->getBody());
+            for ($j = 0; $j < count($itemBody->items); $j++) {
+                $item = $itemBody->items[$j];
+                $items[] = [
+                    'id' => $item->id,
+                    'number' => count($items),
+                    'barcode' => $item->barcode ?? '',
+                    'status' => $item->status->name,
+                    'availability' => $item->status->name == 'Available',
+                    'notes' => $item->notes ?? [],
+                    'callnumber' => $holding->callNumber,
+                    'location' => $location->name,
+                    'reserve' => 'TODO',
+                ];
+            }
+        }
+        return $items;
     }
 
     /**
