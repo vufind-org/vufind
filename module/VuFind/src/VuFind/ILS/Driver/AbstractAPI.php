@@ -96,7 +96,19 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 $client->setParameterPost($params);
             }
         }
-        return $client->send();
+        $response = $client->send();
+        switch ($response->getStatusCode()) {
+        case 400:
+            throw new BadRequest($response->getBody());
+        case 401:
+        case 403:
+            throw new Forbidden($response->getBody());
+        case 404:
+            throw new RecordMissing($response->getBody());
+        case 500:
+            throw new ILSException("500: Internal Server Error");
+        }
+        return $response;
     }
 
     /**

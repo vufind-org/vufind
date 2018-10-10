@@ -198,20 +198,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         $query = ['query' => '(identifiers="' . $itemId . '")'];
         $response = $this->makeRequest('GET', '/inventory/instances', $query);
-        switch ($response->getStatusCode()) {
-        case 400:
-            throw new BadRequest($response->getBody());
-        case 401:
-        case 403:
-            throw new Forbidden($response->getBody());
-        case 404:
-            throw new RecordMissing($response->getBody());
-        case 500:
-            throw new ILSException("500: Internal Server Error");
-        default:
-            $instances = json_decode($response->getBody());
-            return $instances->instances[0];
-        }
+        $instances = json_decode($response->getBody());
+        return $instances->instances[0];
     }
 
     /**
@@ -275,14 +263,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             '/holdings-storage/holdings',
             $query
         );
-        switch ($holdingResponse->getStatusCode()) {
-        case 400:
-            throw new BadRequest($holdingResponse->getBody());
-        case 401:
-            throw new Forbidden($holdingResponse->getBody());
-        case 500:
-            throw new ILSException("500: Internal Server Error");
-        }
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         for ($i = 0; $i < count($holdingBody->holdingsRecords); $i++) {
@@ -291,27 +271,10 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                 'GET',
                 '/locations/' . $holding->permanentLocationId
             );
-            switch ($locationResponse->getStatusCode()) {
-            case 400:
-                throw new BadRequest($locationResponse->getBody());
-            case 401:
-                throw new Forbidden($locationResponse->getBody());
-            case 500:
-                throw new ILSException("500: Internal Server Error");
-            }
             $location = json_decode($locationResponse->getBody());
-            error_log($locationResponse->getBody());
 
             $query = ['query' => '(holdingsRecordId="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
-            switch ($itemResponse->getStatusCode()) {
-            case 400:
-                throw new BadRequest($itemResponse->getBody());
-            case 401:
-                throw new Forbidden($itemResponse->getBody());
-            case 500:
-                throw new ILSException("500: Internal Server Error");
-            }
             $itemBody = json_decode($itemResponse->getBody());
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
@@ -361,23 +324,24 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             'password' => $password,
         ];
         // Get token
-        $response = $this->makeRequest("POST", '/authn/login', $credentials);
-        if ($response->getStatusCode() >= 400) {
+        try {
+            $response = $this->makeRequest("POST", '/authn/login', $credentials);
+            // Replace admin with user as tenant
+            $this->tenant = $profile['id'];
+            $this->token = $response->getHeaders()->get('X-Okapi-Token')
+                ->getFieldValue();
+            return [
+                'id' => $profile['id'],
+                'username' => $username,
+                'firstname' => $profile['personal']['firstName'],
+                'lastname' => $profile['personal']['lastName'],
+                'cat_username' => $username,
+                'cat_password' => $password,
+                'email' => $profile['personal']['email'],
+            ];
+        } catch(Exception $e) {
             return null;
         }
-        // Replace admin with user as tenant
-        $this->tenant = $profile['id'];
-        $this->token = $response->getHeaders()->get('X-Okapi-Token')
-            ->getFieldValue();
-        return [
-            'id' => $profile['id'],
-            'username' => $username,
-            'firstname' => $profile['personal']['firstName'],
-            'lastname' => $profile['personal']['lastName'],
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $profile['personal']['email'],
-        ];
     }
 
     /**
