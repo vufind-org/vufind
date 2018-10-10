@@ -325,31 +325,43 @@ class Server
         // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
-        } elseif ('oai_vufind' === $format && $this->vufindApiFields) {
-            $records = $this->recordFormatter->format(
-                [$record], $this->vufindApiFields
+        } elseif ('oai_vufind_json' === $format && $this->vufindApiFields) {
+            // Root node
+            $recordDoc = new \DOMDocument();
+            $rootNode = $recordDoc->createElementNS(
+                $this->metadataFormats['oai_vufind_json']['namespace'],
+                'oai_vufind_json:record'
             );
-            $xml = simplexml_load_string(
+            $recordDoc->appendChild($rootNode);
+
+            // Add oai_dc part
+            $oaiDc = new \DOMDocument();
+            $oaiDc->loadXML(
                 $record
                     ->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
             );
-            $child = $xml->addChild(
-                'oai_vufind:metadata',
-                '',
-                $this->metadataFormats['oai_vufind']['namespace']
+            $rootNode->appendChild(
+                $recordDoc->importNode(
+                    $oaiDc->documentElement,
+                    true
+                )
             );
-            $child->addAttribute(
-                'xsi:schemaLocation',
-                $this->metadataFormats['oai_vufind']['namespace'],
-                'http://www.w3.org/2001/XMLSchema-instance'
+
+            // Add VuFind metadata
+            $records = $this->recordFormatter->format(
+                [$record], $this->vufindApiFields
             );
-            $child->addAttribute('type', 'application/json');
-            // Add as cdata
-            $domNode = dom_import_simplexml($child);
-            $domNode->appendChild(
-                $domNode->ownerDocument->createCDATASection(json_encode($records[0]))
+            $metadataNode = $recordDoc->createElementNS(
+                $this->metadataFormats['oai_vufind_json']['namespace'],
+                'oai_vufind_json:metadata'
             );
-            $xml = $xml->asXML();
+            $metadataNode->setAttribute('type', 'application/json');
+            $metadataNode->appendChild(
+                $recordDoc->createCDATASection(json_encode($records[0]))
+            );
+            $rootNode->appendChild($metadataNode);
+
+            $xml = $recordDoc->saveXML();
         } else {
             $xml = $record
                 ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
@@ -545,9 +557,9 @@ class Server
             $this->vufindApiFields = explode(
                 ',', $config->OAI->vufind_api_format_fields
             );
-            $this->metadataFormats['oai_vufind'] = [
-                'schema' => 'http://vufind.org/oai_vufind-6.0.xsd',
-                'namespace' => 'http://vufind.org/oai_vufind-6.0'
+            $this->metadataFormats['oai_vufind_json'] = [
+                'schema' => 'http://vufind.org/xsd/oai_vufind_json-1.0.xsd',
+                'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
             ];
         }
     }
