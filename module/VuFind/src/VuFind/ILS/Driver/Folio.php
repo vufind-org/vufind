@@ -30,7 +30,6 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\BadRequest as BadRequest;
 use VuFind\Exception\Forbidden as Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing as RecordMissing;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -209,7 +208,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function getStatus($itemId)
     {
-       return $this->getHolding($itemId);
+        return $this->getHolding($itemId);
     }
 
     /**

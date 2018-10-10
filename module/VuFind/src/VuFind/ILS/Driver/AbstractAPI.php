@@ -28,6 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\RecordMissing as RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
 
