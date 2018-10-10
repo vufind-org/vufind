@@ -211,8 +211,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function getStatus($itemId)
     {
-        $item = $this->getItem($itemId);
-        return $item->status;
+       return $this->getHolding($itemId);
     }
 
     /**
@@ -279,7 +278,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
-                    'id' => $item->id,
+                    'id' => $itemId,
                     'number' => count($items),
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
