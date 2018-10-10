@@ -99,7 +99,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function setConfig($config)
     {
-        error_log("setConfig");
         parent::setConfig($config);
         $this->tenant = $this->config['API']['tenant'];
     }
@@ -157,7 +156,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     protected function checkTenantToken()
     {
-        error_log('checkTenantToken');
         $response = $this->makeRequest('GET', '/users');
         if ($response->getStatusCode() >= 400) {
             $this->token = null;
