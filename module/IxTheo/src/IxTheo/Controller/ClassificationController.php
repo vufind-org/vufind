@@ -11,7 +11,8 @@ class ClassificationController extends \VuFind\Controller\AbstractBase
 	{
              $notation = $this->params()->fromRoute('notation');
              if (empty($notation))
-                 return $this->redirect()->toUrl('/Browse/IxTheoClassification');
+                 return $this->redirect()->toUrl('/Browse/IxTheoClassification?findby=alphabetical' .
+                                                 '&query_field=ixtheo_notation_facet');
              if (preg_match("/^[a-zA-Z]$/", $notation))
                  return $this->redirect()->toUrl('/Browse/IxTheoClassification?findby=alphabetical&category=&query=' .
                                                  $notation . '%2A&facet_prefix=' . $notation . 
