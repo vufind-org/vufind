@@ -67,7 +67,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
                 "$this->path/overrides/en.ini",
                 "$this->path/base/en.ini"
             ]
-        ], $result[ExtendedIni::INFO]);
+        ], $result[ExtendedIni::KEY_INFO]);
 
         $this->assertArraySubset([
             'blank_line' =>
@@ -82,7 +82,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testExtendDirective()
+    public function testExtendsDirective()
     {
         $loader = new ExtendedIni();
         $loader->setDirs(["$this->path/base"]);
@@ -94,7 +94,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
                 "$this->path/base/child1.ini",
                 "$this->path/base/fake.ini",
             ]
-        ], $result[ExtendedIni::INFO]);
+        ], $result[ExtendedIni::KEY_INFO]);
 
         $this->assertArraySubset([
             'test1' => 'test 1',
@@ -110,13 +110,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     {
         $loader = new ExtendedIni();
         $loader->setDirs(["$this->path/base"]);
-        $loader->setFallbacks(['fb2' => 'fb3', '*' => 'fb4']);
+        $loader->setFallbacks(['fb1' => 'fb2', '*' => 'fb3']);
         $result = $loader->load('fb1');
         $this->assertArraySubset([
             'key1' => 'val1', // fb1.ini
             'key2' => 'val2', // fb2.ini
             'key3' => 'val3', // fb3.ini
-            'key4' => 'val4', // fb4.ini
         ], $result);
     }
 

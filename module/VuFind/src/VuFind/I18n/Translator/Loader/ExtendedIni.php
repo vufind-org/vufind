@@ -44,11 +44,9 @@ use Zend\I18n\Translator\TextDomain;
  */
 class ExtendedIni implements RemoteLoaderInterface
 {
-    const EXTEND = '@extend';
+    const KEY_EXTENDS = '@extends';
 
-    const FALLBACK = '@fallback';
-
-    const INFO = '@info';
+    const KEY_INFO = '@info';
 
     /**
      * List of absolute paths to directories where language files reside
@@ -71,13 +69,6 @@ class ExtendedIni implements RemoteLoaderInterface
      * @var string[]
      */
     protected $list = [];
-
-    /**
-     * Fallback language defined via directive.
-     *
-     * @var null|string
-     */
-    protected $fallback = null;
 
     /**
      * Fallback languages defined via configuration.
@@ -144,7 +135,7 @@ class ExtendedIni implements RemoteLoaderInterface
                 return $data->merge($this->dict[$filename]['data']);
             }, new TextDomain(
                 [
-                    self::INFO => [
+                    self::KEY_INFO => [
                         'dirs' => $this->dirs,
                         'list' => $this->list,
                         'dict' => $this->dict
@@ -168,7 +159,6 @@ class ExtendedIni implements RemoteLoaderInterface
     {
         $exists = false;
         $basename = "$locale.ini";
-        $this->fallback = null;
         $relPath = $textDomain === 'default'
             ? $basename : "$textDomain/$basename";
 
@@ -182,7 +172,7 @@ class ExtendedIni implements RemoteLoaderInterface
         }
 
         $catchAll = $this->fallbacks['*'] ?? null;
-        $fallback = $this->fallback ?? $this->fallbacks[$locale]
+        $fallback = $this->fallbacks[$locale]
             ?? ($locale === $catchAll ? null : $catchAll);
 
         if ($fallback) {
@@ -211,8 +201,8 @@ class ExtendedIni implements RemoteLoaderInterface
             $this->readFile($path);
         }
 
-        if ($extend = $this->dict[$path]['extend']) {
-            $this->loadFile($extend);
+        if ($extends = $this->dict[$path]['extends']) {
+            $this->loadFile($extends);
         }
     }
 
@@ -228,19 +218,11 @@ class ExtendedIni implements RemoteLoaderInterface
         $data = ($exists = is_file($path))
             ? $this->reader->getTextDomain($path) : new TextDomain();
 
-        if ($fallback = $data[self::FALLBACK] ?? null) {
-            $this->fallback = $this->fallback ?? $fallback;
-            unset($data[self::FALLBACK]);
+        if ($extends = $data[self::KEY_EXTENDS] ?? null) {
+            unset($data[self::KEY_EXTENDS]);
+            $extends = realpath(dirname($path) . "/$extends");
         }
 
-        if ($extend = $data[self::EXTEND] ?? null) {
-            $dir = $extend[0] === '/' ? APPLICATION_PATH : dirname($path);
-            $extend = realpath("$dir/$extend");
-            unset($data[self::EXTEND]);
-        }
-
-        $this->dict[$path] = compact(
-            'data', 'exists', 'extend', 'path', 'fallback'
-        );
+        $this->dict[$path] = compact('data', 'exists', 'extends', 'path');
     }
 }
