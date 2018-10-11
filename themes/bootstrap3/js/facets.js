@@ -36,20 +36,16 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         .html(
           this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
         );
-
-        if (allowExclude) {
-            var excludeUrl = currentPath + this.exclude;
-            var $a = $('<a/>')
-                .addClass('exclude')
-                .attr('href', excludeUrl)
-                .attr('title', excludeTitle);
-            $('<i/>').addClass('fa fa-times').appendTo($a);
-            $badge.append($a);
-        }
-
-        $badge.appendTo($html);
-
-
+      if (allowExclude) {
+        var excludeUrl = currentPath + this.exclude;
+        var $a = $('<a/>')
+          .addClass('exclude')
+          .attr('href', excludeUrl)
+          .attr('title', excludeTitle);
+        $('<i/>').addClass('fa fa-times').appendTo($a);
+        $badge.append($a);
+      }
+      $badge.appendTo($html);
     }
 
     $html = $('<div/>').append($html);
