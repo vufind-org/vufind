@@ -23,15 +23,15 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
     }   
 
 
-    protected function make_classification_link($key, $value) {
+    protected function makeClassificationLink($key, $value) {
         return '<a href="/classification/' . preg_replace("/^ixtheo-/", "", $key) . '" target="_blank">' . $value . "</a>";
     }
 
 
-    protected function make_classification_link_map($map) {
+    protected function makeClassificationLinkMap($map) {
         $link_entries = [];
         foreach ($map as $key => $value)
-           array_push($link_entries, $this->make_classification_link($key, $value));
+           array_push($link_entries, $this->makeClassificationLink($key, $value));
         return $link_entries;
     }
    
@@ -49,8 +49,8 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         $list = [];
         foreach($superclasses as $key => $value) {
             $subcategories_map = array_filter($subclasses, $this->matcher("/^$key/"), ARRAY_FILTER_USE_KEY);
-            array_push($list, $this->make_classification_link($key, $value),
-                       $this->make_classification_link_map($subcategories_map));
+            array_push($list, $this->makeClassificationLink($key, $value),
+                       $this->makeClassificationLinkMap($subcategories_map));
         }
         return $list;
     }
