@@ -1,47 +1,16 @@
 <h1>IxTheo-Klassifikation</h1>
+<a rel="license"
+   href="http://creativecommons.org/publicdomain/zero/1.0/">
+  <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+</a>
 Der Index Theologicus (IxTheo) stellt die IxTheo-Klassifikation zur freien Nachnutzung unter der Lizenz <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank">CC0 1.0</a> zur Verfügung.</p>
 
-Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine Facettenklassifikation bestehend aus 13 Hauptgruppen und 139 Klassen, die seit 1995 als klassifikatorische Basiserschließung im IxTheo angewandt wird (siehe <a href=/docs/ixtheo-erschliessungskonzept.pdf target="_blank">Erschließungskonzept</a>).</p>
+Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine Facettenklassifikation bestehend aus 13 Hauptgruppen und 139 Klassen, die seit 1995 als klassifikatorische Basiserschließung im IxTheo angewandt wird (siehe <a href=/docs/ixtheo-erschliessungskonzept.pdf target="_blank">Erschließungskonzept</a>):</p>
 
-<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
-  <a rel="license"
-     href="http://creativecommons.org/publicdomain/zero/1.0/">
-    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
-  </a>
-  <br />
-</p>
-
-<?$translator = $this->plugin('translate')->getTranslator();
-  function matcher($regex) {
-      return function ($element) use ($regex) {
-          return preg_match($regex, $element);
-      };
-  }
-  function make_classification_link($key, $value) {
-      return '<a href="/classification/' . preg_replace("/^ixtheo-/", "", $key) . '" target="_blank">' . $value . "</a>";
-  }
-  function make_classification_link_map($map) {
-      $link_entries = [];
-      foreach ($map as $key => $value)
-         array_push($link_entries, make_classification_link($key, $value));
-      return $link_entries;
-  }
-  $locale = $translator->getLocale();
-  $translations = $translator->getAllMessages('default', $locale);
-  $ixtheo_classes = array_filter($translations->getArrayCopy(), matcher("/^ixtheo-/"),
-                                 ARRAY_FILTER_USE_KEY);
-  // Remove unneeded elements
-  unset($ixtheo_classes['ixtheo-Unassigned']);
-  $superclasses = array_filter($ixtheo_classes, matcher("/^ixtheo-[A-Z]$/"),
-                               ARRAY_FILTER_USE_KEY);
-  $subclasses = array_diff_key($ixtheo_classes, $superclasses);
-  $list = [];
-  foreach($superclasses as $key => $value) {
-      $subcategories_map = array_filter($subclasses, matcher("/^$key/"), ARRAY_FILTER_USE_KEY);
-      array_push($list, make_classification_link($key, $value),
-                 make_classification_link_map($subcategories_map));
-  }
-  echo $this->htmlList($list, false, false, false);
+<? $helper = $this->getHelperPluginManager()->get('IxTheo');
+   $translator = $this->plugin('translate')->getTranslator();
+   $list = $helper->getNestedIxtheoClassificationArray($translator);
+   echo $this->htmlList($list, false, false, false);
 ?>
 
 
