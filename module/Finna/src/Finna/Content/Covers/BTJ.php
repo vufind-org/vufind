@@ -78,13 +78,32 @@ class BTJ extends \VuFind\Content\AbstractCover
             'small' => '06',
             'large' => '07'
         ];
-        $ftype = $sizeCodes[$size] ?? '04';
         try {
+            $pid = '';
             $driver = $this->getRecord($ids['recordid']);
             $recordISBN = new ISBN($driver->getCleanISBN());
             if ($isbn = $recordISBN->get13()) {
-                return "https://armas.btj.fi/request.php?error=1&"
-                . "id=$key&pid=$isbn&ftype=$ftype";
+                $pid = $isbn;
+            } else {
+                $standardCodes = $driver->tryMethod('getStandardCodes');
+                if ($standardCodes) {
+                    foreach ($standardCodes as $code) {
+                        $parts = explode(' ', $code);
+                        if (isset($parts[1]) && 'EAN' === $parts[0]) {
+                            $pid = $parts[1];
+                            break;
+                        }
+                    }
+                }
+            }
+            if ('' !== $pid) {
+                $params = [
+                    'id' => $key,
+                    'pid' => $pid,
+                    'ftype' => $sizeCodes[$size] ?? '04'
+                ];
+                return 'https://armas.btj.fi/request.php?error=1&'
+                    . http_build_query($params);
             }
             return false;
         } catch (\Exception $e) {
