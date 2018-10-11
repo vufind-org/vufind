@@ -108,9 +108,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig VuFind main conf
-     * @param \Zend\Config\Config $recordConfig Record-specific conf file
-     * @param \Zend\Session\Container $sessionContainer Session container
+     * @param \Zend\Config\Config           $mainConfig VuFind main conf
+     * @param \Zend\Config\Config           $recordConfig Record-specific conf file
+     * @param \Zend\Session\Container       $sessionContainer Session container
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS Authenticator
      */
     public function __construct(
@@ -190,7 +190,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @return object|bool  Standard object with availability info
      *
-     * @link  https://developer.overdrive.com/apis/library-availability-new
+     * @link https://developer.overdrive.com/apis/library-availability-new
      */
     public function getAvailability($overDriveId)
     {
@@ -219,7 +219,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @return array|bool see getAvailability
      *
-     * @todo  if more tan 25 passed in, make multiple calls
+     * @todo if more tan 25 passed in, make multiple calls
      */
     public function getAvailabilityBulk($overDriveIds = array())
     {
@@ -239,16 +239,16 @@ class OverdriveConnector implements LoggerAwareInterface,
             $availabilityUrl = $baseUrl . $availabilityPath .
                 implode(",", $overDriveIds);
             $res = $this->callUrl($availabilityUrl);
-            if(!$res){
+            if (!$res) {
                 $result->code = 'od_code_connection_failed';
-            }else{
+            } else {
                 $result->status = true;
-                foreach($res->availability as $item){
+                foreach ($res->availability as $item) {
                     $result->data[strtolower($item->reserveId)] = $item;
                 }
             }
         }
-        $this->debug("availres: ".print_r($result,true));
+        $this->debug("availres: " . print_r($result, true));
         return $result;
     }
 
@@ -289,7 +289,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Overdrive Checkout
      * Processes a request to checkout a title from Overdrive
      *
-     * @param  string $overDriveId The overdrive id for the title
+     * @param string $overDriveId The overdrive id for the title
      *
      * @return object $result Results of the call.
      */
@@ -326,7 +326,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                     $result->data->formats = $response->formats;
                     //add the checkout to the session cache
                     $this->sessionContainer->checkouts[] = $response;
-                    $this->debug("allcheckouts:".print_r($this->sessionContainer->checkouts,true));
                 } else {
                     //todo: translate
                     $result->msg = $response->message;
@@ -342,7 +341,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string email The email overdrive should use for notif
+     * @param string $email The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -462,9 +461,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Download Link for an Overdrive Resource
      *
-     * @param $overDriveId string Overdrive ID of the resource
-     * @param $format string Overdrive string for this format
-     * @param $errorURL string A URL to show error if the download doesn't wk
+     * @param string $overDriveIdOverdrive ID of the resource
+     * @param string $format Overdrive string for this format
+     * @param string $errorURL A URL to show error if the download doesn't wk
      *
      * @return object Object with result. If successful, then data will
      * have the download URI ($result->downloadLink)
@@ -485,20 +484,18 @@ class OverdriveConnector implements LoggerAwareInterface,
         //or it is locked in and they are requesting the format that
         //is already locked in.
         if ($template = $this->getLinkTemplate($checkout, $format)) {
-            $this->debug("template: ".print_r($template,true));
+            $this->debug("template: " . print_r($template, true));
             $downloadLink = $template->downloadLinkV2->href;
             $this->debug("found the link: $downloadLink");
-        }elseif (!$checkout->isFormatLockedIn) {
-        //if we get this far, and the checkout is not locked in, then we should
-        //lock it in and try again
+        } elseif (!$checkout->isFormatLockedIn) {
+            //if we get this far, and the checkout is not locked in, then we should
+            //lock it in and try again
 
             $lockinResult = $this->lockinResource($overDriveId, $format);
             if ($lockinResult->status) {
-                //$this->debug("download link found.");
-                $downloadLink = $lockinResult->data->linkTemplates->downloadLink->href;
+                $downloadLink
+                    = $lockinResult->data->linkTemplates->downloadLink->href;
                 $this->debug("(locked in. found the link: $downloadLink");
-                //$result->status = true;
-                //return $result;
             } else {
                 $result->msg = $lockinResult->msg;
             }
@@ -515,8 +512,8 @@ class OverdriveConnector implements LoggerAwareInterface,
 
         if ($downloadLink) {
             $this->debug("dll true");
-            $url = str_replace("{errorurl}",$errorURL, $downloadLink);
-            $url = str_replace("{successurl}",$errorURL, $url);
+            $url = str_replace("{errorurl}", $errorURL, $downloadLink);
+            $url = str_replace("{successurl}", $errorURL, $url);
             $this->debug("getting download link using: $url");
             $response = $this->callPatronUrl(
                 $user["cat_username"],
@@ -525,12 +522,11 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if (!empty($response)) {
                 if (isset($response->links)) {
-                    $this->debug("content link found:".$response->links->contentlink->href);
                     $result->status = true;
                     $result->data->downloadLink
                         = $response->links->contentlink->href;
                 } else {
-                    $this->debug("problem getting link:".$response->message);
+                    $this->debug("problem getting link:" . $response->message);
                     $result->msg
                         = "Could not get download link for resourceID [$overDriveId]: "
                         . $response->message;
@@ -539,15 +535,15 @@ class OverdriveConnector implements LoggerAwareInterface,
                 //todo: translate
                 $result->code = 'od_code_connection_failed';
             }
-        }else {
+        } else {
             $this->debug("dll false");
         }
         return $result;
     }
 
     /**
-     * @param $checkout
-     * @param $format
+     * @param object $checkout The checkout object
+     * @param string $format The name of the format to check
      *
      * @return bool
      */
@@ -566,7 +562,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Lock In Overdrive Resource for a particular format
      *
-     * @param $overDriveId string Overdrive Resource ID
+     * @param string $overDriveId Overdrive Resource ID
      * @param string $format Overdrive string for the format
      *
      * @return object|bool Result of the call.
@@ -600,7 +596,8 @@ class OverdriveConnector implements LoggerAwareInterface,
         if (!in_array($format, $availableFormats)) {
             $result->msg
                 = "Could not lock in Overdrive resourceID [$overDriveId]:" .
-                " This format ($format) doesn't appear to be available for this resource.";
+                " This format ($format) doesn't appear to be available " .
+                "for this resource.";
             return $result;
         } else {
             $params = array(
@@ -673,23 +670,28 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf->ILSname = $this->recordConfig->API->ILSname;
         $conf->isMarc = $this->recordConfig->Overdrive->isMarc;
         $conf->displayDateFormat = $this->mainConfig->Site->displayDateFormat;
-        //$this->debug("OD Record driver config: ".print_r($this->recordConfig,true));
         return $conf;
     }
 
 
-    public function getFormatNames(){
+    /**
+     * Returns an array of Overdrive Formats
+     *
+     * @return array
+     */
+    public function getFormatNames()
+    {
         return array(
-            'ebook-kindle'=>"Kindle Book",
-            'ebook-overdrive'=>"OverDrive Read eBook",
-            'ebook-epub-adobe'=>"Adobe EPUB eBook",
-            'ebook-epub-open'=>"Open EPUB eBook",
-            'ebook-pdf-adobe'=>"Adobe PDF eBook",
-            'ebook-pdf-open'=>"Open PDF eBook",
-            'ebook-mediado'=>"MediaDo Reader eBook",
-            'audiobook-overdrive'=>"OverDrive Listen audiobook",
-            'audiobook-mp3'=>"MP3 audiobook",
-            'video-streaming'=>"streaming video file",
+            'ebook-kindle' => "Kindle Book",
+            'ebook-overdrive' => "OverDrive Read eBook",
+            'ebook-epub-adobe' => "Adobe EPUB eBook",
+            'ebook-epub-open' => "Open EPUB eBook",
+            'ebook-pdf-adobe' => "Adobe PDF eBook",
+            'ebook-pdf-open' => "Open PDF eBook",
+            'ebook-mediado' => "MediaDo Reader eBook",
+            'audiobook-overdrive' => "OverDrive Listen audiobook",
+            'audiobook-mp3' => "MP3 audiobook",
+            'video-streaming' => "streaming video file",
         );
     }
 
@@ -732,7 +734,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * for the current user
      *
      * @param string $overDriveId Overdrive resource id
-     * @param  bool $refresh Whether or not to ignore cache and get latest
+     * @param bool   $refresh Whether or not to ignore cache and get latest
      *
      * @return object|false PHP object that represents the checkout or false
      * the checkout is not in the current list of checkouts for the current
@@ -746,7 +748,10 @@ class OverdriveConnector implements LoggerAwareInterface,
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
 
-                if (strtolower($checkout->reserveId) == strtolower($overDriveId)) {
+                if (strtolower($checkout->reserveId) == strtolower(
+                        $overDriveId
+                    )
+                ) {
                     return $checkout;
                 }
             }
@@ -764,7 +769,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * for the current user
      *
      * @param string $overDriveId Overdrive resource id
-     * @param  bool $refresh Whether or not to ignore cache and get latest
+     * @param  bool  $refresh Whether or not to ignore cache and get latest
      *
      * @return object|false PHP object that represents the checkout or false
      * the checkout is not in the current list of checkouts for the current
@@ -777,9 +782,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
-//                $this->debug(
-//                    strtolower($checkout->reserveId) . " == " . $resourceID
-//                );
                 if (strtolower($hold->reserveId) == strtolower($overDriveId)) {
                     $this->debug("hold found");
                     return $hold;
@@ -920,11 +922,10 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Call a URL on the API
      *
      * @param string $url The url to call
-     * @param array $headers Headers to set for the request.
+     * @param array  $headers Headers to set for the request.
      *                           if null, then the auth headers are used.
-     * @param bool $checkToken Whether to check and get a new token
-     *
-     * @param string $requestType
+     * @param bool   $checkToken Whether to check and get a new token
+     * @param string $requestType The request type (GET, POST etc)
      *
      * @return object|bool The json response from the API call
      *  converted to an object.  If the call fails at the
@@ -947,8 +948,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             }
             if ($headers === null) {
                 $headers = array(
-                    "Authorization: {$tokenData->token_type} {$tokenData->access_token}",
-                    "User-Agent: VuFind"
+                    "Authorization: {$tokenData->token_type} " .
+                    "{$tokenData->access_token}", "User-Agent: VuFind"
                 );
             }
             $client->setHeaders($headers);
@@ -1004,7 +1005,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Connect to API
      *
-     * @param  bool $forceNewConnection Force a new connection (get a new token)
+     * @param bool $forceNewConnection Force a new connection (get a new token)
      *
      * @return string token for the session or false
      *     if the token request failed
@@ -1089,7 +1090,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @param string $patronBarcode Patrons barcode
      * @param string $patronPin Patrons password
      * @param string $url The url to call
-     * @param array $params parameters to call
+     * @param array  $params parameters to call
      * @param string $requestType HTTP request type (default=GET)
      *
      * @return object|bool The json response from the API call
@@ -1192,9 +1193,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Connect to Patron API
      *
-     * @param  string $patronBarcode Patrons barcode
-     * @param  string $patronPin Patrons password
-     * @param  bool $forceNewConnection force a new connection (get a new token)
+     * @param string $patronBarcode Patrons barcode
+     * @param string $patronPin Patrons password
+     * @param bool   $forceNewConnection force a new connection (get a new token)
      *
      * @return string token for the session
      */
@@ -1289,7 +1290,9 @@ class OverdriveConnector implements LoggerAwareInterface,
 
 
     /**
+     * Get Result Object
      *
+     * @return object
      */
     public function getResultObject()
     {

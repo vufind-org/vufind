@@ -67,9 +67,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig VuFind main configuration
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration
-     * @param \VuFind\DigitalContent\OverdriveConnector $connector Overdrive Connector
+     * @param Config             $mainConfig VuFind main configuration
+     * @param Config             $recordConfig Record-specific configuration
+     * @param OverdriveConnector $connector Overdrive Connector
      */
     public function __construct(
         $mainConfig = null, $recordConfig = null,
@@ -84,6 +84,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
 
     /**
+     * Supports OpenURL
+     *
      * @return bool
      */
     public function supportsOpenUrl()
@@ -92,6 +94,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Supports coins OpenURL
+     *
      * @return bool
      */
     public function supportsCoinsOpenUrl()
@@ -565,13 +569,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @since x.x.x
      *
+     * @param type  $var Description.
+     * @param type  $var Optional. Description. Default.
+     *
      * @see   Function/method/class relied on
      * @link  URL
      * @global type $varname Description.
      * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
      *
      * @return type Description.
      */
@@ -593,21 +597,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * summary
+     * Get Real Time Title Hold
      *
      * Description.
      *
-     * @since x.x.x
-     *
-     * @see   Function/method/class relied on
-     * @link  URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @return type Description.
+     * @return array
      */
     public function getRealTimeTitleHold()
     {
