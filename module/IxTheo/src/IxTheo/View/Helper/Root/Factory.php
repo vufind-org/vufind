@@ -35,4 +35,16 @@ class Factory
         );
         return $helper;
     }
+
+    /**
+     * Construct the IxTheo helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return IxTheo
+     */
+
+    public static function getIxTheo(ServiceManager $sm) {
+        return new IxTheo($sm);
+   }
 }
