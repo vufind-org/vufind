@@ -90,9 +90,10 @@ var ItemStatusHandler = {
 
     checkItemStatusDone: function checkItemStatusDone(response) {
         var data = response.data;
-        for (var j = 0; j < data.length; j++) {
-            displayItemStatus(data[j], this.itemStatusEls[data[j].id]);
-            this.itemStatusIds.splice(this.itemStatusIds.indexOf(data[j].id), 1);
+        for (var j = 0; j < data.statuses.length; j++) {
+            var status = data.statuses[j];
+            displayItemStatus(status, this.itemStatusEls[status.id]);
+            this.itemStatusIds.splice(this.itemStatusIds.indexOf(status.id), 1);
         }
     },
     itemStatusFail: function itemStatusFail(response, textStatus) {
@@ -134,15 +135,15 @@ var ItemStatusHandler = {
     }//end runItemAjax
 };
 
+//add you own overridden handler here
 var OdItemStatusHandler=Object.create(ItemStatusHandler);
-    OdItemStatusHandler.url = '/Overdrive/getStatus';
-    OdItemStatusHandler.itemStatusDelay = 200;
-    OdItemStatusHandler.name = "overdrive";
-    OdItemStatusHandler.itemStatusIds = [];
-    OdItemStatusHandler.itemStatusEls = [];
+OdItemStatusHandler.url = '/Overdrive/getStatus';
+OdItemStatusHandler.itemStatusDelay = 200;
+OdItemStatusHandler.name = "overdrive";
+OdItemStatusHandler.itemStatusIds = [];
+OdItemStatusHandler.itemStatusEls = [];
 
 //store the handlers in a "hash" obj
-//add your own overridden handler here
 var checkItemHandlers = {
     'ils': ItemStatusHandler,
     'overdrive': OdItemStatusHandler,
@@ -161,11 +162,9 @@ function checkItemStatus(el) {
     if ($item.find('.handler-name').length > 0) {
         handlerName = $item.find('.handler-name').val();
     }
-
-    if ($item.data("handlerName")) {
-        handlerName = $item.data("handlerName");
+    if ($item.data("handler-name")) {
+        handlerName = $item.data("handler-name");
     }
-
     //queue the element into the handler
     checkItemHandlers[handlerName].itemQueueAjax(id, $item);
 }

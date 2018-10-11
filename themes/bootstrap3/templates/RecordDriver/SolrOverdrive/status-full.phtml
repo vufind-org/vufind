@@ -27,6 +27,6 @@ foreach($ids as $id):
     }
   $data[] = $current;
 endforeach;
-$jsonResult->data = $data;
+$jsonResult->data->statuses = $data;
 echo json_encode($jsonResult);
 ?>
