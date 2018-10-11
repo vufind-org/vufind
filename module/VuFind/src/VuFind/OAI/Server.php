@@ -332,6 +332,16 @@ class Server
                 $this->metadataFormats['oai_vufind_json']['namespace'],
                 'oai_vufind_json:record'
             );
+            $rootNode->setAttribute(
+                'xmlns:xsi',
+                "http://www.w3.org/2001/XMLSchema-instance"
+            );
+            $rootNode->setAttribute(
+                'xsi:schemaLocation',
+                $this->metadataFormats['oai_vufind_json']['namespace'] . ' '
+                . $this->metadataFormats['oai_vufind_json']['schema']
+            );
+
             $recordDoc->appendChild($rootNode);
 
             // Add oai_dc part
