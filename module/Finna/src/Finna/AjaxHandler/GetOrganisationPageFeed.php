@@ -108,7 +108,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-
+        $config = $this->config;
         $id = $params->fromPost('id', $params->fromQuery('id'));
         $url = $params->fromPost('url', $params->fromQuery('url'));
         if (!$id || !$url) {
