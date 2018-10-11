@@ -568,7 +568,7 @@ class Server
                 ',', $config->OAI->vufind_api_format_fields
             );
             $this->metadataFormats['oai_vufind_json'] = [
-                'schema' => 'http://vufind.org/xsd/oai_vufind_json-1.0.xsd',
+                'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
                 'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
             ];
         }
