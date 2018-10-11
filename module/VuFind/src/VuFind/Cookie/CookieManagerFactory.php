@@ -76,12 +76,17 @@ class CookieManagerFactory implements FactoryInterface
         $secure = isset($config->Cookies->only_secure)
             ? $config->Cookies->only_secure
             : false;
+        $httpOnly = isset($config->Cookies->http_only)
+            ? $config->Cookies->http_only
+            : true;
         $domain = isset($config->Cookies->domain)
             ? $config->Cookies->domain
             : null;
         $session_name = isset($config->Cookies->session_name)
             ? $config->Cookies->session_name
             : null;
-        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
+        return new $requestedName(
+            $_COOKIE, $path, $domain, $secure, $session_name, $httpOnly
+        );
     }
 }
