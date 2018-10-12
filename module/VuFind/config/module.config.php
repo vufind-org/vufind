@@ -45,6 +45,20 @@ $config = [
                     ]
                 ],
             ],
+            'feedback-form' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Feedback/Form/[:id]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Form',
+                        'action'     => 'form',
+                    ]
+                ]
+            ],
             'legacy-alphabrowse-results' => [
                 'type' => 'Zend\Router\Http\Literal',
                 'options' => [
@@ -677,6 +691,7 @@ $recordRoutes = [
 
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
+    'Feedback' => ['form' => 'Form/[:id]'],
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
 ];
