@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetRequestGroupPickupLocations',
         'getResolverLinks' => 'VuFind\AjaxHandler\GetResolverLinks',
         'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
+        'getSideFacets' => 'VuFind\AjaxHandler\GetSideFacets',
         'getVisData' => 'VuFind\AjaxHandler\GetVisData',
         'keepAlive' => 'VuFind\AjaxHandler\KeepAlive',
         'recommend' => 'VuFind\AjaxHandler\Recommend',
@@ -106,6 +107,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\GetResolverLinksFactory',
         'VuFind\AjaxHandler\GetSaveStatuses' =>
             'VuFind\AjaxHandler\GetSaveStatusesFactory',
+        'VuFind\AjaxHandler\GetSideFacets' =>
+            'VuFind\AjaxHandler\GetSideFacetsFactory',
         'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
         'VuFind\AjaxHandler\KeepAlive' => 'VuFind\AjaxHandler\KeepAliveFactory',
         'VuFind\AjaxHandler\Recommend' => 'VuFind\AjaxHandler\RecommendFactory',

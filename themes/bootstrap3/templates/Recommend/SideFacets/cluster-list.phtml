@@ -26,6 +26,9 @@
     'urlBase' => $this->currentPath(),
   ]) ?>
 <?php endforeach; ?>
+<?php if (empty($this->cluster['list'])): ?>
+  <div class="facet"><?=$this->transEsc('facet_list_empty')?></div>
+<?php endif; ?>
 
 <?php /* LESS and SEE MORE links */ ?>
 <?php if (isset($i) && $i >= $this->facets_before_more): ?>

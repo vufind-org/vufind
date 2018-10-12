@@ -178,16 +178,6 @@ function getUrlRoot(url) {
   }
   return urlroot;
 }
-function facetSessionStorage(e) {
-  var source = $('#result0 .hiddenSource').val();
-  var id = e.target.id;
-  var key = 'sidefacet-' + source + id;
-  if (!sessionStorage.getItem(key)) {
-    sessionStorage.setItem(key, document.getElementById(id).className);
-  } else {
-    sessionStorage.removeItem(key);
-  }
-}
 
 // Phone number validation
 function phoneNumberFormHandler(numID, regionCode) {
@@ -348,38 +338,6 @@ function keyboardShortcuts() {
   }
 }
 
-/**
- * Setup facets
- */
-function setupFacets() {
-  // Advanced facets
-  $('.facetAND a,.facetOR a').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
-
-  // Side facet status saving
-  $('.facet-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-    if (storedItem) {
-      var saveTransition = $.support.transition;
-      try {
-        $.support.transition = false;
-        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
-          $(item).collapse('show');
-        } else {
-          $(item).collapse('hide');
-        }
-      } finally {
-        $.support.transition = saveTransition;
-      }
-    }
-  });
-  $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
-}
-
 function setupIeSupport() {
   // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
   // Cannot use conditional comments since IE 11 doesn't support them but still has
@@ -453,8 +411,6 @@ $(document).ready(function commonDocReady() {
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
-
-  setupFacets();
 
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {

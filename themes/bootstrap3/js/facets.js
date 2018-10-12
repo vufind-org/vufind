@@ -147,6 +147,154 @@ function collapseTopFacets() {
   });
 }
 
+/* --- Side Facets --- */
+VuFind.register('side_facets', function SideFacets() {
+  function addJSTreeListener(treeNode) {
+    treeNode.bind('ready.jstree', function onReadyJstree() {
+      var tree = $(this);
+      // if hierarchical facet contains 2 or less top level items, it is opened by default
+      if (tree.find('ul > li').length <= 2) {
+        tree.find('ul > li.jstree-node.jstree-closed > i.jstree-ocl').each(function openNode() {
+          tree.jstree('open_node', this, null, false);
+        });
+      }
+      // open facet if it has children and it is selected
+      $(tree.find('.jstree-node.active.jstree-closed')).each(function openNode() {
+        tree.jstree('open_node', this, null, false);
+      });
+    });
+  }
+
+  function loadAjaxSideFacets() {
+    var $container = $('.side-facets-container-ajax');
+    if ($container.length === 0) {
+      return;
+    }
+
+    var facetList = [];
+    var $facets = $container.find('div.collapse.in[data-facet], .checkbox-filter[data-facet]');
+    $facets.each(function addFacet() {
+      if (!$(this).data('loaded')) {
+        facetList.push($(this).data('facet'));
+      }
+    });
+    if (facetList.length === 0) {
+      return;
+    }
+    var urlParts = window.location.href.split('?');
+    var query = urlParts.length > 1 ? urlParts[1] : '';
+    var request = {
+      method: 'getSideFacets',
+      query: query,
+      enabledFacets: facetList
+    };
+    $container.find('.facet-load-indicator').removeClass('hidden');
+    $.getJSON(VuFind.path + '/AJAX/JSON?' + query, request)
+      .done(function onGetSideFacetsDone(response) {
+        $.each(response.data.facets, function initFacet(facet, facetData) {
+          var $facetContainer = $container.find('[data-facet="' + facet + '"]');
+          $facetContainer.data('loaded', 'true');
+          if (typeof facetData.checkboxCount !== 'undefined') {
+            $facetContainer.find('.avail-count').text(
+              facetData.checkboxCount.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+            );
+          } else if (typeof facetData.html !== 'undefined') {
+            $facetContainer.html(facetData.html);
+          } else {
+            // TODO: this block copied from facets.js, refactor
+            var treeNode = $facetContainer.find('.jstree-facet');
+
+            // Enable keyboard navigation also when a screen reader is active
+            treeNode.bind('select_node.jstree', function selectNode(event, data) {
+              window.location = data.node.data.url;
+              event.preventDefault();
+              return false;
+            });
+
+            addJSTreeListener(treeNode);
+            VuFind.emit('VuFind.sidefacets.treenodeloaded', {node: treeNode});
+
+            var currentPath = treeNode.data('path');
+            var allowExclude = treeNode.data('exclude');
+            var excludeTitle = treeNode.data('exclude-title');
+
+            var results = buildFacetNodes(facetData.list, currentPath, allowExclude, excludeTitle, true);
+            treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+              treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+              treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+                window.location = this.href;
+                e.preventDefault();
+                return false;
+              });
+            });
+            treeNode.jstree({
+              'core': {
+                'data': results
+              }
+            });
+          }
+          $facetContainer.find('.facet-load-indicator').remove();
+        });
+        VuFind.lightbox.bind($('.sidebar'));
+        VuFind.emit('VuFind.sidefacets.loaded');
+      })
+      .fail(function onGetSideFacetsFail() {
+        $container.find('.facet-load-indicator').remove();
+        $container.find('.facet-load-failed').removeClass('hidden');
+      });
+  }
+
+  function facetSessionStorage(e) {
+    var source = $('#result0 .hiddenSource').val();
+    var id = e.target.id;
+    var key = 'sidefacet-' + source + id;
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, document.getElementById(id).className);
+    } else {
+      sessionStorage.removeItem(key);
+    }
+  }
+
+  function init() {
+    // Advanced facets
+    $('.facetAND a,.facetOR a').click(function facetBlocking() {
+      $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+      window.location.assign($(this).attr('href'));
+    });
+
+    // Side facet status saving
+    $('.facet-group .collapse').each(function openStoredFacets(index, item) {
+      var source = $('#result0 .hiddenSource').val();
+      var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+      if (storedItem) {
+        var saveTransition = $.support.transition;
+        try {
+          $.support.transition = false;
+          if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+            $(item).collapse('show');
+          } else {
+            $(item).collapse('hide');
+          }
+        } finally {
+          $.support.transition = saveTransition;
+        }
+      }
+    });
+    $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
+    $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+
+    // Side facets loaded with AJAX
+    $('.side-facets-container-ajax')
+      .find('div.collapse[data-facet]:not(.in)')
+      .on('shown.bs.collapse', function expandFacet() {
+        loadAjaxSideFacets();
+      });
+    loadAjaxSideFacets();
+  }
+
+  return { init: init };
+});
+
 /* --- Lightbox Facets --- */
 VuFind.register('lightbox_facets', function LightboxFacets() {
   function lightboxFacetSorting() {
