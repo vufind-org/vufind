@@ -36,7 +36,7 @@ rem if the user specified an override file, add that to the setting.
 set MAPPINGS_FILENAMES=""
 for /f "delims=" %%a in ('findstr "^solr.indexer.properties" %PROPERTIES_FILE%') do set MAPPINGS_FILENAMES=%%a
 set MAPPINGS_FILENAMES="%MAPPINGS_FILENAMES:solr.indexer.properties=%"
-if not "%2"=="" MAPPINGS_FILENAMES=%MAPPINGS_FILENAMES%,%2
+if not "%2"=="" set MAPPINGS_FILENAMES=%MAPPINGS_FILENAMES%,%2
 set MAPPINGS_FILENAMES=%MAPPINGS_FILENAMES:"=%
 
 setlocal EnableDelayedExpansion
