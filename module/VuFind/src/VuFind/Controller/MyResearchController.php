@@ -310,7 +310,7 @@ class MyResearchController extends AbstractBase
     public function logoutAction()
     {
         $config = $this->getConfig();
-        if (isset($config->Site->logOutRoute)) {
+        if (!empty($config->Site->logOutRoute)) {
             $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
         } else {
             $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
@@ -1743,7 +1743,7 @@ class MyResearchController extends AbstractBase
                 );
             } else {
                 // After successful token verification, clear list to shrink session:
-                $this->csrf->trimTokenList(0);
+                $csrf->trimTokenList(0);
             }
             $user->delete(
                 $config->Authentication->delete_comments_with_user ?? true
