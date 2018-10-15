@@ -1202,6 +1202,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
                 $i++;
                 $location = $this->getBranchName($holding['holdingbranch']);
+                $callnumber = '';
                 if ($this->groupHoldingsByLocation) {
                     $holdingLoc = $this->translateLocation($holding['location']);
                     if ($holdingLoc) {
