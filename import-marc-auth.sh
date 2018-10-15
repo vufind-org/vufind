@@ -25,21 +25,21 @@ fi
 MAPPINGS_FILENAMES=($(sed --quiet --expression='s/^\(solr.indexer.properties\s*=\s*\)\(.*\)/\2/p' $PROPERTIES_FILE | tr -d ","))
 if [ $# -gt 1 ]
 then
-  MAPPINGS_FILENAMES+=$2
+  MAPPINGS_FILENAMES+=($2)
 fi
 
 MAPPINGS_FILES=""
 for MAPPINGS_FILENAME in ${MAPPINGS_FILENAMES[@]}; do
-    if [ -n "$MAPPINGS_FILES" ]; then
-        MAPPINGS_FILES+=","
-    fi
+  if [ -n "$MAPPINGS_FILES" ]; then
+    MAPPINGS_FILES+=","
+  fi
 
-    if [ -f "$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME" ]
-    then
-      MAPPINGS_FILES+="$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME"
-    else
-      MAPPINGS_FILES+="$VUFIND_HOME/import/$MAPPINGS_FILENAME"
-    fi
+  if [ -f "$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME" ]
+  then
+    MAPPINGS_FILES+="$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME"
+  else
+    MAPPINGS_FILES+="$VUFIND_HOME/import/$MAPPINGS_FILENAME"
+  fi
 done
 
 export SOLRCORE="authority"
