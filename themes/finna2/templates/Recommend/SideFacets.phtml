@@ -36,7 +36,7 @@
       }
     }
   ?>
-  <?php if ($checkboxesShown):?>
+  <?php if ($checkboxesShown): ?>
     <fieldset>
       <legend class="sr-only"><?=$this->transEsc('checkbox_filter')?></legend>
       <div class="checkboxFilter">
@@ -49,7 +49,6 @@
 <?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
-<?php $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
 <?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
 <?php $module = $this->layout()->templateDir; ?>
 <?php
@@ -81,7 +80,7 @@ if ($this->fromStreetSearch) {
   }
 }
 ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?=isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>

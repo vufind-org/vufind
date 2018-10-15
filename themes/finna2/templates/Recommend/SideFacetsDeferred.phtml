@@ -1,5 +1,14 @@
 <!-- START of: finna - Recommend/SideFacetsDeferred.phtml -->
 <?php
+  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('facets.js');
+  $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.min.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js');
+  $this->headScript()->appendFile('finna-daterange-vis.js');
+
+  $results = $this->recommend->getResults();
+
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
   switch ($this->layout()->userLang) {
@@ -16,14 +25,7 @@
         $datePickerLang = 'sv';
         break;
   }
-  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
-  $this->headScript()->appendFile('facets.js');
-  $this->headScript()->appendFile('vendor/jquery.colorhelpers.min.js');
-  $this->headScript()->appendFile('vendor/jquery.flot.min.js');
-  $this->headScript()->appendFile('vendor/jquery.flot.selection.min.js');
-  $this->headScript()->appendFile('finna-daterange-vis.js');
 ?>
-<?php $results = $this->recommend->getResults(); ?>
 <?php if ($results->getResultTotal() > 0): ?>
 <div class="side-facets-container-ajax">
   <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><?php if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h4>
@@ -39,9 +41,12 @@
     }
   ?>
   <?php if ($checkboxesShown): ?>
-    <div class="checkboxFilter">
-      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'counts' => false]); ?>
-    </div>
+    <fieldset>
+      <legend class="sr-only"><?=$this->transEsc('checkbox_filter')?></legend>
+      <div class="checkboxFilter">
+        <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results, 'counts' => false]); ?>
+      </div>
+    </fieldset>
   <?php endif; ?>
 <?php endif; ?>
 <?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
