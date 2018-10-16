@@ -66,10 +66,10 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
-<?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-  <li class="menu-favorites <?= $listOpen ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item">
-      <?=$this->transEsc('Favorites')?>
+<?php if ($this->ils()->checkCapability('getMyProfile')): ?>
+  <li class="menu-profile<?=$this->active == 'profile' ? ' active' : ''?>">
+    <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
+      <?=$this->transEsc('Profile')?>
     </a>
   </li>
 <?php endif; ?>
@@ -78,10 +78,10 @@
     <?=$this->transEsc('history_saved_searches')?>
   </a>
 </li>
-<?php if ($this->ils()->checkCapability('getMyProfile')): ?>
-  <li class="menu-profile<?=$this->active == 'profile' ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
-      <?=$this->transEsc('Profile')?>
+<?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+  <li class="menu-favorites <?= $listOpen ? ' active' : ''?>">
+    <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item">
+      <?=$this->transEsc('Favorites')?>
     </a>
   </li>
 <?php endif; ?>
@@ -150,6 +150,20 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
+<?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
+  <?php if ($this->ils()->checkCapability('getMyProfile')): ?>
+    <li class="menu-profile hidden-xs hidden-sm<?=$this->active == 'profile' ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
+        <?=$this->transEsc('Profile')?>
+      </a>
+    </li>
+  <?php endif; ?>
+<?php endif; ?>
+<li class="menu-history hidden-xs hidden-sm <?=$this->active == 'history' ? ' active' : ''?>">
+  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item">
+    <?=$this->transEsc('history_saved_searches')?>
+  </a>
+</li>
 <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
   <li class="menu-favorites mylist-menu-favorites <?= $listOpen ? ' active' : ''?>">
     <a href="<?=$this->url('myresearch-favorites')?>" id="open-list" class="<?= !$listOpen ? 'collapsed ' : '' ?>list-group-item hidden-xs hidden-sm">
@@ -162,25 +176,17 @@
     </a>
     <div class="mylist-bar">
       <?php if($listOpen) : ?>
-      <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]);  ?>
+        <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]);  ?>
       <?php endif; ?>
     </div>
   </li>
 <?php endif; ?>
-<li class="menu-history hidden-xs hidden-sm <?=$this->active == 'history' ? ' active' : ''?>">
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item">
-    <?=$this->transEsc('history_saved_searches')?>
+<li class="menu-logout hidden-xs hidden-sm">
+  <a href="<?=$this->url('myresearch-logout')?>" class="list-group-item">
+    <?=$this->transEsc('Log Out')?>
+    <i class="pull-right fa fa-sign-out fa-lg" aria-hidden="true"></i>
   </a>
 </li>
-<?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-  <?php if ($this->ils()->checkCapability('getMyProfile')): ?>
-    <li class="menu-profile  hidden-xs hidden-sm<?=$this->active == 'profile' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
-        <?=$this->transEsc('Profile')?>
-      </a>
-    </li>
-  <?php endif; ?>
-<?php endif; ?>
 <?php $menuEntries = ob_get_clean(); ?>
 
   <div class="mobile-main-tabs visible-xs visible-sm">
@@ -216,7 +222,7 @@
       </ul>
     </div>
   </div>
-  <ul class="<?=$this->layoutClass('sidebar-myresearch')?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
+  <ul class="<?=$this->layoutClass('sidebar-myresearch')?> <?= $listOpen ? '' : 'move-list' ?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
     <?=$menuEntries?>
   </ul>
 
