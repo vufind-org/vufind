@@ -28,11 +28,16 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
     }
 
 
+    protected function makeClassificationText($text) {
+        return "<em>" . $text . "</em>";
+    }
+
+
     // Do not produce links for two letter categories that have further subcategories
     // since these are not present in browsing and faceting
     protected function makeClassificationOutputItem($key, $value, $has_subitems) {
         if ($has_subitems && preg_match("/^ixtheo-[A-Z][A-Z]$/", $key))
-            return $value;
+            return $this->makeClassificationText($value);
         else
             return $this->makeClassificationLink($key, $value);
     }
