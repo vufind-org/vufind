@@ -19,8 +19,8 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
     protected function matcher($regex) {
         return function ($element) use ($regex) {
             return preg_match($regex, $element);
-        };  
-    }   
+        };
+    }
 
 
     protected function makeClassificationLink($key, $value) {
@@ -28,20 +28,29 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
     }
 
 
+    // Do not produce links for two letter categories that have further subcategories
+    // since these are not present in browsing and faceting
+    protected function makeClassificationOutputItem($key, $value, $has_subitems) {
+        if ($has_subitems && preg_match("/^ixtheo-[A-Z][A-Z]$/", $key))
+            return $value;
+        else
+            return $this->makeClassificationLink($key, $value);
+    }
+
+
     protected function makeClassificationLinkMap($map, $base_regex) {
         $link_entries = [];
         $items = array_filter($map, $this->matcher("/^" . $base_regex . "$/"), ARRAY_FILTER_USE_KEY);
         foreach ($items as $key => $value) {
-            array_push($link_entries, $this->makeClassificationLink($key, $value));
             $new_base_regex = $key . "[A-Z]";
             $submap = array_filter($map, $this->matcher("/^" . $new_base_regex . "/"), ARRAY_FILTER_USE_KEY);
-            if (!empty($submap)) {
+            array_push($link_entries, $this->makeClassificationOutputItem($key, $value, !empty($submap)));
+            if (!empty($submap))
                 array_push($link_entries, $this->makeClassificationLinkMap($submap, $new_base_regex));
-            }
         }
         return $link_entries;
     }
-   
+
 
     public function getNestedIxtheoClassificationArray($translator) {
         $locale = $translator->getLocale();
