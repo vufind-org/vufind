@@ -113,9 +113,9 @@ class SolrMarc extends SolrDefault
                  $subfields_w = $this->getSubfieldArray($field, ['w']);
                  foreach($subfields_w as $subfield_w) {
                      if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn)) {
-                         $subfields_x = $this->getSubfieldArray($field, ['x']);
-                         if (!empty($subfields_x))
-                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfields_x[0] ]);
+                         $subfield_x = $field->getSubfield('x');
+                         if ($subfield_x !== false)
+                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_x->getData() ]);
                      }
                  }
              }
