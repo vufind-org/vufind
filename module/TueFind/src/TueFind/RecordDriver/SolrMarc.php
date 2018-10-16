@@ -106,18 +106,20 @@ class SolrMarc extends SolrDefault
     }
 
     public function getParallelEditionPPNs() {
-        $parallel_ppns = [];
-
+        $parallel_ppns_and_type = [];
         foreach (["775", "776"] as $tag) {
              $fields = $this->getMarcRecord()->getFields($tag);
              foreach ($fields as $field) {
                  $subfields_w = $this->getSubfieldArray($field, ['w']);
                  foreach($subfields_w as $subfield_w) {
-                   if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn))
-                       array_push($parallel_ppns, $ppn[1]);
+                     if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn)) {
+                         $subfields_x = $this->getSubfieldArray($field, ['x']);
+                         if (!empty($subfields_x))
+                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfields_x[0] ]);
+                     }
                  }
              }
         }
-        return $parallel_ppns;
+        return $parallel_ppns_and_type;
     }
 }

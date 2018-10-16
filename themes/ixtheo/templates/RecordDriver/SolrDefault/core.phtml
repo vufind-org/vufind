@@ -333,13 +333,13 @@
       </tr>
       <? endif; ?>
 
-      <? $parallel_ppns = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
-      <? if (!empty($parallel_ppns)): ?>
+      <? $parallel_ppns_and_type = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
+      <? if (!empty($parallel_ppns_and_type)): ?>
       <tr>
         <th><?=$this->transEsc('Parallel Edition')?>: </th>
         <td>
-          <? foreach ($parallel_ppns as $parallel_ppn): ?>
-            <a href="/Record/<?=$parallel_ppn?>" class="fulltext" target="new"><i class="fa fa-link"></i> <?=$parallel_ppn?></a>
+          <? foreach ($parallel_ppns_and_type as $parallel_ppn_and_type): ?>
+            <a href="/Record/<?=$parallel_ppn_and_type[0]?>" class="fulltext" target="new"><i class="fa fa-link"></i> <?=$this->transEsc($parallel_ppn_and_type[1])?></a>
             <br/>
           <? endforeach; ?>
         </td>
