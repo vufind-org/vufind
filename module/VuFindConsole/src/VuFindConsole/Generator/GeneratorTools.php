@@ -63,6 +63,28 @@ class GeneratorTools
     }
 
     /**
+     * Create a plugin class.
+     *
+     * @param ContainerInterface $container Service manager
+     * @param string             $class     Class name to create
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function createPlugin(ContainerInterface $container, $class)
+    {
+        // Derive some key bits of information from the new class name:
+        $classParts = explode('\\', $class);
+        $module = $classParts[0];
+        $shortName = strtolower(array_pop($classParts));
+        $classParts[0] = 'VuFind';
+        $classParts[] = 'PluginManager';
+        $pmClass = implode('\\', $classParts);
+        var_dump($class, $module, $shortName, $pmClass);
+        return true;
+    }
+
+    /**
      * Extend a class defined somewhere in the service manager or its child
      * plugin managers.
      *
