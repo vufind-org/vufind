@@ -136,6 +136,12 @@ class GeneratorTools
                     'defaultValue' => null,
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
+                // Copy doc block from this class' factory:
+                $reflection = new \Zend\Code\Reflection\MethodReflection(
+                    GeneratorToolsFactory::class, '__invoke'
+                );
+                $example = MethodGenerator::fromReflection($reflection);
+                $method->setDocBlock($example->getDocBlock());
                 $generator->addMethods([$method]);
             }
         );
