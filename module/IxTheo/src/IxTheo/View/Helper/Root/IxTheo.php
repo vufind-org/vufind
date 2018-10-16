@@ -28,10 +28,17 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
     }
 
 
-    protected function makeClassificationLinkMap($map) {
+    protected function makeClassificationLinkMap($map, $base_regex) {
         $link_entries = [];
-        foreach ($map as $key => $value)
-           array_push($link_entries, $this->makeClassificationLink($key, $value));
+        $items = array_filter($map, $this->matcher("/^" . $base_regex . "$/"), ARRAY_FILTER_USE_KEY);
+        foreach ($items as $key => $value) {
+            array_push($link_entries, $this->makeClassificationLink($key, $value));
+            $new_base_regex = $key . "[A-Z]";
+            $submap = array_filter($map, $this->matcher("/^" . $new_base_regex . "/"), ARRAY_FILTER_USE_KEY);
+            if (!empty($submap)) {
+                array_push($link_entries, $this->makeClassificationLinkMap($submap, $new_base_regex));
+            }
+        }
         return $link_entries;
     }
    
@@ -42,16 +49,8 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         $ixtheo_classes = array_filter($translations->getArrayCopy(), $this->matcher("/^ixtheo-/"),
                                        ARRAY_FILTER_USE_KEY);
         // Remove unneeded elements
-        unset($ixtheo_classes['ixtheo-Unassigned']);
-        $superclasses = array_filter($ixtheo_classes, $this->matcher("/^ixtheo-[A-Z]$/"),
-                                     ARRAY_FILTER_USE_KEY);
-        $subclasses = array_diff_key($ixtheo_classes, $superclasses);
-        $list = [];
-        foreach($superclasses as $key => $value) {
-            $subcategories_map = array_filter($subclasses, $this->matcher("/^$key/"), ARRAY_FILTER_USE_KEY);
-            array_push($list, $this->makeClassificationLink($key, $value),
-                       $this->makeClassificationLinkMap($subcategories_map));
-        }
+        unset($ixtheo_classes['ixtheo-[Unassigned]']);
+        $list = $this->makeClassificationLinkMap($ixtheo_classes, "ixtheo-[A-Z]");
         return $list;
     }
 }

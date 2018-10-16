@@ -333,6 +333,19 @@
       </tr>
       <? endif; ?>
 
+      <? $parallel_ppns = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
+      <? if (!empty($parallel_ppns)): ?>
+      <tr>
+        <th><?=$this->transEsc('Parallel Edition')?>: </th>
+        <td>
+          <? foreach ($parallel_ppns as $parallel_ppn): ?>
+            <a href="/Record/<?=$parallel_ppn?>" class="fulltext" target="new"><i class="fa fa-link"></i> <?=$parallel_ppn?></a>
+            <br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+
       <? $recordLinks = $this->driver->getAllRecordLinks(); ?>
       <? if(!empty($recordLinks)): ?>
         <tr>

@@ -104,4 +104,20 @@ class SolrMarc extends SolrDefault
 
         return false;
     }
+
+    public function getParallelEditionPPNs() {
+        $parallel_ppns = [];
+
+        foreach (["775", "776"] as $tag) {
+             $fields = $this->getMarcRecord()->getFields($tag);
+             foreach ($fields as $field) {
+                 $subfields_w = $this->getSubfieldArray($field, ['w']);
+                 foreach($subfields_w as $subfield_w) {
+                   if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn))
+                       array_push($parallel_ppns, $ppn[1]);
+                 }
+             }
+        }
+        return $parallel_ppns;
+    }
 }
