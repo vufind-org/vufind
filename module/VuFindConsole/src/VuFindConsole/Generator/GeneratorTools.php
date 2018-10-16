@@ -31,6 +31,8 @@ use Interop\Container\ContainerInterface;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\ParameterGenerator;
+use Zend\Code\Generator\ValueGenerator;
 use Zend\Code\Reflection\ClassReflection;
 use Zend\Console\Console;
 
@@ -80,7 +82,72 @@ class GeneratorTools
         $classParts[0] = 'VuFind';
         $classParts[] = 'PluginManager';
         $pmClass = implode('\\', $classParts);
-        var_dump($class, $module, $shortName, $pmClass);
+        $factory = $class . 'Factory';
+
+        // Figure out further information based on the plugin manager:
+        if (!$container->has($pmClass)) {
+            throw new \Exception('Cannot find expected plugin manager: ' . $pmClass);
+        }
+        $pm = $container->get($pmClass);
+        if (!method_exists($pm, 'getExpectedInterface')) {
+            throw new \Exception(
+                $pmClass . ' does not implement getExpectedInterface!'
+            );
+        }
+
+        // Force getExpectedInterface() to be public so we can read it:
+        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
+        $reflectionMethod->setAccessible(true);
+        $interface = $reflectionMethod->invoke($pm);
+
+        // Figure out whether the plugin requirement is an interface or a
+        // parent class so we can create the right thing....
+        if (interface_exists($interface)) {
+            $parent = null;
+            $interfaces = [$interface];
+        } else {
+            $parent = $interface;
+            $interfaces = [];
+        }
+        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
+        $pmKey = $apmFactory->getConfigKey(get_class($pm));
+        $configPath = ['vufind', 'plugin_managers', $pmKey];
+
+        // Generate the classes and configuration:
+        $this->createClassInModule($class, $module, $parent, $interfaces);
+        $this->createClassInModule(
+            $factory, $module, null,
+            ['Zend\ServiceManager\Factory\FactoryInterface'],
+            function ($generator) use ($class) {
+                $method = MethodGenerator::fromArray(
+                    [
+                        'name' => '__invoke',
+                        'body' => 'return new \\' . $class . '();',
+                    ]
+                );
+                $param1 = [
+                    'name' => 'container',
+                    'type' => 'Interop\Container\ContainerInterface'
+                ];
+                $param2 = [
+                    'name' => 'requestedName',
+                ];
+                $param3 = [
+                    'name' => 'options',
+                    'type' => 'array',
+                    'defaultValue' => null,
+                ];
+                $method->setParameters([$param1, $param2, $param3]);
+                $generator->addMethods([$method]);
+            }
+        );
+        $factoryPath = array_merge($configPath, ['factories', $class]);
+        $this->writeNewConfig($factoryPath, $factory, $module);
+        $aliasPath = array_merge($configPath, ['aliases', $shortName]);
+        // Don't back up the config twice -- the first backup from the previous
+        // write operation is sufficient.
+        $this->writeNewConfig($aliasPath, $class, $module, false);
+
         return true;
     }
 
@@ -418,16 +485,22 @@ class GeneratorTools
      * Extend a specified class within a specified module. Return the name of
      * the new subclass.
      *
-     * @param string $class  Name of class to create
-     * @param string $module Module in which to create the new class
-     * @param string $parent Parent class (null for no parent)
+     * @param string    $class      Name of class to create
+     * @param string    $module     Module in which to create the new class
+     * @param string    $parent     Parent class (null for no parent)
+     * @param string[]  $interfaces Interfaces for class to implement
+     * @param \Callable $callback   Callback to set up class generator
      *
      * @return void
      * @throws \Exception
      */
-    protected function createClassInModule($class, $module, $parent = null)
-    {
-        $generator = new ClassGenerator($class, null, null, $parent);
+    protected function createClassInModule($class, $module, $parent = null,
+        array $interfaces = [], $callback = null
+    ) {
+        $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
+        if (is_callable($callback)) {
+            $callback($generator);
+        }
         return $this->writeClass($generator, $module);
     }
 
