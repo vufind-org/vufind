@@ -31,8 +31,6 @@ use Interop\Container\ContainerInterface;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
-use Zend\Code\Generator\ParameterGenerator;
-use Zend\Code\Generator\ValueGenerator;
 use Zend\Code\Reflection\ClassReflection;
 use Zend\Console\Console;
 
