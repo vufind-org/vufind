@@ -23,7 +23,7 @@
       <?=$this->flashmessages()?>
       <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
       <div class="useraccount-header">
-      <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions) + count($this->hiddenTransactions);?>)
+      <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions ?? 0) + count($this->hiddenTransactions ?? 0);?>)
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
       <?php if (isset($this->noSupport)): ?>
         <?php if ($user->getLibraryCards()->count() > 1): ?>
