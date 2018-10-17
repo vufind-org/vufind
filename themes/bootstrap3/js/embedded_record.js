@@ -206,9 +206,6 @@ VuFind.register('embedded', function embedded() {
     var result;
     var i;
     var j;
-    if (!storage) {
-      return;
-    }
     hiddenIds = $('.hiddenId');
     for (i = 0; i < items.length; i++) {
       parts = items[i].split(_SEPERATOR);
