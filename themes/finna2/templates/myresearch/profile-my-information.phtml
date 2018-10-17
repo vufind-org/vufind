@@ -11,7 +11,7 @@
         </div>
         <div class="clearfix visible-xs"></div>
         <div class="my-profile-col">
-          <i class="fa fa-info-big"></i>  <?=$this->transEsc(($ddrEnabled) ? 'email_info' : 'email_info_without_ddr') ?>
+          <i class="fa fa-info-big"></i>  <?=$this->transEsc($this->hideDueDateReminder ? 'email_info_without_ddr' : 'email_info') ?>
         </div>
       </div>
       <div class="my-profile-row">

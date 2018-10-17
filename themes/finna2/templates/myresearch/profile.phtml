@@ -15,10 +15,6 @@
     $updateSmsNumber = $this->ils()->checkFunction('updateSmsNumber', $capabilityParams);
     $updateEmail = $this->ils()->checkFunction('updateEmail', $capabilityParams);
     $updateLoanHistory = $this->ils()->checkFunction('updateTransactionHistoryState', $capabilityParams);
-    $ddrConfig = $this->ils()->getConfig(
-      'dueDateReminder', $patron
-    );
-    $ddrEnabled = (isset($ddrConfig['enabled']) && $ddrConfig['enabled'] === true);
     $updateAddressLink = '';
     if ($updateAddress) {
       $linkText = $this->translate(($updatePhone || $updateEmail || $updateSmsNumber) ? 'request_address_change' : 'request_contact_information_change');
@@ -267,7 +263,7 @@
       <span><?= $this->transEsc("history_schedule") ?></span>
     </div>
     <div class="myresearch-profile-list library-profile">
-      <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress, 'ddrEnabled' => $ddrEnabled]); ?>
+      <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>
     </div>
     <div class="myresearch-profile-header">
       <span><?= $this->transEsc("my_profile_export_import") ?></span>
