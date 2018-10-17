@@ -207,7 +207,7 @@ class Manager
     }
 
     /**
-     * Create a new file cache for the given theme name if neccessary. Return
+     * Create a new file cache for the given theme name if necessary. Return
      * the name of the cache.
      *
      * @param string $themeName Name of the theme
