@@ -268,7 +268,8 @@ class OpenIDConnect extends AbstractBase implements
     protected function decodeJWT($jwt, $section = 0)
     {
         $parts = explode(".", $jwt);
-        return json_decode(base64_decode($parts[$section]));
+        $base64 = strtr($parts[$section], '-_', '+/');
+        return json_decode(base64_decode($base64));
     }
 }
 
