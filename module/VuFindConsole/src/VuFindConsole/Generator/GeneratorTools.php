@@ -67,12 +67,15 @@ class GeneratorTools
      *
      * @param ContainerInterface $container Service manager
      * @param string             $class     Class name to create
+     * @param string             $factory   Existing factory to use (null to
+     * generate a new one)
      *
      * @return bool
      * @throws \Exception
      */
-    public function createPlugin(ContainerInterface $container, $class)
-    {
+    public function createPlugin(ContainerInterface $container, $class,
+        $factory = null
+    ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
         $module = $classParts[0];
@@ -80,7 +83,13 @@ class GeneratorTools
         $classParts[0] = 'VuFind';
         $classParts[] = 'PluginManager';
         $pmClass = implode('\\', $classParts);
-        $factory = $class . 'Factory';
+        // Set a flag for whether to generate a factory, and create class name
+        // if necessary. If existing factory specified, ensure it really exists.
+        if ($generateFactory = empty($factory)) {
+            $factory = $class . 'Factory';
+        } elseif (!class_exists($factory)) {
+            throw new \Exception("Undefined factory: $factory");
+        }
 
         // Figure out further information based on the plugin manager:
         if (!$container->has($pmClass)) {
@@ -113,6 +122,30 @@ class GeneratorTools
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
+        if ($generateFactory) {
+            $this->generateFactory($class, $factory, $module);
+        }
+        $factoryPath = array_merge($configPath, ['factories', $class]);
+        $this->writeNewConfig($factoryPath, $factory, $module);
+        $aliasPath = array_merge($configPath, ['aliases', $shortName]);
+        // Don't back up the config twice -- the first backup from the previous
+        // write operation is sufficient.
+        $this->writeNewConfig($aliasPath, $class, $module, false);
+
+        return true;
+    }
+
+    /**
+     * Generate a factory class.
+     *
+     * @param string $class   Name of class being built by factory
+     * @param string $factory Name of factory to generate
+     * @param string $module  Name of module to generate factory within
+     *
+     * @return void
+     */
+    protected function generateFactory($class, $factory, $module)
+    {
         $this->createClassInModule(
             $factory, $module, null,
             ['Zend\ServiceManager\Factory\FactoryInterface'],
@@ -145,14 +178,6 @@ class GeneratorTools
                 $generator->addMethods([$method]);
             }
         );
-        $factoryPath = array_merge($configPath, ['factories', $class]);
-        $this->writeNewConfig($factoryPath, $factory, $module);
-        $aliasPath = array_merge($configPath, ['aliases', $shortName]);
-        // Don't back up the config twice -- the first backup from the previous
-        // write operation is sufficient.
-        $this->writeNewConfig($aliasPath, $class, $module, false);
-
-        return true;
     }
 
     /**
