@@ -1,0 +1,8 @@
+<header>
+    <p>Text-Only Library Search</p>
+    <?php if ($this->layout()->searchbox !== false): ?>
+        <nav class="nav searchbox hidden-print">
+            <?=$this->layout()->searchbox ?>
+        </nav>
+    <?php endif; ?>
+</header>

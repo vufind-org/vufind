@@ -1,0 +1,29 @@
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+  </head>
+  <body>
+    <?php // Set up the search box -- there are three possible cases:
+      // 1. No search box was set; we should default to the normal box
+      // 2. It was set to false; we should display nothing
+      // 3. It is set to a custom string; we should display the provided version
+      // Set up default search box if no data was provided from the template;
+      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+      if (!isset($this->layout()->searchbox)) {
+        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+      }
+    ?>
+    <?=$this->render('header.phtml')?>
+    <main role="main">
+        <?=$this->layout()->content ?>
+    </main>
+    <?=$this->render('footer.phtml'); ?>
+    <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<?php if (count($tagList) > 0): ?>
+  <?php foreach ($tagList as $tag): ?>
+    <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
+  <?php endforeach; ?>
+<?php endif; ?>

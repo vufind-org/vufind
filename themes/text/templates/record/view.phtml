@@ -1,0 +1,45 @@
+<?php
+  $this->layout()->title = $this->driver->getShortTitle();
+  $coverLink = $this->record($this->driver)->getThumbnail('large');
+?>
+
+<p><b property="name"><?=$this->escapeHtml($this->driver->getShortTitle()) ?></b></p>
+<?php if (!empty($this->driver->getSubtitle())): ?>
+  <p><?=$this->escapeHtml($this->driver->getSubtitle()) ?></p>
+<?php endif; ?>
+<?php if (!empty($this->driver->getTitleSection())): ?>
+  <p><?=$this->escapeHtml($this->driver->getTitleSection()) ?></p>
+<?php endif; ?>
+
+<?php if($coverLink): ?>
+  <p><a href="<?=$coverLink ?>">View Cover</a></p>
+<?php endif; ?>
+
+<ul>
+<?php
+  $holdings = $this->driver->getRealTimeHoldings();
+  foreach ($holdings['holdings'] ?? [] as $holding) {
+    foreach ($holding['items'] ?? [] as $item) {
+      echo '<li>' . $item['callnumber'] . '</li>';
+    }
+  }
+?>
+</ul>
+
+<?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+<?php if ($summary): ?>
+  <div><?=$summary?></div>
+<?php endif; ?>
+
+<?php /* Display Main Details */ ?>
+<?php
+  $formatter = $this->recordDataFormatter();
+  $coreFields = $formatter->getData($this->driver, $formatter->getDefaults('core'));
+?>
+<?php if (!empty($coreFields)): ?>
+  <table>
+    <?php foreach ($coreFields as $current): ?>
+      <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+    <?php endforeach; ?>
+  </table>
+<?php endif; ?>
