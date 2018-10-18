@@ -193,7 +193,7 @@ CREATE TABLE `user` (
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,
-  `cat_pass_enc` varchar(170) DEFAULT NULL,
+  `cat_pass_enc` varchar(255) DEFAULT NULL,
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',
