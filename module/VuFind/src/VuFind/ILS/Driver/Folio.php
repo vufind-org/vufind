@@ -305,35 +305,38 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         // Get user id
         $query = ['query' => 'username == ' . $username];
-        $response = $this->makeRequest("POST", '/users', $query);
+        $response = $this->makeRequest('GET', '/users', $query);
         $json = json_decode($response->getBody());
-        if (count($json['users']) == 0) {
+        if (count($json->users) == 0) {
             // TODO: Flash message
             return null;
         }
-        $profile = $json['users'][0];
+        $profile = $json->users[0];
         $credentials = [
-            'userId' => $profile['id'],
+            'userId' => $profile->id,
             'username' => $username,
             'password' => $password,
         ];
         // Get token
         try {
-            $response = $this->makeRequest("POST", '/authn/login', $credentials);
+            $response = $this->makeRequest(
+                'POST',
+                '/authn/login',
+                json_encode($credentials)
+            );
             // Replace admin with user as tenant
-            $this->tenant = $profile['id'];
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
                 ->getFieldValue();
             return [
-                'id' => $profile['id'],
+                'id' => $profile->id,
                 'username' => $username,
-                'firstname' => $profile['personal']['firstName'],
-                'lastname' => $profile['personal']['lastName'],
+                'firstname' => $profile->personal->firstName ?? null,
+                'lastname' => $profile->personal->lastName ?? null,
                 'cat_username' => $username,
                 'cat_password' => $password,
-                'email' => $profile['personal']['email'],
+                'email' => $profile->personal->email ?? null,
             ];
-        } catch (Exception $e) {
+        } catch(Exception $e) {
             return null;
         }
     }
@@ -596,6 +599,5 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         return [];
     }
-
     // @codingStandardsIgnoreEnd
 }

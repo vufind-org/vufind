@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use VuFind\Exception\BadRequest as BadRequest;
+use VuFind\Exception\Forbidden as Forbidden;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\RecordMissing as RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
@@ -77,9 +79,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
-            $method
+            $method,
+            120
         );
-        error_log($method . ' ' . $this->config['API']['base_url'] . $path);
+        //error_log($method . ' ' . $this->config['API']['base_url'] . $path);
 
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
