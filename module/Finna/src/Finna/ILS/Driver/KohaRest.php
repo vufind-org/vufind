@@ -1215,7 +1215,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                         $holding['location'],
                         !empty($holding['location_description'])
                             ? $holding['location_description'] : $holding['location']
-                        );
+                    );
                     if ($holdingLoc) {
                         if ($location) {
                             $location .= ', ';
