@@ -1203,8 +1203,19 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $i++;
                 $location = $this->getBranchName($holding['holdingbranch']);
                 $callnumber = '';
+                if (!empty($holding['ccode'])) {
+                    $callnumber = $this->translateCollection(
+                        $holding['ccode'],
+                        $holding['ccode_description'] ?? null
+                    );
+                }
+
                 if ($this->groupHoldingsByLocation) {
-                    $holdingLoc = $this->translateLocation($holding['location']);
+                    $holdingLoc = $this->translateLocation(
+                        $holding['location'],
+                        !empty($holding['location_description'])
+                            ? $holding['location_description'] : $holding['location']
+                        );
                     if ($holdingLoc) {
                         if ($location) {
                             $location .= ', ';
@@ -1212,7 +1223,13 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                         $location .= $holdingLoc;
                     }
                 } else {
-                    $callnumber = $this->translateLocation($holding['location']);
+                    $callnumber
+                        .= ', ' . $this->translateLocation(
+                            $holding['location'],
+                            !empty($holding['location_description'])
+                                ? $holding['location_description']
+                                : $holding['location']
+                        );
                 }
                 if ($holding['callnumber']) {
                     $callnumber .= ' ' . $holding['callnumber'];
