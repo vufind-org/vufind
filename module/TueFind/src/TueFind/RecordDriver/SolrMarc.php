@@ -150,9 +150,9 @@ class SolrMarc extends SolrDefault
              foreach ($fields as $field) {
                  $subfields_w = $this->getSubfieldArray($field, ['w']);
                  foreach($subfields_w as $subfield_w) {
-                     if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn)) {
+                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_PPN) . "(.*)/", $subfield_w, $ppn)) {
                          $subfield_x = $field->getSubfield('x');
-                         if ($subfield_x !== false)
+                         if ($subfield_x !== false && $subfield_x->getData() !== 'dangling')
                              array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_x->getData() ]);
                      }
                  }
