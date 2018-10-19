@@ -54,10 +54,8 @@
     <?php if (!$this->translationEmpty('fines_instructions_html')): ?><p class="no-content-message"><?=$this->translate('fines_instructions_html')?></p><?php endif; ?>
     <div class="fines-info-area">
       <div class="useraccount-header"><?=$this->transEsc('Your Fines') . " (" . count($this->fines) . ")"?></div>
-      <div>
-        <label><?= $this->transEsc('Library Card'); ?>
-          <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?>
-        </label>
+      <div class="card-holder"><?= $this->transEsc('Library Card'); ?>
+        <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?>
       </div>
     </div>
     <?=$this->flashmessages()?>
@@ -80,7 +78,8 @@
     <?php if ($this->onlinePayment): ?>
       <?php if ($this->onlinePaymentEnabled): ?>
         <div class="fines-info-area payment-row">
-        <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
+          <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
+        </div>
       <?php elseif (!empty($this->nonPayableReason)): ?>
         <div>
           <p><?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee / 100.00)) . '</span>' : '';?>
