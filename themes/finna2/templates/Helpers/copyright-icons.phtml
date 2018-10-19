@@ -1,0 +1,21 @@
+<!-- START of: finna - Helpers/copyright-icons.phtml -->
+<?php 
+  $displayIcons = [
+    'CCBY' => ['ccby'],
+    'CCBYSA' => ['sa'],
+    'CCBYND' => ['nd'],
+    'CCBYNC' => ['nc-eu'],
+    'CCBYNCSA' => ['nc-eu', 'sa'],
+    'CCBYNCND' => ['nc-eu', 'nd']
+  ];
+  $key = strtoupper(preg_replace('/[^A-Za-z]/', '', $this->copyright));
+?>
+<?php if (isset($displayIcons[$key])): ?>
+  <img class="creative-commons" src="<?=$this->imageLink('cc_icon_black.png')?>" alt=""> <img class="creative-commons" src="<?=$this->imageLink('cc_attribution_icon_black.png')?>" alt="">
+  <?php if ($displayIcons[$key][0] !== 'ccby'): ?>
+    <?php foreach ($displayIcons[$key] as $icon): ?>
+      <img class="creative-commons" src="<?=$this->imageLink('cc_' . $icon . '_black.png')?>" alt="">
+    <?php endforeach; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- END of: finna - Helpers/copyright-icons.phtml -->
