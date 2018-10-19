@@ -5,7 +5,7 @@
     <?php if (isset($this->previous)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i></a></li>
     <?php endif; ?>
-    <li>
+    <li class="pagination-text">
       <?=$this->label ?: $this->translate(
         'showing_results_of_html', [
           '%%start%%' => $this->results->getStartRecord(),

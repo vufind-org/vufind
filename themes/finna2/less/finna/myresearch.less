@@ -496,6 +496,12 @@
 
 .myresearch-body {
   margin-top: 15px;
+  @media (max-width: @screen-sm-max) {
+    margin-top: 0px;
+    &.mainbody.right {
+      padding-left: 0px;
+    } 
+  }
 }
 
 .useraccount-nav-mobile {
