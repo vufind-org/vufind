@@ -377,4 +377,3 @@ class Database extends AbstractBase
     }
 }
 ?>
-
