@@ -3,7 +3,7 @@
 /**
  * SOLR NamedList with parameter json.nl=arrarr.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,7 +28,8 @@
  */
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use Countable, Iterator;
+use Countable;
+use Iterator;
 
 /**
  * SOLR NamedList with parameter json.nl=arrarr.

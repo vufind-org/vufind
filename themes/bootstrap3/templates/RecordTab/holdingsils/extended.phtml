@@ -1,0 +1,101 @@
+<?php if (strlen($holding['barcode'] ?? '') > 0): ?>
+  <?php
+    $check = $holding['check'] ?? false;
+    $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
+    $checkILLRequest = $holding['checkILLRequest'] ?? false;
+  ?>
+  <tr vocab="http://schema.org/" typeof="Offer">
+    <td colspan="2" class="holding-<?=$holding['availability'] ? "available" : "unavailable" ?>">
+      <div class="holding-details">
+        <span class="holding-field copy-number">
+          <?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
+        </span>
+        <span class="holding-field enumchron">
+          <?php if ($holding['enumchron'] ?? false): ?>
+            (<?=$this->escapeHtml($holding['enumchron'])?>)
+          <?php endif; ?>         
+        </span>
+        <span class="holding-field barcode">
+          <?=$this->escapeHtml($holding['barcode'])?>
+        </span>
+        <span class="holding-field availability">
+          <?php if ($holding['reserve'] == "Y"): ?>
+            <link property="availability" href="http://schema.org/InStoreOnly" />
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+          <?php endif; ?>
+
+          <?php if ($holding['use_unknown_message'] ?? false): ?>
+            <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
+          <?php else: ?>
+            <?php if ($holding['availability']): ?>
+              <?php /* Begin Available Items (Holds) */ ?>
+              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+            <?php else: ?>
+              <?php /* Begin Unavailable Items (Recalls) */ ?>
+              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+              <?php if ($holding['returnDate'] ?? false): ?>
+                <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
+              <?php endif; ?>
+              <?php if ($holding['duedate'] ?? false): ?>
+                <span class="small due-date"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($holding['duedate'])?></span>
+              <?php endif; ?>
+              <?php if (($holding['requests_placed'] ?? 0) > 0): ?>
+                <span class="request-count"><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($holding['requests_placed'])?></span>
+              <?php endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        </span>
+        <span class="holding-field storage-retrieval">
+          <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holding['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+          <?php endif; ?>
+        </span>
+        <span class="holding-field ill-request">
+          <?php if ($holding['ILLRequestLink'] ?? false): ?>
+            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holding['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+          <?php endif; ?>
+        </span>
+        <?php if ($holding['availability'] ?? false): ?>
+          <span class="holding-field place-hold">
+            <?php if ($holding['link'] ?? false): ?>
+              <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->recordLink()->getRequestUrl($holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+            <?php endif; ?>
+          </span>
+        <?php else: ?>
+          <span class="holding-field recall">
+            <?php if ($holding['link'] ?? false): ?>
+              <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->recordLink()->getRequestUrl($holding['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+            <?php endif; ?>
+            <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
+          </span>
+        <?php endif; ?>
+      </div>
+
+      <?php if (isset($holding['item_notes'])): ?>
+        <div class="holding-notes">
+          <div class="item-notes">
+            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <ul>
+              <?php foreach ($holding['item_notes'] as $item_note): ?>
+                <li><?=$this->escapeHtml($item_note) ?></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        </div>
+      <?php endif; ?>
+      <?php /* Embed item structured data: library, barcode, call number */ ?>
+      <?php if ($holding['location'] ?? false): ?>
+        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>" />
+      <?php endif; ?>
+      <?php if ($holding['barcode'] ?? false): ?>
+        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>" />
+      <?php endif; ?>
+      <?php if ($holding['callnumber'] ?? false): ?>
+        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>" />
+      <?php endif; ?>
+      <?php /* Declare that the item is to be borrowed, not for sale */ ?>
+      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
+      <link property="itemOffered" href="#record" />
+    </td>
+  </tr>
+<?php endif; ?>

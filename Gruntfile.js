@@ -17,7 +17,7 @@ module.exports = function(grunt) {
       // First identify mixins:
       var mixinMatches = config.match(/["']mixins["']\s*=>\s*\[([^\]]+)\]/);
       if (mixinMatches !== null) {
-        var mixinParts = mixinMatches[1].split(',')
+        var mixinParts = mixinMatches[1].split(',');
         for (var i = 0; i < mixinParts.length; i++) {
           parts[1] = mixinParts[i].trim().replace(/['"]/g, '');
           retVal.push(parts.join('/') + '/');
@@ -150,7 +150,13 @@ module.exports = function(grunt) {
               pattern: '$brand-primary: #619144 !default;',
               replacement: '$brand-primary: #619144;',
               order: 4
-            }
+            },
+			// Wrap calcs in {}
+            {
+              pattern: /calc\((\$[^ ]+)/g,
+              replacement: 'calc(#{$1}',
+              order: 5
+            },
           ]
         }
       }

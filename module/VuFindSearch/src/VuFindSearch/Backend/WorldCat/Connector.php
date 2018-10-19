@@ -2,7 +2,7 @@
 /**
  * Class for accessing OCLC WorldCat search API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Andrew Nagy 2008.
  *
@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -89,6 +90,10 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         }
         $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
             . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
+        if (isset($this->options['latLon'])) {
+            list($lat, $lon) = explode(',', $this->options['latLon']);
+            $uri .= '&lat=' . urlencode($lat) . '&lon=' . urlencode($lon);
+        }
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();
@@ -151,7 +156,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->call('POST', $params->getArrayCopy(), false);
 
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->records->record) ? $xml->records->record : [];
+        $docs = $xml->records->record ?? [];
         $finalDocs = [];
         foreach ($docs as $doc) {
             $finalDocs[] = $doc->recordData->asXML();
@@ -159,7 +164,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
+            'total' => (int)($xml->numberOfRecords ?? 0)
         ];
     }
 }

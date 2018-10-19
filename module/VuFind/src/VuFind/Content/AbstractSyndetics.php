@@ -2,7 +2,7 @@
 /**
  * Abstract base for Syndetics content loader plug-ins.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
+
 use DOMDocument;
 
 /**
@@ -82,7 +83,7 @@ abstract class AbstractSyndetics extends AbstractBase
      * @return \Zend\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url)
+    protected function getHttpClient($url = null)
     {
         $client = parent::getHttpClient($url);
         $client->setOptions(['timeout' => $this->timeout]);

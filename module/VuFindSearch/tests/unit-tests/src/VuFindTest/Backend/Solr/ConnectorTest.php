@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR connector.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,14 +28,14 @@
  */
 namespace VuFindTest\Backend\Solr;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
-
-use PHPUnit_Framework_TestCase;
-use InvalidArgumentException;
 
 /**
  * Unit tests for SOLR connector.
@@ -46,7 +46,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConnectorTest extends PHPUnit_Framework_TestCase
+class ConnectorTest extends TestCase
 {
     /**
      * Current response.

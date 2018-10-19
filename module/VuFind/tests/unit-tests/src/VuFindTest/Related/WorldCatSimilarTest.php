@@ -2,7 +2,7 @@
 /**
  * WorldCat Similar Related Items Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Related;
-use VuFind\Related\WorldCatSimilar, VuFindSearch\Query\Query;
+
+use VuFind\Related\WorldCatSimilar;
+use VuFindSearch\Query\Query;
 
 /**
  * WorldCat Similar Related Items Test Class

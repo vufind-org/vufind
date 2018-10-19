@@ -54,24 +54,26 @@ function runSaveAjaxForQueue() {
       'source': sources
     }
   })
-  .done(function checkSaveStatusDone(response) {
-    for (var id in response.data) {
-      if (response.data.hasOwnProperty(id)) {
-        displaySaveStatus(response.data[id], saveStatusEls[id]);
-      }
-      // Remove populated ids from the queue
-      for (var j = 0; j < saveStatusObjs; j++) {
-        if (saveStatusObjs[j].id === id) {
-          saveStatusObjs.splice(j, 1);
+    .done(function checkSaveStatusDone(response) {
+      for (var id in response.data.statuses) {
+        if (Object.prototype.hasOwnProperty.call(response.data.statuses, id)) {
+          displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
+
+          // Remove populated ids from the queue
+          for (var j = saveStatusObjs.length - 1; j >= 0; j--) {
+            var parts = id.split('|');
+            if (saveStatusObjs[j].id === parts[1] && saveStatusObjs[j].source === parts[0]) {
+              saveStatusObjs.splice(j, 1);
+            }
+          }
         }
       }
-    }
-    saveStatusRunning = false;
-  })
-  .fail(function checkItemStatusFail(response, textStatus) {
-    saveStatusFail(response, textStatus);
-    saveStatusRunning = false;
-  });
+      saveStatusRunning = false;
+    })
+    .fail(function checkItemStatusFail(response, textStatus) {
+      saveStatusFail(response, textStatus);
+      saveStatusRunning = false;
+    });
 }
 function saveQueueAjax(obj, el) {
   if (el.hasClass('js-save-pending')) {
@@ -105,6 +107,7 @@ function checkSaveStatus(el) {
   }, $item);
 }
 
+var saveStatusObserver = null;
 function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
     return;
@@ -134,7 +137,6 @@ function checkSaveStatusesCallback() {
   checkSaveStatuses();
 }
 
-var saveStatusObserver = null;
 $(document).ready(function checkSaveStatusFail() {
   if (typeof Hunt === 'undefined') {
     checkSaveStatuses();

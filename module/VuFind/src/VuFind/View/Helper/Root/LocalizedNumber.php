@@ -2,7 +2,7 @@
 /**
  * Localization based number formatting
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) snowflake productions gmbh 2014.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\AbstractHelper;
 
 /**

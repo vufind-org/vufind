@@ -2,7 +2,7 @@
 /**
  * Abstract authentication base class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
+
+use VuFind\Db\Row\User;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Abstract authentication base class
@@ -312,7 +314,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $policy['hint'] = $config->Authentication->password_hint;
         } else {
             $policy['hint'] = $this->getCannedPasswordPolicyHint(
-                isset($policy['pattern']) ? $policy['pattern'] : null
+                $policy['pattern'] ?? null
             );
         }
         return $policy;

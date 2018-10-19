@@ -2,7 +2,7 @@
 /**
  * InjectTemplateListener Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest;
+
 use VuFindTheme\InjectTemplateListener;
 
 /**
@@ -48,7 +49,7 @@ class ThemeInjectTemplateListenerTest extends Unit\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            '', $this->callMethod($l, 'deriveModuleNamespace', ['dummy'])
+            'search', $l->mapController('VuFind\Controller\SearchController')
         );
     }
 

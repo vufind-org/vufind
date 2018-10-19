@@ -2,7 +2,7 @@
 /**
  * ResultFeed Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Integration\View\Helper\Root;
+
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
@@ -67,7 +68,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        $this->getServiceManager()->get('VuFind\RecordLoader'),
+                        $this->getServiceManager()->get('VuFind\Record\Loader'),
                         new \Zend\Config\Config([])
                     )
                 ]
@@ -80,8 +81,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue('http://server/url'));
 
         return [
-            'currentpath' => $currentPath,
-            'recordlink' => $recordLink,
+            'currentPath' => $currentPath,
+            'recordLink' => $recordLink,
             'serverurl' => $serverUrl
         ];
     }
@@ -118,10 +119,11 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('view', 'rss');
 
         $results = $this->getServiceManager()
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
+        $helper->registerExtensions($this->getServiceManager());
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper->__invoke($results, '/test/path');

@@ -2,7 +2,7 @@
 /**
  * "Similar items" channel provider.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,10 +26,12 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Record\Router as RecordRouter;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Record\Router as RecordRouter;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 use Zend\Mvc\Controller\Plugin\Url;
 
 /**
@@ -107,10 +109,8 @@ class SimilarItems extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->maxRecordsToExamine = isset($options['maxRecordsToExamine'])
-            ? $options['maxRecordsToExamine'] : 2;
+        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
     }
 
     /**
@@ -162,7 +162,10 @@ class SimilarItems extends AbstractChannelProvider
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels) && is_object($driver) && $channelToken !== null) {
+        if (empty($channels)
+            && is_object($driver ?? null)
+            && $channelToken !== null
+        ) {
             $driver = $this->searchService->retrieve(
                 $driver->getSourceIdentifier(), $channelToken
             )->first();

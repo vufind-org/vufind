@@ -2,7 +2,7 @@
 /**
  * Table Definition for user_card
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
+
 use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
 

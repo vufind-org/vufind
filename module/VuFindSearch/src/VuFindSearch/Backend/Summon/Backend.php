@@ -3,7 +3,7 @@
 /**
  * Summon backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,20 +29,20 @@
 namespace VuFindSearch\Backend\Summon;
 
 use SerialsSolutions\Summon\Zend2 as Connector;
-use SerialsSolutions_Summon_Query as SummonQuery;
 use SerialsSolutions_Summon_Exception as SummonException;
+use SerialsSolutions_Summon_Query as SummonQuery;
 
-use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Backend\AbstractBackend;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
 
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Summon backend.
@@ -134,8 +134,11 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $finalParams = $params ?: new ParamBag();
+        // We normally look up by ID, but we occasionally need to use bookmarks:
+        $idType = $finalParams->get('summonIdType')[0] ?? Connector::IDENTIFIER_ID;
         try {
-            $response   = $this->connector->getRecord($id);
+            $response = $this->connector->getRecord($id, false, $idType);
         } catch (SummonException $e) {
             throw new BackendException(
                 $e->getMessage(),
@@ -173,9 +176,16 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                     'pageSize' => $pageSize
                 ]
             );
-            $next = $this->createRecordCollection(
-                $this->connector->query($query)
-            );
+            try {
+                $batch = $this->connector->query($query);
+            } catch (SummonException $e) {
+                throw new BackendException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
+            }
+            $next = $this->createRecordCollection($batch);
             if (!$results) {
                 $results = $next;
             } else {
@@ -266,7 +276,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         $params = $params->getArrayCopy();
 
         // Extract the query:
-        $query = isset($params['query'][0]) ? $params['query'][0] : null;
+        $query = $params['query'][0] ?? null;
         unset($params['query']);
 
         // Convert the options:

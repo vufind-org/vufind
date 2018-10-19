@@ -3,7 +3,7 @@
 /**
  * MultiIndex listener class file.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -30,8 +30,8 @@ namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
 
-use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
+use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * MultiIndex listener class file.

@@ -1,4 +1,4 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('auto_configure_title'));
 
@@ -7,11 +7,11 @@
 ?>
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 <?=$this->flashmessages()?>
-<? $errors = 0; foreach ($this->checks as $check): ?>
-<? if (!$check['status']) $errors++; ?>
-  <div class="alert alert-<?=$check['status'] ? 'success':'danger'?>"><?=$this->escapeHtml($check['title'])?>... <?=$check['status'] ? $this->transEsc('test_ok') : $this->transesc('test_fail') . ' <a class="btn btn-danger" href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></div>
-<? endforeach; ?>
+<?php $errors = 0; foreach ($this->checks as $check): ?>
+<?php if (!$check['status']) $errors++; ?>
+  <div class="alert alert-<?=$check['status'] ? 'success':'danger'?>"><?=$this->escapeHtml($check['title'])?>... <?=$check['status'] ? $this->transEsc('test_ok') : $this->transEsc('test_fail') . ' <a class="btn btn-danger" href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></div>
+<?php endforeach; ?>
 
-<? if ($errors == 0): ?>
+<?php if ($errors == 0): ?>
   <p>No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</p>
-<? endif; ?>
+<?php endif; ?>

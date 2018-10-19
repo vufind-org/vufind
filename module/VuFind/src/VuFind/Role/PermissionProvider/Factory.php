@@ -2,7 +2,7 @@
 /**
  * Permission Provider Factory Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Role\PermissionProvider;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -51,8 +52,8 @@ class Factory
     public static function getIpRange(ServiceManager $sm)
     {
         return new IpRange(
-            $sm->getServiceLocator()->get('Request'),
-            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
+            $sm->get('Request'),
+            $sm->get('VuFind\Net\IpAddressUtils')
         );
     }
 
@@ -65,7 +66,7 @@ class Factory
      */
     public static function getIpRegEx(ServiceManager $sm)
     {
-        return new IpRegEx($sm->getServiceLocator()->get('Request'));
+        return new IpRegEx($sm->get('Request'));
     }
 
     /**
@@ -77,7 +78,7 @@ class Factory
      */
     public static function getServerParam(ServiceManager $sm)
     {
-        return new ServerParam($sm->getServiceLocator()->get('Request'));
+        return new ServerParam($sm->get('Request'));
     }
 
     /**
@@ -90,8 +91,8 @@ class Factory
     public static function getShibboleth(ServiceManager $sm)
     {
         return new Shibboleth(
-            $sm->getServiceLocator()->get('Request'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+            $sm->get('Request'),
+            $sm->get('VuFind\Config\PluginManager')->get('config')
         );
     }
 
@@ -105,10 +106,10 @@ class Factory
     public static function getUsername(ServiceManager $sm)
     {
         return new Username(
-            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+            $sm->get('ZfcRbac\Service\AuthorizationService')
         );
     }
-    
+
     /**
      * Factory for User
      *
@@ -119,7 +120,7 @@ class Factory
     public static function getUser(ServiceManager $sm)
     {
         return new User(
-            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+            $sm->get('ZfcRbac\Service\AuthorizationService')
         );
     }
 }

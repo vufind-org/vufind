@@ -7,7 +7,7 @@ return [
         'factories' => [
             'foo' => 'fooOverrideFactory',
         ],
-        'invokables' => [
+        'aliases' => [
             'xyzzy' => 'Xyzzy',
         ]
     ],

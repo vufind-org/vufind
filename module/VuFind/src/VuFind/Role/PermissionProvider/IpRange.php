@@ -2,7 +2,7 @@
 /**
  * IpRange permission provider for VuFind.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2015.
@@ -29,8 +29,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role\PermissionProvider;
-use Zend\Http\PhpEnvironment\Request;
+
 use VuFind\Net\IpAddressUtils;
+use Zend\Console\Console;
+use Zend\Stdlib\RequestInterface;
 
 /**
  * IpRange permission provider for VuFind.
@@ -62,10 +64,10 @@ class IpRange implements PermissionProviderInterface
     /**
      * Constructor
      *
-     * @param Request        $request Request object
-     * @param IpAddressUtils $ipUtils IpAddressUtils object
+     * @param RequestInterface $request Request object
+     * @param IpAddressUtils   $ipUtils IpAddressUtils object
      */
-    public function __construct(Request $request, IpAddressUtils $ipUtils)
+    public function __construct(RequestInterface $request, IpAddressUtils $ipUtils)
     {
         $this->request = $request;
         $this->ipAddressUtils = $ipUtils;
@@ -81,6 +83,9 @@ class IpRange implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
+        if (Console::isConsole()) {
+            return [];
+        }
         // Check if any regex matches....
         $ip = $this->request->getServer()->get('REMOTE_ADDR');
         if ($this->ipAddressUtils->isInRange($ip, (array)$options)) {

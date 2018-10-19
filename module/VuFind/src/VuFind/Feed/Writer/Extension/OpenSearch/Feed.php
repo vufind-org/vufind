@@ -2,7 +2,7 @@
 /**
  * Zend\Feed\Feed extension for Open Search
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *
@@ -26,9 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
-use Zend\Stdlib\StringUtils,
-    Zend\Feed\Uri,
-    Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
+
+use Zend\Feed\Uri;
+use Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
+use Zend\Stdlib\StringUtils;
 
 /**
  * Zend\Feed\Feed extension for Open Search
@@ -117,6 +118,7 @@ class Feed extends ParentFeed
         $this->encoding      = $enc;
         return $this;
     }
+
     /**
      * Get feed encoding
      *
@@ -259,5 +261,4 @@ class Feed extends ParentFeed
     {
         return $this->links;
     }
-
 }

@@ -3,7 +3,7 @@
 /**
  * Unit tests for Summon cover loader.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,9 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Content\Covers;
-use VuFindCode\ISBN, VuFind\Content\Covers\Summon;
+
+use VuFind\Content\Covers\Summon;
+use VuFindCode\ISBN;
 
 /**
  * Unit tests for Summon cover loader.
@@ -38,7 +40,7 @@ use VuFindCode\ISBN, VuFind\Content\Covers\Summon;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SummonTest extends \PHPUnit_Framework_TestCase
+class SummonTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading

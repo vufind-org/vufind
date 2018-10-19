@@ -3,8 +3,13 @@
 # Make sure VUFIND_HOME is set:
 if [ -z "$VUFIND_HOME" ]
 then
-  echo "Please set the VUFIND_HOME environment variable."
-  exit 1
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  export VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"/..
+  if [ "$VUFIND_HOME" = /.. ]
+  then
+    exit 1
+  fi
 fi
 
 # Find harvest directory for future use

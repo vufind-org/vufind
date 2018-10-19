@@ -3,7 +3,7 @@
 /**
  * HTTP error exception.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\Exception;
 
-use Zend\Http\Response;
-
 use Exception;
+
+use Zend\Http\Response;
 
 /**
  * HTTP error exception.

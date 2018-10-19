@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR update document class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+use PHPUnit\Framework\TestCase;
 
-use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 
 /**
  * Unit tests for SOLR update document class.
@@ -41,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocumentTest extends PHPUnit_Framework_TestCase
+class UpdateDocumentTest extends TestCase
 {
     /**
      * Test creation of XML document.

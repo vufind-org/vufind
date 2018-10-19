@@ -12,6 +12,20 @@ then
   exit $E_BADARGS
 fi
 
+##################################################
+# Set VUFIND_HOME
+##################################################
+if [ -z "$VUFIND_HOME" ]
+then
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  export VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"
+  if [ -z "$VUFIND_HOME" ]
+  then
+    exit 1
+  fi
+fi
+
 # Override some settings in the standard import script:
 if [ -f "$VUFIND_LOCAL_DIR/import/import_auth.properties" ]
 then

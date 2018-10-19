@@ -2,7 +2,7 @@
 /**
  * Web Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -48,17 +49,6 @@ class WebController extends AbstractSearch
     {
         $this->searchClassId = 'SolrWeb';
         parent::__construct($sm);
-    }
-
-    /**
-     * Home action
-     *
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function homeAction()
-    {
-        // Do nothing -- just display template
-        return $this->createViewModel();
     }
 
     /**

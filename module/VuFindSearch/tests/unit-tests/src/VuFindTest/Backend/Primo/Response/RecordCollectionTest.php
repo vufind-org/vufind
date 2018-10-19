@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo record collection
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Primo\Response;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Response\RecordCollection;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for Primo record collection
@@ -40,7 +40,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends PHPUnit_Framework_TestCase
+class RecordCollectionTest extends TestCase
 {
     /**
      * Test defaults when given empty data.

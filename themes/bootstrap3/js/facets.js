@@ -1,51 +1,71 @@
-/*global htmlEncode, VuFind */
-/*exported initFacetTree */
+/*global VuFind */
+/*exported collapseTopFacets, initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
 
   $(data).each(function facetNodesEach() {
-    var html = '';
-    if (!this.isApplied && counts) {
-      html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'));
-      if (allowExclude) {
-        var excludeURL = currentPath + this.exclude;
-        excludeURL.replace("'", "\\'");
-        // Just to be safe
-        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times"></i></a>';
-      }
-      html += '</span>';
-    }
-
+    var $html = $('<div/>').addClass('facet');
     var url = currentPath + this.href;
-    // Just to be safe
-    url.replace("'", "\\'");
-    html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
-      + ' onclick="document.location.href=\'' + url + '\'; return false;">';
+    var $item = $('<span/>')
+      .addClass('main text' + (this.isApplied ? ' applied' : ''))
+      .attr('role', 'menuitem')
+      .attr('title', this.displayText);
+
+    var $i = $('<i/>').addClass('fa');
     if (this.operator === 'OR') {
       if (this.isApplied) {
-        html += '<i class="fa fa-check-square-o" title="' + VuFind.translate('Selected') + '"></i>';
+        $i.addClass('fa-check-square-o').attr('title', VuFind.translate('Selected'));
       } else {
-        html += '<i class="fa fa-square-o" aria-hidden="true"></i>';
+        $i.addClass('fa-square-o').attr('aria-hidden', 'true');
       }
+      $i.appendTo($item);
+      $item.append(' ');
     } else if (this.isApplied) {
-      html += '<i class="fa fa-check pull-right" title="' + VuFind.translate('Selected') + '"></i>';
+      $i.addClass('fa-check pull-right').attr('title', VuFind.translate('Selected'));
+      $i.appendTo($item);
+      $item.append(' ');
     }
-    html += ' ' + this.displayText;
-    html += '</span>';
+
+    $item.append(this.displayText);
+    $item.appendTo($html);
+
+    if (!this.isApplied && counts) {
+      $('<span/>')
+        .addClass('badge')
+        .html(
+          this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+        )
+        .appendTo($html);
+
+      if (allowExclude) {
+        var excludeUrl = currentPath + this.exclude;
+        var $a = $('<a/>')
+          .addClass('exclude')
+          .attr('href', excludeUrl)
+          .attr('title', excludeTitle);
+        $('<i/>').addClass('fa fa-times').appendTo($a);
+        $a.appendTo($html);
+      }
+    }
+
+    $html = $('<div/>').append($html);
 
     var children = null;
     if (typeof this.children !== 'undefined' && this.children.length > 0) {
       children = buildFacetNodes(this.children, currentPath, allowExclude, excludeTitle, counts);
     }
     json.push({
-      'text': html,
+      'text': $html.html(),
       'children': children,
       'applied': this.isApplied,
       'state': {
         'opened': this.hasAppliedChildren
       },
-      'li_attr': this.isApplied ? { 'class': 'active' } : {}
+      'li_attr': this.isApplied ? { 'class': 'active' } : {},
+      'data': {
+        'url': url.replace(/&amp;/g, '&')
+      }
     });
   });
 
@@ -60,6 +80,15 @@ function initFacetTree(treeNode, inSidebar)
   }
   treeNode.data('loaded', true);
 
+  // Enable keyboard navigation also when a screen reader is active
+  treeNode.bind('select_node.jstree', function selectNode(event, data) {
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+    window.location = data.node.data.url;
+    event.preventDefault();
+    return false;
+  });
+
+  var source = treeNode.data('source');
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');
   var currentPath = treeNode.data('path');
@@ -76,27 +105,46 @@ function initFacetTree(treeNode, inSidebar)
   $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
+      source: source,
       facetName: facet,
       facetSort: sort,
       facetOperator: operator
     },
     function getFacetData(response/*, textStatus*/) {
-      if (response.status === "OK") {
-        var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
-        treeNode.find('.fa-spinner').parent().remove();
-        if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+      var results = buildFacetNodes(response.data.facets, currentPath, allowExclude, excludeTitle, inSidebar);
+      treeNode.find('.fa-spinner').parent().remove();
+      if (inSidebar) {
+        treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+          treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+          treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+            $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+            window.location = this.href;
+            e.preventDefault();
+            return false;
           });
-        }
-        treeNode.jstree({
-          'core': {
-            'data': results
-          }
         });
       }
+      treeNode.jstree({
+        'core': {
+          'data': results
+        }
+      });
     }
   );
+}
+
+function collapseTopFacets() {
+  $('.top-facets').each(function setupToCollapses() {
+    $(this).find('.collapse').removeClass('in');
+    $(this).on('show.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-right');
+      $(this).find('.top-title .fa').addClass('fa-caret-down');
+    });
+    $(this).on('hide.bs.collapse', function toggleTopFacet() {
+      $(this).find('.top-title .fa').removeClass('fa-caret-down');
+      $(this).find('.top-title .fa').addClass('fa-caret-right');
+    });
+  });
 }
 
 /* --- Lightbox Facets --- */
@@ -107,11 +155,11 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       var sort = $(button).data('sort');
       var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').text(VuFind.translate('loading') + '...');
+        list.find('.js-facet-next-page').html(VuFind.translate('loading') + '...');
         $.ajax(button.href + '&layout=lightbox')
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').text(VuFind.translate('more') + ' ...');
+            list.find('.js-facet-next-page').html(VuFind.translate('more') + ' ...');
           });
       }
       $('.full-facet-list').addClass('hidden');
@@ -134,7 +182,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         return false;
       }
       button.attr('disabled', 1);
-      button.text(VuFind.translate('loading') + '...');
+      button.html(VuFind.translate('loading') + '...');
       $.ajax(this.href + '&layout=lightbox')
         .done(function facetLightboxMoreDone(data) {
           var htmlDiv = $('<div>' + data + '</div>');
@@ -143,7 +191,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.text(VuFind.translate('more') + ' ...');
+            button.html(VuFind.translate('more') + ' ...');
             button.removeAttr('disabled');
           } else {
             button.remove();

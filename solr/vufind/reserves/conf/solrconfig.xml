@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>6.4.2</luceneMatchVersion>
+  <luceneMatchVersion>7.3.1</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -321,7 +321,7 @@
                
             etagSeed="..." is an option you can change to force the ETag
             header (and validation against If-None-Match requests) to be
-            differnet even if the index has not changed (ie: when making
+            different even if the index has not changed (ie: when making
             significant changes to your config file)
 
             lastModifiedFrom and etagSeed are both ignored if you use the
@@ -349,7 +349,7 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
-  <requestHandler name="standard" class="solr.StandardRequestHandler" default="true">
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters may optionally be defined here
      <lst name="defaults">
        <int name="rows">10</int>

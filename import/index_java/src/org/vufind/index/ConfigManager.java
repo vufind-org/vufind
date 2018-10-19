@@ -66,14 +66,15 @@ public class ConfigManager
      * Given the base name of a configuration file, locate the full path.
      * @param filename base name of a configuration file
      */
-    private File findConfigFile(String filename)
+    private File findConfigFile(String filename) throws IllegalStateException
     {
         // Find VuFind's home directory in the environment; if it's not available,
         // try using a relative path on the assumption that we are currently in
         // VuFind's import subdirectory:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
-            vufindHome = "..";
+            // this shouldn't happen since import-marc.sh and .bat always set VUFIND_HOME
+            throw new IllegalStateException("VUFIND_HOME must be set");
         }
 
         // Check for VuFind 2.0's local directory environment variable:
@@ -133,11 +134,21 @@ public class ConfigManager
         // Retrieve the file if it is not already cached.
         if (!configCache.containsKey(filename)) {
             Ini ini = new Ini();
+            File configFile = null;
             try {
-                ini.load(new FileReader(findConfigFile(filename)));
-                configCache.putIfAbsent(filename, ini);
+                configFile = findConfigFile(filename);
+            } catch (IllegalStateException e) {
+                dieWithError("Illegal State: " + e.getMessage());
             } catch (Throwable e) {
-                dieWithError("Unable to access " + filename);
+                dieWithError("Unable to locate " + filename);
+            }
+            try {
+                if (configFile != null) {
+                    ini.load(new FileReader(configFile));
+                    configCache.putIfAbsent(filename, ini);
+                }
+            } catch (Throwable e) {
+                dieWithError("Unable to access " + configFile.getAbsolutePath());
             }
         }
         return configCache.get(filename);

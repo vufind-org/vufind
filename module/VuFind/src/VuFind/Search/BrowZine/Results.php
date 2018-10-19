@@ -2,7 +2,7 @@
 /**
  * BrowZine aspect of the Search Multi-class (Results)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\BrowZine;
+
 use VuFind\Record\Loader;
 use VuFindSearch\Service as SearchService;
 

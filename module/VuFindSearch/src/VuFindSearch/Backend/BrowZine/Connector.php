@@ -3,7 +3,7 @@
 /**
  * BrowZine connector.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -27,6 +27,7 @@
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\BrowZine;
+
 use Zend\Http\Client as HttpClient;
 
 /**
@@ -84,6 +85,23 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $this->client = $client;
         $this->token = $token;
         $this->libraryId = $id;
+    }
+
+    /**
+     * Perform a DOI lookup
+     *
+     * @param string $doi            DOI
+     * @param bool   $includeJournal Include journal data in response?
+     *
+     * @return mixed
+     */
+    public function lookupDoi($doi, $includeJournal = false)
+    {
+        // Documentation says URL encoding of DOI is not necessary.
+        return $this->request(
+            'articles/doi/' . $doi,
+            $includeJournal ? ['include' => 'journal'] : []
+        );
     }
 
     /**

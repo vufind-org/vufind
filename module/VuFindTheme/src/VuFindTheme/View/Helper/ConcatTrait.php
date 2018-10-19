@@ -3,7 +3,7 @@
  * Trait to add asset pipeline functionality (concatenation / minification) to
  * a HeadLink/HeadScript-style view helper.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  * Copyright (C) The National Library of Finland 2017.
@@ -29,6 +29,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -74,7 +75,7 @@ trait ConcatTrait
      *
      * @param stdClass $item Element object
      * @param string   $path New path string
-
+     *
      * @return void
      */
     abstract protected function setResourceFilePath($item, $path);

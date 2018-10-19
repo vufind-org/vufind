@@ -2,7 +2,7 @@
 /**
  * User permission provider for VuFind.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Role\PermissionProvider;
+
 use ZfcRbac\Service\AuthorizationService;
 
 /**

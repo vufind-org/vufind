@@ -2,7 +2,7 @@
 /**
  * "Random items" channel provider.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,9 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 
 /**
  * "Random items" channel provider.
@@ -96,9 +98,8 @@ class Random extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = isset($options['channelSize'])
-            ? $options['channelSize'] : 20;
-        $this->mode = isset($options['mode']) ? $options['mode'] : 'retain';
+        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->mode = $options['mode'] ?? 'retain';
     }
 
     /**

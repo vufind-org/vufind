@@ -2,7 +2,7 @@
 /**
  * EBSCO EDS API Zend2 Framework implementation
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -22,15 +22,15 @@
  * @category EBSCOIndustries
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 
-require_once dirname(__FILE__) . '/Base.php';
+use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 use Zend\Http\Client as Zend2HttpClient;
 use Zend\Log\LoggerAwareInterface;
-use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation
@@ -41,13 +41,13 @@ use Zend\Http\Client\Adapter\Curl as CurlAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
+class Zend2 extends Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
-     /**
+    /**
      * The HTTP Request object to execute EDS API transactions
-      *
+     *
      * @var Zend2HttpClient
      */
     protected $client;
@@ -119,7 +119,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
      * @param string $messageBody   Message body to for HTTP Request
      * @param string $messageFormat Format of request $messageBody and respones
      *
-     * @throws EbscoEdsApiException
+     * @throws ApiException
      * @return string               HTTP response body
      */
     protected function httpRequest($baseUrl, $method, $queryString, $headers,
@@ -141,7 +141,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
         $this->client->setEncType($messageFormat);
         $result = $this->client->send();
         if (!$result->isSuccess()) {
-            throw new \EbscoEdsApiException(json_decode($result->getBody(), true));
+            throw new ApiException(json_decode($result->getBody(), true));
         }
         return $result->getBody();
     }

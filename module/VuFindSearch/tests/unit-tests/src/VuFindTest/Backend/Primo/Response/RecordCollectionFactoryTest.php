@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo record collection factory.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Primo\Response;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for Primo record collection factory.
@@ -40,7 +40,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
+class RecordCollectionFactoryTest extends TestCase
 {
     /**
      * Test constructor exception.

@@ -2,7 +2,7 @@
 /**
  * EIT Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -58,20 +59,10 @@ class EITController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('EIT');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        // Set up default parameters:
-        return $this->createViewModel();
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EIT');
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 
     /**

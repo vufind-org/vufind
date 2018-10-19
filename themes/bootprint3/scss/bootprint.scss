@@ -21,6 +21,11 @@ body {
 
 /* --- Layout --- */
 .main .container { padding-top: 1rem; }
+.main .sidebar { background-color: #fff; }
+body.offcanvas .sidebar {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 @media (min-width: 768px) {
   .main .sidebar { padding: 0; }
 }
@@ -159,5 +164,5 @@ ul.random.image li img { margin: 0 auto; }
   color: #fff;
   &:hover { color: $brand-danger; }
 }
-.jstree-facet .jstree-ocl::before { margin-left: -5px; }
+.jstree-facet .facet { padding: 0; }
 .jstree-node.active { background-color: $active-orange; }

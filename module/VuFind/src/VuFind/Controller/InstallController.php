@@ -2,7 +2,7 @@
 /**
  * Install Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,11 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter,
-    Zend\Mvc\MvcEvent,
-    Zend\Crypt\Password\Bcrypt;
+
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
+use Zend\Crypt\Password\Bcrypt;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -165,7 +166,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->serviceLocator->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\Cache\Manager');
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -180,7 +181,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->serviceLocator->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get('VuFind\Cache\Manager');
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -224,8 +225,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v5.3.3:
-        return PHP_VERSION_ID >= 50303;
+        // We need at least PHP v7.0.8:
+        return PHP_VERSION_ID >= 70008;
     }
 
     /**
@@ -258,7 +259,7 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 5.3.3 or newer; you are running "
+            $msg = "VuFind requires PHP version 7.0.8 or newer; you are running "
                 . phpversion() . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -334,16 +335,16 @@ class InstallController extends AbstractBase
         if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()
                 ->addMessage('Database name must be alphanumeric.', 'error');
-        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
+        } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
                 ->addMessage('Database user must be alphanumeric.', 'error');
-        } else if ($skip || $this->formWasSubmitted('submit')) {
+        } elseif ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must not be blank.', 'error');
-            } else if ($newpass != $newpassConf) {
+            } elseif ($newpass != $newpassConf) {
                 $this->flashMessenger()
                     ->addMessage('Password fields must match.', 'error');
             } else {
@@ -354,7 +355,7 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->serviceLocator->get('VuFind\DbAdapterFactory')
+                    $db = $this->serviceLocator->get('VuFind\Db\AdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -391,7 +392,7 @@ class InstallController extends AbstractBase
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
                         $dbFactory = $this->serviceLocator
-                            ->get('VuFind\DbAdapterFactory');
+                            ->get('VuFind\Db\AdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
                         );
@@ -555,10 +556,13 @@ class InstallController extends AbstractBase
             $drivers = [];
             $blacklist = [
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'AbstractBase.php',
-                'PluginManager.php', 'PluginFactory.php'
+                'PluginManager.php',
             ];
             while ($line = readdir($dir)) {
-                if (stristr($line, '.php') && !in_array($line, $blacklist)) {
+                if (stristr($line, '.php') && !in_array($line, $blacklist)
+                    && substr($line, -11) !== 'Factory.php'
+                    && substr($line, -9) !== 'Trait.php'
+                ) {
                     $drivers[] = str_replace('.php', '', $line);
                 }
             }
@@ -582,7 +586,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->serviceLocator->get('VuFind\Search');
+        $searchService = $this->serviceLocator->get('VuFindSearch\Service');
         $searchService->retrieve('Solr', '1');
     }
 
@@ -797,7 +801,7 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
         try {
-            $this->serviceLocator->get('VuFind\Http')
+            $this->serviceLocator->get('VuFindHttp\HttpService')
                 ->get('https://google.com');
             $status = true;
         } catch (\VuFindHttp\Exception\RuntimeException $e) {

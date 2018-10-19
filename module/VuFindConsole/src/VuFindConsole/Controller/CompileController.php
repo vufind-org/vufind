@@ -2,7 +2,7 @@
 /**
  * Compile Controller Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
+
 use Zend\Console\Console;
 
 /**

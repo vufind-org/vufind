@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR commit document class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Document\CommitDocument;
+use PHPUnit\Framework\TestCase;
 
-use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Solr\Document\CommitDocument;
 
 /**
  * Unit tests for SOLR update document class.
@@ -41,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class CommitDocumentTest extends PHPUnit_Framework_TestCase
+class CommitDocumentTest extends TestCase
 {
     /**
      * Test creation of XML document.

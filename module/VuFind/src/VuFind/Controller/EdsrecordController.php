@@ -2,7 +2,7 @@
 /**
  * EDS Record Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Forbidden as ForbiddenException;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -81,8 +82,9 @@ class EdsrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('EDS');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('EDS');
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 }

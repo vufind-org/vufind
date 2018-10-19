@@ -4,6 +4,9 @@
   margin-top: 2px;
   margin-bottom: 4px;
   box-shadow: 1px 1px 3px rgba(47,52,64,.72);
+  max-height: 130px;
+  width: 105px;
+  height: auto;
 }
 @media (max-width: 767px) {
   .record .media-left,
@@ -122,3 +125,6 @@
 .marc-row-008 {
   white-space: pre-wrap;
 }
+
+/* ------ Relais ------ */
+.relaisLink { display: inline-block; }

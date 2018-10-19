@@ -1,18 +1,18 @@
-<?
+<?php
     $expandFacetSet = $this->recommend->getExpandedSet();
     // Get empty search object to use as basis for parameter generation below:
     $blankResults = $this->recommend->getEmptyResults();
     $cloudLimit = $this->recommend->getFacetLimit();
 ?>
-<? if ($expandFacetSet): ?>
+<?php if ($expandFacetSet): ?>
   <div class="sidegroup">
-    <? foreach ($expandFacetSet as $title=>$facets): ?>
+    <?php foreach ($expandFacetSet as $title => $facets): ?>
       <dl class="narrowList navmenu">
         <dt><?=$this->transEsc($facets['label']) ?></dt>
-        <?
+        <?php
         foreach ($facets['list'] as $i => $facetItem) {
             if ($i < $cloudLimit) {
-                echo (($i == 0) ? '' : ', ')
+                echo(($i == 0) ? '' : ', ')
                     . '<a href="' . $blankResults->getUrlQuery()->addFacet($title, $facetItem['value']) . '">'
                     . $this->escapeHtml($facetItem['displayText'])
                     . '</a> (' . $this->escapeHtml($facetItem['count']) . ')';
@@ -23,6 +23,6 @@
         }
         ?>
       </dl>
-    <? endforeach; ?>
+    <?php endforeach; ?>
   </div>
-<? endif; ?>
+<?php endif; ?>

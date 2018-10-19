@@ -2,7 +2,7 @@
 /**
  * Permission helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
 use Zend\View\Helper\AbstractHelper;
@@ -114,7 +115,7 @@ class Permission extends AbstractHelper
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);
 
-        switch (isset($displayLogic['action']) ? $displayLogic['action'] : '') {
+        switch ($displayLogic['action'] ?? '') {
         case 'showMessage':
             return $this->view->transEsc($displayLogic['value']);
         case 'showTemplate':

@@ -35,14 +35,14 @@ CREATE TABLE `change_tracker` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
   `resource_id` int(11) NOT NULL DEFAULT '0',
   `comment` text NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `resource_id` (`resource_id`),
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -74,6 +74,7 @@ CREATE TABLE `resource` (
   `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
+  `extra_metadata` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -136,7 +137,7 @@ CREATE TABLE `search` (
 CREATE TABLE `session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
-  `data` text,
+  `data` mediumtext,
   `last_used` int(12) NOT NULL DEFAULT '0',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
@@ -192,12 +193,14 @@ CREATE TABLE `user` (
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,
-  `cat_pass_enc` varchar(170) DEFAULT NULL,
+  `cat_pass_enc` varchar(255) DEFAULT NULL,
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
+  `last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `auth_method` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cat_id` (`cat_id`)
@@ -257,8 +260,8 @@ CREATE TABLE `user_card` (
   `user_id` int(11) NOT NULL,
   `card_name` varchar(255) NOT NULL DEFAULT '',
   `cat_username` varchar(50) NOT NULL DEFAULT '',
-  `cat_password` varchar(50) DEFAULT NULL,
-  `cat_pass_enc` varchar(110) DEFAULT NULL,
+  `cat_password` varchar(70) DEFAULT NULL,
+  `cat_pass_enc` varchar(255) DEFAULT NULL,
   `home_library` varchar(100) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

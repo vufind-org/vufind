@@ -2,7 +2,7 @@
 /**
  * Mixed List aspect of the Search Multi-class (Options)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

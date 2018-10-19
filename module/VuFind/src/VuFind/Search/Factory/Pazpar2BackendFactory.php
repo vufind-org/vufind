@@ -3,7 +3,7 @@
 /**
  * Factory for Pazpar2 backends.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Pazpar2\QueryBuilder;
-use VuFindSearch\Backend\Pazpar2\Connector;
-use VuFindSearch\Backend\Pazpar2\Backend;
+use Interop\Container\ContainerInterface;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\FactoryInterface;
+use VuFindSearch\Backend\Pazpar2\Backend;
+use VuFindSearch\Backend\Pazpar2\Connector;
+use VuFindSearch\Backend\Pazpar2\QueryBuilder;
+use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
+
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Pazpar2 backends.
@@ -58,7 +58,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -70,18 +70,23 @@ class Pazpar2BackendFactory implements FactoryInterface
     protected $config;
 
     /**
-     * Create the backend.
+     * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator Superior service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return BackendInterface
+     * @return Backend
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $serviceLocator;
-        $this->config = $this->serviceLocator->get('VuFind\Config')->get('Pazpar2');
-        if ($this->serviceLocator->has('VuFind\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Logger');
+        $this->serviceLocator = $sm;
+        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('Pazpar2');
+        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -120,7 +125,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     {
         $connector = new Connector(
             $this->config->General->base_url,
-            $this->serviceLocator->get('VuFind\Http')->createClient()
+            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient()
         );
         $connector->setLogger($this->logger);
         return $connector;
@@ -143,7 +148,7 @@ class Pazpar2BackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Pazpar2');
             $driver->setRawData($data);

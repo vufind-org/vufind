@@ -2,7 +2,7 @@
 /**
  * Solr Collection aspect of the Search Multi-class (Params)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -90,6 +90,22 @@ class Params extends \VuFind\Search\Solr\Params
         $safeId = addcslashes($this->collectionID, '"');
         $this->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
         $this->addHiddenFilter('!id:"' . $safeId . '"');
+
+        // Because the [HiddenFilters] and [RawHiddenFilters] settings for the
+        // Solr search backend come from searches.ini and are set up in the
+        // AbstractSolrBackendFactory, we need to account for additional ones
+        // from Collection.ini here.
+        $collectionConfig = $this->configLoader->get('Collection');
+        if (isset($collectionConfig->HiddenFilters)) {
+            foreach ($collectionConfig->HiddenFilters as $field => $value) {
+                $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
+            }
+        }
+        if (isset($collectionConfig->RawHiddenFilters)) {
+            foreach ($collectionConfig->RawHiddenFilters as $current) {
+                $this->addHiddenFilter($current);
+            }
+        }
     }
 
     /**
@@ -100,5 +116,15 @@ class Params extends \VuFind\Search\Solr\Params
     public function getCollectionField()
     {
         return $this->collectionField;
+    }
+
+    /**
+     * Get collection id
+     *
+     * @return string
+     */
+    public function getCollectionId()
+    {
+        return $this->collectionID;
     }
 }

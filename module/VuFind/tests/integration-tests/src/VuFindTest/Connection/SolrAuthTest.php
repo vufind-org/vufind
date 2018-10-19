@@ -2,7 +2,7 @@
 /**
  * Solr Auth Connection Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Integration\Connection;
+
 use VuFindSearch\Query\Query;
 
 /**
@@ -37,7 +38,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrAuthTest extends \VuFindTest\Unit\TestCase
+class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
 {
     /**
      * Standard setup method.

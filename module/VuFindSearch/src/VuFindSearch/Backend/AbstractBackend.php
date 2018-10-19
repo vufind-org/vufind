@@ -2,7 +2,7 @@
 /**
  * Abstract backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,8 +27,8 @@
  */
 namespace VuFindSearch\Backend;
 
-use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 use Zend\Log\LoggerAwareInterface;
 

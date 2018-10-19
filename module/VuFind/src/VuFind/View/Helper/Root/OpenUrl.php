@@ -2,7 +2,7 @@
 /**
  * OpenUrl view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use VuFind\Resolver\Driver\PluginManager;
 
 /**
@@ -84,13 +85,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context       Context helper
-     * @param array                            $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager                    $pluginManager Resolver plugin manager
-     * @param \Zend\Config\Config              $config        VuFind OpenURL config
+     * @param Context             $context       Context helper
+     * @param array               $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager       $pluginManager Resolver plugin manager
+     * @param \Zend\Config\Config $config        VuFind OpenURL config
      */
-    public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, PluginManager $pluginManager, $config = null
+    public function __construct(Context $context, $openUrlRules,
+        PluginManager $pluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
@@ -99,9 +100,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Render appropriate UI controls for an OpenURL link.
+     * Set up context for helper
      *
-     * @param \VuFind\RecordDriver $driver The current recorddriver
+     * @param \VuFind\RecordDriver $driver The current record driver
      * @param string               $area   OpenURL context ('results', 'record'
      *  or 'holdings'
      *
@@ -305,7 +306,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return ($this->area == 'results');
+        return $this->area == 'results';
     }
 
     /**
@@ -425,7 +426,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Did all the rules match?
-        return ($ruleMatchCounter == count($rules));
+        return $ruleMatchCounter == count($rules);
     }
 
     /**

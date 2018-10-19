@@ -2,7 +2,7 @@
 /**
  * Booksite review content loader.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -101,8 +101,8 @@ class BookSite extends \VuFind\Content\AbstractBase
         $i = 0;
         $json = json_decode($response->getBody());
         foreach ($json as $source => $values) {
-            $reviews[$i]['Source' ] = $source;
-            $reviews[$i]['Date'   ] = (string)$values->reviewDate;
+            $reviews[$i]['Source'] = $source;
+            $reviews[$i]['Date'] = (string)$values->reviewDate;
             $reviews[$i]['Content'] = (string)$values->reviewText;
             $i++;
         }

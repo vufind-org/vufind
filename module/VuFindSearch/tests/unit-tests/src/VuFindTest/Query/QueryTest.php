@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Query;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for Query class.
@@ -40,7 +40,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryTest extends PHPUnit_Framework_TestCase
+class QueryTest extends TestCase
 {
     /**
      * Test containsTerm() method

@@ -1,9 +1,9 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('Upgrade VuFind'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li><a href="'.$this->url('upgrade-home').'">'.$this->transEsc('Upgrade').'</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('upgrade-home') . '">' . $this->transEsc('Upgrade') . '</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
 ?>
 <h2><?=$this->transEsc('Upgrade VuFind')?></h2>
 <?=$this->flashmessages()?>
@@ -20,10 +20,10 @@
     <input type="text" name="sourceversion" />
   </p>
   <p>Options:<br />
-  <? foreach (['config' => 'Configuration', 'database' => 'Database Structure', 'metadata' => 'Stored Metadata'] as $key => $value): ?>
+  <?php foreach (['config' => 'Configuration', 'database' => 'Database Structure', 'metadata' => 'Stored Metadata'] as $key => $value): ?>
     <input type="checkbox" name="skip[]" id="skip-<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($key)?>" />
     <label for="skip-<?=$this->escapeHtmlAttr($key)?>">Skip <?=$this->escapeHtml($value); ?> Upgrade</label><br />
-  <? endforeach; ?>
+  <?php endforeach; ?>
   </p>
   <input class="btn btn-primary" type="submit" />
 </form>
