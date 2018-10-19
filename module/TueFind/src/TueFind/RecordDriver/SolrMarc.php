@@ -4,6 +4,44 @@ namespace TueFind\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
+    const SCHEME_PREFIX_GND = '(DE-588)';
+    const SCHEME_PREFIX_PPN = '(DE-576)';
+
+    /**
+     * Search for author and return its id (e.g. GND number or PPN)
+     *
+     * @param string $author_heading    name of the author and birth/death years if exist, e.g. "Strecker, Christian 1960-"
+     * @param string $scheme_prefix     see class constants (SCHEME_PREFIX_*)
+     * @return string
+     */
+    protected function getAuthorIdByHeading($author_heading, $scheme_prefix) {
+        $authors = $this->getFieldArrayPCRE('100|700');
+        foreach ($authors as $author) {
+            $subfield_a = $author->getSubfield('a');
+            $subfield_d = $author->getSubfield('d');
+            $current_author_heading = $subfield_a->getData();
+            if ($subfield_d != false)
+                $current_author_heading .= ' ' . $subfield_d;
+
+            if ($author_heading == $subfield_a->getData() || $author_heading == $current_author_heading) {
+                $subfields_0 = $author->getSubfieldsArray('0');
+                foreach ($subfields_0 as $subfield_0) {
+                    if (preg_match('"^' . preg_quote($scheme) . '"', $subfield_0->getData()))
+                        return $subfield_0->getData();
+                }
+                break;
+            }
+        }
+    }
+
+    public function getAuthorGNDNumber($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_GND);
+    }
+
+    public function getAuthorPPN($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_PPN);
+    }
+
     /**
      * Get DOI from 024 instead of doi_str_mv field
      *
@@ -20,6 +58,46 @@ class SolrMarc extends SolrDefault
                     return $subfields[0];
             }
         }
+    }
+
+
+    /**
+     * Same as VuFind\RecordDriver\SolrMarc's "getFieldArray",
+     * but the first value will be treated as PCRE, allowing multiple fields to be processed.
+     *
+     * @param string $field_pcre    PCRE of the MARC field numbers to read (without delimiters), e.g. '100|700'
+     * @param array  $subfields     The MARC subfield codes to read
+     * @param bool   $concat        Should we concatenate subfields?
+     * @param string $separator     Separator string (used only when $concat === true)
+     *
+     * @return array
+     */
+    protected function getFieldArrayPCRE($field_pcre, $subfields = null, $concat = true,
+        $separator = ' '
+    ) {
+        // Default to subfield a if nothing is specified.
+        if (!is_array($subfields)) {
+            $subfields = ['a'];
+        }
+
+        // Initialize return array
+        $matches = [];
+
+        // Try to look up the specified field, return empty array if it doesn't
+        // exist.
+        $fields = $this->getMarcRecord()->getFields($field_pcre, true);
+        if (!is_array($fields)) {
+            return $matches;
+        }
+
+        // Extract all the requested subfields, if applicable.
+        foreach ($fields as $currentField) {
+            $next = $this
+                ->getSubfieldArray($currentField, $subfields, $concat, $separator);
+            $matches = array_merge($matches, $next);
+        }
+
+        return $matches;
     }
 
 
