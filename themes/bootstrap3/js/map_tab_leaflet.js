@@ -50,7 +50,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
       var south = mapData[i][1];
       var east = mapData[i][2];
       var north = mapData[i][3];
- 
+
       // Create features
       var geoFeature;
       if (west === east && north === south) {
