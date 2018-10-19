@@ -1,10 +1,10 @@
 <? if (!$this->driver->suppressDisplayByFormat()): ?>
   <tr>
     <th><?=$this->transEsc('Check Availability')?>: </th>
-  <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
+  <? $isbns = $this->driver->getISBNs(); if (count($isbns) == 1): ?>
     <td><a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a></td>
   <? else: ?>
-    <td><a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getTitle())?>">HBZ Gateway</a></td>
+    <td><a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getUnmergedPrintTitle())?>" target="_blank" >HBZ Gateway</a></td>
   <? endif; ?>
   </tr>
 <? endif; ?>
