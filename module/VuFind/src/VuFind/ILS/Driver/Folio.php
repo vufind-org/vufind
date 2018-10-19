@@ -181,6 +181,26 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         }
     }
 
+    protected function getBibId($itemId, $holdingId = null, $instanceId = null) {
+        if ($instanceId == null) {
+            if ($holdingId == null) {
+                $response = $this->makeRequest('GET', '/item-storage/items/' . $itemId);
+                $item = json_decode($response->getBody());
+                $holdingId = $item->holdingsRecordId;
+            }
+            $response = $this->makeRequest(
+                'GET', '/holdings-storage/holdings/' . $holdingId
+            );
+            $holding = json_decode($response->getBody());
+            $instanceId = $holding->instanceId;
+        }
+        $response = $this->makeRequest(
+            'GET', '/inventory/instances/' . $instanceId
+        );
+        $instance = json_decode($response->getBody());
+        return $instance->identifiers[0]->value;
+    }
+
     /**
      * Get raw object of item from inventory/items/
      *
@@ -274,6 +294,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $itemId,
+                    'item_id' => $record->id,
+                    'holding_id' => $holding->id,
                     'number' => count($items),
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
@@ -282,6 +304,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                     'callnumber' => $holding->callNumber,
                     'location' => $location->name,
                     'reserve' => 'TODO',
+                    'addLink' => true
                 ];
             }
         }
@@ -330,10 +353,10 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             return [
                 'id' => $profile->id,
                 'username' => $username,
-                'firstname' => $profile->personal->firstName ?? null,
-                'lastname' => $profile->personal->lastName ?? null,
                 'cat_username' => $username,
                 'cat_password' => $password,
+                'firstname' => $profile->personal->firstName ?? null,
+                'lastname' => $profile->personal->lastName ?? null,
                 'email' => $profile->personal->email ?? null,
             ];
         } catch(Exception $e) {
@@ -365,21 +388,19 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     public function getMyProfile($patronLogin)
     {
         // Get user id
-        $query = ['query' => 'username == ' . $patronLogin['username']];
-        $response = $this->makeRequest("POST", '/users', $query);
-        $json = json_decode($response->getBody());
-        $profile = $json['users'][0];
+        $response = $this->makeRequest('GET', '/users/' . $patronLogin['username']);
+        $profile = json_decode($response->getBody());
         return [
-            'id' => $profile['id'],
-            'firstname' => $profile['personal']['firstName'],
-            'lastname' => $profile['personal']['lastName'],
-            'address1' => $profile['personal']['addresses'][0]['addressLine1'],
-            'city' => $profile['personal']['addresses'][0]['city'],
-            'country' => $profile['personal']['addresses'][0]['countryId'],
-            'zip' => $profile['personal']['addresses'][0]['postalCode'],
-            'phone' => $profile['personal']['phone'],
-            'mobile_phone' => $profile['personal']['mobilePhone'],
-            'expiration_date' => $profile['expirationDate'],
+            'id' => $profile->id,
+            'firstname' => $profile->personal->firstName ?? null,
+            'lastname' => $profile->personal->lastName ?? null,
+            'address1' => $profile->personal->addresses[0]->addressLine1 ?? null,
+            'city' => $profile->personal->addresses[0]->city ?? null,
+            'country' => $profile->personal->addresses[0]->countryId ?? null,
+            'zip' => $profile->personal->addresses[0]->postalCode ?? null,
+            'phone' => $profile->personal->phone ?? null,
+            'mobile_phone' => $profile->personal->mobilePhone ?? null,
+            'expiration_date' => $profile->expirationDate ?? null,
         ];
     }
 
@@ -450,8 +471,93 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         return $transactions;
     }
 
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron Patron information returned by the patronLogin
+     *                      method.
+     *
+     * @return array An array of associative arrays with locationID and
+     * locationDisplay keys
+     */
+    public function getPickupLocations($patron)
+    {
+        $response = $this->makeRequest('GET', '/locations');
+        $json = json_decode($response->getBody());
+        $locations = [];
+        foreach ($json->locations as $location) {
+            $locations[] = [
+                'locationID' => $location->id,
+                'locationDisplay' => $location->name
+            ];
+        }
+        return $locations;
+    }
+
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details.
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeHold($holdDetails)
+    {
+        try {
+            $requiredBy = date_create_from_format('m-d-Y', $holdDetails['requiredBy']);
+        } catch(Exception $e) {
+            throw new ILSException('hold_date_invalid');
+        }
+        $requestBody = [
+            'requestType' => 'Hold',
+            'requestDate' => date('c'),
+            'requesterId' => $holdDetails['patron']['id'],
+            'requester' => [
+                'firstName' => $holdDetails['patron']['firstname'] ?? '',
+                'lastName' => $holdDetails['patron']['lastname'] ?? ''
+            ],
+            'itemId' => $holdDetails['item_id'],
+            'fulfilmentPreference' => 'Hold Shelf',
+            'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
+        ];
+        $response = $this->makeRequest(
+            'POST',
+            '/request-storage/requests',
+            json_encode($requestBody)
+        );
+        if ($response->isSuccess()) {
+            return [
+                'success' => true,
+                'status' => $response->getBody()
+            ];
+        } else {
+            throw new ILSException($response->getBody());
+        }
+    }
+
     // @codingStandardsIgnoreStart
     /** NOT FINISHED BELOW THIS LINE **/
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     * @author Michael Birkner
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
 
     /**
      * This method queries the ILS for a patron's current holds
@@ -480,7 +586,22 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function getMyHolds($patronLogin)
     {
-        return [];
+        $query = [
+            'query' => 'username == "' . $patronLogin['username'] . '"' .
+                ' and requestType == "Hold"'
+        ];
+        $response = $this->makeRequest('GET', '/request-storage/requests', $query);
+        $json = json_decode($response->getBody());
+        $holds = [];
+        foreach ($json->requests as $hold) {
+            $holds[] = [
+                'type' => 'Hold',
+                'create' => $hold->requestDate,
+                'expire' => $hold->requestExpirationDate,
+                'id' => $this->getBibId(null, null, $hold->itemId),
+            ];
+        }
+        return $holds;
     }
 
     /**
