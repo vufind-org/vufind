@@ -5,7 +5,7 @@ namespace TueFind\RecordDriver;
 class SolrMarc extends SolrDefault
 {
     const SCHEME_PREFIX_GND = '(DE-588)';
-    const SCHEME_PREFIX_PPN = '(DE-576)';
+    const SCHEME_PREFIX_BSZ = '(DE-576)';
 
     /**
      * Search for author and return its id (e.g. GND number or PPN)
@@ -39,7 +39,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function getAuthorPPN($author_heading) {
-        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_PPN);
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_BSZ);
     }
 
     /**
@@ -150,10 +150,10 @@ class SolrMarc extends SolrDefault
              foreach ($fields as $field) {
                  $subfields_w = $this->getSubfieldArray($field, ['w']);
                  foreach($subfields_w as $subfield_w) {
-                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_PPN) . "(.*)/", $subfield_w, $ppn)) {
-                         $subfield_x = $field->getSubfield('x');
-                         if ($subfield_x !== false && $subfield_x->getData() !== 'dangling')
-                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_x->getData() ]);
+                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_BSZ) . "(.*)/", $subfield_w, $ppn)) {
+                         $subfield_k = $field->getSubfield('k');
+                         if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
+                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
                      }
                  }
              }
