@@ -148,7 +148,7 @@ class SolrMarc extends SolrDefault
         foreach (["775", "776"] as $tag) {
              $fields = $this->getMarcRecord()->getFields($tag);
              foreach ($fields as $field) {
-                 $subfields_w = $this->getSubfieldArray($field, ['w']);
+                 $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
                  foreach($subfields_w as $subfield_w) {
                      if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_BSZ) . "(.*)/", $subfield_w, $ppn)) {
                          $subfield_k = $field->getSubfield('k');
