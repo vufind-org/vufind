@@ -84,7 +84,8 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                                     <div class="input-group searchbar">
                                         <input class="form-control form-control-lg searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>"
                                                type="text" name="lookfor"
-                                               value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/>
+                                               value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"
+                                               placeholder="<?=$this->translate('Search for keywords, title or author')?>"/>
                                         <span class="input-group-addon">
                                             <i class="fa fa-search"></i>
                                         </span>

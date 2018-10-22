@@ -9,6 +9,6 @@ fi
 
 echo "Updating TueFind configuration (git hook post-merge)"
 DIR="$(dirname $(readlink --canonicalize "$0"))"
+php $DIR/../../util/cssBuilder.php
 $DIR/../../update_tuefind_config.sh
 $DIR/../../clean_vufind_cache.sh
-

@@ -4,6 +4,44 @@ namespace TueFind\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
+    const SCHEME_PREFIX_GND = '(DE-588)';
+    const SCHEME_PREFIX_PPN = '(DE-576)';
+
+    /**
+     * Search for author and return its id (e.g. GND number or PPN)
+     *
+     * @param string $author_heading    name of the author and birth/death years if exist, e.g. "Strecker, Christian 1960-"
+     * @param string $scheme_prefix     see class constants (SCHEME_PREFIX_*)
+     * @return string
+     */
+    protected function getAuthorIdByHeading($author_heading, $scheme_prefix) {
+        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
+        foreach ($authors as $author) {
+            $subfield_a = $author->getSubfield('a');
+            $subfield_d = $author->getSubfield('d');
+            $current_author_heading = $subfield_a->getData();
+            if ($subfield_d != false)
+                $current_author_heading .= ' ' . $subfield_d->getData();
+
+            if ($author_heading == $subfield_a->getData() || $author_heading == $current_author_heading) {
+                $subfields_0 = $author->getSubfields('0');
+                foreach ($subfields_0 as $subfield_0) {
+                    if (preg_match('"^' . preg_quote($scheme_prefix) . '"', $subfield_0->getData()))
+                        return substr($subfield_0->getData(), strlen($scheme_prefix));
+                }
+                break;
+            }
+        }
+    }
+
+    public function getAuthorGNDNumber($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_GND);
+    }
+
+    public function getAuthorPPN($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_PPN);
+    }
+
     /**
      * Get DOI from 024 instead of doi_str_mv field
      *
@@ -112,9 +150,9 @@ class SolrMarc extends SolrDefault
              foreach ($fields as $field) {
                  $subfields_w = $this->getSubfieldArray($field, ['w']);
                  foreach($subfields_w as $subfield_w) {
-                     if (preg_match("/^\(DE-576\)(.*)/", $subfield_w, $ppn)) {
+                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_PPN) . "(.*)/", $subfield_w, $ppn)) {
                          $subfield_x = $field->getSubfield('x');
-                         if ($subfield_x !== false)
+                         if ($subfield_x !== false && $subfield_x->getData() !== 'dangling')
                              array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_x->getData() ]);
                      }
                  }
