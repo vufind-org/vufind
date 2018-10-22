@@ -60,8 +60,9 @@ function runSaveAjaxForQueue() {
           displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
 
           // Remove populated ids from the queue
-          for (var j = 0; j < saveStatusObjs; j++) {
-            if (saveStatusObjs[j].id === id) {
+          for (var j = saveStatusObjs.length - 1; j >= 0; j--) {
+            var parts = id.split('|');
+            if (saveStatusObjs[j].id === parts[1] && saveStatusObjs[j].source === parts[0]) {
               saveStatusObjs.splice(j, 1);
             }
           }
