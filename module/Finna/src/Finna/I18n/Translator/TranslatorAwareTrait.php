@@ -81,7 +81,8 @@ trait TranslatorAwareTrait
         $defaultTranslation
             = $this->translateString((string)$str, $tokens, $default, $domain);
 
-        if ($defaultTranslation !== (string)$str) {
+        if ($defaultTranslation !== (string)$str && $defaultTranslation !== $default
+        ) {
             return $defaultTranslation;
         }
 
