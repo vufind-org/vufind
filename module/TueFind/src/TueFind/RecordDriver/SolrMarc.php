@@ -160,4 +160,51 @@ class SolrMarc extends SolrDefault
         }
         return $parallel_ppns_and_type;
     }
+
+
+    protected function getFirstBSZPPNFromSubfieldW(&$field, &$ppn) {
+        $ppn = [];
+        $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
+        foreach($subfields_w as $subfield_w) {
+             if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_BSZ) . "(.*)/", $subfield_w, $match_ppn)) {
+                 $ppn[0] = $match_ppn[1];
+                 return;
+             }
+        }
+    }
+
+
+    public function getReferenceInformation() {
+        $reference = [];
+        $fields = $this->getMarcRecord()->getFields("770");
+        foreach ($fields as $field) {
+            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+            $field->getSubfield('a') ? array_push($reference, $field->getSubfield('a')->getData()) : '';
+            $field->getSubfield('d') ? array_push($reference, $field->getSubfield('d')->getData()) : '';
+            $field->getSubfield('h') ? array_push($reference, $field->getSubfield('h')->getData()) : '';
+            $field->getSubfield('t') ? array_push($reference, $field->getSubfield('t')->getData()) : '';
+            $this->getFirstBSZPPNFromSubfieldW($field, $link_ppn);
+            $reference_description = $opening . ": " .  implode(", " , array_filter($reference) /*skip empty elements */);
+            if (!empty($link_ppn))
+                return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $reference_description . "</>";
+            else
+                return $reference_description;
+        }
+    }
+
+
+    public function getContainsInformation() {
+        $contains = [];
+        $fields = $this->getMarcRecord()->getFields("772");
+        foreach ($fields as $field) {
+              $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+              $field->getSubfield('a') ? array_push($contains, $field->getSubfield('a')->getData()) : '';
+              $field->getSubfield('t') ? array_push($contains, $field->getSubfield('t')->getData()) : '';
+              $contains_description = $opening . ": " .  implode(", ", array_filter($reference) /*skip empty elements */);
+              if (!empty($link_ppn))
+                  return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $contains_description . "</>";
+              else
+                  return $contains_description;
+        }
+    }
 }

@@ -235,6 +235,26 @@
   <? endif; ?>
 
   <!-- custom ixtheo fields -->
+  <? $reference = $this->driver->getReferenceInformation() ?>
+  <? if (!empty($reference)): ?>
+       <tr>
+          <th><?=$this->transEsc('Reference')?>: </th>
+          <td><?=$reference?>
+          </td>
+        </tr>
+  <? endif; ?>
+
+  <? $contains = $this->driver->getContainsInformation() ?>
+  <? if (!empty($contains)): ?>
+       <tr>
+          <th><?=$this->transEsc('Contains')?>: </th>
+          <td><?=$contains?>
+          </td>
+        </tr>
+  <? endif; ?>
+
+
+
   <? $types_and_persistent_identifiers = $this->driver->getTypesAndPersistentIdentifiers(); if (!empty($types_and_persistent_identifiers)): ?>
     <tr>
         <th>Persistent identifiers: </th>
