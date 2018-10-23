@@ -1,5 +1,5 @@
 <?php
-  $this->layout()->title = $this->driver->getShortTitle();
+  $this->headTitle($this->driver->getShortTitle());
   $coverLink = $this->record($this->driver)->getThumbnail('large');
 ?>
 
