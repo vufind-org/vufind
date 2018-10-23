@@ -107,11 +107,11 @@ class Generator
     protected $warnings = [];
 
     /**
-     * Mode of retrieving IDs from the index (may be 'terms' or 'search')
+     * Verbose mode
      *
-     * @var string
+     * @var bool
      */
-    protected $retrievalMode = 'terms';
+    protected $verbose = false;
 
     /**
      * Constructor
@@ -150,6 +150,21 @@ class Generator
             $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
                 $this->config->SitemapIndex->indexFileName . '.xml';
         }
+    }
+
+    /**
+     * Get/set verbose mode
+     *
+     * @param bool $newMode New verbose mode
+     *
+     * @return bool Current or new verbose mode
+     */
+    public function setVerbose($newMode = null)
+    {
+        if (null !== $newMode) {
+            $this->verbose = $newMode;
+        }
+        return $this->verbose;
     }
 
     /**
@@ -198,80 +213,55 @@ class Generator
      */
     protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
     {
-        $lastTerm = '';
-        $count = 0;
+        $cursorMark = '*';
+        $prevCursorMark = '';
+        $recordCount = 0;
 
-        while (true) {
+        while ($cursorMark !== $prevCursorMark) {
             // Get IDs and break out of the loop if we've run out:
-            $ids = $this->getIdsFromBackend($backend, $lastTerm, $count);
-            if (empty($ids)) {
+            $prevCursorMark = $cursorMark;
+            $result = $this->getIdsFromBackend($backend, $cursorMark);
+            if (empty($result['ids'])) {
                 break;
             }
+            $cursorMark = $result['cursorMark'];
 
             // Write the current entry:
             $smf = $this->getNewSitemap();
-            foreach ($ids as $item) {
+            foreach ($result['ids'] as $item) {
                 $loc = htmlspecialchars($recordUrl . urlencode($item));
                 if (strpos($loc, 'http') === false) {
                     $loc = 'http://' . $loc;
                 }
                 $smf->addUrl($loc);
-                $lastTerm = $item;
             }
             $filename = $this->getFilenameForPage($currentPage);
             if (false === $smf->write($filename)) {
                 throw new \Exception("Problem writing $filename.");
             }
 
-            // Update counters:
-            $count += $this->countPerPage;
+            // Update total record count:
+            $recordCount += count($result['ids']);
+
+            if ($this->verbose) {
+                echo "Page $currentPage, $recordCount processed\n";
+            }
+
+            // Update counter:
             $currentPage++;
         }
         return $currentPage;
     }
 
     /**
-     * Retrieve a batch of IDs.
-     *
-     * @param Backend $backend  Search backend
-     * @param string  $lastTerm Last term retrieved
-     * @param int     $offset   Number of terms previously retrieved
-     *
-     * @return array
-     */
-    protected function getIdsFromBackend(Backend $backend, $lastTerm, $offset)
-    {
-        if ($this->retrievalMode == 'terms') {
-            return $this->getIdsFromBackendUsingTerms($backend, $lastTerm);
-        }
-        return $this->getIdsFromBackendUsingSearch($backend, $offset);
-    }
-
-    /**
-     * Retrieve a batch of IDs using the terms component.
-     *
-     * @param Backend $backend  Search backend
-     * @param string  $lastTerm Last term retrieved
-     *
-     * @return array
-     */
-    protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
-    {
-        $key = $backend->getConnector()->getUniqueKey();
-        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
-            ->getFieldTerms($key);
-        return null === $info ? [] : array_keys($info->toArray());
-    }
-
-    /**
      * Retrieve a batch of IDs using regular search.
      *
-     * @param Backend $backend Search backend
-     * @param int     $offset  Number of terms previously retrieved
+     * @param Backend $backend    Search backend
+     * @param int     $cursorMark cursorMark
      *
      * @return array
      */
-    protected function getIdsFromBackendUsingSearch(Backend $backend, $offset)
+    protected function getIdsFromBackend(Backend $backend, $cursorMark)
     {
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();
@@ -280,20 +270,25 @@ class Generator
                 'q' => '*:*',
                 'fl' => $key,
                 'rows' => $this->countPerPage,
-                'start' => $offset,
+                'start' => 0, // Always 0 when using a cursorMark
                 'wt' => 'json',
                 'sort' => $key . ' asc',
+                // Override any default timeAllowed since it cannot be used with
+                // cursorMark
+                'timeAllowed' => -1,
+                'cursorMark' => $cursorMark
             ]
         );
         $raw = $connector->search($params);
         $result = json_decode($raw);
         $ids = [];
+        $cursorMark = $result->nextCursorMark;
         if (isset($result->response->docs)) {
             foreach ($result->response->docs as $doc) {
                 $ids[] = $doc->$key;
             }
         }
-        return $ids;
+        return compact('ids', 'cursorMark');
     }
 
     /**
