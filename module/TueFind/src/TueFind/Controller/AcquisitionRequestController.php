@@ -1,6 +1,6 @@
 <?php
 
-namespace KrimDok\Controller;
+namespace TueFind\Controller;
 
 class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
 {

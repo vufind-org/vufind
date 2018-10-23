@@ -4,7 +4,6 @@ namespace KrimDok\Module\Config;
 $config = [
     'controllers' => [
         'factories' => [
-            'acquisition_request' => 'KrimDok\Controller\Factory::getAcquisitionRequestController',
             'browse' => 'KrimDok\Controller\Factory::getBrowseController',
             'help' => 'KrimDok\Controller\Factory::getHelpController',
         ],
@@ -44,8 +43,6 @@ $config = [
 $recordRoutes = [];
 $dynamicRoutes = [];
 $staticRoutes = [
-    'AcquisitionRequest/Create',
-    'AcquisitionRequest/Send',
     'Help/FAQ',
 ];
 
