@@ -42,9 +42,11 @@
   <ol start="<?=$this->results->getStartRecord(); ?>">
     <?php foreach ($this->results->getResults() as $current): ?>
       <li>
-        <a href="<?=$this->recordLink()->getUrl($current)?>">
-          <?=$current->getTitle(); ?>
-        </a>
+        <a href="<?=$this->recordLink()->getUrl($current)?>"><?=$current->getTitle(); ?></a>
+        <?=$this->transEsc('by') ?> <?=$current->getPrimaryAuthor() ?>
+        <?php if (!empty($years = $current->getPublicationDates())): ?>
+          (<?=$years[0] ?>)
+        <?php endif; ?>
       </li>
     <?php endforeach; ?>
   </ol>
