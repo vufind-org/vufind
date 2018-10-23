@@ -1,6 +1,6 @@
 <?php
 
-namespace KrimDok\Controller;
+namespace TueFind\Controller;
 
 class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
 {
@@ -39,8 +39,9 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         } else {
             $to = $config->Site->acquisition_request_receivers;
             $from = $config->Site->email_from;
-            $subject = 'KrimDok-Anschaffungsvorschlag';
-            $body = "Folgender Vorschlag wurde über KrimDok eingereicht:\n";
+            $tuefind_type = ucfirst(basename(getenv('VUFIND_LOCAL_DIR')));
+            $subject = $tuefind_type . '-Anschaffungsvorschlag';
+            $body = "Folgender Vorschlag wurde über " . $tuefind_type . " eingereicht:\n";
             $body .= "\n";
             $body .= "Vorname: " . $this->params()->fromPost('firstname') . "\n";
             $body .= "Nachname: " . $this->params()->fromPost('lastname') . "\n";
