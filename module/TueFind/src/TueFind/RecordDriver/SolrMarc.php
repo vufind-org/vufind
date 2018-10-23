@@ -200,7 +200,7 @@ class SolrMarc extends SolrDefault
               $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
               $field->getSubfield('a') ? array_push($contains, $field->getSubfield('a')->getData()) : '';
               $field->getSubfield('t') ? array_push($contains, $field->getSubfield('t')->getData()) : '';
-              $contains_description = $opening . ": " .  implode(", ", array_filter($reference) /*skip empty elements */);
+              $contains_description = $opening . ": " .  implode(", ", array_filter($contains) /*skip empty elements */);
               if (!empty($link_ppn))
                   return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $contains_description . "</>";
               else
