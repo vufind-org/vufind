@@ -20,14 +20,18 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-firstname"><?= $this->transEsc('First Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-firstname" name="firstname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
+            <input id="ar-firstname" name="firstname" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required
+             value="<?=$this->tuefind()->getUserFirstname()?>"/>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-lastname"><?= $this->transEsc('Last Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-lastname" name="lastname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
+            <input id="ar-lastname" name="lastname" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required
+             value="<?=$this->tuefind()->getUserLastname()?>"/>
         </div>
     </div>
 

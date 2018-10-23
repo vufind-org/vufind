@@ -172,4 +172,26 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     $manager = $auth->getManager();
     return  ($user = $manager->isLoggedIn()) ? $user->email : "";
   }
+
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserLastname() {
+     $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+    $manager = $auth->getManager();
+    return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
+
+  }
+
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserFirstName() {
+     $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+    $manager = $auth->getManager();
+    return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
+
+  }
 }
