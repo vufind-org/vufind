@@ -27,6 +27,29 @@
   $recordTotal = $this->results->getResultTotal()
 ?>
 
+<?php
+  /* Pagination */
+  ob_start();
+  $pages = $this->results->getPaginator()->getPages();
+?>
+<?php if ($pages->pageCount): ?>
+  <p><nav>
+    <?php if (isset($pages->previous)): ?>
+      <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
+    <?php endif; ?>
+
+    Page <?=$pages->current ?> of <?=$pages->pageCount ?>
+
+    <?php if (isset($pages->next)): ?>
+      <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
+    <?php endif; ?>
+  </nav></p>
+<?php endif; ?>
+<?php
+  $pagination = ob_get_contents();
+  ob_end_clean();
+?>
+
 <?php if ($recordTotal < 1): ?>
   <p>
     <?php if (isset($this->overrideEmptyMessage)): ?>
@@ -38,6 +61,7 @@
   </p>
 <?php else: ?>
   <p><?=$this->context()->renderInContext('search/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?></p>
+  <?=$pagination ?>
   <?php
     /* Show results */
     if (!isset($this->indexStart)) {
@@ -56,22 +80,5 @@
       </li>
     <?php endforeach; ?>
   </ol>
-
-  <?php
-    /* Pagination */
-    $pages = $this->results->getPaginator()->getPages();
-  ?>
-  <?php if ($pages->pageCount): ?>
-    <p><nav>
-      <?php if (isset($pages->previous)): ?>
-        <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
-      <?php endif; ?>
-
-      Page <?=$pages->current ?> of <?=$pages->pageCount ?>
-
-      <?php if (isset($pages->next)): ?>
-        <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
-      <?php endif; ?>
-    </nav></p>
-  <?php endif; ?>
+  <?=$pagination ?>
 <?php endif; ?>
