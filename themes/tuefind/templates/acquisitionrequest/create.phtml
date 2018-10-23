@@ -13,28 +13,29 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-book"><?= $this->transEsc('Book Request') ?>*</label>
         <div class="col-sm-9">
-            <textarea id="ar-book" name="book" class="form-control" onkeyup="AcquisitionRequest.checkFields()" required><?=($this->driver != null) ? 'PPN ' . $this->driver->getRecordId() . ': ' . $this->driver->getTitle() : ''?></textarea>
+            <textarea id="ar-book" name="book" class="form-control" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required><?=($this->driver != null) ? 'PPN ' . $this->driver->getRecordId() . ': ' . $this->driver->getTitle() : ''?></textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-firstname"><?= $this->transEsc('First Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-firstname" name="firstname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()" required/>
+            <input id="ar-firstname" name="firstname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-lastname"><?= $this->transEsc('Last Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-lastname" name="lastname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()" required/>
+            <input id="ar-lastname" name="lastname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-3 control-label" for="ar-email"><?= $this->transEsc('Email Address') ?></label>
+        <label class="col-sm-3 control-label" for="ar-email"><?= $this->transEsc('Email Address') ?>
+               <?=($tuefind_type != 'Krimdok') ? "*" : ""?></label>
         <div class="col-sm-9">
-            <input id="ar-email" name="email" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields()"/>
+            <input id="ar-email" name="email" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" <?=($tuefind_type != 'Krimdok') ? "required" : ""?>/>
         </div>
     </div>
 
