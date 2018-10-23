@@ -29,7 +29,10 @@
     </style>
   </head>
   <body>
-    <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+    <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+      <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+    <?php endif; ?>
+    <a class="sr-only" href="#content" role="navigation" aria-level="1"><?=$this->transEsc('Skip to content') ?></a>
     <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing

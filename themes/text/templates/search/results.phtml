@@ -32,13 +32,19 @@
     <?php if (isset($this->overrideEmptyMessage)): ?>
       <?=$this->overrideEmptyMessage?>
     <?php else: ?>
-      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
+      <?php $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
+      <?=$this->layout()->srmessage ?>
     <?php endif; ?>
   </p>
 <?php else: ?>
-  <?php /* Show results */ ?>
-  <?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-  <?php $i = $this->indexStart; ?>
+  <p><?=$this->context()->renderInContext('search/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?></p>
+  <?php
+    /* Show results */
+    if (!isset($this->indexStart)) {
+      $this->indexStart = 0;
+    }
+    $i = $this->indexStart;
+  ?>
   <ol start="<?=$this->results->getStartRecord(); ?>">
     <?php foreach ($this->results->getResults() as $current): ?>
       <li>
