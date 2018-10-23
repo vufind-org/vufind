@@ -5,7 +5,7 @@
     <?php if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
     <?php elseif (!empty($this->params) && $this->params->getSearchType() == 'basic'): ?>
-      <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+      <?=$this->escapeHtml($this->lookfor)?>
     <?php endif; ?>
 
   </h1>

@@ -79,7 +79,6 @@ class ListController extends \Finna\Controller\MyResearchController
 
             $results->performAndProcessSearch();
             $listObj = $results->getListObject();
-            $username = $this->getListUsername($listObj->user_id);
 
             // Special case: If we're in RSS view, we need to render differently:
             if (isset($params) && $params->getView() == 'rss') {
@@ -108,7 +107,6 @@ class ListController extends \Finna\Controller\MyResearchController
                 [
                     'params' => $params,
                     'results' => $results,
-                    'list_username' => $username,
                     'sortList' => $this->createSortList($listObj)
                 ]
             );
@@ -116,26 +114,6 @@ class ListController extends \Finna\Controller\MyResearchController
         } catch (ListPermissionException $e) {
             return $this->createNoAccessView();
         }
-    }
-
-    /**
-     * Return list owners username without institution and email domain part.
-     *
-     * @param int $listUserId lists owners user id
-     *
-     * @return string username
-     */
-    protected function getListUsername($listUserId)
-    {
-        $user = $this->getUser();
-        if ($user && $user->id == $listUserId) {
-            $listUser = $user;
-        } else {
-            $table = $this->getTable('User');
-            $listUser = $table->getById($listUserId);
-        }
-
-        return $listUser;
     }
 
     /**
