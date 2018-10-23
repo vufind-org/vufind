@@ -1,5 +1,9 @@
-<? $translated_template = $this->transEsc('acquisition_request_description');?>
-<? $translated_template = preg_replace('/' . preg_quote('{{{FIDType}}}') . '/', $this->FIDType, $translated_template);?>
-<? $translated_template = preg_replace('/' . preg_quote('{{{TueFindType}}}' . '/'), $this->TueFindType, $translated_template);?>
-<? echo $translated_template;?>
+<? $translated_description = $this->transEsc('acquisition_request_description');?>
+<? $translated_description = preg_replace('/' . preg_quote('{{{FIDType}}}') . '/', $this->FIDType, $translated_description);?>
+<? $translated_description = preg_replace('/' . preg_quote('{{{TueFindType}}}' . '/'), $this->TueFindType, $translated_description);?>
+<? echo $translated_description;?>
+<? // Email explanation only for krimdok since mandatory otherwise ?>
+<? if ($this->TueFindType == 'Krimdok')
+       echo " " . $this->transEsc('acquisition_email_explanation');
+?>
 
