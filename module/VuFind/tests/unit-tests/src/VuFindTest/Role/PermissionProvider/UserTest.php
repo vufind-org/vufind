@@ -91,7 +91,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Convenience method for executing similiar tests
+     * Convenience method for executing similar tests
      *
      * @param string $testuser Name of testuser
      * @param array  $options  Options like settings in permissions.ini
