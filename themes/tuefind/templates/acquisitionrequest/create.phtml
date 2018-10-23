@@ -35,7 +35,9 @@
         <label class="col-sm-3 control-label" for="ar-email"><?= $this->transEsc('Email Address') ?>
                <?=($tuefind_type != 'Krimdok') ? "*" : ""?></label>
         <div class="col-sm-9">
-            <input id="ar-email" name="email" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" <?=($tuefind_type != 'Krimdok') ? "required" : ""?>/>
+            <input id="ar-email" name="email" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" <?=($tuefind_type != 'Krimdok') ? "required" : ""?>
+             value="<?=$this->tuefind()->getUserEmail()?>"/>
         </div>
     </div>
 

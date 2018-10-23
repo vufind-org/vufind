@@ -125,7 +125,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       return basename(getenv('VUFIND_LOCAL_DIR'));
   }
 
-
   /**
     * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
     * @return string or false of no matching value could be found
@@ -144,7 +143,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       }
       return false;
   }
-
 
   /**
     * Derive the German FID denomination
@@ -165,5 +163,13 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
        return false;
   }
 
-
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserEmail() {
+    $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+    $manager = $auth->getManager();
+    return  ($user = $manager->isLoggedIn()) ? $user->email : "";
+  }
 }
