@@ -3,5 +3,6 @@
   $this->overrideTitle = $this->translate('New Items');
   $this->overrideSearchHeading = $this->transEsc('New Items');
   $this->overrideEmptyMessage = $this->transEsc('No new item information is currently available.');
+  $this->skip_noresults_recommendation = true;
   echo $this->render('search/results.phtml');
 ?>
