@@ -4,7 +4,10 @@
 ?>
 
 <h1><?= $this->transEsc('Acquisition Request') ?></h1>
-<p><?= $this->transEsc('acquisition_request_description') ?></p>
+<? $fid_type = $this->tuefind()->getTueFindFID();
+   $tuefind_type = $this->tuefind()->getTueFindType();
+?>
+<p><?= $this->partial('partials/acquistion_explanation.phtml', [ 'FIDType' => $fid_type, 'TueFindType' => $tuefind_type ]);?></p>
 
 <form name="acquisition_request" class="form-horizontal" action="<?=$this->url('acquisitionrequest-send')?>" method="post">
     <div class="form-group">

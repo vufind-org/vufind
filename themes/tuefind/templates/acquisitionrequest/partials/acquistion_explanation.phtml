@@ -1,0 +1,5 @@
+<? $translated_template = $this->transEsc('acquisition_request_description');?>
+<? $translated_template = preg_replace('/' . preg_quote('{{{FIDType}}}') . '/', $this->FIDType, $translated_template);?>
+<? $translated_template = preg_replace('/' . preg_quote('{{{TueFindType}}}' . '/'), $this->TueFindType, $translated_template);?>
+<? echo $translated_template;?>
+
