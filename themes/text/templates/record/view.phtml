@@ -26,7 +26,10 @@
 ?>
 </ul>
 
-<?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+<?php
+  $summary = $this->driver->getSummary();
+  $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false;
+?>
 <?php if ($summary): ?>
   <div><?=$summary?></div>
 <?php endif; ?>

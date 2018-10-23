@@ -6,8 +6,30 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .sr-only:active,
+      .sr-only:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+      }
+    </style>
   </head>
   <body>
+    <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
     <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -19,7 +41,7 @@
       }
     ?>
     <?=$this->render('header.phtml')?>
-    <main role="main">
+    <main role="main" id="content">
         <?=$this->layout()->content ?>
     </main>
     <?=$this->render('footer.phtml'); ?>
