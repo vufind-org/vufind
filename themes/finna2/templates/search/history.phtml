@@ -22,7 +22,7 @@
 <?php endif; ?>
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
-  <div>
+  <div class="history-holder">
     <?php if ($this->alertemail): ?>
       <div class="alert alert-info alert-email-notification hidden">
         <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
