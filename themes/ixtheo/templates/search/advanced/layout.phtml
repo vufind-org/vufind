@@ -139,17 +139,19 @@
             <? endfor; ?>
           <? endif; ?>
         </div>
+      <div class="adv-submit">
+        <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
+        <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+      </div>
+      <? if (isset($this->extraAdvancedControls) && !empty($this->extraAdvancedControls)): ?>
         <div class="clearfix">
-          <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-          <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
-        </div>
-        <? if (isset($this->extraAdvancedControls)): ?>
           <?=$this->extraAdvancedControls ?>
-          <div class="clearfix">
-            <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-            <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
-          </div>
-        <? endif; ?>
+        </div>
+        <div class="adv-submit">
+          <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEsc('Clear')?>">
+          <input class="btn btn-primary" type="submit" value="<?= $this->transEsc('Find')?>">
+        </div>
+      <? endif; ?>
       </div>
 
       <div class="<?=$this->layoutClass('sidebar')?>">
