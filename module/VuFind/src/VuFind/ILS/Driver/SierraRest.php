@@ -749,7 +749,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return [];
         }
         $holds = [];
-
         foreach ($result['entries'] as $entry) {
             $bibId = null;
             $itemId = null;
