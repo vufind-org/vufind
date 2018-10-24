@@ -22,9 +22,12 @@
       <?php if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><?php endif; ?>
       <?=$this->flashmessages()?>
       <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+      <div class="useraccount-row">
+        <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
+      </div>
       <div class="useraccount-header">
-      <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions ?? 0) + count($this->hiddenTransactions ?? 0);?>)
-      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+        <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions) + count($this->hiddenTransactions);?>)
+      </div>
       <?php if (isset($this->noSupport)): ?>
         <?php if ($user->getLibraryCards()->count() > 1): ?>
           <div class="support-notice">
@@ -70,7 +73,7 @@
               </th>
             </tr>
         <?php else: ?>
-          <table class="myresearch-table">
+          <table class="myresearch-table" aria-label="<?=$this->transEsc('Checked Out');?>">
             <tr class="toolbar">
               <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
               <th class="text-right" colspan="2">
@@ -103,8 +106,8 @@
                 <div class="checkboxFilter">
                   <div class="checkbox">
                     <label>
-                    <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                    <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+                      <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                      <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
                     </label>
                   </div>
                 </div>
@@ -263,10 +266,12 @@
         <?php if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-post-list")): ?>
           <div class="checkedout-post-list"><?=$this->render($template)?></div>
         <?php endif; ?>
-        <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $params]) : ''?>
-      <?php else: ?>
-        <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
-      <?php endif; ?>
+          <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $params]) : ''?>
+        <?php else: ?>
+          <div class="useraccount-row">
+            <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
+          </div>
+        <?php endif; ?>
       <?php endif; ?>
     </div>
   </div>

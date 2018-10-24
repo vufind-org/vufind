@@ -26,7 +26,9 @@
       </li>
     <?php else: ?>
       <div class="select-card-wrapper">
-        <span class="select-card-label"><?=$this->transEsc(isset($this->label) ? $this->label : '') ?></span>
+        <?php if (isset($this->label)): ?>
+          <span class="select-card-label"><?=$this->transEsc($this->label)?>:</span>
+        <?php endif; ?>
         <div class="dropdown select-card">
           <?php
             $display = null;
@@ -53,7 +55,7 @@
               $display = $this->transEsc('Select');
             }
           ?>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><?=$display ?></span> <i class="fa fa-arrow-down"></i></a>
+          <a href="#" class="dropdown-toggle" aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"><span><?=$display ?></span> <i class="fa fa-arrow-down"></i></a>
           <ul class="dropdown-menu library_card" role="menu">
           <?php foreach ($cards as $card): ?>
             <?php

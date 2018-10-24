@@ -3,11 +3,13 @@
   font-size: 14px;
   display: inline-block;
   vertical-align: top;
-  margin-bottom: 1px;
-  margin-top: 6px;
-  margin-left: 5px;
+  margin-top: 9px;
+  font-weight: 400;
   .dropdown {
     display: inline-block;
+    &.select-card {
+      margin-left: 5px;
+    }
     > a {
       padding: 7px 7px;
       color: black;
@@ -39,16 +41,15 @@
     }
   }
 }
-.myresearch-profile-header, .useraccount-header {
-  .select-card-wrapper {
-    margin-left: 1em;
-    .dropdown > a {
-      background: @body-bg;
-      color: @gray;
-      border: 1px solid @gray-lighter;
-    }
+
+.useraccount-row .select-card-wrapper {
+  .dropdown > a {
+    background: @body-bg;
+    color: @gray;
+    border: 1px solid @gray-lighter;
   }
 }
+
 .finna-main-header .select-card-wrapper {
   display: block;
   margin-top: 1em;

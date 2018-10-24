@@ -71,6 +71,7 @@
 .myresearch-table {
   width: 100%;
   margin: 15px 0px;
+
   th,td {
     vertical-align: top;
     padding: 5px;
@@ -81,29 +82,33 @@
       text-align: left;
     }
   }
-  .sort-button {
-    @media(max-width: @screen-sm) {
-      min-width: 100px;
-    }
-  }
   .recordcover {
     min-width: 30px;
   }
+  .toolbar {
+    th {
+      vertical-align: middle;
+      > div {
+        margin-bottom: 10px;
+      }
+      &:first-child {
+        vertical-align: top;
+        padding-top: 10px;
+      }
+    }
+  }
   .renew-button {
-    margin-bottom: 5px;
+    height: 35px;
+    padding: 0 10px;
+  }
+  .sort-col .dropdown-toggle {
+    margin-bottom: 0;
   }
   @media(min-width: @screen-sm) {
     .half-table-column {
       width: 50%;
       float: left;
     }
-    .sort-col,
-    .renew-button-col {
-      width: 50%;
-      float: left;
-    }
-    .sort-col{ text-align: right; }
-    .renew-button-col { text-align: left; }
     .title-column{
       width: 60%;
       float: left;
@@ -113,11 +118,31 @@
       float: left;
     }
   }
+  @media(min-width: @screen-xs-min) {
+    .sort-col,
+    .renew-button-col {
+      width: 50%;
+      float: left;
+      .sort-button {
+        margin-bottom: 0px;
+      }
+    }
+    .sort-col{ text-align: right; }
+    .renew-button-col { text-align: left; }
+  }
+  @media(max-width: @screen-xxs-max) {
+    .renew-button-col {
+      margin-bottom: 10px;
+      input {
+        min-width: 170px;
+      }
+    }
+  }
   .checkbox-col{
     width: 10%;
   }
   .myresearch-count {
-    line-height: 40px;
+    line-height: 35px;
     font-weight: bold;
     &.no-buttons {
       line-height: inherit;
@@ -144,7 +169,6 @@
     padding: 10px;
     padding-bottom: 0px;
     margin-bottom: 0px;
-
   }
   > h4 {
     margin-left: 10px;
@@ -282,12 +306,16 @@
   }
 }
 
-.useraccount-header {
+.useraccount-row {
   line-height: 1.5;
   font-weight: 600;
-  font-size:@font-size-h2;
-  display: inline-block;
+  margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.useraccount-header {
+  .useraccount-row();
+  font-size:@font-size-h2;
 }
 
 .payment-row {
@@ -345,7 +373,6 @@
   }
   .checkboxFilter.mylist-select-all {
     margin-right: 0;
-    margin-top: 8px;
     float: none;
     span {
       font-size: 11px;
@@ -366,15 +393,21 @@
   margin: 0;
   margin-top: 5px;
   border-bottom: 1px solid @gray-lighter;
-  padding: 15px 0;
+  padding: 15px 0px;
   .status-text {
     float: right;
     line-height: 38px;
   }
   &.bottom {
-    padding-top: 15px;
     border-top: 1px solid @gray-lighter;
     border-bottom: none;
+    td {
+      vertical-align: middle;
+      &:first-child {
+        vertical-align: top;
+        padding-top: 10px;
+      }
+    }
   }
   .btn-group {
     margin-top: 3px;
@@ -730,7 +763,6 @@
     padding-left: 0px;
     padding-right: 0px;
     padding-bottom: 40px;
-
     &.open {
       top: 0%;
       right: 0;
