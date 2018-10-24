@@ -749,7 +749,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return [];
         }
         $holds = [];
-        $locations =  $this->getPickUpLocations();
 
         foreach ($result['entries'] as $entry) {
             $bibId = null;
@@ -792,7 +791,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
-            $pickupLocation = $locations[$entry['pickupLocation']['code']]['locationDisplay'];
+            $pickupLocation = $this
+                ->getPickUpLocationDisplayName($entry['pickupLocation']['code']);
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
@@ -876,6 +876,24 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Get the display name for a pickup location code (or return the code if no
+     * match found).
+     *
+     * @param string $code Code to look up.
+     *
+     * @return string
+     */
+    public function getPickUpLocationDisplayName($code)
+    {
+        foreach ($this->getPickUpLocations() as $current) {
+            if ($current['locationID'] === $code) {
+                return $current['locationDisplay'];
+            }
+        }
+        return $code;
+    }
+
+    /**
      * Get Pick Up Locations
      *
      * This is responsible for gettting a list of valid library locations for
@@ -900,7 +918,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!empty($this->config['pickUpLocations'])) {
             $locations = [];
             foreach ($this->config['pickUpLocations'] as $id => $location) {
-                $locations[$id] = [
+                $locations[] = [
                     'locationID' => $id,
                     'locationDisplay' => $this->translateLocation(
                         ['code' => $id, 'name' => $location]
