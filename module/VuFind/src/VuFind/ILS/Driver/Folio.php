@@ -181,7 +181,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         }
     }
 
-    protected function getBibId($itemId, $holdingId = null, $instanceId = null) {
+    protected function getBibId($instanceId, $holdingId = null, $itemId = null)
+    {
         if ($instanceId == null) {
             if ($holdingId == null) {
                 $response = $this->makeRequest('GET', '/item-storage/items/' . $itemId);
@@ -378,8 +379,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         zip
      *         phone
      *         mobile_phone (added in VuFind 5.0)
-     *         group – i.e. Student, Staff, Faculty, etc.
-     *         expiration_date – account expiration date (added in VuFind 4.1)
+     *         group ï¿½ i.e. Student, Staff, Faculty, etc.
+     *         expiration_date ï¿½ account expiration date (added in VuFind 4.1)
      *
      * @param array $patronLogin Patron login information
      *
@@ -412,7 +413,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         Each associative array contains these keys:
      *         duedate - The item's due date (a string).
      *         dueTime - The item's due time (a string, optional).
-     *         dueStatus - A special status – may be 'due' (for items due very soon)
+     *         dueStatus - A special status ï¿½ may be 'due' (for items due very soon)
      *                     or 'overdue' (for overdue items). (optional).
      *         id - The bibliographic ID of the checked out item.
      *         source - The search backend from which the record may be retrieved
@@ -422,26 +423,26 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         renewLimit - The maximum number of renewals allowed
      *                      (optional - introduced in VuFind 2.3).
      *         request - The number of pending requests for the item (optional).
-     *         volume – The volume number of the item (optional).
-     *         publication_year – The publication year of the item (optional).
-     *         renewable – Whether or not an item is renewable
+     *         volume ï¿½ The volume number of the item (optional).
+     *         publication_year ï¿½ The publication year of the item (optional).
+     *         renewable ï¿½ Whether or not an item is renewable
      *                     (required for renewals).
-     *         message – A message regarding the item (optional).
-     *         title - The title of the item (optional – only used if the record
+     *         message ï¿½ A message regarding the item (optional).
+     *         title - The title of the item (optional ï¿½ only used if the record
      *                                        cannot be found in VuFind's index).
      *         item_id - this is used to match up renew responses and must match
      *                   the item_id in the renew response.
      *         institution_name - Display name of the institution that owns the item.
      *         isbn - An ISBN for use in cover image loading
-     *                (optional – introduced in release 2.3)
+     *                (optional ï¿½ introduced in release 2.3)
      *         issn - An ISSN for use in cover image loading
-     *                (optional – introduced in release 2.3)
+     *                (optional ï¿½ introduced in release 2.3)
      *         oclc - An OCLC number for use in cover image loading
-     *                (optional – introduced in release 2.3)
+     *                (optional ï¿½ introduced in release 2.3)
      *         upc - A UPC for use in cover image loading
-     *               (optional – introduced in release 2.3)
+     *               (optional ï¿½ introduced in release 2.3)
      *         borrowingLocation - A string describing the location where the item
-     *                         was checked out (optional – introduced in release 2.4)
+     *                         was checked out (optional ï¿½ introduced in release 2.4)
      *
      * @param array $patronLogin Patron login information
      *
@@ -495,6 +496,70 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             ];
         }
         return $locations;
+    }
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     * @author Michael Birkner
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * This method queries the ILS for a patron's current holds
+     *
+     * Input: Patron array returned by patronLogin method
+     * Output: Returns an array of associative arrays, one for each hold associated with the specified account. Each associative array contains these keys:
+     *     type - A string describing the type of hold â€“ i.e. hold vs. recall (optional).
+     *     id - The bibliographic record ID associated with the hold (optional).
+     *     source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
+     *     location - A string describing the pickup location for the held item (optional). In VuFind 1.2, this should correspond with a locationID value from getPickUpLocations. In VuFind 1.3 and later, it may be either a locationID value or a raw ready-to-display string.
+     *     reqnum - A control number for the request (optional).
+     *     expire - The expiration date of the hold (a string).
+     *     create - The creation date of the hold (a string).
+     *     position â€“ The position of the user in the holds queue (optional)
+     *     available â€“ Whether or not the hold is available (true) or not (false) (optional)
+     *     item_id â€“ The item id the request item (optional).
+     *     volume â€“ The volume number of the item (optional)
+     *     publication_year â€“ The publication year of the item (optional)
+     *     title - The title of the item (optional â€“ only used if the record cannot be found in VuFind's index).
+     *     isbn - An ISBN for use in cover image loading (optional â€“ introduced in release 2.3)
+     *     issn - An ISSN for use in cover image loading (optional â€“ introduced in release 2.3)
+     *     oclc - An OCLC number for use in cover image loading (optional â€“ introduced in release 2.3)
+     *     upc - A UPC for use in cover image loading (optional â€“ introduced in release 2.3)
+     *     cancel_details - The cancel token, or a blank string if cancel is illegal for this hold; if omitted, this will be dynamically generated using getCancelHoldDetails(). You should only fill this in if it is more efficient to calculate the value up front; if it is an expensive calculation, you should omit the value entirely and let getCancelHoldDetails() do its job on demand. This optional feature was introduced in release 3.1.
+     *
+     */
+    public function getMyHolds($patronLogin)
+    {
+        // Get user id
+        $query = ['query' => 'username == "' . $patronLogin['username'] . '"'];
+        $response = $this->makeRequest('GET', '/users', $query);
+        $users = json_decode($response->getBody());
+        $query = [
+            'query' => 'requesterId == "' . $users->users[0]->id . '"' .
+                ' and requestType == "Hold"'
+        ];
+        // Request HOLDS
+        $response = $this->makeRequest('GET', '/request-storage/requests', $query);
+        $json = json_decode($response->getBody());
+        $holds = [];
+        foreach ($json->requests as $hold) {
+            $holds[] = [
+                'type' => 'Hold',
+                'create' => $hold->requestDate,
+                'expire' => $hold->requestExpirationDate,
+                'id' => $this->getBibId(null, null, $hold->itemId),
+            ];
+        }
+        return $holds;
     }
 
     /**
@@ -560,58 +625,13 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     }
 
     /**
-     * This method queries the ILS for a patron's current holds
-     *
-     * Input: Patron array returned by patronLogin method
-     * Output: Returns an array of associative arrays, one for each hold associated with the specified account. Each associative array contains these keys:
-     *     type - A string describing the type of hold – i.e. hold vs. recall (optional).
-     *     id - The bibliographic record ID associated with the hold (optional).
-     *     source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
-     *     location - A string describing the pickup location for the held item (optional). In VuFind 1.2, this should correspond with a locationID value from getPickUpLocations. In VuFind 1.3 and later, it may be either a locationID value or a raw ready-to-display string.
-     *     reqnum - A control number for the request (optional).
-     *     expire - The expiration date of the hold (a string).
-     *     create - The creation date of the hold (a string).
-     *     position – The position of the user in the holds queue (optional)
-     *     available – Whether or not the hold is available (true) or not (false) (optional)
-     *     item_id – The item id the request item (optional).
-     *     volume – The volume number of the item (optional)
-     *     publication_year – The publication year of the item (optional)
-     *     title - The title of the item (optional – only used if the record cannot be found in VuFind's index).
-     *     isbn - An ISBN for use in cover image loading (optional – introduced in release 2.3)
-     *     issn - An ISSN for use in cover image loading (optional – introduced in release 2.3)
-     *     oclc - An OCLC number for use in cover image loading (optional – introduced in release 2.3)
-     *     upc - A UPC for use in cover image loading (optional – introduced in release 2.3)
-     *     cancel_details - The cancel token, or a blank string if cancel is illegal for this hold; if omitted, this will be dynamically generated using getCancelHoldDetails(). You should only fill this in if it is more efficient to calculate the value up front; if it is an expensive calculation, you should omit the value entirely and let getCancelHoldDetails() do its job on demand. This optional feature was introduced in release 3.1.
-     *
-     */
-    public function getMyHolds($patronLogin)
-    {
-        $query = [
-            'query' => 'username == "' . $patronLogin['username'] . '"' .
-                ' and requestType == "Hold"'
-        ];
-        $response = $this->makeRequest('GET', '/request-storage/requests', $query);
-        $json = json_decode($response->getBody());
-        $holds = [];
-        foreach ($json->requests as $hold) {
-            $holds[] = [
-                'type' => 'Hold',
-                'create' => $hold->requestDate,
-                'expire' => $hold->requestExpirationDate,
-                'id' => $this->getBibId(null, null, $hold->itemId),
-            ];
-        }
-        return $holds;
-    }
-
-    /**
      * This method returns information on recently received issues of a serial.
      *
      *     Input: Bibliographic record ID
      *     Output: Array of associative arrays, each with a single key:
      *         issue - String describing the issue
      *
-     * Currently, most drivers do not implement this method, instead always returning an empty array. It is only necessary to implement this in more detail if you want to populate the “Most Recent Received Issues” section of the record holdings tab.
+     * Currently, most drivers do not implement this method, instead always returning an empty array. It is only necessary to implement this in more detail if you want to populate the ï¿½Most Recent Received Issuesï¿½ section of the record holdings tab.
      */
     public function getPurchaseHistory($bibID)
     {
@@ -645,9 +665,9 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *     Output: Returns an array of associative arrays, one for each fine associated with the specified account. Each associative array contains these keys:
      *         amount - The total amount of the fine IN PENNIES. Be sure to adjust decimal points appropriately (i.e. for a $1.00 fine, amount should be set to 100).
      *         checkout - A string representing the date when the item was checked out.
-     *         fine - A string describing the reason for the fine (i.e. “Overdue”, “Long Overdue”).
+     *         fine - A string describing the reason for the fine (i.e. ï¿½Overdueï¿½, ï¿½Long Overdueï¿½).
      *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was accrued (optional)
+     *         createdate ï¿½ A string representing the date when the fine was accrued (optional)
      *         duedate - A string representing the date when the item was due.
      *         id - The bibliographic ID of the record involved in the fine.
      *         source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
@@ -659,7 +679,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     }
 
     /**
-     * Get a list of funds that can be used to limit the “new item” search. Note that “fund” may be a misnomer – if funds are not an appropriate way to limit your new item results, you can return a different set of values from this function. For example, you might just make this a wrapper for getDepartments(). The important thing is that whatever you return from this function, the IDs can be used as a limiter to the getNewItems() function, and the names are appropriate for display on the new item search screen. If you do not want or support such limits, just return an empty array here and the limit control on the new item search screen will disappear.
+     * Get a list of funds that can be used to limit the ï¿½new itemï¿½ search. Note that ï¿½fundï¿½ may be a misnomer ï¿½ if funds are not an appropriate way to limit your new item results, you can return a different set of values from this function. For example, you might just make this a wrapper for getDepartments(). The important thing is that whatever you return from this function, the IDs can be used as a limiter to the getNewItems() function, and the names are appropriate for display on the new item search screen. If you do not want or support such limits, just return an empty array here and the limit control on the new item search screen will disappear.
      *
      *     Output: An associative array with key = fund ID, value = fund name.
      *
@@ -711,7 +731,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         page - page number of results to retrieve (counting starts at 1)
      *         limit - the size of each page of results to retrieve
      *         daysOld - the maximum age of records to retrieve in days (maximum 30)
-     *         fundID - optional fund ID to use for limiting results (use a value returned by getFunds, or exclude for no limit); note that “fund” may be a misnomer – if funds are not an appropriate way to limit your new item results, you can return a different set of values from getFunds. The important thing is that this parameter supports an ID returned by getFunds, whatever that may mean.
+     *         fundID - optional fund ID to use for limiting results (use a value returned by getFunds, or exclude for no limit); note that ï¿½fundï¿½ may be a misnomer ï¿½ if funds are not an appropriate way to limit your new item results, you can return a different set of values from getFunds. The important thing is that this parameter supports an ID returned by getFunds, whatever that may mean.
      *     Output: An associative array with two keys: 'count' (the number of items in the 'results' array) and 'results' (an array of associative arrays, each with a single key: 'id', a record ID).
      *
      * IMPORTANT: The fundID parameter changed behavior in r2184. In VuFind 1.0RC2 and earlier versions, it receives one of the VALUES returned by getFunds(); in more recent code, it receives one of the KEYS from getFunds(). See getFunds for additional notes.
