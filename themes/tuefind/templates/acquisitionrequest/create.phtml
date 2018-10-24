@@ -3,6 +3,7 @@
     $this->headScript()->appendFile("acquisitionrequest.js");
 ?>
 
+
 <h1><?= $this->transEsc('Acquisition Request') ?></h1>
 <? $fid_type = $this->tuefind()->getTueFindFID();
    $tuefind_type = $this->tuefind()->getTueFindType();
@@ -20,14 +21,18 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-firstname"><?= $this->transEsc('First Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-firstname" name="firstname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
+            <input id="ar-firstname" name="firstname" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required
+             value="<?=$this->tuefind()->getUserFirstname()?>"/>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-3 control-label" for="ar-lastname"><?= $this->transEsc('Last Name') ?>*</label>
         <div class="col-sm-9">
-            <input id="ar-lastname" name="lastname" class="form-control" type="text" onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required/>
+            <input id="ar-lastname" name="lastname" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')" required
+             value="<?=$this->tuefind()->getUserLastname()?>"/>
         </div>
     </div>
 
@@ -41,13 +46,25 @@
         </div>
     </div>
 
+    <? if ($tuefind_type != 'Krimdok'): ?>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-comments"><?= $this->transEsc('Comments') ?></label>
+        <div class="col-sm-9">
+            <textarea id="ar-comments" name="comments" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')"></textarea>
+        </div>
+    </div>
+    <? endif; ?>
+
     <?=$this->recaptcha()->html($this->useRecaptcha) ?>
 
     <div class="form-group">
         <div class="col-sm-9 col-sm-offset-3">
             <input type="hidden" name="submitted" value="true"/>
-            <input id="ar-submit" type="submit" class="btn btn-primary" disabled/>
+            <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
+             title="<?=$this->transEsc("Please fill in all fields with star")?>">
+            <input id="ar-submit" type="submit" value=<?=$this->transEsc('Submit')?> class="btn btn-primary" style="pointer-events: none;" disabled/>
+            </span>
         </div>
     </div>
-
 </form>
