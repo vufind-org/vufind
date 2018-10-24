@@ -82,7 +82,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
             $method,
             120
         );
-        error_log($method . ' ' . $this->config['API']['base_url'] . $path);
+        // error_log($method . ' ' . $this->config['API']['base_url'] . $path);
 
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();

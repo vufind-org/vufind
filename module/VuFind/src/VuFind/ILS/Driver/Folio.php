@@ -210,10 +210,11 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      * @throw
      * @return array
      */
-    protected function getItem($itemId)
+    protected function getInstance($bibId)
     {
-        $query = ['query' => '(identifiers="' . $itemId . '")'];
-        $response = $this->makeRequest('GET', '/inventory/instances', $query);
+        $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
+        $query = ['query' => '(identifiers="' . $escaped . '")'];
+        $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         return $instances->instances[0];
     }
@@ -269,9 +270,9 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *
      * @return array An array of associative holding arrays
      */
-    public function getHolding($itemId, array $patronLogin = null)
+    public function getHolding($bibId, array $patronLogin = null)
     {
-        $record = $this->getItem($itemId);
+        $record = $this->getInstance($bibId);
         $query = ['query' => '(instanceId="' . $record->id . '")'];
         $holdingResponse = $this->makeRequest(
             'GET',
@@ -282,11 +283,15 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         $items = [];
         for ($i = 0; $i < count($holdingBody->holdingsRecords); $i++) {
             $holding = $holdingBody->holdingsRecords[$i];
-            $locationResponse = $this->makeRequest(
-                'GET',
-                '/locations/' . $holding->permanentLocationId
-            );
-            $location = json_decode($locationResponse->getBody());
+            $locationName = '';
+            if (!empty($holding->permanentLocationId)) {
+                $locationResponse = $this->makeRequest(
+                    'GET',
+                    '/locations/' . $holding->permanentLocationId
+                );
+                $location = json_decode($locationResponse->getBody());
+                $locationName = $location->name;
+            }
 
             $query = ['query' => '(holdingsRecordId="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
@@ -294,7 +299,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
-                    'id' => $itemId,
+                    'id' => $bibId,
                     'item_id' => $record->id,
                     'holding_id' => $holding->id,
                     'number' => count($items),
@@ -303,7 +308,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                     'availability' => $item->status->name == 'Available',
                     'notes' => $item->notes ?? [],
                     'callnumber' => $holding->callNumber,
-                    'location' => $location->name,
+                    'location' => $locationName,
                     'reserve' => 'TODO',
                     'addLink' => true
                 ];
@@ -501,20 +506,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
             ];
         }
         return $locations;
-    }
-
-    /**
-     * Check for request blocks.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
-     * @author Michael Birkner
-     */
-    public function getRequestBlocks($patron)
-    {
-        return false;
     }
 
     /**
