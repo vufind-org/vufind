@@ -389,7 +389,11 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     public function getMyProfile($patronLogin)
     {
         // Get user id
-        $response = $this->makeRequest('GET', '/users/' . $patronLogin['username']);
+        $query = ['query' => 'username == "' . $patronLogin['username'] . '"'];
+        $response = $this->makeRequest('GET', '/users', $query);
+        $users = json_decode($response->getBody());
+        // Request profile
+        $response = $this->makeRequest('GET', '/users/' . $users->users[0]->id);
         $profile = json_decode($response->getBody());
         return [
             'id' => $profile->id,
