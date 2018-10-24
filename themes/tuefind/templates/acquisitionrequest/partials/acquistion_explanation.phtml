@@ -3,6 +3,8 @@
 <? echo $translated_description;?>
 <? // Email explanation only for krimdok since mandatory otherwise ?>
 <? if ($this->TueFindType == 'Krimdok')
+       echo " " . $this->transEsc('acquisition_email_explanation_optional');
+   else
        echo " " . $this->transEsc('acquisition_email_explanation');
 ?>
 

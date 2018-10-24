@@ -33,9 +33,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view = $this->createViewModel();
         if ($this->params()->fromPost('submitted') != 'true') {
-            $this->flashMessenger()->addMessage(
-                $this->translate('Please use the entry form.'), 'error'
-            );
+            $this->redirect()->toRoute('acquisitionrequest-create');
         } else {
             $to = $config->Site->acquisition_request_receivers;
             $from = $config->Site->email_from;
@@ -48,7 +46,9 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
             $body .= "E-Mail-Adresse: " . $this->params()->fromPost('email') . "\n";
             $body .= "\n";
             $body .= "Vorschlag:\n";
-            $body .= $this->params()->fromPost('book');
+            $body .= $this->params()->fromPost('book') . "\n\n";
+            $body .= "Kommentare:\n";
+            $body .= $this->params()->fromPost('comments');
             $cc = null;
             $mailer = $this->serviceLocator->get('VuFind\Mailer');
             $mailer->setMaxRecipients(5);
