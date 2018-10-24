@@ -52,12 +52,19 @@
   }
   div {
     padding: 8px;
+    &.separator {
+      float:left;
+      width: 100%;
+      margin: 15px 0 10px;
+      padding: 0px;
+      border-top: 1px solid @btn-default-border;
+    }
     &.my-profile-row {
       display: inline-block;
       width: 100%;
       padding: 8px;
       @media(max-width: @screen-xs-max) {
-        padding: 10px 8px 0px;
+        padding: 10px 8px 8px;
       }
       >.my-profile-col {
         padding: 0 8px 0 0;
@@ -109,10 +116,19 @@
 .my-profile-btn {
   margin: 0px 5px 10px 0px;
   display: inline-block;
-  @media(max-width: @screen-sm) {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  @media(min-width: @screen-sm-min) {
+    max-width: 250px;
+  }
+  @media(max-width: @screen-xs-max) {
     width: 100%;
-    float: left !important;
+    float: left;
     display: block;
+    &.btn-danger {
+      margin-top: 15px;
+    }
   }
 }
 

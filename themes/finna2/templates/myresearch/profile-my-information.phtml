@@ -11,7 +11,7 @@
         </div>
         <div class="clearfix visible-xs"></div>
         <div class="my-profile-col">
-          <i class="fa fa-info-big"></i>  <?=$this->transEsc($this->hideDueDateReminder ? 'email_info_without_ddr' : 'email_info') ?>
+          <i class="fa fa-info-circle-hollow"></i>  <?=$this->transEsc($this->hideDueDateReminder ? 'email_info_without_ddr' : 'email_info') ?>
         </div>
       </div>
       <div class="my-profile-row">
@@ -21,19 +21,21 @@
   </form>
   <?php if (!$this->hideDueDateReminder): ?>
     <form id="profile_due_date_form" class="inline" method="post">
-      <div class="my-profile-col profile-title">
-          <label for="due-date-reminder"><?=$this->transEsc('messaging_settings_type_dueDateAlertEmail')?>:</label>
-      </div>
-      <div class="my-profile-col">
-        <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-control">
-          <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
-          <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
-          <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
-          <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
-        </select>
-        <?php if ($user->finna_due_date_reminder && empty($user->email)): ?>
-          <span class="alert-danger"><?=$this->transEsc('no_email_address')?></span>
-        <?php endif; ?>
+      <div class="my-profile-row">
+        <div class="my-profile-col profile-title">
+            <label for="due-date-reminder"><?=$this->transEsc('messaging_settings_type_dueDateAlertEmail')?>:</label>
+        </div>
+        <div class="my-profile-col">
+          <select id="due-date-reminder" name="due_date_reminder" class="jumpMenu form-control">
+            <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+            <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+            <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+            <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+          </select>
+          <?php if ($user->finna_due_date_reminder && empty($user->email)): ?>
+            <span class="alert-danger"><?=$this->transEsc('no_email_address')?></span>
+          <?php endif; ?>
+        </div>
       </div>
     </form>
     <div class="clearfix"></div>
