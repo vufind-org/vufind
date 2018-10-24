@@ -379,8 +379,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         zip
      *         phone
      *         mobile_phone (added in VuFind 5.0)
-     *         group � i.e. Student, Staff, Faculty, etc.
-     *         expiration_date � account expiration date (added in VuFind 4.1)
+     *         group – i.e. Student, Staff, Faculty, etc.
+     *         expiration_date – account expiration date (added in VuFind 4.1)
      *
      * @param array $patronLogin Patron login information
      *
@@ -413,7 +413,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         Each associative array contains these keys:
      *         duedate - The item's due date (a string).
      *         dueTime - The item's due time (a string, optional).
-     *         dueStatus - A special status � may be 'due' (for items due very soon)
+     *         dueStatus - A special status – may be 'due' (for items due very soon)
      *                     or 'overdue' (for overdue items). (optional).
      *         id - The bibliographic ID of the checked out item.
      *         source - The search backend from which the record may be retrieved
@@ -423,26 +423,26 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         renewLimit - The maximum number of renewals allowed
      *                      (optional - introduced in VuFind 2.3).
      *         request - The number of pending requests for the item (optional).
-     *         volume � The volume number of the item (optional).
-     *         publication_year � The publication year of the item (optional).
-     *         renewable � Whether or not an item is renewable
+     *         volume – The volume number of the item (optional).
+     *         publication_year – The publication year of the item (optional).
+     *         renewable – Whether or not an item is renewable
      *                     (required for renewals).
-     *         message � A message regarding the item (optional).
-     *         title - The title of the item (optional � only used if the record
+     *         message – A message regarding the item (optional).
+     *         title - The title of the item (optional – only used if the record
      *                                        cannot be found in VuFind's index).
      *         item_id - this is used to match up renew responses and must match
      *                   the item_id in the renew response.
      *         institution_name - Display name of the institution that owns the item.
      *         isbn - An ISBN for use in cover image loading
-     *                (optional � introduced in release 2.3)
+     *                (optional – introduced in release 2.3)
      *         issn - An ISSN for use in cover image loading
-     *                (optional � introduced in release 2.3)
+     *                (optional – introduced in release 2.3)
      *         oclc - An OCLC number for use in cover image loading
-     *                (optional � introduced in release 2.3)
+     *                (optional – introduced in release 2.3)
      *         upc - A UPC for use in cover image loading
-     *               (optional � introduced in release 2.3)
+     *               (optional – introduced in release 2.3)
      *         borrowingLocation - A string describing the location where the item
-     *                         was checked out (optional � introduced in release 2.4)
+     *                         was checked out (optional – introduced in release 2.4)
      *
      * @param array $patronLogin Patron login information
      *
@@ -631,7 +631,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *     Output: Array of associative arrays, each with a single key:
      *         issue - String describing the issue
      *
-     * Currently, most drivers do not implement this method, instead always returning an empty array. It is only necessary to implement this in more detail if you want to populate the �Most Recent Received Issues� section of the record holdings tab.
+     * Currently, most drivers do not implement this method, instead always returning an empty array. It is only necessary to implement this in more detail if you want to populate the “Most Recent Received Issues” section of the record holdings tab.
      */
     public function getPurchaseHistory($bibID)
     {
@@ -665,9 +665,9 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *     Output: Returns an array of associative arrays, one for each fine associated with the specified account. Each associative array contains these keys:
      *         amount - The total amount of the fine IN PENNIES. Be sure to adjust decimal points appropriately (i.e. for a $1.00 fine, amount should be set to 100).
      *         checkout - A string representing the date when the item was checked out.
-     *         fine - A string describing the reason for the fine (i.e. �Overdue�, �Long Overdue�).
+     *         fine - A string describing the reason for the fine (i.e. “Overdue”, “Long Overdue”).
      *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate � A string representing the date when the fine was accrued (optional)
+     *         createdate – A string representing the date when the fine was accrued (optional)
      *         duedate - A string representing the date when the item was due.
      *         id - The bibliographic ID of the record involved in the fine.
      *         source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
@@ -679,7 +679,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     }
 
     /**
-     * Get a list of funds that can be used to limit the �new item� search. Note that �fund� may be a misnomer � if funds are not an appropriate way to limit your new item results, you can return a different set of values from this function. For example, you might just make this a wrapper for getDepartments(). The important thing is that whatever you return from this function, the IDs can be used as a limiter to the getNewItems() function, and the names are appropriate for display on the new item search screen. If you do not want or support such limits, just return an empty array here and the limit control on the new item search screen will disappear.
+     * Get a list of funds that can be used to limit the “new item” search. Note that “fund” may be a misnomer – if funds are not an appropriate way to limit your new item results, you can return a different set of values from this function. For example, you might just make this a wrapper for getDepartments(). The important thing is that whatever you return from this function, the IDs can be used as a limiter to the getNewItems() function, and the names are appropriate for display on the new item search screen. If you do not want or support such limits, just return an empty array here and the limit control on the new item search screen will disappear.
      *
      *     Output: An associative array with key = fund ID, value = fund name.
      *
@@ -731,7 +731,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      *         page - page number of results to retrieve (counting starts at 1)
      *         limit - the size of each page of results to retrieve
      *         daysOld - the maximum age of records to retrieve in days (maximum 30)
-     *         fundID - optional fund ID to use for limiting results (use a value returned by getFunds, or exclude for no limit); note that �fund� may be a misnomer � if funds are not an appropriate way to limit your new item results, you can return a different set of values from getFunds. The important thing is that this parameter supports an ID returned by getFunds, whatever that may mean.
+     *         fundID - optional fund ID to use for limiting results (use a value returned by getFunds, or exclude for no limit); note that “fund” may be a misnomer – if funds are not an appropriate way to limit your new item results, you can return a different set of values from getFunds. The important thing is that this parameter supports an ID returned by getFunds, whatever that may mean.
      *     Output: An associative array with two keys: 'count' (the number of items in the 'results' array) and 'results' (an array of associative arrays, each with a single key: 'id', a record ID).
      *
      * IMPORTANT: The fundID parameter changed behavior in r2184. In VuFind 1.0RC2 and earlier versions, it receives one of the VALUES returned by getFunds(); in more recent code, it receives one of the KEYS from getFunds(). See getFunds for additional notes.
