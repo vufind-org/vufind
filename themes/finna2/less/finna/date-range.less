@@ -5,28 +5,29 @@
             box-shadow: -4px 0px 13px -5px #000;
             padding: 10px;
             z-index: 4;
-            @media (min-width: @screen-lg-min) {
-                width: 1140px;
-                margin-left: -878px;
-            }
-            @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
-                 width: 940px;
-                 margin-left: -728px;
-            }
-            @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-                width: 720px;
-                margin-left: -562px;
-            }
-            transition: box .3s linear;
+        }
+        @media (min-width: @screen-lg-min) {
+            width: 1140px;
+            margin-left: -878px;
+        }
+        @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+            width: 940px;
+            margin-left: -728px;
+        }
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+            width: 720px;
+            margin-left: -562px;
+        }
+        transition: box .3s linear;
             & .timeline_within {
-                margin-left: 10px;   
+            margin-left: 10px;   
             }
         }
     }
     & .daterange-facet {
         & .list-group-item:not(.title).daterange {
             padding-top: 10px;
-            background-color: whitesmoke;
+            background-color: @gray-ultralight;
             padding: 3px 10px;
         }
 
@@ -103,12 +104,9 @@
                     display: inline-block;
                     background: @body-bg;
                     padding-left: 1%;  
-
-                    
                     & .zoom-out, .zoom-in, .prev, .next {
                         font-size: 1.1em;
                         float: left;
-                        display: inline-block;
                     }
                     & .zoom-out {
                         margin-right: 5px; 
@@ -162,7 +160,7 @@
             }
         }
     }
-}
+
 .template-dir-primo {
     & .sidebar .daterange-facet .form-ui {
         & .year-range {

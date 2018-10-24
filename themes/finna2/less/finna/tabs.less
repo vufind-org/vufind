@@ -15,7 +15,7 @@
     }
   }
   ul.nav-tabs {
-    border-bottom: 1px solid @nav-tabs-border-color;
+    border-bottom: 1px solid @main-tabs-border-color;
     margin: 1em 0;
     @media(max-width: @screen-sm-max) {
       margin-left: 0;
@@ -49,7 +49,7 @@
         border-radius: 0;
         font-size: 1em;
         font-weight: 600;
-        color: @main-tabs-link-color;
+        color: @main-tabs-text-color;
         transition: none;
         border-top: 4px solid transparent;
         margin-top: 0;
@@ -59,7 +59,7 @@
           display: block;
           i {
             display: inline-block;
-            color: @action-link-color;
+            color: @main-tabs-active-color;
             font-size: 16px;
           }
         }
@@ -73,9 +73,9 @@
 
       &.active {
         > a {
-          border-top: 4px solid @action-link-color;
-          border-left: 1px solid @nav-tabs-border-color;
-          border-right: 1px solid @nav-tabs-border-color;
+          border-top: 4px solid @main-tabs-active-color;
+          border-left: 1px solid @main-tabs-border-color;
+          border-right: 1px solid @main-tabs-border-color;
           border-bottom: 1px solid @body-bg;
         }
       }
@@ -85,7 +85,7 @@
           background: darken(@main-tabs-background-color,4%);
         }
         @media (max-width: @screen-xs-max) {
-          border-bottom: 1px solid @nav-tabs-border-color;
+          border-bottom: 1px solid @main-tabs-border-color;
         }
       }
     }
@@ -232,9 +232,10 @@
       &:focus {
         background-color: @body-bg;
         border: 1px solid @nav-tabs-border-color;
-        border-top: 4px solid @action-link-color;
+        border-top: 4px solid @nav-tabs-active-color;
         border-bottom-color: transparent;
         transition: border 0.05s linear;
+        color: @text-color;
       }
     }
   }
@@ -353,8 +354,8 @@
   .dropdown-toggle {
     line-height: 50px;
     margin: 15px 0;
-    background-color: @brand-primary;
-    color: @body-bg;
+    background-color: @main-tabs-active-color;
+    color: mix(@main-tabs-active-color, contrast(@main-tabs-active-color), 5%);
     padding: 0 15px;
     border-radius: 5px;
     display: flex;

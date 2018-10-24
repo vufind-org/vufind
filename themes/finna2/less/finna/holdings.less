@@ -110,17 +110,17 @@
 }
 .record-holdings-url-table {
     margin: 20px 0px;
-    border: 1px solid @gray-lighter;
+    border: 1px solid @record-holdings-border-color;
     border-top: none;
     @media print {
-        border-top: 1px solid @gray-lighter;
+        border-top: 1px solid @record-holdings-border-color;
     }
     & .headers {
         display: flex;
         width: 100%;
         padding: 0 15px;
-        background: @brand-primary;
-        color: @body-bg;
+        background: @record-holdings-title-background;
+        color: @record-holdings-title-color;
         vertical-align: middle;
     }
     .holdings-urls {
@@ -141,10 +141,10 @@
 }
 .record-holdings-table {
     margin: 20px 0px;
-    border: 1px solid @gray-lighter;
+    border: 1px solid @record-holdings-border-color;
     border-top: none;
     @media print {
-        border-top: 1px solid @gray-lighter;
+        border-top: 1px solid @record-holdings-border-color;
     }
     h5{
         padding-left: 15px;
@@ -174,10 +174,10 @@
                 padding-bottom: 10px;
             }
             padding-bottom: 5px;
-            border-top: 2px solid @gray-lighter;
+            border-top: 2px solid @record-holdings-border-color;
             vertical-align: middle;
             @media print {
-                border-top: 1px solid @gray-lighter;
+                border-top: 1px solid @record-holdings-border-color;
             }
         }
         & .holdings-details {
@@ -289,8 +289,8 @@
         display: flex;
         width: 100%;
         padding: 0 15px;
-        background: @brand-primary;
-        color: @body-bg;
+        background: @record-holdings-title-background;
+        color: @record-holdings-title-color;
         vertical-align: middle;
         & .dedup-information {
             flex: 1;
@@ -366,7 +366,7 @@
             margin-top: -2px;
         }
         & .info {
-            color: @gray-light;
+            color: lighten(@text-color, 18%);
             float: right;
             margin-top: .5em;
             @media (max-width: @screen-xs-max) {

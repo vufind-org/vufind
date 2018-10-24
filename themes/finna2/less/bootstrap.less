@@ -110,7 +110,7 @@ section.main.template-dir-feedcontent.template-name-content > .container {
     & a.iconlabel {
         color: @link-color;
         &:before {
-            color: @gray;
+            color: @text-color;
         }
         &:hover {
                 text-decoration: none;
@@ -332,4 +332,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             margin-bottom: 20px;
         }
     }
+}
+
+.well {
+    background-color: mix(@body-bg, contrast(@body-bg), 95%);
+    border: 1px solid mix(@body-bg, contrast(@body-bg), 85%);
 }

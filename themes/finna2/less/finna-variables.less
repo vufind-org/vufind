@@ -10,10 +10,10 @@
 
 @gray-darker:            darken(@gray, 40%);
 @gray-dark:              darken(@gray, 10%);
-@gray-light:             lighten(@gray, 18%);
-@gray-mid-light:         lighten(@gray, 40%);
-@gray-lighter:           lighten(@gray, 65%);
-@gray-ultralight:        lighten(@gray, 80%);
+@gray-light:             lighten(@gray, 18%); // mix(@body-bg, contrast(@body-bg), 40%)
+@gray-mid-light:         lighten(@gray, 40%); // dark background: mix(@body-bg, contrast(@body-bg), 65%)
+@gray-lighter:           lighten(@gray, 65%); // dark background: mix(@body-bg, contrast(@body-bg), 80%)
+@gray-ultralight:        lighten(@gray, 80%); // dark background: mix(@body-bg, contrast(@body-bg), 95%)
 
 // Brand Colors
 @brand-primary: #007c90;
@@ -48,7 +48,7 @@
 @footer-background: @gray-ultralight;
 @footer-text-color: @gray;
 @action-link-color: @brand-primary;
-@finna-search-background: @gray-ultralight; // Background color of finna searchbox section
+@finna-search-background: mix(@body-bg, contrast(@body-bg), 95%); // Background color of finna searchbox section
 @finna-search-link-color: @text-color;
 @finna-main-header-background: @body-bg; // Color of page header background and search results tabs
 @finna-searchbox-link-color: @body-bg; // style searchbox link text color contrast with background
@@ -63,14 +63,19 @@
 @finna-button-radius: 4px; // Defines all button radiuses
 @finna-header-font-size: 1.6em;
 @record-title-font-size: 1.7em;
-@main-tabs-background-color: @body-bg;
-@main-tabs-link-color: @gray;
-@main-tabs-background-color: #fff;
+@record-holdings-title-background: @brand-primary;
+@record-holdings-title-color: mix(@record-holdings-title-background, contrast(@record-holdings-title-background), 5%);
+@record-holdings-border-color: @gray-lighter;
+@main-tabs-active-color: @nav-tabs-active-color;
+@main-tabs-background-color: @nav-tabs-background-color;
+@main-tabs-text-color: @nav-tabs-text-color;
+@main-tabs-border-color: @nav-tabs-border-color;
 
 @finna-searchtools-background: @gray-lighter;
 @finna-searchtools-color: @gray;
 
 //== Finna home page
+@introduction-text-color: #fff;
 @introduction-header: 3em;
 @home-content-background: @body-bg; // Add custom background color for home main section
 @home-1-background: @body-bg;
@@ -85,18 +90,21 @@
 @infobox-box-shadow: none;
 
 //== Finna facets
-@sidebar-header-text-color: @body-bg;
+@sidebar-header-text-color: mix(@sidebar-background, contrast(@sidebar-background), 5%);
 @sidebar-background: @brand-primary;
-@sidebar-border: 1px solid @gray-lighter;
-@facet-background:  @gray;
-@facet-text-color: @body-bg;
+@sidebar-border-color: mix(@body-bg, contrast(@body-bg), 80%);
+@sidebar-border: 1px solid @sidebar-border-color;
+@facet-background: @gray-ultralight;
+@facet-text-color: mix(@facet-background, contrast(@facet-background), 5%);
+@facet-border-color: mix(@facet-background, contrast(@facet-background), 80%);
+
 @display-checkbox-facet-amount: inline-block;    // set to none or inline-block
 // Applied filters
 @filters-background-color: @action-link-color;
 @filters-text-color: @body-bg;
 @filters-icon-color: @body-bg;
 @filterContent-background: @body-bg;
-@filterContent-border-color: @gray-lighter;
+@filterContent-border-color: mix(@filterContent-background, contrast(@filterContent-background), 80%);
 @filterContent-text-color: @text-color;
 //Search tools
 @finna-searchtools-background: @brand-primary;
@@ -204,7 +212,7 @@
 @content-headings-line-height: @headings-line-height;
 @content-headings-color: @gray-dark;
 @content-heading-background: @brand-secondary;
-
+@content-nav-bg: @gray-ultralight;
 
 //-- Iconography
 //
@@ -228,7 +236,7 @@
 //** Finna tables
 @table-finna-record-cell-padding:  3px 0px;
 
-@table-bg-accent:               #F7F7F7;    // Defines color for striped tables used in record details and holdings
+@table-bg-accent:               @gray-ultralight;    // Defines color for striped tables used in record details and holdings
 
 //** Border color for table and cell borders.
 @table-border-color:            transparent;
@@ -267,20 +275,20 @@
 
 //** `<input>` border radius
 @input-border-radius:            @border-radius-small;
-
-
+@input-bg: #fff;
+@search-input-bg: #fff;
 
 //== Dropdowns
 //
 //## Dropdown menu container and contents.
 
-@dropdown-bg: #fff;
-@dropdown-border: rgba(0,0,0,.15);
+@dropdown-bg: @body-bg;
+@dropdown-border: mix(@body-bg, contrast(@dropdown-bg), 80%);
 @dropdown-divider-bg: #e5e5e5;
 @dropdown-link-active-color: #fff;
 @dropdown-link-active-bg: @component-active-bg;
-@dropdown-link-color: @gray-dark;
-@dropdown-link-hover-color: @dropdown-link-color;
+@dropdown-link-color: @text-color;
+@dropdown-link-hover-color: darken(@text-color, 7%);
 @dropdown-link-hover-bg: rgba(1,1,1,0.1);
 @dropdown-link-disabled-color: @gray-light;
 @dropdown-header-color: @gray-light;
@@ -337,10 +345,11 @@
 @nav-link-padding:                          0px 15px;
 @nav-link-hover-bg:                         rgba(255,255,255,0.2);
 //== Tabs
-@nav-tabs-background-color:                 #fff;
-@nav-tabs-text-color:                       @gray;
-@nav-tabs-border-color:                     @gray-mid-light;   // this will set the background and border color of tabs in record
-@nav-tabs-link-hover-border-color:          @brand-secondary;
+@nav-tabs-active-color:                     @action-link-color;
+@nav-tabs-background-color:                 @body-bg;
+@nav-tabs-text-color:                       @text-color;
+@nav-tabs-border-color:                     @gray-mid-light; 
+@nav-tabs-link-hover-border-color:          @gray-mid-light;
 @nav-tabs-link-hover-color:                 @nav-tabs-active-link-hover-color;
 @tabs-border-radius:                        4px;
 
@@ -400,7 +409,7 @@
 @tooltip-max-width:           300px;
 @tooltip-min-width:           250px;
 //** Tooltip text color
-@tooltip-color:               @gray;
+@tooltip-color:               @text-color;
 //** Tooltip background color
 @tooltip-bg:                  @body-bg;
 @tooltip-opacity:             1;
@@ -409,13 +418,13 @@
 @tooltip-arrow-width:         6px;
 //** Tooltip arrow color
 @tooltip-arrow-color:         @brand-primary;
-@tooltip-header-color:        @body-bg;
+@tooltip-header-color:        mix(@tooltip-arrow-color, contrast(@tooltip-arrow-color), 5%);
 
 //== Modals
 //
 //##
 @modal-header-background: @brand-primary;
-@modal-header-color: @body-bg;
+@modal-header-color: mix(@modal-header-background, contrast(@modal-header-background), 5%);
 //** Padding applied to the modal body (only a single value allowed!)
 
 
@@ -432,7 +441,7 @@
 
 //** Background color on `.list-group-item`
 @list-group-bg: @body-bg;
-
+@list-group-link-color: @text-color;
 
 
 //== Panels
@@ -452,7 +461,7 @@
 //
 //##
 
-@badge-color:                 @gray-light;
+@badge-color:                 lighten(@text-color, 18%);
 //** Linked badge text color on hover
 @badge-link-hover-color:      #fff;
 @badge-bg:                    none;
@@ -476,6 +485,13 @@
 //** Textual separator for between breadcrumb elements
 @breadcrumb-separator:          "/ ";
 
+
+//== Wells
+//
+//##
+
+@well-bg:                     mix(@body-bg, contrast(@body-bg), 95%);
+@well-border:                 mix(@body-bg, contrast(@body-bg), 80%);
 
 //== Cookie Consent
 //

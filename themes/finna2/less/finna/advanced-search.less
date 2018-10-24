@@ -3,6 +3,7 @@
   h1.content-header {
     padding-left: 75px;
     font-weight: 500;
+    color: @text-color;
     &::before {
       font-family: icomoon;
       content: "\e91e";
@@ -55,7 +56,7 @@
     padding-bottom: 20px;
     padding-top: 10px;
     margin-top: -10px;
-    background-color: white;
+    background-color: @body-bg;
     position: -webkit-sticky;
     position: sticky;
     bottom: 0;
@@ -74,8 +75,6 @@
   }
   .adv-group {
     position: relative;
-    background: @well-bg;
-    border-radius: @border-radius-base;
     margin-top: 5px;
     margin-bottom: .5em;
     .add_search_link {
@@ -274,7 +273,7 @@
     margin-top: 30px;
   }
   .well.map {
-    background: white;
+    background: @body-bg;
     .information {
       margin-top: 10px;
     }

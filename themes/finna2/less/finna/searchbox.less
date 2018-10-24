@@ -4,11 +4,11 @@
       width: 30%;
     }
     .btn.btn-link {
-      background: @finna-searchbox-link-background;
+      background: @background-color;
       border-radius: @border-radius-small;
     }
     .btn.btn-link {
-      color: @finna-searchbox-link-color;
+      color:  mix(@background-color, contrast(@background-color), 5%);
       font-size: 1em;
       font-weight: normal;
       line-height: 25px;
@@ -18,7 +18,7 @@
       text-transform: none;
       .adv-search {
         i {
-          color: @finna-searchbox-link-color;
+          color:  mix(@body-bg, contrast(@body-bg), 95%);
         }
       }
     }
@@ -26,6 +26,7 @@
   .pager {
     li.pager-text {
       font-size: 1em;
+      color:  mix(@finna-search-background, contrast(@finna-search-background), 5%);
     }
     li > a {
       padding: 0 5px;        
@@ -175,6 +176,11 @@
   .search {
     width: 50%;
     flex: 1;
+  }
+  .pager {
+    .disabled {
+      color: mix(@finna-search-background, contrast(@finna-search-background), 50%);
+    }
   }
   .search-tooltip {
     line-height: 48px;
