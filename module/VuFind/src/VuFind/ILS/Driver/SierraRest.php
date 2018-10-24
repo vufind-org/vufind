@@ -749,6 +749,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return [];
         }
         $holds = [];
+        $locations =  $this->getPickUpLocations();
+
         foreach ($result['entries'] as $entry) {
             $bibId = null;
             $itemId = null;
@@ -790,6 +792,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
+            $pickupLocation = $locations[$entry['pickupLocation']['code']]['locationDisplay'];
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
@@ -897,7 +900,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!empty($this->config['pickUpLocations'])) {
             $locations = [];
             foreach ($this->config['pickUpLocations'] as $id => $location) {
-                $locations[] = [
+                $locations[$id] = [
                     'locationID' => $id,
                     'locationDisplay' => $this->translateLocation(
                         ['code' => $id, 'name' => $location]
