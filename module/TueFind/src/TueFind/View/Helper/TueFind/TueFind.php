@@ -168,9 +168,9 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     * @return string
     */
   function getUserEmail() {
-    $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-    $manager = $auth->getManager();
-    return  ($user = $manager->isLoggedIn()) ? $user->email : "";
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->email : "";
   }
 
   /**
@@ -178,10 +178,9 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     * @return string
     */
   function getUserLastname() {
-     $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-    $manager = $auth->getManager();
-    return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
-
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
   }
 
   /**
@@ -189,9 +188,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     * @return string
     */
   function getUserFirstName() {
-     $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-    $manager = $auth->getManager();
-    return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
-
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
   }
 }
