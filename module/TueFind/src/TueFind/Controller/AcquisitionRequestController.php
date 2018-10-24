@@ -33,9 +33,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view = $this->createViewModel();
         if ($this->params()->fromPost('submitted') != 'true') {
-            $this->flashMessenger()->addMessage(
-                $this->translate('Please use the entry form.'), 'error'
-            );
+            $this->redirect()->toRoute('acquisitionrequest-create');
         } else {
             $to = $config->Site->acquisition_request_receivers;
             $from = $config->Site->email_from;
