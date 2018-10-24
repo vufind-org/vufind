@@ -18,7 +18,7 @@
     $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
     $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
 ?>
-<form method="get" action="<?=$this->url($options->getSearchAction())?>" name="searchForm" autocomplete="off">
+<form method="get" action="<?=$this->url($options->getSearchAction())?>" id="searchForm" name="searchForm" autocomplete="off">
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
     <input id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEsc("search_terms")?>" />
 
