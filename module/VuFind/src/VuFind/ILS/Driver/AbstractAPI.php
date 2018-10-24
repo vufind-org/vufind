@@ -55,7 +55,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * Allow default corrections to all requests
      *
      * @param \Zend\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param array              $params  the parameters object
      *
      * @return array
      */
@@ -69,8 +69,8 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      *
      * @param string $method  GET/POST/PUT/DELETE/etc
      * @param string $path    API path (with a leading /)
-     * @param object $params  Parameters object to be sent as data
-     * @param object $headers Additional headers
+     * @param array  $params  Parameters object to be sent as data
+     * @param array  $headers Additional headers
      *
      * @return \Zend\Http\Response
      */
@@ -82,7 +82,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
             $method,
             120
         );
-        //error_log($method . ' ' . $this->config['API']['base_url'] . $path);
+        error_log($method . ' ' . $this->config['API']['base_url'] . $path);
 
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
@@ -125,10 +125,10 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      */
     public function setConfig($config)
     {
+        parent::setConfig($config);
         // Base URL required for API drivers
         if (!isset($config['API']['base_url'])) {
             throw new ILSException('API Driver configured without base url.');
         }
-        $this->config = $config;
     }
 }
