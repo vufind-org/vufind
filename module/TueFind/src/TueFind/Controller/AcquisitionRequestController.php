@@ -48,7 +48,9 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
             $body .= "E-Mail-Adresse: " . $this->params()->fromPost('email') . "\n";
             $body .= "\n";
             $body .= "Vorschlag:\n";
-            $body .= $this->params()->fromPost('book');
+            $body .= $this->params()->fromPost('book') . "\n\n";
+            $body .= "Kommentare:\n";
+            $body .= $this->params()->fromPost('comments');
             $cc = null;
             $mailer = $this->serviceLocator->get('VuFind\Mailer');
             $mailer->setMaxRecipients(5);

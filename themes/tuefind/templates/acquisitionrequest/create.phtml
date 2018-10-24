@@ -45,6 +45,16 @@
         </div>
     </div>
 
+    <? if ($tuefind_type != 'Krimdok'): ?>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="ar-comments"><?= $this->transEsc('Comments') ?></label>
+        <div class="col-sm-9">
+            <textarea id="ar-comments" name="comments" class="form-control" type="text"
+             onkeyup="AcquisitionRequest.checkFields('<?=$tuefind_type?>')"></textarea>
+        </div>
+    </div>
+    <? endif; ?>
+
     <?=$this->recaptcha()->html($this->useRecaptcha) ?>
 
     <div class="form-group">
