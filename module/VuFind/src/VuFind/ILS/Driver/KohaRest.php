@@ -1243,7 +1243,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             // Renew authentication token as necessary
             if (null === $this->sessionCache->patronCookie) {
                 if (!$this->renewPatronCookie($patron)) {
-                    return null;
+                    return $returnCode ? [403, null] : null;
                 }
             }
         }
