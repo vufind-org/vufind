@@ -116,4 +116,80 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       return false;
 
   }
+
+  /**
+    * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
+    * @return string
+    */
+  function getTueFindInstance() {
+      return basename(getenv('VUFIND_LOCAL_DIR'));
+  }
+
+  /**
+    * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
+    * @return string or false of no matching value could be found
+    */
+  function getTueFindType() {
+      $instance = $this->getTueFindInstance();
+      $instance = preg_replace('/\d+$/', "", $instance);
+      switch ($instance) {
+          case 'ixtheo':
+          case 'bibstudies';
+              return 'IxTheo';
+          case 'relbib':
+              return 'RelBib';
+          case 'krimdok':
+             return 'Krimdok';
+      }
+      return false;
+  }
+
+  /**
+    * Derive the German FID denomination
+    * @return string or false of no matching value could be found
+    */
+  function getTueFindFID() {
+      $instance = $this->getTueFindInstance();
+      $instance = preg_replace('/\d+$/', "", $instance);
+      switch($instance) {
+          case 'ixtheo':
+          case 'bibstudies':
+              return 'FID Theologie';
+          case 'relbib':
+              return 'FID Religionswissenschaften';
+          case 'krimdok':
+              return 'FID Kriminologie';
+       }
+       return false;
+  }
+
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserEmail() {
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->email : "";
+  }
+
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserLastname() {
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
+  }
+
+  /**
+    * Get the user address from a logged in user
+    * @return string
+    */
+  function getUserFirstName() {
+      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+      $manager = $auth->getManager();
+      return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
+  }
 }

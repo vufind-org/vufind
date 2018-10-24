@@ -187,7 +187,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
         return $retval;
     }
 
+    private function isOpenAccess(): bool
+    {
+        return isset($this->fields['is_open_access']) && $this->fields['is_open_access'];
+    }
+
     public function getSubitoURL($broker_id) {
+        // Suppress Subito links for open access items:
+        if ($this->isOpenAccess())
+	    return "";
+	    
         $base_url = "http://www.subito-doc.de/preorder/?BI=" . $broker_id;
         switch ($this->getBibliographicLevel()) {
             case 'Monograph':

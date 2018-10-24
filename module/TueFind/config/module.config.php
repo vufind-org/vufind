@@ -4,6 +4,7 @@ namespace TueFind\Module\Config;
 $config = [
     'controllers' => [
         'factories' => [
+            'acquisition_request' => 'TueFind\Controller\Factory::getAcquisitionRequestController',
             'feedback' => 'TueFind\Controller\Factory::getFeedbackController',
             'pdaproxy' => 'TueFind\Controller\Factory::getPDAProxyController',
             'proxy' => 'TueFind\Controller\Factory::getProxyController',
@@ -66,5 +67,19 @@ $config['router']['routes']['static-page'] = [
         ]
     ]
 ];
+
+$recordRoutes = [];
+$dynamicRoutes = [];
+$staticRoutes = [
+    'AcquisitionRequest/Create',
+    'AcquisitionRequest/Send',
+];
+
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addRecordRoutes($config, $recordRoutes);
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
+
+
 
 return $config;

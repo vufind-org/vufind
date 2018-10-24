@@ -1,6 +1,6 @@
 <?php
 
-namespace KrimDok\Controller;
+namespace TueFind\Controller;
 
 class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
 {
@@ -33,21 +33,22 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         $config = $this->serviceLocator->get('VuFind\Config')->get('config');
         $view = $this->createViewModel();
         if ($this->params()->fromPost('submitted') != 'true') {
-            $this->flashMessenger()->addMessage(
-                $this->translate('Please use the entry form.'), 'error'
-            );
+            $this->redirect()->toRoute('acquisitionrequest-create');
         } else {
             $to = $config->Site->acquisition_request_receivers;
             $from = $config->Site->email_from;
-            $subject = 'KrimDok-Anschaffungsvorschlag';
-            $body = "Folgender Vorschlag wurde über KrimDok eingereicht:\n";
+            $tuefind_type = ucfirst(basename(getenv('VUFIND_LOCAL_DIR')));
+            $subject = $tuefind_type . '-Anschaffungsvorschlag';
+            $body = "Folgender Vorschlag wurde über " . $tuefind_type . " eingereicht:\n";
             $body .= "\n";
             $body .= "Vorname: " . $this->params()->fromPost('firstname') . "\n";
             $body .= "Nachname: " . $this->params()->fromPost('lastname') . "\n";
             $body .= "E-Mail-Adresse: " . $this->params()->fromPost('email') . "\n";
             $body .= "\n";
             $body .= "Vorschlag:\n";
-            $body .= $this->params()->fromPost('book');
+            $body .= $this->params()->fromPost('book') . "\n\n";
+            $body .= "Kommentare:\n";
+            $body .= $this->params()->fromPost('comments');
             $cc = null;
             $mailer = $this->serviceLocator->get('VuFind\Mailer');
             $mailer->setMaxRecipients(5);
