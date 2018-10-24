@@ -201,6 +201,7 @@ class SolrMarc extends SolrDefault
               $field->getSubfield('a') ? array_push($contains, $field->getSubfield('a')->getData()) : '';
               $field->getSubfield('t') ? array_push($contains, $field->getSubfield('t')->getData()) : '';
               $contains_description = $opening . ": " .  implode(", ", array_filter($contains) /*skip empty elements */);
+              $this->getFirstBSZPPNFromSubfieldW($field, $link_ppn);
               if (!empty($link_ppn))
                   return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $contains_description . "</>";
               else
