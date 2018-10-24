@@ -127,11 +127,11 @@
         ?>
         <input id="searchForm_type" type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" class="searchForm_type" />
         <a href="#" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-label="<?= $this->transEsc('Narrow Search') ?>" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span><b class="caret"></b></a>
-        <ul class="dropdown-menu" data-native-menu="false">
+        <ul class="dropdown-menu" role="menu">
           <?php foreach ($handlers as $handler): ?>
-            <li class="select-type" tabindex="0">
+            <li role="menuitem">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($handler['value'])?>" />
-              <span><?=$this->transEsc($handler['label'])?></span>
+              <a class="select-type" href="#"><?=$this->transEsc($handler['label'])?></a>
             </li>
           <?php endforeach; ?>
         </ul>

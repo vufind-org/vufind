@@ -6,7 +6,7 @@
 
   &[disabled],
   &[readonly],
-  fieldset[disabled] & {
+  fieldset[disabled] {
     background-color: transparent;
   }
 
@@ -55,7 +55,7 @@
   &:hover {
     background: darken(@btn-primary-bg, 5%);
   }
-  & i {
+  i {
     font-size: @font-size-icon-large;
     color: @btn-primary-color;
     vertical-align: inherit;
@@ -80,7 +80,7 @@
   border-bottom: 0px;
   margin: 0px;
   box-shadow: 0px 0px 3px rgba(100,100,100,0.5) !important;
-  & .form-control.search-query {
+  .form-control.search-query {
     flex: 1 1 auto;
     @media (max-width: @screen-xs-max) {
       width: percentage((@finna-search-input-width - 0.06));
@@ -102,7 +102,7 @@
     }
   }
 
-  & .clear-button {
+  .clear-button {
     margin-left: 0px;
     font-size: 1.5em;
     background: transparent;
@@ -130,7 +130,6 @@
 .dropdown.form-control.type-dropdown {
   border: none;
   display: inline-block;
-  position: relative;
   background: transparent;
   box-shadow: none;
   color: @gray;
@@ -138,42 +137,17 @@
   @media (max-width: @screen-xs-max) {
     width: 25%;
   }
-  & a {
-    color: @gray;
-    width: 100%;
+  .dropdown-toggle {
+    min-width: 110px;
     display: inline-block;
-    line-height: 37px;
-    height: 37px;
-    overflow: hidden;
-    &:hover, &:active, &:focus {
-      text-decoration: none;
-    }
+    text-align: right;
+    height: inherit;
+    padding: 8px;
   }
-  & i {
-    position: absolute;
-    right: 4px;
-    line-height: 35px;
-    top: 3px;
-    background-color: @body-bg;
-    box-shadow: -4px 0px 2px white;
-    &:before {
-      background: @gray-mid-light;
-      color: @body-bg;
-      padding: 5px;
-      border-radius: 50%;
-    }
-  }
-  & li {
+  li {
     text-align: left;
     color: @text-color;
-    padding: 10px;
     min-width: 110px;
-    transition: background .2s linear;
-
-    &:hover {
-      cursor: pointer;
-      background: rgba(1,1,1,0.1);
-    }
   }
 }
 
