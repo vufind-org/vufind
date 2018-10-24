@@ -243,7 +243,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 'Payment registration error (patron ' . $patron['id'] . '): '
                 . $e->getMessage()
             );
-            $this->handleException($e);
+            $this->logException($e, new \Zend\Stdlib\Parameters());
 
             $result = $this->transactionTable->setTransactionRegistrationFailed(
                 $tId, $e->getMessage()
