@@ -100,11 +100,13 @@
       <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
-      <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-        <? if (!in_array($current, $top)): ?>
-          <?=$this->recommend($current)?>
-        <? endif; ?>
-      <? endforeach; ?>
+      <? if (!isset($this->skip_noresults_recommendation) || $this->skip_noresults_recommendation !== true): ?>
+        <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+          <? if (!in_array($current, $top)): ?>
+            <?=$this->recommend($current)?>
+          <? endif; ?>
+        <? endforeach; ?>
+      <? endif; ?>
     <? else: ?>
       <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
