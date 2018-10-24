@@ -790,8 +790,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
-            $pickupLocation = $this
-                ->getPickUpLocationDisplayName($entry['pickupLocation']['code']);
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
@@ -801,6 +799,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['placed']
                 ),
                 'last_pickup_date' => $lastPickup,
+                'location' => $entry['pickupLocation']['code'],
                 'position' => $position,
                 'available' => $available,
                 'in_transit' => $entry['status']['code'] == 't',
@@ -872,24 +871,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
         }
         return ['count' => $count, 'items' => $response];
-    }
-
-    /**
-     * Get the display name for a pickup location code (or return the code if no
-     * match found).
-     *
-     * @param string $code Code to look up.
-     *
-     * @return string
-     */
-    public function getPickUpLocationDisplayName($code)
-    {
-        foreach ($this->getPickUpLocations() as $current) {
-            if ($current['locationID'] === $code) {
-                return $current['locationDisplay'];
-            }
-        }
-        return $code;
     }
 
     /**
