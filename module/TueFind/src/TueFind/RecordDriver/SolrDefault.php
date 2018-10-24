@@ -194,7 +194,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
 
     public function getSubitoURL($broker_id) {
         // Suppress Subito links for open access items:
-        if (isOpenAccess())
+        if (this->isOpenAccess())
 	    return "";
 	    
         $base_url = "http://www.subito-doc.de/preorder/?BI=" . $broker_id;
