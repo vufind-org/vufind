@@ -146,7 +146,7 @@ class Form extends \Zend\Form\Form
                         $config['forms'][$key] = $form;
                     }
                     $parentForm = $parentConfig['forms'][$key];
-
+        
                     if (isset($parentForm['allowLocalOverride'])
                         && $parentForm['allowLocalOverride'] == false
                     ) {
@@ -156,7 +156,7 @@ class Form extends \Zend\Form\Form
                 }
             }
         }
-
+        
         if (!$formId) {
             if (!isset($config['default'])) {
                 return null;
@@ -170,7 +170,7 @@ class Form extends \Zend\Form\Form
 
         return $config['forms'][$formId];
     }
-
+    
     /**
      * Parse form configuration.
      *
@@ -247,7 +247,7 @@ class Form extends \Zend\Form\Form
                         $options[$option] = $translator->translate($option);
                     }
                     $element['options'] = $options;
-                } elseif (isset($el['optionGroups'])) {
+                } else if (isset($el['optionGroups'])) {
                     $groups = [];
                     foreach ($el['optionGroups'] as $group) {
                         if (empty($group['options'])) {
@@ -277,7 +277,7 @@ class Form extends \Zend\Form\Form
             ) {
                 $element['settings']['size'] = 50;
             }
-
+            
             if ($elementType == 'textarea') {
                 if (!isset($element['settings']['cols'])) {
                     $element['settings']['cols'] = 50;
@@ -288,7 +288,7 @@ class Form extends \Zend\Form\Form
             }
             $elements[] = $element;
         }
-
+        
         $elements[] = ['type' => 'submit', 'name' => 'submit', 'label' => 'Send'];
 
         return $elements;
@@ -326,7 +326,7 @@ class Form extends \Zend\Form\Form
 
         $conf = [];
         $conf['name'] = $el['name'];
-
+            
         $conf['type'] = $class;
         $conf['options'] = [];
         $attributes = ['id' => $el['name'], 'class' => ''];
@@ -336,7 +336,7 @@ class Form extends \Zend\Form\Form
         if (!empty($el['required'])) {
             $attributes['required'] = true;
             $attributes['aria-required'] = "true";
-        } elseif ($type !== 'submit') {
+        } else if ($type !== 'submit') {
             $attributes['aria-required'] = "false";
         }
         if (!empty($el['settings'])) {
@@ -345,12 +345,12 @@ class Form extends \Zend\Form\Form
         if (!empty($el['label'])) {
             $attributes['aria-label'] = $el['label'];
         }
-
+        
         switch ($type) {
         case 'select':
             if (isset($el['options'])) {
                 $conf['options'] = ['value_options' => $el['options']];
-            } elseif (isset($el['optionGroups'])) {
+            } else if (isset($el['optionGroups'])) {
                 $conf['options'] = ['value_options' => $el['optionGroups']];
             }
             break;
@@ -382,7 +382,7 @@ class Form extends \Zend\Form\Form
             'submit' => '\Zend\Form\Element\Submit'
         ];
 
-        return $map[$type] ?? null;
+        return isset($map[$type]) ? $map[$type] : null;
     }
 
     /**
@@ -411,7 +411,7 @@ class Form extends \Zend\Form\Form
      * Return form element configuration.
      *
      * @return array
-     */
+     */    
     public function getElements()
     {
         return $this->formElementConfig;
@@ -421,7 +421,7 @@ class Form extends \Zend\Form\Form
      * Return form recipient.
      *
      * @return array with name, email or null if not configured
-     */
+     */    
     public function getRecipient()
     {
         if (!isset($this->formConfig['recipient'])) {
@@ -431,16 +431,16 @@ class Form extends \Zend\Form\Form
         $recipient = $this->formConfig['recipient'];
 
         return [
-            $recipient['name'] ?? null,
-            $recipient['email'] ?? null
+            isset($recipient['name']) ? $recipient['name'] : null,
+            isset($recipient['email']) ? $recipient['email'] : null
         ];
     }
-
+    
     /**
      * Return form title.
      *
      * @return string
-     */
+     */    
     public function getTitle()
     {
         return isset($this->formConfig['title']) ? $this->formConfig['title'] : null;
@@ -450,7 +450,7 @@ class Form extends \Zend\Form\Form
      * Return form help text.
      *
      * @return string|null
-     */
+     */    
     public function getHelp()
     {
         return isset($this->formConfig['help']) ? $this->formConfig['help'] : null;
@@ -460,7 +460,7 @@ class Form extends \Zend\Form\Form
      * Return form email message subject.
      *
      * @return string
-     */
+     */    
     public function getEmailSubject()
     {
         return !empty($this->formConfig['emailSubject'])
@@ -472,7 +472,7 @@ class Form extends \Zend\Form\Form
      * Return reponse that is shown after successful form submit.
      *
      * @return string
-     */
+     */    
     public function getSubmitResponse()
     {
         return !empty($this->formConfig['response'])
@@ -486,7 +486,7 @@ class Form extends \Zend\Form\Form
      * @param array $requestParams Request parameters
      *
      * @return array Array with template parameters and template name.
-     */
+     */    
     public function formatEmailMessage($requestParams)
     {
         $params = [];
@@ -497,7 +497,7 @@ class Form extends \Zend\Form\Form
                 continue;
             }
             $value = $requestParams->fromPost($el['name'], null);
-
+            
             if ($type === 'select') {
                 $value = $this->translator->translate($value);
             }
@@ -509,7 +509,7 @@ class Form extends \Zend\Form\Form
 
         return [$params, 'Email/form.phtml'];
     }
-
+         
     /**
      * Retrieve input filter used by this form
      *
@@ -549,7 +549,7 @@ class Form extends \Zend\Form\Form
             if ($el['type'] === 'email') {
                 $fieldValidators[] = $validators['email'];
             }
-
+            
             $inputFilter->add(
                 [
                     'name' => $el['name'],
