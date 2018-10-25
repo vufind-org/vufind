@@ -32,34 +32,34 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
 
     public function getNew($userId, $recordId) {
         $row = $this->createRow();
-        $row->id = $userId;
-        $row->journal_control_number = $recordId;
+        $row->user_id = $userId;
+        $row->journal_control_number_or_bundle_name = $recordId;
         $row->max_last_modification_time = date('Y-m-d 00:00:00');
         return $row;
     }
 
     public function findExisting($userId, $recordId) {
-        return $this->select(['id' => $userId, 'journal_control_number' => $recordId])->current();
+        return $this->select(['user_id' => $userId, 'journal_control_number_or_bundle_name' => $recordId])->current();
     }
 
     public function subscribe($userId, $recordId) {
         $row = $this->getNew($userId, $recordId);
         $row->save();
-        return $row->id;
+        return $row->user_id;
     }
 
     public function unsubscribe($userId, $recordId) {
-        return $this->delete(['id' => $userId, 'journal_control_number' => $recordId]);
+        return $this->delete(['user_id' => $userId, 'journal_control_number_or_bundle_name' => $recordId]);
     }
 
     public function getAll($userId, $sort) {
-        $select = $this->getSql()->select()->where(['id' => $userId]);
+        $select = $this->getSql()->select()->where(['user_id' => $userId]);
         $this->applySort($select, $sort);
         return $this->selectWith($select);
     }
 
     public function get($userId, $sort, $start, $limit) {
-        $select = $this->getSql()->select()->where(['id' => $userId])->offset($start)->limit($limit);
+        $select = $this->getSql()->select()->where(['user_id' => $userId])->offset($start)->limit($limit);
         $this->applySort($select, $sort);
         return $this->selectWith($select);
     }
