@@ -192,7 +192,9 @@ VuFind.register('side_facets', function SideFacets() {
     $.getJSON(VuFind.path + '/AJAX/JSON?' + query, request)
       .done(function onGetSideFacetsDone(response) {
         $.each(response.data.facets, function initFacet(facet, facetData) {
-          var $facetContainer = $container.find('[data-facet="' + facet + '"]');
+          var containerSelector = typeof facetData.checkboxCount !== 'undefined'
+            ? '.checkbox-filter' : ':not(.checkbox-filter)';
+          var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {
             $facetContainer.find('.avail-count').text(

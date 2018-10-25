@@ -7,8 +7,8 @@
   $rangeFacets = $this->recommend->getAllRangeFacets();
 ?>
 <?php if ($results->getResultTotal() > 0): ?>
+  <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
   <div class="side-facets-container-ajax">
-    <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
