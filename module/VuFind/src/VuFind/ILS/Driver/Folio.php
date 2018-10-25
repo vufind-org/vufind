@@ -367,7 +367,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                 'lastname' => $profile->personal->lastName ?? null,
                 'email' => $profile->personal->email ?? null,
             ];
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -575,7 +575,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         try {
             $requiredBy = date_create_from_format('m-d-Y', $holdDetails['requiredBy']);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw new ILSException('hold_date_invalid');
         }
         $requestBody = [
@@ -738,5 +738,6 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     {
         return [];
     }
+
     // @codingStandardsIgnoreEnd
 }
