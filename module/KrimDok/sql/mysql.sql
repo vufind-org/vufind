@@ -1,6 +1,6 @@
 CREATE TABLE full_text_cache (
     id VARCHAR(20) NOT NULL,
-    expiration DATETIME NOT NULL,
+    expiration DATETIME,
     full_text MEDIUMBLOB,
     PRIMARY KEY (id),
     INDEX expiration (expiration)
