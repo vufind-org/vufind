@@ -213,9 +213,12 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
     protected function getInstance($bibId)
     {
         $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = ['query' => '(identifiers="' . $escaped . '")'];
+        $query = ['query' => '(id="' . $escaped . '" or identifiers="' . $escaped . '")'];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
+        if (count($instances->instances) == 0) {
+            throw new ILSException("Item Not Found");
+        }
         return $instances->instances[0];
     }
 
@@ -272,8 +275,8 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
      */
     public function getHolding($bibId, array $patronLogin = null)
     {
-        $record = $this->getInstance($bibId);
-        $query = ['query' => '(instanceId="' . $record->id . '")'];
+        $instance = $this->getInstance($bibId);
+        $query = ['query' => '(instanceId="' . $instance->id . '")'];
         $holdingResponse = $this->makeRequest(
             'GET',
             '/holdings-storage/holdings',
@@ -300,7 +303,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $bibId,
-                    'item_id' => $record->id,
+                    'item_id' => $instance->id,
                     'holding_id' => $holding->id,
                     'number' => count($items),
                     'barcode' => $item->barcode ?? '',
@@ -337,8 +340,7 @@ class Folio extends AbstractAPI implements TranslatorAwareInterface
         $response = $this->makeRequest('GET', '/users', $query);
         $json = json_decode($response->getBody());
         if (count($json->users) == 0) {
-            // TODO: Flash message
-            return null;
+            throw new ILSException("User not found");
         }
         $profile = $json->users[0];
         $credentials = [
