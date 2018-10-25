@@ -376,5 +376,3 @@ class Database extends AbstractBase
         return $user;
     }
 }
-?>
-
