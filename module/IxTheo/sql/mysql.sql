@@ -11,11 +11,11 @@ CREATE TABLE ixtheo_id_result_sets (
 );
 
 CREATE TABLE ixtheo_journal_subscriptions (
-       id INT(11) NOT NULL,
-       journal_control_number VARCHAR(255) NOT NULL,
+       user_id INT(11) NOT NULL,
+       journal_control_number_or_bundle_name VARCHAR(255) NOT NULL,
        max_last_modification_time DATETIME NOT NULL,
-       FOREIGN KEY (id) REFERENCES user(id),
-       PRIMARY KEY (id,journal_control_number)
+       FOREIGN KEY (user_id) REFERENCES user(id),
+       PRIMARY KEY (user_id,journal_control_number)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ixtheo_pda_subscriptions (
