@@ -94,9 +94,9 @@
 @sidebar-background: @brand-primary;
 @sidebar-border-color: mix(@body-bg, contrast(@body-bg), 80%);
 @sidebar-border: 1px solid @sidebar-border-color;
-@facet-background: @gray-ultralight;
-@facet-text-color: mix(@facet-background, contrast(@facet-background), 5%);
-@facet-border-color: mix(@facet-background, contrast(@facet-background), 80%);
+@facet-header-background: @gray-ultralight;
+@facet-text-color: mix(@facet-header-background, contrast(@facet-header-background), 5%);
+@facet-border-color: mix(@facet-header-background, contrast(@facet-header-background), 80%);
 
 @display-checkbox-facet-amount: inline-block;    // set to none or inline-block
 // Applied filters
@@ -423,6 +423,7 @@
 //== Modals
 //
 //##
+@modal-content-bg: @body-bg;
 @modal-header-background: @brand-primary;
 @modal-header-color: mix(@modal-header-background, contrast(@modal-header-background), 5%);
 //** Padding applied to the modal body (only a single value allowed!)
