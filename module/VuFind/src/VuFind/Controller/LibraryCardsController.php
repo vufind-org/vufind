@@ -131,7 +131,6 @@ class LibraryCardsController extends AbstractBase
                 'cardName' => $cardName,
                 'target' => $target ? $target : $defaultTarget,
                 'username' => $username,
-                'password' => $card->cat_password,
                 'targets' => $targets,
                 'defaultTarget' => $defaultTarget
             ]
