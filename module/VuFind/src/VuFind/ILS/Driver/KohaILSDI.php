@@ -1848,12 +1848,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $bindParams[':dept'] = $dept;
         }
         $reserveWhere = empty($reserveWhere) ?
-            "" : "where (" . implode(' AND ', $reserveWhere) . ")";
+            "" : "HAVING (" . implode(' AND ', $reserveWhere) . ")";
 
         $sql = "SELECT biblionumber AS `BIB_ID`,
-                       courses.course_id AS COURSE_ID,
-                       course_instructors.borrowernumber as INSTRUCTOR_ID,
-                       courses.department AS DEPARTMENT_ID
+                       courses.course_id AS `COURSE_ID`,
+                       course_instructors.borrowernumber as `INSTRUCTOR_ID`,
+                       courses.department AS `DEPARTMENT_ID`
                 FROM courses
                 INNER JOIN `authorised_values`
                    ON courses.department = `authorised_values`.`authorised_value`
@@ -1862,11 +1862,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 INNER JOIN `items` USING (itemnumber)
                 INNER JOIN `course_instructors` USING (course_id)
                 INNER JOIN `borrowers` USING (borrowernumber)
-                WHERE courses.enabled = 'yes'" . $reserveWhere;
+                WHERE courses.enabled = 'yes' " . $reserveWhere;
 
         try {
-            $sqlStmt = $this->db->prepare($sql, $bindParams);
-            $sqlStmt->execute();
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute($bindParams);
             $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $result[] = $rowItem;

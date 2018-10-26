@@ -772,9 +772,10 @@ class Demo extends AbstractBase
 
                 $fineList[] = [
                     "amount"   => $fine * 100,
-                    "checkout" => $this->dateConverter->convertToDisplayDate(
-                        'U', $checkout
-                    ),
+                    "checkout" => $this->dateConverter
+                        ->convertToDisplayDate('U', $checkout),
+                    'createdate' => $this->dateConverter
+                        ->convertToDisplayDate('U', time()),
                     // After 20 days it becomes 'Long Overdue'
                     "fine"     => $day_overdue > 20 ? "Long Overdue" : "Overdue",
                     // 50% chance they've paid half of it

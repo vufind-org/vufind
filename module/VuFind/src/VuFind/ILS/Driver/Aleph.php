@@ -318,7 +318,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @var AlephTranslator
      */
-    protected $translator = false;
+    protected $alephTranslator = false;
 
     /**
      * Cache manager
@@ -333,6 +333,13 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter = null;
+
+    /**
+     * The base URL, where the REST DLF API is running
+     *
+     * @var string
+     */
+    protected $dlfbaseurl = null;
 
     /**
      * Constructor
@@ -388,6 +395,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->xserver_enabled = false;
         }
         $this->dlfport = $this->config['Catalog']['dlfport'];
+        if (isset($this->config['Catalog']['dlfbaseurl'])) {
+            $this->dlfbaseurl = $this->config['Catalog']['dlfbaseurl'];
+        }
         $this->sublibadm = $this->config['sublibadm'];
         if (isset($this->config['duedates'])) {
             $this->duedates = $this->config['duedates'];
@@ -408,12 +418,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             ) {
                 $cache = $this->cacheManager
                     ->getCache($this->config['Cache']['type']);
-                $this->translator = $cache->getItem('alephTranslator');
+                $this->alephTranslator = $cache->getItem('alephTranslator');
             }
-            if ($this->translator == false) {
-                $this->translator = new AlephTranslator($this->config);
+            if ($this->alephTranslator == false) {
+                $this->alephTranslator = new AlephTranslator($this->config);
                 if (isset($cache)) {
-                    $cache->setItem('alephTranslator', $this->translator);
+                    $cache->setItem('alephTranslator', $this->alephTranslator);
                 }
             }
         }
@@ -479,11 +489,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     protected function doRestDLFRequest($path_elements, $params = null,
         $method = 'GET', $body = null
     ) {
-        $path = '';
-        foreach ($path_elements as $path_element) {
-            $path .= $path_element . "/";
+        $path = implode('/', $path_elements);
+        if ($this->dlfbaseurl === null) {
+            $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
+        } else {
+            $url = $this->dlfbaseurl . $path;
         }
-        $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
         $replyCode = (string)$result->{'reply-code'};
@@ -578,10 +589,17 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     protected function parseId($id)
     {
         if (count($this->bib) == 1) {
-            return [$this->bib[0], $id];
+            $retval = [$this->bib[0], $id];
         } else {
-            return explode('-', $id);
+            $retval = explode('-', $id);
         }
+        if (count($retval) != 2) {
+            throw new \Exception("The resulting array has incorrect size");
+        }
+        if (!in_array($retval[0], $this->bib)) {
+            throw new \Exception("The resulting array contains unknown library ID");
+        }
+        return $retval;
     }
 
     /**
@@ -737,14 +755,19 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $params['patron'] = $this->defaultPatronId;
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
-        foreach ($xml->{'items'}->{'item'} as $item) {
+        if (!empty($xml->{'items'})) {
+            $items = $xml->{'items'}->{'item'};
+        } else {
+            $items = [];
+        }
+        foreach ($items as $item) {
             $item_status         = (string)$item->{'z30-item-status-code'}; // $isc
             // $ipsc:
             $item_process_status = (string)$item->{'z30-item-process-status-code'};
             $sub_library_code    = (string)$item->{'z30-sub-library-code'}; // $slc
             $z30 = $item->z30;
-            if ($this->translator) {
-                $item_status = $this->translator->tab15Translate(
+            if ($this->alephTranslator) {
+                $item_status = $this->alephTranslator->tab15Translate(
                     $sub_library_code, $item_status, $item_process_status
                 );
             } else {
@@ -762,9 +785,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             //$reserve = ($item_status['request'] == 'C')?'N':'Y';
             $collection = (string)$z30->{'z30-collection'};
             $collection_desc = ['desc' => $collection];
-            if ($this->translator) {
+            if ($this->alephTranslator) {
                 $collection_code = (string)$item->{'z30-collection-code'};
-                $collection_desc = $this->translator->tab40Translate(
+                $collection_desc = $this->alephTranslator->tab40Translate(
                     $collection_code, $sub_library_code
                 );
             }
@@ -1031,7 +1054,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * Renew My Items
      *
      * Function for attempting to renew a patron's items.  The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
+     * $details['details'] is determined by getRenewDetails().
      *
      * @param array $details An array of data required for renewing items
      * including the Patron ID and an array of renewal IDS
@@ -1748,21 +1771,27 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      */
     public function getPickUpLocations($patron, $holdInfo = null)
     {
+        $pickupLocations = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
                 $patron['id'], $holdInfo['id'], $holdInfo['item_id']
             );
-            $pickupLocations = [];
             foreach ($details['pickup-locations'] as $key => $value) {
                 $pickupLocations[] = [
-                    "locationID" => $key, "locationDisplay" => $value
+                    "locationID" => $key,
+                    "locationDisplay" => $value,
                 ];
             }
-            return $pickupLocations;
         } else {
             $default = $this->getDefaultPickUpLocation($patron);
-            return empty($default) ? [] : [$default];
+            if (!empty($default)) {
+                $pickupLocations[] = [
+                    "locationID" => $default,
+                    "locationDisplay" => $default,
+                ];
+            }
         }
+        return $pickupLocations;
     }
 
     /**

@@ -220,7 +220,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 } catch (ILSException $e) {
                     $statuses = array_map(
                         function ($id) {
-                            return ['id' => $id, 'error' => 'An error has occurred'];
+                            return [
+                                ['id' => $id, 'error' => 'An error has occurred']
+                            ];
                         },
                         $localIds
                     );
