@@ -80,4 +80,4 @@ headers[] = "Content-type: application/x-bibtex; charset=utf-8"
 [RIS]
 requiredMethods[] = getTitle
 headers[] = "Content-type: application/x-research-info-systems; charset=utf-8"
-headers[] = “Content-Disposition: attachment; filename=\“FinnaExport.ris\“;”
+headers[] = "Content-Disposition: attachment; filename=\"FinnaExport.ris\";"
