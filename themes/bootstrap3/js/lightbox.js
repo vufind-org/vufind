@@ -134,7 +134,10 @@ VuFind.register('lightbox', function Lightbox() {
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
-      obj.url += 'layout=lightbox&lbreferer=' + encodeURIComponent(_currentUrl);
+      obj.url += 'layout=lightbox';
+      if (_currentUrl) {
+        obj.url += '&lbreferer=' + encodeURIComponent(_currentUrl);
+      }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     _xhr = $.ajax(obj);

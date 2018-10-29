@@ -312,9 +312,9 @@ class Cart
 
         // Save the cookies:
         $cookie = implode(self::CART_COOKIE_DELIM, $ids);
-        $this->cookieManager->set(self::CART_COOKIE, $cookie, 0);
+        $this->cookieManager->set(self::CART_COOKIE, $cookie, 0, false);
         $srcCookie = implode(self::CART_COOKIE_DELIM, $sources);
-        $this->cookieManager->set(self::CART_COOKIE_SOURCES, $srcCookie, 0);
+        $this->cookieManager->set(self::CART_COOKIE_SOURCES, $srcCookie, 0, false);
     }
 
     /**

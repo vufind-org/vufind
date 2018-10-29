@@ -55,6 +55,7 @@ class ManagerFactory implements FactoryInterface
     {
         $cookieManager = $container->get('VuFind\Cookie\CookieManager');
         $options = [
+            'cookie_httponly' => $cookieManager->isHttpOnly(),
             'cookie_path' => $cookieManager->getPath(),
             'cookie_secure' => $cookieManager->isSecure()
         ];

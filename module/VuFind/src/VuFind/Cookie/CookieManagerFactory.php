@@ -64,24 +64,19 @@ class CookieManagerFactory implements FactoryInterface
         }
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
         $path = '/';
-        if (isset($config->Cookies->limit_by_path)
-            && $config->Cookies->limit_by_path
-        ) {
+        if ($config->Cookies->limit_by_path ?? false) {
             $path = Console::isConsole()
                 ? '' : $container->get('Request')->getBasePath();
             if (empty($path)) {
                 $path = '/';
             }
         }
-        $secure = isset($config->Cookies->only_secure)
-            ? $config->Cookies->only_secure
-            : false;
-        $domain = isset($config->Cookies->domain)
-            ? $config->Cookies->domain
-            : null;
-        $session_name = isset($config->Cookies->session_name)
-            ? $config->Cookies->session_name
-            : null;
-        return new $requestedName($_COOKIE, $path, $domain, $secure, $session_name);
+        $secure = $config->Cookies->only_secure ?? false;
+        $httpOnly = $config->Cookies->http_only ?? true;
+        $domain = $config->Cookies->domain ?? null;
+        $session_name = $config->Cookies->session_name ?? null;
+        return new $requestedName(
+            $_COOKIE, $path, $domain, $secure, $session_name, $httpOnly
+        );
     }
 }
