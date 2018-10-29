@@ -114,4 +114,23 @@ class SearchMemory extends AbstractHelper
     {
         return $this->memory->retrieveLastSetting($context, 'sort');
     }
+
+    /**
+     * Retrieve the parameters of the last search by the search class
+     *
+     * @param string $searchClassId Search class
+     *
+     * @return \VuFind\Search\Base\Params
+     */
+    public function getLastSearchParams($searchClassId)
+    {
+        $lastUrl = $this->memory->retrieveSearch();
+        $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
+        $request = new \Zend\StdLib\Parameters();
+        $request->fromString($queryParams);
+        $paramsPlugin = $this->getView()->plugin('searchParams');
+        $params = $paramsPlugin($searchClassId);
+        $params->initFromRequest($request);
+        return $params;
+    }
 }

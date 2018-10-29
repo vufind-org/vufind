@@ -4,6 +4,18 @@
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
   $this->options = $options = $results->getOptions();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+      }
+    }
+  }
 ?>
 <?php if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
@@ -24,14 +36,9 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
-<?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<?php if (!empty($filterList)): ?>
+<?php if (!empty($this->extraSideFacetFilters)): ?>
   <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
-    'collapsedFacets' => $collapsedFacets,
-    'extraFilters' => $extraFilters,
-    'filterList' => $filterList,
+    'filterList' => $this->extraSideFacetFilters
   ]); ?>
 <?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
