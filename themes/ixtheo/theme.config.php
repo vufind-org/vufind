@@ -16,4 +16,7 @@ return [
             'browse' => 'IxTheo\View\Helper\Root\Browse',
         ],
     ],
+    'js' => [
+        'ixtheo.js',
+    ],
 ];
