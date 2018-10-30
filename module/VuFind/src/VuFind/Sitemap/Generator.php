@@ -31,6 +31,7 @@ use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use Zend\Config\Config;
+use Zend\Console\Console;
 
 /**
  * Class for generating sitemaps
@@ -107,6 +108,13 @@ class Generator
     protected $warnings = [];
 
     /**
+     * Verbose mode
+     *
+     * @var bool
+     */
+    protected $verbose = false;
+
+    /**
      * Mode of retrieving IDs from the index (may be 'terms' or 'search')
      *
      * @var string
@@ -150,6 +158,21 @@ class Generator
             $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
                 $this->config->SitemapIndex->indexFileName . '.xml';
         }
+    }
+
+    /**
+     * Get/set verbose mode
+     *
+     * @param bool $newMode New verbose mode
+     *
+     * @return bool Current or new verbose mode
+     */
+    public function setVerbose($newMode = null)
+    {
+        if (null !== $newMode) {
+            $this->verbose = $newMode;
+        }
+        return $this->verbose;
     }
 
     /**
@@ -225,6 +248,9 @@ class Generator
 
             // Update counters:
             $count += $this->countPerPage;
+            if ($this->verbose) {
+                Console::writeLine("Page $currentPage processed");
+            }
             $currentPage++;
         }
         return $currentPage;

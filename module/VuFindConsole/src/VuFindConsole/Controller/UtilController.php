@@ -283,6 +283,8 @@ class UtilController extends AbstractBase
             $this->serviceLocator->get('VuFind\Search\BackendManager'),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
         );
+        $request = $this->getRequest();
+        $generator->setVerbose($request->getParam('verbose', false));
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
             Console::writeLine("$warning");
