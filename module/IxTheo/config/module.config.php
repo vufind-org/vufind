@@ -103,7 +103,6 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
         ],

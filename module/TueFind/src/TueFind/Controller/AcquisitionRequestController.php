@@ -37,6 +37,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
         } else {
             $to = $config->Site->acquisition_request_receivers;
             $from = $config->Site->email_from;
+            $reply_to = $this->params()->fromPost('email');
             $tuefind_type = ucfirst(basename(getenv('VUFIND_LOCAL_DIR')));
             $subject = $tuefind_type . '-Anschaffungsvorschlag';
             $body = "Folgender Vorschlag wurde über " . $tuefind_type . " eingereicht:\n";
@@ -52,7 +53,7 @@ class AcquisitionRequestController extends \VuFind\Controller\AbstractBase
             $cc = null;
             $mailer = $this->serviceLocator->get('VuFind\Mailer');
             $mailer->setMaxRecipients(5);
-            $mailer->send($to, $from, $subject, $body, $cc);
+            $mailer->send($to, $from, $subject, $body, $cc, $reply_to);
             $this->flashMessenger()->addMessage(
                 'Thank you for your purchasing suggestion!', 'success'
             );

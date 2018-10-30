@@ -52,6 +52,11 @@ $config = [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFind\Mailer' => 'TueFind\Mailer\Factory',
+        ],
+    ],
 ];
 
 $config['router']['routes']['static-page'] = [
