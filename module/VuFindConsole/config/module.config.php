@@ -55,6 +55,7 @@ $routes = [
     'generate/extendclass' => 'generate extendclass [--extendfactory] [<class>] [<target>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
+    'generate/plugin' => 'generate plugin [<class>] [<factory>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
     'generate/theme' => 'generate theme [<themename>]',
