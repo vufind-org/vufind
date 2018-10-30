@@ -90,7 +90,7 @@ class Results extends BaseResults
         $recordsToRequest = [];
         foreach ($list as $row) {
             $recordsToRequest[] = [
-                'id' => $row->journal_control_number,
+                'id' => $row->journal_control_number_or_bundle_name,
                 'source' => 'Solr'
             ];
         }
