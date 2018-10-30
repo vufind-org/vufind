@@ -176,12 +176,26 @@ class Generator
     }
 
     /**
+     * Get the current microtime, formatted to a number.
+     *
+     * @return float
+     */
+    protected function getTime()
+    {
+        $time = explode(" ", microtime());
+        return $time[1] + $time[0];
+    }
+
+    /**
      * Generate the sitemaps based on settings established by the constructor.
      *
      * @return void
      */
     public function generate()
     {
+        // Start timer:
+        $startTime = $this->getTime();
+
         // Initialize variable
         $currentPage = 1;
 
@@ -198,6 +212,13 @@ class Generator
 
         // Set-up Sitemap Index
         $this->buildIndex($currentPage - 1);
+
+        // Display total elapsed time in verbose mode:
+        if ($this->verbose) {
+            Console::writeLine(
+                'Elapsed time (in seconds): ' . ($this->getTime() - $startTime)
+            );
+        }
     }
 
     /**
