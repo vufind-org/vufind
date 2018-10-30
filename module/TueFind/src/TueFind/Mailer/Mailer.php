@@ -1,5 +1,5 @@
 <?php
-namespace IxTheo\Mailer;
+namespace TueFind\Mailer;
 
 class Mailer extends \VuFind\Mailer\Mailer {
 
