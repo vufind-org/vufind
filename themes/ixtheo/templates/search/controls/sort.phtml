@@ -3,7 +3,10 @@
     <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu form-control"
-      data-default_sort="<?=$this->searchOptions($this->searchClassId)->getDefaultSortByHandler()?>"
+      <? $default_sort = $this->params->getOptions()->getDefaultSortByHandler();?>
+      <? if ($default_sort != null): ?>
+      data-default_sort="<?=$default_sort?>"
+      <? endif; ?>
       <?= $this->params->getOptions() instanceof \IxTheo\Search\Solr\Options && $this->params->getQuery() instanceof \VuFindSearch\Query\Query && in_array($this->params->getQuery()->getHandler(), $this->params->getOptions()->getForceDefaultSortSearches()) ? 'disabled' : '' ?>>
       <? foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
