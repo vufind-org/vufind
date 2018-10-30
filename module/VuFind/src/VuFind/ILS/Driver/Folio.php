@@ -28,6 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -39,8 +40,10 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Folio extends AbstractAPI implements TranslatorAwareInterface
+class Folio extends AbstractAPI implements
+    HttpServiceAwareInterface, TranslatorAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
