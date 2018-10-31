@@ -47,7 +47,7 @@ class OverdriveConnectorFactory implements
     /**
      * Create an object
      *
-     * @param ContainerInterface     $container Service manager
+     * @param ContainerInterface $container Service manager
      * @param string             $requestedName Service being created
      * @param null|array         $options Extra options (optional)
      *
@@ -74,6 +74,15 @@ class OverdriveConnectorFactory implements
             'DigitalContent\OverdriveController',
             $container->get('Zend\Session\SessionManager')
         );
-        return new $requestedName($config, $odConfig, $session, $auth);
+
+        $connector = new $requestedName($config, $odConfig, $session, $auth);
+
+        // Populate cache storage
+        $connector->setCacheStorage(
+            $container->get('VuFind\Cache\Manager')->getCache('object',"Overdrive")
+        );
+
+
+        return $connector;
     }
 }

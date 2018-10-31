@@ -74,7 +74,7 @@ class OverdriveController extends AbstractAdmin
 
         $view = $this->createViewModel();
         $view->setTemplate('admin/overdrive/home');
-        $view->productsKey = $connector->getProductsKey();
+        $view->productsKey = $connector->getCollectionToken();
         $view->overdriveConfig = $connector->getConfig();
         $view->hasAccess = $connector->getAccess();
         //$view->token = $connector->connectToAPI();

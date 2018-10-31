@@ -64,50 +64,68 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug("ODC mycontent action");
 
+        //TODO get hold and checkoutlimit using the Patron Info API
+
         //force login
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-
-        //TODO get hold and checkoutlimit using the Patron Info API
-
         $holds = array();
         $checkouts = array();
         $checkoutsUnavailable = false;
         $holdsUnavailable = false;
-        //get the current Overdrive checkouts
-        //for this user and add to our array of IDS
-        $checkoutResults = $this->connector->getCheckouts(true);
-        if (!$checkoutResults->status) {
-            $this->flashMessenger()->addMessage(
-                $checkoutResults->code, 'error'
+
+        //check on this patrons's access to Overdrive
+        $odAccessResult = $this->connector->getAccess();
+
+        if (!$odAccessResult->status) {
+
+            $this->flashMessenger()->addErrorMessage(
+                $this->translate(
+                   $odAccessResult->code,
+                       ["%%message%%"=>$odAccessResult->msg]
+                )
             );
             $checkoutsUnavailable = true;
-        } else {
-            foreach ($checkoutResults->data as $checkout) {
-                $mycheckout['checkout'] = $checkout;
-                $mycheckout['record']
-                    = $this->serviceLocator->get('VuFind\Record\Loader')
-                        ->load(strtolower($checkout->reserveId));
-                $checkouts[] = $mycheckout;
-            }
-        }
-        //get the current Overdrive holds for this user and add to our array of IDS
-        $holdsResults = $this->connector->getHolds(true);
-        if (!$holdsResults->status) {
-            if ($checkoutResults->status) {
-                $this->flashMessenger()->addMessage(
-                    $holdsResults->code, 'error'
-                );
-            }
             $holdsUnavailable = true;
-        } else {
-            foreach ($holdsResults->data as $hold) {
-                $myhold['hold'] = $hold;
-                $myhold['record']
-                    = $this->serviceLocator->get('VuFind\Record\Loader')
+        }
+
+
+        if ($odAccessResult->status) {
+            //get the current Overdrive checkouts
+            //for this user and add to our array of IDS
+            $checkoutResults = $this->connector->getCheckouts(true);
+            if (!$checkoutResults->status) {
+                $this->flashMessenger()->addMessage(
+                    $checkoutResults->code, 'error'
+                );
+                $checkoutsUnavailable = true;
+            } else {
+                foreach ($checkoutResults->data as $checkout) {
+                    $mycheckout['checkout'] = $checkout;
+                    $mycheckout['record']
+                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        ->load(strtolower($checkout->reserveId));
+                    $checkouts[] = $mycheckout;
+                }
+            }
+            //get the current Overdrive holds for this user and add to our array of IDS
+            $holdsResults = $this->connector->getHolds(true);
+            if (!$holdsResults->status) {
+                if ($checkoutResults->status) {
+                    $this->flashMessenger()->addMessage(
+                        $holdsResults->code, 'error'
+                    );
+                }
+                $holdsUnavailable = true;
+            } else {
+                foreach ($holdsResults->data as $hold) {
+                    $myhold['hold'] = $hold;
+                    $myhold['record']
+                        = $this->serviceLocator->get('VuFind\Record\Loader')
                         ->load(strtolower($hold->reserveId));
-                $holds[] = $myhold;
+                    $holds[] = $myhold;
+                }
             }
         }
         //todo: get reading history

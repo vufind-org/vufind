@@ -33,7 +33,8 @@ use Zend\Log\LoggerAwareInterface;
 
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
-
+use Zend\Cache\Storage\StorageInterface;
+use VuFind\Cache\KeyGeneratorTrait;
 
 /**
  * OverdriveConnector
@@ -52,8 +53,6 @@ use ZfcRbac\Service\AuthorizationServiceAwareTrait;
  *       provide option for giving users option for every hold
  *       provide option for asking about autocheckout for every hold
  *       provide config options for how to handle patrons with no access to OD
- *       look into storing collection token in application (object) cache
- *         instead of the users session.
  */
 class OverdriveConnector implements LoggerAwareInterface,
     AuthorizationServiceAwareInterface, \VuFindHttp\HttpServiceAwareInterface
@@ -63,6 +62,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
     use AuthorizationServiceAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
+    use KeyGeneratorTrait;
 
     /**
      * Session Container
@@ -104,6 +104,14 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @var \Zend\Http\Client
      */
     protected $client;
+
+    /**
+     * Cache for storing ILS data temporarily (e.g. patron blocks)
+     *
+     * @var StorageInterface
+     */
+    protected $cache = null;
+
 
     /**
      * Constructor
@@ -155,14 +163,14 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @since 5.0
      *
-     * @return bool Whether the logged-in user has access to Overdrive.
+     * @return object
      */
     public function getAccess()
     {
         if (!$user = $this->getUser()) {
             return false;
         }
-
+        $result = $this->getResultObject();
         $odAccess = $this->sessionContainer->odAccess;
         $this->debug("odaccess: $odAccess");
         if (empty($odAccess)) {
@@ -173,11 +181,28 @@ class OverdriveConnector implements LoggerAwareInterface,
             ) {
                 $this->sessionContainer->odAccess = true;
             } else {
-                $this->sessionContainer->odAccess = false;
+                $result->status = false;
+                $conf = $this->getConfig();
+                if($conf->noAccessString){
+                    if(strpos($this->sessionContainer->odAccessMessage,$conf->noAccessString)){
+                        //this user should not have access to OD
+                        $result->code = "od_account_noaccess";
+                    }else{
+                        //there is some problem with the account
+                        $result->code = "od_account_problem";
+                    }
+                }
+                //odAccess is set in the session by the call above
+
+                $result->msg = $this->sessionContainer->odAccessMessage;
             }
+
+        }else{
+            $result->status = $this->sessionContainer->odAccess;
+            $result->msg = $this->sessionContainer->odAccessMessage;
         }
-        $this->debug("odaccess: " . $this->sessionContainer->odAccess);
-        return $this->sessionContainer->odAccess;
+        $this->debug("odaccess2: " . $this->sessionContainer->odAccess. " ".$this->sessionContainer->odAccessMessage );
+        return $result;
     }
 
     /**
@@ -194,19 +219,37 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     public function getAvailability($overDriveId)
     {
-        $res = false;
+        $result = $this->getResultObject();
         if (!$overDriveId) {
             $this->logWarning("no overdrive content ID was passed in.");
             return false;
         }
         if ($conf = $this->getConfig()) {
-            $productsKey = $this->getProductsKey();
+            $productsKey = $this->getCollectionToken();
             $baseUrl = $conf->discURL;
             $availabilityUrl = "$baseUrl/v2/collections/$productsKey/products/";
             $availabilityUrl .= "$overDriveId/availability";
             $res = $this->callUrl($availabilityUrl);
+
+            if ($res->errorCode == "NotFound") {
+                if ($conf->consortiumSupport && !$this->getUser()) {
+                    //consortium support is turned on but user is not logged in;
+                    //if the title is not found it probably means that it's only
+                    //available to some users.
+                    $result->status = true;
+                    $result->code = 'od_code_login_for_avail';
+                } else {
+                    $result->status = false;
+                    $this->logWarning("resource not found: $overDriveId");
+                }
+            }else{
+                $result->status = true;
+                $result->data = $res;
+            }
+
         }
-        return $res;
+
+        return $result;
     }
 
     /**
@@ -224,15 +267,16 @@ class OverdriveConnector implements LoggerAwareInterface,
     public function getAvailabilityBulk($overDriveIds = array())
     {
         $result = $this->getResultObject();
-
+        $loginRequired = false;
         if (count($overDriveIds) < 1) {
             $this->logWarning("no overdrive content ID was passed in.");
             return false;
         }
         if ($conf = $this->getConfig()) {
-            $res = false;
-            $productsKey = $this->getProductsKey();
-
+            if ($conf->consortiumSupport && !$this->getUser()) {
+                $loginRequired = true;
+            }
+            $productsKey = $this->getCollectionToken();
             $baseUrl = $conf->discURL;
             $availabilityPath = "/v2/collections/";
             $availabilityPath .= "$productsKey/availability?products=";
@@ -242,9 +286,36 @@ class OverdriveConnector implements LoggerAwareInterface,
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                $result->status = true;
-                foreach ($res->availability as $item) {
-                    $result->data[strtolower($item->reserveId)] = $item;
+                //
+                if ($res->errorCode == "NotFound" || $res->totalItems==0) {
+                    if ($loginRequired) {
+                        //consortium support is turned on but user is no
+                        //t logged in
+                        //if the title is not found it could mean that it's only
+                        //available to some users.
+                        $result->status = true;
+                        $result->code = 'od_code_login_for_avail';
+                    } else {
+                        $result->status = false;
+                        $this->logWarning("resources not found");
+                    }
+                }else {
+                    $result->status = true;
+                    foreach ($res->availability as $item) {
+                        $result->data[strtolower($item->reserveId)] = $item;
+                    }
+                    //now look for items not returned
+                    foreach ($overDriveIds as $id){
+                        if(!isset($result->data[$id])){
+                            if($loginRequired){
+                                $result->data[$id]->code
+                                    = 'od_code_login_for_avail';
+                            }else{
+                                $result->data[$id]->code
+                                    = 'od_code_resource_not_found';
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -253,30 +324,55 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
-     * Get Products Key
+     * Get Colllection Token
      *
-     * Gets the products key for the Overdrive collection (also sometimes called the
-     * collection token.) The collection token doesn't change much but according to
+     * Gets the colleciton token for the Overdrive collection. The collection
+     * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
+     * Also, the collection token depends on the user if the user is in a
+     * consortium.  If consortium support is turned on then the user collection
+     * token will override the library collection token.
      * The token itself is returned but it's also saved in the session and
-     * automatically returned. In the future, I'll move this the object cache.
+     * automatically returned.
      *
      * @return object|bool A collection token for the library's collection.
      */
-    public function getProductsKey()
+    public function getCollectionToken()
     {
-        $collectionToken = $this->sessionContainer->collectionToken;
-        $this->debug("collectionToken from session: $collectionToken");
+        $collectionToken = $this->getCachedData("collectionToken");
+        $userCollectionToken = $this->sessionContainer->userCollectionToken;
+        $this->debug("collectionToken from cache: $collectionToken");
+        $this->debug("userCollectionToken from session: $userCollectionToken");
+        $conf = $this->getConfig();
+        if ($conf->consortiumSupport && $user = $this->getUser()) {
+            if (empty($userCollectionToken)) {
+                $this->debug("getting new user collectionToken");
+                $baseUrl = $conf->circURL;
+                $patronURL = "$baseUrl/v1/patrons/me";
+                $res = $this->callPatronUrl(
+                    $user["cat_username"],
+                    $user["cat_password"], $patronURL
+                );
+                if ($res) {
+                    $userCollectionToken = $res->collectionToken;
+                    $this->sessionContainer->userCollectionToken
+                        = $userCollectionToken;
+                } else {
+                    return false;
+                }
+            }
+            return $userCollectionToken;
+        }
         if (empty($collectionToken)) {
             $this->debug("getting new collectionToken");
-            $conf = $this->getConfig();
             $baseUrl = $conf->discURL;
             $libraryID = $conf->libraryID;
             $libraryURL = "$baseUrl/v1/libraries/$libraryID";
             $res = $this->callUrl($libraryURL);
             if ($res) {
                 $collectionToken = $res->collectionToken;
-                $this->sessionContainer->collectionToken = $collectionToken;
+                $this->putCachedData("collectionToken",$collectionToken);
+                //$this->sessionContainer->collectionToken = $collectionToken;
             } else {
                 return false;
             }
@@ -670,6 +766,13 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf->ILSname = $this->recordConfig->API->ILSname;
         $conf->isMarc = $this->recordConfig->Overdrive->isMarc;
         $conf->displayDateFormat = $this->mainConfig->Site->displayDateFormat;
+        $conf->consortiumSupport
+            = $this->recordConfig->Overdrive->consortiumSupport;
+        $conf->showMyContent
+            = strtolower($this->recordConfig->Overdrive->showMyContent);
+        $conf->noAccessString = $this->recordConfig->Overdrive->noAccessString;
+        $conf->tokenCacheLifetime
+            = $this->recordConfig->API->tokenCacheLifetime;
         return $conf;
     }
 
@@ -712,7 +815,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             return array();
         }
         if ($conf = $this->getConfig()) {
-            $productsKey = $this->getProductsKey();
+            $productsKey = $this->getCollectionToken();
             $baseUrl = $conf->discURL;
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
@@ -985,7 +1088,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 if (isset($returnVal->errorCode)) {
                     //In some cases, this should be returned perhaps...
                     $this->error("Overdrive Error: " . $returnVal->errorCode);
-                    return false;
+                    return $returnVal;
                 } else {
                     return $returnVal;
                 }
@@ -998,7 +1101,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 );
             }
         }
-        $this->debug("here");
         return false;
     }
 
@@ -1134,7 +1236,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             }
             $this->debug("patronURL data sent: $postData");
             $this->debug("patronURL method: " . $client->getMethod());
-            //$this->debug("client: " . $client->getRequest());
+            $this->debug("client: " . $client->getRequest());
             try {
 
                 $response = $client->send();
@@ -1248,6 +1350,11 @@ class OverdriveConnector implements LoggerAwareInterface,
             $client->setRawBody($postFields);
             $response = $client->setUri($url)->send();
             $body = $response->getBody();
+            $this->debug(
+                "return from OD patron API token Call: " . print_r(
+                    $body, true
+                )
+            );
             $patronTokenData = json_decode($body);
             $this->debug(
                 "return from OD patron API token Call: " . print_r(
@@ -1258,6 +1365,13 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $patronTokenData->expirationTime = time()
                     + $patronTokenData->expires_in;
             } else {
+
+                //$this->debug("gere".$patronTokenData);
+                if($patronTokenData->error=='unauthorized_client'){
+                    $this->debug("setting session odaccess");
+                    $this->sessionContainer->odAccess = false;
+                    $this->sessionContainer->odAccessMessage = $patronTokenData->error_description;
+                }
                 $patronTokenData = null;
             }
             $this->sessionContainer->patronTokenData = $patronTokenData;
@@ -1287,6 +1401,88 @@ class OverdriveConnector implements LoggerAwareInterface,
         $this->client->resetParameters();
         return $this->client;
     }
+
+    /**
+     * Set a cache storage object.
+     *
+     * @param StorageInterface $cache Cache storage interface
+     *
+     * @return void
+     */
+    public function setCacheStorage(StorageInterface $cache = null)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * Helper function for fetching cached data.
+     * Data is cached for up to $this->cacheLifetime seconds so that it would be
+     * faster to process e.g. requests where multiple calls to the backend are made.
+     *
+     * @param string $key Cache entry key
+     *
+     * @return mixed|null Cached entry or null if not cached or expired
+     */
+    protected function getCachedData($key)
+    {
+        // No cache object, no cached results!
+        if (null === $this->cache) {
+            return null;
+        }
+        $conf = $this->getConfig();
+        $fullKey = $this->getCacheKey($key);
+        $item = $this->cache->getItem($fullKey);
+        $this->debug("pulling item from cache for key $key : ". $item['entry']);
+        if (null !== $item) {
+            // Return value if still valid:
+            if (time() - $item['time'] < $conf->tokenCacheLifetime) {
+                return $item['entry'];
+            }
+
+            // Clear expired item from cache:
+            $this->cache->removeItem($fullKey);
+        }
+        return null;
+    }
+    /**
+     * Helper function for storing cached data.
+     * Data is cached for up to $this->cacheLifetime seconds so that it would be
+     * faster to process e.g. requests where multiple calls to the backend are made.
+     *
+     * @param string $key   Cache entry key
+     * @param mixed  $entry Entry to be cached
+     *
+     * @return void
+     */
+    protected function putCachedData($key, $entry)
+    {
+        // Don't write to cache if we don't have a cache!
+        if (null === $this->cache) {
+            return;
+        }
+        $item = [
+            'time' => time(),
+            'entry' => $entry
+        ];
+        $this->debug("putting item from cache for key $key : $entry");
+        $this->cache->setItem($this->getCacheKey($key), $item);
+    }
+    /**
+     * Helper function for removing cached data.
+     *
+     * @param string $key Cache entry key
+     *
+     * @return void
+     */
+    protected function removeCachedData($key)
+    {
+        // Don't write to cache if we don't have a cache!
+        if (null === $this->cache) {
+            return;
+        }
+        $this->cache->removeItem($this->getCacheKey($key));
+    }
+
 
 
     /**
