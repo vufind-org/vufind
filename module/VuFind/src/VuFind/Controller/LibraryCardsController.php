@@ -131,7 +131,6 @@ class LibraryCardsController extends AbstractBase
                 'cardName' => $cardName,
                 'target' => $target ? $target : $defaultTarget,
                 'username' => $username,
-                'password' => 'NEW' === $id ? '' : '    ',
                 'targets' => $targets,
                 'defaultTarget' => $defaultTarget
             ]
