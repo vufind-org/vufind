@@ -235,18 +235,19 @@ class Generator
      */
     protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
     {
+        $lastTerm = '';
         $cursorMark = '*';
         $prevCursorMark = '';
         $recordCount = 0;
 
-        while ($cursorMark !== $prevCursorMark) {
+        while (true) {
             // Get IDs and break out of the loop if we've run out:
             $prevCursorMark = $cursorMark;
-            $result = $this->getIdsFromBackend($backend, $cursorMark);
+            $result = $this->getIdsFromBackend($backend, $lastTerm, $cursorMark);
             if (empty($result['ids'])) {
                 break;
             }
-            $cursorMark = $result['cursorMark'];
+            $cursorMark = $result['cursorMark'] ?? '';
 
             // Write the current entry:
             $smf = $this->getNewSitemap();
@@ -256,6 +257,7 @@ class Generator
                     $loc = 'http://' . $loc;
                 }
                 $smf->addUrl($loc);
+                $lastTerm = $item;
             }
             $filename = $this->getFilenameForPage($currentPage);
             if (false === $smf->write($filename)) {
@@ -269,6 +271,12 @@ class Generator
                 Console::writeLine("Page $currentPage, $recordCount processed");
             }
 
+            if ('cursorMark' === $this->retrievalMode
+                && $cursorMark === $prevCursorMark
+            ) {
+                break;
+            }
+
             // Update counter:
             $currentPage++;
         }
@@ -276,15 +284,49 @@ class Generator
     }
 
     /**
-     * Retrieve a batch of IDs using regular search.
+     * Retrieve a batch of IDs.
      *
      * @param Backend $backend    Search backend
-     * @param int     $cursorMark cursorMark
+     * @param string  $lastTerm   Last term retrieved (terms mode)
+     * @param string  $cursorMark cursorMark (cursorMark mode)
      *
      * @return array
      */
-    protected function getIdsFromBackend(Backend $backend, $cursorMark)
+    protected function getIdsFromBackend(Backend $backend, $lastTerm, $cursorMark)
     {
+        if ($this->retrievalMode == 'terms') {
+            return $this->getIdsFromBackendUsingTerms($backend, $lastTerm);
+        }
+        return $this->getIdsFromBackendUsingCursorMark($backend, $cursorMark);
+    }
+
+    /**
+     * Retrieve a batch of IDs using the terms component.
+     *
+     * @param Backend $backend  Search backend
+     * @param string  $lastTerm Last term retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
+    {
+        $key = $backend->getConnector()->getUniqueKey();
+        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
+            ->getFieldTerms($key);
+        $ids = null === $info ? [] : array_keys($info->toArray());
+        return compact('ids');
+    }
+
+    /**
+     * Retrieve a batch of IDs using a cursorMark.
+     *
+     * @param Backend $backend    Search backend
+     * @param string  $cursorMark cursorMark
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingCursorMark(Backend $backend, $cursorMark
+    ) {
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();
         $params = new ParamBag(
