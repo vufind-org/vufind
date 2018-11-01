@@ -29,6 +29,8 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\ILS as ILSException;
+
 /**
  * Controller for the library card functionality.
  *
@@ -192,13 +194,19 @@ class LibraryCardsController extends AbstractBase
         $user->activateLibraryCard($cardID);
 
         // Connect to the ILS and check that the credentials are correct:
-        $catalog = $this->getILS();
-        $patron = $catalog->patronLogin(
-            $user->cat_username, $user->getCatPassword()
-        );
-        if (!$patron) {
+        try {
+            $catalog = $this->getILS();
+            $patron = $catalog->patronLogin(
+                $user->cat_username,
+                $user->getCatPassword()
+            );
+            if (!$patron) {
+                $this->flashMessenger()
+                    ->addMessage('authentication_error_invalid', 'error');
+            }
+        } catch (ILSException $e) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_invalid', 'error');
+                ->addMessage('authentication_error_technical', 'error');
         }
 
         $this->setFollowupUrlToReferer();
