@@ -35,7 +35,7 @@
   </div>
   <div class="form-group">
     <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
-    <input id="login_password" type="password" name="password" value="" placeholder="<?=$this->escapeHtmlAttr($this->translate('new_password'))?>" class="form-control"/>
+    <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->id) ? $this->escapeHtmlAttr($this->translate('library_card_edit_password_placeholder')) : ''?>" class="form-control"/>
   </div>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
