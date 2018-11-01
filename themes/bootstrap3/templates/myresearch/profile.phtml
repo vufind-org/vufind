@@ -54,29 +54,31 @@
     <?php endif; ?>
   </div>
 
-  <?php if (is_array($this->profile)): ?>
+  <?php if (is_array($this->profile) || $this->user->getLibraryCards()->count() > 1): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     </p>
-    <table class="table table-striped">
-      <?=$this->renderArray(
-        $arrTemplate, $this->profile,
-        [
-          $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname',
-          $this->transEsc('Address') . ' 1' => 'address1',
-          $this->transEsc('Address') . ' 2' => 'address2',
-          $this->transEsc('Zip') => 'zip',
-          $this->transEsc('City') => 'city',
-          $this->transEsc('Country') => 'country',
-          $this->transEsc('Phone Number') => 'phone',
-          $this->transEsc('Mobile Number') => 'mobile_phone',
-          $this->transEsc('Group') => 'group',
-          $this->transEsc('Expires') => 'expiration_date'
-        ]
-      )?>
-    </table>
+    <?php if (is_array($this->profile)): ?>
+      <table class="table table-striped">
+        <?=$this->renderArray(
+          $arrTemplate, $this->profile,
+          [
+            $this->transEsc('First Name') => 'firstname',
+            $this->transEsc('Last Name') => 'lastname',
+            $this->transEsc('Address') . ' 1' => 'address1',
+            $this->transEsc('Address') . ' 2' => 'address2',
+            $this->transEsc('Zip') => 'zip',
+            $this->transEsc('City') => 'city',
+            $this->transEsc('Country') => 'country',
+            $this->transEsc('Phone Number') => 'phone',
+            $this->transEsc('Mobile Number') => 'mobile_phone',
+            $this->transEsc('Group') => 'group',
+            $this->transEsc('Expires') => 'expiration_date'
+          ]
+        )?>
+      </table>
+    <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
