@@ -3,15 +3,20 @@
   font-size: 14px;
   display: inline-block;
   vertical-align: top;
-  margin-top: 9px;
+  margin-top: 6px;
   font-weight: 400;
+  line-height: 2;
+  
+  > span {
+    margin-right: 5px;
+  }
+  #select-card-label-maincontent {
+    display: none;
+  }
   .dropdown {
     display: inline-block;
-    &.select-card {
-      margin-left: 5px;
-    }
     > a {
-      padding: 7px 7px;
+      padding: 3px 7px;
       color: black;
       background-color: white;
       border: 1px solid @btn-default-border;
@@ -25,7 +30,7 @@
     i {
       font-size: 12px;
       position: absolute;
-      top: 5px;
+      top: 8px;
       right: 11px;
     }
     span {
@@ -47,25 +52,5 @@
     background: @body-bg;
     color: @gray;
     border: 1px solid @gray-lighter;
-  }
-}
-
-.finna-main-header .select-card-wrapper {
-  display: block;
-  margin-top: 1em;
-  @media (max-width: 600px) {
-    text-align: right;
-    margin-left: 0px;
-    li {
-      text-align: left;
-    }
-    .select-card-label {
-      margin-top: -7px;
-    }
-  }
-  @media (max-width: 350px) {
-    .select-card-label {
-      display: none;
-    }
   }
 }
