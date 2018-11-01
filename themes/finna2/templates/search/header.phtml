@@ -104,25 +104,27 @@
     </div>
   </div>
 <?php else: ?>
-  <div class="container <?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
-    <div class="finna-main-header">
-      <h1 class="search-result-header">
-      <?php if ($this->recordsFound || isset($onRecordPage)): ?>
-        <?php if (isset($this->overrideSearchHeading)): ?>
-          <?=$this->overrideSearchHeading?>
-        <?php elseif ($searchType == 'basic'): ?>
-          <?php if (empty($lookfor)): ?>
-            <?=$this->transEsc('history_empty_search');?>
-          <?php else: ?>
-            <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
+  <div class="finna-main-header-wrapper">
+    <div class="container <?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
+      <div class="finna-main-header">
+        <h1 class="search-result-header">
+        <?php if ($this->recordsFound || isset($onRecordPage)): ?>
+          <?php if (isset($this->overrideSearchHeading)): ?>
+            <?=$this->overrideSearchHeading?>
+          <?php elseif ($searchType == 'basic'): ?>
+            <?php if (empty($lookfor)): ?>
+              <?=$this->transEsc('history_empty_search');?>
+            <?php else: ?>
+              <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
+            <?php endif; ?>
+          <?php elseif ($searchType == 'advanced'): ?>
+            <span class="adv_search_terms"><strong><?=$this->transEsc("Your search terms")?>:</strong> <?=$this->escapeHtml($this->lookfor)?></span>
           <?php endif; ?>
-        <?php elseif ($searchType == 'advanced'): ?>
-          <span class="adv_search_terms"><strong><?=$this->transEsc("Your search terms")?>:</strong> <?=$this->escapeHtml($this->lookfor)?></span>
+          <?php else: ?>
+            <?=$this->transEsc('nohit_heading')?>
         <?php endif; ?>
-        <?php else: ?>
-          <?=$this->transEsc('nohit_heading')?>
-      <?php endif; ?>
-      </h1>
+        </h1>
+      </div>
     </div>
   </div>
 <?php endif; ?>

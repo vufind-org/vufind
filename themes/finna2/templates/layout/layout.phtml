@@ -330,7 +330,7 @@ JS;
           </div>
         </div>
       <?php endif; ?>
-      <div class="search-form-container">
+      <div class="search-form-container <?= ($this->searchMemory()->getLastSearchType() === 'advanced' ? 'advanced-container' : '') ?>">
         <div class="container">
           <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
             <div class="logo clearfix">
