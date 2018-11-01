@@ -71,6 +71,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      */
     public function getLinks(array $doiArray)
     {
+        $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
         $response = [];
         foreach ($doiArray as $doi) {
             $data = $this->connector->lookupDoi($doi)['data'] ?? null;
@@ -78,6 +79,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
                 $response[$doi][] = [
                     'link' => $data['browzineWebLink'],
                     'label' => $this->translate('View Complete Issue'),
+                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
                     'data' => $data,
                 ];
             }
@@ -85,6 +87,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
                 $response[$doi][] = [
                     'link' => $data['fullTextFile'],
                     'label' => $this->translate('PDF Full Text'),
+                    'icon' => $baseIconUrl . 'browzine-pdf-download-icon.svg',
                     'data' => $data,
                 ];
             }
