@@ -345,7 +345,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * Oherwise only the link URL is outputted.
      * @param string  $parentName Translated consortium display name.
      *
-     * @return array Array with the keys 'success' and 'items'.
+     * @return mixed array of results or false on error.
      */
     protected function lookupLibraryAction($parent, $link = false, $parentName = null
     ) {
@@ -399,7 +399,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * Oherwise only the link URL is outputted.
      * @param string  $parentName Translated consortium display name.
      *
-     * @return array Array with the keys 'success' and 'items'.
+     * @return mixed array of results or false on error.
      */
     protected function lookupMuseumAction($parent, $link = false,
         $parentName = null
@@ -414,8 +414,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         $urlHelper = $this->viewRenderer->plugin('url');
         $url = $urlHelper('organisationinfo-home');
         $json = $response['museot'][0];
+        $items = [];
         if ($json['finna_publish'] == 1) {
-            $result = ['success' => true, 'items' => []];
             $id = $json['finna_org_id'];
             $data = "{$url}?" . http_build_query(['id' => $id]);
             if ($link) {
@@ -430,9 +430,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                    'logo' => $logo, 'name' => $name
                 ]
             );
-            $result['items'][$id] = $data;
+            $items[$id] = $data;
         }
-        return $result;
+        return ['success' => true, 'items' => $items];
     }
 
     /**
@@ -445,7 +445,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * @param string $startDate Start date (YYYY-MM-DD) of opening times
      * @param string $endDate   End date (YYYY-MM-DD) of opening times
      *
-     * @return array
+     * @return mixed array of results or false on error.
      */
     protected function consortiumAction(
         $parent, $buildings, $target, $startDate, $endDate
@@ -581,7 +581,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * @param boolean $fullDetails Include full details.
      * @param boolean $allServices Include full list of services.
      *
-     * @return array
+     * @return mixed array of results or false on error.
      */
     protected function detailsAction(
         $id, $target, $schedules, $startDate, $endDate, $fullDetails, $allServices
@@ -650,7 +650,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      * @param array   $params Query parameters
      * @param boolean $museum If organisation type is museum
      *
-     * @return mixed result or false on error.
+     * @return mixed array of results or false on error.
      */
     protected function fetchData($action, $params, $museum = false)
     {
@@ -1151,7 +1151,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         if (substr($parts[0], 0, 1) == '0') {
             $parts[0] = substr($parts[0], 1);
         }
-        if ($parts[1] == '00') {
+        if (!isset($parts[1]) || $parts[1] == '00') {
             return $parts[0];
         }
         return $parts[0] . ':' . $parts[1];
@@ -1199,7 +1199,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      *
      * @param array $params Query parameters
      *
-     * @return array
+     * @return mixed array of results or false on error.
      */
     protected function museumAction($params)
     {
