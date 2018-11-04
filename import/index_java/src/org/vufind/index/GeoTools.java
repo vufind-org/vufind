@@ -167,7 +167,7 @@ public class GeoTools
                  out.println(logFilename + "\t" + recNum + "\t" + msgError + "\t" + coordinates);
                  out.close();
             } catch (IOException e) {
-                 System.out.println("io exception occured");
+                 System.out.println("io exception occurred");
                  e.printStackTrace();
             }
         } else {
