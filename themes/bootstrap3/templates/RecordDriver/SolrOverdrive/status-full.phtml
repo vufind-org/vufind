@@ -5,23 +5,31 @@ $jsonResult = new stdClass;
 $data = array();
 $isError = false;
 $loginForAvail= false;
+$noshow=false;
 error_log(print_r($this->result,true));
-if(!$this->result->status){
+
+if($this->result->code == 'od_code_login_for_avail'){
+    $loginForAvail = true;
+}elseif($this->result->code == 'od_account_noaccess'){
+    $noshow = true;
+}elseif (!$this->result->status) {
     //we must have had a connection error.
     $isError = true;
-}elseif($this->result->code == 'od_code_login_for_avail'){
-    $loginForAvail = true;
 }
+
 foreach($ids as $id):
     $current['status'] = "OK";
     $current['id'] = $id;
     $avail = $this->result->data[$id];
 
-    if($isError || $avail->code == 'od_code_resource_not_found') {
+    if($noshow) {
+        $current['full_status'] = "";
+    } elseif($isError || $avail->code == 'od_code_resource_not_found') {
         $current['error'] = $this->transEsc('status_unknown_message');
         $current['full_status'] = "";
-    } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail'){
-        $current['full_status'] = "<p class='alert-info'>Login for availability</p>";
+    } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail') {
+        $current['full_status']
+            = "<p class='alert-info'>Login for availability</p>";
     } else {
         $current['full_status']
             = "<p><div class='copies'><strong>Total Copies</strong> "
