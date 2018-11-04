@@ -82,8 +82,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
-                   $odAccessResult->code,
-                       ["%%message%%"=>$odAccessResult->msg]
+                    $odAccessResult->code,
+                    ["%%message%%" => $odAccessResult->msg]
                 )
             );
             $checkoutsUnavailable = true;

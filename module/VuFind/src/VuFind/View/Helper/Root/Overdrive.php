@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\DigitalContent\OverdriveConnector;
@@ -65,11 +66,11 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
     public function showMyContentLink()
     {
         $config = $this->connector->getConfig();
-        if($config->showMyContent == "always"){
+        if ($config->showMyContent == "always") {
             return true;
-        }elseif($config->showMyContent=="never"){
+        } elseif ($config->showMyContent == "never") {
             return false;
-        }else {
+        } else {
             //assume that it is accessOnly
             $result = $this->connector->getAccess();
 

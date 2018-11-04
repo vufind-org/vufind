@@ -231,14 +231,15 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($conf = $this->getConfig()) {
             $collectionToken = $this->getCollectionToken();
             //hmm. no token.  if user is logged in let's check access
-            if(!$collectionToken && $user = $this->getUser()){
+            if (!$collectionToken && $user = $this->getUser()) {
                 $accessResult = $this->getAccess();
-                if(!$accessResult->status){
+                if (!$accessResult->status) {
                     return $accessResult;
                 }
             }
             $baseUrl = $conf->discURL;
-            $availabilityUrl = "$baseUrl/v2/collections/$collectionToken/products/";
+            $availabilityUrl
+                = "$baseUrl/v2/collections/$collectionToken/products/";
             $availabilityUrl .= "$overDriveId/availability";
             $res = $this->callUrl($availabilityUrl);
 
@@ -290,9 +291,9 @@ class OverdriveConnector implements LoggerAwareInterface,
             }
             $collectionToken = $this->getCollectionToken();
             //hmm. no token.  if user is logged in let's check access
-            if(!$collectionToken && $user = $this->getUser()){
+            if (!$collectionToken && $user = $this->getUser()) {
                 $accessResult = $this->getAccess();
-                if(!$accessResult->status){
+                if (!$accessResult->status) {
                     return $accessResult;
                 }
             }
@@ -321,7 +322,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 } else {
                     $result->status = true;
                     foreach ($res->availability as $item) {
-                        $this->debug("item:".print_r($item,true));
+                        $this->debug("item:" . print_r($item, true));
                         $result->data[strtolower($item->reserveId)] = $item;
                     }
                     //now look for items not returned
@@ -1336,8 +1337,8 @@ class OverdriveConnector implements LoggerAwareInterface,
         $config = $this->getConfig();
         if ($forceNewConnection
             || $patronTokenData == null
-            || ($patronTokenData->expirationTime &&
-                time() >= $patronTokenData->expirationTime)
+            || ($patronTokenData->expirationTime
+                && time() >= $patronTokenData->expirationTime)
         ) {
             $this->debug("connecting to patron API for new token.");
             $url = $config->patronTokenURL;
@@ -1403,7 +1404,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $this->sessionContainer->patronTokenData = $patronTokenData;
 
         }
-        if(isset($patronTokenData->error)){
+        if (isset($patronTokenData->error)) {
             return false;
         }
         return $patronTokenData;
