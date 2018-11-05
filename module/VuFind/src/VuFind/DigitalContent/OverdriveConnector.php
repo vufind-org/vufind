@@ -163,6 +163,8 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @since 5.0
      *
+     * @param bool $refresh
+     *
      * @return object
      */
     public function getAccess($refresh = false)
@@ -577,7 +579,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Download Link for an Overdrive Resource
      *
-     * @param string $overDriveIdOverdrive ID of the resource
+     * @param        $overDriveId
      * @param string $format Overdrive string for this format
      * @param string $errorURL A URL to show error if the download doesn't wk
      *

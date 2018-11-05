@@ -79,7 +79,9 @@ class OverdriveConnectorFactory implements
 
         // Populate cache storage
         $connector->setCacheStorage(
-            $container->get('VuFind\Cache\Manager')->getCache('object',"Overdrive")
+            $container->get('VuFind\Cache\Manager')->getCache(
+                'object', "Overdrive"
+            )
         );
 
 
