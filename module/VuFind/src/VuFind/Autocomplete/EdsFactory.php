@@ -1,11 +1,10 @@
 <?php
 /**
- * CSRF Validator factory.
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) Villanova University 2017.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +20,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Jochen Lienhard <jochen.lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Service;
+namespace VuFind\Autocomplete;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * CSRF Validator factory.
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
  * @category VuFind
- * @package  Service
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Jochen Lienhard <jochen.lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class CsrfValidatorFactory implements FactoryInterface
+class EdsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -59,20 +55,14 @@ class CsrfValidatorFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $sessionManager = $container->get('Zend\Session\SessionManager');
         return new $requestedName(
-            [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
-            ]
+            $container->get('VuFind\Search\BackendManager')->get('EDS')
         );
     }
 }

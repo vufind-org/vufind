@@ -103,14 +103,27 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test that driver makes holdings visible when in MARC mode.
+     * Test that driver makes holdings visible when in custom mode.
      *
      * @return void
      */
-    public function testMarcHoldingsVisibility()
+    public function testCustomHoldingsVisibility()
     {
-        $this->driver
-            ->setConfig(['settings' => ['useHoldings' => 'marc']]);
+        $this->driver->setConfig(
+            [
+                'settings' => ['useHoldings' => 'custom'],
+                'Holdings' => [
+                    'number' => 0,
+                    'availability' => false,
+                    'status' => 'foo',
+                    'use_unknown_message' => true,
+                    'location' => 'bar',
+                    'reserve' => 'N',
+                    'callnumber' => 'xyzzy',
+                    'barcode' => null,
+                ]
+            ]
+        );
         $this->assertTrue($this->driver->hasHoldings('foo'));
     }
 

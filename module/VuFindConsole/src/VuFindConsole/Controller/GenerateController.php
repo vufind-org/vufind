@@ -223,6 +223,43 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Create a new plugin class
+     *
+     * @return \Zend\Console\Response
+     */
+    public function pluginAction()
+    {
+        // Display help message if parameters missing:
+        $request = $this->getRequest();
+        $class = $request->getParam('class');
+        $factory = $request->getParam('factory');
+
+        if (empty($class)) {
+            Console::writeLine(
+                'Usage: ' . $request->getScriptName() . ' generate plugin'
+                . ' [class_name] [factory]'
+            );
+            Console::writeLine(
+                "\tclass_name - the name of the class you wish to create"
+            );
+            Console::writeLine(
+                "\tfactory - an existing factory to use (omit to generate a new one)"
+            );
+            return $this->getFailureResponse();
+        }
+
+        try {
+            $this->getGeneratorTools()
+                ->createPlugin($this->serviceLocator, $class, $factory);
+        } catch (\Exception $e) {
+            Console::writeLine($e->getMessage());
+            return $this->getFailureResponse();
+        }
+
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Add a new record route definition
      *
      * @return \Zend\Console\Response

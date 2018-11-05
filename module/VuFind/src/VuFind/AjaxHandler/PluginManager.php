@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
         'commentRecord' => 'VuFind\AjaxHandler\CommentRecord',
         'deleteRecordComment' => 'VuFind\AjaxHandler\DeleteRecordComment',
+        'doiLookup' => 'VuFind\AjaxHandler\DoiLookup',
         'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
         'getFacetData' => 'VuFind\AjaxHandler\GetFacetData',
         'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
@@ -82,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\AjaxHandler\CommentRecordFactory',
         'VuFind\AjaxHandler\DeleteRecordComment' =>
             'VuFind\AjaxHandler\DeleteRecordCommentFactory',
+        'VuFind\AjaxHandler\DoiLookup' => 'VuFind\AjaxHandler\DoiLookupFactory',
         'VuFind\AjaxHandler\GetACSuggestions' =>
             'VuFind\AjaxHandler\GetACSuggestionsFactory',
         'VuFind\AjaxHandler\GetFacetData' =>

@@ -14,37 +14,70 @@
   <?php if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
   <?php else: ?>
+    <?php
+      // Collect the data to build the table; we process this in advance so we
+      // can omit empty columns and simplify customization by separating data
+      // processing from rendering.
+      $tableData = [];
+      $totalDue = 0;
+      foreach ($this->fines as $record) {
+          if (empty($record['title'])) {
+              $title = $this->transEsc('not_applicable');
+          } elseif (!is_object($record['driver'] ?? null)) {
+              $title = $this->escapeHtml(trim($record['title'], '/:'));
+          } else {
+              $title = '<a href="'
+                  . $this->recordLink()->getUrl($record['driver'])
+                  . '">' . $this->escapeHtml(trim($record['title'], '/:')) . '</a>';
+          }
+          $tableData['Title'][] = $title;
+          $tableData['Checked Out'][] = $this->escapeHtml($record['checkout'] ?? '');
+          $tableData['Due Date'][] = $this->escapeHtml($record['duedate'] ?? '');
+          $tableData['Fine'][] = $this->escapeHtml($record['fine'] ?? '');
+          $tableData['Fine Date'][] = $this->escapeHtml($record['createdate'] ?? '');
+          $tableData['Fee'][] = isset($record['amount'])
+              ? $this->safeMoneyFormat($record['amount'] / 100.00) : '';
+          $tableData['Balance'][] = isset($record['balance'])
+              ? $this->safeMoneyFormat($record['balance'] / 100.00) : '';
+          $totalDue += $record['balance'] ?? 0;
+      }
+
+      // Now empty out any unused columns:
+      foreach ($tableData as $column => $values) {
+          $empty = true;
+          foreach ($values as $value) {
+              if (strlen($value) > 0) {
+                  $empty = false;
+                  break;
+              }
+          }
+          if ($empty) {
+              unset($tableData[$column]);
+          }
+      }
+
+      // Create the final list of columns and count of rows:
+      $columns = array_keys($tableData);
+      $rowCount = count($this->fines);
+    ?>
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
-    <tr>
-      <th><?=$this->transEsc('Title')?></th>
-      <th><?=$this->transEsc('Checked Out')?></th>
-      <th><?=$this->transEsc('Due Date')?></th>
-      <th><?=$this->transEsc('Fine')?></th>
-      <th><?=$this->transEsc('Fee')?></th>
-      <th><?=$this->transEsc('Balance')?></th>
-    </tr>
-    <?php $totalDue = 0; ?>
-    <?php foreach ($this->fines as $record): ?>
       <tr>
-        <td>
-          <?php if (empty($record['title'])): ?>
-            <?=$this->transEsc('not_applicable')?>
-          <?php elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
-            <?=$this->escapeHtml(trim($record['title'], '/:'))?>
-          <?php else: ?>
-            <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
-          <?php endif; ?>
-        </td>
-        <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
-        <td><?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></td>
-        <td><?=isset($record['fine']) ? $this->escapeHtml($record['fine']) : ''?></td>
-        <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount'] / 100.00) : ''?></td>
-        <td><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : ''?></td>
+        <?php foreach ($columns as $header): ?>
+          <th><?=$this->transEsc($header)?></th>
+        <?php endforeach; ?>
       </tr>
-      <?php $totalDue += $record['balance']; ?>
-    <?php endforeach; ?>
-      <tr style="font-weight:bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td></tr>
+      <?php for ($row = 0; $row < $rowCount; $row++): ?>
+        <tr>
+          <?php foreach ($columns as $column): ?>
+            <td><?=$tableData[$column][$row]?></td>
+          <?php endforeach; ?>
+        </tr>
+      <?php endfor; ?>
+      <tr style="font-weight:bold">
+        <td colspan="<?=count($columns) - 1?>"><?=$this->transEsc('Total Balance Due')?></td>
+        <td><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
+      </tr>
     </table>
   <?php endif; ?>
 </div>

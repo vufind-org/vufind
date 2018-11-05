@@ -281,7 +281,7 @@ class PAIA extends DAIA
             }
 
             // If caching is enabled for PAIA clear the cache as at least for one
-            // item cancel was successfull and therefore the status changed.
+            // item cancel was successful and therefore the status changed.
             // Otherwise the changed status will not be shown before the cache
             // expires.
             if ($this->paiaCacheEnabled) {
@@ -1069,7 +1069,7 @@ class PAIA extends DAIA
             }
 
             // If caching is enabled for PAIA clear the cache as at least for one
-            // item renew was successfull and therefore the status changed. Otherwise
+            // item renew was successful and therefore the status changed. Otherwise
             // the changed status will not be shown before the cache expires.
             if ($this->paiaCacheEnabled) {
                 $this->removeCachedData($patron['cat_username']);

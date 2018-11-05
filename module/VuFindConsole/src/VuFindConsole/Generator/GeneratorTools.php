@@ -63,6 +63,124 @@ class GeneratorTools
     }
 
     /**
+     * Create a plugin class.
+     *
+     * @param ContainerInterface $container Service manager
+     * @param string             $class     Class name to create
+     * @param string             $factory   Existing factory to use (null to
+     * generate a new one)
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function createPlugin(ContainerInterface $container, $class,
+        $factory = null
+    ) {
+        // Derive some key bits of information from the new class name:
+        $classParts = explode('\\', $class);
+        $module = $classParts[0];
+        $shortName = strtolower(array_pop($classParts));
+        $classParts[0] = 'VuFind';
+        $classParts[] = 'PluginManager';
+        $pmClass = implode('\\', $classParts);
+        // Set a flag for whether to generate a factory, and create class name
+        // if necessary. If existing factory specified, ensure it really exists.
+        if ($generateFactory = empty($factory)) {
+            $factory = $class . 'Factory';
+        } elseif (!class_exists($factory)) {
+            throw new \Exception("Undefined factory: $factory");
+        }
+
+        // Figure out further information based on the plugin manager:
+        if (!$container->has($pmClass)) {
+            throw new \Exception('Cannot find expected plugin manager: ' . $pmClass);
+        }
+        $pm = $container->get($pmClass);
+        if (!method_exists($pm, 'getExpectedInterface')) {
+            throw new \Exception(
+                $pmClass . ' does not implement getExpectedInterface!'
+            );
+        }
+
+        // Force getExpectedInterface() to be public so we can read it:
+        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
+        $reflectionMethod->setAccessible(true);
+        $interface = $reflectionMethod->invoke($pm);
+
+        // Figure out whether the plugin requirement is an interface or a
+        // parent class so we can create the right thing....
+        if (interface_exists($interface)) {
+            $parent = null;
+            $interfaces = [$interface];
+        } else {
+            $parent = $interface;
+            $interfaces = [];
+        }
+        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
+        $pmKey = $apmFactory->getConfigKey(get_class($pm));
+        $configPath = ['vufind', 'plugin_managers', $pmKey];
+
+        // Generate the classes and configuration:
+        $this->createClassInModule($class, $module, $parent, $interfaces);
+        if ($generateFactory) {
+            $this->generateFactory($class, $factory, $module);
+        }
+        $factoryPath = array_merge($configPath, ['factories', $class]);
+        $this->writeNewConfig($factoryPath, $factory, $module);
+        $aliasPath = array_merge($configPath, ['aliases', $shortName]);
+        // Don't back up the config twice -- the first backup from the previous
+        // write operation is sufficient.
+        $this->writeNewConfig($aliasPath, $class, $module, false);
+
+        return true;
+    }
+
+    /**
+     * Generate a factory class.
+     *
+     * @param string $class   Name of class being built by factory
+     * @param string $factory Name of factory to generate
+     * @param string $module  Name of module to generate factory within
+     *
+     * @return void
+     */
+    protected function generateFactory($class, $factory, $module)
+    {
+        $this->createClassInModule(
+            $factory, $module, null,
+            ['Zend\ServiceManager\Factory\FactoryInterface'],
+            function ($generator) use ($class) {
+                $method = MethodGenerator::fromArray(
+                    [
+                        'name' => '__invoke',
+                        'body' => 'return new \\' . $class . '();',
+                    ]
+                );
+                $param1 = [
+                    'name' => 'container',
+                    'type' => 'Interop\Container\ContainerInterface'
+                ];
+                $param2 = [
+                    'name' => 'requestedName',
+                ];
+                $param3 = [
+                    'name' => 'options',
+                    'type' => 'array',
+                    'defaultValue' => null,
+                ];
+                $method->setParameters([$param1, $param2, $param3]);
+                // Copy doc block from this class' factory:
+                $reflection = new \Zend\Code\Reflection\MethodReflection(
+                    GeneratorToolsFactory::class, '__invoke'
+                );
+                $example = MethodGenerator::fromReflection($reflection);
+                $method->setDocBlock($example->getDocBlock());
+                $generator->addMethods([$method]);
+            }
+        );
+    }
+
+    /**
      * Extend a class defined somewhere in the service manager or its child
      * plugin managers.
      *
@@ -82,6 +200,7 @@ class GeneratorTools
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');
         $cpm = $container->get('ControllerPluginManager');
+        $delegators = [];
         if ($container->has($class)) {
             $factory = $this->getFactoryFromContainer($container, $class);
             $configPath = ['service_manager'];
@@ -94,6 +213,7 @@ class GeneratorTools
             $pmKey = $apmFactory->getConfigKey(get_class($pm));
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
+            $delegators = $this->getDelegatorsFromContainer($pm, $class);
         }
 
         // No factory found? Throw an error!
@@ -106,8 +226,7 @@ class GeneratorTools
 
         // Create the custom factory only if requested.
         $newFactory = $extendFactory
-            ? $this->cloneFactory($factory, $target)
-            : $factory;
+            ? $this->cloneFactory($factory, $target) : $factory;
 
         // Finalize the local module configuration -- create a factory for the
         // new class, and set up the new class as an alias for the old class.
@@ -117,6 +236,17 @@ class GeneratorTools
         // Don't back up the config twice -- the first backup from the previous
         // write operation is sufficient.
         $this->writeNewConfig($aliasPath, $newClass, $target, false);
+
+        // Clone/configure delegator factories as needed.
+        if (!empty($delegators)) {
+            $newDelegators = [];
+            foreach ($delegators as $delegator) {
+                $newDelegators[] = $extendFactory
+                    ? $this->cloneFactory($delegator, $target) : $delegator;
+            }
+            $delegatorPath = array_merge($configPath, ['delegators', $newClass]);
+            $this->writeNewConfig($delegatorPath, $newDelegators, $target, false);
+        }
 
         return true;
     }
@@ -148,6 +278,36 @@ class GeneratorTools
     {
         $factories = $this->getAllFactoriesFromContainer($container);
         return $factories[$class] ?? null;
+    }
+
+    /**
+     * Get a list of delegators in the provided container.
+     *
+     * @param ContainerInterface $container Container to inspect
+     *
+     * @return array
+     */
+    protected function getAllDelegatorsFromContainer(ContainerInterface $container)
+    {
+        // There is no "getDelegators" method, so we need to use reflection:
+        $reflectionProperty = new \ReflectionProperty($container, 'delegators');
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($container);
+    }
+
+    /**
+     * Get delegators from the provided container (or empty array if undefined).
+     *
+     * @param ContainerInterface $container Container to inspect
+     * @param string             $class     Class whose delegators we want
+     *
+     * @return array
+     */
+    protected function getDelegatorsFromContainer(ContainerInterface $container,
+        $class
+    ) {
+        $delegators = $this->getAllDelegatorsFromContainer($container);
+        return $delegators[$class] ?? [];
     }
 
     /**
@@ -354,16 +514,22 @@ class GeneratorTools
      * Extend a specified class within a specified module. Return the name of
      * the new subclass.
      *
-     * @param string $class  Name of class to create
-     * @param string $module Module in which to create the new class
-     * @param string $parent Parent class (null for no parent)
+     * @param string    $class      Name of class to create
+     * @param string    $module     Module in which to create the new class
+     * @param string    $parent     Parent class (null for no parent)
+     * @param string[]  $interfaces Interfaces for class to implement
+     * @param \Callable $callback   Callback to set up class generator
      *
      * @return void
      * @throws \Exception
      */
-    protected function createClassInModule($class, $module, $parent = null)
-    {
-        $generator = new ClassGenerator($class, null, null, $parent);
+    protected function createClassInModule($class, $module, $parent = null,
+        array $interfaces = [], $callback = null
+    ) {
+        $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
+        if (is_callable($callback)) {
+            $callback($generator);
+        }
         return $this->writeClass($generator, $module);
     }
 

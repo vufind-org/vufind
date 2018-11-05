@@ -51,7 +51,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'missing' => 'VuFind\RecordDriver\Missing',
         'pazpar2' => 'VuFind\RecordDriver\Pazpar2',
         'primo' => 'VuFind\RecordDriver\Primo',
-        'solrauth' => 'VuFind\RecordDriver\SolrAuth',
+        'solrauth' => 'VuFind\RecordDriver\SolrAuthMarc', // legacy name
+        'solrauthdefault' => 'VuFind\RecordDriver\SolrAuthDefault',
+        'solrauthmarc' => 'VuFind\RecordDriver\SolrAuthMarc',
         'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
         'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
         'solrmarcremote' => 'VuFind\RecordDriver\SolrMarcRemote',
@@ -59,6 +61,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrweb' => 'VuFind\RecordDriver\SolrWeb',
         'summon' => 'VuFind\RecordDriver\Summon',
         'worldcat' => 'VuFind\RecordDriver\WorldCat',
+    ];
+
+    /**
+     * Default delegator factories.
+     *
+     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     */
+    protected $delegators = [
+        'VuFind\RecordDriver\SolrMarc' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+        'VuFind\RecordDriver\SolrMarcRemote' =>
+            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
     ];
 
     /**
@@ -77,13 +91,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\RecordDriver\Pazpar2' =>
             'VuFind\RecordDriver\NameBasedConfigFactory',
         'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\SolrAuth' =>
+        'VuFind\RecordDriver\SolrAuthDefault' =>
+            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
+        'VuFind\RecordDriver\SolrAuthMarc' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrDefault' =>
             'VuFind\RecordDriver\SolrDefaultFactory',
-        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrMarcFactory',
+        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrDefaultFactory',
         'VuFind\RecordDriver\SolrMarcRemote' =>
-            'VuFind\RecordDriver\SolrMarcFactory',
+            'VuFind\RecordDriver\SolrDefaultFactory',
         'VuFind\RecordDriver\SolrReserves' =>
             'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
         'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\SolrWebFactory',
@@ -142,22 +158,35 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Convenience method to retrieve a populated Solr record driver.
      *
-     * @param array $data Raw Solr data
+     * @param array  $data             Raw Solr data
+     * @param string $keyPrefix        Record class name prefix
+     * @param string $defaultKeySuffix Default key suffix
      *
      * @return AbstractBase
      */
-    public function getSolrRecord($data)
-    {
-        if (isset($data['recordtype'])) {
-            $key = 'Solr' . ucwords($data['recordtype']);
-            $recordType = $this->has($key) ? $key : 'SolrDefault';
-        } else {
-            $recordType = 'SolrDefault';
-        }
+    public function getSolrRecord($data, $keyPrefix = 'Solr',
+        $defaultKeySuffix = 'Default'
+    ) {
+        $key = $keyPrefix . ucwords(
+            $data['record_format'] ?? $data['recordtype'] ?? $defaultKeySuffix
+        );
+        $recordType = $this->has($key) ? $key : $keyPrefix . $defaultKeySuffix;
 
         // Build the object:
         $driver = $this->get($recordType);
         $driver->setRawData($data);
         return $driver;
+    }
+
+    /**
+     * Convenience method to retrieve a populated Solr authority record driver.
+     *
+     * @param array $data Raw Solr data
+     *
+     * @return AbstractBase
+     */
+    public function getSolrAuthRecord($data)
+    {
+        return $this->getSolrRecord($data, 'SolrAuth');
     }
 }

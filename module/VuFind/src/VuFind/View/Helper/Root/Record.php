@@ -329,7 +329,8 @@ class Record extends AbstractClassBasedTemplateRenderer
     public function getLink($type, $lookfor)
     {
         $link = $this->renderTemplate(
-            'link-' . $type . '.phtml', ['lookfor' => $lookfor]
+            'link-' . $type . '.phtml',
+            ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
         $link .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());

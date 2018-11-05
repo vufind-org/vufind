@@ -591,4 +591,67 @@ class ResourceTags extends Gateway
         $this->delete($callback);
         return count($ids);
     }
+
+    /**
+     * Get a list of duplicate rows (this sometimes happens after merging IDs,
+     * for example after a Summon resource ID changes).
+     *
+     * @return mixed
+     */
+    public function getDuplicates()
+    {
+        $callback = function ($select) {
+            $select->columns(
+                [
+                    'resource_id' => new Expression(
+                        'MIN(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'tag_id' => new Expression(
+                        'MIN(?)', ['tag_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'list_id' => new Expression(
+                        'MIN(?)', ['list_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'user_id' => new Expression(
+                        'MIN(?)', ['user_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'cnt' => new Expression(
+                        'COUNT(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'id' => new Expression(
+                        'MIN(?)', ['id'], [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
+            $select->group(['resource_id', 'tag_id', 'list_id', 'user_id']);
+            $select->having('COUNT(resource_id) > 1');
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate()
+    {
+        foreach ($this->getDuplicates() as $dupe) {
+            $callback = function ($select) use ($dupe) {
+                // match on all relevant IDs in duplicate group
+                $select->where(
+                    [
+                        'resource_id' => $dupe['resource_id'],
+                        'tag_id' => $dupe['tag_id'],
+                        'list_id' => $dupe['list_id'],
+                        'user_id' => $dupe['user_id'],
+                    ]
+                );
+                // getDuplicates returns the minimum id in the set, so we want to
+                // delete all of the duplicates with a higher id value.
+                $select->where->greaterThan('id', $dupe['id']);
+            };
+            $this->delete($callback);
+        }
+    }
 }

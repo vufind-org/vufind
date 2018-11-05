@@ -292,6 +292,10 @@ class CombinedController extends AbstractSearch
         // Reset override to avoid bleed-over from one section to the next!
         $query->recommendOverride = false;
 
+        // Always disable 'jumpto' setting, as it does not make sense to
+        // load a record view in the context of combined search.
+        $query->jumpto = false;
+
         // Always leave noresults active (useful for 0-hit searches) and
         // side inactive (no room to display) but display or hide top based
         // on include_recommendations setting.

@@ -128,6 +128,8 @@ class Suggester
             list($name, $params) = explode(':', $module, 2);
             $handler = $this->pluginManager->get($name);
             $handler->setConfig($params);
+        } else {
+            $handler = null;
         }
 
         if (is_callable([$handler, 'addFilters'])) {
@@ -139,7 +141,7 @@ class Suggester
             $handler->setRequest($request);
         }
 
-        return (isset($handler) && is_object($handler))
+        return is_object($handler)
             ? array_values($handler->getSuggestions($query)) : [];
     }
 }

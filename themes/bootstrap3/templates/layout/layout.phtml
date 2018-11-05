@@ -1,5 +1,5 @@
 <?=$this->doctype('HTML5')?>
-<html lang="<?=$this->layout()->userLang?>">
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->headThemeResources(); ?>
     <meta charset="utf-8">
