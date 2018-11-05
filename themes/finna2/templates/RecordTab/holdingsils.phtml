@@ -5,6 +5,8 @@
     $user = $account->isLoggedIn();
     $openUrl = $this->openUrl($this->driver, 'holdings');
     $openUrlActive = $openUrl->isActive();
+    $doi = $this->doi($this->driver, 'holdings');
+    $doiActive = $doi->isActive();
     // Account for replace_other_urls setting
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
@@ -84,7 +86,7 @@
   <?php endif; ?>
 <?php endif; ?>
 
-<?php if (!empty($urls) || $openUrlActive): ?>
+<?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
 <div class="table record-holdings-url-table">
   <div class="headers">
     <span class="holdings-url-title"><?=$this->transEsc("Links")?></span>
@@ -96,6 +98,7 @@
       <?php endforeach; ?>
     <?php endif; ?>
     <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
+    <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
   </div>
 </div>
 <?php endif; ?>

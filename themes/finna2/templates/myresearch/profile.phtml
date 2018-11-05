@@ -280,7 +280,7 @@
         <?php endif; ?>
       </div>
     </div>
-    <?php if (!is_array($this->profile) && 'ils-none' !== $this->ils()->getOfflineMode() && !empty($this->patronLoginView->getTemplate())): ?>
+    <?php if (!is_array($this->profile) && 'ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
       <?=$this->partial($this->patronLoginView);?>
     <?php endif; ?>
   </div>
