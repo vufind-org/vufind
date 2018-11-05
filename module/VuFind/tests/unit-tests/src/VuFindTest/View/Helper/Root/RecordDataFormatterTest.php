@@ -55,6 +55,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
                 $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')->disableOriginalConstructor()->getMock()
             ),
             'context' => $context,
+            'doi' => new \VuFind\View\Helper\Root\Doi($context),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),

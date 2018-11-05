@@ -84,7 +84,7 @@
         <tokenizer class="solr.PatternTokenizerFactory" pattern="^(\S*)\s*.*$" group="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.PatternReplaceFilterFactory" pattern="[^0-9x]" replacement="" replace="all"/>
-        <filter class="solr.LengthFilterFactory" min="1" max="100" />
+        <filter class="solr.LengthFilterFactory" min="4" max="100" />
       </analyzer>
     </fieldType>
     <!-- case-insensitive/whitespace-agnostic field type for callnumber searching -->

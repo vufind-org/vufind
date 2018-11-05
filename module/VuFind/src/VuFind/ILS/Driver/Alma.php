@@ -806,7 +806,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return array                Associative array containing with keys 'count'
      *                                 (number of items successfully cancelled) and
-     *                                 'items' (array of successfull cancellations).
+     *                                 'items' (array of successful cancellations).
      */
     public function cancelHolds($cancelDetails)
     {
