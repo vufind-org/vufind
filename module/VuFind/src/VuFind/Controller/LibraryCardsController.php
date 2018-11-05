@@ -191,6 +191,9 @@ class LibraryCardsController extends AbstractBase
         }
 
         $cardID = $this->params()->fromQuery('cardID');
+        if (null === $cardID) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
         $user->activateLibraryCard($cardID);
 
         // Connect to the ILS and check that the credentials are correct:
