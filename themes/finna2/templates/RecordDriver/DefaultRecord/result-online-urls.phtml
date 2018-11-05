@@ -33,18 +33,6 @@
             }
           ?>
           <?=$i > 0 ? '<br/>' : '' ?>
-          <?php
-            $icon = 'fa-external-link';
-            if (!empty($url['desc'])) {
-              if (!is_string($url['desc'])) {
-                  error_log('$url["desc"] is not a string: ' . print_r($url['desc'], true));
-              }
-              $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
-              if (is_string($url['desc']) && isset($map[$url['desc']])) {
-                $icon = $map[$url['desc']];
-              }
-            }
-          ?>
           <a
             class="fulltext"
             href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?php if (!empty($url['videoSources'])): ?>
@@ -52,7 +40,7 @@
             data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
             <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
             <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-            target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>"
+            target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"
             aria-hidden="true"
             >
             </i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?>
