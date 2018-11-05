@@ -137,7 +137,7 @@
                   </a>
                 </li>
               <?php endif; ?>        
-              <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true']);?>
+              <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true', 'label' => 'Library Cards','limit' => 0]);?>
               <li>
                 <a role="menuitem" href="<?=$this->url('myresearch-profile')?>">
                   <?=$this->transEsc('Profile')?>

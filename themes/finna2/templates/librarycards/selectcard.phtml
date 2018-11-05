@@ -1,29 +1,33 @@
 <!-- START of: finna - librarycards/selectcard.phtml -->
 <?php if ($this->user): ?>
-  <?php $cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
+  <?php $cards = $this->user->getLibraryCards(); if ($cards->count() > ($this->limit ?? 1)): ?>
     <?php $targetCount = $this->ils()->checkCapability('getLoginDrivers') ? count($this->ils()->getLoginDrivers()) : 1; ?>
     <?php if (isset($loginMenu) && $loginMenu): ?>
       <li class="logoutOptions card-selection">
-        <p><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?></p>
+        <a class="card-header" href="<?=$this->url('librarycards-home')?>">
+          <?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?>
+        </a>
         <label id="select-card-label-dropdown"><?= $this->transEsc('Library Card') ?></label>
-        <?php foreach ($cards as $card): ?>
-          <?php
-            $target = '';
-            $username = $card->cat_username;
-            if (strstr($username, '.')) {
-              list($target, $username) = explode('.', $username, 2);
-            }
-            $display = $this->transEsc($card->card_name ? $card->card_name : $username);
-            if ($display == "$target.$username") {
-              $display = $username;
-            }
-            if ($target && $targetCount > 1) {
-              $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
-            }
-          ?>
-          <?php $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && (strcasecmp($card->cat_username, $this->user->cat_username) === 0); ?>
-          <a aria-describedby="select-card-label-dropdown" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>"><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
-        <?php endforeach; ?>
+        <?php if ($cards->count() > 1) : ?>
+          <?php foreach ($cards as $card): ?>
+            <?php
+              $target = '';
+              $username = $card->cat_username;
+              if (strstr($username, '.')) {
+                list($target, $username) = explode('.', $username, 2);
+              }
+              $display = $this->transEsc($card->card_name ? $card->card_name : $username);
+              if ($display == "$target.$username") {
+                $display = $username;
+              }
+              if ($target && $targetCount > 1) {
+                $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+              }
+            ?>
+            <?php $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && (strcasecmp($card->cat_username, $this->user->cat_username) === 0); ?>
+            <a aria-describedby="select-card-label-dropdown" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>"><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </li>
     <?php else: ?>
       <div class="select-card-wrapper">
