@@ -110,6 +110,9 @@ if ($img):
               <?php else: ?>
                 <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
               <?php endif; ?>
+            <?php elseif (!empty($summDate)): ?>
+              <?=!empty($summAuthor) ? '' : ' '?>
+              <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
             <?php endif; ?>
             <?php $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
               <div class="resultClassification">
