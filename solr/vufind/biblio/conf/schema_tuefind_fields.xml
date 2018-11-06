@@ -17,6 +17,7 @@
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
+    <field name="has_unpaywall_entry" type="boolean" indexed="true" stored="true" multiValued="false"/>
 
     <!-- COMMON copyFields -->
     <copyField source="record_selector" dest="rs"/>
