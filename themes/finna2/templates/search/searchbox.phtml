@@ -186,20 +186,17 @@
           <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
         <?php endforeach; ?>
       <?php endforeach; ?>
-      <?php
-        /* Load hidden limit preference from Session */
-        if (!empty($lastLimit)) {
-          echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
-        }
-        if (!empty($lastSort)) {
-          echo '<input type="hidden" name="sort" value="' . ($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '') . '" data-value="' . $this->escapeHtmlAttr($lastSort) . '" />';
-        }
-      ?>
+      <?php if (!empty($lastLimit)): ?>
+        <input type="hidden" name="limit" value="<?= $this->escapeHtmlAttr($lastLimit)?>" />
+      <?php endif; ?>
+      <?php if (!empty($lastSort)): ?>
+        <input type="hidden" name="sort" value="<?=($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '')?>" data-value="<?=$this->escapeHtmlAttr($lastSort)?>" />';
+      <?php endif; ?>
     </form>
     </div>
     <div class="search-tooltip">
       <?php if (!$browse && !$mainPage && $advSearch): ?>
-        <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced hidden-xs"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+        <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced <?=($module === 'record') ? 'visible-lg' : 'hidden-xs'?>"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
       <?php endif; ?>
       <?php
         $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
@@ -220,7 +217,6 @@
         </button>
       <?php endif; ?>
     </div>
-    <div class="clearfix"></div>
     <?php if ($module != 'record' && $module != 'collection'): ?>
       <?php if ($browse || $mainPage): ?>
         <div class="search-links">
@@ -259,9 +255,9 @@
                 <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" rel="nofollow"><i class="fa fa-arrow-alt-left"></i><span class="sr-only"><?=$this->transEsc('Previous Record')?></span></a>
               </li>
             <?php else: ?>
-                <?php if ($this->scrollData['firstRecord']): ?>
+              <?php if ($this->scrollData['firstRecord']): ?>
                 <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a><i class="fa fa-first-page"></i></a></li>
-                <?php endif; ?>
+              <?php endif; ?>
               <li class="disabled" title="<?=$this->transEsc('Previous Record')?>"><a><i class="fa fa-arrow-alt-left"></i></a></li>
             <?php endif; ?>
           <li class="pager-text">
@@ -274,15 +270,15 @@
               <li class="pager-next-record">
                 <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" rel="nofollow"><i class="fa fa-arrow-alt-right"></i><span class="sr-only"><?=$this->transEsc('Next Record')?></span></a>
               </li>
-                <?php if ($this->scrollData['lastRecord']): ?>
+              <?php if ($this->scrollData['lastRecord']): ?>
                 <li>
                   <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" rel="nofollow"><i class="fa fa-last-page"></i><span class="sr-only"><?=$this->transEsc('Last Record')?></span></a>
                 </li>
-                <?php endif; ?>
+              <?php endif; ?>
             <?php else: ?>
               <li class="disabled" title="<?=$this->transEsc('Next Record')?>"><a><i class="fa fa-arrow-alt-right"></i></a></li>
                 <?php if ($this->scrollData['lastRecord']): ?>
-                <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a><i class="fa fa-last-page"></i></a></li>
+                  <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a><i class="fa fa-last-page"></i></a></li>
                 <?php endif; ?>
             <?php endif; ?>
         </ul>
