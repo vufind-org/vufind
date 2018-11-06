@@ -2,16 +2,6 @@
   .searchbox-home {
     .search-tooltip {
       width: 30%;
-      button {
-        background-color: transparent;
-        border: none;
-        &.tooltip-button {
-          height: 50px;
-        }
-        &.tooltip-image {
-          height: 30px;
-        }
-      }
     }
     .btn.btn-link {
       background: @background-color;
@@ -145,6 +135,19 @@
   }
   
   .search-tooltip {
+    button {
+      background-color: transparent;
+      border: none;
+      i {
+        cursor: pointer;
+      }
+      &.tooltip-button {
+        height: 50px;
+      }
+      &.tooltip-image {
+        height: 30px;
+      }
+    }
     float: right;
     padding-left: 5px;
     display: -webkit-box;
