@@ -77,7 +77,7 @@
         ]
       )?>
     </table>
-  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && !empty($this->patronLoginView->getTemplate())): ?>
+  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 </div>
