@@ -59,6 +59,13 @@ class Form extends \Zend\Form\Form
     protected $messages;
 
     /**
+     * Default form config (from config.ini > Feedback)
+     *
+     * @var array
+     */
+    protected $defaultConfig;
+
+    /**
      * Form config
      *
      * @var array
@@ -75,13 +82,14 @@ class Form extends \Zend\Form\Form
     /**
      * Constructor
      *
-     * @param string     $formId     Form id
-     * @param Translator $translator Translator
-     * @param User       $user       User
+     * @param string             $formId        Form id
+     * @param Zend\Config\Config $defaultConfig Default Feedback configuration
+     * @param Translator         $translator    Translator
+     * @param User               $user          User
      *
      * @throws Exception
      */
-    public function __construct($formId, $translator, $user)
+    public function __construct($formId, $defaultConfig, $translator, $user)
     {
         parent::__construct($formId);
 
@@ -90,6 +98,7 @@ class Form extends \Zend\Form\Form
             return null;
         }
 
+        $this->defaultFormConfig = $defaultConfig;
         $this->translator = $translator;
         $this->messages = [];
         $this->messages['empty']
@@ -142,15 +151,14 @@ class Form extends \Zend\Form\Form
             // Handle non-overridable forms before merging local config
             if (isset($localConfig['forms'])) {
                 foreach ($localConfig['forms'] as $key => $form) {
-                    if (!isset($parentConfig['forms'][$key])) {
-                        $config['forms'][$key] = $form;
-                    }
-                    $parentForm = $parentConfig['forms'][$key];
-
-                    if (isset($parentForm['allowLocalOverride'])
-                        && $parentForm['allowLocalOverride'] == false
-                    ) {
-                        continue;
+                    if (isset($parentConfig['forms'][$key])) {
+                        $parentForm = $parentConfig['forms'][$key];
+                        if (isset($parentForm['allowLocalOverride'])
+                            && $parentForm['allowLocalOverride'] === false
+                        ) {
+                            continue;
+                        }
+                        $form = array_merge($parentForm, $form);
                     }
                     $config['forms'][$key] = $form;
                 }
@@ -424,15 +432,24 @@ class Form extends \Zend\Form\Form
      */
     public function getRecipient()
     {
-        if (!isset($this->formConfig['recipient'])) {
-            return null;
+        $recipientName = $recipientEmail = null;
+        $recipient = $this->formConfig['recipient'] ?? null;
+
+        if (isset($this->defaultFormConfig['recipient_email'])) {
+            $recipientEmail = $this->defaultFormConfig['recipient_email'];
+        } elseif (isset($recipient['email'])) {
+            $recipientEmail = $recipient['email'];
         }
 
-        $recipient = $this->formConfig['recipient'];
+        if (isset($this->defaultFormConfig['recipient_name'])) {
+            $recipientName = $this->defaultFormConfig['recipient_name'];
+        } elseif (isset($recipient['name'])) {
+            $recipientName = $recipient['name'];
+        }
 
         return [
-            $recipient['name'] ?? null,
-            $recipient['email'] ?? null
+            $recipientName,
+            $recipientEmail,
         ];
     }
 
@@ -463,9 +480,15 @@ class Form extends \Zend\Form\Form
      */
     public function getEmailSubject()
     {
-        return !empty($this->formConfig['emailSubject'])
-            ? $this->formConfig['emailSubject']
-            : 'VuFind Feedback';
+        $subject = 'VuFind Feedback';
+
+        if (!empty($this->defaultFormConfig['email_subject'])) {
+            $subject = $this->defaultFormConfig['email_subject'];
+        } elseif (!empty($this->formConfig['emailSubject'])) {
+            $subject = $this->formConfig['emailSubject'];
+        }
+
+        return $subject;
     }
 
     /**

@@ -8,40 +8,16 @@
         "name": "Your Library",
         "email": "email@domain.com"
       },
-      "allowLocalOverride": false,
+      "allowLocalOverride": true,
       "onlyForLoggedUsers": false,
       "emailSubject": "feedback_email_subject",
       "response": "Thank you for your feedback.",
-      "senderInfoRequired": true, 
+      "senderInfoRequired": false, 
       "help": {
         "pre": "feedback_help_pre",
         "post": "feedback_help_post"
       },
       "fields": [
-        {
-          "name": "receiver",
-          "type": "select",
-          "label": "feedback_receiver",
-          "options": [
-              "Library 1",
-              "Library 2",
-              "Library 3",
-              "Library 4",
-              "Library 5"
-          ]
-        },
-        {
-          "name": "subject",
-          "type": "select",
-          "label": "feedback_category",
-          "options": [
-             "feedback_category_general" ,
-             "feedback_category_metadata",
-             "feedback_category_services",
-             "feedback_category_usability",
-             "feedback_category_technical"
-          ]
-        },
         {
           "name": "message",
           "type": "textarea",
@@ -49,21 +25,13 @@
           "required": true,
           "settings": [
           ]
-        },
-        {
-          "name": "url",
-          "type": "url",
-          "label": "URL",
-          "settings": [
-            [ "placeholder", "https://..." ]
-          ]
         }
       ]
     },
 
     "AcquisitionRequest": {
       "onlyLogged": false,
-      "enabled": true,
+      "enabled": false,
       "emailSubject": "Acquisition Request",
       "title": "Acquisition Request",
       "response": "Thank you for your feedback.",

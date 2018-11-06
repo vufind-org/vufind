@@ -52,10 +52,12 @@ class FeedbackController extends AbstractBase
             $formId = 'FeedbackSite';
         }
 
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         $translator = $this->serviceLocator->get('VuFind\Translator');
         $user = $this->getUser();
 
-        $form = new Form($formId, $translator, $user);
+        $form = new Form($formId, $config['Feedback'] ?? null, $translator, $user);
         if (!$form->isEnabled()) {
             throw new \Exception("Form '$formId' is disabled");
         }
