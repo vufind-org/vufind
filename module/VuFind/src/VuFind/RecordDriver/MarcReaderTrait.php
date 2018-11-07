@@ -53,7 +53,7 @@ trait MarcReaderTrait
     /**
      * Get access to the raw File_MARC object.
      *
-     * @return \File_MARCBASE
+     * @return \File_MARC_Record
      */
     public function getMarcRecord()
     {
