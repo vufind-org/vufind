@@ -1,9 +1,9 @@
 {
   "forms": {
-    
+
     "FeedbackSite": {
       "enabled": true,
-      "title": "Feedback",
+      "title": "Send us your feedback!",
       "recipient": {
         "name": "Your Library",
         "email": "email@domain.com"
@@ -12,7 +12,7 @@
       "onlyForLoggedUsers": false,
       "emailSubject": "feedback_email_subject",
       "response": "Thank you for your feedback.",
-      "senderInfoRequired": false, 
+      "senderInfoRequired": false,
       "help": {
         "pre": "feedback_help_pre",
         "post": "feedback_help_post"
