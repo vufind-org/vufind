@@ -115,6 +115,13 @@ class Generator
     protected $verbose = false;
 
     /**
+     * Mode of retrieving IDs from the index (may be 'terms' or 'search')
+     *
+     * @var string
+     */
+    protected $retrievalMode = 'search';
+
+    /**
      * Constructor
      *
      * @param BackendManager $bm      Search backend
@@ -271,8 +278,7 @@ class Generator
                 Console::writeLine("Page $currentPage, $recordCount processed");
             }
 
-            if ('cursorMark' === $this->retrievalMode
-                && $cursorMark === $prevCursorMark
+            if ('search' === $this->retrievalMode && $cursorMark === $prevCursorMark
             ) {
                 break;
             }
