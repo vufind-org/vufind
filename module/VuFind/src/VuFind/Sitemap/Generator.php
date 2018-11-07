@@ -242,19 +242,17 @@ class Generator
      */
     protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
     {
-        $lastTerm = '';
-        $cursorMark = '*';
-        $prevCursorMark = '';
+        // Starting offset varies depending on retrieval mode:
+        $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
         $recordCount = 0;
 
         while (true) {
             // Get IDs and break out of the loop if we've run out:
-            $prevCursorMark = $cursorMark;
-            $result = $this->getIdsFromBackend($backend, $lastTerm, $cursorMark);
+            $result = $this->getIdsFromBackend($backend, $currentOffset);
             if (empty($result['ids'])) {
                 break;
             }
-            $cursorMark = $result['cursorMark'] ?? '';
+            $currentOffset = $result['nextOffset'];
 
             // Write the current entry:
             $smf = $this->getNewSitemap();
@@ -264,7 +262,6 @@ class Generator
                     $loc = 'http://' . $loc;
                 }
                 $smf->addUrl($loc);
-                $lastTerm = $item;
             }
             $filename = $this->getFilenameForPage($currentPage);
             if (false === $smf->write($filename)) {
@@ -278,11 +275,6 @@ class Generator
                 Console::writeLine("Page $currentPage, $recordCount processed");
             }
 
-            if ('search' === $this->retrievalMode && $cursorMark === $prevCursorMark
-            ) {
-                break;
-            }
-
             // Update counter:
             $currentPage++;
         }
@@ -292,18 +284,16 @@ class Generator
     /**
      * Retrieve a batch of IDs.
      *
-     * @param Backend $backend    Search backend
-     * @param string  $lastTerm   Last term retrieved (terms mode)
-     * @param string  $cursorMark cursorMark (cursorMark mode)
+     * @param Backend $backend       Search backend
+     * @param string  $currentOffset String representing progress through set
      *
      * @return array
      */
-    protected function getIdsFromBackend(Backend $backend, $lastTerm, $cursorMark)
+    protected function getIdsFromBackend(Backend $backend, $currentOffset)
     {
-        if ($this->retrievalMode == 'terms') {
-            return $this->getIdsFromBackendUsingTerms($backend, $lastTerm);
-        }
-        return $this->getIdsFromBackendUsingCursorMark($backend, $cursorMark);
+        $method = $this->retrievalMode == 'terms'
+            ? 'getIdsFromBackendUsingTerms' : 'getIdsFromBackendUsingCursorMark';
+        return $this->$method($backend, $currentOffset);
     }
 
     /**
@@ -320,7 +310,8 @@ class Generator
         $info = $backend->terms($key, $lastTerm, $this->countPerPage)
             ->getFieldTerms($key);
         $ids = null === $info ? [] : array_keys($info->toArray());
-        return compact('ids');
+        $nextOffset = empty($ids) ? null : $ids[count($ids) - 1];
+        return compact('ids', 'nextOffset');
     }
 
     /**
@@ -333,6 +324,13 @@ class Generator
      */
     protected function getIdsFromBackendUsingCursorMark(Backend $backend, $cursorMark
     ) {
+        // If the previous cursor mark matches the current one, we're finished!
+        static $prevCursorMark = '';
+        if ($cursorMark === $prevCursorMark) {
+            return ['ids' => [], 'cursorMark' => $cursorMark];
+        }
+        $prevCursorMark = $cursorMark;
+
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();
         $params = new ParamBag(
@@ -352,13 +350,11 @@ class Generator
         $raw = $connector->search($params);
         $result = json_decode($raw);
         $ids = [];
-        $cursorMark = $result->nextCursorMark;
-        if (isset($result->response->docs)) {
-            foreach ($result->response->docs as $doc) {
-                $ids[] = $doc->$key;
-            }
+        $nextOffset = $result->nextCursorMark;
+        foreach ($result->response->docs ?? [] as $doc) {
+            $ids[] = $doc->$key;
         }
-        return compact('ids', 'cursorMark');
+        return compact('ids', 'nextOffset');
     }
 
     /**
@@ -447,11 +443,7 @@ class Generator
     protected function getBaseSitemapIndexUrl()
     {
         // Pick the appropriate base URL based on the configuration files:
-        if (!isset($this->config->SitemapIndex->baseSitemapUrl)
-            || empty($this->config->SitemapIndex->baseSitemapUrl)
-        ) {
-            return $this->baseUrl;
-        }
-        return $this->config->SitemapIndex->baseSitemapUrl;
+        return empty($this->config->SitemapIndex->baseSitemapUrl)
+            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
     }
 }
