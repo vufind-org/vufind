@@ -26,7 +26,7 @@
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
       <div class="useraccount-header">
-        <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions) + count($this->hiddenTransactions);?>)
+        <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions ?? []) + count($this->hiddenTransactions ?? []);?>)
       </div>
       <?php if (isset($this->noSupport)): ?>
         <?php if ($user->getLibraryCards()->count() > 1): ?>
