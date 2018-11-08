@@ -21,6 +21,9 @@
             <?php if (!$this->translationEmpty('feedback_recipient_info_record')): ?>
               <?=$this->transEsc('feedback_recipient_info_record', ['%%institution%%' => $this->organisationDisplayName($this->driver, true)]); ?>
             <?php endif; ?>
+            <?php if (!$this->translationEmpty('feedback_recipient_info_record_' . $this->driver->getDataSource() . '_html')): ?>
+              <span class="datasource-info"><?=$this->translate('feedback_recipient_info_record_' . $this->driver->getDataSource() . '_html'); ?></span>
+            <?php endif; ?>
           </label>
         </div>
       </div>
