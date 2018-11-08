@@ -1,7 +1,7 @@
 <!-- available fields are defined in solr/biblio/conf/schema.xml -->
 <!-- This document was written for Biblioteca Brasiliana Guita e José Mindlin
-     by Fabio Chagas da Silva (fabio.chagas.silva@usp.br). It takes metadata
-     directly from dim to index in Solr. It is based on dspace.xsl.
+     by Fabio Chagas da Silva (fabio.chagas.silva@usp.br, GitHub: @fabio-stdio).
+     It takes metadata directly from dim to index in Solr. It is based on dspace.xsl.
 
      The choices of fields were made based on which metadata is most interesting
      for the user of the library and which Solr fields in schema.xml are close to
