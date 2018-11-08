@@ -193,7 +193,6 @@ class Server
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
-     * @param RecordFormatter                      $recfmt  Record formatter
      * @param \Zend\Config\Config                  $config  VuFind configuration
      * @param string                               $baseURL The base URL for the OAI
      * server
@@ -202,12 +201,11 @@ class Server
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        RecordFormatter $recfmt, \Zend\Config\Config $config, $baseURL, $params
+        \Zend\Config\Config $config, $baseURL, $params
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
-        $this->recordFormatter = $recfmt;
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
         $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
@@ -215,7 +213,6 @@ class Server
             $this->baseHostURL .= $parts['port'];
         }
         $this->params = isset($params) && is_array($params) ? $params : [];
-        $this->initializeMetadataFormats(); // Load details on supported formats
         $this->initializeSettings($config); // Load config.ini settings
     }
 
@@ -233,12 +230,26 @@ class Server
     }
 
     /**
+     * Add a record formatter (optional -- allows the vufind record format to be
+     * returned).
+     *
+     * @param RecordFormatter $formatter Record formatter
+     *
+     * @return void
+     */
+    public function setRecordFormatter($formatter)
+    {
+        $this->recordFormatter = $formatter;
+    }
+
+    /**
      * Respond to the OAI-PMH request.
      *
      * @return string
      */
     public function getResponse()
     {
+        $this->initializeMetadataFormats();
         if (!$this->hasParam('verb')) {
             return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
@@ -326,6 +337,10 @@ class Server
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
         } elseif ('oai_vufind_json' === $format && $this->vufindApiFields) {
+            if (null === $this->recordFormatter) {
+                return false;
+            }
+
             // Root node
             $recordDoc = new \DOMDocument();
             $rootNode = $recordDoc->createElementNS(
@@ -526,6 +541,14 @@ class Server
         $this->metadataFormats['marc21'] = [
             'schema' => 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
             'namespace' => 'http://www.loc.gov/MARC21/slim'];
+
+        if ($this->vufindApiFields && null !== $this->recordFormatter) {
+            $this->metadataFormats['oai_vufind_json'] = [
+                'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
+                'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
+            ];
+        }
+
     }
 
     /**
@@ -563,15 +586,10 @@ class Server
             $this->setQueries = $config->OAI->set_query->toArray();
         }
 
-        if (!empty($config->OAI->vufind_api_format_fields)) {
-            $this->vufindApiFields = explode(
-                ',', $config->OAI->vufind_api_format_fields
-            );
-            $this->metadataFormats['oai_vufind_json'] = [
-                'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
-                'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
-            ];
-        }
+        // Initialize VuFind API format fields:
+        $this->vufindApiFields = explode(
+            ',', $config->OAI->vufind_api_format_fields ?? ''
+        );
     }
 
     /**
