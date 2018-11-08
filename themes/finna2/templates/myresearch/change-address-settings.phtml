@@ -3,7 +3,8 @@
     $user = $this->auth()->isLoggedIn();
     $updatePhone = $this->ils()->checkFunction('updatePhone', compact($user));
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact($user));
-
+    $updateAddress = $this->ils()->checkFunction('updateAddress', compact($user));
+    $needsApproval = $updateAddress['needsApproval'] ?? true;
     // Set up page title:
     $title = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
     $this->headTitle($title);
@@ -34,6 +35,7 @@
     </div>
   </form>
 <?php endif; ?>
+<?php if ($needsApproval): ?>
   <div class="address-change-description">
     <?php if ('driver' === $this->config['method']): ?>
       <?=$this->transEsc('request_change_description_html') ?>
@@ -41,4 +43,5 @@
       <?=$this->transEsc('request_change_email_description_html') ?>
     <?php endif; ?>
   </div>
+<?php endif; ?>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->
