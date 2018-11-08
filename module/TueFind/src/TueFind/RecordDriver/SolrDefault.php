@@ -196,7 +196,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
         // Suppress Subito links for open access items:
         if ($this->isOpenAccess())
 	    return "";
-	    
+
         $base_url = "http://www.subito-doc.de/preorder/?BI=" . $broker_id;
         switch ($this->getBibliographicLevel()) {
             case 'Monograph':
@@ -334,7 +334,19 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
      */
     public function normalizeGermanMaterialTypeTerms(string $material_type) : string
     {
-        $translations = [ "Kostenfrei" => "Free Access", "Vermutlich kostenfreier Zugang" => "Presumably Free Access"];
+        $translations = [
+          "Kostenfrei" => "Free Access",
+          "Vermutlich kostenfreier Zugang" => "Presumably Free Access",
+          "Inhaltsverzeichnis" => "TOC",
+          "Klappentext" => "blurb",
+          "Rezension" => "review",
+          "Cover" => "cover",
+          "Inhaltstext" => "contents",
+          "Verlagsinformation" => "publisher information",
+          "Ausführliche Beschreibung" => "detailed description",
+          "Unbekanntes Material" => "unknown material type",
+        ];
+
         if (array_key_exists($material_type, $translations))
             return $translations[$material_type];
         return $material_type;
