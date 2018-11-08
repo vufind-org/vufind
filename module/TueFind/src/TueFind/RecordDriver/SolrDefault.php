@@ -329,6 +329,19 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
 
 
     /**
+     * Normalize common german media type terms to English for the integration in the translation process
+     *
+     */
+    public function normalizeGermanMaterialTypeTerms(string $material_type) : string
+    {
+        $translations = [ "Kostenfrei" => "Free Access", "Vermutlich kostenfreier Zugang" => "Presumably Free Access"];
+        if (array_key_exists($material_type, $translations))
+            return $translations[$material_type];
+        return $material_type;
+    }
+
+
+    /**
      * Return an associative array of URL's mapped to their material types.
      *
      * @return array
@@ -341,7 +354,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
                 $last_colon_pos = strrpos($url_and_material_type, ":");
                 if ($last_colon_pos) {
                     $material_type = substr($url_and_material_type, $last_colon_pos + 1);
-                    $retval[substr($url_and_material_type, 0, $last_colon_pos)] = $material_type;
+                    $retval[substr($url_and_material_type, 0, $last_colon_pos)] = $this->normalizeGermanMaterialTypeTerms($material_type);
                 }
             }
         }
