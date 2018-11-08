@@ -165,7 +165,7 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
         if ($institutions = $record->tryMethod('getInstitutions')) {
             $result = [];
             $translate = $this->helperManager->get('translate');
-            foreach ($institutions as $institution) {
+            foreach ((array)$institutions as $institution) {
                 $result[] = [
                     'value' => $institution,
                     'translated' => $translate(
