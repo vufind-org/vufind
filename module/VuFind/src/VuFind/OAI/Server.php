@@ -321,6 +321,64 @@ class Server
     }
 
     /**
+     * Support method for attachNonDeleted() to build the VuFind metadata for
+     * a record driver.
+     *
+     * @param object $record A record driver object
+     *
+     * @return string
+     */
+    protected function getVuFindMetadata($record)
+    {
+        // Root node
+        $recordDoc = new \DOMDocument();
+        $rootNode = $recordDoc->createElementNS(
+            $this->metadataFormats['oai_vufind_json']['namespace'],
+            'oai_vufind_json:record'
+        );
+        $rootNode->setAttribute(
+            'xmlns:xsi',
+            "http://www.w3.org/2001/XMLSchema-instance"
+        );
+        $rootNode->setAttribute(
+            'xsi:schemaLocation',
+            $this->metadataFormats['oai_vufind_json']['namespace'] . ' '
+            . $this->metadataFormats['oai_vufind_json']['schema']
+        );
+
+        $recordDoc->appendChild($rootNode);
+
+        // Add oai_dc part
+        $oaiDc = new \DOMDocument();
+        $oaiDc->loadXML(
+            $record
+                ->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
+        );
+        $rootNode->appendChild(
+            $recordDoc->importNode(
+                $oaiDc->documentElement,
+                true
+            )
+        );
+
+        // Add VuFind metadata
+        $records = $this->recordFormatter->format(
+            [$record], $this->vufindApiFields
+        );
+        $metadataNode = $recordDoc->createElementNS(
+            $this->metadataFormats['oai_vufind_json']['namespace'],
+            'oai_vufind_json:metadata'
+        );
+        $metadataNode->setAttribute('type', 'application/json');
+        $metadataNode->appendChild(
+            $recordDoc->createCDATASection(json_encode($records[0]))
+        );
+        $rootNode->appendChild($metadataNode);
+
+        return $recordDoc->saveXML();
+    }
+
+    /**
      * Attach a non-deleted record to an XML document.
      *
      * @param SimpleXMLElement $container  XML container for new record
@@ -337,57 +395,8 @@ class Server
         // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
-        } elseif ('oai_vufind_json' === $format && $this->vufindApiFields) {
-            if (null === $this->recordFormatter) {
-                return false;
-            }
-
-            // Root node
-            $recordDoc = new \DOMDocument();
-            $rootNode = $recordDoc->createElementNS(
-                $this->metadataFormats['oai_vufind_json']['namespace'],
-                'oai_vufind_json:record'
-            );
-            $rootNode->setAttribute(
-                'xmlns:xsi',
-                "http://www.w3.org/2001/XMLSchema-instance"
-            );
-            $rootNode->setAttribute(
-                'xsi:schemaLocation',
-                $this->metadataFormats['oai_vufind_json']['namespace'] . ' '
-                . $this->metadataFormats['oai_vufind_json']['schema']
-            );
-
-            $recordDoc->appendChild($rootNode);
-
-            // Add oai_dc part
-            $oaiDc = new \DOMDocument();
-            $oaiDc->loadXML(
-                $record
-                    ->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
-            );
-            $rootNode->appendChild(
-                $recordDoc->importNode(
-                    $oaiDc->documentElement,
-                    true
-                )
-            );
-
-            // Add VuFind metadata
-            $records = $this->recordFormatter->format(
-                [$record], $this->vufindApiFields
-            );
-            $metadataNode = $recordDoc->createElementNS(
-                $this->metadataFormats['oai_vufind_json']['namespace'],
-                'oai_vufind_json:metadata'
-            );
-            $metadataNode->setAttribute('type', 'application/json');
-            $metadataNode->appendChild(
-                $recordDoc->createCDATASection(json_encode($records[0]))
-            );
-            $rootNode->appendChild($metadataNode);
-
-            $xml = $recordDoc->saveXML();
+        } elseif ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
+            $xml = $this->getVuFindMetadata($record);   // special case
         } else {
             $xml = $record
                 ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
@@ -529,6 +538,17 @@ class Server
     }
 
     /**
+     * Does the current configuration support the VuFind metadata format (using
+     * the API's record formatter.
+     *
+     * @return bool
+     */
+    protected function supportsVuFindMetadata()
+    {
+        return !empty($this->vufindApiFields) && null !== $this->recordFormatter;
+    }
+
+    /**
      * Load data about metadata formats.  (This is called by the constructor
      * and is only a separate method to allow easy override by child classes).
      *
@@ -543,7 +563,7 @@ class Server
             'schema' => 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
             'namespace' => 'http://www.loc.gov/MARC21/slim'];
 
-        if ($this->vufindApiFields && null !== $this->recordFormatter) {
+        if ($this->supportsVuFindMetadata()) {
             $this->metadataFormats['oai_vufind_json'] = [
                 'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
                 'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
@@ -587,8 +607,10 @@ class Server
         }
 
         // Initialize VuFind API format fields:
-        $this->vufindApiFields = explode(
-            ',', $config->OAI->vufind_api_format_fields ?? ''
+        $this->vufindApiFields = array_filter(
+            explode(
+                ',', $config->OAI->vufind_api_format_fields ?? ''
+            )
         );
     }
 
@@ -617,6 +639,7 @@ class Server
         foreach ($this->metadataFormats as $prefix => $details) {
             if ($record === false
                 || $record->getXML($prefix) !== false
+                || ('oai_vufind_json' === $prefix && $this->supportsVuFindMetadata())
             ) {
                 $node = $xml->addChild('metadataFormat');
                 $node->metadataPrefix = $prefix;
