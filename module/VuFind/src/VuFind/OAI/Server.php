@@ -548,7 +548,6 @@ class Server
                 'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
             ];
         }
-
     }
 
     /**

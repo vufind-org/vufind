@@ -70,15 +70,16 @@ class ServerTest extends \VuFindTest\Unit\TestCase
             $config['Site']['email'] = 'fake@example.com';
         }
 
-        return new Server(
+        $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
             $this->getMockTableManager(),
-            $this->getMockRecordFormatter(),
             new \Zend\Config\Config($config),
             $baseURL,
             $params
         );
+        $server->setRecordFormatter($this->getMockRecordFormatter());
+        return $server;
     }
 
     /**

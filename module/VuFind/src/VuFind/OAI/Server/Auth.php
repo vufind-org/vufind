@@ -28,7 +28,6 @@
 namespace VuFind\OAI\Server;
 
 use VuFind\OAI\Server as Base;
-use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * OAI Server class for Authority core
