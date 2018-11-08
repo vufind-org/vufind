@@ -214,7 +214,6 @@ class Server
         }
         $this->params = isset($params) && is_array($params) ? $params : [];
         $this->initializeSettings($config); // Load config.ini settings
-        $this->initializeMetadataFormats();
     }
 
     /**
@@ -241,7 +240,9 @@ class Server
     public function setRecordFormatter($formatter)
     {
         $this->recordFormatter = $formatter;
-        $this->initializeMetadataFormats();
+        // Reset metadata formats so they can be reinitialized; the formatter
+        // may enable additional options.
+        $this->metadataFormats = [];
     }
 
     /**
@@ -332,9 +333,9 @@ class Server
     {
         // Root node
         $recordDoc = new \DOMDocument();
+        $vufindFormat = $this->getMetadataFormats()['oai_vufind_json'];
         $rootNode = $recordDoc->createElementNS(
-            $this->metadataFormats['oai_vufind_json']['namespace'],
-            'oai_vufind_json:record'
+            $vufindFormat['namespace'], 'oai_vufind_json:record'
         );
         $rootNode->setAttribute(
             'xmlns:xsi',
@@ -342,8 +343,7 @@ class Server
         );
         $rootNode->setAttribute(
             'xsi:schemaLocation',
-            $this->metadataFormats['oai_vufind_json']['namespace'] . ' '
-            . $this->metadataFormats['oai_vufind_json']['schema']
+            $vufindFormat['namespace'] . ' ' . $vufindFormat['schema']
         );
 
         $recordDoc->appendChild($rootNode);
@@ -366,8 +366,7 @@ class Server
             [$record], $this->vufindApiFields
         );
         $metadataNode = $recordDoc->createElementNS(
-            $this->metadataFormats['oai_vufind_json']['namespace'],
-            'oai_vufind_json:metadata'
+            $vufindFormat['namespace'], 'oai_vufind_json:metadata'
         );
         $metadataNode->setAttribute('type', 'application/json');
         $metadataNode->appendChild(
@@ -549,8 +548,8 @@ class Server
     }
 
     /**
-     * Load data about metadata formats.  (This is called by the constructor
-     * and is only a separate method to allow easy override by child classes).
+     * Initialize data about metadata formats. (This is called on demand and is
+     * defined as a separate method to allow easy override by child classes).
      *
      * @return void
      */
@@ -568,7 +567,22 @@ class Server
                 'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
                 'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
             ];
+        } else {
+            unset($this->metadataFormats['oai_vufind_json']);
         }
+    }
+
+    /**
+     * Get metadata formats; initialize the list if necessary.
+     *
+     * @return array
+     */
+    protected function getMetadataFormats()
+    {
+        if (empty($this->metadataFormats)) {
+            $this->initializeMetadataFormats();
+        }
+        return $this->metadataFormats;
     }
 
     /**
@@ -636,7 +650,7 @@ class Server
         // means that no specific record ID was requested; otherwise, they only
         // apply if the current record driver supports them):
         $xml = new SimpleXMLElement('<ListMetadataFormats />');
-        foreach ($this->metadataFormats as $prefix => $details) {
+        foreach ($this->getMetadataFormats() as $prefix => $details) {
             if ($record === false
                 || $record->getXML($prefix) !== false
                 || ('oai_vufind_json' === $prefix && $this->supportsVuFindMetadata())
@@ -930,7 +944,7 @@ class Server
         }
 
         // Validate requested metadata format:
-        $prefixes = array_keys($this->metadataFormats);
+        $prefixes = array_keys($this->getMetadataFormats());
         if (!in_array($params['metadataPrefix'], $prefixes)) {
             throw new \Exception('cannotDisseminateFormat:Unknown Format');
         }
