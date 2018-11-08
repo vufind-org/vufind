@@ -338,27 +338,21 @@ class Server
             $vufindFormat['namespace'], 'oai_vufind_json:record'
         );
         $rootNode->setAttribute(
-            'xmlns:xsi',
-            "http://www.w3.org/2001/XMLSchema-instance"
+            'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance'
         );
         $rootNode->setAttribute(
             'xsi:schemaLocation',
             $vufindFormat['namespace'] . ' ' . $vufindFormat['schema']
         );
-
         $recordDoc->appendChild($rootNode);
 
         // Add oai_dc part
         $oaiDc = new \DOMDocument();
         $oaiDc->loadXML(
-            $record
-                ->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
+            $record->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
         );
         $rootNode->appendChild(
-            $recordDoc->importNode(
-                $oaiDc->documentElement,
-                true
-            )
+            $recordDoc->importNode($oaiDc->documentElement, true)
         );
 
         // Add VuFind metadata
