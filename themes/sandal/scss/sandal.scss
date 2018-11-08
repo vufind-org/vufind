@@ -214,7 +214,6 @@ header {
 .facet .badge {
   flex-shrink: 0;
   max-height: 19px;
-  line-height: .8;
   background-color: $sidebar-item-badge;
 }
 
@@ -224,7 +223,10 @@ header {
   padding-right: 0;
 }
 .sidebar .checkbox-filter,
-.sidebar > h4 { margin-left: 1rem; }
+.sidebar > h4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
 
 .jstree-facet {
   .main .fa-check { margin-top: 3px; }

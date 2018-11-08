@@ -24,9 +24,9 @@
   & > .facet:first-child { border-top: 1px solid $list-group-border; }
 }
 
-
 .facet,
-.facet-group .title {
+.facet-group .title,
+.facet-load-indicator {
   display: flex;
   padding: .5rem;
   width: 100%;
@@ -40,7 +40,6 @@
   .badge {
     flex-shrink: 0;
     max-height: 19px;
-    line-height: 1.1rem;
   }
 
   .exclude {
@@ -49,7 +48,8 @@
     padding-left: 0.5rem;
   }
 }
-.facet {
+.facet-group .facet,
+.facet-load-indicator {
   border-bottom: 1px solid $list-group-border;
 }
 .facet-group .title {
@@ -75,9 +75,12 @@
 }
 .top-facets .narrow-toggle { text-decoration: underline; }
 
+.checkboxFilter {
+  padding-bottom: 0.5rem;
+}
 .checkbox-filter {
-  display: block;
-  padding-bottom: 1rem;
+  display: flex;
+  width: 100%;
   font-weight: bold;
   color: $text-color;
 }
