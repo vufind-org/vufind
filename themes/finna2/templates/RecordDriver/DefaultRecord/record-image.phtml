@@ -63,13 +63,29 @@
         <div class="access-rights">
           <div class="image-rights">
             <?php $hasLink = isset($rights['link']); ?>
-            <strong><?= $this->transEsc('Image Rights') ?>:</strong>
-            <?php if (!empty($rights['copyright'])): ?><?php if ($hasLink): ?><span class="imagerights"><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?php if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$this->transEsc($rights['copyright']) ?><?php endif; ?><?php if ($hasLink): ?></a></span><?php endif; ?>
-            <?php else: ?>
-              <?php if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
-                <?=$this->transEsc('usage_F') ?><br>
+            <strong><?= $this->transEsc('Image Rights') ?></strong><br>
+            <span class="imagerights btn">
+              <?php if (!empty($rights['copyright'])): ?>
+                <?php $copyright = $this->transEsc($rights['copyright']) ?>
+                <?php if (!empty($copyright)): ?>
+                  <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $copyright]);?><?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?php if ($copyright === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$copyright ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
+                <?php endif; ?>
+              <?php else: ?>
+                <?php if (isset($rights['description'])): ?>
+                  <?php foreach ($rights['description'] as $item): ?>
+                    <?php if (!empty($item)): ?>
+                      <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $item])?> <?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?=$item ?><?php if ($hasLink): ?></a><?php endif; ?>
+                    <?php endif; ?>
+                  <?php endforeach ?>
+                <?php else: ?>
+                  <?php if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
+                    <?=$this->transEsc('usage_F') ?>
+                  <?php else: ?>
+                    <?=$this->transEsc('usage_unknown') ?>
+                  <?php endif; ?>
+                <?php endif; ?>
               <?php endif; ?>
-            <?php endif; ?>
+            </span> <p class="copyright-meaning"><a target="_blank" href="<?php if ($hasLink): ?><?= $rights['link'] ?><?php else: ?><?=$this->url('content-page', ['page' => 'terms'])?><?php endif; ?>"><?=$this->transEsc('usage_meaning') ?></a></p>
           </div>
           <div class="copyright truncate-field">
             <?php if (isset($rights['description'])): ?>
