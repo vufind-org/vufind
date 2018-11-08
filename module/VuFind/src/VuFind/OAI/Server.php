@@ -214,6 +214,7 @@ class Server
         }
         $this->params = isset($params) && is_array($params) ? $params : [];
         $this->initializeSettings($config); // Load config.ini settings
+        $this->initializeMetadataFormats();
     }
 
     /**
@@ -240,6 +241,7 @@ class Server
     public function setRecordFormatter($formatter)
     {
         $this->recordFormatter = $formatter;
+        $this->initializeMetadataFormats();
     }
 
     /**
@@ -249,7 +251,6 @@ class Server
      */
     public function getResponse()
     {
-        $this->initializeMetadataFormats();
         if (!$this->hasParam('verb')) {
             return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
