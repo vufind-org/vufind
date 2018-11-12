@@ -220,10 +220,10 @@ class JSTree extends AbstractBase
             if ('collection' === $type && !$this->collectionsEnabled) {
                 $type = 'record';
             }
-            $url = $this->getUrlFromRouteCache($type, $node->id);
+            $url = $this->getUrlFromRouteCache($type, urlencode($node->id));
             return $type === 'collection'
                 ? $url . '#tabnav'
-                : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
+                : $url . '#tree-' . preg_replace('/\W/', '-', urlencode($node->id));
         }
     }
 
