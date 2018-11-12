@@ -74,7 +74,7 @@
     <?php foreach ($lists as $list): ?>
       <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
         <?=$this->escapeHtml($list['title'])?>
-        <span class="badge"><?=$list->cnt?></span>
+        <span class="badge"><?=$list->cnt ?></span>
       </a>
     <?php endforeach; ?>
     <a href="<?=$this->url('editList', ['id' => 'NEW'])?>">
