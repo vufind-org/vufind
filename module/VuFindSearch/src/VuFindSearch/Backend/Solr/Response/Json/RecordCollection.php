@@ -135,8 +135,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getGroups()
     {
-        return isset($this->response['grouped'])
-            ? $this->response['grouped'] : [];
+        return $this->response['grouped'] ?? [];
     }
 
     /**
@@ -146,8 +145,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getHighlighting()
     {
-        return isset($this->response['highlighting'])
-            ? $this->response['highlighting'] : [];
+        return $this->response['highlighting'] ?? [];
     }
 
     /**
@@ -157,8 +155,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     protected function getSolrParameters()
     {
-        return isset($this->response['responseHeader']['params'])
-            ? $this->response['responseHeader']['params'] : [];
+        return $this->response['responseHeader']['params'] ?? [];
     }
 
     /**
@@ -179,7 +176,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     protected function getRawSpellcheckSuggestions()
     {
-        return isset($this->response['spellcheck']['suggestions'])
-            ? $this->response['spellcheck']['suggestions'] : [];
+        return $this->response['spellcheck']['suggestions'] ?? [];
     }
 }

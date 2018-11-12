@@ -29,6 +29,7 @@ namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\KeepAlive;
 use VuFind\AjaxHandler\KeepAliveFactory;
+use Zend\Session\SessionManager;
 
 /**
  * KeepAlive test class.
@@ -48,12 +49,11 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponse()
     {
-        $sm = $this->getMockService('Zend\Session\SessionManager', ['getId']);
+        $sm = $this->container->createMock(SessionManager::class, ['getId']);
         $sm->expects($this->once())->method('getId');
-        $container = new \Zend\ServiceManager\ServiceManager();
-        $container->setService('Zend\Session\SessionManager', $sm);
+        $this->container->set(SessionManager::class, $sm);
         $factory = new KeepAliveFactory();
-        $handler = $factory($container, KeepAlive::class);
+        $handler = $factory($this->container, KeepAlive::class);
         $params = new \Zend\Mvc\Controller\Plugin\Params();
         $this->assertEquals([true], $handler->handleRequest($params));
     }

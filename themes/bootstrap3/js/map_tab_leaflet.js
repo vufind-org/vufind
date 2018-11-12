@@ -3,7 +3,6 @@
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
 function loadMapTab(mapData, mapGraticule, basemap) {
-  var init = true;
   var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});	
   var geoFeatureGroup = L.featureGroup();
   // Define styles for icons
@@ -21,7 +20,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
   });
 
   $('#map-canvas').show();
-  init = function drawMap() {
+  var init = function drawMap() {
     var featureCount = mapData.length;
     var label, label_name, label_coords, split_coords;
     var i = 0;
@@ -51,7 +50,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
       var south = mapData[i][1];
       var east = mapData[i][2];
       var north = mapData[i][3];
- 
+
       // Create features
       var geoFeature;
       if (west === east && north === south) {
@@ -108,5 +107,4 @@ function loadMapTab(mapData, mapGraticule, basemap) {
     }
   };
   init();
-  init = false;
 }

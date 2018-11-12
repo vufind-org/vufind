@@ -1848,12 +1848,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $bindParams[':dept'] = $dept;
         }
         $reserveWhere = empty($reserveWhere) ?
-            "" : "where (" . implode(' AND ', $reserveWhere) . ")";
+            "" : "HAVING (" . implode(' AND ', $reserveWhere) . ")";
 
         $sql = "SELECT biblionumber AS `BIB_ID`,
-                       courses.course_id AS COURSE_ID,
-                       course_instructors.borrowernumber as INSTRUCTOR_ID,
-                       courses.department AS DEPARTMENT_ID
+                       courses.course_id AS `COURSE_ID`,
+                       course_instructors.borrowernumber as `INSTRUCTOR_ID`,
+                       courses.department AS `DEPARTMENT_ID`
                 FROM courses
                 INNER JOIN `authorised_values`
                    ON courses.department = `authorised_values`.`authorised_value`
@@ -1862,11 +1862,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 INNER JOIN `items` USING (itemnumber)
                 INNER JOIN `course_instructors` USING (course_id)
                 INNER JOIN `borrowers` USING (borrowernumber)
-                WHERE courses.enabled = 'yes'" . $reserveWhere;
+                WHERE courses.enabled = 'yes' " . $reserveWhere;
 
         try {
-            $sqlStmt = $this->db->prepare($sql, $bindParams);
-            $sqlStmt->execute();
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute($bindParams);
             $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $result[] = $rowItem;
@@ -1924,6 +1927,49 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } else {
             return null;
         }
+    }
+
+    /**
+     * Change Password
+     *
+     * This method changes patron's password
+     *
+     * @param array $detail An associative array with three keys
+     *      patron      - The patron array from patronLogin
+     *      oldPassword - Old password
+     *      newPassword - New password
+     *
+     * @return array  An associative array with keys:
+     *      success - boolean, true if change was made
+     *      status  - string, A status message - subject to translation
+     */
+    public function changePassword($detail)
+    {
+        if (!$this->db) {
+            $this->initDb();
+        }
+        $sql = "UPDATE borrowers SET password = ? WHERE borrowernumber = ?";
+        $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        $salt = '';
+        for ($i = 0; $i < 16; ++$i) { // 16 is length of salt
+            $salt .= $keyspace[random_int(0, $max)];
+        }
+        $salt = base64_encode($salt);
+        $newPassword_hashed = crypt($detail['newPassword'], '$2a$08$' . $salt);
+        try {
+            $stmt = $this->db->prepare($sql);
+            $result = $stmt->execute(
+                [ $newPassword_hashed, $detail['patron']['id'] ]
+            );
+        } catch (Exception $e) {
+            return [ 'success' => false, 'status' => $e->getMessage() ];
+        }
+        return [
+            'success' => $result,
+            'status' => $result ? 'new_password_success'
+                : 'password_error_not_unique'
+        ];
     }
 
     /**

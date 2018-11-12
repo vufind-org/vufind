@@ -139,7 +139,7 @@ class Backend extends AbstractBackend
         $this->connector->search($baseParams);
 
         /* Pazpar2 does not return all results immediately. Rather, we need to
-         * occassionally check with the Pazpar2 server on the status of the
+         * occasionally check with the Pazpar2 server on the status of the
          * search.
          *
          * This loop will continue to wait until the configured level of
@@ -160,7 +160,7 @@ class Backend extends AbstractBackend
         );
         $response = $this->connector->show($showParams);
 
-        $hits = isset($response->hit) ? $response->hit : [];
+        $hits = $response->hit ?? [];
         $collection = $this->createRecordCollection(
             $hits, intval($response->merged), $offset
         );

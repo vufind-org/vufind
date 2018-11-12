@@ -794,7 +794,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
-                'location' => $entry['pickupLocation']['name'],
+                // note that $entry['pickupLocation']['name'] may contain misleading
+                // text, so we instead use the code here:
+                'location' => $entry['pickupLocation']['code'],
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
                 ),

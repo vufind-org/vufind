@@ -114,6 +114,11 @@ footer {
     float: right;
     padding-left: 1rem;
   }
+  .mainbody.solo {
+    width: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 /* ------ Form Errors ------ */
@@ -215,18 +220,6 @@ footer {
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
 }
-.top-facets {
-  margin-left: -.5rem;
-  margin-right: -.5rem;
-}
-.top-facets .facet,
-.top-facets .narrow-toggle,
-.top-facets > strong {
-  display: inline-block;
-  padding: .25rem .5rem;
-  white-space: nowrap;
-}
-.top-facets .narrow-toggle { text-decoration: underline; }
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
