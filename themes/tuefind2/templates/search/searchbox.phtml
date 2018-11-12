@@ -26,6 +26,7 @@ if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
     }
 }
 $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+$searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters);
 ?>
 
 
@@ -60,7 +61,7 @@ $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->s
                 <div class="clearfix searchbox_home" role="search">
                     <? if ($this->searchType == 'advanced'): ?>
                         <div class="searchForm navbar-form navbar-left flip">
-                            <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
+                            <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
                             <? if (!empty($tabs)): ?><?= $tabs ?>
                             <div class="tab-content clearfix"><? endif; ?>
                                 <p class="adv_search_terms"><?= $this->transEsc("Your search terms") ?> :
