@@ -435,16 +435,16 @@ class Form extends \Zend\Form\Form
         $recipientName = $recipientEmail = null;
         $recipient = $this->formConfig['recipient'] ?? null;
 
-        if (isset($this->defaultFormConfig['recipient_email'])) {
-            $recipientEmail = $this->defaultFormConfig['recipient_email'];
-        } elseif (isset($recipient['email'])) {
+        if (isset($recipient['email'])) {
             $recipientEmail = $recipient['email'];
+        } elseif (isset($this->defaultFormConfig['recipient_email'])) {
+            $recipientEmail = $this->defaultFormConfig['recipient_email'];
         }
 
-        if (isset($this->defaultFormConfig['recipient_name'])) {
-            $recipientName = $this->defaultFormConfig['recipient_name'];
-        } elseif (isset($recipient['name'])) {
+        if (isset($recipient['name'])) {
             $recipientName = $recipient['name'];
+        } elseif (isset($this->defaultFormConfig['recipient_name'])) {
+            $recipientName = $this->defaultFormConfig['recipient_name'];
         }
 
         return [
@@ -482,10 +482,10 @@ class Form extends \Zend\Form\Form
     {
         $subject = 'VuFind Feedback';
 
-        if (!empty($this->defaultFormConfig['email_subject'])) {
-            $subject = $this->defaultFormConfig['email_subject'];
-        } elseif (!empty($this->formConfig['emailSubject'])) {
+        if (!empty($this->formConfig['emailSubject'])) {
             $subject = $this->formConfig['emailSubject'];
+        } elseif (!empty($this->defaultFormConfig['email_subject'])) {
+            $subject = $this->defaultFormConfig['email_subject'];
         }
 
         return $subject;
