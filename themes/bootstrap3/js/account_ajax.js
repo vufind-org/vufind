@@ -70,14 +70,14 @@ VuFind.register('account', function Account() {
       url: VuFind.path + '/AJAX/JSON?method=getUserTransactions',
       dataType: 'json'
     })
-    .done(function getCheckedOutDone(response) {
-      checkedOutStatus = response.data;
-      _save();
-      _render();
-    })
-    .fail(function getCheckedOutFail() {
-      holdStatus = null;
-    });
+      .done(function getCheckedOutDone(response) {
+        checkedOutStatus = response.data;
+        _save();
+        _render();
+      })
+      .fail(function getCheckedOutFail() {
+        holdStatus = null;
+      });
   };
 
   var _ajaxFines = function _ajaxFines() {
@@ -85,14 +85,14 @@ VuFind.register('account', function Account() {
       url: VuFind.path + '/AJAX/JSON?method=getUserFines',
       dataType: 'json'
     })
-    .done(function getFinesDone(response) {
-      fineStatus = response.data;
-      _save();
-      _render();
-    })
-    .fail(function getFinesFail() {
-      holdStatus = null;
-    });
+      .done(function getFinesDone(response) {
+        fineStatus = response.data;
+        _save();
+        _render();
+      })
+      .fail(function getFinesFail() {
+        holdStatus = null;
+      });
   };
 
   var _ajaxHolds = function _ajaxHolds() {
@@ -100,14 +100,14 @@ VuFind.register('account', function Account() {
       url: VuFind.path + '/AJAX/JSON?method=getUserHolds',
       dataType: 'json'
     })
-    .done(function getFinesDone(response) {
-      holdStatus = parseInt(response.data);
-      _save();
-      _render();
-    })
-    .fail(function getFinesFail() {
-      holdStatus = null;
-    });
+      .done(function getFinesDone(response) {
+        holdStatus = parseInt(response.data);
+        _save();
+        _render();
+      })
+      .fail(function getFinesFail() {
+        holdStatus = null;
+      });
   };
   var _fetchData = function _fetchData() {
     _ajaxCheckedOut();
