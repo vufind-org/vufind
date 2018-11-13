@@ -220,10 +220,10 @@ class JSTree extends AbstractBase
             if ('collection' === $type && !$this->collectionsEnabled) {
                 $type = 'record';
             }
-            $url = $this->getUrlFromRouteCache($type, urlencode($node->id));
+            $url = $this->getUrlFromRouteCache($type, $node->id);
             return $type === 'collection'
                 ? $url . '#tabnav'
-                : $url . '#tree-' . preg_replace('/\W/', '-', urlencode($node->id));
+                : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
         }
     }
 
@@ -251,7 +251,7 @@ class JSTree extends AbstractBase
             ];
             $cache[$route] = $this->router->fromRoute($route, $params, $options);
         }
-        return str_replace('__record_id__', $id, $cache[$route]);
+        return str_replace('__record_id__', urlencode($id), $cache[$route]);
     }
 
     /**
