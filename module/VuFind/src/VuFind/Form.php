@@ -89,10 +89,9 @@ class Form extends \Zend\Form\Form
     /**
      * Constructor
      *
-     * @param string             $formId        Form id
      * @param Zend\Config\Config $defaultConfig Default Feedback configuration
      * @param Translator         $translator    Translator
-     * @param User               $user          User
+     * @param YamlReader         $yamlReader    YamlReader
      *
      * @throws \Exception
      */
@@ -105,11 +104,18 @@ class Form extends \Zend\Form\Form
         $this->yamlReader = $yamlReader;
     }
 
+    /**
+     * Set form id
+     *
+     * @param string $formId Form id
+     *
+     * @return void
+     * @throws Exception
+     */
     public function setFormId($formId)
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
-            return null;
         }
 
         $this->messages = [];
@@ -472,6 +478,8 @@ class Form extends \Zend\Form\Form
 
     /**
      * Return form email message subject.
+     *
+     * @param array $postParams Posted form data
      *
      * @return string
      */
