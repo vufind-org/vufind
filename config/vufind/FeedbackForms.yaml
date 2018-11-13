@@ -34,7 +34,7 @@
 #     required (boolean) Is the element required
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class "custom-css-class,another-class"]
-#     type (string)      Element type (text|textarea|email|select)
+#     type (string)      Element type (text|textarea|email|url|select)
 #     
 #     And for select elements one of:
 # 
