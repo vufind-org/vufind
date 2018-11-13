@@ -27,6 +27,7 @@
  */
 namespace VuFind;
 
+use VuFind\Config\YamlReader;
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\EmailAddress;
 use Zend\Validator\NotEmpty;
@@ -84,6 +85,11 @@ class Form extends \Zend\Form\Form
      */
     protected $translator;
 
+    /**
+     * YAML reader
+     *
+     * @var YamlReader
+     */
     protected $yamlReader;
 
     /**
@@ -91,7 +97,7 @@ class Form extends \Zend\Form\Form
      *
      * @param Zend\Config\Config $defaultConfig Default Feedback configuration
      * @param Translator         $translator    Translator
-     * @param YamlReader         $yamlReader    YamlReader
+     * @param YamlReader         $yamlReader    YAML reader
      *
      * @throws \Exception
      */
@@ -148,12 +154,7 @@ class Form extends \Zend\Form\Form
         $localConfig = $this->yamlReader->get($confName, true, false);
 
         if (!$formId) {
-            if (isset($localConfig['default'])) {
-                $formId = $localConfig['default'];
-            } elseif (isset($config['default'])) {
-                $formId = $config['default'];
-            }
-
+            $formId = $localConfig['default'] ?? $config['default'] ?? null;
             if (!$formId) {
                 return null;
             }
@@ -210,9 +211,7 @@ class Form extends \Zend\Form\Form
             'name' => '__email__', 'type' => 'email', 'label' => 'feedback_email',
             'group' => '__sender__'
         ];
-        if (isset($formConfig['senderInfoRequired'])
-            && $formConfig['senderInfoRequired'] == true
-        ) {
+        if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderEmail['aria-required']
                 = $senderName['required'] = $senderName['aria-required'] = true;
         }
@@ -265,7 +264,6 @@ class Form extends \Zend\Form\Form
 
             $settings = [];
             if (isset($el['settings'])) {
-                //die(var_export($el['settings'], true));
                 foreach ($el['settings'] as list($settingId, $settingVal)) {
                     $settings[trim($settingId)] = trim($settingVal);
                 }
@@ -403,9 +401,8 @@ class Form extends \Zend\Form\Form
      */
     public function isEnabled()
     {
-        return
-            !(isset($this->formConfig['enabled'])
-            && $this->formConfig['enabled'] === false);
+        // Enabled unless explicitly disabled
+        return ($this->formConfig['enabled'] ?? true) === false;
     }
 
     /**
@@ -435,20 +432,13 @@ class Form extends \Zend\Form\Form
      */
     public function getRecipient()
     {
-        $recipientName = $recipientEmail = null;
         $recipient = $this->formConfig['recipient'] ?? null;
 
-        if (isset($recipient['email'])) {
-            $recipientEmail = $recipient['email'];
-        } elseif (isset($this->defaultFormConfig['recipient_email'])) {
-            $recipientEmail = $this->defaultFormConfig['recipient_email'];
-        }
+        $recipientEmail = $recipient['email']
+            ?? $this->defaultFormConfig['recipient_email'] ?? null;
 
-        if (isset($recipient['name'])) {
-            $recipientName = $recipient['name'];
-        } elseif (isset($this->defaultFormConfig['recipient_name'])) {
-            $recipientName = $this->defaultFormConfig['recipient_name'];
-        }
+        $recipientName = $recipient['name']
+            ?? $this->defaultFormConfig['recipient_name'] ?? null;
 
         return [
             $recipientName,
@@ -463,7 +453,7 @@ class Form extends \Zend\Form\Form
      */
     public function getTitle()
     {
-        return isset($this->formConfig['title']) ? $this->formConfig['title'] : null;
+        return $this->formConfig['title'] ?? null;
     }
 
     /**
@@ -473,7 +463,7 @@ class Form extends \Zend\Form\Form
      */
     public function getHelp()
     {
-        return isset($this->formConfig['help']) ? $this->formConfig['help'] : null;
+        return $this->formConfig['help'] ?? null;
     }
 
     /**
@@ -577,7 +567,7 @@ class Form extends \Zend\Form\Form
         ];
 
         foreach ($this->getElements() as $el) {
-            $required = isset($el['required']) && $el['required'] === true;
+            $required = ($el['required'] ?? false) === true;
             $fieldValidators = [];
             if ($required) {
                 $fieldValidators[] = $validators['notEmpty'];
