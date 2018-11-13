@@ -2,7 +2,7 @@
 /**
  * Configurable form.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2018.
  *
@@ -25,9 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-namespace VuFind\Form;
-
-use VuFind\Config\Locator;
+namespace VuFind;
 
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\EmailAddress;
@@ -73,11 +71,20 @@ class Form extends \Zend\Form\Form
     protected $formElementConfig;
 
     /**
+     * Form config
+     *
+     * @var array
+     */
+    protected $formConfig;
+
+    /**
      * Translator
      *
      * @var Translator
      */
     protected $translator;
+
+    protected $yamlReader;
 
     /**
      * Constructor
@@ -89,26 +96,31 @@ class Form extends \Zend\Form\Form
      *
      * @throws Exception
      */
-    public function __construct($formId, $defaultConfig, $translator, $user)
+    public function __construct($defaultConfig, $translator, $yamlReader)
     {
-        parent::__construct($formId);
+        parent::__construct();
 
+        $this->defaultConfig = $defaultConfig;
+        $this->translator = $translator;
+        $this->yamlReader = $yamlReader;
+    }
+
+    public function setFormId($formId)
+    {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \Exception("Form '$formId' not found");
             return null;
         }
 
-        $this->defaultFormConfig = $defaultConfig;
-        $this->translator = $translator;
         $this->messages = [];
         $this->messages['empty']
-            = $translator->translate('This field is required');
+            = $this->translator->translate('This field is required');
 
         $this->messages['invalid_email']
-            = $translator->translate('Email address is invalid');
+            = $this->translator->translate('Email address is invalid');
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config, $translator, $user);
+            = $this->parseConfig($formId, $config, $this->translator);
 
         $this->buildForm($this->formElementConfig);
     }
@@ -123,60 +135,34 @@ class Form extends \Zend\Form\Form
      */
     protected function getFormConfig($formId = null)
     {
-        $confName = 'FeedbackForms.json';
+        $confName = 'FeedbackForms.yaml';
         $localConfig = $parentConfig = $config = null;
 
-        if ($parentFile = Locator::getBaseConfigPath($confName)) {
-            $parentConfig = json_decode(file_get_contents($parentFile), true);
-        }
-
-        if (JSON_ERROR_NONE !== ($error = json_last_error())) {
-            throw new \Exception(
-                "Invalid form configuration for form '$formId' ($parentFile)"
-            );
-        }
-
-        if ($localFile = Locator::getLocalConfigPath($confName)) {
-            $localConfig = json_decode(file_get_contents($localFile), true);
-        }
-
-        if (JSON_ERROR_NONE !== ($error = json_last_error())) {
-            throw new \Exception(
-                "Invalid form configuration for form '$formId' ($localFile)"
-            );
-        }
-
-        $config = $parentConfig;
-        if ($localConfig) {
-            // Handle non-overridable forms before merging local config
-            if (isset($localConfig['forms'])) {
-                foreach ($localConfig['forms'] as $key => $form) {
-                    if (isset($parentConfig['forms'][$key])) {
-                        $parentForm = $parentConfig['forms'][$key];
-                        if (isset($parentForm['allowLocalOverride'])
-                            && $parentForm['allowLocalOverride'] === false
-                        ) {
-                            continue;
-                        }
-                        $form = array_merge($parentForm, $form);
-                    }
-                    $config['forms'][$key] = $form;
-                }
-            }
-        }
+        $config = $this->yamlReader->get($confName, false, false);
+        $localConfig = $this->yamlReader->get($confName, true, false);
 
         if (!$formId) {
-            if (!isset($config['default'])) {
+            if (isset($localConfig['default'])) {
+                $formId = $localConfig['default'];
+            } elseif (isset($config['default'])) {
+                $formId = $config['default'];
+            }
+
+            if (!$formId) {
                 return null;
             }
-            $formId = $config['default'];
         }
 
-        if (! isset($config['forms'][$formId])) {
-            return null;
+        $config = $config['forms'][$formId] ?? null;
+        $localConfig = $localConfig['forms'][$formId] ?? null;
+
+        $useLocal = isset($localConfig) && !empty($config['allowLocalOverride']);
+
+        if ($useLocal) {
+            $config = $localConfig;
         }
 
-        return $config['forms'][$formId];
+        return $config;
     }
 
     /**
@@ -185,11 +171,10 @@ class Form extends \Zend\Form\Form
      * @param string     $formId     Form id
      * @param array      $config     Configuration
      * @param Translator $translator Translator
-     * @param User       $user       User (if available)
      *
      * @return array
      */
-    protected function parseConfig($formId, $config, $translator, $user = null)
+    protected function parseConfig($formId, $config, $translator)
     {
         $formConfig = [
            'id' => $formId,
@@ -274,12 +259,13 @@ class Form extends \Zend\Form\Form
 
             $settings = [];
             if (isset($el['settings'])) {
-                foreach ($el['settings'] as $setting) {
-                    list($settingId, $settingVal) = $setting;
+                //die(var_export($el['settings'], true));
+                foreach ($el['settings'] as list($settingId, $settingVal)) {
                     $settings[trim($settingId)] = trim($settingVal);
                 }
                 $element['settings'] = $settings;
             }
+
             if (in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
@@ -337,10 +323,18 @@ class Form extends \Zend\Form\Form
 
         $conf['type'] = $class;
         $conf['options'] = [];
-        $attributes = ['id' => $el['name'], 'class' => ''];
+
+        $attributes = $el['settings'] ?? [];
+
+        $attributes = [
+            'id' => $el['name'],
+            'class' => [$el['settings']['class'] ?? null]
+        ];
+
         if ($type !== 'submit') {
-            $attributes['class'] = 'form-control';
+            $attributes['class'][] = 'form-control';
         }
+
         if (!empty($el['required'])) {
             $attributes['required'] = true;
             $attributes['aria-required'] = "true";
@@ -364,9 +358,12 @@ class Form extends \Zend\Form\Form
             break;
         case 'submit':
             $attributes['value'] = $el['label'];
-            $attributes['class'] .= ' btn btn-primary';
+            $attributes['class'][] = 'btn';
+            $attributes['class'][] = 'btn-primary';
             break;
         }
+
+        $attributes['class'] = trim(implode(' ', $attributes['class']));
         $conf['attributes'] = $attributes;
 
         return $conf;
@@ -478,7 +475,7 @@ class Form extends \Zend\Form\Form
      *
      * @return string
      */
-    public function getEmailSubject()
+    public function getEmailSubject($postParams)
     {
         $subject = 'VuFind Feedback';
 
@@ -487,8 +484,16 @@ class Form extends \Zend\Form\Form
         } elseif (!empty($this->defaultFormConfig['email_subject'])) {
             $subject = $this->defaultFormConfig['email_subject'];
         }
+        $subject = $this->translator->translate($subject);
 
-        return $subject;
+        $translated = [];
+        foreach ($postParams as $key => $val) {
+            $translated["%%{$key}%%"] = $this->translator->translate($val);
+        }
+
+        return str_replace(
+            array_keys($translated), array_values($translated), $subject
+        );
     }
 
     /**

@@ -1,0 +1,135 @@
+---
+# Listing of configured forms.
+#
+# Configured forms are listed in the top level 'forms' array and can accessed via the URL:
+# /Feedback/Form/<form-id>
+#
+# The main Feedback form (id: FeedbackSite) can be accessed with a shorter URL /Feedback
+#
+# Form supports the following options:
+#
+#   enabled (boolean) Is the form enabled?
+#   title (string) Form title (translation key)
+#   onlyForLoggedUsers (boolean) Require the user to be logged to see the form
+#   allowLocalOverride (boolean) May the form be overriden with local configuration
+#   emailSubject (string) Email subject (translation key).
+#                         The subject may contain placeholders (for example %%receiver%%)
+#                         that are replaced with submitted form values.
+#   recipient
+#     name (string)  Recipient name
+#     email (string) Recipient email address
+#   response (string) Reponse after form submit (translation key)
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#
+#   help
+#     pre (string)  Help text displayed at the beginning of the form (translation key).
+#     post (string) Help text displayed at the end of the form (translation key)
+#
+#   Help texts may contain HTML-formatting.
+#
+#   fields (array) List of form elements with the follofing options:
+#
+#     name (string)      Element name
+#     label (string)     Element label
+#     required (boolean) Is the element required
+#     settings (array)   HTML attributes as key-value pairs, for example:
+#       - [class "custom-css-class,another-class"]
+#     type (string)      Element type (text|textarea|email|select)
+#     
+#     And for select elements one of:
+# 
+#     options (array) List of select values (translation keys)
+#
+#     or
+#
+#     optionGroups (array) List of option groups with keys:
+#       label (string) Group label (translation key)
+#       options (array) List of select values (translation keys)
+#
+#-----------------------------------------------------------------------------------
+
+forms:
+
+  # Main Feedback form
+
+  FeedbackSite:
+    allowLocalOverride: false
+    enabled: true
+    title: Feedback
+    recipient:
+      name2: Your Library json
+      email2: samuli.sillanpaa@helsinki.fi
+
+    onlyForLoggedUsers: false
+    emailSubject: feedback_email_subject custom
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+
+    help:
+      pre: feedback_help_pre
+      post: feedback_help_post
+
+    fields:
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+        settings:
+
+  # Example for an acquisition request form
+
+  AcquisitionRequest:
+    enabled: true
+    title: Acquisition Request
+    onlyForLoggedUsers: false
+    emailSubject: Acquisition Request
+    title: Acquisition Request,
+    response: Thank you for your feedback.
+
+    recipient:
+      name: Your Library
+      email: samuli.sillanpaa@helsinki.fi
+
+    help:
+      pre: acquisition_request_info_pre
+      post: acquisition_request_info_post
+
+    fields:
+      - name: receiver
+        type: select
+        label: acquisition_request_receiver
+        required: true,
+        options:
+          - Feedback
+          - bar
+
+      - name: receiver2
+        type: select
+        label: acquisition_request_receiver
+        required: true,
+        optionGroups:
+          - label: Library 1
+            options:
+              - Branch 1
+              - Branch 2
+              - Branch 3
+
+          - label: Library 2
+            options:
+              - Branch 1
+              - Branch 2
+
+      - name: title
+        type: text
+        label: Title
+        required: true
+
+      - name: author
+        type: text
+        label: Author
+        required: true
+
+      - name: format
+        type: text
+        label: Format
+        required: true

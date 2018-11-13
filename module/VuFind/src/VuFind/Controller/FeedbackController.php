@@ -52,12 +52,11 @@ class FeedbackController extends AbstractBase
             $formId = 'FeedbackSite';
         }
 
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
-            ->get('config');
-        $translator = $this->serviceLocator->get('VuFind\Translator');
         $user = $this->getUser();
 
-        $form = new Form($formId, $config['Feedback'] ?? null, $translator, $user);
+        $form = $this->serviceLocator->get('VuFind\Form');
+        $form->setFormId($formId);
+
         if (!$form->isEnabled()) {
             throw new \Exception("Form '$formId' is disabled");
         }
@@ -99,12 +98,7 @@ class FeedbackController extends AbstractBase
 
         list($recipientName, $recipientEmail) = $form->getRecipient();
 
-        // Translate form variables for email subject
-        $translated = [];
-        foreach ($params->fromPost() as $key => $val) {
-            $translated["%%{$key}%%"] = $translator->translate($val);
-        }
-        $emailSubject = $this->translate($form->getEmailSubject(), $translated);
+        $emailSubject = $form->getEmailSubject($params->fromPost());
 
         list($success, $errorMsg)= $this->sendEmail(
             $recipientName, $recipientEmail, $senderName, $senderEmail,
