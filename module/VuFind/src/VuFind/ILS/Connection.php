@@ -613,6 +613,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Current Loans
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports current
+     * loans.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetMyTransactions($functionConfig, $params)
+    {
+        if ($this->checkCapability('getMyTransactions', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
      * Check Historic Loans
      *
      * A support method for checkFunction(). This is responsible for checking

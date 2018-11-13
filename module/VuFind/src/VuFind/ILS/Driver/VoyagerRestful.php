@@ -319,13 +319,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
+        if ('getMyTransactions' === $function) {
+            // Can't support paging or sorting with the REST API
+            return [];
         }
-
-        return $functionConfig;
+        return parent::getConfig($function, $params);
     }
 
     /**
@@ -2170,15 +2168,16 @@ EOT;
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws ILSException
      * @return mixed        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
         // Get local loans from the database so that we can get more details
         // than available via the API.
-        $transactions = parent::getMyTransactions($patron);
+        $transactions = parent::getMyTransactions($patron, $params);
 
         // Get remote loans and renewability for local loans via the API
 
@@ -2212,7 +2211,7 @@ EOT;
                         // we have already
                         $renewable = (string)$loan->attributes()->canRenew == 'Y';
 
-                        foreach ($transactions as &$transaction) {
+                        foreach ($transactions['records'] as &$transaction) {
                             if (!isset($transaction['institution_id'])
                                 && $transaction['item_id'] == (string)$loan->itemId
                             ) {
@@ -2252,7 +2251,7 @@ EOT;
                         $dueTime = false;
                     }
 
-                    $transactions[] = [
+                    $transactions['records'][] = [
                         // This is bogus, but we need something..
                         'id' => (string)$institution->attributes()->id . '_' .
                                 (string)$loan->itemId,

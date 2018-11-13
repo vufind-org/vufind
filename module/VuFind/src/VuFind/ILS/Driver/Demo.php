@@ -274,6 +274,17 @@ class Demo extends AbstractBase
      */
     protected function getRandomBibId()
     {
+        list($id) = $this->getRandomBibIdAndTitle();
+        return $id;
+    }
+
+    /**
+     * Get a random ID and title from the Solr index.
+     *
+     * @return array [id, title]
+     */
+    protected function getRandomBibIdAndTitle()
+    {
         $source = $this->getRecordSource();
         $query = isset($this->config['Records']['query'])
             ? $this->config['Records']['query'] : '*:*';
@@ -281,7 +292,8 @@ class Demo extends AbstractBase
         if (count($result) === 0) {
             throw new \Exception('Problem retrieving random record from $source.');
         }
-        return current($result->getRecords())->getUniqueId();
+        $record = current($result->getRecords());
+        return [$record->getUniqueId(), $record->getTitle()];
     }
 
     /**
@@ -450,7 +462,8 @@ class Demo extends AbstractBase
                 $currentItem['institution_dbkey'] = 'ill_institution';
             } else {
                 if ($this->idsInMyResearch) {
-                    $currentItem['id'] = $this->getRandomBibId();
+                    list($currentItem['id'], $currentItem['title'])
+                        = $this->getRandomBibIdAndtitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
@@ -787,7 +800,8 @@ class Demo extends AbstractBase
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
                     if ($this->idsInMyResearch) {
-                        $fineList[$i]['id'] = $this->getRandomBibId();
+                        list($fineList[$i]['id'], $fineList[$i]['title'])
+                            = $this->getRandomBibIdAndTitle();
                         $fineList[$i]['source'] = $this->getRecordSource();
                     } else {
                         $fineList[$i]['title'] = 'Demo Title ' . $i;
@@ -951,7 +965,8 @@ class Demo extends AbstractBase
             } else {
                 $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
                 if ($this->idsInMyResearch) {
-                    $transList[$i]['id'] = $this->getRandomBibId();
+                    list($transList[$i]['id'], $transList[$i]['title'])
+                        = $this->getRandomBibIdAndTitle();
                     $transList[$i]['source'] = $this->getRecordSource();
                 } else {
                     $transList[$i]['title'] = 'Demo Title ' . $i;
@@ -968,19 +983,51 @@ class Demo extends AbstractBase
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @return mixed        Array of the patron's transactions on success.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
         $this->checkIntermittentFailure();
         $session = $this->getSession();
         if (!isset($session->transactions)) {
             $session->transactions = $this->getTransactionList();
         }
-        return $session->transactions;
+        // Order
+        $transactions = $session->transactions;
+        if (!empty($params['sort'])) {
+            $sort = explode(
+                ' ', !empty($params['sort']) ? $params['sort'] : 'date_due desc', 2
+            );
+
+            $descending = isset($sort[1]) && 'desc' === $sort[1];
+
+            usort(
+                $transactions,
+                function ($a, $b) use ($sort, $descending) {
+                    if ('title' === $sort[0]) {
+                        $cmp = strcmp($a['title'] ?? '', $b['title'] ?? '');
+                    } else {
+                        $cmp = $a['rawduedate'] - $b['rawduedate'];
+                    }
+                    return $descending ? -$cmp : $cmp;
+                }
+            );
+        }
+
+        if (isset($params['limit'])) {
+            $limit = $params['limit'] ?? 50;
+            $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+            $transactions = array_slice($transactions, $offset, $limit);
+        }
+
+        return [
+            'count' => count($session->transactions),
+            'records' => $transactions
+        ];
     }
 
     /**
@@ -1041,7 +1088,8 @@ class Demo extends AbstractBase
                 'item_id' => $i,
             ];
             if ($this->idsInMyResearch) {
-                $transList[$i]['id'] = $this->getRandomBibId();
+                list($transList[$i]['id'], $transList[$i]['title'])
+                    = $this->getRandomBibIdAndTitle();
                 $transList[$i]['source'] = $this->getRecordSource();
             } else {
                 $transList[$i]['title'] = 'Demo Title ' . $i;
@@ -2190,8 +2238,7 @@ class Demo extends AbstractBase
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;
             }
-            return [
-                'max_results' => 100,
+            $config = [
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
@@ -2202,7 +2249,27 @@ class Demo extends AbstractBase
                 ],
                 'default_sort' => 'checkout desc'
             ];
+            if ($this->config['Loans']['paging'] ?? false) {
+                $config['max_results']
+                    = $this->config['Loans']['max_page_size'] ?? 100;
+            }
+            return $config;
         }
+        if ('getMyTransactions' === $function) {
+            if (empty($this->config['Loans']['paging'])) {
+                return [];
+            }
+            return [
+                'max_results' => $this->config['Loans']['max_page_size'] ?? 100,
+                'sort' => [
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc',
+                    'title asc' => 'sort_title'
+                ],
+                'default_sort' => 'due asc'
+            ];
+        }
+
         return [];
     }
 
