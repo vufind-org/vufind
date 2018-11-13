@@ -27,6 +27,7 @@
  */
 namespace VuFind;
 
+use VuFind\Config\YamlReader;
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\EmailAddress;
 use Zend\Validator\NotEmpty;
@@ -84,15 +85,19 @@ class Form extends \Zend\Form\Form
      */
     protected $translator;
 
+    /**
+     * YAML reader
+     *
+     * @var YamlReader
+     */
     protected $yamlReader;
 
     /**
      * Constructor
      *
-     * @param string             $formId        Form id
      * @param Zend\Config\Config $defaultConfig Default Feedback configuration
      * @param Translator         $translator    Translator
-     * @param User               $user          User
+     * @param YamlReader         $yamlReader    YAML reader
      *
      * @throws \Exception
      */
