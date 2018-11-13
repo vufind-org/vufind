@@ -58,7 +58,7 @@ class FeedbackController extends AbstractBase
         $form->setFormId($formId);
 
         if (!$form->isEnabled()) {
-            throw new \Exception("Form '$formId' is disabled");
+            throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
         $view = $this->createViewModel();

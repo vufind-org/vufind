@@ -55,13 +55,13 @@ forms:
   FeedbackSite:
     allowLocalOverride: false
     enabled: true
-    title: Feedback
+    title: Send us your feedback!
     recipient:
-      name2: Your Library json
-      email2: samuli.sillanpaa@helsinki.fi
+      name: Your Library
+      email: feedback@myuniversity.edu
 
     onlyForLoggedUsers: false
-    emailSubject: feedback_email_subject custom
+    emailSubject: feedback_email_subject
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
@@ -88,7 +88,7 @@ forms:
 
     recipient:
       name: Your Library
-      email: samuli.sillanpaa@helsinki.fi
+      email: feedback@myuniversity.edu
 
     help:
       pre: acquisition_request_info_pre

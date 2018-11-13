@@ -94,7 +94,7 @@ class Form extends \Zend\Form\Form
      * @param Translator         $translator    Translator
      * @param User               $user          User
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($defaultConfig, $translator, $yamlReader)
     {
@@ -108,7 +108,7 @@ class Form extends \Zend\Form\Form
     public function setFormId($formId)
     {
         if (!$config = $this->getFormConfig($formId)) {
-            throw new \Exception("Form '$formId' not found");
+            throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
             return null;
         }
 
