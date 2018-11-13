@@ -402,7 +402,7 @@ class Form extends \Zend\Form\Form
     public function isEnabled()
     {
         // Enabled unless explicitly disabled
-        return ($this->formConfig['enabled'] ?? true) === false;
+        return ($this->formConfig['enabled'] ?? true) === true;
     }
 
     /**
