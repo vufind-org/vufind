@@ -27,7 +27,8 @@
  */
 namespace VuFindTheme;
 
-use VuFind\I18n\Initializer as I18nInitializer;
+use VuFind\I18n\Translator\TranslatorHelper;
+use VuFind\I18n\Translator\Resolver\LocalFile;
 use Zend\Config\Config;
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
@@ -408,13 +409,12 @@ class Initializer
             }
         }
 
-        // Add theme specific language directories for translation
         $baseDir = APPLICATION_PATH . '/themes';
-        $i18n = $this->serviceManager->get(I18nInitializer::class);
-        foreach (array_keys($themes) as $theme) {
-            if (is_dir($langDir = "$baseDir/$theme/languages")) {
-                $i18n->addLanguageDir($langDir);
-            }
+        /** @var TranslatorHelper $loader */
+        $loader = $this->serviceManager->get(TranslatorHelper::class);
+        foreach (array_keys($themes) as $idx => $theme) {
+            list($dir, $prio) = ["$baseDir/$theme/languages", 2000 + $idx * 1000];
+            $loader->addResolver(new LocalFile('ini', $dir), $prio);
         }
     }
 }

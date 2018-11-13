@@ -83,7 +83,7 @@ class ExtendedIniNormalizer
      */
     public function normalizeFileToString($file)
     {
-        $reader = new Translator\Loader\ExtendedIniReader();
+        $reader = new Translator\Loader\ExtendedIniType();
 
         // Reading and rewriting the file by itself will eliminate all comments;
         // we should extract comments separately and then recombine the parts.

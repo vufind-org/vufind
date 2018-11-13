@@ -28,7 +28,7 @@
 namespace VuFindConsole\Controller;
 
 use VuFind\I18n\ExtendedIniNormalizer;
-use VuFind\I18n\Translator\Loader\ExtendedIniReader;
+use VuFind\I18n\Translator\Loader\ExtendedIniType;
 use Zend\Console\Console;
 
 /**
@@ -66,7 +66,7 @@ class LanguageController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $reader = new ExtendedIniReader();
+        $reader = new ExtendedIniType();
         $normalizer = new ExtendedIniNormalizer();
         list($sourceDomain, $sourceKey) = $this->extractTextDomain($source);
         list($targetDomain, $targetKey) = $this->extractTextDomain($target);
@@ -154,7 +154,7 @@ class LanguageController extends AbstractBase
         }
 
         // Look up translations of all references in template:
-        $reader = new ExtendedIniReader();
+        $reader = new ExtendedIniType();
         foreach ($lookups as $domain => & $tokens) {
             $sourceDir = $this->getLangDir($domain, false);
             if (!$sourceDir) {

@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\I18n\Translator\Loader;
 
-use VuFind\I18n\Translator\Loader\ExtendedIniReader;
+use VuFind\I18n\Translator\Loader\ExtendedIniType;
 
 /**
  * ExtendedIniReader Test Class
@@ -48,7 +48,7 @@ class ExtendedIniReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testNonJoinerOptions()
     {
-        $reader = new ExtendedIniReader();
+        $reader = new ExtendedIniType();
         $input = ['foo="bar"', 'baz=""'];
         $output = ['foo' => 'bar', 'baz' => ''];
         $nonJoiner = html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');

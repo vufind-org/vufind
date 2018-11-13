@@ -27,7 +27,7 @@
  */
 namespace VuFindDevTools;
 
-use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\I18n\Translator\Loader\ExtendedIniType;
 use Zend\Config\Config;
 use Zend\I18n\Translator\TextDomain;
 
@@ -45,7 +45,7 @@ class LanguageHelper
     /**
      * Language loader
      *
-     * @var ExtendedIni
+     * @var ExtendedIniType
      */
     protected $loader;
 
@@ -59,10 +59,10 @@ class LanguageHelper
     /**
      * Constructor
      *
-     * @param ExtendedIni $loader Language loader
+     * @param ExtendedIniType $loader Language loader
      * @param Config      $config Config
      */
-    public function __construct(ExtendedIni $loader, Config $config)
+    public function __construct(ExtendedIniType $loader, Config $config)
     {
         $this->loader = $loader;
         $this->config = $config;

@@ -28,7 +28,7 @@
  */
 namespace VuFindDevTools\Controller;
 
-use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\I18n\Translator\Loader\ExtendedIniType;
 use VuFindDevTools\LanguageHelper;
 
 /**
@@ -113,7 +113,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function languageAction()
     {
         // Test languages with no local overrides and no fallback:
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs([APPLICATION_PATH . '/languages']);
         $helper = new LanguageHelper($loader, $this->getConfig());
         return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));

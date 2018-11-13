@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind I18n Initializer Factory
+ * VuFind I18n Locale Settings Factory
  *
  * PHP version 7
  *
@@ -21,54 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Translator
+ * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\I18n;
+
+namespace VuFind\I18n\Locale;
 
 use Interop\Container\ContainerInterface;
-use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\PluginManager as ConfigManager;
-use VuFind\Cookie\CookieManager;
-use Zend\Mvc\I18n\Translator;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Creates i18n initializer instance.
+ * Creates a Locale settings instance.
  *
  * @category VuFind
- * @package  Translator
+ * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class InitializerFactory implements FactoryInterface
+class SettingsFactory implements FactoryInterface
 {
     /**
      * Creates an initializer instance.
      *
-     * @param ContainerInterface $container     Container
-     * @param string             $requestedName Requested name
-     * @param array|null         $options       Options
+     * @param ContainerInterface $container Container
+     * @param string $requestedName Requested name
+     * @param array|null $options Options
      *
-     * @return Initializer
+     * @return Settings
      */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        array $options = null
-    ) {
-        return new $requestedName(
-            $container->get('Request'),
-            $container->get(ConfigManager::class)->get('config'),
-            $container->get(CookieManager::class),
-            $container->get(CacheManager::class)->getCache('language'),
-            $container->get(Translator::class),
-            $container->get('ViewManager')->getViewModel()
-        );
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new $requestedName($container->get(ConfigManager::class)->get('config'));
     }
 }

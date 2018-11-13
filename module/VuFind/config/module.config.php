@@ -351,7 +351,9 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\I18n\Initializer' => 'VuFind\I18n\InitializerFactory',
+            'VuFind\I18n\Locale\Settings' => 'VuFind\I18n\Locale\SettingsFactory',
+            'VuFind\I18n\Translator\TranslatorHelper' => 'VuFind\I18n\Translator\TranslatorHelperFactory',
+            'VuFind\I18n\Translator\Reader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -394,6 +396,14 @@ $config = [
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
+        'delegators' => [
+            'SlmLocale\Locale\Detector' => [
+                'VuFind\I18n\Locale\DetectorFactory',
+            ],
+            'Zend\I18n\Translator\TranslatorInterface' => [
+                'VuFind\I18n\Translator\TranslatorFactory',
+            ],
+        ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
@@ -425,6 +435,7 @@ $config = [
             'VuFind\HierarchyTreeRendererPluginManager' => 'VuFind\Hierarchy\TreeRenderer\PluginManager',
             'VuFind\HMAC' => 'VuFind\Crypt\HMAC',
             'VuFind\Http' => 'VuFindHttp\HttpService',
+            'VuFind\I18n\Translator\Translator' => 'VuFind\Translator',
             'VuFind\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticator',
             'VuFind\ILSConnection' => 'VuFind\ILS\Connection',
             'VuFind\ILSDriverPluginManager' => 'VuFind\ILS\Driver\PluginManager',
@@ -458,11 +469,6 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'Zend\Validator\Csrf' => 'VuFind\Validator\Csrf',
-        ],
-    ],
-    'translator_plugins' => [
-        'factories' => [
-            'VuFind\I18n\Translator\Loader\ExtendedIni' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ]
     ],
     'view_helpers' => [
@@ -536,6 +542,7 @@ $config = [
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
+            'i18n_translator_reader' => [],
         ],
         // This section behaves just like recorddriver_tabs below, but is used for
         // the collection module instead of the standard record view.

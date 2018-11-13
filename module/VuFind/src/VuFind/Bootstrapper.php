@@ -25,12 +25,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
-use VuFind\I18n\Initializer as I18nInitializer;
+use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\Settings as LocaleSettings;
+use VuFind\I18n\Translator\TranslatorHelper;
+use VuFind\I18n\Translator\Resolver\LocalFile;
+use Zend\Config\Config;
 use Zend\Console\Console;
+use Zend\EventManager\EventManagerInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Router\Http\RouteMatch;
+use Zend\View\Model\ViewModel;
 
 /**
  * VuFind Bootstrapper
@@ -46,9 +53,14 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
-    protected $config = null;
+    protected $config;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Current MVC event
@@ -60,7 +72,7 @@ class Bootstrapper
     /**
      * Event manager
      *
-     * @var \Zend\EventManager\EventManagerInterface
+     * @var EventManagerInterface
      */
     protected $events;
 
@@ -73,6 +85,7 @@ class Bootstrapper
     {
         $this->event = $event;
         $this->events = $event->getApplication()->getEventManager();
+        $this->container = $event->getApplication()->getServiceManager();
     }
 
     /**
@@ -148,6 +161,26 @@ class Bootstrapper
             };
             $this->events->attach('route', $callback);
         }
+    }
+
+    protected function initTranslatorLoader()
+    {
+        /** @var TranslatorHelper $loader */
+        $loader = $this->event->getApplication()
+            ->getServiceManager()->get(TranslatorHelper::class);
+        $loader->addResolver(new LocalFile('ini', APPLICATION_PATH . '/languages'), 0);
+        $loader->addResolver(new LocalFile('ini', LOCAL_OVERRIDE_DIR . '/languages'), 1000);
+    }
+
+    protected function initViewModel()
+    {
+        /** @var LocaleSettings $settings */
+        $settings = $this->container->get(LocaleSettings::class);
+        /** @var ViewModel $viewModel */
+        $viewModel = $this->container->get('HttpViewManager')->getViewModel();
+        $viewModel->setVariable('userLang', $locale = $settings->getUserLocale());
+        $viewModel->setVariable('allLangs', $settings->getEnabledLanguages());
+        $viewModel->setVariable('rtl', $settings->isRightToLeftLocale($locale));
     }
 
     /**
@@ -246,26 +279,6 @@ class Bootstrapper
     }
 
     /**
-     * Initializes i18n services.
-     *
-     * @return void
-     */
-    protected function initI18n()
-    {
-        // Language not supported in CLI mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        $this->events->attach(
-            'dispatch', function (MvcEvent $event) {
-                $event->getApplication()->getServiceManager()
-                    ->get(I18nInitializer::class)->init();
-            }, 5000
-        );
-    }
-
-    /**
      * Set up custom HTTP status based on exception information.
      *
      * @return void
@@ -298,8 +311,8 @@ class Bootstrapper
      */
     protected function initSearch()
     {
-        $sm     = $this->event->getApplication()->getServiceManager();
-        $bm     = $sm->get('VuFind\Search\BackendManager');
+        $sm = $this->event->getApplication()->getServiceManager();
+        $bm = $sm->get('VuFind\Search\BackendManager');
         $events = $sm->get('SharedEventManager');
         $events->attach('VuFindSearch', 'resolve', [$bm, 'onResolve']);
     }

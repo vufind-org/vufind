@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\I18n\Translator\Loader;
+namespace VuFind\I18n\Translator\Reader;
 
 use Zend\I18n\Translator\TextDomain;
 
@@ -38,8 +38,14 @@ use Zend\I18n\Translator\TextDomain;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ExtendedIniReader
+class ExtendedIni implements ReaderInterface
 {
+
+    public function read(string $source): TextDomain
+    {
+        return $this->getTextDomain($source);
+    }
+
     /**
      * Parse a language file.
      *

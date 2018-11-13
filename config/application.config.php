@@ -2,7 +2,7 @@
 
 // Set up modules:
 $modules = [
-    'Zend\Router', 'ZfcRbac', 'Zend\I18n', 'Zend\Mvc\I18n',
+    'Zend\Router', 'ZfcRbac', 'Zend\I18n', 'Zend\Mvc\I18n', 'SlmLocale',
     'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
 if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {

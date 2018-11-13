@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\I18n\Translator\Loader;
 
-use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\I18n\Translator\Loader\ExtendedIniType;
 
 /**
  * ExtendedIni translation loader Test Class
@@ -58,7 +58,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testDirectoryPrecedence()
     {
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/overrides", "$this->path/base"]);
         $result = $loader->load('en');
 
@@ -67,7 +67,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
                 "$this->path/overrides/en.ini",
                 "$this->path/base/en.ini"
             ]
-        ], $result[ExtendedIni::KEY_INFO]);
+        ], $result[ExtendedIniType::KEY_INFO]);
 
         $this->assertArraySubset([
             'blank_line' =>
@@ -84,7 +84,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testExtendsDirective()
     {
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $result = $loader->load('child2');
 
@@ -94,7 +94,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
                 "$this->path/base/child1.ini",
                 "$this->path/base/fake.ini",
             ]
-        ], $result[ExtendedIni::KEY_INFO]);
+        ], $result[ExtendedIniType::KEY_INFO]);
 
         $this->assertArraySubset([
             'test1' => 'test 1',
@@ -108,7 +108,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testFallbacks()
     {
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $loader->setFallbacks(['fb1' => 'fb2', '*' => 'fb3']);
         $result = $loader->load('fb1');
@@ -128,7 +128,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testExceptionOnCircularExtensionChain()
     {
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $loader->load('circ1');
     }
@@ -141,7 +141,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testExceptionOnCircularFallbackChain()
     {
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $loader->setFallbacks(['fb2' => 'fb3', '*' => 'fb2']);
         $loader->load('fb2');
@@ -156,7 +156,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("File 'xyz.ini' not found.");
-        $loader = new ExtendedIni();
+        $loader = new ExtendedIniType();
         $loader->load('xyz');
     }
 }

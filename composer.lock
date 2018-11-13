@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82a765a499e6baa6261b9dbd74c9f849",
+    "content-hash": "1c14c9c451f4d8f6579e19998659cf5b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1658,6 +1658,69 @@
             ],
             "description": "Library for interacting with Serials Solutions' Summon API.",
             "time": "2018-07-18T14:28:58+00:00"
+        },
+        {
+            "name": "slm/locale",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/basz/SlmLocale.git",
+                "reference": "a698c7398b12d501f23885a84dc529b5c0e671ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/basz/SlmLocale/zipball/a698c7398b12d501f23885a84dc529b5c0e671ce",
+                "reference": "a698c7398b12d501f23885a84dc529b5c0e671ce",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "php": "^5.6 || ^7.0",
+                "zendframework/zend-eventmanager": "^3.1",
+                "zendframework/zend-http": "^2.7",
+                "zendframework/zend-modulemanager": "^2.8.1",
+                "zendframework/zend-router": "^3.0",
+                "zendframework/zend-servicemanager": "^3.2",
+                "zendframework/zend-stdlib": "^3.1",
+                "zendframework/zend-view": "^2.9.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.8.1",
+                "phpunit/phpunit": "^4.8.36",
+                "satooshi/php-coveralls": "^1.0.2",
+                "zendframework/zend-console": "^2.6",
+                "zendframework/zend-mvc": "^3.1",
+                "zendframework/zend-mvc-console": "^1.1.9"
+            },
+            "suggest": {
+                "zendframework/zend-mvc": "For using the router in the UriPath strategy"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SlmLocale\\": "src/SlmLocale/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Jurian Sluiman",
+                    "email": "jurian@juriansluiman.nl",
+                    "homepage": "http://juriansluiman.nl"
+                }
+            ],
+            "description": "Automatic detection of locales for Zend Framework",
+            "homepage": "https://github.com/juriansluiman/SlmLocale",
+            "keywords": [
+                "Zend Framework",
+                "i18n",
+                "locale",
+                "zf"
+            ],
+            "time": "2017-11-20T14:20:02+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
