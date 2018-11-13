@@ -74,7 +74,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      *
      * @return \Zend\Http\Response
      */
-    protected function makeRequest($method = "GET", $path = "/", $params = [],
+    public function makeRequest($method = "GET", $path = "/", $params = [],
         $headers = []
     ) {
         $client = $this->httpService->createClient(

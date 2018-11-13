@@ -113,7 +113,7 @@ class Folio extends AbstractAPI implements
      *
      * @return array
      */
-    protected function preRequest(\Zend\Http\Headers $headers, $params)
+    public function preRequest(\Zend\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
         if (!$headers->has('Content-Type')) {
@@ -398,14 +398,10 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patronLogin)
     {
-        // Get user id
-        $response = $this->makeRequest('GET', '/users/' . $patronLogin['username']);
         $query = ['query' => 'username == "' . $patronLogin['username'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
-        // Request profile
-        $response = $this->makeRequest('GET', '/users/' . $users->users[0]->id);
-        $profile = json_decode($response->getBody());
+        $profile = $users->users[0];
         return [
             'id' => $profile->id,
             'firstname' => $profile->personal->firstName ?? null,
