@@ -191,10 +191,8 @@ class FeedbackController extends AbstractBase
     protected function getSender()
     {
         $config = $this->getConfig()->Feedback;
-        $email = isset($config->sender_email)
-            ? $config->sender_email : 'noreply@vufind.org';
-        $name = isset($config->sender_name)
-            ? $config->sender_name : 'VuFind Feedback';
+        $email = $config->sender_email ?? 'noreply@vufind.org';
+        $name = $config->sender_name ?? 'VuFind Feedback';
 
         return [$name, $email];
     }
