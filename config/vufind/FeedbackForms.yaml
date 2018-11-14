@@ -61,7 +61,7 @@ forms:
     #   email: feedback@myuniversity.edu
 
     onlyForLoggedUsers: false
-    emailSubject: feedback_email_subject
+    emailSubject: VuFind Feedback
     response: Thank you for your feedback.
     senderInfoRequired: false 
 

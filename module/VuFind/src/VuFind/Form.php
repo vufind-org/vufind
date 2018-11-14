@@ -482,7 +482,6 @@ class Form extends \Zend\Form\Form
         } elseif (!empty($this->defaultFormConfig['email_subject'])) {
             $subject = $this->defaultFormConfig['email_subject'];
         }
-        $subject = $this->translator->translate($subject);
 
         $translated = [];
         foreach ($postParams as $key => $val) {
