@@ -25,11 +25,6 @@ class TranslatorHelper
     protected $cache = [];
 
     /**
-     * @var array
-     */
-    protected $state = [];
-
-    /**
      * @var string[][]
      */
     protected $fallbacks = [];
