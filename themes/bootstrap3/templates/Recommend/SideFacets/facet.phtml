@@ -4,6 +4,7 @@
   $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
   $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $rangeFacets = $this->recommend->getAllRangeFacets();
   $facet = $this->facet;
 ?>
 <?php if (isset($rangeFacets[$facet])): // special display for ranges ?>

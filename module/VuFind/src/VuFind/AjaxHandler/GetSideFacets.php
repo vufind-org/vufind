@@ -180,7 +180,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             $listener->attach($runner->getEventManager()->getSharedManager());
 
             $params->setLimit(0);
-            if (is_callable([$params, 'getHierarchicalFacetLimit'])) {
+            if (is_callable([$params, 'setHierarchicalFacetLimit'])) {
                 $params->setHierarchicalFacetLimit(-1);
             }
             $options = $params->getOptions();
