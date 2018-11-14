@@ -29,9 +29,7 @@
 namespace VuFind;
 
 use Psr\Container\ContainerInterface;
-use VuFind\I18n\Locale\Settings as LocaleSettings;
-use VuFind\I18n\Translator\TranslatorHelper;
-use VuFind\I18n\Translator\Resolver\LocalFile;
+use VuFind\I18n\Locale\LocaleSettings as LocaleSettings;
 use Zend\Config\Config;
 use Zend\Console\Console;
 use Zend\EventManager\EventManagerInterface;
@@ -161,15 +159,6 @@ class Bootstrapper
             };
             $this->events->attach('route', $callback);
         }
-    }
-
-    protected function initTranslatorLoader()
-    {
-        /** @var TranslatorHelper $loader */
-        $loader = $this->event->getApplication()
-            ->getServiceManager()->get(TranslatorHelper::class);
-        $loader->addResolver(new LocalFile('ini', APPLICATION_PATH . '/languages'), 0);
-        $loader->addResolver(new LocalFile('ini', LOCAL_OVERRIDE_DIR . '/languages'), 1000);
     }
 
     protected function initViewModel()

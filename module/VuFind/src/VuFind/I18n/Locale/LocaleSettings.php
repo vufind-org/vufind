@@ -30,7 +30,7 @@
 
 namespace VuFind\I18n\Locale;
 
-use VuFind\I18n\Translator\TranslatorException;
+use VuFind\I18n\Translator\TranslatorRuntimeException;
 use Zend\Config\Config;
 
 
@@ -44,7 +44,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Settings
+class LocaleSettings
 {
     /**
      * @var string
@@ -152,7 +152,7 @@ class Settings
     protected function parseDefaultLocale(Config $config): string
     {
         if (!in_array($locale = $config->Site->language, $this->enabledLocales)) {
-            throw new TranslatorException("Configured default locale '$locale' not enabled!");
+            throw new TranslatorRuntimeException("Configured default locale '$locale' not enabled!");
         }
         return $locale;
     }

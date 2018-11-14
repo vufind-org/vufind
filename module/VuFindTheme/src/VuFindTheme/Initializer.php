@@ -25,10 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
-use VuFind\I18n\Translator\TranslatorHelper;
-use VuFind\I18n\Translator\Resolver\LocalFile;
+use VuFind\I18n\Translator\Loader\LoaderConfig;
+use VuFind\I18n\Translator\Resolver\ResolverConfigList;
 use Zend\Config\Config;
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
@@ -98,7 +99,7 @@ class Initializer
     /**
      * Constructor
      *
-     * @param Config   $config Configuration object containing these keys:
+     * @param Config $config Configuration object containing these keys:
      * <ul>
      *   <li>theme - the name of the default theme for non-mobile devices</li>
      *   <li>mobile_theme - the name of the default theme for mobile devices
@@ -113,7 +114,7 @@ class Initializer
      *   <li>generator - a Generator value to display in the HTML header
      * (optional)</li>
      * </ul>
-     * @param MvcEvent $event  Zend MVC Event object
+     * @param MvcEvent $event Zend MVC Event object
      */
     public function __construct(Config $config, MvcEvent $event)
     {
@@ -173,7 +174,7 @@ class Initializer
         }
 
         // Attach our own listener in place of the one we removed:
-        $injectTemplateListener  = new InjectTemplateListener();
+        $injectTemplateListener = new InjectTemplateListener();
         $sharedEvents->attach(
             'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH,
             [$injectTemplateListener, 'injectTemplate'], $injectTemplatePriority
@@ -241,9 +242,9 @@ class Initializer
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedUI = $request->getPost()->get(
             'ui', $request->getQuery()->get(
-                'ui', isset($request->getCookie()->ui)
-                ? $request->getCookie()->ui : null
-            )
+            'ui', isset($request->getCookie()->ui)
+            ? $request->getCookie()->ui : null
+        )
         );
         if (empty($selectedUI)) {
             $selectedUI = ($mobileTheme && $this->mobile->detect())
@@ -314,7 +315,8 @@ class Initializer
                 $desc = empty($desc) ? $name : $desc;
                 if (!empty($name)) {
                     $options[] = [
-                        'name' => $name, 'desc' => $desc,
+                        'name' => $name,
+                        'desc' => $desc,
                         'selected' => ($this->cookieManager->get('ui') == $name)
                     ];
                 }
@@ -409,12 +411,16 @@ class Initializer
             }
         }
 
-        $baseDir = APPLICATION_PATH . '/themes';
-        /** @var TranslatorHelper $loader */
-        $loader = $this->serviceManager->get(TranslatorHelper::class);
-        foreach (array_keys($themes) as $idx => $theme) {
-            list($dir, $prio) = ["$baseDir/$theme/languages", 2000 + $idx * 1000];
-            $loader->addResolver(new LocalFile('ini', $dir), $prio);
+        $baseDir = $this->tools->getBaseDir();
+        /** @var LoaderConfig $config */
+        $config = $this->serviceManager->get(LoaderConfig::class);
+        foreach (array_keys($themes) as $index => $theme) {
+            $path = "$baseDir/$theme/languages";
+            $config->add("theme", function ($options) use ($index, $path, $theme) {
+                $prio = $options['prio'] + $index * $options['prioInc'];
+                $type = $options['type'][$theme] ?? $options['type']['*'];
+                return compact('path', 'prio', 'type') + $options;
+            });
         }
     }
 }

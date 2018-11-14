@@ -1,57 +1,62 @@
 <?php
-/**
- * Helper class to load .ini files from disk.
- *
- * PHP version 7
- *
- * Copyright (C) Villanova University 2010.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @category VuFind
- * @package  Translator
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
- */
-namespace VuFind\I18n\Translator\Reader;
+
+namespace VuFind\I18n\Translator\Loader;
 
 use Zend\I18n\Translator\TextDomain;
+use Zend\Uri\Uri;
 
-/**
- * Helper class to load .ini files from disk.
- *
- * @category VuFind
- * @package  Translator
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
- */
-class ExtendedIni implements ReaderInterface
+class ExtendedIniLoader implements LoaderInterface
 {
+    /**
+     * @var \ArrayObject|TextDomain[]
+     */
+    protected $cache;
 
-    public function read(string $source): TextDomain
+    /**
+     * @var LoaderInterface
+     */
+    protected $loader;
+
+    public function __construct(LoaderInterface $loader)
     {
-        return $this->getTextDomain($source);
+        $this->loader = $loader;
+        $this->cache = new \ArrayObject();
+    }
+
+    /**
+     * @param string $file
+     * @return \Generator|TextDomain[]
+     */
+    public function load(string $file): \Generator
+    {
+        if (!$this->canLoad($uri = new Uri($file))) {
+            return;
+        }
+
+        $data = $this->cache[$file] ?? ($this->cache[$file] = $this->getTextDomain($file));
+
+        if ($parents = $data['@extends'] ?? null) {
+            foreach (explode(',', $parents) as $parent) {
+                $parentUri = Uri::merge($uri, trim($parent));
+                yield from $this->loader->load((string)$parentUri);
+            }
+        }
+
+        yield $file => $data;
+    }
+
+    protected function canLoad(Uri $uri): bool
+    {
+        return pathinfo($uri->getPath(), PATHINFO_EXTENSION) === 'ini'
+            && static::class === ($uri->getQueryAsArray()['loader'] ?? static::class);
     }
 
     /**
      * Parse a language file.
      *
-     * @param string|array $input         Either a filename to read (passed as a
+     * @param string|array $input Either a filename to read (passed as a
      * string) or a set of data to convert into a TextDomain (passed as an array)
-     * @param bool         $convertBlanks Should we convert blank strings to
+     * @param bool $convertBlanks Should we convert blank strings to
      * zero-width non-joiners?
      *
      * @return TextDomain

@@ -11,7 +11,7 @@ use VuFind\Cookie\CookieManager;
 use Zend\EventManager\EventInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
-class DetectorFactory implements DelegatorFactoryInterface
+class LocaleDetectorFactory implements DelegatorFactoryInterface
 {
     public function __invoke(
         ContainerInterface $container,
@@ -21,8 +21,8 @@ class DetectorFactory implements DelegatorFactoryInterface
     ) {
         /** @var Detector $detector */
         $detector = call_user_func($callback);
-        /** @var Settings $settings */
-        $settings = $container->get(Settings::class);
+        /** @var LocaleSettings $settings */
+        $settings = $container->get(LocaleSettings::class);
         $detector->setDefault($settings->getDefaultLocale());
         $detector->setSupported($settings->getEnabledLocales());
         $detector->setMappings($settings->getMappedLocales());
@@ -43,7 +43,7 @@ class DetectorFactory implements DelegatorFactoryInterface
 
     protected function getStrategies()
     {
-        yield new ParamStrategy();
+        yield new LocaleDetectorParamStrategy();
         yield $queryStrategy = new QueryStrategy();
         yield $cookieStrategy = new CookieStrategy();
         $queryStrategy->setOptions(['query_key' => 'lng']);

@@ -6,7 +6,7 @@ use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\AbstractStrategy;
 use Zend\Http\PhpEnvironment\Request;
 
-class ParamStrategy extends AbstractStrategy
+class LocaleDetectorParamStrategy extends AbstractStrategy
 {
     const PARAM_NAME = 'mylang';
 

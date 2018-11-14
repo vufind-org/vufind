@@ -44,7 +44,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SettingsFactory implements FactoryInterface
+class LocaleSettingsFactory implements FactoryInterface
 {
     /**
      * Creates an initializer instance.
@@ -53,7 +53,7 @@ class SettingsFactory implements FactoryInterface
      * @param string $requestedName Requested name
      * @param array|null $options Options
      *
-     * @return Settings
+     * @return LocaleSettings
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
