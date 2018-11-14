@@ -187,13 +187,19 @@ class Settings
             }
         }
         return $locales;
-//        return array_intersect_key($locales, $this->enabledLanguages);
-
     }
 
     protected function parseMappedLocales(Config $config): array
     {
-        return [];
+        $value = $config->LanguageSettings->mappings ?? '';
+        preg_match_all("#([a-z-]+):([a-z-]+)#", $value, $matches, PREG_SET_ORDER);
+        return iterator_to_array(
+            (function () use ($matches) {
+                foreach ($matches as list(, $locale, $fallbackLocale)) {
+                    yield $locale => $fallbackLocale;
+                }
+            })()
+        );
     }
 
     protected function parseRightToLeftLocales(Config $config): array
