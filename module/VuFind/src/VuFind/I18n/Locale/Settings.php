@@ -186,8 +186,8 @@ class Settings
                 }
             }
         }
-
-        return array_intersect_key($locales, $this->enabledLanguages);
+        return $locales;
+//        return array_intersect_key($locales, $this->enabledLanguages);
 
     }
 

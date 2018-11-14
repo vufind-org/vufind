@@ -25,6 +25,16 @@ class TranslatorHelper
     protected $cache = [];
 
     /**
+     * @var array
+     */
+    protected $state = [];
+
+    /**
+     * @var string[][]
+     */
+    protected $fallbacks = [];
+
+    /**
      * @var Readers;
      */
     protected $readers;
@@ -88,10 +98,21 @@ class TranslatorHelper
         $locale = $event->getParam('locale');
         $message = $event->getParam('message');
         $textDomain = $event->getParam('text_domain');
+        $namespacedMessage = "$textDomain::$message";
+        $trace = $this->fallbacks[$namespacedMessage] ?? [];
         $fallbackLocales = $this->settings->getFallbackLocales();
 
-        if ($locale = $fallbackLocales[$locale] ?? null) {
-          return $this->translator->translate($message, $textDomain, $locale);
+        if (in_array($fallbackLocale = $fallbackLocales[$locale] ?? null, $trace)) {
+            throw new TranslatorException("Circular chain of fallback locales!");
+        }
+
+        if (!$trace || $locale !== end($trace)) {
+            $this->fallbacks[$namespacedMessage] = [];
+        }
+
+        if ($fallbackLocale) {
+            $this->fallbacks[$namespacedMessage][] = $fallbackLocale;
+            return $this->translator->translate($message, $textDomain, $fallbackLocale);
         }
     }
 
@@ -117,7 +138,7 @@ class TranslatorHelper
     protected function loadSource(string $source, string ...$sources)
     {
         if (key_exists($source = realpath($source), $sources)) {
-            throw new TranslatorException("Chain of sources must not be circular!");
+            throw new TranslatorException("Circular chain of sources!");
         }
 
         $type = pathinfo($source, PATHINFO_EXTENSION);
