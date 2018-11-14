@@ -54,7 +54,7 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get('VuFind\Form');
+        $form = $this->serviceLocator->get('VuFind\Form\Form');
         $form->setFormId($formId);
 
         if (!$form->isEnabled()) {
