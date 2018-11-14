@@ -62,7 +62,7 @@ class Form extends \Zend\Form\Form
      *
      * @var array
      */
-    protected $defaultConfig;
+    protected $defaultFormConfig;
 
     /**
      * Form config
@@ -105,7 +105,7 @@ class Form extends \Zend\Form\Form
     {
         parent::__construct();
 
-        $this->defaultConfig = $defaultConfig;
+        $this->defaultFormConfig = $defaultConfig;
         $this->translator = $translator;
         $this->yamlReader = $yamlReader;
     }
