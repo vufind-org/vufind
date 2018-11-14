@@ -196,6 +196,17 @@ $(document).ready(function hierarchyTreeReady() {
           scrollTop: scrollTop
         }, 1500);
       }
+      var jsTreeFirstChild = $(this).find('.jstree-container-ul').children('li').first();
+
+      if (jsTreeFirstChild.find('ul').length === 0) {
+        jsTreeFirstChild.append(
+          '<div class="empty-collection">'
+          + '<span class="highlight">' 
+          + VuFind.translate('collection_empty') 
+          + '</span>' 
+          + '</div>'
+        );
+      }
     })
     .jstree({
       plugins: ['search', 'types'],
