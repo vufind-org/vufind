@@ -53,12 +53,12 @@ forms:
   # Main Feedback form
 
   FeedbackSite:
-    allowLocalOverride: false
-    enabled: true
     title: Send us your feedback!
-    recipient:
-      name: Your Library
-      email: feedback@myuniversity.edu
+    # allowLocalOverride: false
+    # enabled: true
+    # recipient:
+    #   name: Your Library
+    #   email: feedback@myuniversity.edu
 
     onlyForLoggedUsers: false
     emailSubject: feedback_email_subject
@@ -79,7 +79,7 @@ forms:
   # Example for an acquisition request form
 
   AcquisitionRequest:
-    enabled: true
+    enabled: false
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
