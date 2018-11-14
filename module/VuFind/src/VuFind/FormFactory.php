@@ -67,6 +67,8 @@ class FormFactory implements FactoryInterface
         $translator = $container->get('VuFind\Translator');
         $yamlReader = $container->get('VuFind\Config\YamlReader');
 
-        return new Form($config['Feedback'] ?? null, $translator, $yamlReader);
+        return new $requestedName(
+            $config['Feedback'] ?? null, $translator, $yamlReader
+        );
     }
 }
