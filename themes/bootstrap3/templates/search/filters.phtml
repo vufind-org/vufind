@@ -62,7 +62,9 @@
           }
           $operatorClass = $this->escapeHtmlAttr(strtolower($value['operator']));
         ?>
-        <span class="filters-term filters-<?=$operatorClass?>"><?=$index > 0 ? $join : '' ?></span>
+        <span class="filters-term filters-<?=$operatorClass?>">
+          <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
+        </span>
         <span class="filter-value filters-<?=$operatorClass?>">
           <?=$this->escapeHtml($value['displayText'])?>
           <?php if (isset($this->urlQuery)): ?>
