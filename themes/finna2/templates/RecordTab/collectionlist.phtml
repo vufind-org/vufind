@@ -6,7 +6,6 @@
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1, 'isCollection' => $this->driver->isCollection()];
 ?>
 <div class="mainbody left">
-<?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
   <?php foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
@@ -56,20 +55,20 @@
     ); ?>
   <?php endif; ?>
 
-  <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
+  <?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $results])?>
 
-  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
-  </form>
-  <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid' : $this->escapeHtmlAttr($params->getView());?>">
-    <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
-  </div>
-    <div class="text-center">
-    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
+    </form>
+    <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid' : $this->escapeHtmlAttr($params->getView());?>">
+      <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
     </div>
-
+    <div class="text-center">
+      <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+    </div>
   <?php else: ?>
-    <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
+    <h4><?=$this->transEsc($params->getDisplayQuery() || $filterCount > 0 ? 'nohit_heading' : 'collection_empty')?></h4><br><br>
   <?php endif; ?>
 </div>
 <div class="sidebar right">
