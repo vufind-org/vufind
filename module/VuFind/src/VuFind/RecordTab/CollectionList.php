@@ -122,23 +122,13 @@ class CollectionList extends AbstractBase
     }
 
     /**
-     * Get side recommendations.
-     *
-     * @return array
-     */
-    public function getSideRecommendations()
-    {
-        return $this->getResults()->getRecommendations('side');
-    }
-
-    /**
      * Can this tab be loaded via AJAX?
      *
      * @return bool
      */
     public function supportsAjax()
     {
-        // No, special sidebar needed.
+        // No, search parameters from the URL are needed.
         return false;
     }
 }
