@@ -826,7 +826,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['item_id'];
+            : $holdDetails['requestId'];
     }
 
     /**
