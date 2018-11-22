@@ -204,11 +204,11 @@ class Form extends \Zend\Form\Form
 
         // Add sender contact name & email fields
         $senderName = [
-            'name' => '__name__', 'type' => 'text', 'label' => 'feedback_name',
+            'name' => 'name', 'type' => 'text', 'label' => 'feedback_name',
             'group' => '__sender__'
         ];
         $senderEmail = [
-            'name' => '__email__', 'type' => 'email', 'label' => 'feedback_email',
+            'name' => 'email', 'type' => 'email', 'label' => 'feedback_email',
             'group' => '__sender__'
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {

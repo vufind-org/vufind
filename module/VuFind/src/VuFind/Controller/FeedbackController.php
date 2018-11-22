@@ -88,11 +88,11 @@ class FeedbackController extends AbstractBase
 
         $replyToName = $replyToEmail = null;
         $replyToName = $params->fromPost(
-            '__name__',
+            'name',
             $user ? trim($user->firstname . ' ' . $user->lastname) : null
         );
         $replyToEmail = $params->fromPost(
-            '__email__',
+            'email',
             $user ? $user->email : null
         );
 
@@ -123,8 +123,8 @@ class FeedbackController extends AbstractBase
         if ($user) {
             $form->setData(
                 [
-                 '__name__' => $user->firstname . ' ' . $user->lastname,
-                 '__email__' => $user['email']
+                 'name' => $user->firstname . ' ' . $user->lastname,
+                 'email' => $user['email']
                 ]
             );
         }
