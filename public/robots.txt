@@ -23,6 +23,8 @@ User-agent: Yandex
 User-agent: YandexBot/3.0
 Disallow: /
 
+User-agent: dotbot
+Disallow: /
 
 User-agent: adscanner/
 Disallow: /
