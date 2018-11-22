@@ -107,13 +107,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $db;
 
     /**
-     * Logger Status
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
