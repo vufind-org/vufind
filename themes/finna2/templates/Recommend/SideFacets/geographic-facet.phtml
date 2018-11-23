@@ -10,7 +10,7 @@
   <?php endif;?>
   <div class="clearfix"></div>
 </div>
-<div class="geographic-facet">
+<div aria-hidden="true" class="geographic-facet">
   <?php if (empty($geoFilters)):?>
     <div class="location-search-info alert alert-info hidden">
       <div class="fa fa-spinner fa-spin hidden"></div>
@@ -28,7 +28,7 @@
   <?php endif; ?>
   <div class="map-controls text-center">
     <a class="btn user-location-filter" href="<?=$removeFacetUrl?>"><?=$this->translate("use_my_location");?></a>
-    <a class="btn map-control" href="<?=$mapPopupUrl ?>" data-lightbox><?=$this->translate("select_from_map");?></a>
+    <a tabindex="-1" class="btn map-control" href="<?=$mapPopupUrl ?>" data-lightbox><?=$this->translate("select_from_map");?></a>
   </div>
   <div class="clearfix"></div>
 </div>
