@@ -1205,7 +1205,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ID: " . $rsp->{'borrowernumber'});
         $this->debug("Chrgs: " . $rsp->{'charges'});
 
-        foreach ($rsp->{'fines'}->{'fine'} as $fine) {
+        foreach ($rsp->{'fines'}->{'fine'} ?? [] as $fine) {
             $fineLst[] = [
                 'amount'     => 100 * $this->getField($fine->{'amount'}),
                 // FIXME: require accountlines.itemnumber -> issues.issuedate data
@@ -1244,7 +1244,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
-        foreach ($rsp->{'holds'}->{'hold'} as $hold) {
+        foreach ($rsp->{'holds'}->{'hold'} ?? [] as $hold) {
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
                 'location' => $this->getField($hold->{'branchname'}),
@@ -1511,7 +1511,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
-        foreach ($rsp->{'loans'}->{'loan'} as $loan) {
+        foreach ($rsp->{'loans'}->{'loan'} ?? [] as $loan) {
             $start = microtime(true);
             $rsp2 = $this->makeIlsdiRequest(
                 "GetServices", [
@@ -1522,7 +1522,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $end = microtime(true);
             $requestTimes[] = $end - $start;
             $renewable = false;
-            foreach ($rsp2->{'AvailableFor'} as $service) {
+            foreach ($rsp2->{'AvailableFor'} ?? [] as $service) {
                 if ($this->getField((string)$service) == "loan renewal") {
                     $renewable = true;
                 }
