@@ -783,7 +783,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $position = $entry['priorityQueueLength'] . ' / '
                     . $entry['priorityQueueLength'];
             } else {
-                $position = ($entry['priority'] + 1) . ' / '
+                $position = $entry['priority'] . ' / '
                     . $entry['priorityQueueLength'];
             }
             $lastPickup = !empty($entry['pickupByDate'])
@@ -826,7 +826,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['item_id'];
+            : $holdDetails['requestId'];
     }
 
     /**
@@ -849,7 +849,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId], [], 'DELETE', $patron
+                ['v5', 'patrons', 'holds', $holdId], '', 'DELETE', $patron
             );
 
             if (!empty($result['code'])) {
