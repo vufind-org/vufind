@@ -32,7 +32,6 @@ use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Log\LoggerInterface;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -105,13 +104,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @var string
      */
     protected $db;
-
-    /**
-     * Logger Status
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
 
     /**
      * Date converter object
