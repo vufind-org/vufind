@@ -45,20 +45,6 @@ $config = [
                     ]
                 ],
             ],
-            'feedback-form' => [
-                'type'    => 'Zend\Router\Http\Segment',
-                'options' => [
-                    'route'    => '/Feedback/Form/[:id]',
-                    'constraints' => [
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Form',
-                        'action'     => 'form',
-                    ]
-                ]
-            ],
             'legacy-alphabrowse-results' => [
                 'type' => 'Zend\Router\Http\Literal',
                 'options' => [
@@ -713,7 +699,7 @@ $staticRoutes = [
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Feedback/Email', 'Feedback/Form', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',
