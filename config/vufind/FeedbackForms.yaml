@@ -8,17 +8,21 @@
 #
 # Form supports the following options:
 #
-#   enabled (boolean) Is the form enabled?
+#   enabled (boolean) Is the form enabled? (default = true)
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
+#                                (default = false)
 #   allowLocalOverride (boolean) May the form be overridden with local configuration?
 #                                ($VUFIND_LOCAL_DIR/config/vufind/FeedbackForms.yaml)
+#                                (default = false)
 #   emailSubject (string) Email subject (translation key).
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
 #   recipient
-#     name (string)  Recipient name
-#     email (string) Recipient email address
+#     name (string)  Recipient name (default = recipient_name setting from config.ini
+#                    [Feedback] section)
+#     email (string) Recipient email address (default = recipient_email setting from
+#                    config.ini [Feedback] section)
 #   response (string) Reponse after form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields
 #
@@ -28,13 +32,13 @@
 #
 #   Help texts may contain HTML-formatting.
 #
-#   fields (array) List of form elements with the follofing options:
+#   fields (array) List of form elements with the following options:
 #
 #     name (string)      Element name
-#     label (string)     Element label
-#     required (boolean) Is the element required
+#     label (string)     Element label (translation key)
+#     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
-#       - [class "custom-css-class,another-class"]
+#       - [class, "custom-css-class another-class"]
 #     type (string)      Element type (text|textarea|email|url|select)
 #     
 #     And for select elements one of:
@@ -55,11 +59,11 @@ forms:
 
   FeedbackSite:
     title: Send us your feedback!
-    # allowLocalOverride: false
-    # enabled: true
-    # recipient:
-    #   name: Your Library
-    #   email: feedback@myuniversity.edu
+    #allowLocalOverride: false
+    enabled: true
+    #recipient:
+    #  name: Your Library
+    #  email: feedback@myuniversity.edu
 
     onlyForLoggedUsers: false
     emailSubject: VuFind Feedback
