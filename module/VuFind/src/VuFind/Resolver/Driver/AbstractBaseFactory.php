@@ -39,7 +39,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DriverFactory implements FactoryInterface
+class AbstractBaseFactory implements FactoryInterface
 {
     /**
      * Create an object

@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DriverWithHttpClientFactory extends DriverFactory
+class DriverWithHttpClientFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
