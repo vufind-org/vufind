@@ -10,8 +10,9 @@
 #
 #   enabled (boolean) Is the form enabled?
 #   title (string) Form title (translation key)
-#   onlyForLoggedUsers (boolean) Require the user to be logged to see the form
-#   allowLocalOverride (boolean) May the form be overriden with local configuration
+#   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
+#   allowLocalOverride (boolean) May the form be overridden with local configuration?
+#                                ($VUFIND_LOCAL_DIR/config/vufind/FeedbackForms.yaml)
 #   emailSubject (string) Email subject (translation key).
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
