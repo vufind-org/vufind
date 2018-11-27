@@ -26,25 +26,6 @@ then
   fi
 fi
 
-
-# Always use the standard authority mappings; if the user specified an override
-# file, add that to the setting.
-if [ -f "$VUFIND_LOCAL_DIR/import/marc_auth.properties" ]
-then
-  MAPPINGS_FILE="$VUFIND_LOCAL_DIR/import/marc_auth.properties"
-else
-  MAPPINGS_FILE="$VUFIND_HOME/import/marc_auth.properties"
-fi
-if [ $# -gt 1 ]
-then
-  if [ -f "$VUFIND_LOCAL_DIR/import/$2" ]
-  then
-    MAPPINGS_FILE="$MAPPINGS_FILE,$VUFIND_LOCAL_DIR/import/$2"
-  else
-    MAPPINGS_FILE="$MAPPINGS_FILE,$VUFIND_HOME/import/$2"
-  fi
-fi
-
 # Override some settings in the standard import script:
 if [ -f "$VUFIND_LOCAL_DIR/import/import_auth.properties" ]
 then
@@ -52,8 +33,31 @@ then
 else
   export PROPERTIES_FILE="$VUFIND_HOME/import/import_auth.properties"
 fi
+
+# Always use the authority mappings from PROPERTIES_FILE
+# if the user specified an override file, add that to the setting.
+MAPPINGS_FILENAMES=($(sed --quiet --expression='s/^\(solr.indexer.properties\s*=\s*\)\(.*\)/\2/p' $PROPERTIES_FILE | tr "," " "))
+if [ $# -gt 1 ]
+then
+  MAPPINGS_FILENAMES+=($2)
+fi
+
+MAPPINGS_FILES=""
+for MAPPINGS_FILENAME in ${MAPPINGS_FILENAMES[@]}; do
+  if [ -n "$MAPPINGS_FILES" ]; then
+    MAPPINGS_FILES+=","
+  fi
+
+  if [ -f "$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME" ]
+  then
+    MAPPINGS_FILES+="$VUFIND_LOCAL_DIR/import/$MAPPINGS_FILENAME"
+  else
+    MAPPINGS_FILES+="$VUFIND_HOME/import/$MAPPINGS_FILENAME"
+  fi
+done
+
 export SOLRCORE="authority"
-export EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=$MAPPINGS_FILE"
+export EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=$MAPPINGS_FILES"
 
 # Call the standard script:
 $VUFIND_HOME/import-marc.sh $1
