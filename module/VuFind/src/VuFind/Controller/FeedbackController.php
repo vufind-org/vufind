@@ -61,12 +61,9 @@ class FeedbackController extends AbstractBase
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(compact('form', 'formId', 'user'));
         $view->useRecaptcha
             = $this->recaptcha()->active('feedback') && $form->useCaptcha();
-        $view->form = $form;
-        $view->formId = $formId;
-        $view->user = $user;
 
         $params = $this->params();
         $form->setData($params->fromPost());
