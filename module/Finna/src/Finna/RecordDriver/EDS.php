@@ -361,7 +361,6 @@ class EDS extends \VuFind\RecordDriver\EDS
             ];
         }
 
-
         return $retVal;
     }
 
