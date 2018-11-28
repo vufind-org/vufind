@@ -39,16 +39,6 @@ namespace VuFind\Resolver\Driver;
 class Generic extends AbstractBase
 {
     /**
-     * Constructor
-     *
-     * @param string $baseUrl Base URL for link resolver
-     */
-    public function __construct($baseUrl)
-    {
-        parent::__construct($baseUrl);
-    }
-
-    /**
      * Fetch Links
      *
      * Fetches a set of links corresponding to an OpenURL
