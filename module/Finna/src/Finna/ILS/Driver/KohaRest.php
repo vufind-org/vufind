@@ -1079,7 +1079,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function getItemStatusesForBiblio($id, $patron = null)
     {
-        $holdings = null;
+        $holdings = [];
         if (!empty($this->config['Holdings']['use_holding_records'])) {
             list($code, $holdingsResult) = $this->makeRequest(
                 ['v1', 'biblios', $id, 'holdings'],
