@@ -304,7 +304,7 @@ class Form extends \Zend\Form\Form
     protected function getFormSettingFields()
     {
         return [
-            'recipient', 'title', 'help', 'submit', 'response',
+            'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
             'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
         ];
     }
@@ -420,6 +420,16 @@ class Form extends \Zend\Form\Form
     {
         // Enabled unless explicitly disabled
         return ($this->formConfig['enabled'] ?? true) === true;
+    }
+
+    /**
+     * Check if the form should use Captcha validation
+     *
+     * @return boolean
+     */
+    public function useCaptcha()
+    {
+        return !empty($this->formConfig['useCaptcha']);
     }
 
     /**

@@ -9,6 +9,7 @@
 # Form supports the following options:
 #
 #   enabled (boolean) Is the form enabled? (default = true)
+#   useCaptcha (boolean) Should the form use Captcha validation?
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
@@ -60,6 +61,7 @@ forms:
   FeedbackSite:
     title: Send us your feedback!
     enabled: true
+    useCaptcha: true
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu

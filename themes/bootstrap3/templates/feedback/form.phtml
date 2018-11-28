@@ -85,6 +85,7 @@
           <?=$helpPost?>
         </div>
       <?php endif ?>
+      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
     <?php endif ?>
     <?= $this->formRow($formElement) ?>
     </div>
