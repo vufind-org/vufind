@@ -162,7 +162,7 @@ class Form extends \Zend\Form\Form
 
         $config = $config['forms'][$formId] ?? null;
         $localConfig = $localConfig['forms'][$formId] ?? null;
-        
+
         return $this->mergeLocalConfig($config, $localConfig);
     }
 
