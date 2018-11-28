@@ -352,6 +352,16 @@ class EDS extends \VuFind\RecordDriver\EDS
             ];
         }
 
+        $customLinks
+            = array_merge($this->getFTCustomLinks(), $this->getCustomLinks());
+        foreach ($customLinks as $link) {
+            $retVal[] = [
+                'desc' => $link['Text'] ?: $link['Name'],
+                'url' => $link['Url']
+            ];
+        }
+
+
         return $retVal;
     }
 
