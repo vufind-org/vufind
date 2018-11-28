@@ -9,7 +9,9 @@
 # Form supports the following options:
 #
 #   enabled (boolean) Is the form enabled? (default = true)
-#   useCaptcha (boolean) Should the form use Captcha validation?
+#   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
+#                        option to be turned on in the config.ini [Captcha] form setting.
+#                        (default = true, if Captcha turned on for feedback overall).
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)

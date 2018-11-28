@@ -308,7 +308,7 @@ class Form extends \Zend\Form\Form
             'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
         ];
     }
-    
+
     /**
      * Build form.
      *
@@ -414,7 +414,7 @@ class Form extends \Zend\Form\Form
     /**
      * Check if form enabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -423,19 +423,19 @@ class Form extends \Zend\Form\Form
     }
 
     /**
-     * Check if the form should use Captcha validation
+     * Check if the form should use Captcha validation (if supported)
      *
-     * @return boolean
+     * @return bool
      */
     public function useCaptcha()
     {
-        return !empty($this->formConfig['useCaptcha']);
+        return (bool)($this->formConfig['useCaptcha'] ?? true);
     }
 
     /**
      * Check if form is available only for logged users.
      *
-     * @return boolean
+     * @return bool
      */
     public function showOnlyForLoggedUsers()
     {

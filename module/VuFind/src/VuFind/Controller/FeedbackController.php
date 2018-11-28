@@ -63,7 +63,7 @@ class FeedbackController extends AbstractBase
 
         $view = $this->createViewModel();
         $view->useRecaptcha
-            = $this->recaptcha()->active('feedback') || $form->useCaptcha();
+            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
         $view->form = $form;
         $view->formId = $formId;
         $view->user = $user;
