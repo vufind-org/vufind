@@ -1,6 +1,6 @@
 <?php
 
-namespace IxTheo\Mailer;
+namespace TueFind\Mailer;
 
 class Factory extends \VuFind\Mailer\Factory {
 

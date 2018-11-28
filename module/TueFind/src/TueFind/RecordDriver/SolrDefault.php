@@ -186,7 +186,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    private function isOpenAccess(): bool
+    {
+        return isset($this->fields['is_open_access']) && $this->fields['is_open_access'];
+    }
+
     public function getSubitoURL($broker_id) {
+        // Suppress Subito links for open access items:
+        if ($this->isOpenAccess())
+	    return "";
+
         $base_url = "http://www.subito-doc.de/preorder/?BI=" . $broker_id;
         switch ($this->getBibliographicLevel()) {
             case 'Monograph':
@@ -263,6 +272,86 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $title;
     }
 
+   /**
+     * Get the title and try to reconstruct the original title for merged records
+     *
+     * @return string
+     */
+    public function getUnmergedTitleByType(string $type) : string
+    {
+        $merge_match_expression = "/^(.*) \/ (\(electronic\)|\(print\)); (.*) \/ (\(electronic\)|\(print\))$/";
+        $title = $this->getShortTitle();
+        if (preg_match($merge_match_expression, $title, $matches))
+            $title = ($matches[2] == "($type)") ? $matches[1] : $matches[3];
+
+        $subtitle = $this->getSubtitle();
+        if (preg_match($merge_match_expression, $subtitle, $matches))
+            $subtitle = ($matches[2] == "($type)") ? $matches[1] : $matches[3];
+        $titleSection = $this->getTitleSection();
+        if (!empty($subtitle)) {
+            if ($title != '') {
+                $separator = preg_match("/^[\\s=]+/", $subtitle) ? " " : ": ";
+                $title .= $separator;
+            }
+            $title .= $subtitle;
+        }
+        if (!empty($titleSection)) {
+            if ($title != '') {
+                $title .= ' / ';
+            }
+            $title .= $titleSection;
+        }
+        return $title;
+    }
+
+
+    /**
+     * Get the title or only the reconstruction of the electronic title if it is a merged record
+     *
+     * @return string
+     */
+    public function getUnmergedElectronicTitle() : string
+    {
+        return $this->getUnmergedTitleByType("electronic");
+    }
+
+
+    /**
+     * Get the title or only the reconstruction of the print title if it is a merged record
+     *
+     * @return string
+     */
+    public function getUnmergedPrintTitle() : string
+    {
+        return $this->getUnmergedTitleByType("print");
+    }
+
+
+    /**
+     * Normalize common german media type terms to English for the integration in the translation process
+     *
+     */
+    public function normalizeGermanMaterialTypeTerms(string $material_type) : string
+    {
+        $translations = [
+          "Kostenfrei" => "Free Access",
+          "Vermutlich kostenfreier Zugang" => "Presumably Free Access",
+          "Inhaltsverzeichnis" => "TOC",
+          "Klappentext" => "blurb",
+          "Rezension" => "review",
+          "Cover" => "cover",
+          "Inhaltstext" => "contents",
+          "Verlagsinformation" => "publisher information",
+          "Ausführliche Beschreibung" => "detailed description",
+          "Unbekanntes Material" => "unknown material type",
+        ];
+
+        if (array_key_exists($material_type, $translations))
+            return $translations[$material_type];
+        return $material_type;
+    }
+
+
     /**
      * Return an associative array of URL's mapped to their material types.
      *
@@ -276,7 +365,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
                 $last_colon_pos = strrpos($url_and_material_type, ":");
                 if ($last_colon_pos) {
                     $material_type = substr($url_and_material_type, $last_colon_pos + 1);
-                    $retval[substr($url_and_material_type, 0, $last_colon_pos)] = $material_type;
+                    $retval[substr($url_and_material_type, 0, $last_colon_pos)] = $this->normalizeGermanMaterialTypeTerms($material_type);
                 }
             }
         }

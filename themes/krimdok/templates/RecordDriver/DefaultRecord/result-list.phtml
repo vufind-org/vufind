@@ -130,7 +130,7 @@
         <? $urls_and_material_types = $this->driver->getURLsAndMaterialTypes(); ?>
         <? if (!empty($urls_and_material_types)): ?>
           <? foreach ($urls_and_material_types as $url => $material_type): ?>
-            <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($material_type)?></a>
+            <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
             <br/>
           <? endforeach; ?>
         <? endif; ?>

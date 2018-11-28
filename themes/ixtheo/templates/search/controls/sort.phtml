@@ -2,7 +2,12 @@
   <form class="form-inline" action="<?=$this->currentPath()?>" method="get" name="sort" style="display: inline;">
     <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
-    <select id="sort_options_1" name="sort" class="jumpMenu form-control" <?= $this->params->getOptions() instanceof \IxTheo\Search\Solr\Options && $this->params->getQuery() instanceof \VuFindSearch\Query\Query && in_array($this->params->getQuery()->getHandler(), $this->params->getOptions()->getForceDefaultSortSearches()) ? 'disabled' : '' ?>>
+    <select id="sort_options_1" name="sort" class="jumpMenu form-control"
+      <? $default_sort = $this->params->getOptions()->getDefaultSortByHandler();?>
+      <? if ($default_sort != null): ?>
+      data-default_sort="<?=$default_sort?>"
+      <? endif; ?>
+      <?= $this->params->getOptions() instanceof \IxTheo\Search\Solr\Options && $this->params->getQuery() instanceof \VuFindSearch\Query\Query && in_array($this->params->getQuery()->getHandler(), $this->params->getOptions()->getForceDefaultSortSearches()) ? 'disabled' : '' ?>>
       <? foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
       <? endforeach; ?>

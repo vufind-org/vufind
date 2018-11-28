@@ -15,6 +15,7 @@ return [
         'vendor/keyboard.css',
         'vendor/keyboard-dark.css',
         'vendor/keyboard-previewkeyset.css',
+        'botprotect.css',
         'keyboard-tuefind.css'
     ],
     'js' => [

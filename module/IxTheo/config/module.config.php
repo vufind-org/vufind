@@ -64,6 +64,7 @@ $config = [
         'factories' => [
             'IxTheo\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'IxTheo\Controller\BrowseController' => 'VuFind\Controller\BrowseControllerFactory',
+            'IxTheo\Controller\ClassificationController' => 'VuFind\Controller\AbstractBaseFactory',
             'IxTheo\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'IxTheo\Controller\RecordController' => 'VuFind\Controller\RecordControllerFactory',
             'IxTheo\Controller\Search\KeywordChainSearchController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -71,6 +72,7 @@ $config = [
         'aliases' => [
             'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
             'browse' => 'IxTheo\Controller\BrowseController',
+            'classification' => 'IxTheo\Controller\ClassificationController',
             'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
             'Keywordchainsearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
             'MyResearch' => 'IxTheo\Controller\MyResearchController',
@@ -104,6 +106,23 @@ $config = [
             'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
         ],
     ],
+    'router' => [
+        'routes' => [
+            'classification' => [
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/classification[/:notation]',
+                    'constraints' => [
+                        'notation' => '[a-zA-Z][a-zA-Z]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Classification',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];
 
 $recordRoutes = [
@@ -123,6 +142,7 @@ $staticRoutes = [
     'MyResearch/DeleteSubscription',
     'MyResearch/PDASubscriptions',
     'MyResearch/DeletePDASubscription',
+    'Classification/Home'
 ];
 
 $routeGenerator = new \IxTheo\Route\RouteGenerator();

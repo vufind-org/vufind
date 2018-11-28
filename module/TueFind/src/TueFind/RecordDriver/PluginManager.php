@@ -15,11 +15,14 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->aliases['solrauth'] = 'TueFind\RecordDriver\SolrAuth';
         $this->aliases['solrdefault'] = 'TueFind\RecordDriver\SolrDefault';
         $this->aliases['solrmarc'] = 'TueFind\RecordDriver\SolrMarc';
 
         $this->delegators['TueFind\RecordDriver\SolrMarc'] = ['VuFind\RecordDriver\IlsAwareDelegatorFactory'];
 
+        $this->factories['TueFind\RecordDriver\SolrAuthDefault'] = 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory';
+        $this->factories['TueFind\RecordDriver\SolrAuthMarc'] = 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory';
         $this->factories['TueFind\RecordDriver\SolrDefault'] = 'TueFind\RecordDriver\SolrDefaultFactory';
         $this->factories['TueFind\RecordDriver\SolrMarc'] = 'TueFind\RecordDriver\SolrMarcFactory';
 

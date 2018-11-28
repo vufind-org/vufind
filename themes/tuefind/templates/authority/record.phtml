@@ -1,0 +1,75 @@
+<? $this->layout()->breadcrumbs = false; ?>
+<?
+    // Heading
+    ?>
+    <h1><?=$this->driver->getTitle()?></h1>
+    <?
+
+    // Professions
+    $professions = $this->driver->getProfessions();
+    $professions_display = '';
+    foreach ($professions as $profession) {
+        if ($professions_display != '')
+            $professions_display .= '/';
+        $professions_display .= $profession['title'];
+    }
+    if (count($professions) > 0) {
+        ?><p><?=$professions_display?></p><?
+    }
+
+    // Internal search
+    ?>
+    <p>
+        <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
+    </p>
+    <?
+
+    // Locations
+    $locations = $this->driver->getLocations();
+    if (count($locations) > 0) {
+        ?>
+            <p>
+                Locations:<br/>
+                <ul>
+                <?
+                foreach ($locations as $location) {
+                    ?><li><?=$location['type'] . ': ' . $location['name']?></li><?
+                }
+                ?>
+                </ul>
+            </p>
+        <?
+    }
+
+    // Other databases
+    $gnd_number = $this->driver->getGNDNumber();
+    if ($gnd_number != null) {
+        ?>
+            <p>
+                Other databases:
+                <ul>
+                    <li><a target="_blank" href="http://www.deutsche-digitale-bibliothek.de/entity/<?=urlencode($gnd_number)?>">Entity Facts</a></li>
+                    <li><a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a></li>
+                </ul>
+            </p>
+        <?
+    }
+
+    // BEACON
+    $beacon_references = $this->driver->getBeaconReferences();
+    if (count($beacon_references) > 0) {
+        ?>
+        <p>
+            BEACON References:<br/>
+            <ul>
+            <?
+            foreach ($beacon_references as $beacon_reference) {
+                ?><li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li><?
+            }
+            ?>
+            </ul>
+        </p>
+        <?
+    }
+?>
+<?=$this->record($this->driver)->getTab($this->tabs['Details'])?>

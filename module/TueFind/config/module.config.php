@@ -28,6 +28,7 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
+            'TueFind\Controller\AcquisitionRequestController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'TueFind\Controller\PDAProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'TueFind\Controller\ProxyControllerFactory',
@@ -35,6 +36,7 @@ $config = [
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
+            'acquisition_request' => 'TueFind\Controller\AcquisitionRequestController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
@@ -55,6 +57,11 @@ $config = [
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFind\Mailer' => 'TueFind\Mailer\Factory',
+        ],
+    ],
 ];
 
 $config['router']['routes']['static-page'] = [
@@ -70,5 +77,19 @@ $config['router']['routes']['static-page'] = [
         ]
     ]
 ];
+
+$recordRoutes = [];
+$dynamicRoutes = [];
+$staticRoutes = [
+    'AcquisitionRequest/Create',
+    'AcquisitionRequest/Send',
+];
+
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addRecordRoutes($config, $recordRoutes);
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
+
+
 
 return $config;

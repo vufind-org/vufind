@@ -4,6 +4,44 @@ namespace TueFind\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
+    const SCHEME_PREFIX_GND = '(DE-588)';
+    const SCHEME_PREFIX_BSZ = '(DE-576)';
+
+    /**
+     * Search for author and return its id (e.g. GND number or PPN)
+     *
+     * @param string $author_heading    name of the author and birth/death years if exist, e.g. "Strecker, Christian 1960-"
+     * @param string $scheme_prefix     see class constants (SCHEME_PREFIX_*)
+     * @return string
+     */
+    protected function getAuthorIdByHeading($author_heading, $scheme_prefix) {
+        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
+        foreach ($authors as $author) {
+            $subfield_a = $author->getSubfield('a');
+            $subfield_d = $author->getSubfield('d');
+            $current_author_heading = $subfield_a->getData();
+            if ($subfield_d != false)
+                $current_author_heading .= ' ' . $subfield_d->getData();
+
+            if ($author_heading == $subfield_a->getData() || $author_heading == $current_author_heading) {
+                $subfields_0 = $author->getSubfields('0');
+                foreach ($subfields_0 as $subfield_0) {
+                    if (preg_match('"^' . preg_quote($scheme_prefix) . '"', $subfield_0->getData()))
+                        return substr($subfield_0->getData(), strlen($scheme_prefix));
+                }
+                break;
+            }
+        }
+    }
+
+    public function getAuthorGNDNumber($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_GND);
+    }
+
+    public function getAuthorPPN($author_heading) {
+        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_BSZ);
+    }
+
     /**
      * Get DOI from 024 instead of doi_str_mv field
      *
@@ -103,5 +141,71 @@ class SolrMarc extends SolrDefault
             return true;
 
         return false;
+    }
+
+    public function getParallelEditionPPNs() {
+        $parallel_ppns_and_type = [];
+        foreach (["775", "776"] as $tag) {
+             $fields = $this->getMarcRecord()->getFields($tag);
+             foreach ($fields as $field) {
+                 $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
+                 foreach($subfields_w as $subfield_w) {
+                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_BSZ) . "(.*)/", $subfield_w, $ppn)) {
+                         $subfield_k = $field->getSubfield('k');
+                         if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
+                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
+                     }
+                 }
+             }
+        }
+        return $parallel_ppns_and_type;
+    }
+
+
+    protected function getFirstBSZPPNFromSubfieldW(&$field, &$ppn) {
+        $ppn = [];
+        $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
+        foreach($subfields_w as $subfield_w) {
+             if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_BSZ) . "(.*)/", $subfield_w, $match_ppn)) {
+                 $ppn[0] = $match_ppn[1];
+                 return;
+             }
+        }
+    }
+
+
+    public function getReferenceInformation() {
+        $reference = [];
+        $fields = $this->getMarcRecord()->getFields("770");
+        foreach ($fields as $field) {
+            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+            $field->getSubfield('a') ? array_push($reference, $field->getSubfield('a')->getData()) : '';
+            $field->getSubfield('d') ? array_push($reference, $field->getSubfield('d')->getData()) : '';
+            $field->getSubfield('h') ? array_push($reference, $field->getSubfield('h')->getData()) : '';
+            $field->getSubfield('t') ? array_push($reference, $field->getSubfield('t')->getData()) : '';
+            $this->getFirstBSZPPNFromSubfieldW($field, $link_ppn);
+            $reference_description = $opening . ": " .  implode(", " , array_filter($reference) /*skip empty elements */);
+            if (!empty($link_ppn))
+                return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $reference_description . "</>";
+            else
+                return $reference_description;
+        }
+    }
+
+
+    public function getContainsInformation() {
+        $contains = [];
+        $fields = $this->getMarcRecord()->getFields("772");
+        foreach ($fields as $field) {
+              $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+              $field->getSubfield('a') ? array_push($contains, $field->getSubfield('a')->getData()) : '';
+              $field->getSubfield('t') ? array_push($contains, $field->getSubfield('t')->getData()) : '';
+              $contains_description = $opening . ": " .  implode(", ", array_filter($contains) /*skip empty elements */);
+              $this->getFirstBSZPPNFromSubfieldW($field, $link_ppn);
+              if (!empty($link_ppn))
+                  return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $contains_description . "</>";
+              else
+                  return $contains_description;
+        }
     }
 }

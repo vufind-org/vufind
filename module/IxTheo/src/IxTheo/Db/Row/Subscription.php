@@ -19,6 +19,6 @@ class Subscription extends \VuFind\Db\Row\RowGateway
      */
     public function __construct($adapter)
     {
-        parent::__construct('id', 'ixtheo_journal_subscriptions', $adapter);
+        parent::__construct('user_id', 'ixtheo_journal_subscriptions', $adapter);
     }
 }

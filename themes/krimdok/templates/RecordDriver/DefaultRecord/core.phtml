@@ -205,7 +205,7 @@
           <th><?=$this->transEsc('Online Access')?>:</th>
           <td>
             <? foreach ($urls_and_material_types as $url => $material_type): ?>
-              <a href="<?=$url?>" target="_blank"><?=$this->escapeHtml($material_type)?></a>
+              <a href="<?=$url?>" target="_blank"><?=$this->transEsc($material_type)?></a>
               <br/>
             <? endforeach; ?>
           </td>
