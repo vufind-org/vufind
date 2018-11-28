@@ -68,13 +68,13 @@ class FeedbackController extends AbstractBase
         $view->formId = $formId;
         $view->user = $user;
 
+        $params = $this->params();
+        $form->setData($params->fromPost());
+
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
-
-        $params = $this->params();
-        $form->setData($params->fromPost());
 
         if (! $form->isValid()) {
             return $view;
