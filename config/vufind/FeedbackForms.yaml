@@ -59,7 +59,6 @@ forms:
 
   FeedbackSite:
     title: Send us your feedback!
-    #allowLocalOverride: false
     enabled: true
     #recipient:
     #  name: Your Library

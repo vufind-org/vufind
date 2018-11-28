@@ -150,8 +150,8 @@ class Form extends \Zend\Form\Form
         $confName = 'FeedbackForms.yaml';
         $localConfig = $parentConfig = $config = null;
 
-        $config = $this->yamlReader->get($confName, false, false);
-        $localConfig = $this->yamlReader->get($confName, true, false);
+        $config = $this->yamlReader->get($confName, false, true);
+        $localConfig = $this->yamlReader->get($confName, true, true);
 
         if (!$formId) {
             $formId = $localConfig['default'] ?? $config['default'] ?? null;
@@ -162,14 +162,21 @@ class Form extends \Zend\Form\Form
 
         $config = $config['forms'][$formId] ?? null;
         $localConfig = $localConfig['forms'][$formId] ?? null;
+        
+        return $this->mergeLocalConfig($config, $localConfig);
+    }
 
-        $useLocal = isset($localConfig) && !empty($config['allowLocalOverride']);
-
-        if ($useLocal) {
-            $config = $localConfig;
-        }
-
-        return $config;
+    /**
+     * Merge local configuration into default configuration.
+     *
+     * @param array $config      Default configuration
+     * @param array $localConfig Local configuration
+     *
+     * @return array
+     */
+    protected function mergeLocalConfig($config, $localConfig)
+    {
+        return $localConfig ?? $config;
     }
 
     /**
@@ -187,11 +194,8 @@ class Form extends \Zend\Form\Form
            'id' => $formId,
            'title' => !empty($config['name']) ?: $formId
         ];
-        $fields = [
-            'recipient', 'title', 'help', 'submit', 'response',
-            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
-        ];
-        foreach ($fields as $key) {
+
+        foreach ($this->getFormSettingFields() as $key) {
             if (isset($config[$key])) {
                 $formConfig[$key] = $config[$key];
             }
@@ -292,6 +296,19 @@ class Form extends \Zend\Form\Form
         return $elements;
     }
 
+    /**
+     * Return a list of field names to read from settings file.
+     *
+     * @return array
+     */
+    protected function getFormSettingFields()
+    {
+        return [
+            'recipient', 'title', 'help', 'submit', 'response',
+            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
+        ];
+    }
+    
     /**
      * Build form.
      *
