@@ -66,13 +66,19 @@ class ImageLink extends \Zend\View\Helper\AbstractHelper
     {
         // Normalize href to account for themes:
         $relPath = 'images/' . $image;
-        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $details = $this->themeInfo->findContainingTheme(
+            $relPath, \VuFindTheme\ThemeInfo::RETURN_ALL_DETAILS
+        );
 
-        if (null === $currentTheme) {
+        if (null === $details) {
             return null;
         }
 
         $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+        $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+        $url .= strstr($url, '?') ? '&_=' : '?_=';
+        $url .= filemtime($details['path']);
+
+        return $url;
     }
 }
