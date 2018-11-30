@@ -71,9 +71,9 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
-    help:
-      pre: feedback_help_pre
-      post: feedback_help_post
+    #help:
+    #  pre: feedback_help_pre
+    #  post: feedback_help_post
 
     fields:
       - name: message
