@@ -41,8 +41,11 @@ use Zend\Validator\NotEmpty;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Form extends \Zend\Form\Form
+class Form extends \Zend\Form\Form implements
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Input filter
      *
@@ -79,13 +82,6 @@ class Form extends \Zend\Form\Form
     protected $formConfig;
 
     /**
-     * Translator
-     *
-     * @var Translator
-     */
-    protected $translator;
-
-    /**
      * YAML reader
      *
      * @var YamlReader
@@ -96,17 +92,15 @@ class Form extends \Zend\Form\Form
      * Constructor
      *
      * @param Zend\Config\Config $defaultConfig Default Feedback configuration
-     * @param Translator         $translator    Translator
      * @param YamlReader         $yamlReader    YAML reader
      *
      * @throws \Exception
      */
-    public function __construct($defaultConfig, $translator, $yamlReader)
+    public function __construct($defaultConfig, $yamlReader)
     {
         parent::__construct();
 
         $this->defaultFormConfig = $defaultConfig;
-        $this->translator = $translator;
         $this->yamlReader = $yamlReader;
     }
 
@@ -126,13 +120,13 @@ class Form extends \Zend\Form\Form
 
         $this->messages = [];
         $this->messages['empty']
-            = $this->translator->translate('This field is required');
+            = $this->translate('This field is required');
 
         $this->messages['invalid_email']
-            = $this->translator->translate('Email address is invalid');
+            = $this->translate('Email address is invalid');
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config, $this->translator);
+            = $this->parseConfig($formId, $config);
 
         $this->buildForm($this->formElementConfig);
     }
@@ -184,11 +178,10 @@ class Form extends \Zend\Form\Form
      *
      * @param string     $formId     Form id
      * @param array      $config     Configuration
-     * @param Translator $translator Translator
      *
      * @return array
      */
-    protected function parseConfig($formId, $config, $translator)
+    protected function parseConfig($formId, $config)
     {
         $formConfig = [
            'id' => $formId,
@@ -236,7 +229,7 @@ class Form extends \Zend\Form\Form
                 $value = $el[$field];
                 $element[$field] = $value;
             }
-            $element['label'] = $translator->translate($el['label']);
+            $element['label'] = $this->translate($el['label']);
 
             $elementType = $element['type'];
             if ($elementType === 'select') {
@@ -246,7 +239,7 @@ class Form extends \Zend\Form\Form
                 if (isset($el['options'])) {
                     $options = [];
                     foreach ($el['options'] as $option) {
-                        $options[$option] = $translator->translate($option);
+                        $options[$option] = $this->translate($option);
                     }
                     $element['options'] = $options;
                 } elseif (isset($el['optionGroups'])) {
@@ -257,9 +250,9 @@ class Form extends \Zend\Form\Form
                         }
                         $options = [];
                         foreach ($group['options'] as $option) {
-                            $options[$option] = $translator->translate($option);
+                            $options[$option] = $this->translate($option);
                         }
-                        $label = $translator->translate($group['label']);
+                        $label = $this->translate($group['label']);
                         $groups[$label] = ['label' => $label, 'options' => $options];
                     }
                     $element['optionGroups'] = $groups;
@@ -512,7 +505,7 @@ class Form extends \Zend\Form\Form
 
         $translated = [];
         foreach ($postParams as $key => $val) {
-            $translated["%%{$key}%%"] = $this->translator->translate($val);
+            $translated["%%{$key}%%"] = $this->translate($val);
         }
 
         return str_replace(
@@ -551,14 +544,14 @@ class Form extends \Zend\Form\Form
             $value = $requestParams->fromPost($el['name'], null);
 
             if ($type === 'select') {
-                $value = $this->translator->translate($value);
+                $value = $this->translate($value);
             }
-
-            $label = $this->translator->translate($el['label']);
+            
+            $label = $this->translate($el['label']);
 
             $params[$label] = ['type' => $type, 'value' => $value];
         }
-
+        
         return [$params, 'Email/form.phtml'];
     }
 
