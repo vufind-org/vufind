@@ -77,7 +77,8 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        list($messageParams, $template) = $form->formatEmailMessage($this->params());
+        list($messageParams, $template)
+            = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
             $template, ['fields' => $messageParams]
         );

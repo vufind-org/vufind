@@ -72,7 +72,7 @@ class Form extends \Zend\Form\Form implements
      *
      * @var array
      */
-    protected $formElementConfig;
+    protected $formElementConfig = [];
 
     /**
      * Form config
@@ -532,7 +532,7 @@ class Form extends \Zend\Form\Form implements
      *
      * @return array Array with template parameters and template name.
      */
-    public function formatEmailMessage($requestParams)
+    public function formatEmailMessage(array $requestParams = [])
     {
         $params = [];
         foreach ($this->getElements() as $el) {
@@ -541,7 +541,7 @@ class Form extends \Zend\Form\Form implements
             if ($type === 'submit') {
                 continue;
             }
-            $value = $requestParams->fromPost($el['name'], null);
+            $value = $requestParams[$el['name']] ?? null;
 
             if ($type === 'select') {
                 $value = $this->translate($value);
