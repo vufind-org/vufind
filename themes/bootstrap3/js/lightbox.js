@@ -27,7 +27,6 @@ VuFind.register('lightbox', function Lightbox() {
   }
   function _emit(msg, _details) {
     var details = _details || {};
-    // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
     var event;
     try {
       event = new CustomEvent(msg, {
@@ -36,6 +35,7 @@ VuFind.register('lightbox', function Lightbox() {
         cancelable: true
       });
     } catch (e) {
+      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
       event = document.createEvent('CustomEvent');
       event.initCustomEvent(msg, true, true, details);
     }
@@ -54,6 +54,9 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody.find('.flash-message,.fa.fa-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
+  }
+  function close() {
+    _modal.modal('hide');
   }
 
   /**
@@ -80,7 +83,7 @@ VuFind.register('lightbox', function Lightbox() {
       var href = alerts.find('.download').attr('href');
       if (typeof href !== 'undefined') {
         location.href = href;
-        _modal.modal('hide');
+        close();
       } else {
         showAlert(msgs, 'success');
       }
@@ -131,7 +134,10 @@ VuFind.register('lightbox', function Lightbox() {
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
-      obj.url += 'layout=lightbox&lbreferer=' + encodeURIComponent(_currentUrl);
+      obj.url += 'layout=lightbox';
+      if (_currentUrl) {
+        obj.url += '&lbreferer=' + encodeURIComponent(_currentUrl);
+      }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     _xhr = $.ajax(obj);
@@ -281,6 +287,10 @@ VuFind.register('lightbox', function Lightbox() {
     _clickedButton = null;
     var buttonData = { name: 'submit', value: 1 };
     if (submit.length > 0) {
+      if (typeof submit.data('lightbox-close') !== 'undefined') {
+        close();
+        return false;
+      }
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
@@ -386,6 +396,7 @@ VuFind.register('lightbox', function Lightbox() {
     ajax: ajax,
     alert: showAlert,
     bind: bind,
+    close: close,
     flashMessage: flashMessage,
     reload: reload,
     render: render,

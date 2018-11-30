@@ -806,6 +806,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return array                Associative array containing with keys 'count'
      *                                 (number of items successfully cancelled) and
+<<<<<<< HEAD
      *                                 'items' (array of successfull cancellations).
      */
     public function cancelHolds($cancelDetails)
@@ -1401,6 +1402,605 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @return array With key BIB_ID - The record ID of the current reserve item.
      *               Not currently used:
      *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
+=======
+     *                                 'items' (array of successful cancellations).
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $returnArray = [];
+        $patronId = $cancelDetails['patron']['cat_username'];
+        $count = 0;
+
+        foreach ($cancelDetails['details'] as $requestId) {
+            $item = [];
+            try {
+                // Get some details of the requested items as we need them below.
+                // We only can get them from an API request.
+                $requestDetails = $this->makeRequest(
+                    $this->baseUrl .
+                        '/users/' . urlencode($patronId) .
+                        '/requests/' . urlencode($requestId)
+                );
+
+                $mmsId = (isset($requestDetails->mms_id))
+                          ? (string)$requestDetails->mms_id
+                          : (string)$requestDetails->mms_id;
+
+                // Delete the request in Alma
+                $apiResult = $this->makeRequest(
+                    $this->baseUrl .
+                    '/users/' . urlencode($patronId) .
+                    '/requests/' . urlencode($requestId),
+                    ['reason' => 'CancelledAtPatronRequest'],
+                    [],
+                    'DELETE'
+                );
+
+                // Adding to "count" variable and setting values to return array
+                $count++;
+                $item[$mmsId]['success'] = true;
+                $item[$mmsId]['status'] = 'hold_cancel_success';
+            } catch (ILSException $e) {
+                if (isset($apiResult['xml'])) {
+                    $almaErrorCode = $apiResult['xml']->errorList->error->errorCode;
+                    $sysMessage = $apiResult['xml']->errorList->error->errorMessage;
+                } else {
+                    $almaErrorCode = 'No error code available';
+                    $sysMessage = 'HTTP status code: ' .
+                         ($e->getCode() ?? 'Code not available');
+                }
+                $item[$mmsId]['success'] = false;
+                $item[$mmsId]['status'] = 'hold_cancel_fail';
+                $item[$mmsId]['sysMessage'] = $sysMessage . '. ' .
+                         'Alma MMS ID: ' . $mmsId . '. ' .
+                         'Alma request ID: ' . $requestId . '. ' .
+                         'Alma error code: ' . $almaErrorCode;
+            }
+
+            $returnArray['items'] = $item;
+        }
+
+        $returnArray['count'] = $count;
+
+        return $returnArray;
+    }
+
+    /**
+     * Get details of a single hold request.
+     *
+     * @param array $holdDetails One of the item arrays returned by the
+     *                           getMyHolds method
+     *
+     * @return string            The Alma request ID
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        return $holdDetails['id'];
+    }
+
+    /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/requests',
+            ['request_type' => 'MOVE']
+        );
+        $holdList = [];
+        for ($i = 0; $i < count($xml->user_requests); $i++) {
+            $request = $xml->user_requests[$i];
+            if (!isset($request->item_policy)
+                || $request->item_policy !== 'Archive'
+            ) {
+                continue;
+            }
+            $holdList[] = [
+                'create' => $request->request_date,
+                'expire' => $request->last_interest_date,
+                'id' => $request->request_id,
+                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'item_id' => $request->mms_id,
+                'location' => $request->pickup_location,
+                'processed' => $request->item_policy === 'InterlibraryLoan'
+                    && $request->request_status !== 'NOT_STARTED',
+                'title' => $request->title,
+            ];
+        }
+        return $holdList;
+    }
+
+    /**
+     * Get Patron ILL Requests
+     *
+     * This is responsible for retrieving all ILL requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's ILL requests
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyILLRequests($patron)
+    {
+        $xml = $this->makeRequest(
+            '/users/' . $patron['cat_username'] . '/requests',
+            ['request_type' => 'MOVE']
+        );
+        $holdList = [];
+        for ($i = 0; $i < count($xml->user_requests); $i++) {
+            $request = $xml->user_requests[$i];
+            if (!isset($request->item_policy)
+                || $request->item_policy !== 'InterlibraryLoan'
+            ) {
+                continue;
+            }
+            $holdList[] = [
+                'create' => $request->request_date,
+                'expire' => $request->last_interest_date,
+                'id' => $request->request_id,
+                'in_transit' => $request->request_status !== 'IN_PROCESS',
+                'item_id' => $request->mms_id,
+                'location' => $request->pickup_location,
+                'processed' => $request->item_policy === 'InterlibraryLoan'
+                    && $request->request_status !== 'NOT_STARTED',
+                'title' => $request->title,
+            ];
+        }
+        return $holdList;
+    }
+
+    /**
+     * Get transactions of the current patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return string[]    Transaction information as array or empty array if the
+     *                  patron has no transactions.
+     *
+     * @author Michael Birkner
+     */
+    public function getMyTransactions($patron)
+    {
+        // Defining the return value
+        $returnArray = [];
+
+        // Get the patrons user name
+        $patronUserName = $patron['cat_username'];
+
+        // Create a timestamp for calculating the due / overdue status
+        $nowTS = mktime();
+
+        // Create parameters for the API call
+        // INFO: "order_by" does not seem to work as expected!
+        //       This is an Alma API problem.
+        $params = [
+            'limit' => '100',
+            'order_by' => 'due_date',
+            'direction' => 'DESC',
+            'expand' => 'renewable'
+        ];
+
+        // Get user loans from Alma API
+        $apiResult = $this->makeRequest(
+            '/users/' . $patronUserName . '/loans/',
+            $params
+        );
+
+        // If there is an API result, process it
+        if ($apiResult) {
+            // Iterate over all item loans
+            foreach ($apiResult->item_loan as $itemLoan) {
+                $loan['duedate'] = $this->parseDate(
+                    (string)$itemLoan->due_date,
+                    true
+                );
+                //$loan['dueTime'] = ;
+                $loan['dueStatus'] = null; // Calculated below
+                $loan['id'] = (string)$itemLoan->mms_id;
+                //$loan['source'] = 'Solr';
+                $loan['barcode'] = (string)$itemLoan->item_barcode;
+                //$loan['renew'] = ;
+                //$loan['renewLimit'] = ;
+                //$loan['request'] = ;
+                //$loan['volume'] = ;
+                $loan['publication_year'] = (string)$itemLoan->publication_year;
+                $loan['renewable']
+                    = (strtolower((string)$itemLoan->renewable) == 'true')
+                    ? true
+                    : false;
+                //$loan['message'] = ;
+                $loan['title'] = (string)$itemLoan->title;
+                $loan['item_id'] = (string)$itemLoan->loan_id;
+                $loan['institution_name'] = (string)$itemLoan->library;
+                //$loan['isbn'] = ;
+                //$loan['issn'] = ;
+                //$loan['oclc'] = ;
+                //$loan['upc'] = ;
+                $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
+
+                // Calculate due status
+                $dueDateTS = strtotime($loan['duedate']);
+                if ($nowTS > $dueDateTS) {
+                    // Loan is overdue
+                    $loan['dueStatus'] = 'overdue';
+                } elseif (($dueDateTS - $nowTS) < 86400) {
+                    // Due date within one day
+                    $loan['dueStatus'] = 'due';
+                }
+
+                $returnArray[] = $loan;
+            }
+        }
+
+        return $returnArray;
+    }
+
+    /**
+     * Get Alma loan IDs for use in renewMyItems.
+     *
+     * @param array $checkOutDetails An array from getMyTransactions
+     *
+     * @return string The Alma loan ID for this loan
+     *
+     * @author Michael Birkner
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+        $loanId = $checkOutDetails['item_id'];
+        return $loanId;
+    }
+
+    /**
+     * Renew loans via Alma API.
+     *
+     * @param array $renewDetails An array with the IDs of the loans returned by
+     *                            getRenewDetails and the patron information
+     *                            returned by patronLogin.
+     *
+     * @return array[] An array with the renewal details and a success or error
+     *                 message.
+     *
+     * @author Michael Birkner
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $returnArray = [];
+        $patronUserName = $renewDetails['patron']['cat_username'];
+
+        foreach ($renewDetails['details'] as $loanId) {
+            // Create an empty array that holds the information for a renewal
+            $renewal = [];
+
+            try {
+                // POST the renewals to Alma
+                $apiResult = $this->makeRequest(
+                    '/users/' . $patronUserName . '/loans/' . $loanId . '/?op=renew',
+                    [],
+                    [],
+                    'POST'
+                );
+
+                // Add information to the renewal array
+                $blocks = false;
+                $renewal[$loanId]['success'] = true;
+                $renewal[$loanId]['new_date'] = $this->parseDate(
+                    (string)$apiResult->due_date,
+                    true
+                );
+                //$renewal[$loanId]['new_time'] = ;
+                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
+                $renewal[$loanId]['sysMessage'] = 'renew_success';
+
+                // Add the renewal to the return array
+                $returnArray['details'] = $renewal;
+            } catch (ILSException $ilsEx) {
+                // Add the empty renewal array to the return array
+                $returnArray['details'] = $renewal;
+
+                // Add a message that can be translated
+                $blocks[] = 'renew_fail';
+            }
+        }
+
+        $returnArray['blocks'] = $blocks;
+
+        return $returnArray;
+    }
+
+    /**
+     * Get Status
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        return $this->getHolding($id);
+    }
+
+    /**
+     * Get Statuses
+     *
+     * This is responsible for retrieving the status information for a
+     * collection of records.
+     *
+     * @param array $ids The array of record ids to retrieve the status for
+     *
+     * @return array An array of getStatus() return values on success.
+     */
+    public function getStatuses($ids)
+    {
+        $results = [];
+        $params = [
+            'mms_id' => implode(',', $ids),
+            'expand' => 'p_avail,e_avail,d_avail'
+        ];
+        if ($bibs = $this->makeRequest('/bibs', $params)) {
+            foreach ($bibs as $bib) {
+                $marc = new \File_MARCXML(
+                    $bib->record->asXML(),
+                    \File_MARCXML::SOURCE_STRING
+                );
+                $status = [];
+                $tmpl = [
+                    'id' => (string)$bib->mms_id,
+                    'source' => 'Solr',
+                    'callnumber' => isset($bib->isbn)
+                        ? (string)$bib->isbn
+                        : ''
+                ];
+                if ($record = $marc->next()) {
+                    // Physical
+                    $physicalItems = $record->getFields('AVA');
+                    foreach ($physicalItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $item['location'] = (string)$field->getSubfield('c')
+                            ->getData();
+                        $status[] = $item;
+                    }
+                    // Electronic
+                    $electronicItems = $record->getFields('AVE');
+                    foreach ($electronicItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $status[] = $item;
+                    }
+                    // Digital
+                    $digitalItems = $record->getFields('AVD');
+                    foreach ($digitalItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $status[] = $item;
+                    }
+                } else {
+                    // TODO: Throw error
+                    error_log('no record');
+                }
+                $results[] = $status;
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Get Purchase History
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial).
+     *
+     * @param string $id The record id to retrieve the info for
+     *
+     * @return array     An array with the acquisitions data on success.
+     */
+    public function getPurchaseHistory($id)
+    {
+        // TODO: Alma getPurchaseHistory
+        return [];
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+        if (isset($this->config[$function])) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+
+        return $functionConfig;
+    }
+
+    /**
+     * Place a hold request via Alma API. This could be a title level request or
+     * an item level request.
+     *
+     * @param array $holdDetails An associative array w/ atleast patron and item_id
+     *
+     * @return array success: bool, sysMessage: string
+     *
+     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
+     */
+    public function placeHold($holdDetails)
+    {
+        // Check for title or item level request
+        $level = $holdDetails['level'] ?? 'item';
+
+        // Get information that is valid for both, item level requests and title
+        // level requests.
+        $mmsId = $holdDetails['id'];
+        $holId = $holdDetails['holding_id'];
+        $itmId = $holdDetails['item_id'];
+        $patronCatUsername = $holdDetails['patron']['cat_username'];
+        $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
+        $comment = $holdDetails['comment'] ?? null;
+        $requiredBy = (isset($holdDetails['requiredBy']))
+        ? $this->dateConverter->convertFromDisplayDate(
+            'Y-m-d',
+            $holdDetails['requiredBy']
+        ) . 'Z'
+        : null;
+
+        // Create body for API request
+        $body = [];
+        $body['request_type'] = 'HOLD';
+        $body['pickup_location_type'] = 'LIBRARY';
+        $body['pickup_location_library'] = $pickupLocation;
+        $body['comment'] = $comment;
+        $body['last_interest_date'] = $requiredBy;
+
+        // Remove "null" values from body array
+        $body = array_filter($body);
+
+        // Check if we have a title level request or an item level request
+        if ($level === 'title') {
+            // Add description if we have one for title level requests as Alma
+            // needs it under certain circumstances. See: https://developers.
+            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+            $description = isset($holdDetails['description']) ?? null;
+            if ($description) {
+                $body['description'] = $description;
+            }
+
+            // Create HTTP client with Alma API URL for title level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        } else {
+            // Create HTTP client with Alma API URL for item level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/holdings/' . urlencode($holId)
+                . '/items/' . urlencode($itmId)
+                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronCatUsername)
+                . '&format=json'
+            );
+        }
+
+        // Set headers
+        $client->setHeaders(
+            [
+            'Content-type: application/json',
+            'Accept: application/json'
+            ]
+        );
+
+        // Set HTTP method
+        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+
+        // Set body
+        $client->setRawBody(json_encode($body));
+
+        // Send API call and get response
+        $response = $client->send();
+
+        // Check for success
+        if ($response->isSuccess()) {
+            return ['success' => true];
+        } else {
+            // TODO: Throw an error
+            error_log($response->getBody());
+        }
+
+        // Get error message
+        $error = json_decode($response->getBody());
+        if (!$error) {
+            $error = simplexml_load_string($response->getBody());
+        }
+
+        return [
+            'success' => false,
+            'sysMessage' => $error->errorList->error[0]->errorMessage
+        ];
+    }
+
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid library locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron Patron information returned by the patronLogin method.
+     *
+     * @return array An array of associative arrays with locationID and
+     * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickupLocations($patron)
+    {
+        $xml = $this->makeRequest('/conf/libraries');
+        $libraries = [];
+        foreach ($xml as $library) {
+            $libraries[] = [
+                'locationID' => $library->code,
+                'locationDisplay' => $library->name
+            ];
+        }
+        return $libraries;
+    }
+
+    /**
+     * Request from /courses.
+     *
+     * @return array with key = course ID, value = course name
+     */
+    public function getCourses()
+    {
+        // https://developers.exlibrisgroup.com/alma/apis/courses
+        // GET /almaws/v1/courses
+        $xml = $this->makeRequest('/courses');
+        $courses = [];
+        foreach ($xml as $course) {
+            $courses[$course->id] = $course->name;
+        }
+        return $courses;
+    }
+
+    /**
+     * Get reserves by course
+     *
+     * @param string $courseID     Value from getCourses
+     * @param string $instructorID Value from getInstructors (not used yet)
+     * @param string $departmentID Value from getDepartments (not used yet)
+     *
+     * @return array With key BIB_ID - The record ID of the current reserve item.
+     *               Not currently used:
+     *               DISPLAY_CALL_NO, AUTHOR, TITLE, PUBLISHER, PUBLISHER_DATE
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+>>>>>>> refs/heads/master
      */
     public function findReserves($courseID, $instructorID, $departmentID)
     {

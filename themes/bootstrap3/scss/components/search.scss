@@ -98,6 +98,8 @@ header .container.navbar { margin-bottom: 0; }
   .media {
     flex: 1;
     margin: 0;
+    padding-right: 10px;
+    padding-left: 10px;
   }
   .media-left,
   .media-right {
@@ -114,13 +116,13 @@ header .container.navbar { margin-bottom: 0; }
       max-width: none;
     }
   }
+  .media-left { margin-right: 10px; }
+  .media-right { margin-left: 10px; }
 
   @media (min-width: 768px) {
     .media-left,
     .media-right {
       max-width: 25%;
-      padding-right: 10px;
-      padding-left: 10px;
 
       a {
         display: inline-block;

@@ -28,7 +28,7 @@
   <property name="solr_version" value="7.3.1" />
   <property name="phpdoc_version" value="2.9.0" />
 
-  <property name="version" value="5.0" />
+  <property name="version" value="5.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -67,6 +67,7 @@
     <phingcall target="pdepend"/>
     <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
+    <phingcall target="jshint-report"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -118,7 +119,15 @@
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --fix" escape="false" passthru="true" />
   </target>
   <target name="eslint-report">
-    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
+  </target>
+
+  <!-- JSHint -->
+  <target name="jshint">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+  </target>
+  <target name="jshint-report">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
   <!-- PHP API Documentation -->

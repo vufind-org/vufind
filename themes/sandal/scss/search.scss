@@ -17,9 +17,8 @@
 .result {
   margin-left: -1rem;
   margin-right: -1rem;
-  padding-top: 1rem;
-  padding-left: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem;
+  padding-right: 0;
   border-bottom: 1px solid $moon-gray;
   font-size: $reduced-font-size;
 
@@ -112,7 +111,6 @@
 
 .grid-result .grid-checkbox label { width: 100%; }
 @media (min-width: 768px) {
-  .result { padding-right: 1rem; }
   .result-body { width: 75%; }
   .result-links {
     width: 25%;
@@ -259,8 +257,12 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-.combined-search-container {
-  @include full-width();
-
-  .result { margin-right: 0; }
+.template-dir-combined.template-name-results {
+    .bulkActionButtons {
+        max-width: 1170px;
+        margin: auto;
+    }
+    .main .container {
+        width: 100%;
+    }
 }

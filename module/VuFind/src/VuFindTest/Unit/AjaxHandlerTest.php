@@ -29,7 +29,6 @@ namespace VuFindTest\Unit;
 
 use Zend\Http\Request;
 use Zend\Mvc\Controller\Plugin\Params;
-use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -41,24 +40,8 @@ use Zend\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
+abstract class AjaxHandlerTest extends MockContainerTest
 {
-    /**
-     * Create a mock service.
-     *
-     * @param string $name    Name of class implementing service
-     * @param array  $methods Methods to mock
-     *
-     * @return object
-     */
-    protected function getMockService($name, $methods = [])
-    {
-        return $this->getMockBuilder($name)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
-    }
-
     /**
      * Create mock user object.
      *
@@ -66,21 +49,7 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockUser()
     {
-        return $this->getMockService('VuFind\Db\Row\User');
-    }
-
-    /**
-     * Add a service to a container.
-     *
-     * @param ServiceManager $container Container to populate
-     * @param string         $name      Name of service to create
-     * @param mixed          $value     Value of service (or null to create mock)
-     *
-     * @return void
-     */
-    protected function addServiceToContainer($container, $name, $value = null)
-    {
-        $container->setService($name, $value ?? $this->getMockService($name));
+        return $this->container->get('VuFind\Db\Row\User');
     }
 
     /**
@@ -92,7 +61,9 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockAuthManager($user)
     {
-        $authManager = $this->getMockService('VuFind\Auth\Manager', ['isLoggedIn']);
+        $authManager = $this->container->createMock(
+            'VuFind\Auth\Manager', ['isLoggedIn']
+        );
         $authManager->expects($this->any())->method('isLoggedIn')
             ->will($this->returnValue($user));
         return $authManager;
@@ -112,7 +83,7 @@ abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
         $request = new Request();
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
-        $controller = $this->getMockService(
+        $controller = $this->container->createMock(
             'Zend\Mvc\Controller\AbstractActionController', ['getRequest']
         );
         $controller->expects($this->any())->method('getRequest')

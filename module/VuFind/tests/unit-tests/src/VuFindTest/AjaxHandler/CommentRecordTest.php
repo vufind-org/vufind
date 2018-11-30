@@ -29,11 +29,10 @@ namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
-use VuFind\Controller\Plugin\Recaptcha;
+use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Row\Resource;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource as ResourceTable;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * CommentRecord test class.
@@ -49,46 +48,32 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Set up a CommentRecord handler for testing.
      *
-     * @param ResourceTable $table     Resource table mock (or null for default)
-     * @param Recaptcha     $recaptcha Recaptcha plugin mock (or null for default)
-     * @param bool          $enabled   Are comments enabled?
-     * @param User|bool     $user      Return value for isLoggedIn() in auth manager
+     * @param bool      $enabled Are comments enabled?
+     * @param User|bool $user    Return value for isLoggedIn() in auth manager
      *
      * @return CommentRecord
      */
-    protected function getHandler($table = null, $recaptcha = null, $enabled = true,
-        $user = false
-    ) {
-        // Create container
-        $container = new ServiceManager();
-
+    protected function getHandler($enabled = true, $user = false)
+    {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $container->setService('VuFind\Db\Table\PluginManager', $container);
-        $container->setService('ControllerPluginManager', $container);
-
-        // Install or mock up remaining services:
-        $this->addServiceToContainer(
-            $container, 'VuFind\Db\Table\Resource', $table
-        );
-        $this->addServiceToContainer(
-            $container, 'VuFind\Controller\Plugin\Recaptcha', $recaptcha
-        );
+        $this->container->set('VuFind\Db\Table\PluginManager', $this->container);
+        $this->container->set('ControllerPluginManager', $this->container);
 
         // Set up auth manager with user:
         $authManager = $this->getMockAuthManager($user);
-        $container->setService('VuFind\Auth\Manager', $authManager);
+        $this->container->set('VuFind\Auth\Manager', $authManager);
 
         // Set up capability configuration:
         $cfg = new \Zend\Config\Config(
             ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
         );
-        $capabilities = new \VuFind\Config\AccountCapabilities($cfg, $authManager);
-        $container->setService('VuFind\Config\AccountCapabilities', $capabilities);
+        $capabilities = new AccountCapabilities($cfg, $authManager);
+        $this->container->set(AccountCapabilities::class, $capabilities);
 
         // Build the handler:
         $factory = new CommentRecordFactory();
-        return $factory($container, CommentRecord::class);
+        return $factory($this->container, CommentRecord::class);
     }
 
     /**
@@ -101,7 +86,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function getMockResource($comment, $user)
     {
-        $row = $this->getMockService('VuFind\Db\Row\Resource', ['addComment']);
+        $row = $this->container->createMock(Resource::class, ['addComment']);
         $row->expects($this->once())->method('addComment')
             ->with($this->equalTo($comment), $this->equalTo($user))
             ->will($this->returnValue(true));
@@ -115,7 +100,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testDisabledResponse()
     {
-        $handler = $this->getHandler(null, null, false);
+        $handler = $this->getHandler(false);
         $this->assertEquals(
             ['Comments disabled', 400],
             $handler->handleRequest($this->getParamsHelper())
@@ -129,7 +114,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testLoggedOutUser()
     {
-        $handler = $this->getHandler(null, null, true);
+        $handler = $this->getHandler(true);
         $this->assertEquals(
             ['You must be logged in first', 401],
             $handler->handleRequest($this->getParamsHelper())
@@ -143,7 +128,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testEmptyQuery()
     {
-        $handler = $this->getHandler(null, null, true, $this->getMockUser());
+        $handler = $this->getHandler(true, $this->getMockUser());
         $this->assertEquals(
             ['bulk_error_missing', 400],
             $handler->handleRequest($this->getParamsHelper())
@@ -158,11 +143,13 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     public function testSuccessfulTransaction()
     {
         $user = $this->getMockUser();
-        $table = $this->getMockService('VuFind\Db\Table\Resource', ['findResource']);
+        $table = $this->container
+            ->createMock(ResourceTable::class, ['findResource']);
         $table->expects($this->once())->method('findResource')
             ->with($this->equalTo('foo'), $this->equalTo('Solr'))
             ->will($this->returnValue($this->getMockResource('bar', $user)));
-        $handler = $this->getHandler($table, null, true, $user);
+        $this->container->set(ResourceTable::class, $table);
+        $handler = $this->getHandler(true, $user);
         $post = [
             'id' => 'foo',
             'comment' => 'bar',

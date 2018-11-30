@@ -1280,7 +1280,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Given a location field, return the values relevant to VuFind.
      *
-     * This method is meant to be overriden in inheriting classes to
+     * This method is meant to be overridden in inheriting classes to
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
