@@ -546,12 +546,12 @@ class Form extends \Zend\Form\Form implements
             if ($type === 'select') {
                 $value = $this->translate($value);
             }
-            
+
             $label = $this->translate($el['label']);
 
             $params[$label] = ['type' => $type, 'value' => $value];
         }
-        
+
         return [$params, 'Email/form.phtml'];
     }
 
