@@ -91,12 +91,12 @@ class Form extends \Zend\Form\Form implements
     /**
      * Constructor
      *
-     * @param Zend\Config\Config $defaultConfig Default Feedback configuration
-     * @param YamlReader         $yamlReader    YAML reader
+     * @param YamlReader $yamlReader    YAML reader
+     * @param array      $defaultConfig Default Feedback configuration (optional)
      *
      * @throws \Exception
      */
-    public function __construct($defaultConfig, $yamlReader)
+    public function __construct(YamlReader $yamlReader, array $defaultConfig = null)
     {
         parent::__construct();
 
