@@ -176,8 +176,8 @@ class Form extends \Zend\Form\Form implements
     /**
      * Parse form configuration.
      *
-     * @param string     $formId     Form id
-     * @param array      $config     Configuration
+     * @param string $formId Form id
+     * @param array  $config Configuration
      *
      * @return array
      */
