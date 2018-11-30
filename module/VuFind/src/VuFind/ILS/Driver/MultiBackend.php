@@ -1132,7 +1132,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'placeILLRequest', compact($details))
+            && $this->methodSupported($driver, 'placeILLRequest', compact('details'))
         ) {
             // Patron is not stripped so that the correct library can be determined
             $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);

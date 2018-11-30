@@ -678,7 +678,7 @@ $recordRoutes = [
 
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
-    'Feedback' => ['form' => 'Form/[:id]'],
+    'Feedback' => ['feedback-form' => 'Form/[:id]'],
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
 ];
@@ -699,7 +699,7 @@ $staticRoutes = [
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Form', 'Feedback/Home', 'Help/Home',
+    'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',

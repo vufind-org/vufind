@@ -156,7 +156,7 @@ class Form extends \Zend\Form\Form implements
 
         $config = $config['forms'][$formId] ?? null;
         $localConfig = $localConfig['forms'][$formId] ?? null;
-        
+
         return $this->mergeLocalConfig($config, $localConfig);
     }
 
@@ -301,7 +301,7 @@ class Form extends \Zend\Form\Form implements
             'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
         ];
     }
-    
+
     /**
      * Build form.
      *
@@ -407,7 +407,7 @@ class Form extends \Zend\Form\Form implements
     /**
      * Check if form enabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -416,19 +416,19 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
-     * Check if the form should use Captcha validation
+     * Check if the form should use Captcha validation (if supported)
      *
-     * @return boolean
+     * @return bool
      */
     public function useCaptcha()
     {
-        return !empty($this->formConfig['useCaptcha']);
+        return (bool)($this->formConfig['useCaptcha'] ?? true);
     }
 
     /**
      * Check if form is available only for logged users.
      *
-     * @return boolean
+     * @return bool
      */
     public function showOnlyForLoggedUsers()
     {
