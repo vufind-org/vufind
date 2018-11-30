@@ -15,7 +15,8 @@
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
-#   emailSubject (string) Email subject (translation key).
+#   emailSubject (string) Email subject (translation key). (default = email_subject
+#                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
 #   recipient
@@ -66,7 +67,7 @@ forms:
     #  email: feedback@myuniversity.edu
 
     onlyForLoggedUsers: false
-    emailSubject: VuFind Feedback
+    #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
