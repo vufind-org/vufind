@@ -163,8 +163,8 @@ class CookieManager
      */
     public function proxySetCookie()
     {
-        // Special case: in test suite -- don't actually write headers!
-        return defined('VUFIND_PHPUNIT_RUNNING')
+        // Special case: in test suite or CLI -- don't actually write headers!
+        return defined('VUFIND_PHPUNIT_RUNNING') || 'cli' === PHP_SAPI
             ? true : call_user_func_array('setcookie', func_get_args());
     }
 
