@@ -79,6 +79,7 @@
 <?php ob_end_clean(); ?>
 
 <?php if ($filterCount > 0): ?>
+  <?php // Normal view ?>
   <div class="active-filters hidden-xs">
     <?php if (empty($isCollectionTab)): ?>
       <?php if ($advancedSearch): ?>
@@ -97,7 +98,7 @@
     </div>
     <div class="clearfix"></div>
   </div>
-  <?php // Mobile view ?>
+  <?php // Narrow view ?>
   <div class="active-filters visible-xs">
     <div class="filters-toggle-bar">
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
