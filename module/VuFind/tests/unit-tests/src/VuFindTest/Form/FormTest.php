@@ -172,14 +172,14 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
         $this->assertEquals(true, $form->isValid());
 
-        // Required field        
+        // Required field
         $form->setData(['email' => 'foo@bar.com', 'message' => null]);
         $this->assertEquals(false, $form->isValid());
         $form->setData(['email' => 'foo@bar.com', 'message' => '']);
         $this->assertEquals(false, $form->isValid());
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
         $this->assertEquals(true, $form->isValid());
-        
+
         // Email
         $form->setData(['email' => ' ',  'message' => 'message']);
         $this->assertEquals(false, $form->isValid());
