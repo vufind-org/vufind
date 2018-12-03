@@ -162,7 +162,7 @@ class SolrMarc extends SolrDefault
     }
 
 
-    public function getParallelEditionAsPureStrings() {
+    public function getUnlinkedParallelEditions() {
         $parallel_editions = [];
         foreach (["775", "776"] as $tag) {
             $fields = $this->getMarcRecord()->getFields($tag);
@@ -174,14 +174,15 @@ class SolrMarc extends SolrDefault
 
                 $parallel_edition = "";
                 $subfield_i = $field->getSubfield('i');
-                if (!empty($subfield_i))
-                    $parallel_edition = $subfield_i->getData() . ": ";
+                # If $i is not given we will not have proper key for processing
+                if (empty($subfield_i))
+                    continue;
                 $subfield_a = $field->getSubfield('a');
                 if (!empty($subfield_a))
                     $parallel_edition .= $subfield_a->getData() . ": ";
                 $further_subfields = $this->getSubfieldArray($field, ['t','d','g','o','u','z'], false);
                 $parallel_edition .= implode('.- ', $further_subfields);
-                array_push($parallel_editions, $parallel_edition);
+                array_push($parallel_editions, [ $subfield_i->getData() => $parallel_edition ]);
             }
         }
         return $parallel_editions;

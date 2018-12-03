@@ -334,8 +334,7 @@
       <? endif; ?>
 
       <? $parallel_ppns_and_type = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
-      <? $parallel_editions_as_string = $this->driver->tryMethod('getParallelEditionAsPureStrings'); ?>
-      <? if (!empty($parallel_ppns_and_type) || !empty($parallel_editions_as_string)): ?>
+      <? if (!empty($parallel_ppns_and_type)): ?>
       <tr>
         <th><?=$this->transEsc('Parallel Edition')?>: </th>
         <td>
@@ -343,11 +342,21 @@
             <a href="/Record/<?=$parallel_ppn_and_type[0]?>" class="fulltext" target="new"><i class="fa fa-link"></i> <?=$this->transEsc($parallel_ppn_and_type[1])?></a>
             <br/>
           <? endforeach; ?>
-          <?=implode("<br/>", $parallel_editions_as_string);?>
         </td>
       </tr>
       <? endif; ?>
-
+      <? $parallel_editions = $this->driver->tryMethod('getUnlinkedParallelEditions'); ?>
+      <? if (!empty($parallel_editions)): ?>
+<? var_dump($parallel_editions) ?>
+           <? foreach ($parallel_editions as $parallel_edition): ?>
+             <? foreach ($parallel_edition as $heading => $description): ?>
+               <tr>
+                 <th><?=$this->transEsc($heading) . ':';?> </th>
+                 <td><?=$description;?></td>
+               </tr>
+             <? endforeach; ?>
+           <? endforeach; ?>
+      <? endif; ?>
       <? $recordLinks = $this->driver->getAllRecordLinks(); ?>
       <? if(!empty($recordLinks)): ?>
         <tr>
