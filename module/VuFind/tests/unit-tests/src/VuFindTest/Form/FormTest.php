@@ -167,5 +167,33 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
+
+        // Validators
+        $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
+        $this->assertEquals(true, $form->isValid());
+
+        // Required field        
+        $form->setData(['email' => 'foo@bar.com', 'message' => null]);
+        $this->assertEquals(false, $form->isValid());
+        $form->setData(['email' => 'foo@bar.com', 'message' => '']);
+        $this->assertEquals(false, $form->isValid());
+        $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
+        $this->assertEquals(true, $form->isValid());
+        
+        // Email
+        $form->setData(['email' => ' ',  'message' => 'message']);
+        $this->assertEquals(false, $form->isValid());
+
+        $form->setData(['email' => 'foo',  'message' => 'message']);
+        $this->assertEquals(false, $form->isValid());
+
+        $form->setData(['email' => 'foo@', 'message' => 'message']);
+        $this->assertEquals(false, $form->isValid());
+
+        $form->setData(['email' => 'foo@bar', 'message' => 'message']);
+        $this->assertEquals(false, $form->isValid());
+
+        $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
+        $this->assertEquals(true, $form->isValid());
     }
 }
