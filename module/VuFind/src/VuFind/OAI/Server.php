@@ -174,6 +174,13 @@ class Server
     protected $setQueries = [];
 
     /**
+     * Default query used when a set is not specified
+     *
+     * @var string
+     */
+    protected $defaultQuery = '';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -508,6 +515,11 @@ class Server
         if (isset($config->OAI->set_query)) {
             $this->setQueries = $config->OAI->set_query->toArray();
         }
+
+        // Use a default query, if configured:
+        if (isset($config->OAI->default_query)) {
+            $this->defaultQuery = $config->OAI->default_query;
+        }
     }
 
     /**
@@ -758,6 +770,10 @@ class Server
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
                 );
             }
+        } elseif ($this->defaultQuery) {
+            // Put parentheses around the query so that it does not get
+            // parsed as a simple field:value filter.
+            $params->addFilter('(' . $this->defaultQuery . ')');
         }
 
         // Perform a Solr search:
@@ -822,6 +838,13 @@ class Server
             && !empty($params['set'])
         ) {
             throw new \Exception('noSetHierarchy:Sets not supported');
+        }
+
+        // Validate set parameter:
+        if (!empty($params['set']) && null === $this->setField
+            && !isset($this->setQueries[$params['set']])
+        ) {
+            throw new \Exception('badArgument:Invalid set specified');
         }
 
         if (!isset($params['metadataPrefix'])) {
