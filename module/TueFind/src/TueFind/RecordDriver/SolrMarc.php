@@ -162,6 +162,32 @@ class SolrMarc extends SolrDefault
     }
 
 
+    public function getParallelEditionAsPureStrings() {
+        $parallel_editions = [];
+        foreach (["775", "776"] as $tag) {
+            $fields = $this->getMarcRecord()->getFields($tag);
+            foreach ($fields as $field) {
+                # If $w exists this is handled by getParallelEditionPPNs
+                $subfield_w = $field->getSubfield('w');
+                if (!empty($subfield_w))
+                    continue;
+
+                $parallel_edition = "";
+                $subfield_i = $field->getSubfield('i');
+                if (!empty($subfield_i))
+                    $parallel_edition = $subfield_i->getData() . ": ";
+                $subfield_a = $field->getSubfield('a');
+                if (!empty($subfield_a))
+                    $parallel_edition .= $subfield_a->getData() . ": ";
+                $further_subfields = $this->getSubfieldArray($field, ['t','d','g','o','u','z'], false);
+                $parallel_edition .= implode('.- ', $further_subfields);
+                array_push($parallel_editions, $parallel_edition);
+            }
+        }
+        return $parallel_editions;
+    }
+
+
     protected function getFirstBSZPPNFromSubfieldW(&$field, &$ppn) {
         $ppn = [];
         $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);

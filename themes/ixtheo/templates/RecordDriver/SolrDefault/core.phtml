@@ -334,7 +334,8 @@
       <? endif; ?>
 
       <? $parallel_ppns_and_type = $this->driver->tryMethod('getParallelEditionPPNs'); ?>
-      <? if (!empty($parallel_ppns_and_type)): ?>
+      <? $parallel_editions_as_string = $this->driver->tryMethod('getParallelEditionAsPureStrings'); ?>
+      <? if (!empty($parallel_ppns_and_type) || !empty($parallel_editions_as_string)): ?>
       <tr>
         <th><?=$this->transEsc('Parallel Edition')?>: </th>
         <td>
@@ -342,6 +343,7 @@
             <a href="/Record/<?=$parallel_ppn_and_type[0]?>" class="fulltext" target="new"><i class="fa fa-link"></i> <?=$this->transEsc($parallel_ppn_and_type[1])?></a>
             <br/>
           <? endforeach; ?>
+          <?=implode("<br/>", $parallel_editions_as_string);?>
         </td>
       </tr>
       <? endif; ?>
