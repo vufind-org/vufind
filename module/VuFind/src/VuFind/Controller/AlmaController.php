@@ -83,7 +83,7 @@ class AlmaController extends AbstractBase
     protected $userTable;
 
     /**
-     * Alma Controler constructor.
+     * Alma Controller constructor.
      *
      * @param ServiceLocatorInterface $sm The ServiceLocatorInterface
      */
@@ -429,7 +429,7 @@ class AlmaController extends AbstractBase
     /**
      * Helper function to check access permissions defined in permissions.ini.
      * The function validateAccessPermission() will throw an exception that can be
-     * catched when the permission is denied.
+     * caught when the permission is denied.
      *
      * @param string $accessPermission The permission name from permissions.ini that
      *                                 should be checked.

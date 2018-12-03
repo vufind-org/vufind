@@ -32,7 +32,6 @@ use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Log\LoggerInterface;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -105,13 +104,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @var string
      */
     protected $db;
-
-    /**
-     * Logger Status
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
 
     /**
      * Date converter object
@@ -1205,7 +1197,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ID: " . $rsp->{'borrowernumber'});
         $this->debug("Chrgs: " . $rsp->{'charges'});
 
-        foreach ($rsp->{'fines'}->{'fine'} as $fine) {
+        foreach ($rsp->{'fines'}->{'fine'} ?? [] as $fine) {
             $fineLst[] = [
                 'amount'     => 100 * $this->getField($fine->{'amount'}),
                 // FIXME: require accountlines.itemnumber -> issues.issuedate data
@@ -1244,7 +1236,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
-        foreach ($rsp->{'holds'}->{'hold'} as $hold) {
+        foreach ($rsp->{'holds'}->{'hold'} ?? [] as $hold) {
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
                 'location' => $this->getField($hold->{'branchname'}),
@@ -1511,7 +1503,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
-        foreach ($rsp->{'loans'}->{'loan'} as $loan) {
+        foreach ($rsp->{'loans'}->{'loan'} ?? [] as $loan) {
             $start = microtime(true);
             $rsp2 = $this->makeIlsdiRequest(
                 "GetServices", [
@@ -1522,7 +1514,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $end = microtime(true);
             $requestTimes[] = $end - $start;
             $renewable = false;
-            foreach ($rsp2->{'AvailableFor'} as $service) {
+            foreach ($rsp2->{'AvailableFor'} ?? [] as $service) {
                 if ($this->getField((string)$service) == "loan renewal") {
                     $renewable = true;
                 }
@@ -1848,12 +1840,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $bindParams[':dept'] = $dept;
         }
         $reserveWhere = empty($reserveWhere) ?
-            "" : "where (" . implode(' AND ', $reserveWhere) . ")";
+            "" : "HAVING (" . implode(' AND ', $reserveWhere) . ")";
 
         $sql = "SELECT biblionumber AS `BIB_ID`,
-                       courses.course_id AS COURSE_ID,
-                       course_instructors.borrowernumber as INSTRUCTOR_ID,
-                       courses.department AS DEPARTMENT_ID
+                       courses.course_id AS `COURSE_ID`,
+                       course_instructors.borrowernumber as `INSTRUCTOR_ID`,
+                       courses.department AS `DEPARTMENT_ID`
                 FROM courses
                 INNER JOIN `authorised_values`
                    ON courses.department = `authorised_values`.`authorised_value`
@@ -1862,11 +1854,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 INNER JOIN `items` USING (itemnumber)
                 INNER JOIN `course_instructors` USING (course_id)
                 INNER JOIN `borrowers` USING (borrowernumber)
-                WHERE courses.enabled = 'yes'" . $reserveWhere;
+                WHERE courses.enabled = 'yes' " . $reserveWhere;
 
         try {
-            $sqlStmt = $this->db->prepare($sql, $bindParams);
-            $sqlStmt->execute();
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute($bindParams);
             $result = [];
             foreach ($sqlStmt->fetchAll() as $rowItem) {
                 $result[] = $rowItem;

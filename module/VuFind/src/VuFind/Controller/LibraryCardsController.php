@@ -29,6 +29,8 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\ILS as ILSException;
+
 /**
  * Controller for the library card functionality.
  *
@@ -131,7 +133,6 @@ class LibraryCardsController extends AbstractBase
                 'cardName' => $cardName,
                 'target' => $target ? $target : $defaultTarget,
                 'username' => $username,
-                'password' => $card->cat_password,
                 'targets' => $targets,
                 'defaultTarget' => $defaultTarget
             ]
@@ -190,16 +191,25 @@ class LibraryCardsController extends AbstractBase
         }
 
         $cardID = $this->params()->fromQuery('cardID');
+        if (null === $cardID) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
         $user->activateLibraryCard($cardID);
 
         // Connect to the ILS and check that the credentials are correct:
-        $catalog = $this->getILS();
-        $patron = $catalog->patronLogin(
-            $user->cat_username, $user->getCatPassword()
-        );
-        if (!$patron) {
+        try {
+            $catalog = $this->getILS();
+            $patron = $catalog->patronLogin(
+                $user->cat_username,
+                $user->getCatPassword()
+            );
+            if (!$patron) {
+                $this->flashMessenger()
+                    ->addMessage('authentication_error_invalid', 'error');
+            }
+        } catch (ILSException $e) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_invalid', 'error');
+                ->addMessage('authentication_error_technical', 'error');
         }
 
         $this->setFollowupUrlToReferer();
@@ -224,8 +234,9 @@ class LibraryCardsController extends AbstractBase
         $target = $this->params()->fromPost('target', '');
         $username = $this->params()->fromPost('username', '');
         $password = $this->params()->fromPost('password', '');
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
 
-        if (!$username || !$password) {
+        if (!$username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_blank', 'error');
             return false;
@@ -235,16 +246,20 @@ class LibraryCardsController extends AbstractBase
             $username = "$target.$username";
         }
 
-        // Connect to the ILS and check that the credentials are correct:
-        $catalog = $this->getILS();
-        $patron = $catalog->patronLogin($username, $password);
-        if (!$patron) {
-            $this->flashMessenger()
-                ->addMessage('authentication_error_invalid', 'error');
-            return false;
+        // Check the credentials if the username is changed or a new password is
+        // entered:
+        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+        if ($card->cat_username !== $username || trim($password)) {
+            // Connect to the ILS and check that the credentials are correct:
+            $catalog = $this->getILS();
+            $patron = $catalog->patronLogin($username, $password);
+            if (!$patron) {
+                $this->flashMessenger()
+                    ->addMessage('authentication_error_invalid', 'error');
+                return false;
+            }
         }
 
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         try {
             $user->saveLibraryCard(
                 $id == 'NEW' ? null : $id, $cardName, $username, $password

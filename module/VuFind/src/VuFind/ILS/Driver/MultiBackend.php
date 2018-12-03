@@ -220,7 +220,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 } catch (ILSException $e) {
                     $statuses = array_map(
                         function ($id) {
-                            return ['id' => $id, 'error' => 'An error has occurred'];
+                            return [
+                                ['id' => $id, 'error' => 'An error has occurred']
+                            ];
                         },
                         $localIds
                     );
@@ -1130,7 +1132,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'placeILLRequest', compact($details))
+            && $this->methodSupported($driver, 'placeILLRequest', compact('details'))
         ) {
             // Patron is not stripped so that the correct library can be determined
             $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);

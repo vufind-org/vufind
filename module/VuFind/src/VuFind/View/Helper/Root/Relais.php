@@ -86,9 +86,10 @@ class Relais extends \Zend\View\Helper\AbstractHelper
         // Assemble and return URL:
         $separator = strstr($this->loginUrl, '?') === false ? '?' : '&';
         $url = $this->loginUrl . $separator . 'query='
-            . ($isbn ? 'isbn%3D' . urlencode($isbn) : 'ti%3D' . urlencode($title));
+            . ($isbn ? 'isbn%3D' . rawurlencode($isbn) : 'ti%3D'
+            . rawurlencode($title));
         if ($mainAuthor) {
-            $url .= '%20and%20au%3D' . urlencode($mainAuthor);
+            $url .= '%20and%20au%3D' . rawurlencode($mainAuthor);
         }
         return $url;
     }

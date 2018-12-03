@@ -82,6 +82,11 @@ footer ul { padding-left: 30px; }
 [id^=list].list-group .col-sm-9 { margin: 0; }
 
 /* --- Channels --- */
+.channel {
+  max-width: 96%;
+  margin-left: 2%;
+  margin-right: 2%;
+}
 .channel,
 .channel-title.no-results { margin-bottom: 2rem; }
 .channel-title { margin-top: 1rem; }
@@ -149,7 +154,6 @@ ul.random.image li img { margin: 0 auto; }
   .facet .badge a { color: #fff; }
 
   .facet.facetOR { padding-left: 1rem; }
-  .facet.excludable { padding-right: 0; }
 }
 .slider-container .slider-handle {
   background: $brand-primary;
@@ -164,5 +168,8 @@ ul.random.image li img { margin: 0 auto; }
   color: #fff;
   &:hover { color: $brand-danger; }
 }
-.jstree-facet .facet { padding: 0; }
+.jstree-facet .facet {
+  padding: 0;
+  padding-right: 10px;
+}
 .jstree-node.active { background-color: $active-orange; }

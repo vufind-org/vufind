@@ -3,12 +3,13 @@
 @border-radius-large: 0; // modal
 
 /* ------ Common element changes ------ */
-h1, h2, h3, h4 {
-  margin: 0;
-  margin-bottom: 1rem;
-
-  .help-block & { margin: 0; }
+.help-block {
+  h1,
+  h2,
+  h3,
+  h4 { margin: 0; }
 }
+
 .highlight,
 mark { background-color: @highlighter-color; }
 table { font-size: @reduced-font-size; }
@@ -86,8 +87,8 @@ select.form-control {
 .alert-success,
 .alert-success:hover {
   color: @dark-green;
-  background-color: @light-green;
-  a { color: @white; }
+  background-color: @washed-green;
+  a { color: @green; }
 }
 .alert-danger,
 .alert-danger:hover {
