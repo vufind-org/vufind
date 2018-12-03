@@ -1104,15 +1104,22 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
+     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     *
      * @return array
      */
-    public function getCheckboxFacets()
+    public function getCheckboxFacets(array $whitelist = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
+                // If the current filter is not on the whitelist, skip it (but
+                // accept everything if the whitelist is empty).
+                if (!empty($whitelist) && !in_array($facet['filter'], $whitelist)) {
+                    continue;
+                }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
                 // Is this checkbox always visible, even if non-selected on the
                 // "no results" screen?  By default, no (may be overridden by
