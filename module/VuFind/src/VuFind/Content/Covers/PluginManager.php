@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'amazon' => 'VuFind\Content\Covers\Amazon',
         'booksite' => 'VuFind\Content\Covers\Booksite',
         'buchhandel' => 'VuFind\Content\Covers\Buchhandel',
+        'browzine' => 'VuFind\Content\Covers\BrowZine',
         'contentcafe' => 'VuFind\Content\Covers\ContentCafe',
         'google' => 'VuFind\Content\Covers\Google',
         'librarything' => 'VuFind\Content\Covers\LibraryThing',
@@ -65,6 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Content\Covers\Amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
         'VuFind\Content\Covers\Booksite' =>
             'VuFind\Content\Covers\Factory::getBooksite',
+        'VuFind\Content\Covers\BrowZine' => 'VuFind\Content\Covers\BrowZineFactory',
         'VuFind\Content\Covers\Buchhandel' =>
             'VuFind\Content\Covers\Factory::getBuchhandel',
         'VuFind\Content\Covers\ContentCafe' =>
