@@ -49,6 +49,8 @@ class BrowZine extends \VuFind\Content\AbstractCover
 
     /**
      * Constructor
+     *
+     * @param Connector $connector BrowZine connector object
      */
     public function __construct(Connector $connector)
     {
