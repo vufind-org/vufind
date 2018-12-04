@@ -6,7 +6,7 @@ use Zend\I18n\Translator\TextDomain;
 use Zend\Stdlib\Glob;
 use Zend\Uri\Uri;
 
-class ClassicLoader implements LoaderInterface
+class DirectoryLoader implements LoaderInterface
 {
     /**
      * @var string
@@ -14,14 +14,20 @@ class ClassicLoader implements LoaderInterface
     protected $dir;
 
     /**
+     * @var string
+     */
+    protected $ext;
+
+    /**
      * @var LoaderInterface
      */
     protected $loader;
 
-    public function __construct(LoaderInterface $loader, string $dir)
+    public function __construct(LoaderInterface $loader, string $dir, string $ext)
     {
         $this->loader = $loader;
         $this->dir = realpath($dir);
+        $this->ext = "{{$ext}}";
     }
 
     /**
@@ -35,11 +41,9 @@ class ClassicLoader implements LoaderInterface
         }
 
         list ($locale, $textDomain) = [$uri->getHost(), substr($uri->getPath(), 1)];
-        $pattern = $textDomain === 'default' ? "$this->dir/$locale.ini"
-            : "$this->dir/$textDomain/$locale.ini";
-
-        foreach (Glob::glob($pattern) as $file) {
-            yield from $this->loader->load("file://$file");
+        $dir = $textDomain === 'default' ? "$this->dir" : "$this->dir/$textDomain";
+        foreach (Glob::glob("$dir/$locale.$this->ext", Glob::GLOB_BRACE) as $path) {
+            yield from $this->loader->load("file://$path");
         }
     }
 }

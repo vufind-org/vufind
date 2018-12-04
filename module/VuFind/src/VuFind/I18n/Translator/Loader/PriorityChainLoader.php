@@ -18,9 +18,10 @@ class PriorityChainLoader implements LoaderInterface
         $this->filterChain = new FilterChain();
     }
 
+
     public function attach(LoaderInterface $loader, int $prio)
     {
-        $this->filterChain->attach($this->toFilterCallback($loader), $prio);
+        $this->filterChain->attach($this->toCallback($loader), $prio);
     }
 
     /**
@@ -32,7 +33,7 @@ class PriorityChainLoader implements LoaderInterface
         yield from $this->filterChain->run($this, compact('file'));
     }
 
-    protected function toFilterCallback(LoaderInterface $loader): \Closure
+    protected function toCallback(LoaderInterface $loader): \Closure
     {
         return function ($self, array $argv, FilterIterator $tail) use ($loader) : \Generator {
             yield from $loader->load(current($argv));

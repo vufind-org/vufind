@@ -673,28 +673,24 @@ $config = [
             ],
             'core' => [
                 'prio' => 9000000,
-                'path' => APPLICATION_PATH . '/languages',
-                'type' => 'VuFind\I18n\Translator\Loader\ClassicLoader'
+                'type' => 'VuFind\I18n\Translator\Loader\DirectoryLoader',
+                'args' => [
+                    'dir' => APPLICATION_PATH . '/languages',
+                    'ext' => 'ini'
+                ]
             ],
             'local' => [
                 'prio' => 8000000,
-                'path' => LOCAL_OVERRIDE_DIR . '/languages',
-                'type' => 'VuFind\I18n\Translator\Loader\ClassicLoader'
+                'type' => 'VuFind\I18n\Translator\Loader\DirectoryLoader',
+                'args' => [
+                    'dir' => LOCAL_OVERRIDE_DIR . '/languages',
+                    'ext' => 'ini,yaml'
+                ]
             ],
-            'theme' => [
-                'add' => false,
-                'prio' => 7000000,
-                'prioInc' => 10000,
-                'type' => [
-                    '*' => 'VuFind\I18n\Translator\Loader\ClassicLoader'
-                ],
-            ],
-            'ini' => [
-                'prio' => 1000000,
+            'xini' => [
                 'type' => 'VuFind\I18n\Translator\Loader\ExtendedIniLoader',
             ],
             'yaml' => [
-                'prio' => 1000000,
                 'type' => 'VuFind\I18n\Translator\Loader\YamlLoader',
             ],
         ]

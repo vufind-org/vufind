@@ -12,18 +12,18 @@ class LoaderFactory implements FactoryInterface
     {
         $proxyConf = $container->get('ProxyManager\Configuration');
         return (new Factory($proxyConf))->createProxy(LoaderInterface::class,
-            function (& $resolver, $proxy, $method, $params, & $initializer) use ($container) {
-                list ($resolver, $initializer) = [$this->create($container), null];
+            function (& $loader, $proxy, $method, $params, & $initializer) use ($container) {
+                list ($loader, $initializer) = [$this->create($container), null];
             });
     }
 
     protected function create(ContainerInterface $container): LoaderInterface
     {
         $chainLoader = new PriorityChainLoader();
-        $manager = $container->get(PluginManager::class);
+        $loaderManager = $container->get(PluginManager::class);
         foreach ($container->get(LoaderConfig::class) as $config) {
-            $loader = $manager->build($config['type'], $config);
-            $chainLoader->attach($loader, $config['prio']);
+            $loader = $loaderManager->build($config['type'], $config['args'] ?? []);
+            $chainLoader->attach($loader, $config['prio'] ?? 0);
         }
         return $chainLoader;
     }

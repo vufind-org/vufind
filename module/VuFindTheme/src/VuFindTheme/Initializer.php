@@ -28,7 +28,10 @@
 
 namespace VuFindTheme;
 
+use VuFind\Cover\Loader;
+use VuFind\I18n\Translator\Loader\DirectoryLoader;
 use VuFind\I18n\Translator\Loader\LoaderConfig;
+use VuFind\I18n\Translator\Loader\MainLoaderConfig;
 use VuFind\I18n\Translator\Resolver\ResolverConfigList;
 use Zend\Config\Config;
 use Zend\Console\Console;
@@ -415,12 +418,14 @@ class Initializer
         /** @var LoaderConfig $config */
         $config = $this->serviceManager->get(LoaderConfig::class);
         foreach (array_keys($themes) as $index => $theme) {
-            $path = "$baseDir/$theme/languages";
-            $config->add("theme", function ($options) use ($index, $path, $theme) {
-                $prio = $options['prio'] + $index * $options['prioInc'];
-                $type = $options['type'][$theme] ?? $options['type']['*'];
-                return compact('path', 'prio', 'type') + $options;
-            });
+            $config["theme_$theme"] = [
+                'prio' => 7000000 + $index * 100000,
+                'type' => DirectoryLoader::class,
+                'args' => [
+                    'dir' => "$baseDir/themes/$theme/languages",
+                    'ext' => 'ini,yaml'
+                ]
+            ];
         }
     }
 }
