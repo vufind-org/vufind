@@ -49,13 +49,13 @@ class FormTest extends \VuFindTest\Unit\TestCase
     public function testDefaultsWithoutConfiguration()
     {
         $form = new Form(new YamlReader());
-        $this->assertEquals(true, $form->isEnabled());
-        $this->assertEquals(true, $form->useCaptcha());
-        $this->assertEquals(false, $form->showOnlyForLoggedUsers());
+        $this->assertTrue($form->isEnabled());
+        $this->assertTrue($form->useCaptcha());
+        $this->assertFalse($form->showOnlyForLoggedUsers());
         $this->assertEquals([], $form->getElements());
         $this->assertEquals([null, null], $form->getRecipient());
-        $this->assertEquals(null, $form->getTitle());
-        $this->assertEquals(null, $form->getHelp());
+        $this->assertNull($form->getTitle());
+        $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
             'Thank you for your feedback.', $form->getSubmitResponse()
@@ -106,9 +106,9 @@ class FormTest extends \VuFindTest\Unit\TestCase
     {
         $form = new Form(new YamlReader());
         $form->setFormId('FeedbackSite');
-        $this->assertEquals(true, $form->isEnabled());
-        $this->assertEquals(true, $form->useCaptcha());
-        $this->assertEquals(false, $form->showOnlyForLoggedUsers());
+        $this->assertTrue($form->isEnabled());
+        $this->assertTrue($form->useCaptcha());
+        $this->assertFalse($form->showOnlyForLoggedUsers());
         $this->assertEquals(
             [
                 [
@@ -142,7 +142,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([null, null], $form->getRecipient());
         $this->assertEquals('Send us your feedback!', $form->getTitle());
-        $this->assertEquals(null, $form->getHelp());
+        $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
             'Thank you for your feedback.', $form->getSubmitResponse()
@@ -168,32 +168,24 @@ class FormTest extends \VuFindTest\Unit\TestCase
             'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
 
-        // Validators
-        $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
-        $this->assertEquals(true, $form->isValid());
-
-        // Required field
+        // Validators: Required field problems
         $form->setData(['email' => 'foo@bar.com', 'message' => null]);
-        $this->assertEquals(false, $form->isValid());
+        $this->assertFalse($form->isValid());
         $form->setData(['email' => 'foo@bar.com', 'message' => '']);
-        $this->assertEquals(false, $form->isValid());
-        $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
-        $this->assertEquals(true, $form->isValid());
+        $this->assertFalse($form->isValid());
 
-        // Email
+        // Validators: Email problems
         $form->setData(['email' => ' ',  'message' => 'message']);
-        $this->assertEquals(false, $form->isValid());
-
+        $this->assertFalse($form->isValid());
         $form->setData(['email' => 'foo',  'message' => 'message']);
-        $this->assertEquals(false, $form->isValid());
-
+        $this->assertFalse($form->isValid());
         $form->setData(['email' => 'foo@', 'message' => 'message']);
-        $this->assertEquals(false, $form->isValid());
-
+        $this->assertFalse($form->isValid());
         $form->setData(['email' => 'foo@bar', 'message' => 'message']);
-        $this->assertEquals(false, $form->isValid());
+        $this->assertFalse($form->isValid());
 
+        // Validators: Good data
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
-        $this->assertEquals(true, $form->isValid());
+        $this->assertTrue($form->isValid());
     }
 }
