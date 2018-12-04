@@ -161,26 +161,6 @@ class SolrMarc extends SolrDefault
         return $parallel_ppns_and_type;
     }
 
-    protected function normalizeGermanParallelDescriptions($german_term) {
-       $translations = [ "Äquivalent" => "Equivalent",
-                         "Digitale Übertragung von" => "Digital Reproduction of",
-                         "Digitale Übertragung" => "Digital Reproduction of",
-                         "Faksimile von" => "Facsimile of",
-                         "Faksimile" => "Facsimile",
-                         "Bestanderhaltungsfaksimile von" => "Preservation Facsimile of",
-                         "Bestanderhaltungsfaksimile" => "Preservation Facsimile",
-                         "Nachdruck von" => "Reprint of",
-                         "Nachgedruckt als" => "Reprinted as",
-                         "Reproduktion von" => "Reproduction of",
-                         "Reproduziert als" => "Reproduced as",
-                         "Elektronische Reproduktion von" => "Electronic Reproduction of",
-                         "Elektronische Reproduktion" => "Electronic Reproduction"
-                        ];
-        if (array_key_exists($german_term, $translations))
-            return $translations[$german_term];
-        return $german_term;
-    }
-
 
     public function getUnlinkedParallelEditions() {
         $parallel_editions = [];
@@ -202,7 +182,7 @@ class SolrMarc extends SolrDefault
                     $parallel_edition .= $subfield_a->getData() . ": ";
                 $further_subfields = $this->getSubfieldArray($field, ['t','d','g','o','u','z'], false);
                 $parallel_edition .= implode('.- ', $further_subfields);
-                $description = $this->normalizeGermanParallelDescriptions($subfield_i->getData());
+                $description = \TueFind\Utility::normalizeGermanParallelDescriptions($subfield_i->getData());
                 array_push($parallel_editions, [ $description => $parallel_edition ]);
             }
         }
