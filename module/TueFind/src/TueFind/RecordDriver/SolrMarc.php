@@ -180,8 +180,8 @@ class SolrMarc extends SolrDefault
                 $subfield_a = $field->getSubfield('a');
                 if (!empty($subfield_a))
                     $parallel_edition .= $subfield_a->getData() . ": ";
-                $further_subfields = $this->getSubfieldArray($field, ['t','d','g','o','u','z'], false);
-                $parallel_edition .= implode('.- ', $further_subfields);
+                $further_subfields = $this->getSubfieldArray($field, ['t','d','h','g','o','u','z'], false);
+                $parallel_edition .= implode('. - ', $further_subfields);
                 $description = \TueFind\Utility::normalizeGermanParallelDescriptions($subfield_i->getData());
                 array_push($parallel_editions, [ $description => $parallel_edition ]);
             }
