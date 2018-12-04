@@ -232,27 +232,41 @@ class DueDateReminders extends AbstractService
             $this->collectScriptArguments($arguments);
         }
 
-        $users = $this->userTable->getUsersWithDueDateReminders();
-        $this->msg('Processing ' . count($users) . ' users');
+        try {
+            $users = $this->userTable->getUsersWithDueDateReminders();
+            $this->msg('Processing ' . count($users) . ' users');
 
-        foreach ($users as $user) {
-            $results = $this->getReminders($user);
-            $errors = $results['errors'];
-            $remindLoans = $results['remindLoans'];
-            $remindCnt = count($remindLoans);
-            $errorCnt = count($errors);
-            if ($remindCnt || $errorCnt) {
-                $this->msg(
-                    "$remindCnt reminders and $errorCnt errors to send for user"
-                    . " {$user->username} (id {$user->id})"
-                );
-                $this->sendReminder($user, $remindLoans, $errors);
-            } else {
-                $this->msg(
-                    "No loans to remind for user {$user->username} (id {$user->id})"
-                );
+            foreach ($users as $user) {
+                $results = $this->getReminders($user);
+                $errors = $results['errors'];
+                $remindLoans = $results['remindLoans'];
+                $remindCnt = count($remindLoans);
+                $errorCnt = count($errors);
+                if ($remindCnt || $errorCnt) {
+                    $this->msg(
+                        "$remindCnt reminders and $errorCnt errors to send for user"
+                        . " {$user->username} (id {$user->id})"
+                    );
+                    $this->sendReminder($user, $remindLoans, $errors);
+                } else {
+                    $this->msg(
+                        "No loans to remind for user {$user->username}"
+                        . " (id {$user->id})"
+                    );
+                }
             }
+            $this->msg('Completed processing users');
+        } catch (\Exception $e) {
+            $this->err(
+                "Exception: " . $e->getMessage(),
+                'Exception occurred'
+            );
+            while ($e = $e->getPrevious()) {
+                $this->err("  Previous exception: " . $e->getMessage());
+            }
+            exit(1);
         }
+
         return true;
     }
 
@@ -305,8 +319,9 @@ class DueDateReminders extends AbstractService
             } catch (\Exception $e) {
                 $this->err(
                     "Catalog login error for user {$user->username}"
-                    . " (id {$user->id}), card {$card->cat_username}"
-                    . " (id {$card->id}): " . $e->getMessage()
+                        . " (id {$user->id}), card {$card->cat_username}"
+                        . " (id {$card->id}): " . $e->getMessage(),
+                    'Catalog login error for a user'
                 );
                 continue;
             }
@@ -337,9 +352,10 @@ class DueDateReminders extends AbstractService
             } catch (\Exception $e) {
                 $this->err(
                     "Exception trying to get loans for user {$user->username}"
-                    . " (id {$user->id}), card {$card->cat_username}"
-                    . " (id {$card->id}): "
-                    . $e->getMessage()
+                        . " (id {$user->id}), card {$card->cat_username}"
+                        . " (id {$card->id}): "
+                        . $e->getMessage(),
+                    'Exception trying to get loans for a user'
                 );
                 continue;
             }
@@ -421,7 +437,8 @@ class DueDateReminders extends AbstractService
             if (!$viewPath = $this->resolveViewPath($userInstitution)) {
                 $this->err(
                     "Could not resolve view path for user {$user->username}"
-                    . " (id {$user->id})"
+                        . " (id {$user->id})",
+                    'Could not resolve view path for a user'
                 );
                 return false;
             } else {
@@ -512,7 +529,8 @@ class DueDateReminders extends AbstractService
         } catch (\Exception $e) {
             $this->err(
                 "Failed to send due date reminders to user {$user->username} "
-                . " (id {$user->id})"
+                    . " (id {$user->id})",
+                'Failed to send due date reminders to a user'
             );
             $this->err('   ' . $e->getMessage());
             return false;

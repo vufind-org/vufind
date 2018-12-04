@@ -157,32 +157,36 @@ abstract class AbstractService implements ConsoleServiceInterface
     /**
      * Output a message with a timestamp
      *
-     * @param string  $msg   Message
-     * @param boolean $error Log as en error message?
+     * @param string $msg Message
      *
      * @return void
      */
-    protected function msg($msg, $error = false)
+    protected function msg($msg)
     {
         $msg = '[' . getmypid() . "] $msg";
-        if ($error) {
-            $this->errLogger->err($msg);
-            $this->logger->err($msg);
-        } else {
-            $this->logger->info($msg);
-        }
+        $this->logger->info($msg);
     }
 
     /**
      * Output an error message with a timestamp
      *
-     * @param string $msg Message
+     * @param string $msg          Message
+     * @param string $publishedMsg Published version of the error message. Must
+     * exclude any privacy-related information. Use '=' for same as $msg.
      *
      * @return void
      */
-    protected function err($msg)
+    protected function err($msg, $publishedMsg = '')
     {
-        $this->msg($msg, true);
+        if ($publishedMsg) {
+            if ('=' === $publishedMsg) {
+                $publishedMsg = $msg;
+            }
+            $publishedMsg = '[' . getmypid() . "] $publishedMsg";
+            $this->errLogger->err($publishedMsg);
+        }
+        $msg = '[' . getmypid() . "] $msg";
+        $this->logger->err($msg);
     }
 
     /**
@@ -222,7 +226,7 @@ abstract class AbstractService implements ConsoleServiceInterface
 
         // Assume that view is functional if index.php exists.
         if (!is_file("$path/public/index.php")) {
-            $this->err("Could not resolve view path for $institution/$view");
+            $this->err("Could not resolve view path for $institution/$view", '=');
             return false;
         }
 

@@ -85,19 +85,30 @@ class ExpireUsers extends AbstractService
             return false;
         }
 
-        $users = $this->getExpiredUsers($arguments[0]);
-        $count = 0;
+        try {
+            $users = $this->getExpiredUsers($arguments[0]);
+            $count = 0;
 
-        foreach ($users as $user) {
-            $this->msg("Removing user: " . $user->username);
-            $user->delete($this->removeComments);
-            $count++;
-        }
+            foreach ($users as $user) {
+                $this->msg("Removing user: " . $user->username);
+                $user->delete($this->removeComments);
+                $count++;
+            }
 
-        if ($count === 0) {
-            $this->msg('No expired users to remove.');
-        } else {
-            $this->msg("$count expired users removed.");
+            if ($count === 0) {
+                $this->msg('No expired users to remove.');
+            } else {
+                $this->msg("$count expired users removed.");
+            }
+        } catch (\Exception $e) {
+            $this->err(
+                "Exception: " . $e->getMessage(),
+                'Exception occurred'
+            );
+            while ($e = $e->getPrevious()) {
+                $this->err("  Previous exception: " . $e->getMessage());
+            }
+            exit(1);
         }
 
         return true;

@@ -196,24 +196,37 @@ class AccountExpirationReminders extends AbstractService
             return false;
         }
 
-        $users = $this->getUsersToRemind(
-            $this->expirationDays, $this->remindDaysBefore, $this->reminderFrequency
-        );
-        $count = 0;
-
-        foreach ($users as $user) {
-            $this->msg(
-                "Sending expiration reminder for user {$user->username}"
-                . " (id {$user->id})"
+        try {
+            $users = $this->getUsersToRemind(
+                $this->expirationDays,
+                $this->remindDaysBefore,
+                $this->reminderFrequency
             );
-            $this->sendAccountExpirationReminder($user, $this->expirationDays);
-            $count++;
-        }
+            $count = 0;
 
-        if ($count === 0) {
-            $this->msg('No user accounts to remind.');
-        } else {
-            $this->msg("$count reminders processed.");
+            foreach ($users as $user) {
+                $this->msg(
+                    "Sending expiration reminder for user {$user->username}"
+                    . " (id {$user->id})"
+                );
+                $this->sendAccountExpirationReminder($user, $this->expirationDays);
+                $count++;
+            }
+
+            if ($count === 0) {
+                $this->msg('No user accounts to remind.');
+            } else {
+                $this->msg("$count reminders processed.");
+            }
+        } catch (\Exception $e) {
+            $this->err(
+                "Exception: " . $e->getMessage(),
+                'Exception occurred'
+            );
+            while ($e = $e->getPrevious()) {
+                $this->err("  Previous exception: " . $e->getMessage());
+            }
+            exit(1);
         }
 
         return true;
@@ -351,7 +364,8 @@ class AccountExpirationReminders extends AbstractService
             if (!$viewPath = $this->resolveViewPath($userInstitution)) {
                 $this->err(
                     "Could not resolve view path for user {$user->username}"
-                    . " (id {$user->id})"
+                    . " (id {$user->id})",
+                    'Could not resolve view path for a user'
                 );
                 return false;
             } else {
@@ -457,8 +471,9 @@ EOT;
             }
         } catch (\Exception $e) {
             $this->err(
-                "Failed to send expiration reminder to user {$user->username} "
-                . " (id {$user->id})"
+                "Failed to send an expiration reminder to user {$user->username} "
+                . " (id {$user->id})",
+                'Failed to send an expiration reminder to a user'
             );
             $this->err('   ' . $e->getMessage());
             return false;

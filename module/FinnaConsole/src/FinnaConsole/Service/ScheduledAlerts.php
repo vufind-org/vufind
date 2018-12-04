@@ -185,7 +185,10 @@ class ScheduledAlerts extends AbstractService
                 exit(0);
             }
         } catch (\Exception $e) {
-            $this->err("Exception: " . $e->getMessage());
+            $this->err(
+                "Exception: " . $e->getMessage(),
+                'Exception occurred'
+            );
             while ($e = $e->getPrevious()) {
                 $this->err("  Previous exception: " . $e->getMessage());
             }
@@ -232,7 +235,7 @@ class ScheduledAlerts extends AbstractService
             $hostCnt = count($host);
 
             if ($hostCnt < 2 || $hostCnt > 4) {
-                $this->err("Invalid base URL $url");
+                $this->err("Invalid base URL $url", '=');
                 continue;
             }
 
@@ -248,7 +251,7 @@ class ScheduledAlerts extends AbstractService
             $view = isset($parts['path']) ? substr($parts['path'], 1) : false;
 
             if (!$path = $this->resolveViewPath($institution, $view)) {
-                $this->err("Skipping alerts for view $url");
+                $this->err("Skipping alerts for view $url", '=');
                 continue;
             }
             $this->switchInstitution("$path/{$this->confDir}", $url);
@@ -282,7 +285,7 @@ class ScheduledAlerts extends AbstractService
         $this->msg("    $cmd");
         $res = system($cmd, $retval);
         if ($retval !== 0) {
-            $this->err("Error calling: $cmd");
+            $this->err("Error calling: $cmd", '=');
         }
     }
 
@@ -354,14 +357,14 @@ class ScheduledAlerts extends AbstractService
                 }
             } else {
                 $this->err(
-                    'Search ' . $s->id . ': unknown schedule: ' . $s->schedule
+                    'Search ' . $s->id . ': unknown schedule: ' . $s->schedule, '='
                 );
                 continue;
             }
 
             if ($user === false || $s->user_id != $user->id) {
                 if (!$user = $this->userTable->getById($s->user_id)) {
-                    $this->err(
+                    $this->warn(
                         'Search ' . $s->id . ': user ' . $s->user_id
                         . ' does not exist '
                     );
@@ -381,7 +384,8 @@ class ScheduledAlerts extends AbstractService
             if (!isset($scheduleUrl['host'])) {
                 $this->err(
                     'Could not resolve institution for search ' . $s->id
-                    . ' with schedule_base_url: ' . var_export($scheduleUrl, true)
+                    . ' with schedule_base_url: ' . var_export($scheduleUrl, true),
+                    '='
                 );
                 continue;
             }
@@ -413,7 +417,8 @@ class ScheduledAlerts extends AbstractService
             if ($searchObject->getBackendId() !== 'Solr') {
                 $this->err(
                     'Unsupported search backend ' . $searchObject->getBackendId()
-                    . ' for search ' . $searchObject->getSearchId()
+                        . ' for search ' . $searchObject->getSearchId(),
+                    '='
                 );
                 continue;
             }
@@ -429,7 +434,8 @@ class ScheduledAlerts extends AbstractService
                 $records = $searchObject->getResults();
             } catch (\Exception $e) {
                 $this->err(
-                    "Error processing search $searchId: " . $e->getMessage()
+                    "Error processing search $searchId: " . $e->getMessage(),
+                    '='
                 );
             }
             if (empty($records)) {
@@ -505,13 +511,16 @@ class ScheduledAlerts extends AbstractService
                 );
             } catch (\Exception $e) {
                 $this->err(
-                    "Failed to send message to {$user->email}: " . $e->getMessage()
+                    "Failed to send message to {$user->email}: " . $e->getMessage(),
+                    'Failed to send a message to a user'
                 );
                 continue;
             }
 
             if ($s->setLastExecuted($searchTime) === 0) {
-                $this->msg("Error updating last_executed date for search $searchId");
+                $this->err(
+                    "Error updating last_executed date for search $searchId", '='
+                );
             }
         }
         $this->msg('    Done processing searches');

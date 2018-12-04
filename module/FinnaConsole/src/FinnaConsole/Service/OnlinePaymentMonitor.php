@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -255,16 +255,18 @@ class OnlinePaymentMonitor extends AbstractService
             );
             if (!$result) {
                 $this->err(
-                    '    Failed to update transaction '
-                    . $t->transaction_id . 'as reported'
+                    '    Failed to update transaction ' . $t->transaction_id
+                        . ' as reported',
+                    'Failed to update a transaction as reported'
                 );
             }
 
             $t->complete = Transaction::STATUS_REGISTRATION_EXPIRED;
             if (!$t->save()) {
                 $this->err(
-                    '    Failed to update transaction '
-                    . $t->transaction_id . ' as expired.'
+                    '    Failed to update transaction ' . $t->transaction_id
+                        . ' as expired',
+                    'Failed to update a transaction as expired'
                 );
             } else {
                 $this->msg('    Transaction ' . $t->transaction_id . ' expired.');
@@ -292,7 +294,10 @@ class OnlinePaymentMonitor extends AbstractService
                             break;
                         }
                     } catch (\Exception $e) {
-                        $this->err('Patron login error: ' . $e->getMessage());
+                        $this->err(
+                            'Patron login error: ' . $e->getMessage(),
+                            'Patron login failed for a user'
+                        );
                         $this->logException($e);
                     }
                 }
@@ -317,8 +322,9 @@ class OnlinePaymentMonitor extends AbstractService
                 );
                 if (!$result) {
                     $this->err(
-                        '    Failed to update transaction '
-                        . $t->transaction_id . 'as registered'
+                        '    Failed to update transaction ' . $t->transaction_id
+                            . ' as registered',
+                        'Failed to update a transaction as expired'
                     );
                 }
                 $registeredCnt++;
@@ -326,7 +332,10 @@ class OnlinePaymentMonitor extends AbstractService
             } catch (\Exception $e) {
                 $this->err(
                     '    Registration of transaction '
-                    . $t->transaction_id . ' failed'
+                        . $t->transaction_id . " failed for user {$user->username}"
+                        . " (id {$user->id}), card {$card->cat_username}"
+                        . " (id {$card->id})",
+                    'Registration of a transaction failed'
                 );
                 $this->err('      ' . $e->getMessage());
                 $this->logException($e);
@@ -337,7 +346,8 @@ class OnlinePaymentMonitor extends AbstractService
                 if (!$result) {
                     $this->err(
                         'Error updating transaction ' . $t->transaction_id
-                        . ' status: registration failed'
+                            . ' status: registration failed',
+                        'Failed to update a transaction status: registration failed'
                     );
                 }
                 $failedCnt++;
@@ -362,8 +372,9 @@ class OnlinePaymentMonitor extends AbstractService
 
         if (!$this->transactionTable->setTransactionReported($t->transaction_id)) {
             $this->err(
-                '    Failed to update transaction '
-                . $t->transaction_id . ' as reported'
+                '    Failed to update transaction ' . $t->transaction_id
+                    . ' as reported',
+                'Failed to update a transaction as reported'
             );
         }
         if (!isset($report[$t->driver])) {
@@ -383,8 +394,7 @@ class OnlinePaymentMonitor extends AbstractService
      */
     protected function sendReports($report)
     {
-        $subject
-            = 'Finna: ilmoitus tietokannan %s epäonnistuneista verkkomaksuista';
+        $subject = 'Finna: ilmoitus tietokannan %s epäonnistuneista verkkomaksuista';
 
         foreach ($report as $driver => $cnt) {
             if ($cnt) {
@@ -394,7 +404,8 @@ class OnlinePaymentMonitor extends AbstractService
                 if (!$settings || !isset($settings['errorEmail'])) {
                     $this->err(
                         "  No error email for expired transactions not defined for "
-                        . "driver $driver ($cnt expired transactions)"
+                        . "driver $driver ($cnt expired transactions)",
+                        '='
                     );
                     continue;
                 }
@@ -420,8 +431,9 @@ class OnlinePaymentMonitor extends AbstractService
                     );
                 } catch (\Exception $e) {
                     $this->err(
-                        "    Failed to send error email to customer: $email "
-                        . "(driver: $driver)"
+                        "    Failed to send error email to staff: $email "
+                            . "(driver: $driver)",
+                        'Failed to send error email to staff'
                     );
                     $this->logException($e);
                     continue;
