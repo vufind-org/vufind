@@ -174,7 +174,7 @@ class SolrMarc extends SolrDefault
 
                 $parallel_edition = "";
                 $subfield_i = $field->getSubfield('i');
-                # If $i is not given we will not have proper key for processing
+                # If $i is not given we will not have a proper key for processing
                 if (empty($subfield_i))
                     continue;
                 $subfield_a = $field->getSubfield('a');
