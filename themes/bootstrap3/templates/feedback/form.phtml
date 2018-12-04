@@ -14,13 +14,7 @@
   $help = $form->getHelp();
   $helpPre = $helpPost = null;
   $helpPre = isset($help['pre']) ? $this->translate($help['pre']) : null;
-  if ($helpPre === $help['pre']) {
-    $helpPre = null;
-  }
   $helpPost = isset($help['post']) ? $this->translate($help['post']) : null;
-  if ($helpPost === $help['post']) {
-    $helpPost = null;
-  }
 ?>
 <div class="feedback-content">
   <?php if ($title): ?>
