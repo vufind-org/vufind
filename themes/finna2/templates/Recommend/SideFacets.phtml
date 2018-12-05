@@ -6,31 +6,28 @@
   $this->results = $results = $this->recommend->getResults();
   $this->options = $options = $results->getOptions();
 
+  $language = $this->layout()->userLang;
+
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
-  switch ($this->layout()->userLang) {
-    case 'en-gb':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js');
-        $datePickerLang = 'en-GB';
-        break;
-    case 'fi':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js');
-        $datePickerLang = 'fi';
-        break;
-    case 'sv':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js');
-        $datePickerLang = 'sv';
-        break;
+
+  $datepickerLanguages = ['en-gb' => 'en-GB', 'fi' => 'fi', 'sv' => 'sv'];
+
+  if (array_key_exists($language, $datepickerLanguages)) {
+    $datePickerLang = $datepickerLanguages[$language];
+    $this->headScript()->appendFile('vendor/bootstrap-datepicker.' . $datePickerLang . '.min.js');
   }
+
+  $resultsTotal = $results->getResultTotal();
 ?>
-<?php if ($results->getResultTotal() > 0): ?>
+<?php if ($resultsTotal > 0): ?>
   <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><?php if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h4>
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
-      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+      if ($resultsTotal > 0 || $current['selected'] || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
@@ -72,11 +69,8 @@
 ]); ?>
 <?php
 if ($this->fromStreetSearch) {
-  $geographicFacets = $this->recommend->getGeographicFacets();
-  foreach ($collapsedFacets as $index => $facet){
-    if (in_array($facet, $geographicFacets)) {
-      unset($collapsedFacets[$index]);
-    }
+  if (($key = array_search('geographic_facet', $collapsedFacets)) !== false) {
+    unset($collapsedFacets[$key]);
   }
 }
 ?>
@@ -84,11 +78,16 @@ if ($this->fromStreetSearch) {
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
-    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <?php $daterangeFacet = $title == $daterangeFacetField; ?>
-    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="list-group-item title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" onclick="return false;"><?=$this->transEsc($cluster['label'])?></button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
+    <?php 
+      $allowExclude = $this->recommend->excludeAllowed($title);
+      $daterangeFacet = $title == $daterangeFacetField;
+      $escTitle = $this->escapeHtmlAttr($title);
+      $isCollapsed = in_array($title, $collapsedFacets);
+      $dataTarget = 'side-collapse-' . $escTitle;
+    ?>
+    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escTitle?>">
+      <button class="list-group-item title<?= $isCollapsed ? ' collapsed': '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" onclick="return false;"><?=$this->transEsc($cluster['label'])?></button>
+      <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' in' : '' ?>" data-facet="<?=$escTitle?>">
         <?=$this->context($this)->renderInContext(
           'Recommend/SideFacets/facet.phtml',
           [

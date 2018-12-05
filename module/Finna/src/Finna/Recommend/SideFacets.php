@@ -24,6 +24,7 @@
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
@@ -41,6 +42,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
@@ -51,11 +53,13 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     use SideFacetsTrait;
 
     /**
-     * Geographic facet setting
+     * Display the map under region facet
      *
      * @var array
      */
-    protected $geographicFacets = [];
+    protected $geographicFacet = [
+        'map_selection' => false,
+    ];
 
     /**
      * Store the configuration of the recommendation module.
@@ -79,9 +83,17 @@ class SideFacets extends \VuFind\Recommend\SideFacets
         if (isset($config->SpecialFacets->newItems)) {
             $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
         }
+
+        //Fallback check for older style of enabling the map in facets
         if (isset($config->SpecialFacets->finna_geographic)) {
-            $this->geographicFacets
-                = $config->SpecialFacets->finna_geographic->toArray();
+            $finna_geographic = $config->SpecialFacets->finna_geographic->toArray();
+            $this->geographicFacet['map_selection']
+                = in_array('geographic_facet:location_geo', $finna_geographic);
+        }
+
+        if (isset($config->Geographical->map_selection)) {
+            $this->geographicFacet['map_selection']
+                = (bool)$config->Geographical->map_selection;
         }
     }
 
@@ -138,16 +150,12 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     }
 
     /**
-     * Get an array of geographic facets.
+     * Returns the geographic map facet array.
      *
      * @return array
      */
-    public function getGeographicFacets()
+    public function getGeographicFacet()
     {
-        return array_map(
-            function ($geo_facet) {
-                return explode(':', $geo_facet)[0];
-            }, $this->geographicFacets
-        );
+        return $this->geographicFacet;
     }
 }

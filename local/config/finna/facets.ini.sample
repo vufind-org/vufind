@@ -78,9 +78,6 @@ newItems[] = first_indexed
 dateVis[] = main_date_str
 dateRangeVis = search_daterange_mv:main_date_str
 
-; Finna geographical facet
-finna_geographic[] = geographic_facet:location_geo
-
 ; This section is reserved for special boolean facets.  These are displayed
 ; as checkboxes.  If the box is checked, the filter on the left side of the
 ; equal sign is applied.  If the box is not checked, the filter is not applied.
@@ -229,3 +226,8 @@ facet_limit      = -1
 ;building[]=0/JYU/
 ;building[]=1/NLF/arto/
 ;building[]=1/JYU/100/
+
+; Geographical facet settings, settings for map under the region facet
+[Geographical]
+;Map selection enabled?
+;map_selection = ""

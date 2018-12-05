@@ -9,24 +9,21 @@
 
   $results = $this->recommend->getResults();
 
+  $language = $this->layout()->userLang;
+
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
-  switch ($this->layout()->userLang) {
-    case 'en-gb':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js');
-        $datePickerLang = 'en-GB';
-        break;
-    case 'fi':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js');
-        $datePickerLang = 'fi';
-        break;
-    case 'sv':
-        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js');
-        $datePickerLang = 'sv';
-        break;
+
+  $datepickerLanguages = ['en-gb' => 'en-GB', 'fi' => 'fi', 'sv' => 'sv'];
+
+  if (array_key_exists($language, $datepickerLanguages)) {
+    $datePickerLang = $datepickerLanguages[$language];
+    $this->headScript()->appendFile('vendor/bootstrap-datepicker.' . $datePickerLang . '.min.js');
   }
+
+  $resultsTotal = $results->getResultTotal();
 ?>
-<?php if ($results->getResultTotal() > 0): ?>
+<?php if ($resultsTotal > 0): ?>
 <div class="side-facets-container-ajax">
   <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><?php if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h4>
 <?php endif; ?>
@@ -34,7 +31,7 @@
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
-      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+      if ($resultsTotal > 0 || $current['selected'] || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
@@ -76,41 +73,49 @@
 ]); ?>
 <?php
 if ($this->fromStreetSearch) {
-  $geographicFacets = $this->recommend->getGeographicFacets();
-  foreach ($collapsedFacets as $index => $facet){
-    if (in_array($facet, $geographicFacets)) {
-      unset($collapsedFacets[$index]);
-    }
+  if (($key = array_search('geographic_facet', $collapsedFacets)) !== false) {
+    unset($collapsedFacets[$key]);
   }
 }
 ?>
 <?=isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $activeFacets = $this->recommend->getActiveFacets();
 $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
-<?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
+<?php if (!empty($activeFacets) && $resultsTotal > 0): ?>
+  <?php 
+    $msgLoading = $this->transEsc('Loading');
+    $msgFailed = $this->transEsc('ajax_load_interrupted');
+    $msgExcludeFacet = $this->transEsc('exclude_facet');
+  ?>
   <?php foreach ($activeFacets as $title => $facetName): ?>
-    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <?php $daterangeFacet = $title == $daterangeFacetField; ?>
-    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="list-group-item title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" onclick="return false;"><?=$this->transEsc($facetName)?></button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
-        <span class="facet-load-indicator"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
-        <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
+    <?php 
+      $allowExclude = $this->recommend->excludeAllowed($title);
+      $daterangeFacet = $title == $daterangeFacetField;
+      $escTitle = $this->escapeHtml($title);
+      $escAttrTitle = $this->escapeHtmlAttr($title);
+      $isCollapsed = in_array($title, $collapsedFacets);
+      $dataTarget = 'side-collapse-' . $escAttrTitle;
+    ?>
+    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escAttrTitle?>">
+      <button class="list-group-item title<?= $isCollapsed ? ' collapsed' : '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" onclick="return false;"><?=$this->transEsc($facetName)?></button>
+      <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' in' : '';?>" data-facet="<?=$escAttrTitle?>">
+        <span class="facet-load-indicator"><i class="fa fa-spinner fa-spin"></i> <?=$msgLoading?>...</span>
+        <span class="facet-load-failed hidden"><?=$msgFailed?></span>
         <?php if (in_array($title, $hierarchicalFacets)): ?>
-          <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
-              data-facet="<?=$this->escapeHtmlAttr($title)?>"
-              data-path=""
-              data-exclude="<?=$allowExclude?>"
-              data-operator="<?=$this->recommend->getFacetOperator($title)?>"
-              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="<?=$hierarchicalFacetSortOptions[$title] ?? ''?>">
+          <div id="facet_<?=$escTitle?>" class="jstree-facet"
+            data-facet="<?=$escAttrTitle?>"
+            data-path=""
+            data-exclude="<?=$allowExclude?>"
+            data-operator="<?=$this->recommend->getFacetOperator($title)?>"
+            data-exclude-title="<?=$msgExcludeFacet?>"
+            data-sort="<?=$hierarchicalFacetSortOptions[$title] ?? ''?>">
           </div>
         <?php endif; ?>
       </div>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?php if ($results->getResultTotal() > 0): ?>
-</div>
+<?php if ($resultsTotal > 0): ?>
+  </div>
 <?php endif; ?>
 <!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->

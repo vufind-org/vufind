@@ -3,10 +3,10 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
 <?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
-<?php $geographicFacets = []; ?>
+<?php $geographicFacet = []; ?>
 <?php
-  if (is_callable([$this->recommend, 'getGeographicFacets'])) {
-    $geographicFacets = $this->recommend->getGeographicFacets();
+  if (is_callable([$this->recommend, 'getGeographicFacet'])) {
+    $geographicFacet = $this->recommend->getGeographicFacet();
   }
 ?>
 <?php $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
@@ -55,35 +55,35 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
   }
 ?>
 <?php if (isset($newItemsFacets[$title])): ?>
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/new-item-facet.phtml', ['results' => $results, 'title' => $title, 'newItemsFacets' => $newItemsFacets, 'datePickerLang' => $datePickerLang]); ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/new-item-facet.phtml', ['results' => $results, 'title' => $title, 'newItemsFacets' => $newItemsFacets, 'datePickerLang' => $datePickerLang]); ?>
 <?php elseif ($daterangeFacet): ?>
-    <div class="list-group-item daterange">
-      <?=$this->partial('Recommend/DateRangeVisAjax.phtml', [
-        'submitLabel' => 'Update',
-        'from' => $fromVal,
-        'to' => $toVal,
-        'formAction' => $formParams,
-        'searchParams' => $searchParams,
-        'baseParams' => $formParams,
-        'type' => $type,
-        'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
-        'daterangeFacet' => $daterangeFacetField,
-        'plotFrom' => $plotFrom,
-        'plotImmediately' => !in_array($title, $collapsedFacets) ? 'true' : 'false'
-      ]);
-      ?>
-    </div>
+  <div class="list-group-item daterange">
+    <?=$this->partial('Recommend/DateRangeVisAjax.phtml', [
+      'submitLabel' => 'Update',
+      'from' => $fromVal,
+      'to' => $toVal,
+      'formAction' => $formParams,
+      'searchParams' => $searchParams,
+      'baseParams' => $formParams,
+      'type' => $type,
+      'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
+      'daterangeFacet' => $daterangeFacetField,
+      'plotFrom' => $plotFrom,
+      'plotImmediately' => !in_array($title, $collapsedFacets) ? 'true' : 'false'
+    ]);
+    ?>
+  </div>
 <?php elseif (isset($rangeFacets[$title])): ?>
   <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-facet.phtml', ['results' => $results, 'title' => $title, 'facet' => $rangeFacets[$title]]); ?>
 <?php elseif ($title == 'usage_rights_str_mv'): ?>
-    <?php $contextVars = [
-        'options' => $options,
-        'allowExclude' => $this->recommend->excludeAllowed($title),
-        'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-        'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
-        'results' => $results
-    ]; ?>
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/usage-rights-facet.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $this->cluster])); ?>
+  <?php $contextVars = [
+      'options' => $options,
+      'allowExclude' => $this->recommend->excludeAllowed($title),
+      'facets_before_more' => $this->recommend->getShowMoreSetting($title),
+      'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
+      'results' => $results
+  ]; ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/usage-rights-facet.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $this->cluster])); ?>
 <?php else: ?>
   <?php $contextVars = [
     'options' => $options,
@@ -97,7 +97,7 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
   ]; ?>
   <?php if (in_array($title, $hierarchicalFacets)): ?>
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
-  <?php elseif (in_array($title, $geographicFacets)): ?>
+  <?php elseif ($title === 'geographic_facet' && isset($geographicFacet['map_selection']) && $geographicFacet['map_selection']): ?>
     <div class="geofacet-header">
       <h5 class="geofacet-title"><?=$this->translate('choose_from_list')?></h5>
     </div>
