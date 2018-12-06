@@ -1,54 +1,30 @@
 <?php
 
-namespace VuFind\I18n\Translator\Loader;
+namespace VuFind\I18n\Translator\Loader\Handler;
 
+use VuFind\I18n\Translator\Loader\Command\LoadExtendedFilesCommand;
+use VuFind\I18n\Translator\Loader\Command\LoadFileCommand;
 use Zend\I18n\Translator\TextDomain;
-use Zend\Uri\Uri;
 
-class ExtendedIniLoader implements LoaderInterface
+class IniFileHandler implements HandlerInterface
 {
-    /**
-     * @var \ArrayObject|TextDomain[]
-     */
-    protected $cache;
-
-    /**
-     * @var LoaderInterface
-     */
-    protected $loader;
-
-    public function __construct(LoaderInterface $loader)
+    public function __invoke(HandlerContext $context, $command): \Generator
     {
-        $this->loader = $loader;
-        $this->cache = new \ArrayObject();
-    }
-
-    /**
-     * @param string $file
-     * @return \Generator|TextDomain[]
-     */
-    public function load(string $file): \Generator
-    {
-        if (!$this->canLoad($uri = new Uri($file))) {
+        if (!$command instanceof LoadFileCommand || !$this->canLoad($file = $command->getFile())) {
             return;
         }
 
-        $data = $this->cache[$file] ?? ($this->cache[$file] = $this->getTextDomain($file));
+        yield $file => $data = $this->getTextDomain($file);
+        
+        $files = is_string($files = $data['@extends'] ?? null)
+            ? array_map('trim', explode(',', $files)) : [];
 
-        if ($parents = $data['@extends'] ?? null) {
-            foreach (explode(',', $parents) as $parent) {
-                $parentUri = Uri::merge($uri, trim($parent));
-                yield from $this->loader->load((string)$parentUri);
-            }
-        }
-
-        yield $file => $data;
+        yield from $context->run(new LoadExtendedFilesCommand($file, $files));
     }
 
-    protected function canLoad(Uri $uri): bool
+    protected function canLoad(string $file): bool
     {
-        return pathinfo($uri->getPath(), PATHINFO_EXTENSION) === 'ini'
-            && static::class === ($uri->getQueryAsArray()['loader'] ?? static::class);
+        return pathinfo($file, PATHINFO_EXTENSION) === 'ini';
     }
 
     /**

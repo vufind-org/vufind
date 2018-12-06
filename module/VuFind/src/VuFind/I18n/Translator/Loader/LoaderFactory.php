@@ -4,6 +4,7 @@ namespace VuFind\I18n\Translator\Loader;
 
 use Interop\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory as Factory;
+use VuFind\I18n\Translator\Loader\Handler\HandlerManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 class LoaderFactory implements FactoryInterface
@@ -19,12 +20,12 @@ class LoaderFactory implements FactoryInterface
 
     protected function create(ContainerInterface $container): LoaderInterface
     {
-        $chainLoader = new PriorityChainLoader();
-        $loaderManager = $container->get(PluginManager::class);
+        $loader = new Loader();
+        $handlerManager = $container->get(HandlerManager::class);
         foreach ($container->get(LoaderConfig::class) as $config) {
-            $loader = $loaderManager->build($config['type'], $config['args'] ?? []);
-            $chainLoader->attach($loader, $config['prio'] ?? 0);
+            $handler = $handlerManager->get($config['type']);
+            $loader->attach($handler, $config['opts'] ?? [], $config['prio'] ?? 0);
         }
-        return $chainLoader;
+        return $loader;
     }
 }

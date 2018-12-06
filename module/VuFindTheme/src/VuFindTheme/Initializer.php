@@ -28,8 +28,8 @@
 
 namespace VuFindTheme;
 
-use VuFind\Cover\Loader;
-use VuFind\I18n\Translator\Loader\DirectoryLoader;
+use VuFind\I18n\Translator\Loader\DirectoryFilter;
+use VuFind\I18n\Translator\Loader\Handler\DirectoryHandler;
 use VuFind\I18n\Translator\Loader\LoaderConfig;
 use VuFind\I18n\Translator\Loader\MainLoaderConfig;
 use VuFind\I18n\Translator\Resolver\ResolverConfigList;
@@ -420,8 +420,8 @@ class Initializer
         foreach (array_keys($themes) as $index => $theme) {
             $config["theme_$theme"] = [
                 'prio' => 7000000 + $index * 100000,
-                'type' => DirectoryLoader::class,
-                'args' => [
+                'type' => DirectoryHandler::class,
+                'opts' => [
                     'dir' => "$baseDir/themes/$theme/languages",
                     'ext' => 'ini,yaml'
                 ]

@@ -7,12 +7,9 @@ use Zend\I18n\Translator\TextDomain;
 interface LoaderInterface
 {
     /**
-     * Loads a resource as well as possible dependencies and yields
-     * the loaded {@see Zend\I18n\Translator\TextDomain} indexed by
-     * the corresponding resource for each loaded resource.
-     *
-     * @param string $file
-     * @return \Generator|TextDomain[]
+     * @param string $locale
+     * @param string $textDomain
+     * @return TextDomain
      */
-    public function load(string $file): \Generator;
+    public function load(string $locale, string $textDomain): TextDomain;
 }
