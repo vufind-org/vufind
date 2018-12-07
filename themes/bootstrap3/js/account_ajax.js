@@ -105,7 +105,7 @@ VuFind.register('account', function Account() {
       dataType: 'json'
     })
       .done(function getFinesDone(response) {
-        holdStatus = parseInt(response.data);
+        holdStatus = response.data;
       })
       .fail(function getFinesFail() {
         holdStatus = -1;
