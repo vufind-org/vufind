@@ -65,14 +65,6 @@ VuFind.register('account', function Account() {
     $('#account-icon').attr('class', accountIcon);
   };
 
-  var _save = function _save() {
-    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
-      checkedOut: checkedOutStatus,
-      fines: fineStatus,
-      holds: holdStatus
-    }));
-  };
-
   var _ajaxCheckedOut = function _ajaxCheckedOut() {
     $.ajax({
       url: VuFind.path + '/AJAX/JSON?method=getUserTransactions',
@@ -123,6 +115,7 @@ VuFind.register('account', function Account() {
         _render();
       });
   };
+
   var _fetchData = function _fetchData() {
     _ajaxCheckedOut();
     _ajaxFines();
@@ -130,9 +123,18 @@ VuFind.register('account', function Account() {
   };
 
   // Clearing save forces AJAX update next page load
+  var _save = function _save() {
+    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
+      checkedOut: checkedOutStatus,
+      fines: fineStatus,
+      holds: holdStatus
+    }));
+  };
+
   var _clearSave = function _clearSave() {
     sessionStorage.removeItem(_sessionDataKey);
   };
+
   var load = function load() {
     if (!userIsLoggedIn) {
       sessionStorage.setItem(_sessionLoginKey, false);
