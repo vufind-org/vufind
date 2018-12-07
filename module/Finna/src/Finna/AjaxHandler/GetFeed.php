@@ -132,7 +132,7 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
         }
 
         return $this->formatResponse(
-            $this->formatFeed($feed, $this->config, $this->renderer)
+            $this->formatFeed($feed, $this->config, $this->renderer, $touchDevice)
         );
     }
 }

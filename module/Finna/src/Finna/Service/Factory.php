@@ -57,7 +57,9 @@ class Factory extends \VuFind\Service\Factory
             $sm->get('VuFind\Config')->get('rss'),
             $sm->get('VuFind\Http'),
             $sm->get('VuFind\Translator'),
-            $sm->get('VuFind\CacheManager')
+            $sm->get('VuFind\CacheManager'),
+            $sm->get('ControllerPluginManager')->get('url'),
+            $sm->get('ViewRenderer')->plugin('imageLink')
         );
     }
 

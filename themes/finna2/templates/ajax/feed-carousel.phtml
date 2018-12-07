@@ -31,7 +31,7 @@
       <?php endif; ?>
       <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
       <div class="wrapper">
-        <img src="<?= $item['image']['url']; ?>" alt="<?=$this->transEsc("Image");?>: <?php if (isset($item['title'])): ?><?= $item['title']; ?><?php endif; ?>" />
+        <img data-lazy="<?= $item['image']['url']; ?>" alt="<?=$this->transEsc("Image");?>: <?php if (isset($item['title'])): ?><?= $item['title']; ?><?php endif; ?>" />
       </div>
       <?php endif; ?>
       <?php if ($clickableElement):?></a><?php endif; ?>

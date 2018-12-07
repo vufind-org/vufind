@@ -54,13 +54,15 @@ trait FeedTrait
      * @param string|bool       $feedUrl      Feed URL (needed for organisation page
      * RSS-feeds where the feed URL is passed to the FeedContentController as
      * a URL parameter.
+     * @param bool              $touchDevice  Whether the feed is being rendered for
+     * a touch-enabled device
      *
      * @return array Array with keys:
      *   html (string)    Rendered feed content
      *   settings (array) Feed settings
      */
     protected function formatFeed($feed, Config $config,
-        RendererInterface $viewRenderer, $feedUrl = false
+        RendererInterface $viewRenderer, $feedUrl = false, $touchDevice = false
     ) {
         $channel = $feed['channel'];
         $items = $feed['items'];

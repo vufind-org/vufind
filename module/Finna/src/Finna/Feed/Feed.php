@@ -27,8 +27,13 @@
  */
 namespace Finna\Feed;
 
+use VuFind\Cache\Manager as CacheManager;
+use VuFindHttp\HttpService;
+use VuFindTheme\View\Helper\ImageLink;
 use Zend\Config\Config;
 use Zend\Feed\Reader\Reader;
+use Zend\I18n\Translator\TranslatorInterface;
+use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * Feed service
@@ -46,55 +51,75 @@ class Feed implements \Zend\Log\LoggerAwareInterface
     /**
      * Main configuration.
      *
-     * @var Zend\Config\Config
+     * @var Config
      */
     protected $mainConfig;
 
     /**
      * Feed configuration.
      *
-     * @var Zend\Config\Config
+     * @var Config
      */
     protected $feedConfig;
 
     /**
      * Http service
      *
-     * @var VuFind\Http
+     * @var HttpService
      */
     protected $http;
 
     /**
      * Translator
      *
-     * @var VuFind\Translator
+     * @var TranslatorInterface
      */
     protected $translator;
 
     /**
      * Cache manager
      *
-     * @var VuFind\Translator
+     * @var CacheManager
      */
     protected $cacheManager;
 
     /**
+     * URL helper
+     *
+     * @var Url
+     */
+    protected $urlHelper;
+
+    /**
+     * Image link helper
+     *
+     * @var ImageLink
+     */
+    protected $imageLinkHelper;
+
+    /**
      * Constructor.
      *
-     * @param VuFind\Config       $config       Main configuration
-     * @param VuFind\Config       $feedConfig   Feed configuration
-     * @param VuFind\Http         $http         Http service
-     * @param VuFind\Translator   $translator   Translator
-     * @param VuFind\CacheManager $cacheManager Cache manager
+     * @param Config              $config     Main configuration
+     * @param Config              $feedConfig Feed configuration
+     * @param HttpService         $http       Http service
+     * @param TranslatorInterface $translator Translator
+     * @param CacheManager        $cm         Cache manager
+     * @param Url                 $url        URL helper
+     * @param ImageLink           $imageLink  Image link helper
      */
     public function __construct(
-        $config, $feedConfig, $http, $translator, $cacheManager
+        Config $config, Config $feedConfig, HttpService $http,
+        TranslatorInterface $translator, CacheManager $cm,
+        Url $url, ImageLink $imageLink
     ) {
         $this->mainConfig = $config;
         $this->feedConfig = $feedConfig;
         $this->http = $http;
         $this->translator = $translator;
-        $this->cacheManager = $cacheManager;
+        $this->cacheManager = $cm;
+        $this->urlHelper = $url;
+        $this->imageLinkHelper = $imageLink;
     }
 
     /**
@@ -177,50 +202,47 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      *   - 'config'  VuFind\Config             Feed configuration
      *   - 'modal'   boolean                   Display feed content in a modal
      *
-     * @param string                         $id        Feed id
-     * @param Zend\Mvc\Controller\Plugin\Url $urlHelper Url helper
-     * @param string                         $viewUrl   View URL
+     * @param string $id      Feed id
+     * @param string $viewUrl View URL
      *
      * @return mixed null|array
      */
-    public function readFeed($id, $urlHelper, $viewUrl)
+    public function readFeed($id, $viewUrl)
     {
         if (!$config = $this->getFeedConfig($id)) {
             throw new \Exception('Error reading feed');
         }
-        return $this->processReadFeed($config, $urlHelper, $viewUrl, $id);
+        return $this->processReadFeed($config, $viewUrl, $id);
     }
 
     /**
      * Return feed content from a URL.
      * See readFeed for a description of the return object.
      *
-     * @param string                         $id        Feed id
-     * @param string                         $url       Feed URL
-     * @param array                          $config    Configuration
-     * @param Zend\Mvc\Controller\Plugin\Url $urlHelper Url helper
-     * @param string                         $viewUrl   View URL
+     * @param string $id      Feed id
+     * @param string $url     Feed URL
+     * @param array  $config  Configuration
+     * @param string $viewUrl View URL
      *
      * @return mixed null|array
      */
-    public function readFeedFromUrl($id, $url, $config, $urlHelper, $viewUrl)
+    public function readFeedFromUrl($id, $url, $config, $viewUrl)
     {
         $config = new \Zend\Config\Config($config);
-        return $this->processReadFeed($config, $urlHelper, $viewUrl, $id);
+        return $this->processReadFeed($config, $viewUrl, $id);
     }
 
     /**
      * Utility function for processing a feed (see readFeed, readFeedFromUrl).
      *
-     * @param array                          $feedConfig Configuration
-     * @param Zend\Mvc\Controller\Plugin\Url $urlHelper  Url helper
-     * @param string                         $viewUrl    View URL
-     * @param string                         $id         Feed id (needed when the
-     * feed content is shown on a content page or in a modal)
+     * @param array  $feedConfig Configuration
+     * @param string $viewUrl    View URL
+     * @param string $id         Feed id (needed when the feed content is shown on a
+     * content page or in a modal)
      *
      * @return mixed null|array
      */
-    protected function processReadFeed($feedConfig, $urlHelper, $viewUrl, $id = null)
+    protected function processReadFeed($feedConfig, $viewUrl, $id = null)
     {
         $config = $feedConfig['result'];
         $url = trim($feedConfig['url']);
@@ -374,12 +396,29 @@ EOT;
                     }
 
                     if ($setting == 'image') {
-                        if (!$value
-                            || stripos($value['type'], 'image') === false
-                        ) {
+                        if (!$value || stripos($value['type'], 'image') === false) {
                             // Attempt to parse image URL from content
                             if ($value = $this->extractImage($item->getContent())) {
                                 $value = ['url' => $value];
+                            }
+                        }
+                        if (!empty($value['url'])) {
+                            // Check for a local file and create timestamped link if
+                            // found
+                            $urlParts = parse_url($value['url']);
+                            if (empty($urlParts['host'])) {
+                                $file = preg_replace(
+                                    '/^\/themes\/[^\/]+\/images\//',
+                                    '',
+                                    $value['url']
+                                );
+
+                                $imgLink = call_user_func(
+                                    $this->imageLinkHelper, $file
+                                );
+                                if (null !== $imgLink) {
+                                    $value['url'] = $imgLink;
+                                }
                             }
                         }
                     } elseif ($setting == 'date') {
@@ -403,7 +442,7 @@ EOT;
                         if (!$itemId = $item->getId()) {
                             $itemId = $cnt;
                         }
-                        $link = $urlHelper->fromRoute(
+                        $link = $this->urlHelper->fromRoute(
                             'feed-content-page',
                             ['page' => $id, 'element' => urlencode($itemId)]
                         );
