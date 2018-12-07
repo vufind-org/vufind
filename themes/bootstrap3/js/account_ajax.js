@@ -80,11 +80,13 @@ VuFind.register('account', function Account() {
     })
       .done(function getCheckedOutDone(response) {
         checkedOutStatus = response.data;
-        _save();
-        _render();
       })
       .fail(function getCheckedOutFail() {
-        holdStatus = null;
+        checkedOutStatus = -1;
+      })
+      .always(function getFinesFail() {
+        _save();
+        _render();
       });
   };
 
@@ -95,11 +97,13 @@ VuFind.register('account', function Account() {
     })
       .done(function getFinesDone(response) {
         fineStatus = response.data;
-        _save();
-        _render();
       })
       .fail(function getFinesFail() {
-        holdStatus = null;
+        fineStatus = -1;
+      })
+      .always(function getFinesFail() {
+        _save();
+        _render();
       });
   };
 
@@ -110,11 +114,13 @@ VuFind.register('account', function Account() {
     })
       .done(function getFinesDone(response) {
         holdStatus = parseInt(response.data);
-        _save();
-        _render();
       })
       .fail(function getFinesFail() {
-        holdStatus = null;
+        holdStatus = -1;
+      })
+      .always(function getFinesFail() {
+        _save();
+        _render();
       });
   };
   var _fetchData = function _fetchData() {
