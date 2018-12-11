@@ -230,8 +230,14 @@
         <? endforeach; ?>
         </td></tr>
       <? endif; ?>
-
-      <? if($this->driver->isSuperiorWork()): ?>
+      <? if ($this->driver->isSuperiorWork() && in_array("Subscription Bundle", $this->driver->getFormats())): ?>
+         <tr>
+           <th><?=$this->transEsc('Subscription Bundle Journals')?>: </th>
+           <td>
+             <a href="<?=$this->url("search-results", array(), array('query' => array('lookfor' => 'bundle_id:' . $this->driver->getRecordId())))?>"><?=$this->transEsc('Show journals in subscriptions package');?>.</a>
+           </td>
+        </tr>
+      <? elseif($this->driver->isSuperiorWork()): ?>
         <tr>
           <th><?=$this->transEsc('Volumes / Articles')?>: </th>
           <td>
