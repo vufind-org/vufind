@@ -1044,7 +1044,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if (!empty($item['ccode'])) {
             $result[] = $this->translateCollection(
                 $item['ccode'],
-                $item['ccode_description'] ?? null
+                $item['ccode_description'] ?? $item['ccode']
             );
         }
         if (!$this->groupHoldingsByLocation) {
@@ -1206,7 +1206,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 if (!empty($holding['ccode'])) {
                     $callnumber = $this->translateCollection(
                         $holding['ccode'],
-                        $holding['ccode_description'] ?? null
+                        $holding['ccode_description'] ?? $holding['ccode']
                     );
                 }
 
