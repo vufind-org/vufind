@@ -135,6 +135,8 @@
     <field name="topic_non_standardized_ru" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="types_and_persistent_identifiers" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="zdb_number" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="exclude_ixtheo" type="boolean" indexed="true" stored="true" multiValued="false"/>
+    <field name="bundle_id" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- COMMON copyFields-->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>

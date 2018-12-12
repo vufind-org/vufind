@@ -139,7 +139,8 @@ class SolrMarc extends SolrDefault
     public function suppressDisplayByFormat() {
         if (in_array("Weblog", $this->getFormats()))
             return true;
-
+        if (in_array("Subscription Bundle", $this->getFormats()))
+            return true;
         return false;
     }
 
