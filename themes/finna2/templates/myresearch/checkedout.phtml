@@ -11,7 +11,7 @@
 
     $user = $this->auth()->isLoggedIn();
 
-    $totalCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions);
+    $totalCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions ?? []);
 ?>
 
 <!-- Leftside navigationbar -->
