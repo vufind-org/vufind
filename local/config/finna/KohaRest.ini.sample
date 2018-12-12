@@ -90,3 +90,7 @@ enabled = true
 userId = 'admin'
 ; Recovery processing operator password in Koha
 userPassword = '1234'
+
+[Loans]
+; How many loans can be displayed on a single page
+;max_page_size = 25

@@ -1192,8 +1192,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;
             }
+            $limit = $this->config['TransactionHistory']['max_page_size'] ?? 100;
             return [
-                'max_results' => 100,
+                'max_results' => $limit,
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
@@ -1208,8 +1209,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (empty($this->config['Catalog']['checkoutsSupportPaging'])) {
                 return [];
             }
+            $limit = $this->config['Loans']['max_page_size'] ?? 100;
             return [
-                'max_results' => 100,
+                'max_results' => $limit,
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
