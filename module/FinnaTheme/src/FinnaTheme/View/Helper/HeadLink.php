@@ -228,6 +228,10 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
      */
     protected function isExcludedFromConcat($item)
     {
+        if (parent::isExcludedFromConcat($item)) {
+            return true;
+        }
+
         $ua = $this->request->getHeader('User-Agent');
         $agent = is_object($ua) ? $ua->toString() : '';
         return strstr($agent, 'MSIE 9.0') || strstr($agent, 'MSIE 8.0')
