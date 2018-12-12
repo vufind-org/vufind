@@ -8,6 +8,19 @@ VuFind.register('account', function Account() {
   var fineStatus = LOADING;
   var holdStatus = LOADING;
 
+  var _save = function _save() {
+    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
+      checkedOut: checkedOutStatus,
+      fines: fineStatus,
+      holds: holdStatus
+    }));
+  };
+
+  // Clearing save forces AJAX update next page load
+  var _clearSave = function _clearSave() {
+    sessionStorage.removeItem(_sessionDataKey);
+  };
+
   var _render = function _render() {
     function formatNumber(num) {
       return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -120,19 +133,6 @@ VuFind.register('account', function Account() {
     _ajaxCheckedOut();
     _ajaxFines();
     _ajaxHolds();
-  };
-
-  // Clearing save forces AJAX update next page load
-  var _save = function _save() {
-    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
-      checkedOut: checkedOutStatus,
-      fines: fineStatus,
-      holds: holdStatus
-    }));
-  };
-
-  var _clearSave = function _clearSave() {
-    sessionStorage.removeItem(_sessionDataKey);
   };
 
   var load = function load() {
