@@ -1450,6 +1450,21 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $message = isset($loan->loanStatus->status)
                 ? $this->mapStatus($loan->loanStatus->status, $function) : '';
 
+            $renewals = max(
+                [
+                    0,
+                    $this->config['Loans']['renewalLimit']
+                        - $loan->remainingRenewals
+                ]
+            );
+            $renewLimit = $this->config['Loans']['renewalLimit'];
+            if (isset($loan->loanStatus->status)
+                && $this->isPermanentRenewalBlock($loan->loanStatus->status)
+            ) {
+                $renewals = null;
+                $renewLimit = null;
+            }
+
             $trans = [
                 'id' => $loan->catalogueRecord->id,
                 'item_id' => $loan->id,
@@ -1457,12 +1472,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'duedate' => $loan->loanDueDate,
                 'renewable' => (string)$loan->loanStatus->isRenewable == 'yes',
                 'message' => $message,
-                'renewalCount' => max(
-                    [0,
-                        $this->config['Loans']['renewalLimit']
-                        - $loan->remainingRenewals]
-                ),
-                'renewalLimit' => $this->config['Loans']['renewalLimit']
+                'renewalCount' => $renewals,
+                'renewalLimit' => $renewLimit,
             ];
 
             $transList[] = $trans;
@@ -2499,6 +2510,23 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $statuses[$status];
         }
         return $status;
+    }
+
+    /**
+     * Check if renewal is permanently blocked
+     *
+     * @param string $status Status as a string
+     *
+     * @return bool
+     */
+    protected function isPermanentRenewalBlock($status)
+    {
+        $blocks = [
+            'copyHasSpecialCircCat',
+            'copyIsReserved'
+        ];
+
+        return in_array($status, $blocks);
     }
 
     /**
