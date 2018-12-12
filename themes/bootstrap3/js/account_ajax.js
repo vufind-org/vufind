@@ -52,15 +52,15 @@ VuFind.register('account', function Account() {
     // FINES
     if (fineStatus === MISSING) {
       $('.myresearch-menu .fines-status').addClass('hidden');
+    } else if (fineStatus === LOADING) {
+      $('.myresearch-menu .fines-status').html(
+        '<i class="fa fa-spin fa-spinner" aria-hidden="true"></i>'
+      );
     } else {
       $('.myresearch-menu .fines-status').html(
         '<span class="badge overdue">$' + formatNumber(fineStatus / 100) + '</span>'
       );
       accountIcon = 'fa fa-exclamation-triangle text-danger';
-    } else if (fineStatus === LOADING) {
-      $('.myresearch-menu .fines-status').html(
-        '<i class="fa fa-spin fa-spinner" aria-hidden="true"></i>'
-      );
     }
     $('#account-icon').attr('class', accountIcon);
   };
