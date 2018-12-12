@@ -404,7 +404,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $lastname = '';
         if (!empty($result['names'])) {
             $name = $result['names'][0];
-            list($lastname, $firstname) = explode(', ', $name, 2);
+            $parts = explode(', ', $name, 2);
+            $lastname = $parts[0];
+            $firstname = $parts[1] ?? '';
         }
         return [
             'id' => $result['id'],

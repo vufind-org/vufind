@@ -1,6 +1,6 @@
 <?php
 /**
- * Generic factory suitable for most resolver drivers.
+ * BrowZine cover loader factory
  *
  * PHP version 7
  *
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Resolver_Drivers
+ * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\Resolver\Driver;
+namespace VuFind\Content\Covers;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Generic factory suitable for most resolver drivers.
+ * BrowZine cover loader factory
  *
  * @category VuFind
- * @package  Resolver_Drivers
+ * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class DriverWithHttpClientFactory extends AbstractBaseFactory
+class BrowZineFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -53,16 +53,16 @@ class DriverWithHttpClientFactory extends AbstractBaseFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $client = $container->get('VuFindHttp\HttpService')->createClient();
-        if ($options) {
-            array_unshift($options, $client);
-        } else {
-            $options = [$client];
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        return parent::__invoke($container, $requestedName, $options);
+        $backend = $container->get('VuFind\Search\BackendManager')->get('BrowZine');
+        return new $requestedName($backend->getConnector());
     }
 }
