@@ -440,24 +440,62 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
-        $result = $this->makeRequest(
-            ['v1', 'checkouts', 'expanded'],
-            ['borrowernumber' => $patron['id']],
-            'GET',
-            $patron
-        );
-        if (empty($result)) {
-            return [];
+        if (!empty($this->config['Catalog']['checkoutsSupportPaging'])) {
+            $sort = explode(
+                ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+            );
+            if ($sort[0] == 'checkout') {
+                $sortKey = 'issuedate';
+            } elseif ($sort[0] == 'title') {
+                $sortKey = 'title';
+            } else {
+                $sortKey = 'date_due';
+            }
+            $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
+
+            $pageSize = $params['limit'] ?? 50;
+            $queryParams = [
+                'borrowernumber' => $patron['id'],
+                'sort' => $sortKey,
+                'order' => $direction,
+                'offset' => isset($params['page'])
+                    ? ($params['page'] - 1) * $pageSize : 0,
+                'limit' => $pageSize
+            ];
+            $result = $this->makeRequest(
+                ['v1', 'checkouts', 'expanded', 'paged'],
+                $queryParams,
+                'GET',
+                $patron
+            );
+        } else {
+            $records = $this->makeRequest(
+                ['v1', 'checkouts', 'expanded'],
+                ['borrowernumber' => $patron['id']],
+                'GET',
+                $patron
+            );
+            $result = [
+                'total' => count($records),
+                'records' => $records
+            ];
+        }
+        if (empty($result['records'])) {
+            return [
+                'count' => 0,
+                'records' => []
+            ];
         }
         $transactions = [];
-        foreach ($result as $entry) {
+        foreach ($result['records'] as $entry) {
             list($biblionumber, $title, $volume)
                 = $this->getCheckoutInformation($entry);
 
@@ -499,7 +537,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $transactions[] = $transaction;
         }
 
-        return $transactions;
+        return [
+            'count' => $result['total'],
+            'records' => $transactions
+        ];
     }
 
     /**
@@ -1145,7 +1186,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ],
                 'default_sort' => 'checkout desc'
             ];
+        } elseif ('getMyTransactions' === $function) {
+            if (empty($this->config['Catalog']['checkoutsSupportPaging'])) {
+                return [];
+            }
+            return [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc',
+                    'title asc' => 'sort_title'
+                ],
+                'default_sort' => 'due asc'
+            ];
         }
+
         return isset($this->config[$function])
             ? $this->config[$function] : false;
     }
