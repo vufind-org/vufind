@@ -6,11 +6,12 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 
+    // Check if "Renew All" button can be displayed:
+    $renewAll = !$this->ilsPaging || !$paginator;
+
     $user = $this->auth()->isLoggedIn();
 
-    $params = [
-        'sort' => $this->currentSort
-    ];
+    $totalCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions);
 ?>
 
 <!-- Leftside navigationbar -->
@@ -26,7 +27,7 @@
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
       <div class="useraccount-header">
-        <?=$this->transEsc('Your Checked Out Items')?> (<?=count($this->transactions ?? []) + count($this->hiddenTransactions ?? []);?>)
+        <?=$this->transEsc('Your Checked Out Items')?> (<?=$totalCount?>)
       </div>
       <?php if (isset($this->noSupport)): ?>
         <?php if ($user->getLibraryCards()->count() > 1): ?>
@@ -54,7 +55,7 @@
                   <div class="checkbox">
                     <label>
                       <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-                      <?=$this->transEsc('Select All')?>
+                      <?=$this->transEsc($this->ilsPaging ? 'select_page' : 'Select All')?>
                       <span class="selected"></span> <span class="loans-renewal-available"></span>
                     </label>
                   </div>
@@ -63,7 +64,7 @@
               <th colspan="2">
                 <div class="renew-button-col">
                   <input type="submit" class="btn btn-primary renew-button" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-                  <?php if ($this->paginator): ?>
+                  <?php if ($renewAll): ?>
                     <input type="submit" class="btn btn-primary renew-button" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
                   <?php endif; ?>
                 </div>
@@ -233,14 +234,14 @@
           </tr>
         <?php endforeach; ?>
         <?php if ($this->renewForm): ?>
-          <?php if (count($this->transactions) > 5): ?>
+          <?php if ($totalCount > 5): ?>
           <tr class="toolbar bottom">
             <td>
               <div class="checkboxFilter mylist-select-all">
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-                    <?=$this->transEsc('Select All')?>
+                    <?=$this->transEsc($this->ilsPaging ? 'select_page' : 'Select All')?>
                   </label>
                 </div>
               </div>
@@ -248,7 +249,7 @@
             <td colspan="2">
               <div class="renew-button-col">
                 <input type="submit" class="btn btn-primary renew-button" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-                <?php if ($this->paginator): ?>
+                <?php if ($renewAll): ?>
                   <input type="submit" class="btn btn-primary renew-button" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
                 <?php endif; ?>
               </div>

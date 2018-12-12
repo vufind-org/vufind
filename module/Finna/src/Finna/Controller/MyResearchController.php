@@ -129,72 +129,90 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
 
-        // Get checked out item details:
-        $result = $catalog->getMyTransactions($patron);
-
-        // Get page size:
+        // Get paging setup:
         $config = $this->getConfig();
-        $limit = isset($config->Catalog->checked_out_page_size)
-            ? $config->Catalog->checked_out_page_size : 50;
+        $pagingSetup = $this->getPagingSetup(
+            (int)$this->params()->fromQuery('page', 1),
+            isset($config->Catalog->checked_out_page_size)
+                ? $config->Catalog->checked_out_page_size : 50,
+            $catalog->checkFunction('getMyTransactions', $patron)
+        );
 
-        // Build paginator if needed:
-        if ($limit > 0 && $limit < count($result)) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
-        } else {
-            $paginator = false;
-            $pageStart = 0;
-            $pageEnd = count($result);
+        // Get checked out item details:
+        $result = $catalog->getMyTransactions($patron, $pagingSetup['ilsParams']);
+
+        // Support also older driver return value:
+        if (!isset($result['count'])) {
+            $result = [
+                'count' => count($result),
+                'records' => $result
+            ];
         }
 
-        // Handle sorting
-        $currentSort = $this->getRequest()->getQuery('sort', 'duedate');
-        $sortList = [
-            'duedate' => [
-                'desc' => 'Due Date',
-                'url' => '?sort=duedate',
-                'selected' => $currentSort == 'duedate'
-            ],
-            'title' => [
-                'desc' => 'Title',
-                'url' => '?sort=title',
-                'selected' => $currentSort == 'title'
-            ]
-        ];
+        // Build paginator if needed:
+        $paginator = $this->buildPaginator(
+            $pagingSetup, $result['count'], $result['records']
+        );
+        if ($paginator) {
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pagingSetup['limit']) - 1;
+        } else {
+            $pageStart = 0;
+            $pageEnd = $result['count'];
+        }
 
-        $date = $this->serviceLocator->get('VuFind\DateConverter');
-        $sortFunc = function ($a, $b) use ($currentSort, $date) {
-            if ($currentSort == 'title') {
-                $aTitle = $a['title'] ?? '';
-                $bTitle = $b['title'] ?? '';
-                $result = strcmp($aTitle, $bTitle);
-                if ($result != 0) {
-                    return $result;
+        if (!$pagingSetup['ilsPaging']) {
+            // Handle sorting
+            $currentSort = $this->getRequest()->getQuery('sort', 'duedate');
+            if (!in_array($currentSort, ['duedate', 'title'])) {
+                $currentSort = 'duedate';
+            }
+            $pagingSetup['ilsParams']['sort'] = $currentSort;
+            $sortList = [
+                'duedate' => [
+                    'desc' => 'Due Date',
+                    'url' => '?sort=duedate',
+                    'selected' => $currentSort == 'duedate'
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'url' => '?sort=title',
+                    'selected' => $currentSort == 'title'
+                ]
+            ];
+
+            $date = $this->serviceLocator->get('VuFind\DateConverter');
+            $sortFunc = function ($a, $b) use ($currentSort, $date) {
+                if ($currentSort == 'title') {
+                    $aTitle = $a['title'] ?? '';
+                    $bTitle = $b['title'] ?? '';
+                    $result = strcmp($aTitle, $bTitle);
+                    if ($result != 0) {
+                        return $result;
+                    }
                 }
-            }
 
-            try {
-                $aDate = isset($a['duedate'])
-                    ? $date->convertFromDisplayDate('U', $a['duedate'])
-                    : 0;
-                $bDate = isset($b['duedate'])
-                    ? $date->convertFromDisplayDate('U', $b['duedate'])
-                    : 0;
-            } catch (Exception $e) {
-                return 0;
-            }
+                try {
+                    $aDate = isset($a['duedate'])
+                        ? $date->convertFromDisplayDate('U', $a['duedate'])
+                        : 0;
+                    $bDate = isset($b['duedate'])
+                        ? $date->convertFromDisplayDate('U', $b['duedate'])
+                        : 0;
+                } catch (Exception $e) {
+                    return 0;
+                }
 
-            return $aDate - $bDate;
-        };
+                return $aDate - $bDate;
+            };
 
-        usort($result, $sortFunc);
+            usort($result['records'], $sortFunc);
+        } else {
+            $sortList = $pagingSetup['sortList'];
+        }
 
         $transactions = $hiddenTransactions = [];
-        foreach ($result as $i => $current) {
+        foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -207,7 +225,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
 
             // Build record driver (only for the current visible page):
-            if ($i >= $pageStart && $i <= $pageEnd) {
+            if ($pagingSetup['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
@@ -242,10 +260,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $this->flashMessenger()->addErrorMessage($msg);
         }
 
+        $params = $pagingSetup['ilsParams'];
+        $ilsPaging = $pagingSetup['ilsPaging'];
         $view = $this->createViewModel(
             compact(
-                'transactions', 'renewForm', 'renewResult', 'paginator',
-                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'currentSort'
+                'transactions', 'renewForm', 'renewResult', 'paginator', 'params',
+                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'ilsPaging'
             )
         );
 
