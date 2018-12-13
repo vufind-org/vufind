@@ -15,13 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  * @category VuFind
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
@@ -45,7 +47,8 @@ use VuFind\Cache\KeyGeneratorTrait;
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  * @todo     provide option for autocheckout by default in config
  *       allow override for cover display using other covers
@@ -116,10 +119,10 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config           $mainConfig VuFind main conf
-     * @param \Zend\Config\Config           $recordConfig Record-specific conf file
-     * @param \Zend\Session\Container       $sessionContainer Session container
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS Authenticator
+     * @param $mainConfig       \Zend\Config\Config VuFind main conf
+     * @param $recordConfig     \Zend\Config\ConfigRecord-specific conf file
+     * @param $sessionContainer \Zend\Session\ContainerSession container
+     * @param $ilsAuth          \VuFind\Auth\ILSAuthenticator ILS Authenticator
      */
     public function __construct(
         $mainConfig,
@@ -163,7 +166,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @since 5.0
      *
-     * @param bool $refresh
+     * @param bool $refresh Force a check instead of checking cache
      *
      * @return object
      */
@@ -272,7 +275,8 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Gets availability for up to 25 titles at once.  This is used by the
      * the ajax availability system
      *
-     * @param  array $overDriveIds The Overdrive ID (reserve IDs) of the eResources
+     * @param  array $overDriveIds The Overdrive ID (reserve IDs) of the
+     *                             eResources
      *
      * @return array|bool see getAvailability
      *
@@ -459,7 +463,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -511,7 +515,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Cancel Hold
      * Cancel and existing Overdrive Hold
      *
-     * @param  string $overDriveId The overdrive id for the title
+     * @param string $overDriveId The overdrive id for the title
      *
      * @return \stdClass Object with result
      */
@@ -579,9 +583,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Download Link for an Overdrive Resource
      *
-     * @param        $overDriveId
-     * @param string $format Overdrive string for this format
-     * @param string $errorURL A URL to show error if the download doesn't wk
+     * @param string $overDriveId Overdrive ID
+     * @param string $format      Overdrive string for this format
+     * @param string $errorURL    A URL to show err if the download doesn't wk
      *
      * @return object Object with result. If successful, then data will
      * have the download URI ($result->downloadLink)
@@ -646,8 +650,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                 } else {
                     $this->debug("problem getting link:" . $response->message);
                     $result->msg
-                        = "Could not get download link for resourceID [$overDriveId]: "
-                        . $response->message;
+                        = "Could not get download link for resourceID "
+                        . "[$overDriveId]: " . $response->message;
                 }
             } else {
                 //todo: translate
@@ -660,8 +664,10 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
+     * Returns the link template for this format
+     *
      * @param object $checkout The checkout object
-     * @param string $format The name of the format to check
+     * @param string $format   The name of the format to check
      *
      * @return bool
      */
@@ -681,7 +687,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Lock In Overdrive Resource for a particular format
      *
      * @param string $overDriveId Overdrive Resource ID
-     * @param string $format Overdrive string for the format
+     * @param string $format      Overdrive string for the format
      *
      * @return object|bool Result of the call.
      */
@@ -767,11 +773,13 @@ class OverdriveConnector implements LoggerAwareInterface,
             return false;
         }
         if ($this->recordConfig->API->productionMode == false) {
+            $conf->productionMode = false;
             $conf->discURL = $this->recordConfig->API->integrationDiscoveryURL;
             $conf->circURL = $this->recordConfig->API->integrationCircURL;
             $conf->libraryID = $this->recordConfig->API->integrationLibraryID;
             $conf->websiteID = $this->recordConfig->API->integrationWebsiteID;
         } else {
+            $conf->productionMode = true;
             $conf->discURL = $this->recordConfig->API->productionDiscoveryURL;
             $conf->circURL = $this->recordConfig->API->productionCircURL;
             $conf->libraryID = $this->recordConfig->API->productionLibraryID;
@@ -827,7 +835,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @return array results of metadata fetch
      *
-     * @todo  if more tan 25 passed in, make multiple calls
+     * @todo if more tan 25 passed in, make multiple calls
      */
     public function getMetadata($overDriveIds = array())
     {
@@ -859,7 +867,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * for the current user
      *
      * @param string $overDriveId Overdrive resource id
-     * @param bool   $refresh Whether or not to ignore cache and get latest
+     * @param bool   $refresh     Whether or not to ignore cache and get latest
      *
      * @return object|false PHP object that represents the checkout or false
      * the checkout is not in the current list of checkouts for the current
@@ -894,7 +902,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * for the current user
      *
      * @param string $overDriveId Overdrive resource id
-     * @param  bool  $refresh Whether or not to ignore cache and get latest
+     * @param  bool  $refresh     Whether or not to ignore cache and get latest
      *
      * @return object|false PHP object that represents the checkout or false
      * the checkout is not in the current list of checkouts for the current
@@ -1046,10 +1054,10 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Call a URL on the API
      *
-     * @param string $url The url to call
-     * @param array  $headers Headers to set for the request.
-     *                           if null, then the auth headers are used.
-     * @param bool   $checkToken Whether to check and get a new token
+     * @param string $url         The url to call
+     * @param array  $headers     Headers to set for the request.
+     *                            if null, then the auth headers are used.
+     * @param bool   $checkToken  Whether to check and get a new token
      * @param string $requestType The request type (GET, POST etc)
      *
      * @return object|bool The json response from the API call
@@ -1212,10 +1220,10 @@ class OverdriveConnector implements LoggerAwareInterface,
      * specific token.
      *
      * @param string $patronBarcode Patrons barcode
-     * @param string $patronPin Patrons password
-     * @param string $url The url to call
-     * @param array  $params parameters to call
-     * @param string $requestType HTTP request type (default=GET)
+     * @param string $patronPin     Patrons password
+     * @param string $url           The url to call
+     * @param array  $params        parameters to call
+     * @param string $requestType   HTTP request type (default=GET)
      *
      * @return object|bool The json response from the API call
      *  converted to an object.  If the call fails at the
@@ -1292,8 +1300,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             if ($returnVal != null) {
 
                 if (!isset($returnVal->message)
-                    || $returnVal->message
-                    != 'An unexpected error has occurred.'
+                    || $returnVal->message != 'An unexpected error has occurred.'
                 ) {
 
                     return $returnVal;
@@ -1317,9 +1324,10 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Connect to Patron API
      *
-     * @param string $patronBarcode Patrons barcode
-     * @param string $patronPin Patrons password
-     * @param bool   $forceNewConnection force a new connection (get a new token)
+     * @param string $patronBarcode      Patrons barcode
+     * @param string $patronPin          Patrons password
+     * @param bool   $forceNewConnection force a new connection (get a new
+     *                                   token)
      *
      * @return string token for the session
      */
@@ -1328,14 +1336,8 @@ class OverdriveConnector implements LoggerAwareInterface,
         $patronPin = '1234',
         $forceNewConnection = false
     ) {
-        //$previousError = false;
+
         $patronTokenData = $this->sessionContainer->patronTokenData;
-        $this->debug(
-            "OD patronData from session: " .
-            print_r(
-                $patronTokenData, true
-            )
-        );
         $config = $this->getConfig();
         if ($forceNewConnection
             || $patronTokenData == null
@@ -1449,8 +1451,10 @@ class OverdriveConnector implements LoggerAwareInterface,
 
     /**
      * Helper function for fetching cached data.
-     * Data is cached for up to $this->cacheLifetime seconds so that it would be
-     * faster to process e.g. requests where multiple calls to the backend are made.
+     * Data is cached for up to $this->cacheLifetime seconds so that it would
+     * be
+     * faster to process e.g. requests where multiple calls to the backend are
+     * made.
      *
      * @param string $key Cache entry key
      *
@@ -1482,10 +1486,12 @@ class OverdriveConnector implements LoggerAwareInterface,
 
     /**
      * Helper function for storing cached data.
-     * Data is cached for up to $this->cacheLifetime seconds so that it would be
-     * faster to process e.g. requests where multiple calls to the backend are made.
+     * Data is cached for up to $this->cacheLifetime seconds so that it would
+     * be
+     * faster to process e.g. requests where multiple calls to the backend are
+     * made.
      *
-     * @param string $key Cache entry key
+     * @param string $key   Cache entry key
      * @param mixed  $entry Entry to be cached
      *
      * @return void
@@ -1524,9 +1530,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Result Object
      *
-     * @param bool   $status
-     * @param string $msg
-     * @param string $code
+     * @param bool   $status Whether it succeeded
+     * @param string $msg    More information
+     * @param string $code   code used for end user display/translation
      *
      * @return object
      */

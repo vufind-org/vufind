@@ -18,13 +18,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
@@ -40,7 +42,8 @@ use Zend\Log\LoggerAwareInterface;
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
@@ -67,9 +70,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config             $mainConfig VuFind main configuration
+     * @param Config             $mainConfig   VuFind main configuration
      * @param Config             $recordConfig Record-specific configuration
-     * @param OverdriveConnector $connector Overdrive Connector
+     * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
         $mainConfig = null, $recordConfig = null,
@@ -208,14 +211,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             }
             $results[$format->name] = $tmpresults;
         }
-        //}
 
-        //$this->debug("returning formats array:" . print_r($results, true));
         return $results;
     }
 
     /**
-     * @return array
+     * Returns links for showing previews
+     *
+     * @return array      an array of links
      * @throws \Exception
      */
     public function getPreviewLinks()
@@ -231,7 +234,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         }
 
         if (isset($data->formats[0]->samples[0])) {
-            //$format = $data->formats[0]->samples[0];
             foreach ($data->formats[0]->samples as $format) {
                 if ($format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
@@ -383,7 +385,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     *  This will be removed after I fix my data to have short titles
+     * Get Bread Crumb
+     *
+     * @return string
      */
     public function getBreadcrumb()
     {
@@ -395,14 +399,68 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     *  This will be reomved after I fix my data to have short titles
+     * Get Marc Record
+     *
+     * override the base marc trait to return a fake marc obj.
+     *
+     * @return \File_MARCBASE
+     * @throws \File_MARC_Exception
+     */
+    public function getMarcRecord()
+    {
+        if ($this->getIsMarc()) {
+            return parent::getMarcRecord();
+        } else {
+            //return new fake marc class
+            return (new class
+            {
+                public function getField($f) { return ""; }
+
+                public function getFields($f) { return []; }
+            });
+        }
+    }
+
+    /**
+     * Get Subtitle
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        if ($this->getIsMarc()) {
+            return parent::getSubtitle();
+        } else {
+            return $this->fields['title_sub'];
+        }
+    }
+
+    /**
+     * Get Title Section
+     *
+     * @return string
+     */
+    public function getTitleSection()
+    {
+        if ($this->getIsMarc()) {
+            return parent::getTitleSection();
+        } else {
+            //I don't think overdrive has this metadata
+            return "";
+        }
+    }
+
+    /**
+     * Get Short Title
+     *
+     * @return string
      */
     public function getShortTitle()
     {
-        if (!parent::getShortTitle()) {
-            return $this->getTitle();
+        if ($this->getIsMarc()) {
+            return parent::getShortTitle();
         } else {
-            return $this->getShortTitle();
+            return $this->fields['title_short'];
         }
     }
 
@@ -417,18 +475,19 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             return parent::getGeneralNotes();
         } else {
 
-            return false;
+            return [];
         }
     }
 
     /**
-     * Returns one of three things: a full URL to a thumbnail preview of the record
-     * if an image is available in an external system; an array of parameters to
-     * send to VuFind's internal cover generator if no fixed URL exists; or false
-     * if no thumbnail can be generated.
+     * Returns one of three things: a full URL to a thumbnail preview of the
+     * record if an image is available in an external system; an array of
+     * parameters to send to VuFind's internal cover generator if no fixed URL
+     * exists; or false if no thumbnail can be generated.
      *
-     * @param string $size Size of thumbnail (small, medium or large -- small is
-     * default).
+     * @param string $size Size of thumbnail (small, medium or large -- small
+     *                     is
+     *                     default).
      *
      * @return string|array|bool
      * @throws \Exception
@@ -521,10 +580,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * specific.
      *
      * @param bool $extended Whether to return a keyed array with the following
-     * keys:
-     * - heading: the actual subject heading chunks
-     * - type: heading type
-     * - source: source vocabulary
+     *                       keys:
+     *                       - heading: the actual subject heading chunks
+     *                       - type: heading type
+     *                       - source: source vocabulary
      *
      * @return array
      */
@@ -569,8 +628,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @since x.x.x
      *
-     * @param type  $var Description.
-     * @param type  $var Optional. Description. Default.
+     * @param type  $var     Description.
+     * @param type  $var     Optional. Description. Default.
      *
      * @see   Function/method/class relied on
      * @link  URL

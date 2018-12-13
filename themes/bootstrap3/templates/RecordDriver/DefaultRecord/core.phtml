@@ -5,6 +5,8 @@
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = $this->record($this->driver)->getPreviews();
+
+    //override the default preview link with overdrive link
     if($this->OverdrivePreview)  $preview = $this->OverdrivePreview;
 
   ?>
@@ -37,7 +39,12 @@
 
     <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
-      <?php if($this->OverdriveAvail){ echo $this->OverdriveAvail;}   ?>
+    <?php //show overdrive action button (or message)
+          // see themes/bootstrap3/templates/RecordDriver/SolrOverdrive/core.phtml
+        if($this->OverdriveAction){echo $this->OverdriveAction;}  ?>
+
+    <?php //show overdrive availability block
+        if($this->OverdriveAvail){ echo $this->OverdriveAvail;}   ?>
 
     <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <?php if ($summary): ?>

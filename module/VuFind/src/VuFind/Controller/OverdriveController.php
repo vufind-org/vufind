@@ -109,7 +109,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     $checkouts[] = $mycheckout;
                 }
             }
-            //get the current Overdrive holds for this user and add to our array of IDS
+            //get the current Overdrive holds for this user and add to
+            // our array of IDS
             $holdsResults = $this->connector->getHolds(true);
             if (!$holdsResults->status) {
                 if ($checkoutResults->status) {

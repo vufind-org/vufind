@@ -17,13 +17,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  * @category VuFind
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
@@ -38,7 +40,8 @@ use Interop\Container\ContainerInterface;
  * @package  DigitalContent
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Brent Palmer <brent-palmer@icpl.org>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class OverdriveConnectorFactory implements
@@ -47,9 +50,9 @@ class OverdriveConnectorFactory implements
     /**
      * Create an object
      *
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
-     * @param null|array         $options Extra options (optional)
+     * @param null|array         $options       Extra options (optional)
      *
      * @return object
      *
