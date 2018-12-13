@@ -53,8 +53,11 @@ class Processor
     public static function process($xslt, $xml, $params = [])
     {
         $style = new DOMDocument();
-        // TODO: support local overrides
-        $style->load(APPLICATION_PATH . '/module/VuFind/xsl/' . $xslt);
+        if (file_exists(LOCAL_OVERRIDE_DIR . '/xsl/' . $xslt)) {
+            $style->load(LOCAL_OVERRIDE_DIR . '/xsl/' . $xslt);
+        } else {
+            $style->load(APPLICATION_PATH . '/module/VuFind/xsl/' . $xslt);
+        }
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
