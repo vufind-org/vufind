@@ -938,7 +938,7 @@ class Params
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
         list($fieldName) = explode(':', $filter);
-        $this->checkboxFacets[$fieldName][]
+        $this->checkboxFacets[$fieldName][$filter]
             = ['desc' => $desc, 'filter' => $filter];
     }
 
