@@ -208,6 +208,12 @@ class Params
                 $this->extraFacetLabels[$field] = $label;
             }
         }
+
+        // Activate all relevant checkboxes, also important for labeling:
+        $checkboxSections = $config->FacetLabels->checkboxSections ?? [];
+        foreach ($checkboxSections as $checkboxSection) {
+            $this->initCheckboxFacets($checkboxSection);
+        }
     }
 
     /**
