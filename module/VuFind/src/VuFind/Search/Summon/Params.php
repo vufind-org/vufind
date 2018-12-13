@@ -134,20 +134,18 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
         // search object.
-        return isset($this->facetConfig[$field])
-            ? $this->facetConfig[$field] : $field;
+        return parent::getFacetLabel($field, $value, $default ?: $field);
     }
 
     /**

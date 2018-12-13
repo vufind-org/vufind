@@ -939,14 +939,15 @@ class Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
+     * @return string         Human-readable description of field.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         if (!isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
@@ -958,7 +959,8 @@ class Params
             return $this->facetConfig[$field];
         }
         return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field] : 'unrecognized_facet_label';
+            ? $this->extraFacetLabels[$field]
+            : ($default ?: 'unrecognized_facet_label');
     }
 
     /**
