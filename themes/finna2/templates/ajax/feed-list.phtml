@@ -14,7 +14,7 @@
       <?php if (!isset($this->linkText) && isset($item['link'])):?>
       <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']) . ($this->feedUrl ? '?feedUrl=' . $this->escapeHtmlAttr(urlencode($this->feedUrl)) : '')?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?> data-feed="<?=$this->escapeHtmlAttr($this->feedUrl)?>"><?php endif; ?>
         <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
-        <img data-lazy="<?= $item['image']['url']; ?>" alt="" />
+        <img src="<?= $item['image']['url']; ?>" alt="" />
         <?php endif; ?>
         <span class="title"><?= $item['title']; ?></span>
         <?php if (!isset($this->linkText) && isset($item['link'])):?>
