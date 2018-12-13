@@ -58,6 +58,9 @@ class Processor
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
+        $xml = str_replace(
+            [chr(27), chr(28), chr(29), chr(30), chr(31), chr(8)], ' ', $xml
+        );
         if ($doc->loadXML($xml)) {
             foreach ($params as $key => $value) {
                 $xsl->setParameter('', $key, $value);
