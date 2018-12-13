@@ -349,6 +349,7 @@ $config = [
             'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
+            'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
             'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapTabConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapSelectionConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
@@ -693,6 +694,7 @@ $recordRoutes = [
 
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
+    'Feedback' => ['feedback-form' => 'Form/[:id]'],
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
 ];

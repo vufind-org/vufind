@@ -465,7 +465,7 @@ class MyResearchController extends AbstractBase
      */
     public function addAccountBlocksToFlashMessenger($catalog, $patron)
     {
-        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+        if ($catalog->checkCapability('getAccountBlocks', compact('patron'))
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {

@@ -105,6 +105,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Perform an ISSN lookup.
+     *
+     * @param string|array $issns ISSN(s) to look up.
+     *
+     * @return mixed
+     */
+    public function lookupIssns($issns)
+    {
+        return $this->request('search', ['issns' => implode(',', (array)$issns)]);
+    }
+
+    /**
      * Perform a search
      *
      * @param string $query Search query

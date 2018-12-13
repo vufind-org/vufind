@@ -108,6 +108,9 @@ class OaiController extends AbstractBase
             $server->setRecordLinkHelper(
                 $this->getViewRenderer()->plugin('recordLink')
             );
+            $server->setRecordFormatter(
+                $this->serviceLocator->get('VuFindApi\Formatter\RecordFormatter')
+            );
             $xml = $server->getResponse();
         } catch (\Exception $e) {
             $response->setStatusCode(500);

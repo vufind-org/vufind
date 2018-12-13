@@ -28,7 +28,6 @@
 namespace VuFind\Resolver\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory suitable for most resolver drivers.
@@ -39,7 +38,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DriverWithHttpClientFactory implements FactoryInterface
+class DriverWithHttpClientFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -58,11 +57,12 @@ class DriverWithHttpClientFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        return new $requestedName(
-            $config->OpenURL->url,
-            $container->get('VuFindHttp\HttpService')->createClient(),
-            ...($options ?: [])
-        );
+        $client = $container->get('VuFindHttp\HttpService')->createClient();
+        if ($options) {
+            array_unshift($options, $client);
+        } else {
+            $options = [$client];
+        }
+        return parent::__invoke($container, $requestedName, $options);
     }
 }
