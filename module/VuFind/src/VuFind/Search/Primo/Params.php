@@ -99,22 +99,4 @@ class Params extends \VuFind\Search\Base\Params
         }
         return ucwords(str_replace('_', ' ', $str));
     }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        $this->initFacetList('Facets', 'Results_Settings');
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
-        $this->initCheckboxFacets();
-    }
 }

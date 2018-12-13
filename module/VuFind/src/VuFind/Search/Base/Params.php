@@ -198,6 +198,16 @@ class Params
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
+
+        // Set up facet label settings, to be used as fallbacks if specific facets
+        // are not already configured:
+        $config = $configLoader->get($options->getFacetsIni());
+        $sections = $config->FacetLabels->labelSections ?? ['ExtraFacetLabels'];
+        foreach ($sections as $section) {
+            foreach ($config->$section ?? [] as $field => $label) {
+                $this->extraFacetLabels[$field] = $label;
+            }
+        }
     }
 
     /**
@@ -1594,29 +1604,6 @@ class Params
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings;
-     * if multiple sections contain the same facet, this section's description
-     * will be favored.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // By default, there is only 1 set of facet settings, so this function isn't
-        // really necessary.  However, in the Search History screen, we need to
-        // use this for Solr-based Search Objects, so we need this dummy method to
-        // allow other types of Search Objects to co-exist with Solr-based ones.
-        // See the Solr Search Object for details of how this works if you need to
-        // implement context-sensitive facet settings in another module.
     }
 
     /**

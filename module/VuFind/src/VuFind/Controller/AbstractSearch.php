@@ -433,9 +433,6 @@ class AbstractSearch extends AbstractBase
             }
         }
 
-        // Activate facets so we get appropriate descriptions in the filter list:
-        $savedSearch->getParams()->activateAllFacets('Advanced');
-
         // Make the object available to the view:
         return $savedSearch;
     }
@@ -731,7 +728,6 @@ class AbstractSearch extends AbstractBase
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'] ?? [];
-        $params->activateAllFacets();
         $facetLabel = $params->getFacetLabel($facet);
 
         $view = $this->createViewModel(

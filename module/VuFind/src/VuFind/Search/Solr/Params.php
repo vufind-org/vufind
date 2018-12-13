@@ -103,9 +103,6 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
-        if (isset($config->ExtraFacetLabels)) {
-            $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
-        }
         if (isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index) > 0
         ) {
@@ -305,44 +302,6 @@ class Params extends \VuFind\Search\Base\Params
         if (!$this->initFacetList('HomePage', 'HomePage_Settings')) {
             $this->initAdvancedFacets();
         }
-    }
-
-    /**
-     * Initialize facet settings for the standard search screen.
-     *
-     * @return void
-     */
-    public function initBasicFacets()
-    {
-        $this->initFacetList('ResultsTop', 'Results_Settings');
-        $this->initFacetList('Results', 'Results_Settings');
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // Based on preference, change the order of initialization to make sure
-        // that preferred facet labels come in last.
-        if ($preferredSection == 'Advanced') {
-            $this->initHomePageFacets();
-            $this->initBasicFacets();
-            $this->initAdvancedFacets();
-        } else {
-            $this->initHomePageFacets();
-            $this->initAdvancedFacets();
-            $this->initBasicFacets();
-        }
-        $this->initCheckboxFacets();
     }
 
     /**

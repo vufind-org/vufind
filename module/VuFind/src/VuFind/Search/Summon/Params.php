@@ -400,41 +400,4 @@ class Params extends \VuFind\Search\Base\Params
             $this->initAdvancedFacets();
         }
     }
-
-    /**
-     * Initialize facet settings for the standard search screen.
-     *
-     * @return void
-     */
-    public function initBasicFacets()
-    {
-        $this->initFacetList('Facets', 'Results_Settings');
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // Based on preference, change the order of initialization to make sure
-        // that preferred facet labels come in last.
-        if ($preferredSection == 'Advanced') {
-            $this->initHomePageFacets();
-            $this->initBasicFacets();
-            $this->initAdvancedFacets();
-        } else {
-            $this->initHomePageFacets();
-            $this->initAdvancedFacets();
-            $this->initBasicFacets();
-        }
-        $this->initCheckboxFacets();
-    }
 }
