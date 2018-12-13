@@ -46,14 +46,16 @@ class SearchSpecsReader extends \VuFind\Config\SearchSpecsReader
     /**
      * Return search specs
      *
-     * @param string $filename config file name
+     * @param string  $filename        Config file name
+     * @param boolean $useLocalConfig  Use local configuration if available
+     * @param boolean $ignoreFileCache Read from file even if config has been cached.
      *
      * @return array
      */
-    public function get($filename)
+    public function get($filename, $useLocalConfig = true, $ignoreFileCache = false)
     {
         // Load data if it is not already in the object's cache:
-        if (!isset($this->searchSpecs[$filename])) {
+        if ($ignoreFileCache || !isset($this->searchSpecs[$filename])) {
             // Connect to searchspecs cache:
             $cache = (null !== $this->cacheManager)
                 ? $this->cacheManager->getCache('searchspecs') : false;
@@ -66,10 +68,10 @@ class SearchSpecsReader extends \VuFind\Config\SearchSpecsReader
             // Generate cache key:
             $cacheKey = $filename . '-'
                 . (file_exists($fullpath) ? filemtime($fullpath) : 0);
-            if (!empty($finna)) {
+            if ($useLocalConfig && !empty($finna)) {
                 $cacheKey .= '-finna-' . filemtime($local);
             }
-            if (!empty($local)) {
+            if ($useLocalConfig && !empty($local)) {
                 $cacheKey .= '-local-' . filemtime($local);
             }
             $cacheKey = md5($cacheKey);
