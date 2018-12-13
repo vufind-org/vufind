@@ -1,8 +1,9 @@
 <?
 $i=0;
   $formats = $this->driver->getFormats();  
-  if (in_array("Electronic", $this->driver->tryMethod('getMediaType'))):
-    $formats = array_merge(["Electronic"], $formats);
+  $media_type = $this->driver->tryMethod('getMediaType');
+  if (!is_null($media_type) && in_array("Electronic", $media_type)):
+      $formats = array_merge(["Electronic"], $formats);
   endif;
   $i = 0;
   foreach ($formats as $format): ?>
