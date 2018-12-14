@@ -4,7 +4,8 @@ namespace VuFind\I18n\Translator\Loader;
 
 use Interop\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory as Factory;
-use VuFind\I18n\Translator\Loader\Handler\HandlerManager;
+use VuFind\I18n\Translator\Loader\Listener\ListenerInterface;
+use VuFind\I18n\Translator\Loader\Listener\ListenerManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 class LoaderFactory implements FactoryInterface
@@ -21,10 +22,13 @@ class LoaderFactory implements FactoryInterface
     protected function create(ContainerInterface $container): LoaderInterface
     {
         $loader = new Loader();
-        $handlerManager = $container->get(HandlerManager::class);
+        $loaderEvents = $loader->getEventManager();
+        $listenerManager = $container->get(ListenerManager::class);
         foreach ($container->get(LoaderConfig::class) as $config) {
-            $handler = $handlerManager->get($config['type']);
-            $loader->attach($handler, $config['opts'] ?? [], $config['prio'] ?? 0);
+            /** @var ListenerInterface $listener */
+            $listener = $listenerManager->build($config['type'], $config['opts'] ?? []);
+            $loaderEvents->attach($listener->getEventName(), $listener, $config['prio'] ?? 0);
+            $listener->setEventManager($loaderEvents);
         }
         return $loader;
     }

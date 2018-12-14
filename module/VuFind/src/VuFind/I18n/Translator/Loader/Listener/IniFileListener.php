@@ -1,30 +1,33 @@
 <?php
 
-namespace VuFind\I18n\Translator\Loader\Handler;
+namespace VuFind\I18n\Translator\Loader\Listener;
 
-use VuFind\I18n\Translator\Loader\Command\LoadExtendedFilesCommand;
-use VuFind\I18n\Translator\Loader\Command\LoadFileCommand;
+use VuFind\I18n\Translator\Loader\Event\ExtensionEvent;
+use VuFind\I18n\Translator\Loader\Event\FileEvent;
 use Zend\I18n\Translator\TextDomain;
 
-class IniFileHandler implements HandlerInterface
+class IniFileListener implements ListenerInterface
 {
-    public function __invoke(HandlerContext $context, $command): \Generator
+    use ListenerTrait;
+
+    public function getEventName(): string
     {
-        if (!$command instanceof LoadFileCommand || !$this->canLoad($file = $command->getFile())) {
+        return FileEvent::class;
+    }
+
+    protected function invoke(FileEvent $event): \Generator
+    {
+        if (pathinfo($file = $event->getFile(), PATHINFO_EXTENSION) !== 'ini') {
             return;
         }
 
         yield $file => $data = $this->getTextDomain($file);
-        
+
         $files = is_string($files = $data['@extends'] ?? null)
             ? array_map('trim', explode(',', $files)) : [];
 
-        yield from $context->run(new LoadExtendedFilesCommand($file, $files));
-    }
+        yield from $this->trigger(new ExtensionEvent($file, $files));
 
-    protected function canLoad(string $file): bool
-    {
-        return pathinfo($file, PATHINFO_EXTENSION) === 'ini';
     }
 
     /**

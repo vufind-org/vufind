@@ -1,8 +1,10 @@
 <?php
 
-namespace VuFind\I18n\Translator\Loader\Command;
+namespace VuFind\I18n\Translator\Loader\Event;
 
-class LoadLocaleCommand
+use Zend\EventManager\Event;
+
+class InitialEvent extends Event
 {
     /**
      * @var string
@@ -14,9 +16,9 @@ class LoadLocaleCommand
      */
     protected $textDomain;
 
-
     public function __construct(string $locale, string $textDomain)
     {
+        parent::__construct(self::class);
         $this->locale = $locale;
         $this->textDomain = $textDomain;
     }
@@ -30,30 +32,10 @@ class LoadLocaleCommand
     }
 
     /**
-     * @param string $locale
-     * @return LoadLocaleCommand
-     */
-    public function setLocale(string $locale): self
-    {
-        $this->locale = $locale;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getTextDomain(): string
     {
         return $this->textDomain;
-    }
-
-    /**
-     * @param string $textDomain
-     * @return LoadLocaleCommand
-     */
-    public function setTextDomain(string $textDomain): self
-    {
-        $this->textDomain = $textDomain;
-        return $this;
     }
 }

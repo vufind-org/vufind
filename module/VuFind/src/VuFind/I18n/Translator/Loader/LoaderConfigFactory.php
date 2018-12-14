@@ -14,6 +14,6 @@ class LoaderConfigFactory implements FactoryInterface
 
     protected function getConfig(ContainerInterface $container): array
     {
-        return $container->get('config')['vufind']['translator_loader'] ?? [];
+        return array_reverse($container->get('config')['vufind']['translator_loader'] ?? []);
     }
 }
