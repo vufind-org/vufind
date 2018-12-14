@@ -1,0 +1,21 @@
+form {
+    textarea:invalid,
+    input:invalid {
+        box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
+    }
+    .form-info {
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    .info {
+        margin: 10px 0;
+    }
+    .form-group ul {
+        padding: 0;
+        margin-left: 15px;
+        margin-top: 5px;
+    }
+    .form-group label.required::before {
+        content: '* ';
+    }
+}

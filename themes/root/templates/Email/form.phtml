@@ -1,0 +1,12 @@
+<?php foreach($this->fields as $key => $data): ?>
+<?php $isTextarea = $data['type'] === 'textarea'; ?>
+<?php if ($isTextarea): ?>
+-----
+<?=$key?>:
+<?=$data['value']?>
+
+-----
+<?php else: ?>
+<?= "$key: " . $data['value'] . PHP_EOL ?>
+<?php endif ?>
+<?php endforeach ?>
