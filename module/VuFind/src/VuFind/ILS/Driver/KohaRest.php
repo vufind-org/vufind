@@ -1640,6 +1640,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         $statuses[] = !empty($reason['code'])
                             ? $reason['code'] : $status;
                     }
+                } elseif (strncmp($key, 'ItemType::', 10) == 0) {
+                    $status = substr($key, 10);
+                    switch ($status) {
+                    case 'NotForLoan':
+                        $statuses[] = 'On Reference Desk';
+                        break;
+                    }
                 }
             }
             if (empty($statuses)) {
