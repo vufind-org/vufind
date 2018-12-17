@@ -372,7 +372,6 @@ class BrowseController extends \VuFind\Controller\BrowseController
         } else {
             $query = $facet . ':' . $query;
         }
-        $params->setOverrideQuery('{!multiLanguageQueryParser}' . $query);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
         // Get limit from config
