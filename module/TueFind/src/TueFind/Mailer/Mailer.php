@@ -1,6 +1,8 @@
 <?php
 namespace TueFind\Mailer;
 
+use \VuFind\Exception\Mail as MailException;
+
 class Mailer extends \VuFind\Mailer\Mailer {
 
     protected $sm;
