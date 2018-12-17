@@ -105,7 +105,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $searchClassId = $params->fromQuery('searchClassId', '');
 
         $resolverType = isset($this->config->OpenURL->resolver)
-            ? $this->config->OpenURL->resolver : 'other';
+            ? $this->config->OpenURL->resolver : 'generic';
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),

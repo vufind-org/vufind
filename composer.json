@@ -15,7 +15,6 @@
     },
     "require": {
         "php": ">=7.0.8",
-        "ext-intl": "*",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
         "endroid/qr-code": "2.5.0",
@@ -72,6 +71,7 @@
         "zendframework/zendservice-amazon": "2.3.0",
         "zendframework/zendservice-recaptcha": "3.1.0",
         "zf-commons/zfc-rbac": "2.6.3",
+        "zendframework/zend-form": "2.12.0",
         "slm/locale": "^0.3.0"
     },
     "require-dev": {

@@ -616,6 +616,15 @@ class AbstractBase extends AbstractActionController
             return;
         }
 
+        // If the referer is the MyResearch/UserLogin action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $myUserLogin = $this->getServerUrl('myresearch-userlogin');
+        $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
+        if (0 === strpos($refererNorm, $mulNorm)) {
+            return;
+        }
+
         // If we got this far, we want to store the referer:
         $this->followup()->store([], $referer);
     }

@@ -199,7 +199,7 @@ class ThemeInfo
      * if boolean false, return containing theme name; if self::RETURN_ALL_DETAILS,
      * return an array containing both values (keyed with 'path' and 'theme').
      *
-     * @return string
+     * @return string|array|null
      */
     public function findContainingTheme($relativePath, $returnType = false)
     {
