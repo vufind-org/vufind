@@ -45,9 +45,13 @@ namespace VuFind\ILS;
 class PaginationHelper
 {
     /**
-     * Support method for getPagingSetup() -- validate the active sort option.
+     * Support method for getPagingSetup() -- validate the active sort option,
+     * returning either a valid sort method or false.
      *
-     * @param array $functionConfig Function config returned from the ILS
+     * @param array  $functionConfig Function config returned from the ILS
+     * @param string $sort           The unvalidated user sort parameter
+     *
+     * @return string|bool
      */
     protected function validateSort($functionConfig, $sort)
     {
@@ -73,6 +77,8 @@ class PaginationHelper
      *
      * @param array  $functionConfig Function config returned from the ILS
      * @param string $sort           Currently active sort option
+     *
+     * @return array
      */
     protected function getSortList($functionConfig, $sort)
     {
