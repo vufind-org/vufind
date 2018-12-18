@@ -59,6 +59,15 @@ class Params extends \VuFind\Search\Base\Params
     protected $dateFacetSettings = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'HomePage_Facets', 'FacetsTop', 'Facets'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use

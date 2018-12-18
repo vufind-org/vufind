@@ -131,6 +131,14 @@ class Params
     protected $extraFacetLabels = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -202,7 +210,8 @@ class Params
         // Set up facet label settings, to be used as fallbacks if specific facets
         // are not already configured:
         $config = $configLoader->get($options->getFacetsIni());
-        $sections = $config->FacetLabels->labelSections ?? ['ExtraFacetLabels'];
+        $sections = $config->FacetLabels->labelSections
+            ?? $this->defaultFacetLabelSections;
         foreach ($sections as $section) {
             foreach ($config->$section ?? [] as $field => $label) {
                 $this->extraFacetLabels[$field] = $label;

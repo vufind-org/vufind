@@ -56,6 +56,15 @@ class Params extends \VuFind\Search\Base\Params
     protected $extraFilterList = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+
+    /**
      * Is the request using this parameters objects for setup only?
      *
      * @var bool

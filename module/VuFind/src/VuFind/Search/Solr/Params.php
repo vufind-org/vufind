@@ -85,6 +85,15 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetHelper;
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced', 'HomePage', 'ResultsTop', 'Results', 'ExtraFacetLabels'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use

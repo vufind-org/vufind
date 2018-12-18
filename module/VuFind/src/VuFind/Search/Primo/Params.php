@@ -41,6 +41,15 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
