@@ -4,18 +4,26 @@ function getSubscriptionBundleItems(bundle_id) {
   $.ajax({
     url: VuFind.path + '/AJAX/JSON',
     data: {
-       method: 'getSubscriptionBundleEntries'
+       method: 'getSubscriptionBundleEntries',
+       bundle_id: bundle_id
     },
     dataType: 'json',
     success: function displaySubscriptionItems(json) {
       $(document).ready(function() {
-        if (json.data.length > 0) {
+        var data = $.parseJSON(json.data)
+        if (data.items.length > 0) {
           datums = [];
-          for (var j = 0; j < json.data.length; j++) {
-            datums.push(json.data[j]);
+          for (var j = 0; j < data.items.length; j++) {
+            datums.push(data.items[j].title);
+            $("#" + bundle_id).find("div").append(data.items[j].title);
           }
         }
       });
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      if (window.console && window.console.log) {
+              console.log("Status: " + xhr.status + ", Error: " + thrownError);
+      }
     }
   });
 }
