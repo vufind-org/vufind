@@ -74,17 +74,19 @@ class YamlReader
     /**
      * Return a configuration
      *
-     * @param string $filename config file name
+     * @param string  $filename        Config file name
+     * @param boolean $useLocalConfig  Use local configuration if available
+     * @param boolean $ignoreFileCache Read from file even if config has been cached.
      *
      * @return array
      */
-    public function get($filename)
+    public function get($filename, $useLocalConfig = true, $ignoreFileCache = false)
     {
         // Load data if it is not already in the object's cache:
-        if (!isset($this->files[$filename])) {
+        if ($ignoreFileCache || !isset($this->files[$filename])) {
             $this->files[$filename] = $this->getFromPaths(
                 Locator::getBaseConfigPath($filename),
-                Locator::getLocalConfigPath($filename)
+                ($useLocalConfig ? Locator::getLocalConfigPath($filename) : null)
             );
         }
 

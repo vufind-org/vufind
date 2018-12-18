@@ -855,7 +855,7 @@ trait MarcAdvancedTrait
         if ($format == 'marc21') {
             $xml = $this->getMarcRecord()->toXML();
             $xml = str_replace(
-                [chr(27), chr(28), chr(29), chr(30), chr(31)], ' ', $xml
+                [chr(27), chr(28), chr(29), chr(30), chr(31), chr(8)], ' ', $xml
             );
             $xml = simplexml_load_string($xml);
             if (!$xml || !isset($xml->record)) {
