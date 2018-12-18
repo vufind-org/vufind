@@ -124,10 +124,10 @@ class GetContentFeed extends \VuFind\AjaxHandler\AbstractBase
             if ($feedUrl) {
                 $config = $this->getOrganisationFeedConfig($id, $feedUrl);
                 $feed = $this->feedService->readFeedFromUrl(
-                    $id, $feedUrl, $config, $this->url, $homeUrl
+                    $id, $feedUrl, $config, $homeUrl
                 );
             } else {
-                $feed = $this->feedService->readFeed($id, $this->url, $homeUrl);
+                $feed = $this->feedService->readFeed($id, $homeUrl);
             }
         } catch (\Exception $e) {
             return $this->formatResponse($e->getMessage(), self::STATUS_HTTP_ERROR);

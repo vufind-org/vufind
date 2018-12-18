@@ -134,7 +134,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
                 $id,
                 $url,
                 $feedConfig,
-                $this->url, $homeUrl
+                $homeUrl
             );
         } catch (\Exception $e) {
             return $this->handleError(
