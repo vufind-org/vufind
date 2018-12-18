@@ -1,6 +1,8 @@
 <?php
 namespace TueFind\Mailer;
 
+use \VuFind\Exception\Mail as MailException;
+
 class Mailer extends \VuFind\Mailer\Mailer {
 
     protected $sm;
@@ -98,7 +100,7 @@ class Mailer extends \VuFind\Mailer\Mailer {
                 ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject)
-                ->setReplyTo($reply_to);
+                ->setReplyTo(!is_null($reply_to) ? $reply_to : $from);
 
             if ($cc !== null) {
                 $message->addCc($cc);

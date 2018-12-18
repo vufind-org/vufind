@@ -77,7 +77,7 @@ mark {
     background-color: #a51e37;
 }
 
-.facet > .text {
+.facet:not(.active) > .text {
     color: #a51e37;
 }
 
@@ -85,6 +85,24 @@ mark {
     background-color: #7b7d84;
 }
 
-a:hover {
+/* hyperlink color fixes */
+a:hover, .template-name-content a:not(.panel-default-link) {
     color: #a51e37;
+}
+
+.panel-default-link {
+    color: #32414b;
+}
+
+.panel-inverse-link {
+    color: white;
+}
+
+.panel-default-link:hover, .panel-inverse-link:hover {
+    color: #7b7d84;
+}
+
+
+.partner {
+    padding-bottom: 20px;
 }

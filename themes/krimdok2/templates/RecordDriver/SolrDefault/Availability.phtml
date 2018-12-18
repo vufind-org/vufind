@@ -1,0 +1,18 @@
+<?
+$signatures = $this->driver->getLocalSignatures();
+if ($this->driver->isAvailableInTuebingen() || !empty($signatures)) {
+    echo "<tr>";
+    echo "<th>";
+    echo $this->transEsc('Availability in Tubingen') . ":";
+    echo "</th>";
+    echo "<td>";
+    if (!OnlyOrdered($signatures)) {
+        echo $this->transEsc('Available in Tubingen') . ".<br>";
+    }
+    foreach ($signatures as $signature) {
+        echo $this->escapeHtml($signature) . "<br>";
+    }
+    echo "</td>";
+    echo "</tr>";
+}
+?>
