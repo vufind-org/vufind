@@ -46,3 +46,5 @@ onlinePayment['transactionFeeProductCode'] = 'Transaction'
 onlinePayment['productCodeMappings'] = 'Overdue=demo_003:Long Overdue=demo_004'
 ; Mappings to languages supported by the service
 ;onlinePayment['supportedLanguages'] = 'fi=fi:en=en'
+; Product code mappings from organization names or codes to product codes
+;onlinePayment['organizationProductCodeMappings'] = 'Helsinki=demo_003:Tampere=demo_004'

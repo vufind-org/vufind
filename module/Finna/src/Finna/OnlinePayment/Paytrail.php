@@ -155,12 +155,14 @@ class Paytrail extends BaseHandler
         if (!isset($this->config->productCode)
             && !isset($this->config->transactionFeeProductCode)
             && !isset($this->config->productCodeMappings)
+            && !isset($this->config->organizationProductCodeMappings)
         ) {
             $module->setTotalAmount($amount + $transactionFee);
         } else {
             $productCode = !empty($this->config->productCode)
                 ? $this->config->productCode : '';
             $productCodeMappings = [];
+            $organizationProductCodeMappings = [];
             if (!empty($this->config->productCodeMappings)) {
                 foreach (explode(':', $this->config->productCodeMappings) as $item) {
                     $parts = explode('=', $item, 2);
@@ -170,12 +172,26 @@ class Paytrail extends BaseHandler
                     $productCodeMappings[trim($parts[0])] = trim($parts[1]);
                 }
             }
+            if (!empty($this->config->organizationProductCodeMappings)) {
+                $map = explode(':', $this->config->organizationProductCodeMappings);
+                foreach ($map as $item) {
+                    $parts = explode('=', $item, 2);
+                    if (count($parts) != 2) {
+                        continue;
+                    }
+                    $organizationProductCodeMappings[trim($parts[0])]
+                        = trim($parts[1]);
+                }
+            }
 
             foreach ($fines as $fine) {
                 $fineType = $fine['fine'] ?? '';
+                $fineOrg = $fine['organization'] ?? '';
 
                 if (isset($productCodeMappings[$fineType])) {
                     $code = $productCodeMappings[$fineType];
+                } elseif (isset($organizationProductCodeMappings[$fineOrg])) {
+                    $code = $organizationProductCodeMappings[$fineOrg];
                 } elseif ($productCode) {
                     $code = $productCode;
                 } else {
