@@ -111,6 +111,7 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
                 }
             }
         }
+        $item->attributes['defer'] = true;
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 }
