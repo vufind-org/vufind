@@ -5,10 +5,18 @@
   $results = $this->recommend->getResults();
   $activeFacets = $this->recommend->getActiveFacets();
   $rangeFacets = $this->recommend->getAllRangeFacets();
+
+  foreach ($activeFacets as $field => $facetName) {
+    if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
+      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      break;
+    }
+  }
 ?>
 <?php if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
-  <div class="side-facets-container-ajax">
+  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
@@ -37,31 +45,31 @@
   ]); ?>
 <?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
-<?php $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
+<?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
-  <?php foreach ($activeFacets as $title => $facetName): ?>
-    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+  <?php foreach ($activeFacets as $field => $facetName): ?>
+    <?php $allowExclude = $this->recommend->excludeAllowed($field); ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
+      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($title) ?>">
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>">
         <span class="facet-load-indicator hidden">
           <span class="text">
             <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
           </span>
         </span>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
-        <?php if (in_array($title, $hierarchicalFacets)): ?>
-          <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
-              data-facet="<?=$this->escapeHtmlAttr($title)?>"
+        <?php if (in_array($field, $hierarchicalFacets)): ?>
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+              data-facet="<?=$this->escapeHtmlAttr($field)?>"
               data-path=""
               data-exclude="<?=$allowExclude?>"
-              data-operator="<?=$this->recommend->getFacetOperator($title)?>"
+              data-operator="<?=$this->recommend->getFacetOperator($field)?>"
               data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="<?=$hierarchicalFacetSortOptions[$title] ?? ''?>">
+              data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
           </div>
         <?php endif; ?>
       </div>

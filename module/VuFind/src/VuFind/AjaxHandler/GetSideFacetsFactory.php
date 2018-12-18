@@ -70,7 +70,6 @@ class GetSideFacetsFactory implements \Zend\ServiceManager\Factory\FactoryInterf
             $container->get('VuFind\Config\PluginManager')->get('facets'),
             $container->get('ViewRenderer')
         );
-        $result->setLogger($container->get('VuFind\Logger'));
         return $result;
     }
 }

@@ -189,7 +189,11 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         };
 
         $runner = $this->searchRunner;
-        return $runner->run($request, DEFAULT_SEARCH_BACKEND, $setupCallback);
+        return $runner->run(
+            $request,
+            $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
+            $setupCallback
+        );
     }
 
     /**

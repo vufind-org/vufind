@@ -185,6 +185,7 @@ VuFind.register('side_facets', function SideFacets() {
     var query = urlParts.length > 1 ? urlParts[1] : '';
     var request = {
       method: 'getSideFacets',
+      searchClassId: $container.data('searchClassId'),
       query: query,
       enabledFacets: facetList
     };
