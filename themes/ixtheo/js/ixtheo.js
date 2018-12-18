@@ -1,3 +1,25 @@
+function getSubscriptionBundleItems(bundle_id) {
+  var query = "bundle_id:" + bundle_id;
+  var datums = [];
+  $.ajax({
+    url: VuFind.path + '/AJAX/JSON',
+    data: {
+       method: 'getSubscriptionBundleEntries'
+    },
+    dataType: 'json',
+    success: function displaySubscriptionItems(json) {
+      $(document).ready(function() {
+        if (json.data.length > 0) {
+          datums = [];
+          for (var j = 0; j < json.data.length; j++) {
+            datums.push(json.data[j]);
+          }
+        }
+      });
+    }
+  });
+}
+
 $(document).ready(function() {
    var previous_handler;
    $("#searchForm_type").on('focus', function () {
