@@ -3,6 +3,7 @@
 namespace IxTheo\View\Helper\Root;
 
 use Zend\ServiceManager\ServiceManager;
+use VuFindSearch\Query\Query;
 
 /**
  * Some IxTheo specific struff
@@ -67,4 +68,15 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         $list = $this->makeClassificationLinkMap($ixtheo_classes, "ixtheo-[A-Z]");
         return $list;
     }
+
+
+    public function getSubscriptionBundlesTitles() {
+        $runner = $this->sm->getServiceLocator()->get('VuFind\SearchRunner');
+        $request = new \Zend\Stdlib\Parameters([ 'lookfor' => 'format:"Subscription Bundle"' ]);
+        $subscription_bundles = $runner->run($request)->getResults();
+        $html = $this->getView()->render('myresearch/subscription_bundles.phtml',
+                                               array('subscription_bundles' =>  $subscription_bundles));
+        return $html;
+    }
+
 }
