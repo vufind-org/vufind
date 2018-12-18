@@ -32,6 +32,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
 use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
@@ -47,6 +48,13 @@ use Zend\View\Model\ViewModel;
  */
 class MyResearchController extends AbstractBase
 {
+    /**
+     * ILS Pagination Helper
+     *
+     * @var PaginationHelper
+     */
+    protected $paginationHelper = null;
+
     /**
      * Are we currently in a lightbox context?
      *
@@ -465,7 +473,7 @@ class MyResearchController extends AbstractBase
      */
     public function addAccountBlocksToFlashMessenger($catalog, $patron)
     {
-        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+        if ($catalog->checkCapability('getAccountBlocks', compact('patron'))
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
@@ -1273,73 +1281,31 @@ class MyResearchController extends AbstractBase
             return $this->createViewModel();
         }
 
-        // Get page and page size:
-        $page = (int)$this->params()->fromQuery('page', 1);
+        // Get paging setup:
         $config = $this->getConfig();
-        $limit = isset($config->Catalog->historic_loan_page_size)
-            ? $config->Catalog->historic_loan_page_size : 50;
-        $ilsPaging = true;
-        if (isset($functionConfig['max_results'])) {
-            $limit = min([$functionConfig['max_results'], $limit]);
-        } elseif (isset($functionConfig['page_size'])) {
-            if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = $functionConfig['default_page_size']
-                    ?? $functionConfig['page_size'][0];
-            }
-        } else {
-            $ilsPaging = false;
-        }
-
-        // Get sort settings
-        $sort = false;
-        if (!empty($functionConfig['sort'])) {
-            $sort = $this->params()->fromQuery('sort');
-            if (!isset($functionConfig['sort'][$sort])) {
-                if (isset($functionConfig['default_sort'])) {
-                    $sort = $functionConfig['default_sort'];
-                } else {
-                    reset($functionConfig['sort']);
-                    $sort = key($functionConfig['sort']);
-                }
-            }
-        }
-
-        // Configure call params
-        $params = [
-            'sort' => $sort
-        ];
-        if ($ilsPaging) {
-            $params['page'] = $page;
-            $params['limit'] = $limit;
-        }
+        $pageOptions = $this->getPaginationHelper()->getOptions(
+            (int)$this->params()->fromQuery('page', 1),
+            $this->params()->fromQuery('sort'),
+            $config->Catalog->historic_loan_page_size ?? 50,
+            $functionConfig
+        );
 
         // Get checked out item details:
-        $result = $catalog->getMyTransactionHistory($patron, $params);
+        $result
+            = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
 
         if (isset($result['success']) && !$result['success']) {
             $this->flashMessenger()->addErrorMessage($result['status']);
             return $this->createViewModel();
         }
 
-        // Build paginator if needed:
-        if ($ilsPaging && $limit < $result['count']) {
-            $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($page);
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions, $result['count'], $result['transactions']
+        );
+        if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
-        } elseif ($limit > 0 && $limit < $result['count']) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter(
-                $result['transactions']
-            );
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($page);
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
         } else {
-            $paginator = false;
             $pageStart = 0;
             $pageEnd = $result['count'];
         }
@@ -1347,25 +1313,15 @@ class MyResearchController extends AbstractBase
         $transactions = $hiddenTransactions = [];
         foreach ($result['transactions'] as $i => $current) {
             // Build record driver (only for the current visible page):
-            if ($ilsPaging || ($i >= $pageStart && $i <= $pageEnd)) {
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
 
-        // Handle view params for sorting
-        $sortList = [];
-        if (!empty($functionConfig['sort'])) {
-            foreach ($functionConfig['sort'] as $key => $value) {
-                $sortList[$key] = [
-                    'desc' => $value,
-                    'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
-                ];
-            }
-        }
-
+        $sortList = $pageOptions['sortList'];
+        $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
                 'transactions', 'paginator', 'params',
@@ -1756,5 +1712,18 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toRoute('myresearch-profile');
         }
         return $view;
+    }
+
+    /**
+     * Get the ILS pagination helper
+     *
+     * @return PaginationHelper
+     */
+    protected function getPaginationHelper()
+    {
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new PaginationHelper();
+        }
+        return $this->paginationHelper;
     }
 }

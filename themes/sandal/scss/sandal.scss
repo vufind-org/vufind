@@ -162,6 +162,8 @@ header {
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
+  h1,h2,h3,h4 { margin-top: 0; }
+
   .facet-group {
     margin-left: 1rem;
     margin-right: 1rem;
@@ -206,10 +208,16 @@ header {
   .facet .badge {
     max-height: 15px;
     margin-top: 5px;
-    line-height: .8;
-    background-color: $sidebar-item-badge;
   }
 }
+
+.facet .badge {
+  flex-shrink: 0;
+  max-height: 19px;
+  line-height: .8;
+  background-color: $sidebar-item-badge;
+}
+
 .sidebar.left,
 .sidebar.right {
   padding-left: 0;
