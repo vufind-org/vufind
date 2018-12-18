@@ -356,7 +356,7 @@ $config = [
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\I18n\Locale\LocaleSettingsFactory',
             'VuFind\I18n\Translator\Loader\LoaderConfig' => 'VuFind\I18n\Translator\Loader\LoaderConfigFactory',
             'VuFind\I18n\Translator\Loader\LoaderInterface' => 'VuFind\I18n\Translator\Loader\LoaderFactory',
-            'VuFind\I18n\Translator\Loader\Listener\ListenerManager' => 'VuFind\I18n\Translator\Loader\Listener\ListenerManagerFactory',
+            'VuFind\I18n\Translator\Loader\Handler\HandlerManager' => 'VuFind\I18n\Translator\Loader\Handler\HandlerManagerFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -652,32 +652,33 @@ $config = [
             ],
         ],
         'translator_loader' => [
+            'init' => [
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\InitialHandler',
+            ],
             'local' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\DirectoryListener',
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\DirectoryHandler',
                 'opts' => [
                     'dir' => LOCAL_OVERRIDE_DIR . '/languages',
                     'ext' => 'yaml,ini'
                 ]
             ],
             'core' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\DirectoryListener',
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\DirectoryHandler',
                 'opts' => [
                     'dir' => APPLICATION_PATH . '/languages',
                     'ext' => 'ini'
                 ]
             ],
             'ext' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\ExtensionListener',
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\ExtensionHandler',
             ],
             'ini' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\IniFileListener',
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\IniFileHandler',
             ],
-            'yaml' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\YamlFileListener',
+            'yml' => [
+                'type' => 'VuFind\I18n\Translator\Loader\Handler\YamlFileHandler',
             ],
-            'base' => [
-                'type' => 'VuFind\I18n\Translator\Loader\Listener\BaseLocaleListener',
-            ],
+
         ]
     ],
     // Authorization configuration:

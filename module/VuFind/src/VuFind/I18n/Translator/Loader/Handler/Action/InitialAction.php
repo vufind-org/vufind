@@ -1,10 +1,8 @@
 <?php
 
-namespace VuFind\I18n\Translator\Loader\Event;
+namespace VuFind\I18n\Translator\Loader\Handler\Action;
 
-use Zend\EventManager\Event;
-
-class InitialEvent extends Event
+class InitialAction implements ActionInterface
 {
     /**
      * @var string
@@ -18,7 +16,6 @@ class InitialEvent extends Event
 
     public function __construct(string $locale, string $textDomain)
     {
-        parent::__construct(self::class);
         $this->locale = $locale;
         $this->textDomain = $textDomain;
     }

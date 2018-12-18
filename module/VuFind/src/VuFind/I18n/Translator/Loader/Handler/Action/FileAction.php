@@ -1,10 +1,8 @@
 <?php
 
-namespace VuFind\I18n\Translator\Loader\Event;
+namespace VuFind\I18n\Translator\Loader\Handler\Action;
 
-use Zend\EventManager\Event;
-
-class FileEvent extends Event
+class FileAction implements ActionInterface
 {
     /**
      * @var string
@@ -13,7 +11,6 @@ class FileEvent extends Event
 
     public function __construct(string $file)
     {
-        parent::__construct(self::class);
         $this->file = $file;
     }
 
