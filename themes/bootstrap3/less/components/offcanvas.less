@@ -9,11 +9,31 @@
   margin-bottom: 1rem;
 }
 
-@media screen and (min-width: 768px) {
   .close-offcanvas,
   .search-filter-toggle { display: none; }
-}
+
 @media screen and (max-width: 767px) {
+  .close-offcanvas::before,
+  .close-offcanvas::after,
+  .search-filter-toggle::before,
+  .search-filter-toggle::after {
+    display: inline-block;
+    width: 16px;
+    font: normal normal normal 14px/1 FontAwesome;
+  }
+  .offcanvas-left .close-offcanvas::after { content: "\f105"; }
+  .offcanvas-right .close-offcanvas::before { content: "\f104"; }
+  .offcanvas-left .search-filter-toggle::before { content: "\f100"; }
+  .offcanvas-right .search-filter-toggle::after { content: "\f101"; }
+
+  .close-offcanvas { display: block; }
+  .search-filter-toggle {
+    &:extend(.btn);
+    &:extend(.btn-default);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
   body.offcanvas {
     overflow-x: hidden; /* Prevent scroll on narrow devices */
     transition: margin .5s;
