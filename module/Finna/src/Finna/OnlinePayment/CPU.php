@@ -172,6 +172,8 @@ class CPU extends BaseHandler
                     'UTF-8',
                     iconv('UTF-8', 'ISO-8859-1//IGNORE', $fineDesc)
                 );
+                // Remove ' since that causes the string to be truncated
+                $fineDesc = str_replace("'", ' ', $fineDesc);
             }
 
             $code = $productCodeMappings[$fineType] ?? $productCode;
