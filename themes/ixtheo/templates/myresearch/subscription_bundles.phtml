@@ -10,7 +10,11 @@
     </div>
     <div id="<?=$bundle_id?>" class="panel-collapse collapse">
       <div class="panel-body">
-        <script type="text/javascript">getSubscriptionBundleItems('<?=$bundle_id?>');</script>
+        <script type="text/javascript">
+          $("#<?=$bundle_id?>").on("show.bs.collapse", function() {
+            getSubscriptionBundleItems('<?=$bundle_id?>');
+          });
+        </script>
       </div>
     </div>
   </div>

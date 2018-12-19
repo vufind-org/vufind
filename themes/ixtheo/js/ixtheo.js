@@ -1,5 +1,6 @@
 function convertToListEntries(bundle_id, items) {
   var bundle_div = $("#" + bundle_id).find("div");
+  bundle_div.empty();
   var entry_list = '<ul class="list-group">';
   $.each(items, function(index, item) {
     entry_list += ('<li class="list-group-item">' +
