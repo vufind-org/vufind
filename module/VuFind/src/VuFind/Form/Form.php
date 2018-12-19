@@ -284,7 +284,11 @@ class Form extends \Zend\Form\Form implements
             $elements[] = $element;
         }
 
-        $elements[] = ['type' => 'submit', 'name' => 'submit', 'label' => 'Send'];
+        $elements[]= [
+            'type' => 'submit',
+            'name' => 'submit',
+            'label' => $this->translate('Send')
+        ];
 
         return $elements;
     }
