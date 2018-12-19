@@ -25,10 +25,6 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<div class="visible-xs">
-  <?=$this->render('search/controls/limit.phtml')?>
-  <?=$this->render('search/controls/sort.phtml')?>
-</div>
 <?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
