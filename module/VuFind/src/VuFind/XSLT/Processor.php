@@ -42,6 +42,29 @@ use XSLTProcessor;
 class Processor
 {
     /**
+     * Locate an XSLT file and return its full path.
+     *
+     * @param string $xslt Filename
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected static function findXslt($xslt)
+    {
+        $paths = [
+            LOCAL_OVERRIDE_DIR . '/xsl/',
+            APPLICATION_PATH . '/module/VuFind/xsl/',
+            APPLICATION_PATH . '/xsl/',
+        ];
+        foreach ($paths as $path) {
+            if (file_exists($path . $xslt)) {
+                return $path . $xslt;
+            }
+        }
+        throw new \Exception('Cannot locate ' . $xslt);
+    }
+
+    /**
      * Perform an XSLT transformation and return the results.
      *
      * @param string $xslt   Name of stylesheet (in application/xsl directory)
@@ -53,8 +76,7 @@ class Processor
     public static function process($xslt, $xml, $params = [])
     {
         $style = new DOMDocument();
-        // TODO: support local overrides
-        $style->load(APPLICATION_PATH . '/module/VuFind/xsl/' . $xslt);
+        $style->load(static::findXslt($xslt));
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
