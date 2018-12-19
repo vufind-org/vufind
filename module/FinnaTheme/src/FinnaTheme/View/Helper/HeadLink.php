@@ -30,7 +30,6 @@
 namespace FinnaTheme\View\Helper;
 
 use Finna\Cache\Manager;
-use Finna\Db\Table\FinnaCache;
 use VuFindTheme\ThemeInfo;
 use Zend\Http\Request;
 
@@ -46,8 +45,6 @@ use Zend\Http\Request;
  */
 class HeadLink extends \VuFindTheme\View\Helper\HeadLink
 {
-    use FinnaConcatTrait;
-
     /**
      * Cache Manager
      *
@@ -63,28 +60,19 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
     protected $request;
 
     /**
-     * FinnaCache table. Requirement of FinnaConcatTrait.
-     *
-     * @var FinnaCache
-     */
-    protected $finnaCache;
-
-    /**
      * Constructor
      *
      * @param ThemeInfo   $themeInfo    Theme information service
      * @param string|bool $plconfig     Config for current application environment
      * @param Request     $request      Request
      * @param Manager     $cacheManager Cache manager
-     * @param FinnaCache  $finnaCache   FinnaCache table
      */
     public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request,
-        Manager $cacheManager, FinnaCache $finnaCache
+        Manager $cacheManager
     ) {
         parent::__construct($themeInfo, $plconfig);
         $this->request = $request;
         $this->cacheManager = $cacheManager;
-        $this->finnaCache = $finnaCache;
     }
 
     /**

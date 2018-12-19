@@ -27,7 +27,6 @@
  */
 namespace FinnaTheme\View\Helper;
 
-use Finna\Db\Table\FinnaCache;
 use VuFindTheme\ThemeInfo;
 use Zend\Http\Request;
 
@@ -42,8 +41,6 @@ use Zend\Http\Request;
  */
 class HeadScript extends \VuFindTheme\View\Helper\HeadScript
 {
-    use FinnaConcatTrait;
-
     /**
      * Request
      *
@@ -52,23 +49,14 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     protected $request;
 
     /**
-     * FinnaCache table. Requirement of FinnaConcatTrait.
-     *
-     * @var FinnaCache
-     */
-    protected $finnaCache;
-
-    /**
      * Constructor
      *
-     * @param ThemeInfo   $themeInfo  Theme information service
-     * @param string|bool $plconfig   Whether or not to concatenate
-     * @param Request     $request    Request
-     * @param FinnaCache  $finnaCache FinnaCache table
+     * @param ThemeInfo   $themeInfo Theme information service
+     * @param string|bool $plconfig  Whether or not to concatenate
+     * @param Request     $request   Request
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request,
-        FinnaCache $finnaCache
-    ) {
+    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request)
+    {
         // Disable pipeline on old Android browsers (< 4.0) due to them having
         // trouble handling all the minified data.
         $ua = $request->getHeader('User-Agent');
@@ -83,7 +71,6 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
 
         parent::__construct($themeInfo, $plconfig);
         $this->request = $request;
-        $this->finnaCache = $finnaCache;
     }
 
     /**

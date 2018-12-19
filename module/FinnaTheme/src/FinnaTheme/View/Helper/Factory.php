@@ -55,8 +55,7 @@ class Factory extends \VuFindTheme\View\Helper\Factory
             $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
             $sm->get('Request'),
-            $sm->get('VuFind\Cache\Manager'),
-            $sm->get('VuFind\DbTablePluginManager')->get('FinnaCache')
+            $sm->get('VuFind\Cache\Manager')
         );
     }
 
@@ -72,8 +71,7 @@ class Factory extends \VuFindTheme\View\Helper\Factory
         return new HeadScript(
             $sm->get('VuFindTheme\ThemeInfo'),
             Factory::getPipelineConfig($sm),
-            $sm->get('Request'),
-            $sm->get('VuFind\DbTablePluginManager')->get('FinnaCache')
+            $sm->get('Request')
         );
     }
 

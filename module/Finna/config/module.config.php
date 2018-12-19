@@ -30,19 +30,6 @@ namespace Finna\Module\Configuration;
 $config = [
     'router' => [
         'routes' => [
-            'cache-file' => [
-                'type'    => 'Zend\Router\Http\Segment',
-                'options' => [
-                    'route'    => '/cache/[:file]',
-                    'constraints' => [
-                        'file'     => '[.a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Cache',
-                        'action'     => 'File',
-                    ]
-                ],
-            ],
             'comments-inappropriate' => [
                 'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
@@ -159,7 +146,6 @@ $config = [
             'Finna\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'Finna\Controller\BarcodeController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
-            'Finna\Controller\CacheController' => 'Finna\Controller\CacheControllerFactory',
             'Finna\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'Finna\Controller\CollectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'Finna\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -188,8 +174,6 @@ $config = [
         'aliases' => [
             'Barcode' => 'Finna\Controller\BarcodeController',
             'barcode' => 'Finna\Controller\BarcodeController',
-            'Cache' => 'Finna\Controller\CacheController',
-            'cache' => 'Finna\Controller\CacheController',
             'Comments' => 'Finna\Controller\CommentsController',
             'comments' => 'Finna\Controller\CommentsController',
             'FeedContent' => 'Finna\Controller\FeedContentController',
