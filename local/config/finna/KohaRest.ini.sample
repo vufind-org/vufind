@@ -47,6 +47,8 @@ display_item_hold_counts = false
 display_total_hold_count = true
 ; Whether total item count is displayed in results list
 display_total_item_count_in_results = true
+; Whether to include item's ccode in the shelf location
+display_ccode = true
 ; Whether to include item's call number in the shelf location
 display_full_call_number = true
 ; Whether to display title hold links in results list
