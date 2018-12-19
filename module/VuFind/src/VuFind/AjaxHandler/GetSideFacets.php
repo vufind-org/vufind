@@ -248,7 +248,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      * @param string  $facet   Facet
      * @param Results $results Search results
      *
-     * @return int
+     * @return int|null
      */
     protected function getCheckboxFacetCount($facet, Results $results)
     {
@@ -262,7 +262,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
                 [$field => $value]
             );
             if (!isset($checkboxResults[$field]['list'])) {
-                return 0;
+                return null;
             }
             $count = 0;
             $truncate = substr($value, -1) === '*';

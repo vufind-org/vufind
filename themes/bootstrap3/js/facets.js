@@ -198,9 +198,11 @@ VuFind.register('side_facets', function SideFacets() {
           var $facetContainer = $container.find(containerSelector + '[data-facet="' + facet + '"]');
           $facetContainer.data('loaded', 'true');
           if (typeof facetData.checkboxCount !== 'undefined') {
-            $facetContainer.find('.avail-count').text(
-              facetData.checkboxCount.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
-            );
+            if (facetData.checkboxCount !== null) {
+              $facetContainer.find('.avail-count').text(
+                facetData.checkboxCount.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'))
+              );
+            }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(facetData.html);
           } else {
