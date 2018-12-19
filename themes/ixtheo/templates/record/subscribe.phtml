@@ -14,5 +14,6 @@
           data-lightbox-onclose="checkSubscribeStatuses();">
         <input type="hidden" name="action" value="unsubscribe"/>
         <input class="btn btn-danger" type="submit" value="<?= $this->transEsc("Unsubscribe");?>"/>
+        <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal"><?=$this->transEsc("Abort")?></button>
     </form>
 <?php } ?>
