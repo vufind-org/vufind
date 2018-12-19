@@ -81,7 +81,7 @@ class Redi extends AbstractBase
      */
     public function fetchLinks($openURL)
     {
-        $url = $this->baseUrl . '?' . $openURL;
+        $url = $this->getResolverUrl($openURL);
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }

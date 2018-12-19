@@ -68,14 +68,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getTotal()
     {
-        $totalHits = 0;
-        if (isset($this->response['SearchResult'])
-            && isset($this->response['SearchResult']['Statistics'])
-            && isset($this->response['SearchResult']['Statistics']['TotalHits'])
-        ) {
-            $totalHits = $this->response['SearchResult']['Statistics']['TotalHits'];
-        }
-        return $totalHits;
+        return $this->response['SearchResult']['Statistics']['TotalHits'] ?? 0;
     }
 
     /**
@@ -85,9 +78,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getRawFacets()
     {
-        return isset($this->response['SearchResult'])
-            && isset($this->response['SearchResult']['AvailableFacets'])
-            ? $this->response['SearchResult']['AvailableFacets'] : [];
+        return $this->response['SearchResult']['AvailableFacets'] ?? [];
     }
 
     /**
@@ -98,9 +89,7 @@ class RecordCollection extends AbstractRecordCollection
     public function getFacets()
     {
         $vufindFacetList = [];
-        $facets = isset($this->response['SearchResult'])
-            && isset($this->response['SearchResult']['AvailableFacets'])
-            ? $this->response['SearchResult']['AvailableFacets'] : [];
+        $facets = $this->response['SearchResult']['AvailableFacets'] ?? [];
         foreach ($facets as $facet) {
             $vufindFacet['displayName'] = $facet['Id'];
             $vufindFacet['displayText'] = $facet['Label'];

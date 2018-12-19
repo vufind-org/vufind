@@ -1,27 +1,29 @@
 <?php
 /**
- * Feedback Controller
+ * Controller for configurable forms (feedback etc).
  *
  * PHP version 7
  *
  * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\Mail as MailException;
+use VuFind\Form\Form;
 use Zend\Mail\Address;
 
 /**
- * Feedback Class
- *
- * Controls the Feedback
+ * Controller for configurable forms (feedback etc).
  *
  * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -34,70 +36,163 @@ class FeedbackController extends AbstractBase
      */
     public function homeAction()
     {
-        return $this->forwardTo('Feedback', 'Email');
+        return $this->forwardTo('Feedback', 'Form');
     }
 
     /**
-     * Receives input from the user and sends an email to the recipient set in
-     * the config.ini
+     * Handles rendering and submit of dynamic forms.
+     * Form configurations are specified in FeedbackForms.json
      *
      * @return void
      */
-    public function emailAction()
+    public function formAction()
     {
-        $view = $this->createViewModel();
-        $view->useRecaptcha = $this->recaptcha()->active('feedback');
-        $view->name = $this->params()->fromPost('name');
-        $view->email = $this->params()->fromPost('email');
-        $view->comments = $this->params()->fromPost('comments');
-
-        // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
-            if (empty($view->email) || empty($view->comments)) {
-                $this->flashMessenger()->addMessage('bulk_error_missing', 'error');
-                return;
-            }
-
-            // These settings are set in the feedback settion of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
-                ->get('config');
-            $feedback = isset($config->Feedback) ? $config->Feedback : null;
-            $recipient_email = isset($feedback->recipient_email)
-                ? $feedback->recipient_email : null;
-            $recipient_name = isset($feedback->recipient_name)
-                ? $feedback->recipient_name : 'Your Library';
-            $email_subject = isset($feedback->email_subject)
-                ? $feedback->email_subject : 'VuFind Feedback';
-            $sender_email = isset($feedback->sender_email)
-                ? $feedback->sender_email : 'noreply@vufind.org';
-            $sender_name = isset($feedback->sender_name)
-                ? $feedback->sender_name : 'VuFind Feedback';
-            if ($recipient_email == null) {
-                throw new \Exception(
-                    'Feedback Module Error: Recipient Email Unset (see config.ini)'
-                );
-            }
-
-            $email_message = empty($view->name) ? '' : 'Name: ' . $view->name . "\n";
-            $email_message .= 'Email: ' . $view->email . "\n";
-            $email_message .= 'Comments: ' . $view->comments . "\n\n";
-
-            // This sets up the email to be sent
-            // Attempt to send the email and show an appropriate flash message:
-            try {
-                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
-                $mailer->send(
-                    new Address($recipient_email, $recipient_name),
-                    new Address($sender_email, $sender_name),
-                    $email_subject, $email_message
-                );
-                $this->flashMessenger()->addMessage(
-                    'Thank you for your feedback.', 'success'
-                );
-            } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
-            }
+        $formId = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        if (!$formId) {
+            $formId = 'FeedbackSite';
         }
+
+        $user = $this->getUser();
+
+        $form = $this->serviceLocator->get('VuFind\Form\Form');
+        $form->setFormId($formId);
+
+        if (!$form->isEnabled()) {
+            throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
+        }
+
+        $view = $this->createViewModel(compact('form', 'formId', 'user'));
+        $view->useRecaptcha
+            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
+
+        $params = $this->params();
+        $form->setData($params->fromPost());
+
+        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            $form = $this->prefillUserInfo($form, $user);
+            return $view;
+        }
+
+        if (! $form->isValid()) {
+            return $view;
+        }
+
+        list($messageParams, $template)
+            = $form->formatEmailMessage($this->params()->fromPost());
+        $emailMessage = $this->getViewRenderer()->partial(
+            $template, ['fields' => $messageParams]
+        );
+
+        list($senderName, $senderEmail) = $this->getSender();
+
+        $replyToName = $replyToEmail = null;
+        $replyToName = $params->fromPost(
+            'name',
+            $user ? trim($user->firstname . ' ' . $user->lastname) : null
+        );
+        $replyToEmail = $params->fromPost(
+            'email',
+            $user ? $user->email : null
+        );
+
+        list($recipientName, $recipientEmail) = $form->getRecipient();
+
+        $emailSubject = $form->getEmailSubject($params->fromPost());
+
+        list($success, $errorMsg)= $this->sendEmail(
+            $recipientName, $recipientEmail, $senderName, $senderEmail,
+            $replyToName, $replyToEmail, $emailSubject, $emailMessage
+        );
+
+        $this->showResponse($view, $form, $success, $errorMsg);
+
         return $view;
+    }
+
+    /**
+     * Prefill form sender fields for logged in users.
+     *
+     * @param Form  $form Form
+     * @param array $user User
+     *
+     * @return Form
+     */
+    protected function prefillUserInfo($form, $user)
+    {
+        if ($user) {
+            $form->setData(
+                [
+                 'name' => $user->firstname . ' ' . $user->lastname,
+                 'email' => $user['email']
+                ]
+            );
+        }
+        return $form;
+    }
+
+    /**
+     * Send form data as email.
+     *
+     * @param string $recipientName  Recipient name
+     * @param string $recipientEmail Recipient email
+     * @param string $senderName     Sender name
+     * @param string $senderEmail    Sender email
+     * @param string $replyToName    Reply-to name
+     * @param string $replyToEmail   Reply-to email
+     * @param string $emailSubject   Email subject
+     * @param string $emailMessage   Email message
+     *
+     * @return array with elements success:boolean, errorMessage:string (optional)
+     */
+    protected function sendEmail(
+        $recipientName, $recipientEmail, $senderName, $senderEmail,
+        $replyToName, $replyToEmail, $emailSubject, $emailMessage
+    ) {
+        try {
+            $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+            $mailer->send(
+                new Address($recipientEmail, $recipientName),
+                new Address($senderEmail, $senderName),
+                $emailSubject, $emailMessage, null, $replyToEmail
+            );
+            return [true, null];
+        } catch (MailException $e) {
+            return [false, $e->getMessage()];
+        }
+    }
+
+    /**
+     * Show response after form submit.
+     *
+     * @param View    $view     View
+     * @param Form    $form     Form
+     * @param boolean $success  Was email sent successfully?
+     * @param string  $errorMsg Error message (optional)
+     *
+     * @return array with name, email
+     */
+    protected function showResponse($view, $form, $success, $errorMsg = null)
+    {
+        if ($success) {
+            $this->flashMessenger()->addMessage(
+                $form->getSubmitResponse(), 'success'
+            );
+        } else {
+            $this->flashMessenger()->addMessage($errorMsg, 'error');
+        }
+    }
+
+    /**
+     * Return email sender from configuration.
+     *
+     * @return array with name, email
+     */
+    protected function getSender()
+    {
+        $config = $this->getConfig()->Feedback;
+        $email = $config->sender_email ?? 'noreply@vufind.org';
+        $name = $config->sender_name ?? 'VuFind Feedback';
+
+        return [$name, $email];
     }
 }

@@ -30,9 +30,8 @@ namespace VuFindTest\AjaxHandler;
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\Manager;
 use VuFind\ILS\Connection;
-use VuFind\Session\Settings;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * CheckRequestIsValid test class.
@@ -48,33 +47,18 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
-     * @param Settings         $ss      Session settings (or null for default)
-     * @param Connection       $ils     ILS connection (or null for default)
-     * @param ILSAuthenticator $ilsAuth ILS authenticator (or null for default)
-     * @param User|bool        $user    Return value for isLoggedIn() in auth manager
+     * @param User|bool $user Return value for isLoggedIn() in auth manager
      *
      * @return CheckRequestIsValid
      */
-    protected function getHandler($ss = null, $ils = null, $ilsAuth = null,
-        $user = false
-    ) {
-        // Create container
-        $container = new ServiceManager();
-
-        // Install or mock up services:
-        $this->addServiceToContainer($container, 'VuFind\Session\Settings', $ss);
-        $this->addServiceToContainer($container, 'VuFind\ILS\Connection', $ils);
-        $this->addServiceToContainer(
-            $container, 'VuFind\Auth\ILSAuthenticator', $ilsAuth
-        );
-
+    protected function getHandler($user = false)
+    {
         // Set up auth manager with user:
-        $authManager = $this->getMockAuthManager($user);
-        $container->setService('VuFind\Auth\Manager', $authManager);
+        $this->container->set(Manager::class, $this->getMockAuthManager($user));
 
         // Build the handler:
         $factory = new AbstractIlsAndUserActionFactory();
-        return $factory($container, CheckRequestIsValid::class);
+        return $factory($this->container, CheckRequestIsValid::class);
     }
 
     /**
@@ -98,7 +82,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testEmptyQuery()
     {
-        $handler = $this->getHandler(null, null, null, $this->getMockUser());
+        $handler = $this->getHandler($this->getMockUser());
         $this->assertEquals(
             ['bulk_error_missing', 400],
             $handler->handleRequest($this->getParamsHelper())
@@ -112,17 +96,17 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function runSuccessfulTest($ilsMethod, $requestType = null)
     {
-        $ilsAuth = $this->getMockService(
-            'VuFind\Auth\ILSAuthenticator', ['storedCatalogLogin']
-        );
+        $ilsAuth = $this->container
+            ->createMock(ILSAuthenticator::class, ['storedCatalogLogin']);
         $ilsAuth->expects($this->once())->method('storedCatalogLogin')
             ->will($this->returnValue([3]));
-        $ils = $this
-            ->getMockService('VuFind\ILS\Connection', [$ilsMethod]);
+        $ils = $this->container->createMock(Connection::class, [$ilsMethod]);
         $ils->expects($this->once())->method($ilsMethod)
             ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
             ->will($this->returnValue(true));
-        $handler = $this->getHandler(null, $ils, $ilsAuth, $this->getMockUser());
+        $this->container->set(Connection::class, $ils);
+        $this->container->set(ILSAuthenticator::class, $ilsAuth);
+        $handler = $this->getHandler($this->getMockUser());
         $params = ['id' => 1, 'data' => 2, 'requestType' => $requestType];
         return $handler->handleRequest($this->getParamsHelper($params));
     }

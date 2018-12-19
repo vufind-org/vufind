@@ -556,10 +556,13 @@ class InstallController extends AbstractBase
             $drivers = [];
             $blacklist = [
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'AbstractBase.php',
-                'PluginManager.php', 'PluginFactory.php'
+                'PluginManager.php',
             ];
             while ($line = readdir($dir)) {
-                if (stristr($line, '.php') && !in_array($line, $blacklist)) {
+                if (stristr($line, '.php') && !in_array($line, $blacklist)
+                    && substr($line, -11) !== 'Factory.php'
+                    && substr($line, -9) !== 'Trait.php'
+                ) {
                     $drivers[] = str_replace('.php', '', $line);
                 }
             }

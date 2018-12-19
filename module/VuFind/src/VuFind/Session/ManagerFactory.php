@@ -54,10 +54,12 @@ class ManagerFactory implements FactoryInterface
     protected function getOptions(ContainerInterface $container)
     {
         $cookieManager = $container->get('VuFind\Cookie\CookieManager');
-        $options = [
+        // Set options only if we are not running from CLI
+        $options = 'cli' !== PHP_SAPI ? [
+            'cookie_httponly' => $cookieManager->isHttpOnly(),
             'cookie_path' => $cookieManager->getPath(),
             'cookie_secure' => $cookieManager->isSecure()
-        ];
+        ] : [];
 
         $domain = $cookieManager->getDomain();
         if (!empty($domain)) {

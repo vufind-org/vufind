@@ -342,8 +342,10 @@ $config = [
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
+            'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
             'VuFind\GeoFeatures\BasemapConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapTabConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
             'VuFind\GeoFeatures\MapSelectionConfig' => 'VuFind\GeoFeatures\AbstractConfigFactory',
@@ -515,6 +517,7 @@ $config = [
             'cover_layer' => [ /* see VuFind\Cover\Layer\PluginManager for defaults */ ],
             'db_row' => [ /* see VuFind\Db\Row\PluginManager for defaults */ ],
             'db_table' => [ /* see VuFind\Db\Table\PluginManager for defaults */ ],
+            'doilinker' => [ /* see VuFind\DoiLinker\PluginManager for defaults */ ],
             'hierarchy_driver' => [ /* see VuFind\Hierarchy\Driver\PluginManager for defaults */ ],
             'hierarchy_treedataformatter' => [ /* see VuFind\Hierarchy\TreeDataFormatter\PluginManager for defaults */ ],
             'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
@@ -675,6 +678,7 @@ $recordRoutes = [
 
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
+    'Feedback' => ['feedback-form' => 'Form/[:id]'],
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
 ];

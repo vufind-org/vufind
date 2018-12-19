@@ -190,20 +190,53 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getStatuses($ids)
     {
-        $items = [];
+        // Group records by source and request statuses from the drivers
+        $grouped = [];
         foreach ($ids as $id) {
-            try {
-                $items[] = $this->getStatus($id);
-            } catch (ILSException $e) {
-                $items[] = [
-                    [
-                        'id' => $id,
-                        'error' => 'An error has occurred'
-                    ]
+            $source = $this->getSource($id);
+            if (!isset($grouped[$source])) {
+                $driver = $this->getDriver($source);
+                $grouped[$source] = [
+                    'driver' => $driver,
+                    'ids' => []
                 ];
             }
+            $grouped[$source]['ids'][] = $id;
         }
-        return $items;
+
+        // Process each group
+        $results = [];
+        foreach ($grouped as $source => $current) {
+            // Get statuses only if a driver is configured for this source
+            if ($current['driver']) {
+                $localIds = array_map(
+                    function ($id) {
+                        return $this->getLocalId($id);
+                    },
+                    $current['ids']
+                );
+                try {
+                    $statuses = $current['driver']->getStatuses($localIds);
+                } catch (ILSException $e) {
+                    $statuses = array_map(
+                        function ($id) {
+                            return [
+                                ['id' => $id, 'error' => 'An error has occurred']
+                            ];
+                        },
+                        $localIds
+                    );
+                }
+                $statuses = array_map(
+                    function ($status) use ($source) {
+                        return $this->addIdPrefixes($status, $source);
+                    },
+                    $statuses
+                );
+                $results = array_merge($results, $statuses);
+            }
+        }
+        return $results;
     }
 
     /**
@@ -1099,7 +1132,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'placeILLRequest', compact($details))
+            && $this->methodSupported($driver, 'placeILLRequest', compact('details'))
         ) {
             // Patron is not stripped so that the correct library can be determined
             $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);

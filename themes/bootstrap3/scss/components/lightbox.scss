@@ -1,17 +1,30 @@
 #modal { background-color: rgba(0,0,0,.2); }
-#modal .modal-content > .close { // Fancy side X button
+
+#modal .modal-content > .close {
   position: absolute;
-  right: -50px;
   top: 0;
+  right: 0;
   z-index: 2;
-  font-size: 32pt;
-  color: #fff;
+  padding: .5rem 1rem;
   opacity: .7;
+
   body.rtl & {
-    left: -50px;
+    left: 0;
     right: auto;
   }
 }
+@media (min-width: 768px) {
+  #modal .modal-content > .close { // Fancy side X button
+    right: -50px;
+    font-size: 32pt;
+    color: #fff;
+    body.rtl & {
+      left: -50px;
+      right: auto;
+    }
+  }
+}
+
 #modal .modal-content > .close:hover { opacity: 1; }
 #modal .modal-body h1,
 #modal .modal-body h2 {

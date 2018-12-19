@@ -46,10 +46,10 @@ class MapTabConfig extends AbstractConfig
     protected function getDefaultOptions()
     {
         return [
-            'recordMap' => 'false',
-            'displayCoords' => 'false',
+            'recordMap' => false,
+            'displayCoords' => false,
             'mapLabels' => null,
-            'graticule' => 'false'
+            'graticule' => false
         ];
     }
 
