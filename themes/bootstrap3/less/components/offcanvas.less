@@ -21,10 +21,6 @@
     width: 16px;
     font: normal normal normal 14px/1 FontAwesome;
   }
-  .offcanvas-left .close-offcanvas::after { content: "\f105"; }
-  .offcanvas-right .close-offcanvas::before { content: "\f104"; }
-  .offcanvas-left .search-filter-toggle::before { content: "\f100"; }
-  .offcanvas-right .search-filter-toggle::after { content: "\f101"; }
 
   .close-offcanvas { display: block; }
   .search-filter-toggle {
@@ -91,6 +87,30 @@
     .offcanvas-overlay {
       opacity: 1;
       transition: opacity .5s;
+    }
+  }
+
+  /* Button arrows */
+  .offcanvas-left {
+    .close-offcanvas::after { content: "\f105"; }
+    .search-filter-toggle::before { content: "\f100"; }
+  }
+  .offcanvas-right {
+    .close-offcanvas::before { content: "\f104"; }
+    .search-filter-toggle::after { content: "\f101"; }
+  }
+  .rtl /* right to left */ {
+    &.offcanvas-left {
+      .close-offcanvas::after { content: none; }
+      .close-offcanvas::before { content: "\f105"; }
+      .search-filter-toggle::before { content: none; }
+      .search-filter-toggle::after { content: "\f100"; }
+    }
+    &.offcanvas-right {
+      .close-offcanvas::before { content: none; }
+      .close-offcanvas::after { content: "\f104"; }
+      .search-filter-toggle::after { content: none; }
+      .search-filter-toggle::before { content: "\f101"; }
     }
   }
 }
