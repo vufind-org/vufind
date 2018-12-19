@@ -29,7 +29,13 @@ VuFind.register('doi', function Doi() {
             for (var i = 0; i < response.data[currentDoi].length; i++) {
               var newLink = $('<a />');
               newLink.attr('href', response.data[currentDoi][i].link);
-              newLink.text(response.data[currentDoi][i].label);
+              newLink.text(' ' + response.data[currentDoi][i].label);
+              if (typeof response.data[currentDoi][i].icon !== 'undefined') {
+                var icon = $('<img />');
+                icon.attr('src',  response.data[currentDoi][i].icon);
+                icon.attr('class', 'doi-icon');
+                $(doiEl).append(icon);
+              }
               $(doiEl).append(newLink);
               $(doiEl).append("<br />");
             }
