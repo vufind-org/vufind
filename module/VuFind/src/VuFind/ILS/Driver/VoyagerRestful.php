@@ -2176,7 +2176,9 @@ EOT;
     public function getMyTransactions($patron, $params = [])
     {
         // Get local loans from the database so that we can get more details
-        // than available via the API.
+        // than available via the API. We need all records, so paging is not
+        // possible.
+        unset($params['limit']);
         $transactions = parent::getMyTransactions($patron, $params);
 
         // Get remote loans and renewability for local loans via the API
@@ -2268,7 +2270,10 @@ EOT;
                 }
             }
         }
-        return $transactions;
+        return [
+            'count' => count($transactions['records']),
+            'records' => $transactions['records']
+        ];
     }
 
     /**
