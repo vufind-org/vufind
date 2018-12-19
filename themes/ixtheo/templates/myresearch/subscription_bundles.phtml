@@ -2,14 +2,14 @@
   <?foreach ($this->subscription_bundles as $bundle): ?>
   <div class="panel panel-default">
     <div class="panel-heading">
+    <?$bundle_id = $bundle->getUniqueID()?>
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+        <a data-toggle="collapse" data-parent="#accordion" href="#<?=$bundle_id?>">
         <?=$bundle->getTitle()?></a>
       </h4>
     </div>
-    <?$bundle_id = $bundle->getUniqueID()?>
-    <div id="<?=$bundle_id?>" class="panel-collapse collapse in">
-      <div class "panel-body">
+    <div id="<?=$bundle_id?>" class="panel-collapse collapse">
+      <div class="panel-body">
         <script type="text/javascript">getSubscriptionBundleItems('<?=$bundle_id?>');</script>
       </div>
     </div>
