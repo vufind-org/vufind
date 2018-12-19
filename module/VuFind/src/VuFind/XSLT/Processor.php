@@ -58,7 +58,10 @@ class Processor
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
-        if ($doc->loadXML($xml)) {
+        $sanitizeXmlRegEx
+            = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
+        $cleanXml = trim(preg_replace("/$sanitizeXmlRegEx/u", ' ', $xml));
+        if ($doc->loadXML($cleanXml)) {
             foreach ($params as $key => $value) {
                 $xsl->setParameter('', $key, $value);
             }
