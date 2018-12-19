@@ -58,10 +58,10 @@ class Processor
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
-        $xml = str_replace(
-            [chr(27), chr(28), chr(29), chr(30), chr(31), chr(8)], ' ', $xml
-        );
-        if ($doc->loadXML($xml)) {
+        $sanitizeXmlRegEx
+            = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
+        $cleanXml = trim(preg_replace("/$sanitizeXmlRegEx/u", ' ', $xml));
+        if ($doc->loadXML($cleanXml)) {
             foreach ($params as $key => $value) {
                 $xsl->setParameter('', $key, $value);
             }
