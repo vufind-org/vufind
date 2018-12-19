@@ -154,9 +154,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     if ($item.find('.handler-name').length > 0) {
       handlerName = $item.find('.handler-name').val();
     }
-    if ($item.data("handler-name")) {
-      handlerName = $item.data("handler-name");
-    }
+
     //queue the element into the handler
     checkItemHandlers[handlerName].itemQueueAjax(id, $item);
   }
