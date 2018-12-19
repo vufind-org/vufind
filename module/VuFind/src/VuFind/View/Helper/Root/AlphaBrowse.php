@@ -75,6 +75,9 @@ class AlphaBrowse extends \Zend\View\Helper\AbstractHelper
             'type' => ucwords($source) . 'Browse',
             'lookfor' => $this->escapeForSolr($item['heading']),
         ];
+        if ($item['count'] == 1) {
+            $query['jumpto'] = 1;
+        }
         return $this->url->__invoke('search-results', [], ['query' => $query]);
     }
 
