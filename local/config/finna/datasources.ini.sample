@@ -46,5 +46,7 @@ onlinePayment['transactionFeeProductCode'] = 'Transaction'
 onlinePayment['productCodeMappings'] = 'Overdue=demo_003:Long Overdue=demo_004'
 ; Mappings to languages supported by the service
 ;onlinePayment['supportedLanguages'] = 'fi=fi:en=en'
-; Product code mappings from organization names or codes to product codes
+; Product code mappings from organization names or codes to product codes. If there's
+; already a product code from other mappings above, this value is prepended to it
+; without any delimiter.
 ;onlinePayment['organizationProductCodeMappings'] = 'Helsinki=demo_003:Tampere=demo_004'

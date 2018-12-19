@@ -161,28 +161,9 @@ class Paytrail extends BaseHandler
         } else {
             $productCode = !empty($this->config->productCode)
                 ? $this->config->productCode : '';
-            $productCodeMappings = [];
-            $organizationProductCodeMappings = [];
-            if (!empty($this->config->productCodeMappings)) {
-                foreach (explode(':', $this->config->productCodeMappings) as $item) {
-                    $parts = explode('=', $item, 2);
-                    if (count($parts) != 2) {
-                        continue;
-                    }
-                    $productCodeMappings[trim($parts[0])] = trim($parts[1]);
-                }
-            }
-            if (!empty($this->config->organizationProductCodeMappings)) {
-                $map = explode(':', $this->config->organizationProductCodeMappings);
-                foreach ($map as $item) {
-                    $parts = explode('=', $item, 2);
-                    if (count($parts) != 2) {
-                        continue;
-                    }
-                    $organizationProductCodeMappings[trim($parts[0])]
-                        = trim($parts[1]);
-                }
-            }
+            $productCodeMappings = $this->getProductCodeMappings();
+            $organizationProductCodeMappings
+                = $this->getOrganizationProductCodeMappings();
 
             foreach ($fines as $fine) {
                 $fineType = $fine['fine'] ?? '';
@@ -190,12 +171,13 @@ class Paytrail extends BaseHandler
 
                 if (isset($productCodeMappings[$fineType])) {
                     $code = $productCodeMappings[$fineType];
-                } elseif (isset($organizationProductCodeMappings[$fineOrg])) {
-                    $code = $organizationProductCodeMappings[$fineOrg];
                 } elseif ($productCode) {
                     $code = $productCode;
                 } else {
                     $code = $fineType;
+                }
+                if (isset($organizationProductCodeMappings[$fineOrg])) {
+                    $code = $organizationProductCodeMappings[$fineOrg] . $code;
                 }
                 $code = substr($code, 0, 16);
 

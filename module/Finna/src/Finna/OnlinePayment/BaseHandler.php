@@ -275,4 +275,45 @@ abstract class BaseHandler implements OnlinePaymentHandlerInterface,
         $table = $this->getTable('transaction');
         $table->setTransactionUnknownPaymentResponse($orderNum, $status);
     }
+
+    /**
+     * Get product code mappings from configuration
+     *
+     * @return array
+     */
+    protected function getProductCodeMappings()
+    {
+        $mappings = [];
+        if (!empty($this->config->productCodeMappings)) {
+            foreach (explode(':', $this->config->productCodeMappings) as $item) {
+                $parts = explode('=', $item, 2);
+                if (count($parts) != 2) {
+                    continue;
+                }
+                $mappings[trim($parts[0])] = trim($parts[1]);
+            }
+        }
+        return $mappings;
+    }
+
+    /**
+     * Get organization to product code mappings from configuration
+     *
+     * @return array
+     */
+    protected function getOrganizationProductCodeMappings()
+    {
+        $mappings = [];
+        if (!empty($this->config->organizationProductCodeMappings)) {
+            $map = explode(':', $this->config->organizationProductCodeMappings);
+            foreach ($map as $item) {
+                $parts = explode('=', $item, 2);
+                if (count($parts) != 2) {
+                    continue;
+                }
+                $mappings[trim($parts[0])] = trim($parts[1]);
+            }
+        }
+        return $mappings;
+    }
 }

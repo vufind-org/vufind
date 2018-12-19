@@ -72,7 +72,7 @@ class Cpu_Client_Product
         }
 
         if ($description) {
-            $this->Description = Cpu_Client::sanitize($description);
+            $this->Description = strip_tags(trim($description));
         }
     }
 
