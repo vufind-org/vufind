@@ -37,7 +37,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
            $result_set = $results->getResults();
            $titles = [];
            foreach ($result_set as $record)
-               array_push($titles,  '{ "id" :  "' . $record->getUniqueID() . '" , "title" : "' . $record->getTitle() . '"}');
+               array_push($titles,  '{ "id" :  "' . $record->getUniqueID() . '" , "title" : "' . json_encode($record->getTitle()) . '"}');
            return $this->output( '{ "items": [' . implode(', ', $titles)  . '] }', self::STATUS_OK);
         } catch (\Exception $e) {
             return $this->output(
