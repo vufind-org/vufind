@@ -252,37 +252,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      */
     protected function getCheckboxFacetCount($facet, Results $results)
     {
-        $checkboxFacets = $results->getParams()->getCheckboxFacets();
-        foreach ($checkboxFacets as $checkboxFacet) {
-            if ($facet !== $checkboxFacet['filter']) {
-                continue;
-            }
-            list($field, $value) = explode(':', $facet, 2);
-            $checkboxResults = $results->getFacetList(
-                [$field => $value]
-            );
-            if (!isset($checkboxResults[$field]['list'])) {
-                return null;
-            }
-            $count = 0;
-            $truncate = substr($value, -1) === '*';
-            if ($truncate) {
-                $value = substr($value, 0, -1);
-            }
-            foreach ($checkboxResults[$field]['list'] as $item) {
-                if ($item['value'] == $value
-                    || ($truncate
-                    && preg_match('/^' . $value . '/', $item['value']))
-                    || ($item['value'] == 'true' && $value == '1')
-                    || ($item['value'] == 'false' && $value == '0')
-                ) {
-                    $count += $item['count'];
-                }
-            }
-            return $count;
-        }
-
-        return 0;
+        // There's currently no good way to return counts for checkbox filters.
+        return null;
     }
 
     /**

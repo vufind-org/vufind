@@ -195,12 +195,6 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
-        if (!empty($this->checkboxFacets)) {
-            foreach (array_keys($this->checkboxFacets) as $facetField) {
-                $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
-                $facetSet['field'][] = $facetField;
-            }
-        }
 
         return $facetSet;
     }
