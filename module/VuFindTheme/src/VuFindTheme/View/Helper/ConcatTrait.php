@@ -230,7 +230,10 @@ trait ConcatTrait
         }
         // Locate/create concatenated asset file
         $filename = md5($group['key']) . '.min.' . $this->getFileType();
-        $concatPath = $this->getResourceCacheDir() . $filename;
+        // Minifier uses realpath, so do that here too to make sure we're not
+        // pointing to a symlink. Otherwise the path converter won't find the correct
+        // shared directory part.
+        $concatPath = realpath($this->getResourceCacheDir()) . '/' . $filename;
         if (!file_exists($concatPath)) {
             $lockfile = "$concatPath.lock";
             $handle = fopen($lockfile, 'c+');
