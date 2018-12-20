@@ -2,23 +2,23 @@
   <?foreach ($this->subscription_bundles as $bundle): ?>
   <div class="panel panel-default">
     <div class="panel-heading">
-      <?$bundle_id = $bundle->getUniqueID()?>
+      <?//$bundle_id = preg_replace("/:/", "_", $bundle->getUniqueID())?>
+      <?$bundle_id =  $bundle->getUniqueID()?>
+      <?$bundle_id_normalized = preg_replace("/:/", "_", $bundle_id)?>
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#<?=$bundle_id?>">
+        <a data-toggle="collapse" data-parent="#accordion" href="#<?=$bundle_id_normalized?>">
           <?=$bundle->getTitle()?>
         </a>
-        <a class="subscribe-record save-record modal-link" data-lightbox  id="<?=$bundle_id?>_subscribe"
+        <a class="subscribe-record save-record modal-link" data-lightbox  id="<?=$bundle_id_normalized?>_subscribe"
                  href="/Record/<?=$bundle_id?>/Subscribe" rel="nofollow" title=<?=$this->transEsc("Subscribe")?>>
                  <i class="fa fa-fw fa-bell"></i>
         </a>
       </h4>
     </div>
-    <div id="<?=$bundle_id?>" class="panel-collapse collapse">
+    <div id="<?=$bundle_id_normalized?>" class="panel-collapse collapse">
       <div class="panel-body">
-        <script type="text/javascript">
-          $("#<?=$bundle_id?>").on("show.bs.collapse", function() {
-            getSubscriptionBundleItems('<?=$bundle_id?>');
-          });
+         <script type="text/javascript">
+          $("#<?=$bundle_id_normalized?>").on("show.bs.collapse", getSubscriptionBundleItems('<?=$bundle_id?>'));
         </script>
       </div>
     </div>
