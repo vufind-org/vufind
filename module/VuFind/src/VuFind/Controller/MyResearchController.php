@@ -32,6 +32,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
 use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
@@ -47,6 +48,13 @@ use Zend\View\Model\ViewModel;
  */
 class MyResearchController extends AbstractBase
 {
+    /**
+     * ILS Pagination Helper
+     *
+     * @var PaginationHelper
+     */
+    protected $paginationHelper = null;
+
     /**
      * Are we currently in a lightbox context?
      *
@@ -1195,40 +1203,30 @@ class MyResearchController extends AbstractBase
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
 
-        // Get paging setup:
-        $config = $this->getConfig();
-        $pagingSetup = $this->getPagingSetup(
-            (int)$this->params()->fromQuery('page', 1),
-            isset($config->Catalog->checked_out_page_size)
-                ? $config->Catalog->checked_out_page_size : 50,
-            $catalog->checkFunction('getMyTransactions', $patron)
-        );
-
         // Get checked out item details:
-        $result = $catalog->getMyTransactions($patron, $pagingSetup['ilsParams']);
+        $result = $catalog->getMyTransactions($patron);
 
-        // Support also older driver return value:
-        if (!isset($result['count'])) {
-            $result = [
-                'count' => count($result),
-                'records' => $result
-            ];
-        }
+        // Get page size:
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->checked_out_page_size)
+            ? $config->Catalog->checked_out_page_size : 50;
 
         // Build paginator if needed:
-        $paginator = $this->buildPaginator(
-            $pagingSetup, $result['count'], $result['records']
-        );
-        if ($paginator) {
+        if ($limit > 0 && $limit < count($result)) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($pagingSetup['limit']) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
         } else {
+            $paginator = false;
             $pageStart = 0;
-            $pageEnd = $result['count'];
+            $pageEnd = count($result);
         }
 
         $transactions = $hiddenTransactions = [];
-        foreach ($result['records'] as $i => $current) {
+        foreach ($result as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -1241,7 +1239,7 @@ class MyResearchController extends AbstractBase
             }
 
             // Build record driver (only for the current visible page):
-            if ($pagingSetup['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
+            if ($i >= $pageStart && $i <= $pageEnd) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
@@ -1251,13 +1249,10 @@ class MyResearchController extends AbstractBase
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
 
-        $ilsPaging = $pagingSetup['ilsPaging'];
-        $sortList = $pagingSetup['sortList'];
-        $params = $pagingSetup['ilsParams'];
         return $this->createViewModel(
             compact(
-                'transactions', 'renewForm', 'renewResult', 'paginator', 'ilsPaging',
-                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params'
+                'transactions', 'renewForm', 'renewResult', 'paginator',
+                'hiddenTransactions', 'displayItemBarcode'
             )
         );
     }
@@ -1288,28 +1283,28 @@ class MyResearchController extends AbstractBase
 
         // Get paging setup:
         $config = $this->getConfig();
-        $pagingSetup = $this->getPagingSetup(
+        $pageOptions = $this->getPaginationHelper()->getOptions(
             (int)$this->params()->fromQuery('page', 1),
-            isset($config->Catalog->historic_loan_page_size)
-                ? $config->Catalog->historic_loan_page_size : 50,
+            $this->params()->fromQuery('sort'),
+            $config->Catalog->historic_loan_page_size ?? 50,
             $functionConfig
         );
 
         // Get checked out item details:
         $result
-            = $catalog->getMyTransactionHistory($patron, $pagingSetup['ilsParams']);
+            = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
 
         if (isset($result['success']) && !$result['success']) {
             $this->flashMessenger()->addErrorMessage($result['status']);
             return $this->createViewModel();
         }
 
-        $paginator = $this->buildPaginator(
-            $pagingSetup, $result['count'], $result['transactions']
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions, $result['count'], $result['transactions']
         );
         if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($pagingSetup['limit']) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
         } else {
             $pageStart = 0;
             $pageEnd = $result['count'];
@@ -1318,16 +1313,15 @@ class MyResearchController extends AbstractBase
         $transactions = $hiddenTransactions = [];
         foreach ($result['transactions'] as $i => $current) {
             // Build record driver (only for the current visible page):
-            if ($pagingSetup['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
 
-        $ilsPaging = $pagingSetup['ilsPaging'];
-        $sortList = $pagingSetup['sortList'];
-        $params = $pagingSetup['ilsParams'];
+        $sortList = $pageOptions['sortList'];
+        $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
                 'transactions', 'paginator', 'params',
@@ -1721,92 +1715,15 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get paging settings and request data for paged ILS requests.
+     * Get the ILS pagination helper
      *
-     * @param int   $page            Current page (1-based)
-     * @param int   $defaultPageSize Default page size
-     * @param array $functionConfig  Function config returned from the ILS
-     *
-     * @return array
+     * @return PaginationHelper
      */
-    protected function getPagingSetup($page, $defaultPageSize, $functionConfig)
+    protected function getPaginationHelper()
     {
-        // Get page and page size:
-        $page = (int)$this->params()->fromQuery('page', 1);
-        $limit = $defaultPageSize;
-        $ilsPaging = true;
-        if (isset($functionConfig['max_results'])) {
-            $limit = min([$functionConfig['max_results'], $limit]);
-        } elseif (isset($functionConfig['page_size'])) {
-            if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = $functionConfig['default_page_size']
-                    ?? $functionConfig['page_size'][0];
-            }
-        } else {
-            $ilsPaging = false;
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new PaginationHelper();
         }
-
-        // Get sort settings
-        $sort = false;
-        if (!empty($functionConfig['sort'])) {
-            $sort = $this->params()->fromQuery('sort');
-            if (!isset($functionConfig['sort'][$sort])) {
-                if (isset($functionConfig['default_sort'])) {
-                    $sort = $functionConfig['default_sort'];
-                } else {
-                    reset($functionConfig['sort']);
-                    $sort = key($functionConfig['sort']);
-                }
-            }
-        }
-
-        // Collect ILS call params
-        $ilsParams = compact('sort');
-        if ($ilsPaging) {
-            $ilsParams['page'] = $page;
-            $ilsParams['limit'] = $limit;
-        }
-
-        // Handle view params for sorting
-        $sortList = [];
-        if (!empty($functionConfig['sort'])) {
-            foreach ($functionConfig['sort'] as $key => $value) {
-                $sortList[$key] = [
-                    'desc' => $value,
-                    'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
-                ];
-            }
-        }
-
-        return compact('page', 'limit', 'ilsPaging', 'ilsParams', 'sortList');
-    }
-
-    /**
-     * Build a paginator with the paging setup and ILS results if necessary
-     *
-     * @param array $pagingSetup Paging setup and parameters
-     * @param int   $count       Result count
-     * @param array $records     Result records
-     *
-     * @return false|\Zend\Paginator\Paginator
-     */
-    protected function buildPaginator($pagingSetup, $count, $records)
-    {
-        $limit = $pagingSetup['limit'];
-        if ($pagingSetup['ilsPaging'] && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\NullFill($count);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($pagingSetup['page']);
-        } elseif ($limit > 0 && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($records);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($pagingSetup['page']);
-        } else {
-            $paginator = false;
-        }
-        return $paginator;
+        return $this->paginationHelper;
     }
 }
