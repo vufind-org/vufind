@@ -1215,14 +1215,6 @@ class MyResearchController extends AbstractBase
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron, $pageOptions['ilsParams']);
 
-        // Support also older driver return value:
-        if (!isset($result['count'])) {
-            $result = [
-                'count' => count($result),
-                'records' => $result
-            ];
-        }
-
         // Build paginator if needed:
         $paginator = $this->getPaginationHelper()->getPaginator(
             $pageOptions, $result['count'], $result['records']
