@@ -279,6 +279,7 @@ trait ConcatTrait
                 . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            $details['path'] = realpath($details['path']);
             $data[] = $this->getMinifiedData($details, $concatPath);
         }
         // Separate each file's data with a new line so that e.g. a file
