@@ -320,6 +320,8 @@ ul .dropdown-menu {
   overflow: hidden;
 }
 
+/* Don't use object-fit because it's not supported in IE11+Edge15' */
+/*
 .panel-image-wrapper {
   max-height: 205px;
   height: auto;
@@ -333,6 +335,13 @@ ul .dropdown-menu {
   max-height: 166px;
   overflow: hidden;
   object-fit: cover;
+}
+*/
+
+.panel-image {
+    background-size: cover;
+    background-position: center;
+    height: 166px;
 }
 
 .panel-content {
