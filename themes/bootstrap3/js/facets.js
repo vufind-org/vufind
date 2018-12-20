@@ -148,7 +148,7 @@ function collapseTopFacets() {
 }
 
 /* --- Side Facets --- */
-VuFind.register('side_facets', function SideFacets() {
+VuFind.register('sideFacets', function SideFacets() {
   function addJSTreeListener(treeNode) {
     treeNode.bind('ready.jstree', function onReadyJstree() {
       var tree = $(this);
