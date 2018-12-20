@@ -10,6 +10,7 @@
     $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
   }
 ?>
+<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <?php if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <?php endif; ?>
