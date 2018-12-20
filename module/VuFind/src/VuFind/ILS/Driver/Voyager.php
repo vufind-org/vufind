@@ -1303,11 +1303,10 @@ EOT;
      * Protected support method for getMyTransactions.
      *
      * @param array $patron Patron data for use in an sql query
-     * @param array $params Parameters
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getMyTransactionsSQL($patron, $params)
+    protected function getMyTransactionsSQL($patron)
     {
         // Expressions
         $sqlExpressions = [
@@ -1363,15 +1362,7 @@ EOT;
         ];
 
         // Order
-        $sort = explode(
-            ' ', !empty($params['sort']) ? $params['sort'] : 'date_due desc', 2
-        );
-        $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'DESC' : 'ASC';
-        if ('title' === $sort[0]) {
-            $sqlOrder = ["TITLE $direction", "FULLDATE ASC"];
-        } else {
-            $sqlOrder = ["FULLDATE $direction", "TITLE ASC"];
-        }
+        $sqlOrder = ["FULLDATE ASC", "TITLE ASC"];
 
         // Bind
         $sqlBind = [':id' => $patron['id']];
@@ -1383,43 +1374,6 @@ EOT;
             'order' => $sqlOrder,
             'bind' => $sqlBind,
             'group' => ['CIRC_TRANSACTIONS.ITEM_ID']
-        ];
-
-        return $sqlArray;
-    }
-
-    /**
-     * Protected support method for getMyTransactions.
-     *
-     * @param array $patron Patron data for use in an sql query
-     * @param array $params Parameters
-     *
-     * @return array Keyed data for use in an sql query
-     */
-    protected function getMyTransactionsCountSQL($patron, $params)
-    {
-        // Expressions
-        $sqlExpressions = [
-            'COUNT(*) as cnt'
-        ];
-
-        // From
-        $sqlFrom = [
-            $this->dbName . '.CIRC_TRANSACTIONS'
-        ];
-
-        // Where
-        $sqlWhere = [
-            'CIRC_TRANSACTIONS.PATRON_ID = :id'
-        ];
-
-        $sqlBind = [':id' => $patron['id']];
-
-        $sqlArray = [
-            'expressions' => $sqlExpressions,
-            'from' => $sqlFrom,
-            'where' => $sqlWhere,
-            'bind' => $sqlBind
         ];
 
         return $sqlArray;
@@ -1519,34 +1473,18 @@ EOT;
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
-     * @param array $params Parameters
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron, $params = [])
+    public function getMyTransactions($patron)
     {
         $transList = [];
 
-        $sqlArray = $this->getMyTransactionsSQL($patron, $params);
+        $sqlArray = $this->getMyTransactionsSQL($patron);
+
         $sql = $this->buildSqlFromArray($sqlArray);
-
-        // Paging
-        if (isset($params['limit'])) {
-            $pageSize = $params['limit'] ?? 50;
-            $startRow = ($params['page'] - 1) * $pageSize + 1;
-            $endRow = $params['page'] * $pageSize;
-
-            $sql['string'] = <<<EOT
-SELECT * FROM (
-  SELECT a.*, ROWNUM AS RNUM FROM ({$sql['string']}) a
-    WHERE ROWNUM <= :endRow
-) WHERE RNUM >= :startRow
-EOT;
-            $sql['bind'][':startRow'] = $startRow;
-            $sql['bind'][':endRow'] = $endRow;
-        }
 
         try {
             $sqlStmt = $this->executeSQL($sql);
@@ -1554,21 +1492,7 @@ EOT;
                 $processRow = $this->processMyTransactionsData($row, $patron);
                 $transList[] = $processRow;
             }
-
-            if (isset($params['page']) && isset($params['limit'])) {
-                $sqlArray = $this->getMyTransactionsCountSQL($patron, $params);
-                $sql = $this->buildSqlFromArray($sqlArray);
-                $sqlStmt = $this->executeSQL($sql);
-                $row = $sqlStmt->fetch(PDO::FETCH_NUM);
-                $count = $row[0];
-            } else {
-                $count = count($transList);
-            }
-
-            return [
-                'count' => $count,
-                'records' => $transList
-            ];
+            return $transList;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
@@ -2679,36 +2603,5 @@ EOT;
         $sqlStmt->execute($bind);
 
         return $sqlStmt;
-    }
-
-    /**
-     * Public Function which retrieves renew, hold and cancel settings from the
-     * driver ini file.
-     *
-     * @param string $function The name of the feature to be checked
-     * @param array  $params   Optional feature-specific parameters (array)
-     *
-     * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getConfig($function, $params = null)
-    {
-        if ('getMyTransactions' === $function) {
-            if (empty($this->config['Loans']['paging'])) {
-                return [];
-            }
-            return [
-                'max_results' => $this->config['Loans']['max_page_size'] ?? 100,
-                'sort' => [
-                    'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc',
-                    'title asc' => 'sort_title'
-                ],
-                'default_sort' => 'due asc'
-            ];
-        }
-
-        return $this->config[$function] ?? false;
     }
 }
