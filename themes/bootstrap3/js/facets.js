@@ -162,7 +162,7 @@ VuFind.register('sideFacets', function SideFacets() {
 
   function init() {
     // Advanced facets
-    $('a.facet,.facet a').click(function facetBlocking() {
+    $('a.facet:not(.narrow-toggle),.facet a').click(function facetBlocking() {
       $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
       window.location.assign($(this).attr('href'));
     });
