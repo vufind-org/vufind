@@ -64,7 +64,7 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             'overdue' => 0
         ];
         $foundValid = false;
-        foreach ($items as $item) {
+        foreach ($items['records'] ?? [] as $item) {
             if (isset($item['duedate'])) {
                 $foundValid = true;
                 // Overdue
