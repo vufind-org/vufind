@@ -2,10 +2,10 @@
 
 // Set up modules:
 $modules = [
-    'Zend\Router', 'ZfcRbac',
+    'Zend\Form', 'Zend\Router', 'ZfcRbac',
     'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
-if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
+if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'Zend\Mvc\Console';
     $modules[] = 'VuFindConsole';
 }
@@ -52,7 +52,7 @@ if (!is_dir($cacheDir)) {
 }
 
 // Enable caching unless in dev mode or running tests:
-$useCache = APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING');
+$useCache = APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
 
 // Build configuration:
 return [

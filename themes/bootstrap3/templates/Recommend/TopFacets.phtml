@@ -17,7 +17,7 @@
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
         <?php $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
         <?php foreach($cluster['list'] as $index => $thisFacet): ?>
-          <span class="facet <?=$index > $limit ? $moreClass : '' ?>">
+          <span class="facet top-facet <?=$index > $limit ? $moreClass : '' ?>">
             <?php if ($thisFacet['isApplied']):
               if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
                 $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
@@ -31,11 +31,10 @@
               <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
                 <?=$this->escapeHtml($thisFacet['displayText'])?><!--
            --></a>
-              <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
-                <?php if ($allowExclude): ?>
-                  <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-                <?php endif; ?>
-              </span>
+              <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
+              <?php if ($allowExclude): ?>
+                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+              <?php endif; ?>
             <?php endif; ?>
           </span>
           <?php /* More link */ ?>

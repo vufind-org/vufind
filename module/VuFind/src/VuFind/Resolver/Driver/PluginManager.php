@@ -50,6 +50,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'sfx' => 'VuFind\Resolver\Driver\Sfx',
         'redi' => 'VuFind\Resolver\Driver\Redi',
         'threesixtylink' => 'VuFind\Resolver\Driver\Threesixtylink',
+        'generic' => 'VuFind\Resolver\Driver\Generic',
+        'other' => 'generic'
     ];
 
     /**
@@ -68,6 +70,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
         'VuFind\Resolver\Driver\Redi' =>
             'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+        'VuFind\Resolver\Driver\Generic' =>
+            'VuFind\Resolver\Driver\AbstractBaseFactory',
     ];
 
     /**
