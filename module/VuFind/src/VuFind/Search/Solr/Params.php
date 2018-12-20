@@ -195,7 +195,6 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
-
         return $facetSet;
     }
 
