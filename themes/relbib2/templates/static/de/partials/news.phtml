@@ -3,29 +3,7 @@
     <div class="panel-content">
         <h4>Religionswissenschaft aktuell</h4>
         <p>
-        <?
-        $rss_items = $this->tuefind()->getRssNewsEntries('/usr/local/vufind/public/relbib_docs/news.rss', 4, 30);
-        if (count($rss_items) == 0)
-            print $this->translate('rss_news_missing');
-        else {
-            print '<ul id="rss_preview">';
-            foreach ($rss_items as $rss_item) {
-                $img_src = $this->imageLink('rss/' . $rss_item['tuefind:rss_title'] . '.png');
-                if ($img_src == null)
-                    $img_src = $this->imageLink('rss/rss.png');
-
-                print '<li>';
-                print '<a target="_blank" href="' . $rss_item['tuefind:rss_url'] . '" title="' . $rss_item['tuefind:rss_title'] . '">';
-                print '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />';
-                print '</a>';
-                print '&nbsp;<a target="_blank" href="'.$rss_item['link'].'" title="' . $rss_item['description'] . '">';
-                print $rss_item['description_short'];
-                print '</a>';
-                print '</li>';
-            }
-            print '</ul>';
-        }
-        ?>
+            <?=$this->tuefind()->getRssNewsEntriesHtml('/usr/local/vufind/public/relbib_docs/news.rss')?>
         </p>
         <a href="#" class="btn btn-inverse" role="button">Weiterlesen</a>
     </div>

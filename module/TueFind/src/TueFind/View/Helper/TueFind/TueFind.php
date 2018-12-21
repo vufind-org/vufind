@@ -14,6 +14,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
 
     protected $sm;
 
+    const RSS_DEFAULT_MAX_ITEM_COUNT = 5;
+
     public function __construct(ServiceManager $sm) {
         $this->sm = $sm;
     }
@@ -168,9 +170,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @param string $rss_feed_path         Path to RSS Feed file
      * @param int $max_item_count           Max items to read from file
-     * @param int $max_description_length   Max chars for 'description_short' based on 'description'
      */
-    function getRssNewsEntries($rss_feed_path, $max_item_count=5, $max_description_length=50) {
+    function getRssNewsEntries($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
         $rss_items = [];
 
         $dom = new \DOMDocument();
@@ -178,7 +179,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
             $items = $dom->getElementsByTagName('item');
             $i = 0;
             foreach ($items as $item) {
-                if ($max_item_count !== null && $i > $max_item_count)
+                if ($max_item_count !== null && $i >= $max_item_count)
                     break;
 
                 $rss_item = [];
@@ -190,13 +191,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                     $child = $child->nextSibling;
                 }
 
-                $description_short = $rss_item['description'];
-                if (mb_strlen($description_short) > $max_description_length) {
-                    $description_short = mb_substr($description_short, 0, $max_description_length - 3);
-                    $description_short .= '...';
-                }
-                $rss_item['description_short'] = $description_short;
-
                 $rss_items[] = $rss_item;
                 ++$i;
             }
@@ -205,6 +199,37 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         return $rss_items;
     }
 
+    /**
+     * Same as getRssNewsEntries, but returns a HTML snippet instead of the list.
+     */
+    function getRssNewsEntriesHtml($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
+        $html = '';
+
+        $rss_items = $this->getRssNewsEntries($rss_feed_path, $max_item_count);
+        if (count($rss_items) == 0)
+            $html .= $this->getView()->translate('rss_news_missing');
+        else {
+            $html .= '<ul id="rss_preview">';
+            foreach ($rss_items as $rss_item) {
+                $img_src = $this->getView()->imageLink('rss/' . $rss_item['tuefind:rss_title'] . '.png');
+                if ($img_src == null)
+                    $img_src = $this->getView()->imageLink('rss/rss.png');
+
+                $html .= '<li>';
+                $html .= '<a target="_blank" href="' . $rss_item['tuefind:rss_url'] . '" title="' . $rss_item['tuefind:rss_title'] . '">';
+                $html .= '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />';
+                $html .= '</a>';
+                $html .= '&nbsp;';
+                $html .= '<a target="_blank" href="'.$rss_item['link'].'" title="' . $rss_item['description'] . '" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">';
+                $html .= $rss_item['title'];
+                $html .= '</a>';
+                $html .= '</li>';
+            }
+            $html .= '</ul>';
+        }
+
+        return $html;
+    }
 
     /**
       * Get the user address from a logged in user
