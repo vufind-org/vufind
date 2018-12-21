@@ -10,13 +10,15 @@
         else {
             print '<ul id="rss_preview">';
             foreach ($rss_items as $rss_item) {
-                $img_src = $this->imageLink('rss/' . $rss_item['title'] . '.png');
+                $img_src = $this->imageLink('rss/' . $rss_item['tuefind:rss_title'] . '.png');
                 if ($img_src == null)
                     $img_src = $this->imageLink('rss/rss.png');
 
                 print '<li>';
-                print '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />&nbsp;';
-                print '<a target="_blank" href="'.$rss_item['link'].'" title="' . $rss_item['description'] . '">';
+                print '<a target="_blank" href="' . $rss_item['tuefind:rss_url'] . '" title="' . $rss_item['tuefind:rss_title'] . '">';
+                print '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />';
+                print '</a>';
+                print '&nbsp;<a target="_blank" href="'.$rss_item['link'].'" title="' . $rss_item['description'] . '">';
                 print $rss_item['description_short'];
                 print '</a>';
                 print '</li>';
