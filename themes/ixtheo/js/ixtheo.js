@@ -1,6 +1,5 @@
 function convertToListEntries(bundle_id, items) {
-  var bundle_div = $("#" + bundle_id).find("div");
-  bundle_div.empty();
+  var bundle_div = $("#" + bundle_id.replace(":", "_")).find("div");
   var entry_list = '<ul class="list-group">';
   $.each(items, function(index, item) {
     entry_list += ('<li class="list-group-item">' +
@@ -11,7 +10,7 @@ function convertToListEntries(bundle_id, items) {
                    '</li>');
   });
   entry_list += '</ul>';
-  bundle_div.append(entry_list);
+  bundle_div.html(entry_list);
 }
 
 function getSubscriptionBundleItems(bundle_id) {
