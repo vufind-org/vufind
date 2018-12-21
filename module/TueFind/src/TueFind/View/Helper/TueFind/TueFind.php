@@ -76,120 +76,163 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         return $team_email;
     }
 
-   /**
-    * Appropriately format the roles for authors
-    * @param array roles
-    *
-    * @return string
-    */
-   function formatRoles($roles) {
+    /**
+     * Appropriately format the roles for authors
+     * @param array roles
+     *
+     * @return string
+     */
+    function formatRoles($roles) {
 
-       if (!isset($roles['role'])) {
-           return '';
-       }
-       $translate = function ($arr) {
-         $translatedRoles = array();
-         foreach ($arr as $element) {
-             if (!is_array($element)) {
-               $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
-             } else {
-               foreach ($element as $str) {
-                   $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
-               }
-             }
-         }
-         return implode(',', $translatedRoles);
-       };
-       return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+        if (!isset($roles['role'])) {
+            return '';
+        }
+        $translate = function ($arr) {
+          $translatedRoles = array();
+          foreach ($arr as $element) {
+              if (!is_array($element)) {
+                $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
+              } else {
+                foreach ($element as $str) {
+                    $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
+                }
+              }
+          }
+          return implode(',', $translatedRoles);
+        };
+        return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+    }
+
+    /**
+     * Analyze a list of facets if at least one of them is chosen
+     * @param facet list array
+     *
+     * @return bool
+     */
+   function atLeastOneFacetChosen($list) {
+       foreach($list as $i => $thisFacet)
+           if ($thisFacet['isApplied'])
+               return true;
+       return false;
+
    }
 
-   /**
-    * Analyze a list of facets if at least one of them is chosen
-    * @param facet list array
-    *
-    * @return bool
-    */
-  function atLeastOneFacetChosen($list) {
-      foreach($list as $i => $thisFacet)
-          if ($thisFacet['isApplied'])
-              return true;
-      return false;
+    /**
+      * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
+      * @return string
+      */
+    function getTueFindInstance() {
+        return basename(getenv('VUFIND_LOCAL_DIR'));
+    }
 
-  }
+    /**
+      * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
+      * @return string or false of no matching value could be found
+      */
+    function getTueFindType() {
+        $instance = $this->getTueFindInstance();
+        $instance = preg_replace('/\d+$/', "", $instance);
+        switch ($instance) {
+            case 'ixtheo':
+            case 'bibstudies';
+                return 'IxTheo';
+            case 'relbib':
+                return 'RelBib';
+            case 'krimdok':
+               return 'Krimdok';
+        }
+        return false;
+    }
 
-  /**
-    * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
-    * @return string
-    */
-  function getTueFindInstance() {
-      return basename(getenv('VUFIND_LOCAL_DIR'));
-  }
+    /**
+      * Derive the German FID denomination
+      * @return string or false of no matching value could be found
+      */
+    function getTueFindFID() {
+        $instance = $this->getTueFindInstance();
+        $instance = preg_replace('/\d+$/', "", $instance);
+        switch($instance) {
+            case 'ixtheo':
+            case 'bibstudies':
+                return 'FID Theologie';
+            case 'relbib':
+                return 'FID Religionswissenschaften';
+            case 'krimdok':
+                return 'FID Kriminologie';
+         }
+         return false;
+    }
 
-  /**
-    * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
-    * @return string or false of no matching value could be found
-    */
-  function getTueFindType() {
-      $instance = $this->getTueFindInstance();
-      $instance = preg_replace('/\d+$/', "", $instance);
-      switch ($instance) {
-          case 'ixtheo':
-          case 'bibstudies';
-              return 'IxTheo';
-          case 'relbib':
-              return 'RelBib';
-          case 'krimdok':
-             return 'Krimdok';
-      }
-      return false;
-  }
+    /**
+     * Parse the RSS feed and return a short overview of the first few entries
+     *
+     * @param string $rss_feed_path         Path to RSS Feed file
+     * @param int $max_item_count           Max items to read from file
+     * @param int $max_description_length   Max chars for 'description_short' based on 'description'
+     */
+    function getRssNewsEntries($rss_feed_path, $max_item_count=5, $max_description_length=50) {
+        $rss_items = [];
 
-  /**
-    * Derive the German FID denomination
-    * @return string or false of no matching value could be found
-    */
-  function getTueFindFID() {
-      $instance = $this->getTueFindInstance();
-      $instance = preg_replace('/\d+$/', "", $instance);
-      switch($instance) {
-          case 'ixtheo':
-          case 'bibstudies':
-              return 'FID Theologie';
-          case 'relbib':
-              return 'FID Religionswissenschaften';
-          case 'krimdok':
-              return 'FID Kriminologie';
-       }
-       return false;
-  }
+        $dom = new \DOMDocument();
+        if (@$dom->load($rss_feed_path)) {
+            $items = $dom->getElementsByTagName('item');
+            $i = 0;
+            foreach ($items as $item) {
+                if ($max_item_count !== null && $i > $max_item_count)
+                    break;
 
-  /**
-    * Get the user address from a logged in user
-    * @return string
-    */
-  function getUserEmail() {
-      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-      $manager = $auth->getManager();
-      return  ($user = $manager->isLoggedIn()) ? $user->email : "";
-  }
+                $rss_item = [];
+                $child = $item->firstChild;
+                while ($child != null) {
+                    if ($child instanceof \DOMElement) {
+                        $rss_item[$child->tagName] = $child->nodeValue;
+                    }
+                    $child = $child->nextSibling;
+                }
 
-  /**
-    * Get the user address from a logged in user
-    * @return string
-    */
-  function getUserLastname() {
-      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-      $manager = $auth->getManager();
-      return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
-  }
+                $description_short = $rss_item['description'];
+                if (mb_strlen($description_short) > $max_description_length) {
+                    $description_short = mb_substr($description_short, 0, $max_description_length - 3);
+                    $description_short .= '...';
+                }
+                $rss_item['description_short'] = $description_short;
 
-  /**
-    * Get the user address from a logged in user
-    * @return string
-    */
-  function getUserFirstName() {
-      $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
-      $manager = $auth->getManager();
-      return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
-  }
+                $rss_items[] = $rss_item;
+                ++$i;
+            }
+        }
+
+        return $rss_items;
+    }
+
+
+    /**
+      * Get the user address from a logged in user
+      * @return string
+      */
+    function getUserEmail() {
+        $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+        $manager = $auth->getManager();
+        return  ($user = $manager->isLoggedIn()) ? $user->email : "";
+    }
+
+    /**
+      * Get the user address from a logged in user
+      * @return string
+      */
+    function getUserLastname() {
+        $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+        $manager = $auth->getManager();
+        return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
+    }
+
+    /**
+      * Get the user address from a logged in user
+      * @return string
+      */
+    function getUserFirstName() {
+        $auth = $this->sm->getServiceLocator()->get('ViewHelperManager')->get('Auth');
+        $manager = $auth->getManager();
+        return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
+    }
 }
