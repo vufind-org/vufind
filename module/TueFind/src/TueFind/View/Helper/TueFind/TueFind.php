@@ -14,6 +14,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
 
     protected $sm;
 
+    const RSS_DEFAULT_MAX_ITEM_COUNT = 5;
+
     public function __construct(ServiceManager $sm) {
         $this->sm = $sm;
     }
@@ -169,7 +171,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      * @param string $rss_feed_path         Path to RSS Feed file
      * @param int $max_item_count           Max items to read from file
      */
-    function getRssNewsEntries($rss_feed_path, $max_item_count=5) {
+    function getRssNewsEntries($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
         $rss_items = [];
 
         $dom = new \DOMDocument();
@@ -177,7 +179,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
             $items = $dom->getElementsByTagName('item');
             $i = 0;
             foreach ($items as $item) {
-                if ($max_item_count !== null && $i > $max_item_count)
+                if ($max_item_count !== null && $i >= $max_item_count)
                     break;
 
                 $rss_item = [];
@@ -200,7 +202,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     /**
      * Same as getRssNewsEntries, but returns a HTML snippet instead of the list.
      */
-    function getRssNewsEntriesHtml($rss_feed_path, $max_item_count=5) {
+    function getRssNewsEntriesHtml($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
         $html = '';
 
         $rss_items = $this->getRssNewsEntries($rss_feed_path, $max_item_count);
