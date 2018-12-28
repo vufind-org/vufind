@@ -1450,19 +1450,20 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $message = isset($loan->loanStatus->status)
                 ? $this->mapStatus($loan->loanStatus->status, $function) : '';
 
-            $renewals = max(
-                [
-                    0,
-                    $this->config['Loans']['renewalLimit']
-                        - $loan->remainingRenewals
-                ]
-            );
-            $renewLimit = $this->config['Loans']['renewalLimit'];
-            if (isset($loan->loanStatus->status)
-                && $this->isPermanentRenewalBlock($loan->loanStatus->status)
+            if (!isset($this->config['Loans']['renewalLimit'])
+                || (isset($loan->loanStatus->status)
+                && $this->isPermanentRenewalBlock($loan->loanStatus->status))
             ) {
-                $renewals = null;
                 $renewLimit = null;
+                $renewals = null;
+            } else {
+                $renewLimit = $this->config['Loans']['renewalLimit'];
+                $renewals = max(
+                    [
+                        0,
+                        $renewLimit - $loan->remainingRenewals
+                    ]
+                );
             }
 
             $trans = [
