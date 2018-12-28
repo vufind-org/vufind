@@ -408,7 +408,7 @@ EOT;
                             $urlParts = parse_url($value['url']);
                             if (empty($urlParts['host'])) {
                                 $file = preg_replace(
-                                    '/^\/themes\/[^\/]+\/images\//',
+                                    '/^\/?themes\/[^\/]+\/images\//',
                                     '',
                                     $value['url']
                                 );
