@@ -349,6 +349,13 @@ class DueDateReminders extends AbstractService
             $todayTime = new \DateTime();
             try {
                 $loans = $this->catalog->getMyTransactions($patron);
+                // Support also older driver return value:
+                if (!isset($loans['count'])) {
+                    $loans = [
+                        'count' => count($loans),
+                        'records' => $loans
+                    ];
+                }
             } catch (\Exception $e) {
                 $this->err(
                     "Exception trying to get loans for user {$user->username}"
@@ -359,7 +366,7 @@ class DueDateReminders extends AbstractService
                 );
                 continue;
             }
-            foreach ($loans as $loan) {
+            foreach ($loans['records'] as $loan) {
                 $dueDate = new \DateTime($loan['duedate']);
                 $dayDiff = $dueDate->diff($todayTime)->days;
                 if ($todayTime >= $dueDate
@@ -382,6 +389,7 @@ class DueDateReminders extends AbstractService
                     $title = $loan['title']
                         ?? null;
 
+                    $record = null;
                     if (isset($loan['id'])) {
                         $record = $this->recordLoader->load(
                             $loan['id'], 'Solr', true
