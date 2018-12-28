@@ -485,14 +485,16 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             ) {
                 $val = $this->getField($response, $field);
                 if (!empty($val)) {
-                    $consortium[$field] = $val;
-                    if ($field == 'homepage') {
+                    if ('homepage' === $field) {
                         $parts = parse_url($val);
                         if (isset($parts['host'])) {
-                            $val = $parts['host'];
-                            $consortium['homepageLabel'] = $val;
+                            $consortium['homepageLabel'] = $parts['host'];
+                        }
+                        if (!isset($parts['scheme'])) {
+                            $val = "http://$val";
                         }
                     }
+                    $consortium[$field] = $val;
                 }
             }
             if (!empty($response['logo'])) {
@@ -768,6 +770,12 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $fields = ['homepage', 'email'];
             foreach ($fields as $field) {
                 if ($val = $this->getField($item, $field)) {
+                    if ('homepage' === $field) {
+                        $parts = parse_url($val);
+                        if (empty($parts['scheme'])) {
+                            $val = "http://$val";
+                        }
+                    }
                     $data[$field] = $val;
                 }
             }
@@ -859,6 +867,10 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         if (!empty($response['phone_numbers'])) {
             $phones = [];
             foreach ($response['phone_numbers'] as $phone) {
+                // Check for email data in phone numbers
+                if (strpos($phone['number'], '@') !== false) {
+                    continue;
+                }
                 $name = $this->getField($phone, 'name');
                 if ($name) {
                     $phones[]
