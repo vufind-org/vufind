@@ -20,6 +20,7 @@ return [
             'Finna\View\Helper\Root\FinnaSurvey' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'FinnaTheme\View\Helper\HeadLink' => 'FinnaTheme\View\Helper\Factory::getHeadLink',
             'FinnaTheme\View\Helper\HeadScript' => 'FinnaTheme\View\Helper\Factory::getHeadScript',
+            'Finna\View\Helper\Root\HtmlElement' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'FinnaTheme\View\Helper\InlineScript' => 'FinnaTheme\View\Helper\Factory::getInlineScript',
             'Finna\View\Helper\Root\HeadTitle' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\HoldingsSettings' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
@@ -78,6 +79,7 @@ return [
             'inlineScript' => 'FinnaTheme\View\Helper\InlineScript',
             'headTitle' => 'Finna\View\Helper\Root\HeadTitle',
             'holdingsSettings' => 'Finna\View\Helper\Root\HoldingsSettings',
+            'htmlElement' => 'Finna\View\Helper\Root\HtmlElement',
             //use root highlight so search results use span instead of mark
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
             'imageSrc' => 'Finna\View\Helper\Root\ImageSrc',

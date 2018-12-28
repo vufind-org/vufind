@@ -26,24 +26,42 @@
       }
     }
   }
-  h4 {
+  .header-container {
+    border-bottom: 1px solid @gray-mid-light;
     padding-bottom: 10px;
     margin-bottom: 20px;
-    border-bottom: 1px solid @gray-mid-light;
-    position: relative;
-    .tooltip-local-advanced {
-      position: absolute;
-      bottom: 10px;
-      right: 0;
+    font-size: 18px;
+    h2 {
+      position: relative;
+      display: inline;
+    }
+    button {
+      float: right;
+      border: none;
+      background: transparent;
+      padding: 6px;
+      i {
+        cursor: pointer;
+      }
+
+      @media (max-width: @screen-xxs) {
+        i {
+          font-size: 24px;
+        }
+        span {
+          display: none;
+        }
+      } 
     }
   }
-  & ::-webkit-input-placeholder {
+  
+  ::-webkit-input-placeholder {
     color: @gray-mid-light;
   }
-  & :-moz-placeholder { /* Firefox 18- */
+  :-moz-placeholder { /* Firefox 18- */
     color: @gray-mid-light;
   }
-  & ::-moz-placeholder {  /* Firefox 19+ */
+  ::-moz-placeholder {  /* Firefox 19+ */
     color: @gray-mid-light;
   }
   :-ms-input-placeholder {
@@ -67,13 +85,18 @@
       margin-bottom: 10px;
     }
   }
-  & .responsive-field {
+  .responsive-field {
     min-width: 45%;
   }
-  & .applied-adv-search-filters {
+  .applied-adv-search-filters {
     margin-top: 15px;
   }
   .adv-group {
+    h3 {
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
     position: relative;
     margin-top: 5px;
     margin-bottom: .5em;
@@ -81,20 +104,25 @@
       display: inline-block;
       margin-top: 10px;
       padding: 6px;
+      @media (max-width: @screen-xxs) {
+        width: 100%;
+      }
     }
-    & .responsive-field {
+    .responsive-field {
       max-width: 49%;
     }
-    & .match {
+    .match {
       @media (max-width: @screen-xs-max) {
         margin-bottom: 10px;
       }
     }
-    & .adv-group-close {
-      position: absolute;
-      bottom: 20px;
-      right: 15px;
-      z-index: 1;
+    .adv-group-close {
+      border: none;
+      background: transparent;
+      margin-top: 10px;
+      padding: 6px;
+      color: @link-color;
+      float: right;
       @media (max-width: @screen-xs-max) {
         font-size: @font-size-small;
       }
@@ -102,22 +130,22 @@
     .adv-search, .primo-advanced-search-fields {
       margin-bottom: 0px;
       padding-top: 3px;
-      & select, input {
+      select, input {
         margin-bottom: 3px;
       }
       .close {opacity: .8;}
       @media (max-width: @screen-xs-max) {
-        & select:first-child {
+        select:first-child {
           display: block;
         }
       }
     }
-    & .primo-advanced-search-fields {
-      & .responsive-field {
+    .primo-advanced-search-fields {
+      .responsive-field {
         min-width: inherit;
       }
     }
-    & .primo-add-search {
+    .primo-add-search {
       display: inline-block;
       margin-top: 10px;
       padding: 6px;
@@ -125,10 +153,12 @@
     [class^=col-] {padding-left: 15px;}
   }
   #groupPlaceHolder {
-    float:left;
-    display:block;
     padding:6px;
     margin-left: 15px;
+
+    .btn {
+      padding: 6px;
+    }
   }
   #groupJoin {
     padding: 0px 0px 20px;
@@ -136,11 +166,11 @@
     border-top: none;
     margin-top: -10px;
     margin-bottom: 30px;
-    & #groupJoinOptions {
+    #groupJoinOptions {
       margin-bottom: -56px;
     }
   }
-  & .slider.slider-horizontal {
+  .slider.slider-horizontal {
     margin-top: 6px;
     width: 95%;
     margin-left: 10px;
@@ -154,13 +184,13 @@
       }
     }
   }
-  & .slider {
-    & .slider-selection {
+  .slider {
+    .slider-selection {
       top: 0;
       bottom: 0;
       position: absolute;
     }
-    & .slider-track {
+    .slider-track {
       height: 10px;
       width: 100%;
       margin-top: -5px;
@@ -173,7 +203,7 @@
       border-top-left-radius: 4px;
       border-top-right-radius: 4px;
     }
-    & .slider-handle {
+    .slider-handle {
       position: absolute;
       width: 20px;
       height: 20px;
@@ -193,42 +223,42 @@
       width: 1px;
       position: absolute;
     }
-    & .tooltip.top {
+    .tooltip.top {
       margin-top: -36px;
     }
   }
-  & .primo-advanced-search-fields {
+  .primo-advanced-search-fields {
     margin-bottom: 10px;
-    & label {
+    label {
       @media(max-width: @screen-xs-max) {
         margin-top: 10px;
         margin-bottom: 20px;
       }
     }
   }
-  & .limit-to {
-    & .ranges-container, .limit-container {
+  .limit-to {
+    .ranges-container, .limit-container {
       overflow: hidden;
       margin-top: 10px;
-      & label {
+      label {
         padding-top: 5px;
       }
       .slider-container {
         padding: 0 10px;
       }
     }
-    & .year-input-container {
+    .year-input-container {
       margin: 5px 0 10px 0;
       display: inline-block;
       padding-right: 10px;
       text-align: left;
     }
-    & label {
+    label {
       display: block;
     }
-    & .language-container, .format-container {
+    .language-container, .format-container {
       @media(max-width: @screen-xs-max) {
-        & .btn-group {
+        .btn-group {
           width: 100%;
           text-align: left;
         }
@@ -486,7 +516,7 @@
     font-weight: normal;
   }
 
-  & .year-input-container {
+  .year-input-container {
     margin: 5px 0px;
   }
   input.input-year{
