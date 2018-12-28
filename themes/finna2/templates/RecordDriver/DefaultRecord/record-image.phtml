@@ -59,34 +59,32 @@
             <?=$this->escapeHtml($image['description']) ?>
           </div>
         <?php endif; ?>
-        <?php $rights = $image['rights']; ?>
+        <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+          <p class="image-rights-default"><?= $this->transEsc('Image Rights Default') ?></p>
+        <?php endif; ?>
         <div class="access-rights">
-          <div class="image-rights">
-            <?php $hasLink = isset($rights['link']); ?>
-            <strong><?= $this->transEsc('Image Rights') ?></strong><br>
-            <span class="cc-rights">
-              <?php if (!empty($rights['copyright'])): ?>
-                <?php $copyright = $this->transEsc($rights['copyright']) ?>
-                <?php if (!empty($copyright)): ?>
-                  <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $copyright]);?><?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?php if ($copyright === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$copyright ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
-                <?php endif; ?>
-              <?php else: ?>
-                <?php if (isset($rights['description'])): ?>
-                  <?php foreach ($rights['description'] as $item): ?>
-                    <?php if (!empty($item)): ?>
-                      <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $item])?> <?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?=$item ?><?php if ($hasLink): ?></a><?php endif; ?>
-                    <?php endif; ?>
-                  <?php endforeach ?>
+          <?php if (!empty($rights)): ?>
+            <div class="image-rights">
+              <?php $hasLink = isset($rights['link']); ?>
+              <strong><?= $this->transEsc('Image Rights') ?></strong><br>
+              <span class="cc-rights">
+                <?php if (!empty($rights['copyright'])): ?>
+                  <?php $copyright = $this->transEsc($rights['copyright']) ?>
+                  <?php if (!empty($copyright)): ?>
+                    <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $copyright]);?><?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?php if ($copyright === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$copyright ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
+                  <?php endif; ?>
                 <?php else: ?>
-                  <?php if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
-                    <?=$this->transEsc('usage_F') ?>
-                  <?php else: ?>
-                    <?=$this->transEsc('usage_unknown') ?>
+                  <?php if (isset($rights['description'])): ?>
+                    <?php foreach ($rights['description'] as $item): ?>
+                      <?php if (!empty($item)): ?>
+                        <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $item])?> <?php if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><?php endif; ?><?=$item ?><?php if ($hasLink): ?></a><?php endif; ?>
+                      <?php endif; ?>
+                    <?php endforeach ?>
                   <?php endif; ?>
                 <?php endif; ?>
-              <?php endif; ?>
-            </span> <p class="copyright-meaning"><a target="_blank" href="<?php if ($hasLink): ?><?= $rights['link'] ?><?php else: ?><?=$this->url('content-page', ['page' => 'terms'])?><?php endif; ?>"><?=$this->transEsc('usage_meaning') ?></a></p>
-          </div>
+              </span> <p class="copyright-meaning"><a target="_blank" href="<?php if ($hasLink): ?><?= $rights['link'] ?><?php else: ?><?=$this->url('content-page', ['page' => 'terms'])?><?php endif; ?>"><?=$this->transEsc('usage_meaning') ?></a></p>
+            </div>
+          <?php endif ?>
           <div class="copyright truncate-field">
             <?php if (isset($rights['description'])): ?>
               <?php foreach ($rights['description'] as $item): ?>
@@ -95,8 +93,7 @@
             <?php endif ?>
           </div>
           <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-            <p><?= $this->transEsc('Image Rights Default') ?>
-            <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a>
+            <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a></p>
           <?php endif; ?>
         </div>
       </div>

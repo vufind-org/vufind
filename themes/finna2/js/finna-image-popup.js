@@ -376,6 +376,7 @@ finna.imagePopup = (function finnaImagePopup() {
           $(this).parent().attr({'href': href.split('#')[0], 'title': ''});
           $(this).parents('.grid').addClass('no-image');
           $('.rating-stars').addClass('hidden-xs');
+          $('.image-rights-default').addClass('hidden');
         }
       }).each(function loadImage() {
         if (this.complete) {
