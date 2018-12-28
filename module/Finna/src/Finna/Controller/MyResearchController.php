@@ -249,7 +249,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($renewedCount > 0) {
             $msg = $this->translate(
                 'renew_ok', ['%%count%%' => $renewedCount,
-                '%%transactionscount%%' => count($result)]
+                '%%transactionscount%%' => $result['count']]
             );
             $this->flashMessenger()->addInfoMessage($msg);
         }
