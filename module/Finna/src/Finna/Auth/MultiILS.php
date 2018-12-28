@@ -79,6 +79,9 @@ class MultiILS extends \VuFind\Auth\MultiILS
             $patron = $this->getCatalog()->patronLogin(
                 $username, $password, $secondaryUsername
             );
+        } catch (AuthException $e) {
+            //Pass possible error message from failed ILS authentication
+            throw $e;
         } catch (\Exception $e) {
             throw new AuthException('authentication_error_technical');
         }

@@ -24,13 +24,14 @@
  * @author   Bjarne Beckmann <bjarne.beckmann@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @author   Konsta Raunio  <konsta.raunio@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
 
 use VuFind\Date\DateException;
+use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -41,7 +42,7 @@ use VuFind\Exception\ILS as ILSException;
  * @author   Bjarne Beckmann <bjarne.beckmann@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @author   Konsta Raunio  <konsta.raunio@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -233,7 +234,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @throws AuthException
+     * @return mixed Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -251,6 +253,11 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             $request, 'POST', true
         );
         if ($code != 200 || empty($result)) {
+            if ($code == 403 && !empty($result['error']['code'])
+                && $result['error']['code'] == 'Defaulted'
+            ) {
+                throw new AuthException('authentication_error_account_locked');
+            }
             return null;
         }
         $patron = [
@@ -1594,7 +1601,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param array $item Item from Mikromarc.
      *
-     * @return String Status
+     * @return string Status
      */
     protected function getItemStatusCode($item)
     {
