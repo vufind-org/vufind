@@ -528,20 +528,37 @@ class DueDateReminders extends AbstractService
         }
         $message = $this->viewRenderer
             ->render('Email/due-date-reminder.phtml', $params);
-        try {
-            $to = $user->email;
-            $from = $this->currentSiteConfig['Site']['email'];
-            $this->serviceManager->get('VuFind\Mailer')->send(
-                $to, $from, $subject, $message
-            );
-        } catch (\Exception $e) {
-            $this->err(
-                "Failed to send due date reminders to user {$user->username} "
-                    . " (id {$user->id})",
-                'Failed to send due date reminders to a user'
-            );
-            $this->err('   ' . $e->getMessage());
-            return false;
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
+            try {
+                $to = $user->email;
+                $from = $this->currentSiteConfig['Site']['email'];
+                $this->serviceManager->get('VuFind\Mailer')->send(
+                    $to,
+                    $from,
+                    $subject,
+                    $message
+                );
+            } catch (\Exception $e) {
+                if ($attempt === 1) {
+                    // Reset connection and try again
+                    $this->warn('First attempt at sending email failed');
+                    try {
+                        $this->serviceManager->get('VuFind\Mailer')->getTransport()
+                            ->disconnect();
+                    } catch (\Exception $e) {
+                        // Do nothing
+                    }
+                    continue;
+                }
+                $this->err(
+                    "Failed to send due date reminders to user {$user->username} "
+                        . " (id {$user->id})",
+                    'Failed to send due date reminders to a user'
+                );
+                $this->err('   ' . $e->getMessage());
+                return false;
+            }
+            break;
         }
 
         foreach ($remindLoans as $loan) {
