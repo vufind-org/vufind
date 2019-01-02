@@ -63,11 +63,18 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     protected $groupHoldingsByLocation;
 
     /**
-     * Institution settings for the order of branches
+     * Priority settings for the order of branches or branch/location combinations
      *
-     * @var string
+     * @var array
      */
     protected $holdingsBranchOrder;
+
+    /**
+     * Priority settings for the order of locations (in branches)
+     *
+     * @var array
+     */
+    protected $holdingsLocationOrder;
 
     /**
      * Initialize the driver.
@@ -87,11 +94,22 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             ? $this->config['Holdings']['group_by_location']
             : '';
 
-        $this->holdingsBranchOrder
-            = isset($this->config['Holdings']['holdingsBranchOrder'])
-            ? explode(':', $this->config['Holdings']['holdingsBranchOrder'])
+        if (isset($this->config['Holdings']['holdings_branch_order'])) {
+            $values = explode(
+                ':', $this->config['Holdings']['holdings_branch_order']
+            );
+            foreach ($values as $i => $value) {
+                $parts = explode('=', $value, 2);
+                $idx = $parts[1] ?? $i;
+                $this->holdingsBranchOrder[$parts[0]] = $idx;
+            }
+        }
+
+        $this->holdingsLocationOrder
+            = isset($this->config['Holdings']['holdings_location_order'])
+            ? explode(':', $this->config['Holdings']['holdings_location_order'])
             : [];
-        $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
+        $this->holdingsLocationOrder = array_flip($this->holdingsLocationOrder);
     }
 
     /**
@@ -1189,6 +1207,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $sublocation = $item['sub_description'] ?? '';
             $branchId = (!$this->useHomeBranch && null !== $item['holdingbranch'])
                 ? $item['holdingbranch'] : $item['homebranch'];
+            $locationId = $item['location'];
 
             $entry = [
                 'id' => $id,
@@ -1207,7 +1226,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 'requests_placed' => max(
                     [$item['hold_queue_length'], $result[0]['hold_queue_length']]
                 ),
-                'branchId' => $branchId
+                'branchId' => $branchId,
+                'locationId' => $locationId
             ];
             if (!empty($item['itemnotes'])) {
                 $entry['item_notes'] = [$item['itemnotes']];
@@ -1284,6 +1304,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 }
                 $callnumber = trim($callnumber);
                 $branchId = $holding['holdingbranch'];
+                $locationId = $holding['location'];
 
                 $entry = [
                     'id' => $id,
@@ -1297,7 +1318,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     'barcode' => '',
                     'callnumber' => $callnumber,
                     'sort' => $i,
-                    'branchId' => $branchId
+                    'branchId' => $branchId,
+                    'locationId' => $locationId
                 ];
                 $entry += $holdingData;
 
@@ -1524,16 +1546,28 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function statusSortFunction($a, $b)
     {
-        $orderA = $this->holdingsBranchOrder[$a['branchId']] ?? PHP_INT_MAX;
-        $orderB = $this->holdingsBranchOrder[$b['branchId']] ?? PHP_INT_MAX;
-
+        $orderA = $this->holdingsBranchOrder[$a['branchId'] . '/' . $a['locationId']]
+            ?? $this->holdingsBranchOrder[$a['branchId']]
+            ?? 999;
+        $orderB = $this->holdingsBranchOrder[$b['branchId'] . '/' . $b['locationId']]
+            ?? $this->holdingsBranchOrder[$b['branchId']]
+            ?? 999;
         $result = $orderA - $orderB;
-        if ($result == 0) {
+
+        if (0 === $result) {
+            $orderA = $this->holdingsLocationOrder[$a['locationId']] ?? 999;
+            $orderB = $this->holdingsLocationOrder[$b['locationId']] ?? 999;
+            $result = $orderA - $orderB;
+        }
+
+        if (0 === $result) {
             $result = strcmp($a['location'], $b['location']);
         }
-        if ($result == 0) {
+
+        if (0 === $result) {
             $result = $a['sort'] - $b['sort'];
         }
+
         return $result;
     }
 }

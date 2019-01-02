@@ -70,9 +70,24 @@ supplements = "867az"
 indexes = "868az"
 ; Whether to display home branch instead of holding branch. Default is false.
 ;use_home_branch = true
-; By default the holdings location list is sorted alphabetically. This setting can be
-; used to manually set the order by entering location IDs as a colon-separated list.
-;holdingsBranchOrder = "MAIN:BRANCH"
+; By default the holdings list is sorted alphabetically. This setting can be
+; used to manually set the order of branches and locations by entering codes as a
+; colon-separated list. Branch and location may be combined with a slash. By default
+; the first entry has the highest priority (0), but each entry can be given a custom
+; priority after an equals sign (higher number means lower priority). Unlisted
+; branches will get a default priority of 999.
+;
+; Examples:
+; "MAIN:BRANCH"
+; "MAIN:DEPOSIT=9999"
+; "MAIN:MAIN/111:MAIN/112:MAIN/300=800"
+;
+;holdings_branch_order = "MAIN:BRANCH"
+; By default the holdings list is sorted alphabetically. This setting can be
+; used to manually set the order of locations in branches by entering location codes
+; as a colon-separated list. This list is independent of the branch. Unlisted
+; locations will get a default priority of 999.
+;holdings_location_order = "112:111"
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
