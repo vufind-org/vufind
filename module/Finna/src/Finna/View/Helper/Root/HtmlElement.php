@@ -171,6 +171,12 @@ class HtmlElement extends \Zend\View\Helper\AbstractHelper
         $stringified = [];
 
         foreach ($element as $key => $value) {
+            if (in_array($key, $this->booleanAttributes)
+                && strlen($value) === 0
+            ) {
+                continue;
+            }
+
             $stringified[] = "$key=\"$value\"";
         }
 
@@ -190,15 +196,6 @@ class HtmlElement extends \Zend\View\Helper\AbstractHelper
         array $newAttributes
     ) {
         foreach ($newAttributes as $key => $value) {
-            if (in_array($key, $this->booleanAttributes)
-                && strlen($value) === 0
-            ) {
-                if (isset($baseAttributes[$key])) {
-                    unset($baseAttributes[$key]);
-                }
-                continue;
-            }
-
             if ($key !== 'class') {
                 $baseAttributes[$key] = $value;
             } else {
