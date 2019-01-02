@@ -190,7 +190,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         { enter: checkItemStatus }
       );
     }
-  };
+  }
 
   return { init: init, check: checkItemStatuses };
 });
