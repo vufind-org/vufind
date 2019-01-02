@@ -1283,9 +1283,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     $callnumber .= ' ' . $holding['callnumber'];
                 }
                 $callnumber = trim($callnumber);
-                $branchId = (!$this->useHomeBranch
-                    && null !== $item['holdingbranch'])
-                    ? $item['holdingbranch'] : $item['homebranch'];
+                $branchId = $holding['holdingbranch'];
 
                 $entry = [
                     'id' => $id,
