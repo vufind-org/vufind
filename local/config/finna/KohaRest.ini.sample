@@ -51,6 +51,9 @@ display_total_item_count_in_results = true
 display_ccode = true
 ; Whether to include item's call number in the shelf location
 display_full_call_number = true
+; Whether to use the original call number field instead of the display version.
+; Default is false.
+;use_non_display_call_number = true
 ; Whether to display title hold links in results list
 display_title_hold_in_results = true
 ; Whether to use holding records

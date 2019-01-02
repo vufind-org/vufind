@@ -1097,8 +1097,12 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             || !empty($item['itemcallnumber_display']))
             && !empty($this->config['Holdings']['display_full_call_number'])
         ) {
-            $result[] = !empty($item['itemcallnumber_display'])
-                ? $item['itemcallnumber_display'] : $item['itemcallnumber'];
+            if (!empty($this->config['Holdings']['use_non_display_call_number'])) {
+                $result[] = $item['itemcallnumber'];
+            } else {
+                $result[] = !empty($item['itemcallnumber_display'])
+                    ? $item['itemcallnumber_display'] : $item['itemcallnumber'];
+            }
         }
         $str = implode(', ', $result);
         return $str;
