@@ -67,6 +67,9 @@ supplements = "867az"
 indexes = "868az"
 ; Whether to display home branch instead of holding branch. Default is false.
 ;use_home_branch = true
+; By default the holdings location list is sorted alphabetically. This setting can be
+; used to manually set the order by entering location IDs as a colon-separated list.
+;holdingsBranchOrder = "MAIN:BRANCH"
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.

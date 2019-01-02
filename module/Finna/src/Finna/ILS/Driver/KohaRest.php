@@ -63,6 +63,13 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     protected $groupHoldingsByLocation;
 
     /**
+     * Institution settings for the order of branches
+     *
+     * @var string
+     */
+    protected $holdingsBranchOrder;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -79,6 +86,12 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             = isset($this->config['Holdings']['group_by_location'])
             ? $this->config['Holdings']['group_by_location']
             : '';
+
+        $this->holdingsBranchOrder
+            = isset($this->config['Holdings']['holdingsBranchOrder'])
+            ? explode(':', $this->config['Holdings']['holdingsBranchOrder'])
+            : [];
+        $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
     }
 
     /**
@@ -959,6 +972,30 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Check if patron belongs to staff.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return bool True if patron is staff, false if not
+     */
+    public function getPatronStaffAuthorizationStatus($patron)
+    {
+        $username = $patron['cat_username'];
+        if ($this->sessionCache->patron != $username) {
+            if (!$this->renewPatronCookie($patron)) {
+                return false;
+            }
+        }
+
+        return !empty(
+            array_intersect(
+                ['superlibrarian', 'catalogue'],
+                $this->sessionCache->patronPermissions
+            )
+        );
+    }
+
+    /**
      * Return summary of holdings items.
      *
      * @param array $holdings Parsed holdings items
@@ -1146,6 +1183,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $location = $this->getItemLocationName($item);
             $callnumber = $this->getItemCallNumber($item);
             $sublocation = $item['sub_description'] ?? '';
+            $branchId = (!$this->useHomeBranch && null !== $item['holdingbranch'])
+                ? $item['holdingbranch'] : $item['homebranch'];
 
             $entry = [
                 'id' => $id,
@@ -1163,7 +1202,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 'sort' => $i,
                 'requests_placed' => max(
                     [$item['hold_queue_length'], $result[0]['hold_queue_length']]
-                )
+                ),
+                'branchId' => $branchId
             ];
             if (!empty($item['itemnotes'])) {
                 $entry['item_notes'] = [$item['itemnotes']];
@@ -1239,6 +1279,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     $callnumber .= ' ' . $holding['callnumber'];
                 }
                 $callnumber = trim($callnumber);
+                $branchId = (!$this->useHomeBranch
+                    && null !== $item['holdingbranch'])
+                    ? $item['holdingbranch'] : $item['homebranch'];
 
                 $entry = [
                     'id' => $id,
@@ -1251,7 +1294,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     'duedate' => '',
                     'barcode' => '',
                     'callnumber' => $callnumber,
-                    'sort' => $i
+                    'sort' => $i,
+                    'branchId' => $branchId
                 ];
                 $entry += $holdingData;
 
@@ -1469,26 +1513,25 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
-     * Check if patron belongs to staff.
+     * Status item sort function
      *
-     * @param array $patron The patron array from patronLogin
+     * @param array $a First status record to compare
+     * @param array $b Second status record to compare
      *
-     * @return bool True if patron is staff, false if not
+     * @return int
      */
-    public function getPatronStaffAuthorizationStatus($patron)
+    protected function statusSortFunction($a, $b)
     {
-        $username = $patron['cat_username'];
-        if ($this->sessionCache->patron != $username) {
-            if (!$this->renewPatronCookie($patron)) {
-                return false;
-            }
-        }
+        $orderA = $this->holdingsBranchOrder[$a['branchId']] ?? PHP_INT_MAX;
+        $orderB = $this->holdingsBranchOrder[$b['branchId']] ?? PHP_INT_MAX;
 
-        return !empty(
-            array_intersect(
-                ['superlibrarian', 'catalogue'],
-                $this->sessionCache->patronPermissions
-            )
-        );
+        $result = $orderA - $orderB;
+        if ($result == 0) {
+            $result = strcmp($a['location'], $b['location']);
+        }
+        if ($result == 0) {
+            $result = $a['sort'] - $b['sort'];
+        }
+        return $result;
     }
 }
