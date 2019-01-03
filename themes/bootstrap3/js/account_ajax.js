@@ -81,7 +81,6 @@ VuFind.register('account', function Account() {
       })
       .fail(function getCheckedOutFail(response) {
         checkedOutStatus = MISSING;
-        console.log(response);
       })
       .always(function getFinesFail() {
         _save();
@@ -97,7 +96,7 @@ VuFind.register('account', function Account() {
       .done(function getFinesDone(response) {
         fineStatus = response.data;
       })
-      .fail(function getFinesFail(response) {
+      .fail(function getFinesFail() {
         fineStatus = MISSING;
       })
       .always(function getFinesFail() {
@@ -138,7 +137,7 @@ VuFind.register('account', function Account() {
 
     $('.myresearch-menu .status').removeClass('hidden');
     var data = sessionStorage.getItem(_sessionDataKey);
-    if (false && data) {
+    if (data) {
       var json = JSON.parse(data);
       if (json.checkedOut === MISSING || json.checkedOut === LOADING) {
         _ajaxCheckedOut();

@@ -32,7 +32,7 @@ VuFind.register('doi', function Doi() {
               newLink.text(' ' + response.data[currentDoi][i].label);
               if (typeof response.data[currentDoi][i].icon !== 'undefined') {
                 var icon = $('<img />');
-                icon.attr('src',  response.data[currentDoi][i].icon);
+                icon.attr('src', response.data[currentDoi][i].icon);
                 icon.attr('class', 'doi-icon');
                 $(doiEl).append(icon);
               }
