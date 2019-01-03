@@ -53,10 +53,10 @@ VuFind.register('account', function Account() {
     } else if (holdStatus === LOADING) {
       $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-spin fa-spinner');
     } else if (holdStatus.available > 0) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-bell ok');
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-bell text-success');
       accountIcon = 'fa fa-bell text-success';
     } else if (holdStatus.in_transit > 0) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-clock-o warn');
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-clock-o text-warning');
     }
     // FINES
     if (fineStatus === MISSING) {
