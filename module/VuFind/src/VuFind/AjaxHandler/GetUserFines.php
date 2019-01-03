@@ -27,7 +27,9 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\View\Helper\Root\SafeMoneyFormat;
 use Zend\Mvc\Controller\Plugin\Params;
+use Zend\View\Renderer\PhpRenderer;
 
 /**
  * "Get User Fines" AJAX handler
@@ -65,6 +67,8 @@ class GetUserFines extends AbstractIlsAndUserAction
         foreach ($fines as $fine) {
             $sum += $fine['balance'];
         }
-        return $this->formatResponse($sum);
+        $smf = new SafeMoneyFormat();
+        $smf->setView(new PhpRenderer());
+        return $this->formatResponse($smf->__invoke($sum / 100));
     }
 }

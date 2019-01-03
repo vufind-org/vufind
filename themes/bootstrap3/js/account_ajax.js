@@ -22,9 +22,6 @@ VuFind.register('account', function Account() {
   };
 
   var _render = function _render() {
-    function formatNumber(num) {
-      return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
     var accountIcon = 'fa fa-user-circle';
     // CHECKED OUT COUNTS
     if (checkedOutStatus === MISSING) {
@@ -67,7 +64,7 @@ VuFind.register('account', function Account() {
       );
     } else {
       $('.myresearch-menu .fines-status').html(
-        '<span class="badge overdue">$' + formatNumber(fineStatus / 100) + '</span>'
+        '<span class="badge overdue">' + fineStatus + '</span>'
       );
       accountIcon = 'fa fa-exclamation-triangle text-danger';
     }
@@ -82,8 +79,9 @@ VuFind.register('account', function Account() {
       .done(function getCheckedOutDone(response) {
         checkedOutStatus = response.data;
       })
-      .fail(function getCheckedOutFail() {
+      .fail(function getCheckedOutFail(response) {
         checkedOutStatus = MISSING;
+        console.log(response);
       })
       .always(function getFinesFail() {
         _save();
@@ -99,7 +97,7 @@ VuFind.register('account', function Account() {
       .done(function getFinesDone(response) {
         fineStatus = response.data;
       })
-      .fail(function getFinesFail() {
+      .fail(function getFinesFail(response) {
         fineStatus = MISSING;
       })
       .always(function getFinesFail() {
@@ -140,7 +138,7 @@ VuFind.register('account', function Account() {
 
     $('.myresearch-menu .status').removeClass('hidden');
     var data = sessionStorage.getItem(_sessionDataKey);
-    if (data) {
+    if (false && data) {
       var json = JSON.parse(data);
       if (json.checkedOut === MISSING || json.checkedOut === LOADING) {
         _ajaxCheckedOut();
