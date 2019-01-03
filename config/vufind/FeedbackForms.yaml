@@ -1,0 +1,143 @@
+---
+# Listing of configured forms.
+#
+# Configured forms are listed in the top level 'forms' array and can accessed via the URL:
+# /Feedback/Form/<form-id>
+#
+# The main Feedback form (id: FeedbackSite) can be accessed with a shorter URL /Feedback
+#
+# Form supports the following options:
+#
+#   enabled (boolean) Is the form enabled? (default = true)
+#   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
+#                        option to be turned on in the config.ini [Captcha] form setting.
+#                        (default = true, if Captcha turned on for feedback overall).
+#   title (string) Form title (translation key)
+#   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
+#                                (default = false)
+#   emailSubject (string) Email subject (translation key). (default = email_subject
+#                         value from config.ini [Feedback] section, or 'VuFind Feedback')
+#                         The subject may contain placeholders (for example %%receiver%%)
+#                         that are replaced with submitted form values.
+#   recipient
+#     name (string)  Recipient name (default = recipient_name setting from config.ini
+#                    [Feedback] section)
+#     email (string) Recipient email address (default = recipient_email setting from
+#                    config.ini [Feedback] section)
+#   response (string) Reponse after form submit (translation key)
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#
+#   help
+#     pre (string)  Help text displayed at the beginning of the form (translation key).
+#     post (string) Help text displayed at the end of the form (translation key)
+#
+#   Help texts may contain HTML-formatting.
+#
+#   fields (array) List of form elements with the following options:
+#
+#     name (string)      Element name
+#     label (string)     Element label (translation key)
+#     required (boolean) Is the element required?
+#     settings (array)   HTML attributes as key-value pairs, for example:
+#       - [class, "custom-css-class another-class"]
+#     type (string)      Element type (text|textarea|email|url|select)
+#     help (string)      Element help text (translation key)
+#     
+#     And for select elements one of:
+# 
+#     options (array) List of select values (translation keys)
+#
+#     or
+#
+#     optionGroups (array) List of option groups with keys:
+#       label (string) Group label (translation key)
+#       options (array) List of select values (translation keys)
+#
+#-----------------------------------------------------------------------------------
+
+forms:
+
+  # Main Feedback form
+
+  FeedbackSite:
+    title: Send us your feedback!
+    enabled: true
+    useCaptcha: true
+    #recipient:
+    #  name: Your Library
+    #  email: feedback@myuniversity.edu
+
+    onlyForLoggedUsers: false
+    #emailSubject: VuFind Feedback
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+
+    #help:
+    #  pre: feedback_help_pre
+    #  post: feedback_help_post
+
+    fields:
+      - name: message
+        type: textarea
+        label: Comments
+        required: true
+        settings:
+        # help: message_help
+
+  # Example for an acquisition request form
+
+  AcquisitionRequest:
+    enabled: false
+    title: Acquisition Request
+    onlyForLoggedUsers: false
+    emailSubject: Acquisition Request
+    title: Acquisition Request,
+    response: Thank you for your feedback.
+
+    recipient:
+      name: Your Library
+      email: feedback@myuniversity.edu
+
+    help:
+      pre: acquisition_request_info_pre
+      post: acquisition_request_info_post
+
+    fields:
+      - name: receiver
+        type: select
+        label: acquisition_request_receiver
+        required: true,
+        options:
+          - Feedback
+          - bar
+
+      - name: receiver2
+        type: select
+        label: acquisition_request_receiver
+        required: true,
+        optionGroups:
+          - label: Library 1
+            options:
+              - Branch 1
+              - Branch 2
+              - Branch 3
+
+          - label: Library 2
+            options:
+              - Branch 1
+              - Branch 2
+
+      - name: title
+        type: text
+        label: Title
+        required: true
+
+      - name: author
+        type: text
+        label: Author
+        required: true
+
+      - name: format
+        type: text
+        label: Format
+        required: true

@@ -482,6 +482,6 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         return $handler
-            ? $handler->createAdvancedQueryString($string, false) : $string;
+            ? $handler->createAdvancedQueryString($string) : $string;
     }
 }
