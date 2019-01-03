@@ -124,7 +124,7 @@ class PaginationHelper
         // Collect ILS call params
         $ilsParams = ['sort' => $this->validateSort($functionConfig, $sort)];
         if ($ilsPaging) {
-            $ilsParams['page'] = $page;
+            $ilsParams['page'] = $page >= 1 ? $page : 1;
             $ilsParams['limit'] = $limit;
         }
         $sortList = $this->getSortList($functionConfig, $ilsParams['sort']);
@@ -144,6 +144,10 @@ class PaginationHelper
     public function getPaginator($pageOptions, $count, $records)
     {
         $limit = $pageOptions['limit'];
+        $page = $pageOptions['page'];
+        if (($page - 1) * $limit >= $count) {
+            throw new \VuFind\Exception\BadRequest('Page number out of range.');
+        }
         if ($pageOptions['ilsPaging'] && $limit < $count) {
             $adapter = new \Zend\Paginator\Adapter\NullFill($count);
         } elseif ($limit > 0 && $limit < $count) {
@@ -153,7 +157,7 @@ class PaginationHelper
         }
         $paginator = new \Zend\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
-        $paginator->setCurrentPageNumber($pageOptions['page']);
+        $paginator->setCurrentPageNumber($page);
         return $paginator;
     }
 }
