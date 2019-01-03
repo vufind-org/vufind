@@ -31,7 +31,6 @@
 namespace Finna\ILS\Driver;
 
 use VuFind\Date\DateException;
-use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -234,7 +233,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @throws AuthException
      * @return mixed Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
@@ -248,21 +246,27 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
               'Pin' => $password
             ]
         );
-        list($code, $result) = $this->makeRequest(
+        list($code, $patronId) = $this->makeRequest(
             ['odata', 'Borrowers', 'Default.Authenticate'],
             $request, 'POST', true
         );
-        if ($code != 200 || empty($result)) {
-            if ($code == 403 && !empty($result['error']['code'])
-                && $result['error']['code'] == 'Defaulted'
-            ) {
-                throw new AuthException('authentication_error_account_locked');
-            }
+        if (($code != 200 && $code != 403) || empty($patronId)) {
             return null;
+        } elseif ($code == 403 && !empty($patronId['error']['code'])
+            && $patronId['error']['code'] == 'Defaulted'
+        ) {
+            $defaultedPatron = $this->makeRequest(
+                ['odata', 'Borrowers', 'Default.AuthenticateDebtor'],
+                $request, 'POST', false
+            );
+            $patronId = $defaultedPatron['BorrowerId'];
         }
         $patron = [
-            'cat_username' => $username, 'cat_password' => $password, 'id' => $result
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'id' => $patronId
         ];
+
         if ($profile = $this->getMyProfile($patron)) {
             $profile['major'] = null;
             $profile['college'] = null;
@@ -1858,6 +1862,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $map = [
+           'BorrowerDefaulted' => 'authentication_error_account_locked',
            'DuplicateReservationExists' => 'hold_error_already_held',
            'NoItemsAvailableByTerm' => 'hold_error_denied',
            'NoItemAvailable' => 'hold_error_denied',
