@@ -63,21 +63,13 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             'warn' => 0,
             'overdue' => 0
         ];
-        $foundValid = false;
         foreach ($items as $item) {
-            if (isset($item['duedate'])) {
-                $foundValid = true;
-                // Overdue
-                if (strtotime($item['duedate']) - time() <= 0) {
-                    $counts['overdue']++;
-                } else {
-                    // Due soon (1 week)
-                    if (strtotime($item['duedate']) - time() < 60 * 60 * 24 * 7) {
-                        $counts['warn']++;
-                    } else {
-                        $counts['ok']++;
-                    }
-                }
+            if ($item['dueStatus'] == 'overdue') {
+                $counts['overdue'] += 1;
+            } else if ($item['dueStatus'] == 'due') {
+                $counts['warn'] += 1;
+            } else {
+                $counts['ok'] += 1;
             }
         }
         return $this->formatResponse($counts);
