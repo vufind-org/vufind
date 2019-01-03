@@ -79,7 +79,7 @@ VuFind.register('account', function Account() {
       .done(function getCheckedOutDone(response) {
         checkedOutStatus = response.data;
       })
-      .fail(function getCheckedOutFail(response) {
+      .fail(function getCheckedOutFail() {
         checkedOutStatus = MISSING;
       })
       .always(function getFinesFail() {
