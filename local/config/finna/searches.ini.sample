@@ -127,6 +127,7 @@ Series              = adv_search_series
 year                = adv_search_year
 toc                 = adv_search_toc
 PublicationPlace    = adv_search_publication_place
+geographic          = adv_search_geographic
 
 ; This section defines the sort options available on standard search results.
 ; Values on the left of the equal sign are either the reserved term "relevance"
