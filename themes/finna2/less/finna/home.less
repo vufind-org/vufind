@@ -19,7 +19,7 @@
   }
 }
 
-.introduction h1, .introduction h3 {
+.introduction h1, h2.introductionText, .introduction h3 {
   padding: 0 5px 1px 7px;
   color: @introduction-text-color;
   line-height: 1.4em;
@@ -41,7 +41,7 @@
 .introduction {
   position: relative;
 }
-h1.introductionText, h3.introductionText {
+h1.introductionText, h2.introductionText, h3.introductionText {
   margin: 0px 50px 5px 0px;
   em {
       font-style: normal;
@@ -50,8 +50,12 @@ h1.introductionText, h3.introductionText {
 h1.introductionText > em {
   color: @brand-secondary;
 }
-h3.introductionText > em {
+h2.introductionText > em, h3.introductionText > em {
   color: @link-color;
+}
+h2.introductionText {
+  color: @introduction-text-small-color;
+  font-size: @font-size-h3;
 }
 
 .left-column-content {

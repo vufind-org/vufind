@@ -4,7 +4,7 @@
     <?=$this->translate('cookie_consent_html', ['%%link%%' => $this->url('content-page', ['page' => 'privacy']) . '#cookies'])?>
   </div>
   <div class="nav navbar-nav nav-absolute cookie-consent-button">
-    <a class="btn btn-primary cookie-consent-dismiss"><?=$this->transEsc('OK')?></a>
+    <button class="btn btn-primary cookie-consent-dismiss" aria-label="<?=$this->transEsc('Accept cookies')?>"><?=$this->transEsc('OK')?></button>
   </div>
 </div>
 <!-- END of: finna - Helpers/cookie-consent.phtml -->

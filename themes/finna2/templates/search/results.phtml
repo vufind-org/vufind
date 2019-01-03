@@ -128,7 +128,7 @@
         <?php $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
         <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
       <?php else: ?>
-        <?php $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
+        <?php $this->layout()->srmessage .= $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
         <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
       <?php endif; ?>
       <?php if (isset($this->parseError)): ?>
@@ -170,7 +170,7 @@
             <div class="pagination-container">
                 <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
             </div>
-          <?php $this->layout()->srmessage = strip_tags($resultsStr); ?>
+          <?php $this->layout()->srmessage .= strip_tags($resultsStr); ?>
       </div>
     <?php endif; ?>
     <?php if ($this->results->getResultTotal() > 0): ?>
