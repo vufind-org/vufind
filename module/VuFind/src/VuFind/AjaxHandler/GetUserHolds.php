@@ -58,15 +58,18 @@ class GetUserHolds extends AbstractIlsAndUserAction
             return $this->formatResponse('', self::STATUS_ERROR, 405);
         }
         $holds = $this->ils->getMyHolds($patron);
-        $foundValid = false;
+        $status = [
+            'available' => 0,
+            'in_transit' => 0
+        ];
         foreach ($holds as $hold) {
             if ($hold['available'] ?? false) {
-                return $this->formatResponse('PICKUP');
+                $status['available'] += 1;
             }
             if ($hold['in_transit'] ?? false) {
-                return $this->formatResponse('IN TRANSIT');
+                $status['in_transit'] += 1;
             }
         }
-        return $this->formatResponse('CLEAR');
+        return $this->formatResponse($status);
     }
 }

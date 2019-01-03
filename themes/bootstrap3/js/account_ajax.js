@@ -48,19 +48,15 @@ VuFind.register('account', function Account() {
       $('.myresearch-menu .checkedout-status').removeClass('hidden');
     }
     // HOLDS
-    if (holdStatus === 'PICKUP') {
-      $('.myresearch-menu .holds-status')
-        .removeClass('hidden fa-spin fa-spinner')
-        .removeClass('fa-clock-o warn')
-        .addClass('fa-bell ok');
+    if (holdStatus === MISSING) {
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status hidden');
+    } else if (holdStatus === LOADING) {
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-spin fa-spinner');
+    } else if (holdStatus.available > 0) {
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-bell ok');
       accountIcon = 'fa fa-bell text-success';
-    } else if (holdStatus === 'INTRANSIT') {
-      $('.myresearch-menu .holds-status')
-        .removeClass('hidden fa-spin fa-spinner')
-        .removeClass('fa-bell ok')
-        .addClass('fa-clock-o warn');
-    } else if (holdStatus !== LOADING) {
-      $('.myresearch-menu .holds-status').addClass('hidden');
+    } else if (holdStatus.in_transit > 0) {
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-clock-o warn');
     }
     // FINES
     if (fineStatus === MISSING) {
@@ -146,17 +142,17 @@ VuFind.register('account', function Account() {
     var data = sessionStorage.getItem(_sessionDataKey);
     if (data) {
       var json = JSON.parse(data);
-      if (json.checkedOut === MISSING) {
+      if (json.checkedOut === MISSING || json.checkedOut === LOADING) {
         _ajaxCheckedOut();
       } else {
         checkedOutStatus = json.checkedOut;
       }
-      if (json.fines === MISSING) {
+      if (json.fines === MISSING || json.fines === LOADING) {
         _ajaxFines();
       } else {
         fineStatus = json.fines;
       }
-      if (json.holds === MISSING) {
+      if (json.holds === MISSING || json.holds === LOADING) {
         _ajaxHolds();
       } else {
         holdStatus = json.holds;
