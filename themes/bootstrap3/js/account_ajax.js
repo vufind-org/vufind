@@ -1,7 +1,7 @@
 /*global userIsLoggedIn, VuFind */
 VuFind.register('account', function Account() {
-  var LOADING = -1;
-  var MISSING = -2;
+  var LOADING = -1 * Math.PI;
+  var MISSING = -2 * Math.PI;
   var _sessionDataKey = 'account-statuses';
 
   var checkedOutStatus = LOADING;
