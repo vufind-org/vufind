@@ -110,7 +110,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\AjaxHandler\GetSaveStatuses' =>
             'VuFind\AjaxHandler\GetSaveStatusesFactory',
         'VuFind\AjaxHandler\GetUserFines' =>
-            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
+            'VuFind\AjaxHandler\GetUserFinesFactory',
         'VuFind\AjaxHandler\GetUserHolds' =>
             'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
         'VuFind\AjaxHandler\GetUserTransactions' =>

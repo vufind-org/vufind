@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for AbstractIlsAndUserAction AJAX handlers.
+ * Factory for GetUserFines AJAX handler.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFind\AjaxHandler;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for AbstractIlsAndUserAction AJAX handlers.
+ * Factory for GetUserFines AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractIlsAndUserActionFactory
+class GetUserFinesFactory extends AbstractIlsAndUserActionFactory
     implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
@@ -60,12 +60,10 @@ class AbstractIlsAndUserActionFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
-            ...($options ?: [])
-        );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $helper = $container->get('ViewHelperManager')->get('safeMoneyFormat');
+        return parent::__invoke($container, $requestedName, [$helper]);
     }
 }
