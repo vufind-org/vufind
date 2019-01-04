@@ -7,7 +7,7 @@
     $showLibraryTabs = $this->ils()->loginAvailable();
     $listOpen = $this->active == 'favorites' || substr($this->active, 0, 4) == 'list';
     //Get the data for vertical menu to show lists on correct site
-    if($listOpen){
+    if ($listOpen) {
       $list = $this->results->getListObject();
       $activeId = $list['id'];
       $activeUrl = $this->serverUrl() . $this->url('home') . 'List/' . $activeId;
@@ -38,14 +38,14 @@
         <?=$this->transEsc('Holds and Recalls')?>
       </a>
     </li>
-    <?php if ($this->ils()->checkCapability('getMyStorageRetrievalRequests', $capabilityParams)): ?>
+    <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
       <li class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
         <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item">
           <?=$this->transEsc('Storage Retrieval Requests')?>
         </a>
       </li>
     <?php endif; ?>
-    <?php if ($this->ils()->checkCapability('getMyILLRequests', $capabilityParams)): ?>
+    <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
       <li class="menu-ill-requests <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
         <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item">
           <?=$this->transEsc('Interlibrary Loan Requests')?>
@@ -120,7 +120,7 @@
             <?=$this->transEsc('Holds and Recalls')?>
           </a>
         </li>
-      <?php if ($this->ils()->checkCapability('getMyStorageRetrievalRequests', $capabilityParams)): ?>
+      <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
         <li role="menuitem" class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
           <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item">
             <?=$this->transEsc('Storage Retrieval Requests')?>
