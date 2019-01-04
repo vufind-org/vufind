@@ -40,6 +40,29 @@ defaultPickUpLocation = ""
 ;acceptTermsText = "I accept the terms in any language."
 ;acceptTermsText[en-gb] = "I accept the terms in English."
 
+; This section controls article request behavior. To enable, uncomment (at minimum)
+; the HMACKeys and extraFields settings below.
+[StorageRetrievalRequests]
+; Whether to allow article requests on checked out items. Default is false.
+;allow_checked_out = true
+
+; HMACKeys - A list of form element names that will be analyzed for consistency
+; during form processing. Most users should not need to change this setting.
+;HMACKeys = item_id:holdings_id
+
+; extraFields - A colon-separated list used to display extra visible fields in the
+; place request form. Supported values are "comments", "pickUpLocation",
+; "item-issue" and "acceptTerms"
+;extraFields = item-issue:comments
+
+; Optional help texts that can be displayed on the request form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
+; Optional label for the "acceptTerms" extra field
+;acceptTermsText = "I accept the terms in any language."
+;acceptTermsText[en-gb] = "I accept the terms in English."
+
 [Holdings]
 ; Whether item-specific hold counts are displayed
 display_item_hold_counts = false

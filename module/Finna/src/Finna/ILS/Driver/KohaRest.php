@@ -1241,6 +1241,11 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $entry['is_holdable'] = false;
             }
 
+            if ($patron && $this->itemArticleRequestAllowed($item)) {
+                $entry['storageRetrievalRequest'] = 'auto';
+                $entry['addStorageRetrievalRequestLink'] = 'check';
+            }
+
             if (isset($holding)) {
                 $entry += $this->getHoldingData($holding);
                 $holding['_hasItems'] = true;

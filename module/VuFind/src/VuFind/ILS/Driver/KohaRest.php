@@ -1068,6 +1068,224 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all article requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return array        Array of the patron's storage retrieval requests.
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $result = $this->makeRequest(
+            ['v1', 'articlerequests'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+        if (empty($result['records'])) {
+            return [];
+        }
+        $requests = [];
+        foreach ($result['records'] as $entry) {
+            $bibId = $entry['biblionumber'] ?? null;
+            $itemId = $entry['itemnumber'] ?? null;
+            $title = '';
+            $volume = '';
+            $publicationYear = '';
+            if ($itemId) {
+                $item = $this->getItem($itemId);
+                $bibId = $item['biblionumber'];
+                $volume = $item['enumchron'];
+            }
+            if (!empty($bibId)) {
+                $bib = $this->getBibRecord($bibId);
+                $title = $bib['title'] ?? '';
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
+                }
+            }
+            $requests[] = [
+                'id' => $bibId,
+                'item_id' => $entry['id'],
+                'location' => $entry['branchcode'],
+                'create' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['created_on']
+                ),
+                'available' => $entry['status'] === 'COMPLETED',
+                'title' => $title,
+                'volume' => $volume,
+            ];
+        }
+        return $requests;
+    }
+
+    /**
+     * Get Cancel Storage Retrieval Request (article request) Details
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        return $details['item_id'];
+    }
+
+    /**
+     * Cancel Storage Retrieval Requests (article requests)
+     *
+     * Attempts to Cancel an article request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $response = [];
+
+        foreach ($details as $id) {
+            list($resultCode) = $this->makeRequest(
+                ['v1', 'articlerequests', $id], [], 'DELETE', $patron, true
+            );
+
+            if ($resultCode != 200) {
+                $response[$id] = [
+                    'success' => false,
+                    'status' => 'storage_retrieval_request_cancel_fail',
+                    'sysMessage' => false
+                ];
+            } else {
+                $response[$id] = [
+                    'success' => true,
+                    'status' => 'storage_retrieval_request_cancel_success'
+                ];
+                ++$count;
+            }
+        }
+        return ['count' => $count, 'items' => $response];
+    }
+
+    /**
+     * Check if storage retrieval request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        if (!isset($this->config['StorageRetrievalRequests'])
+            || $this->getPatronBlocks($patron)
+        ) {
+            return false;
+        }
+
+        $level = $data['level'] ?? 'copy';
+
+        if ('title' === $level) {
+            $result = $this->makeRequest(
+                ['v1', 'availability', 'biblio', 'articlerequest'],
+                ['biblionumber' => $id, 'borrowernumber' => $patron['id']],
+                'GET',
+                $patron
+            );
+        } else {
+            $result = $this->makeRequest(
+                ['v1', 'availability', 'item', 'articlerequest'],
+                [
+                    'itemnumber' => $data['item_id'],
+                    'borrowernumber' => $patron['id']
+                ],
+                'GET',
+                $patron
+            );
+        }
+        return !empty($result[0]['availability']['available']);
+    }
+
+    /**
+     * Place Storage Retrieval Request (Call Slip)
+     *
+     * Attempts to place a call slip request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        $patron = $details['patron'];
+        $level = $details['level'] ?? 'copy';
+        $pickUpLocation = $details['pickUpLocation'] ?? null;
+        $itemId = $details['item_id'] ?? false;
+        $comment = $details['comment'] ?? '';
+        $bibId = $details['id'];
+
+        if ('copy' === $level && empty($itemId)) {
+            throw new ILSException("Request level is 'copy', but item ID is empty");
+        }
+
+        // Make sure pickup location is valid
+        if (null !== $pickUpLocation
+            && !$this->pickUpLocationIsValid($pickUpLocation, $patron, $details)
+        ) {
+            return [
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+            ];
+        }
+
+        $request = [
+            'biblionumber' => (int)$bibId,
+            'borrowernumber' => (int)$patron['id'],
+            'branchcode' => $pickUpLocation,
+        ];
+        if ($level == 'copy') {
+            $request['itemnumber'] = (int)$itemId;
+        }
+
+        $request['volume'] = $details['volume'] ?? '';
+        $request['issue'] = $details['issue'] ?? '';
+        $request['date'] = $details['year'] ?? '';
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'articlerequests'],
+            json_encode($request),
+            'POST',
+            $patron,
+            true
+        );
+
+        if ($code >= 300) {
+            $message = $result['error'] ?? 'storage_retrieval_request_error_fail';
+            return [
+                'success' => false,
+                'sysMessage' => $message
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'storage_retrieval_request_place_success'
+        ];
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -1560,6 +1778,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $entry['is_holdable'] = false;
             }
 
+            if ($patron && $this->itemArticleRequestAllowed($item)) {
+                $entry['storageRetrievalRequest'] = 'auto';
+                $entry['addStorageRetrievalRequestLink'] = 'check';
+            }
+
             $statuses[] = $entry;
         }
 
@@ -1695,6 +1918,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if an article request can be placed on the item
+     *
+     * @param array $item Item from Koha
+     *
+     * @return bool
+     */
+    protected function itemArticleRequestAllowed($item)
+    {
+        $unavail = $item['availability']['unavailabilities'] ?? [];
+        if (isset($unavail['ArticleRequest::NotAllowed'])) {
+            return false;
+        }
+        if (empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut'])
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
