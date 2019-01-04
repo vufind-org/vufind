@@ -27,9 +27,12 @@
  */
 namespace VuFind\AjaxHandler;
 
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Db\Row\User;
+use VuFind\ILS\Connection;
+use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\PhpRenderer;
 
 /**
  * "Get User Fines" AJAX handler
@@ -42,6 +45,22 @@ use Zend\View\Renderer\PhpRenderer;
  */
 class GetUserFines extends AbstractIlsAndUserAction
 {
+    /**
+     * Constructor
+     *
+     * @param SessionSettings  $ss               Session settings
+     * @param Connection       $ils              ILS connection
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     * @param User|bool        $user             Logged in user (or false)
+     * @param SafeMoneyFormat  $safeMoneyFormat  Money formatting view helper
+     */
+    public function __construct(SessionSettings $ss, Connection $ils,
+        ILSAuthenticator $ilsAuthenticator, $user, SafeMoneyFormat $safeMoneyFormat
+    ) {
+        parent::__construct($ss, $ils, $ilsAuthenticator, $user);
+        $this->safeMoneyFormat = $safeMoneyFormat;
+    }
+
     /**
      * Handle a request.
      *
@@ -67,8 +86,6 @@ class GetUserFines extends AbstractIlsAndUserAction
         foreach ($fines as $fine) {
             $sum += $fine['balance'];
         }
-        $smf = new SafeMoneyFormat();
-        $smf->setView(new PhpRenderer());
-        return $this->formatResponse($smf->__invoke($sum / 100));
+        return $this->formatResponse($this->safeMoneyFormat->__invoke($sum / 100));
     }
 }
