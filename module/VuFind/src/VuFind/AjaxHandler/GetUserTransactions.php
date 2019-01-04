@@ -63,7 +63,10 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             'warn' => 0,
             'overdue' => 0
         ];
-        foreach ($items as $item) {
+        foreach ($items['records'] as $item) {
+            if (!isset($item['dueStatus'])) {
+                continue;
+            }
             if ($item['dueStatus'] == 'overdue') {
                 $counts['overdue'] += 1;
             } elseif ($item['dueStatus'] == 'due') {
