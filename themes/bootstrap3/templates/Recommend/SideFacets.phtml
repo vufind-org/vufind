@@ -7,6 +7,8 @@
 
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
   if ($hierarchicalFacets) {
+    // jstree.min.js used to be injected by hierarchical-facet.js, but with deferred
+    // processing it's called too late to append anything to the headers.
     $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
   }
 ?>
