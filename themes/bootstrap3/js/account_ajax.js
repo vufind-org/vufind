@@ -30,19 +30,20 @@ VuFind.register('account', function Account() {
       var html = '';
       if (checkedOutStatus !== LOADING) {
         if (checkedOutStatus.ok > 0) {
-          html += '<span class="badge ok">' + checkedOutStatus.ok + '</span>';
+          html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + checkedOutStatus.ok + '</span>';
         }
         if (checkedOutStatus.warn > 0) {
-          html += '<span class="badge warn">' + checkedOutStatus.warn + '</span>';
+          html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + checkedOutStatus.warn + '</span>';
           accountIcon = 'fa fa-book text-warning';
         }
         if (checkedOutStatus.overdue > 0) {
-          html += '<span class="badge overdue">' + checkedOutStatus.overdue + '</span>';
+          html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + checkedOutStatus.overdue + '</span>';
           accountIcon = 'fa fa-book text-danger';
         }
       }
       $('.myresearch-menu .checkedout-status').html(html);
       $('.myresearch-menu .checkedout-status').removeClass('hidden');
+      $('[data-toggle="tooltip"]').tooltip();
     }
     // HOLDS
     if (holdStatus === MISSING) {
