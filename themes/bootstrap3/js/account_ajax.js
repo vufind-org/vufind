@@ -4,16 +4,19 @@ VuFind.register('account', function Account() {
   var MISSING = -2 * Math.PI;
   var _sessionDataKey = 'account-statuses';
 
-  var checkedOutStatus = LOADING;
-  var fineStatus = LOADING;
-  var holdStatus = LOADING;
+  // Types of statuses to fetch via AJAX:
+  var _statusTypes = ['checkedOut', 'fines', 'holds'];
+  // AJAX methods to use for the various types:
+  var _lookupMethods = {
+    checkedOut: 'getUserTransactions',
+    fines: 'getUserFines',
+    holds: 'getUserHolds'
+  };
+  // Holding area for retrieved statuses:
+  var _statuses = {};
 
   var _save = function _save() {
-    sessionStorage.setItem(_sessionDataKey, JSON.stringify({
-      checkedOut: checkedOutStatus,
-      fines: fineStatus,
-      holds: holdStatus
-    }));
+    sessionStorage.setItem(_sessionDataKey, JSON.stringify(_statuses));
   };
 
   // Clearing save forces AJAX update next page load
@@ -21,23 +24,28 @@ VuFind.register('account', function Account() {
     sessionStorage.removeItem(_sessionDataKey);
   };
 
+  var _getStatus = function _getStatus(key) {
+    return ("undefined" === typeof _statuses[key]) ? LOADING : _statuses[key];
+  };
+
   var _render = function _render() {
     var accountIcon = 'fa fa-user-circle';
     // CHECKED OUT COUNTS
-    if (checkedOutStatus === MISSING) {
+    var checkedOut = _getStatus('checkedOut');
+    if (checkedOut === MISSING) {
       $('.myresearch-menu .checkedout-status').addClass('hidden');
     } else {
       var html = '';
-      if (checkedOutStatus !== LOADING) {
-        if (checkedOutStatus.ok > 0) {
-          html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + checkedOutStatus.ok + '</span>';
+      if (checkedOut !== LOADING) {
+        if (checkedOut.ok > 0) {
+          html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + checkedOut.ok + '</span>';
         }
-        if (checkedOutStatus.warn > 0) {
-          html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + checkedOutStatus.warn + '</span>';
+        if (checkedOut.warn > 0) {
+          html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + checkedOut.warn + '</span>';
           accountIcon = 'fa fa-book text-warning';
         }
-        if (checkedOutStatus.overdue > 0) {
-          html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + checkedOutStatus.overdue + '</span>';
+        if (checkedOut.overdue > 0) {
+          html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + checkedOut.overdue + '</span>';
           accountIcon = 'fa fa-book text-danger';
         }
       }
@@ -46,87 +54,56 @@ VuFind.register('account', function Account() {
       $('[data-toggle="tooltip"]').tooltip();
     }
     // HOLDS
-    if (holdStatus === MISSING) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status hidden');
-    } else if (holdStatus === LOADING) {
+    var holds = _getStatus('holds');
+    if (holds === LOADING) {
       $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-spin fa-spinner');
-    } else if (holdStatus.available > 0) {
+    } else if (holds.available > 0) {
       $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-bell text-success');
       accountIcon = 'fa fa-bell text-success';
-    } else if (holdStatus.in_transit > 0) {
+    } else if (holds.in_transit > 0) {
       $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-clock-o text-warning');
+    } else {
+      $('.myresearch-menu .holds-status').attr('class', 'holds-status hidden');
     }
     // FINES
-    if (fineStatus === MISSING) {
+    var fines = _getStatus('fines');
+    if (fines === MISSING) {
       $('.myresearch-menu .fines-status').addClass('hidden');
-    } else if (fineStatus === LOADING) {
+    } else if (fines === LOADING) {
       $('.myresearch-menu .fines-status').html(
         '<i class="fa fa-spin fa-spinner" aria-hidden="true"></i>'
       );
     } else {
       $('.myresearch-menu .fines-status').html(
-        '<span class="badge overdue">' + fineStatus + '</span>'
+        '<span class="badge overdue">' + fines + '</span>'
       );
       accountIcon = 'fa fa-exclamation-triangle text-danger';
     }
     $('#account-icon').attr('class', accountIcon);
   };
 
-  var _ajaxCheckedOut = function _ajaxCheckedOut() {
+  var _ajaxLookup = function _ajaxLookup(statusKey) {
     $.ajax({
-      url: VuFind.path + '/AJAX/JSON?method=getUserTransactions',
+      url: VuFind.path + '/AJAX/JSON?method=' + _lookupMethods[statusKey],
       dataType: 'json'
     })
-      .done(function getCheckedOutDone(response) {
-        checkedOutStatus = response.data;
+      .done(function ajaxLookupDone(response) {
+        _statuses[statusKey] = response.data;
       })
-      .fail(function getCheckedOutFail() {
-        checkedOutStatus = MISSING;
+      .fail(function ajaxLookupFail() {
+        _statuses[statusKey] = MISSING;
       })
-      .always(function getCheckedOutAlways() {
-        _save();
-        _render();
-      });
-  };
-
-  var _ajaxFines = function _ajaxFines() {
-    $.ajax({
-      url: VuFind.path + '/AJAX/JSON?method=getUserFines',
-      dataType: 'json'
-    })
-      .done(function getFinesDone(response) {
-        fineStatus = response.data;
-      })
-      .fail(function getFinesFail() {
-        fineStatus = MISSING;
-      })
-      .always(function getFinesAlways() {
-        _save();
-        _render();
-      });
-  };
-
-  var _ajaxHolds = function _ajaxHolds() {
-    $.ajax({
-      url: VuFind.path + '/AJAX/JSON?method=getUserHolds',
-      dataType: 'json'
-    })
-      .done(function getHoldsDone(response) {
-        holdStatus = response.data;
-      })
-      .fail(function getHoldsFail() {
-        holdStatus = MISSING;
-      })
-      .always(function getHoldsAlways() {
+      .always(function ajaxLookupAlways() {
         _save();
         _render();
       });
   };
 
   var _fetchData = function _fetchData() {
-    _ajaxCheckedOut();
-    _ajaxFines();
-    _ajaxHolds();
+    for (var i = 0; i < _statusTypes.length; i++) {
+      var currentKey = _statusTypes[i];
+      _ajaxLookup(currentKey);
+    }
   };
 
   var load = function load() {
@@ -140,20 +117,13 @@ VuFind.register('account', function Account() {
     var data = sessionStorage.getItem(_sessionDataKey);
     if (data) {
       var json = JSON.parse(data);
-      if (json.checkedOut === MISSING || json.checkedOut === LOADING) {
-        _ajaxCheckedOut();
-      } else {
-        checkedOutStatus = json.checkedOut;
-      }
-      if (json.fines === MISSING || json.fines === LOADING) {
-        _ajaxFines();
-      } else {
-        fineStatus = json.fines;
-      }
-      if (json.holds === MISSING || json.holds === LOADING) {
-        _ajaxHolds();
-      } else {
-        holdStatus = json.holds;
+      for (var i = 0; i < _statusTypes.length; i++) {
+        var currentKey = _statusTypes[i];
+        if ("undefined" === typeof json[currentKey] || json[currentKey] === MISSING || json[currentKey] === LOADING) {
+          _ajaxLookup(currentKey);
+        } else {
+          _statuses[currentKey] = json[currentKey];
+        }
       }
       _render();
     } else {
@@ -161,11 +131,5 @@ VuFind.register('account', function Account() {
     }
   };
 
-  return {
-    checkedOutStatus: checkedOutStatus,
-    fineStatus: fineStatus,
-    holdStatus: holdStatus,
-
-    init: load
-  };
+  return { init: load };
 });
