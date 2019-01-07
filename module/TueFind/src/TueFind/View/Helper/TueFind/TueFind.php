@@ -37,7 +37,12 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      * @return string
      */
     function getControllerName() {
-        return $this->sm->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch()->getParam('controller', 'index');
+        $default = 'index';
+        $route_match = $this->sm->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch();
+        if ($route_match == null)
+            return $default;
+        else
+            return $route_match->getParam('controller', $default);
     }
 
     /**
