@@ -145,7 +145,7 @@ class PaginationHelper
     {
         $limit = $pageOptions['limit'];
         $page = $pageOptions['page'];
-        if (($page - 1) * $limit >= $count) {
+        if (($page - 1) * $limit >= $count && $page > 1) {
             throw new \VuFind\Exception\BadRequest('Page number out of range.');
         }
         if ($pageOptions['ilsPaging'] && $limit < $count) {
