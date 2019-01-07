@@ -83,7 +83,7 @@ VuFind.register('account', function Account() {
       .fail(function getCheckedOutFail() {
         checkedOutStatus = MISSING;
       })
-      .always(function getFinesFail() {
+      .always(function getCheckedOutAlways() {
         _save();
         _render();
       });
@@ -100,7 +100,7 @@ VuFind.register('account', function Account() {
       .fail(function getFinesFail() {
         fineStatus = MISSING;
       })
-      .always(function getFinesFail() {
+      .always(function getFinesAlways() {
         _save();
         _render();
       });
@@ -111,13 +111,13 @@ VuFind.register('account', function Account() {
       url: VuFind.path + '/AJAX/JSON?method=getUserHolds',
       dataType: 'json'
     })
-      .done(function getFinesDone(response) {
+      .done(function getHoldsDone(response) {
         holdStatus = response.data;
       })
-      .fail(function getFinesFail() {
+      .fail(function getHoldsFail() {
         holdStatus = MISSING;
       })
-      .always(function getFinesFail() {
+      .always(function getHoldsAlways() {
         _save();
         _render();
       });
