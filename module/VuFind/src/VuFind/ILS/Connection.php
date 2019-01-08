@@ -948,6 +948,32 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's transactions
+     */
+    public function getMyTransactions($patron, $params = [])
+    {
+        $result = $this->__call('getMyTransactions', [$patron, $params]);
+
+        // Support also older driver return value:
+        if (!isset($result['count'])) {
+            $result = [
+                'count' => count($result),
+                'records' => $result
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.

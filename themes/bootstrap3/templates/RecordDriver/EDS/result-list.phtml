@@ -61,7 +61,7 @@
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
         if (!empty($customLinks)): ?>
           <?php foreach ($customLinks as $customLink): ?>
-            <?php 
+            <?php
               $url = $customLink['Url'] ?? '';
               $mot = $customLink['MouseOverText'] ?? '';
               $icon = $customLink['Icon'] ?? '';
