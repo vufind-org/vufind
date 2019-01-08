@@ -577,8 +577,10 @@ class Folio extends AbstractAPI implements
         } catch (Exception $e) {
             throw new ILSException('hold_date_invalid');
         }
+        // Get status to separate Holds (on checked out items) and Pages on a
+        $status = $this->getStatus($holdDetails['item_id']);
         $requestBody = [
-            'requestType' => 'Hold',
+            'requestType' => $item->status->name == 'Available' ? 'Page' : 'Hold',
             'requestDate' => date('c'),
             'requesterId' => $holdDetails['patron']['id'],
             'requester' => [
