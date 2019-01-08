@@ -403,7 +403,7 @@ class OnlinePaymentMonitor extends AbstractService
                 );
                 if (!$settings || !isset($settings['errorEmail'])) {
                     $this->err(
-                        "  No error email for expired transactions not defined for "
+                        "  No error email for expired transactions defined for "
                         . "driver $driver ($cnt expired transactions)",
                         '='
                     );
