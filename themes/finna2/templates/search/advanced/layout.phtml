@@ -100,7 +100,7 @@
             'data-original-title' => (!$this->translationEmpty($tooltipKey)) ? $this->translate($tooltipKey) : '',
           ];
           ?>
-          <button type="button" <?=$this->htmlElement()->getAttributes($tooltipElement)?>><i class="fa fa-info-big" aria-hidden="true"></i> 
+          <button type="button" <?=$this->htmlElement()->getAttributes($tooltipElement)?>><i class="fa fa-info-big" aria-hidden="true"></i>
             <span> <?=$this->transEsc("Help with Advanced Search")?> </span>
           </button>
         <?php endif; ?>
@@ -116,7 +116,7 @@
         <?php if (!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <?php else: ?>
-          <?php 
+          <?php
           //Escaped translations, multiusage
           $msgSearchGroup = $this->transEsc('adv_search_group');
           $msgDeleteSearch = $this->transEsc("del_search");
@@ -143,7 +143,7 @@
                   </select>
                 </div>
                 <div class="adv-group-terms">
-                  <?php 
+                  <?php
                   $loopLimit = (isset($setQueries[$group])) ? count($setQueries[$group]) : 3;
 
                   $this->htmlElement()->addAttributeTemplate('input-text', [

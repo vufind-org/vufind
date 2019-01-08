@@ -33,7 +33,6 @@ namespace Finna\Controller;
 use VuFind\Cover\CachingProxy;
 use VuFind\Cover\Loader;
 use VuFind\Session\Settings as SessionSettings;
-use VuFindCode\ISBN;
 
 /**
  * Generates record images.

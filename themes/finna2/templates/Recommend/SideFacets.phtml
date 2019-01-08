@@ -78,7 +78,7 @@ if ($this->fromStreetSearch) {
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
-    <?php 
+    <?php
       $allowExclude = $this->recommend->excludeAllowed($title);
       $daterangeFacet = $title == $daterangeFacetField;
       $escTitle = $this->escapeHtmlAttr($title);

@@ -88,7 +88,7 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
                 }
                 $html .= '<a href="'
                     . $results->getUrlQuery()
-                        ->replaceTerm($term, $data['new_term'])
+                    ->replaceTerm($term, $data['new_term'])
                     . '">' . $view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()

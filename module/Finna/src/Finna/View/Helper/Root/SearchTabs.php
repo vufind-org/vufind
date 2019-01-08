@@ -276,7 +276,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     {
         $search
             = $this->table->get('Search')
-                ->select(['id' => $id])->current();
+            ->select(['id' => $id])->current();
         if (empty($search)) {
             return false;
         }

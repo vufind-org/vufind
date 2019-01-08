@@ -29,10 +29,7 @@
  */
 namespace FinnaSearch\Backend\Solr;
 
-use VuFindSearch\Backend\Solr\Response\Json\Terms;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**

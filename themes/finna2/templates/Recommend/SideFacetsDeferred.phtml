@@ -82,13 +82,13 @@ if ($this->fromStreetSearch) {
 <?php $activeFacets = $this->recommend->getActiveFacets();
 $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
 <?php if (!empty($activeFacets) && $resultsTotal > 0): ?>
-  <?php 
+  <?php
     $msgLoading = $this->transEsc('Loading');
     $msgFailed = $this->transEsc('ajax_load_interrupted');
     $msgExcludeFacet = $this->transEsc('exclude_facet');
   ?>
   <?php foreach ($activeFacets as $title => $facetName): ?>
-    <?php 
+    <?php
       $allowExclude = $this->recommend->excludeAllowed($title);
       $daterangeFacet = $title == $daterangeFacetField;
       $escTitle = $this->escapeHtml($title);

@@ -137,8 +137,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      * @param string $language   Language for copyright information
      * @param array  $params     Optional array of image parameters as an
      *                           associative array of parameter => value pairs:
-     *                             - w  Width
-     *                             - h  Height
+     *                           - w  Width
+     *                           - h  Height
      * @param bool   $thumbnails Whether to include thumbnail links if no image links
      * are found
      *
@@ -183,8 +183,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      * @param string $type   Page type (list, record).
      * @param array  $params Optional array of image parameters as
      *                       an associative array of parameter => value pairs:
-     *                         - w  Width
-     *                         - h  Height
+     *                       - w  Width
+     *                       - h  Height
      *
      * @return string
      */
