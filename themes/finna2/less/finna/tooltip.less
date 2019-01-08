@@ -117,6 +117,10 @@
     font-style: normal;
     padding: 3px;
     color: @action-link-color;
+    font-size: 24px;
+    &:before {
+      color: mix(@background-color, contrast(@background-color), 5%);
+    }
   }
   @media (max-width: @screen-sm) {
     display: none;
