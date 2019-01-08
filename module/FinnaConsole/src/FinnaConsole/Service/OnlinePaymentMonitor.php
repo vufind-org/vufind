@@ -402,12 +402,23 @@ class OnlinePaymentMonitor extends AbstractService
                     'onlinePayment', ['id' => "$driver.123"]
                 );
                 if (!$settings || !isset($settings['errorEmail'])) {
-                    $this->err(
-                        "  No error email for expired transactions defined for "
-                        . "driver $driver ($cnt expired transactions)",
-                        '='
-                    );
-                    continue;
+                    if (!empty($this->datasourceConfig[$driver]['feedbackEmail'])) {
+                        $settings['errorEmail']
+                            = $this->datasourceConfig[$driver]['feedbackEmail'];
+                        $this->warn(
+                            "  No error email for expired transactions defined for "
+                            . "driver $driver, using feedback email ($cnt expired "
+                            . "transactions)",
+                            '='
+                        );
+                    } else {
+                        $this->err(
+                            "  No error email for expired transactions defined for "
+                            . "driver $driver ($cnt expired transactions)",
+                            '='
+                        );
+                        continue;
+                    }
                 }
 
                 $email = $settings['errorEmail'];
