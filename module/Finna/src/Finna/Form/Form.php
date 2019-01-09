@@ -255,7 +255,7 @@ class Form extends \VuFind\Form\Form
             }
         }
 
-        $config = $finnaConfig['forms'][$formId] ?? null;
+        $config = $finnaConfig['forms'][$formId] ?? [];
         $viewConfig = $viewConfig['forms'][$formId] ?? null;
 
         if (!$viewConfig) {
