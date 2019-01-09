@@ -23,14 +23,6 @@ VuFind.register('account', function Account() {
 
   var _sessionDataPrefix = "vf-account-status-";
   var _save = function _save(module) {
-    if (typeof module === "undefined") {
-      for (var sub in _submodules) {
-        if (_submodules.hasOwnProperty(sub)) {
-          _save(sub);
-        }
-      }
-      return;
-    }
     sessionStorage.setItem(
       _sessionDataPrefix + module,
       JSON.stringify(_statuses[module])
@@ -132,7 +124,7 @@ VuFind.register('account', function Account() {
     var $el = $(_submodules[name].selector);
     if ($el) {
       $el.removeClass("hidden");
-      _statuses[name] = MISSING;
+      _statuses[name] = LOADING;
       _load(name);
     } else {
       _statuses[name] = INACTIVE;
