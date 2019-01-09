@@ -28,7 +28,6 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\Shibboleth;
-use VuFind\Db\Table\User;
 use Zend\Config\Config;
 
 /**

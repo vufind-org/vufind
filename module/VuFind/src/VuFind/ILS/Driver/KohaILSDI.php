@@ -400,17 +400,17 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * Makes a request to the Koha ILSDI API
      *
      * @param string $service     Called function (GetAvailability,
-     *                                             GetRecords,
-     *                                             GetAuthorityRecords,
-     *                                             LookupPatron,
-     *                                             AuthenticatePatron,
-     *                                             GetPatronInfo,
-     *                                             GetPatronStatus,
-     *                                             GetServices,
-     *                                             RenewLoan,
-     *                                             HoldTitle,
-     *                                             HoldItem,
-     *                                             CancelHold)
+     *                            GetRecords,
+     *                            GetAuthorityRecords,
+     *                            LookupPatron,
+     *                            AuthenticatePatron,
+     *                            GetPatronInfo,
+     *                            GetPatronStatus,
+     *                            GetServices,
+     *                            RenewLoan,
+     *                            HoldTitle,
+     *                            HoldItem,
+     *                            CancelHold)
      * @param array  $params      Key is parameter name, value is parameter value
      * @param string $http_method HTTP method (default = GET)
      *
