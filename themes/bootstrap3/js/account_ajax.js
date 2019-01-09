@@ -144,7 +144,11 @@ $(document).ready(function registerAccountAjax() {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
     render: function render($element, status, ICON_LEVELS) {
-      $element.html('<span class="badge overdue">' + status + '</span>');
+      if (status.value === 0) {
+        $element.addClass("hidden");
+        return ICON_LEVELS.NONE;
+      }
+      $element.html('<span class="badge overdue">' + status.display + '</span>');
       return ICON_LEVELS.DANGER;
     }
   });

@@ -86,6 +86,9 @@ class GetUserFines extends AbstractIlsAndUserAction
         foreach ($fines as $fine) {
             $sum += $fine['balance'];
         }
-        return $this->formatResponse($this->safeMoneyFormat->__invoke($sum / 100));
+        return $this->formatResponse([
+          'value' => $sum / 100,
+          'display' => $this->safeMoneyFormat->__invoke($sum / 100)
+        ]);
     }
 }
