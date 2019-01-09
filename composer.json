@@ -55,7 +55,7 @@
         "zendframework/zend-i18n": "2.9.0",
         "zendframework/zend-loader": "2.6.0",
         "zendframework/zend-log": "2.10.0",
-        "zendframework/zend-mail": "2.8.0",
+        "zendframework/zend-mail": "2.10.0",
         "zendframework/zend-modulemanager": "2.8.2",
         "zendframework/zend-mvc": "3.1.1",
         "zendframework/zend-mvc-console": "1.2.0",

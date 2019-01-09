@@ -1338,7 +1338,7 @@ simpleContainerLinks = true
 tab_enabled       = true
 ;recipient_email   = "feedback@myuniversity.edu"
 ;recipient_name    = "Your Library"
-email_subject     = "Palautetta Finnasta"
+email_subject     = "Palautetta Finnasta (%%category%%)"
 ; This is the information for where feedback emails are sent from.
 sender_email      = "noreply@finna.fi"
 sender_name       = "Finna-palaute"

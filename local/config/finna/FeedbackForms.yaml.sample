@@ -1,0 +1,108 @@
+---
+# Listing of configured forms.
+#
+# Configured forms are listed in the top level 'forms' array and can accessed via the URL:
+# /Feedback/Form/<form-id>
+#
+# The main Feedback form (id: FeedbackSite) can be accessed with a shorter URL /Feedback
+#
+# Form supports the following options:
+#
+#   enabled (boolean) Is the form enabled? (default = true)
+#   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
+#                        option to be turned on in the config.ini [Captcha] form setting.
+#                        (default = true, if Captcha turned on for feedback overall).
+#   title (string) Form title (translation key)
+#   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
+#                                (default = false)
+#   emailSubject (string) Email subject (translation key). (default = email_subject
+#                         value from config.ini [Feedback] section, or 'VuFind Feedback')
+#                         The subject may contain placeholders (for example %%receiver%%)
+#                         that are replaced with submitted form values.
+#   recipient
+#     name (string)  Recipient name (default = recipient_name setting from config.ini
+#                    [Feedback] section)
+#     email (string) Recipient email address (default = recipient_email setting from
+#                    config.ini [Feedback] section)
+#   response (string) Reponse after form submit (translation key)
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#   senderInfoHelp (string) Info text for sender name/email (translation key)
+#
+#   help
+#     pre (string)  Help text displayed at the beginning of the form (translation key).
+#     post (string) Help text displayed at the end of the form (translation key)
+#
+#   Help texts may contain HTML-formatting.
+#
+#   fields (array) List of form elements with the following options:
+#
+#     name (string)      Element name
+#     label (string)     Element label (translation key)
+#     required (boolean) Is the element required?
+#     settings (array)   HTML attributes as key-value pairs, for example:
+#       - [class, "custom-css-class another-class"]
+#     type (string)      Element type (text|textarea|email|url|select)
+#     help (string)      Element help text (translation key)
+#     
+#     And for select elements one of:
+# 
+#     options (array) List of select values (translation keys)
+#
+#     or
+#
+#     optionGroups (array) List of option groups with keys:
+#       label (string) Group label (translation key)
+#       options (array) List of select values (translation keys)
+#
+#-----------------------------------------------------------------------------------
+
+forms:
+
+  # Main Feedback form
+  FeedbackSite:
+    allowLocalOverride: true
+    title: Feedback
+    enabled: true
+    useCaptcha: false
+    #recipient:
+    #  name: Your Library
+    #  email: feedback@myuniversity.edu
+
+    onlyForLoggedUsers: false
+    #emailSubject: Palautetta Finnasta
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+    senderInfoHelp: feedback_info
+    #help:
+    #  pre: feedback_help_pre
+    #  post: feedback_help_post
+
+    fields:
+      # - name: feedback_choose_library
+      #   type: select
+      #   options:
+      #     - 1/Vaski/1/
+      #     - 1/Vaski/5/
+      #     - 1/Vaski/6/
+      #   label: feedback_choose_library
+      - name: category
+        type: select
+        options:
+          - feedback_category_general
+          - feedback_category_metadata
+          - feedback_category_services
+          - feedback_category_usability
+          - feedback_category_technical
+        label: Subject
+      - name: message
+        type: textarea
+        label: feedback_message
+        required: true
+        settings:
+      - name: url
+        type: url
+        label: feedback_url
+        settings:
+          - [placeholder, http://...]
+          - [class, 'url']
+
