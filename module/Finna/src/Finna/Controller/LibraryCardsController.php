@@ -243,6 +243,11 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
             ? $config->Authentication->recover_hash_lifetime
             : 1209600; // Two weeks
         if (time() - $hashtime > $hashLifetime) {
+            error_log(
+                "Recovery hash expired: $hash, time: $hashtime,"
+                . " lifetime: $hashLifetime, hash age: " . (time() - $hashtime)
+                . ", query: " . $_SERVER['QUERY_STRING']
+            );
             $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
             return $this->redirect()->toRoute(
                 'myresearch-home', [], ['query' => ['redirect' => 0]]
