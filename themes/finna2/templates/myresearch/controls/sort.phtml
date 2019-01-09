@@ -1,0 +1,25 @@
+<!-- START of: finna - myresearch/controls/sort.phtml -->
+<div class="sort-option-container">
+  <span class="hidden-sm hidden-xs hidden-md button-label"><?=$this->transEsc('Sort')?></span>
+  <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('Sort')?></span>
+  <div class="sort-button">
+  <div class="dropdown">
+    <?php foreach ($this->sortList as $sortType => $sortData): ?>
+      <?php if ($sortData['selected']): ?>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <span><?=$this->transEsc($sortData['desc'])?></span> <i class="fa fa-arrow-down"></i>
+      </a>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    <ul class="dropdown-menu" role="menu">
+      <?php foreach ($this->sortList as $sortType => $sortData): ?>
+      <li role="menuitem">
+        <a href="<?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?>"><?=$this->transEsc($sortData['desc'])?></a>
+      <?php endforeach; ?>
+      </li>
+    </ul>
+    <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </div>
+  </div>
+</div>
+<!-- END of: finna - myresearch/controls/sort.phtml -->

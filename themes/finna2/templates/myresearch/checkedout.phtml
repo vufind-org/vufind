@@ -69,7 +69,9 @@
                   <?php endif; ?>
                 </div>
                 <div class="sort-col">
-                  <?=$this->render('search/controls/sort.phtml')?>
+                  <?php if ($this->sortList): ?>
+                    <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+                  <?php endif; ?>
                 </div>
               </th>
             </tr>
@@ -78,7 +80,9 @@
             <tr class="toolbar">
               <th class="myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></th>
               <th class="text-right" colspan="2">
-                <?=$this->render('search/controls/sort.phtml')?>
+                <?php if ($this->sortList): ?>
+                  <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+                <?php endif; ?>
               </th>
             </tr>
         <?php endif; ?>
