@@ -65,7 +65,7 @@ VuFind.register('account', function Account() {
         } else {
           $element.removeClass('hidden');
           if (status === LOADING) {
-            $element.attr("class", _submodules[sub].selector + " fa fa-spin fa-spinner");
+            $element.html('<i class="fa fa-spin fa-spinner"></i>');
           } else {
             var moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
             if (moduleStatus > accountStatus) {
@@ -186,12 +186,12 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.attr('class', 'holds-status fa fa-bell text-success');
+        $element.html('<i class="fa fa-bell text-success"></i>');
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
-        $element.attr('class', 'holds-status fa fa-clock-o text-warning');
+        $element.html('<i class="fa fa-clock-o text-warning"></i>');
       } else {
-        $element.attr('class', 'holds-status hidden');
+        $element.addClass("holds-status hidden");
       }
       return level;
     }
