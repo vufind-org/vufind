@@ -346,6 +346,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
+        if (empty($username) || empty($password)) {
+            return null;
+        }
         $patron = ['cat_username' => $username, 'cat_password' => $password];
 
         if ($this->sessionCache->patron != $username) {
