@@ -140,6 +140,8 @@ class Paytrail extends BaseHandler
                 if (preg_match('/^(.*) (.*?)$/', $lastname, $matches)) {
                     $firstname = $matches[1];
                     $lastname = $matches[2];
+                } else {
+                    $firstname = '';
                 }
             }
             $lastname = trim($lastname);
