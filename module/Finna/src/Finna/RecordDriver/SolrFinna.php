@@ -547,7 +547,7 @@ trait SolrFinna
      */
     public function getRecordType()
     {
-        return $this->fields['recordtype'];
+        return $this->fields['recordtype'] ?? '';
     }
 
     /**
