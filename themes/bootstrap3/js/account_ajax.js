@@ -114,7 +114,7 @@ VuFind.register('account', function Account() {
       }
       _render();
     }
-  }
+  };
 
   var init = function init() {
     if (!userIsLoggedIn) {
