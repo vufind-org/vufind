@@ -1,135 +1,200 @@
 /*global userIsLoggedIn, VuFind */
 VuFind.register('account', function Account() {
-  var LOADING = -1 * Math.PI;
-  var MISSING = -2 * Math.PI;
-  var _sessionDataKey = 'account-statuses';
-
-  // Types of statuses to fetch via AJAX:
-  var _statusTypes = ['checkedOut', 'fines', 'holds'];
-  // AJAX methods to use for the various types:
-  var _lookupMethods = {
-    checkedOut: 'getUserTransactions',
-    fines: 'getUserFines',
-    holds: 'getUserHolds'
-  };
-  // Holding area for retrieved statuses:
+  // Retrieved statuses
+  var LOADING = -1 * Math.PI; // waiting for request
+  var MISSING = -2 * Math.PI; // no data available
+  var INACTIVE = -3 * Math.PI; // status element missing
   var _statuses = {};
 
-  var _save = function _save() {
-    sessionStorage.setItem(_sessionDataKey, JSON.stringify(_statuses));
+  // Account Icons
+  var ICON_LEVELS = {
+    "NONE": 0,
+    "GOOD": 1,
+    "WARNING": 2,
+    "DANGER": 3
+  };
+  var _accountIcons = {};
+  _accountIcons[ICON_LEVELS.NONE] = "fa fa-user-circle";
+  _accountIcons[ICON_LEVELS.GOOD] = "fa fa-bell text-success";
+  _accountIcons[ICON_LEVELS.WARNING] = "fa fa-bell text-warning";
+  _accountIcons[ICON_LEVELS.DANGER] = "fa fa-exclamation-triangle text-danger";
+
+  var _submodules = [];
+
+  var _sessionDataPrefix = "vf-account-status-";
+  var _save = function _save(module) {
+    if (typeof module === "undefined") {
+      for (var sub in _submodules) {
+        if (_submodules.hasOwnProperty(sub)) {
+          _save(sub);
+        }
+      }
+      return;
+    }
+    sessionStorage.setItem(
+      _sessionDataPrefix + module,
+      JSON.stringify(_statuses[module])
+    );
   };
 
   // Clearing save forces AJAX update next page load
-  var _clearSave = function _clearSave() {
-    sessionStorage.removeItem(_sessionDataKey);
+  var clearCache = function clearCache() {
+    for (var sub in _submodules) {
+      if (_submodules.hasOwnProperty(sub)) {
+        sessionStorage.removeItem(_sessionDataPrefix + sub);
+      }
+    }
   };
 
-  var _getStatus = function _getStatus(key) {
-    return ("undefined" === typeof _statuses[key]) ? LOADING : _statuses[key];
+  var _getStatus = function _getStatus(module) {
+    return (typeof _statuses[module] === "undefined") ? LOADING : _statuses[module];
   };
 
   var _render = function _render() {
-    var accountIcon = 'fa fa-user-circle';
-    // CHECKED OUT COUNTS
-    var checkedOut = _getStatus('checkedOut');
-    if (checkedOut === MISSING) {
-      $('.myresearch-menu .checkedout-status').addClass('hidden');
-    } else {
-      var html = '';
-      if (checkedOut !== LOADING) {
-        if (checkedOut.ok > 0) {
-          html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + checkedOut.ok + '</span>';
+    var accountStatus = ICON_LEVELS.NONE;
+    for (var sub in _submodules) {
+      if (_submodules.hasOwnProperty(sub)) {
+        var $element = $(_submodules[sub].selector);
+        if (!$element) {
+          _statuses[sub] = INACTIVE;
+          continue;
         }
-        if (checkedOut.warn > 0) {
-          html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + checkedOut.warn + '</span>';
-          accountIcon = 'fa fa-book text-warning';
-        }
-        if (checkedOut.overdue > 0) {
-          html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + checkedOut.overdue + '</span>';
-          accountIcon = 'fa fa-book text-danger';
+        var status = _getStatus(sub);
+        if (status === MISSING) {
+          $element.addClass('hidden');
+        } else {
+          $element.removeClass('hidden');
+          if (status === LOADING) {
+            $element.attr("class", _submodules[sub].selector + " fa fa-spin fa-spinner");
+          } else {
+            var moduleStatus = _submodules[sub].render($element, _statuses[sub], ICON_LEVELS);
+            if (moduleStatus > accountStatus) {
+              accountStatus = moduleStatus;
+            }
+          }
         }
       }
-      $('.myresearch-menu .checkedout-status').html(html);
-      $('.myresearch-menu .checkedout-status').removeClass('hidden');
-      $('[data-toggle="tooltip"]').tooltip();
     }
-    // HOLDS
-    var holds = _getStatus('holds');
-    if (holds === LOADING) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-spin fa-spinner');
-    } else if (holds.available > 0) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-bell text-success');
-      accountIcon = 'fa fa-bell text-success';
-    } else if (holds.in_transit > 0) {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status fa fa-clock-o text-warning');
-    } else {
-      $('.myresearch-menu .holds-status').attr('class', 'holds-status hidden');
-    }
-    // FINES
-    var fines = _getStatus('fines');
-    if (fines === MISSING) {
-      $('.myresearch-menu .fines-status').addClass('hidden');
-    } else if (fines === LOADING) {
-      $('.myresearch-menu .fines-status').html(
-        '<i class="fa fa-spin fa-spinner" aria-hidden="true"></i>'
-      );
-    } else {
-      $('.myresearch-menu .fines-status').html(
-        '<span class="badge overdue">' + fines + '</span>'
-      );
-      accountIcon = 'fa fa-exclamation-triangle text-danger';
-    }
-    $('#account-icon').attr('class', accountIcon);
+    $("#account-icon").attr("class", _accountIcons[accountStatus]);
   };
 
-  var _ajaxLookup = function _ajaxLookup(statusKey) {
+  var _ajaxLookup = function _ajaxLookup(module) {
     $.ajax({
-      url: VuFind.path + '/AJAX/JSON?method=' + _lookupMethods[statusKey],
+      url: VuFind.path + '/AJAX/JSON?method=' + _submodules[module].ajaxMethod,
       dataType: 'json'
     })
       .done(function ajaxLookupDone(response) {
-        _statuses[statusKey] = response.data;
+        _statuses[module] = response.data;
       })
       .fail(function ajaxLookupFail() {
-        _statuses[statusKey] = MISSING;
+        _statuses[module] = MISSING;
       })
       .always(function ajaxLookupAlways() {
-        _save();
+        _save(module);
         _render();
       });
   };
 
-  var _fetchData = function _fetchData() {
-    for (var i = 0; i < _statusTypes.length; i++) {
-      var currentKey = _statusTypes[i];
-      _ajaxLookup(currentKey);
+  var _load = function _load(module) {
+    var $element = $(_submodules[module].selector);
+    if (!$element) {
+      _statuses[module] = INACTIVE;
+    } else {
+      var json = sessionStorage.getItem(_sessionDataPrefix + module);
+      var session = typeof json === "undefined" ? null : JSON.parse(json);
+      if (
+        session === null ||
+        session === LOADING ||
+        session === MISSING
+      ) {
+        _statuses[module] = LOADING;
+        _ajaxLookup(module);
+      } else {
+        _statuses[module] = session;
+      }
+      _render();
     }
-  };
+  }
 
-  var load = function load() {
+  var init = function init() {
     if (!userIsLoggedIn) {
+      clearCache();
       return false;
     }
     // Update information when certain actions are performed
-    $('#cancelHold, #renewals').submit(_clearSave);
+    $('#cancelHold, #renewals').submit(clearCache);
+  };
 
-    $('.myresearch-menu .status').removeClass('hidden');
-    var data = sessionStorage.getItem(_sessionDataKey);
-    if (data) {
-      var json = JSON.parse(data);
-      for (var i = 0; i < _statusTypes.length; i++) {
-        var currentKey = _statusTypes[i];
-        if ("undefined" === typeof json[currentKey] || json[currentKey] === MISSING || json[currentKey] === LOADING) {
-          _ajaxLookup(currentKey);
-        } else {
-          _statuses[currentKey] = json[currentKey];
-        }
-      }
-      _render();
+  var register = function register(name, module) {
+    if (typeof _submodules[name] === "undefined") {
+      _submodules[name] = typeof module == 'function' ? module() : module;
+    }
+    var $el = $(_submodules[name].selector);
+    if ($el) {
+      $el.removeClass("hidden");
+      _statuses[name] = MISSING;
+      _load(name);
     } else {
-      _fetchData();
+      _statuses[name] = INACTIVE;
     }
   };
 
-  return { init: load };
+  return {
+    init: init,
+    clearCache: clearCache,
+    register: register
+  };
+});
+
+$(document).ready(function registerAccountAjax() {
+
+  VuFind.account.register("fines", {
+    selector: ".fines-status",
+    ajaxMethod: "getUserFines",
+    render: function render($element, status, ICON_LEVELS) {
+      $element.html('<span class="badge overdue">' + status + '</span>');
+      return ICON_LEVELS.DANGER;
+    }
+  });
+
+  VuFind.account.register("checkedOut", {
+    selector: ".checkedout-status",
+    ajaxMethod: "getUserTransactions",
+    render: function render($element, status, ICON_LEVELS) {
+      var html = '';
+      var level = ICON_LEVELS.NONE;
+      if (status.ok > 0) {
+        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + status.ok + '</span>';
+      }
+      if (status.warn > 0) {
+        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + status.warn + '</span>';
+        level = ICON_LEVELS.WARNING;
+      }
+      if (status.overdue > 0) {
+        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + status.overdue + '</span>';
+        level = ICON_LEVELS.DANGER;
+      }
+      $element.html(html);
+      $('[data-toggle="tooltip"]', $element).tooltip();
+      return level;
+    }
+  });
+
+  VuFind.account.register("holds", {
+    selector: ".holds-status",
+    ajaxMethod: "getUserHolds",
+    render: function render($element, status, ICON_LEVELS) {
+      var level = ICON_LEVELS.NONE;
+      if (status.available > 0) {
+        $element.attr('class', 'holds-status fa fa-bell text-success');
+        level = ICON_LEVELS.GOOD;
+      } else if (status.in_transit > 0) {
+        $element.attr('class', 'holds-status fa fa-clock-o text-warning');
+      } else {
+        $element.attr('class', 'holds-status hidden');
+      }
+      return level;
+    }
+  });
+
 });
