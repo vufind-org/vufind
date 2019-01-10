@@ -1,10 +1,10 @@
 <?php
 /**
- * "Get User Holds" AJAX handler
+ * "Get User Storage Retrieval Requests" AJAX handler
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,7 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 /**
- * "Get User Holds" AJAX handler
+ * "Get User Storage Retrieval Requests" AJAX handler
  *
  * @category VuFind
  * @package  AJAX
@@ -36,12 +36,12 @@ namespace VuFind\AjaxHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetUserHolds extends AbstractUserRequestAction
+class GetUserStorageRetrievalRequests extends AbstractUserRequestAction
 {
     /**
      * ILS driver method for data retrieval.
      *
      * @var string
      */
-    protected $lookupMethod = 'getMyHolds';
+    protected $lookupMethod = 'getMyStorageRetrievalRequests';
 }

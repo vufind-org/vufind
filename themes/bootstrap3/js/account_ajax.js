@@ -194,4 +194,20 @@ $(document).ready(function registerAccountAjax() {
     }
   });
 
+  VuFind.account.register("storageRetrievalRequests", {
+    selector: ".storageretrievalrequests-status",
+    ajaxMethod: "getUserStorageRetrievalRequests",
+    render: function render($element, status, ICON_LEVELS) {
+      var level = ICON_LEVELS.NONE;
+      if (status.available > 0) {
+        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('storage_retrieval_request_available') + '"></i>');
+        level = ICON_LEVELS.GOOD;
+      } else {
+        $element.addClass("holds-status hidden");
+      }
+      $('[data-toggle="tooltip"]', $element).tooltip();
+      return level;
+    }
+  });
+
 });
