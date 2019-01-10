@@ -53,7 +53,7 @@ defaultPickUpLocation = ""
 ; extraFields - A colon-separated list used to display extra visible fields in the
 ; place request form. Supported values are "comments", "pickUpLocation",
 ; "item-issue" and "acceptTerms"
-;extraFields = item-issue:comments
+;extraFields = item-issue:pickUpLocation
 
 ; Optional help texts that can be displayed on the request form
 ;helpText = "Help text for all languages."
@@ -62,6 +62,9 @@ defaultPickUpLocation = ""
 ; Optional label for the "acceptTerms" extra field
 ;acceptTermsText = "I accept the terms in any language."
 ;acceptTermsText[en-gb] = "I accept the terms in English."
+
+; This setting can be used to exclude locations from the pickup location list
+;excludePickupLocations = "BRANCH:MOBILE"
 
 [Holdings]
 ; Whether item-specific hold counts are displayed
