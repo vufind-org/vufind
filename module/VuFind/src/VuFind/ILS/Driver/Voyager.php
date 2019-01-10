@@ -1581,7 +1581,7 @@ EOT;
         }
 
         return ['amount' => $sqlRow['FINE_FEE_AMOUNT'],
-              'fine' => $sqlRow['FINE_FEE_DESC'],
+              'fine' => utf8_encode($sqlRow['FINE_FEE_DESC']),
               'balance' => $sqlRow['FINE_FEE_BALANCE'],
               'createdate' => $createDate,
               'checkout' => $chargeDate,
