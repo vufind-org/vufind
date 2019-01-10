@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getSaveStatuses' => GetSaveStatuses::class,
         'getUserFines' => GetUserFines::class,
         'getUserHolds' => GetUserHolds::class,
+        'getUserILLRequests' => GetUserILLRequests::class,
         'getUserStorageRetrievalRequests' => GetUserStorageRetrievalRequests::class,
         'getUserTransactions' => GetUserTransactions::class,
         'getVisData' => GetVisData::class,
@@ -97,6 +98,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetSaveStatuses::class => GetSaveStatusesFactory::class,
         GetUserFines::class => GetUserFinesFactory::class,
         GetUserHolds::class => AbstractIlsAndUserActionFactory::class,
+        GetUserILLRequests::class => AbstractIlsAndUserActionFactory::class,
         GetUserStorageRetrievalRequests::class =>
             AbstractIlsAndUserActionFactory::class,
         GetUserTransactions::class => AbstractIlsAndUserActionFactory::class,

@@ -36,7 +36,8 @@
     <?php endif; ?>
     <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
       <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?>
+        <span class="flex-col"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?></span>
+        <span class="illrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
       </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>

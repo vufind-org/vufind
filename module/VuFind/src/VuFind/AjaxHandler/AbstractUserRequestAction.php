@@ -73,8 +73,6 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
             if ($request['available'] ?? false) {
                 $status['available'] += 1;
             }
-            // Note: at the moment, "in transit" only applies to holds, but
-            // maintaining a counter for other request types is harmless.
             if ($request['in_transit'] ?? false) {
                 $status['in_transit'] += 1;
             }
