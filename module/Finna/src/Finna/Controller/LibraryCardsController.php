@@ -236,6 +236,9 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $hash = $this->params()->fromQuery(
             'hash', $this->params()->fromPost('hash', '')
         );
+        // Make sure to not include '>' if the mail client doesn't handle links
+        // properly
+        $hash = preg_replace('/>$/', '', $hash);
 
         // Check if hash is expired
         $hashtime = $this->getHashAge($hash);
