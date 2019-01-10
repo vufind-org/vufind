@@ -1044,7 +1044,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if (empty($result)) {
             return [];
         }
-        $section = array_key_exists('StorageRetrievalRequest', $holdDetails)
+        $section = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
             ? 'StorageRetrievalRequests' : 'Holds';
         $locations = [];
         $excluded = isset($this->config[$section]['excludePickupLocations'])
