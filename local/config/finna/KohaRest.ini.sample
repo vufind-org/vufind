@@ -48,7 +48,7 @@ defaultPickUpLocation = ""
 
 ; HMACKeys - A list of form element names that will be analyzed for consistency
 ; during form processing. Most users should not need to change this setting.
-;HMACKeys = item_id:holdings_id
+;HMACKeys = item_id:holdings_id:StorageRetrievalRequest
 
 ; extraFields - A colon-separated list used to display extra visible fields in the
 ; place request form. Supported values are "comments", "pickUpLocation",

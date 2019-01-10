@@ -1014,6 +1014,82 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Get Pick Up Locations
+     *
+     * This is responsible for gettting a list of valid library locations for
+     * holds / recall retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * or may be ignored.  The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
+     *
+     * @throws ILSException
+     * @return array        An array of associative arrays with locationID and
+     * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickUpLocations($patron = false, $holdDetails = null)
+    {
+        $result = $this->makeRequest(
+            ['v1', 'libraries'],
+            false,
+            'GET',
+            $patron
+        );
+        if (empty($result)) {
+            return [];
+        }
+        $section = array_key_exists('StorageRetrievalRequest', $holdDetails)
+            ? 'StorageRetrievalRequests' : 'Holds';
+        $locations = [];
+        $excluded = isset($this->config[$section]['excludePickupLocations'])
+            ? explode(':', $this->config[$section]['excludePickupLocations']) : [];
+        foreach ($result as $location) {
+            if (!$location['pickup_location']
+                || in_array($location['branchcode'], $excluded)
+            ) {
+                continue;
+            }
+            $locations[] = [
+                'locationID' => $location['branchcode'],
+                'locationDisplay' => $location['branchname']
+            ];
+        }
+
+        // Do we need to sort pickup locations? If the setting is false, don't
+        // bother doing any more work. If it's not set at all, default to
+        // alphabetical order.
+        $orderSetting = isset($this->config[$section]['pickUpLocationOrder'])
+            ? $this->config[$section]['pickUpLocationOrder'] : 'default';
+        if (count($locations) > 1 && !empty($orderSetting)) {
+            $locationOrder = $orderSetting === 'default'
+                ? [] : array_flip(explode(':', $orderSetting));
+            $sortFunction = function ($a, $b) use ($locationOrder) {
+                $aLoc = $a['locationID'];
+                $bLoc = $b['locationID'];
+                if (isset($locationOrder[$aLoc])) {
+                    if (isset($locationOrder[$bLoc])) {
+                        return $locationOrder[$aLoc] - $locationOrder[$bLoc];
+                    }
+                    return -1;
+                }
+                if (isset($locationOrder[$bLoc])) {
+                    return 1;
+                }
+                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+            };
+            usort($locations, $sortFunction);
+        }
+
+        return $locations;
+    }
+
+    /**
      * Return summary of holdings items.
      *
      * @param array $holdings Parsed holdings items
