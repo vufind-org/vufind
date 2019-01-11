@@ -252,8 +252,7 @@ function setupAutocomplete() {
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     // Auto-submit selected item
-    callback: function autoSubmitAC(item, input, et) {
-      console.log("ac callback", item.value);
+    callback: function autoSubmitAC(item, input) {
       input.val(item.value);
       $("#searchForm").submit();
       return false;
