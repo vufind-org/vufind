@@ -251,6 +251,14 @@ function setupAutocomplete() {
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
+    // Auto-submit selected item
+    callback: function autoSubmitAC(item, input, et) {
+      console.log("ac callback", item.value);
+      input.val(item.value);
+      $("#searchForm").submit();
+      return false;
+    },
+    // AJAX call for autocomplete results
     handler: function vufindACHandler(input, cb) {
       var query = input.val();
       var searcher = extractClassParams(input);
