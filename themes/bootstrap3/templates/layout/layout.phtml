@@ -33,13 +33,11 @@
             'bulk_email_success' => 'bulk_email_success',
             'bulk_noitems_advice' => 'bulk_noitems_advice',
             'bulk_save_success' => 'bulk_save_success',
-            'Checked Out Items' => 'Checked Out Items',
             'close' => 'close',
             'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
             'hold_available' => 'hold_available',
-            'ill_request_available' => 'ill_request_available',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
             'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
@@ -52,11 +50,7 @@
             'number_thousands_separator' => [
                 'number_thousands_separator', null, ','
             ],
-            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
-            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
-            'request_in_transit' => 'request_in_transit',
-            'sms_success' => 'sms_success',
-            'storage_retrieval_request_available' => 'storage_retrieval_request_available',
+            'sms_success' => 'sms_success'
           ]
         );
         // Add libphonenumber.js strings
@@ -126,9 +120,20 @@ VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
 
+      // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
         $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'Checked Out Items' => 'Checked Out Items',
+            'ill_request_available' => 'ill_request_available',
+            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
+            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
+            'request_in_transit' => 'request_in_transit',
+            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
+          ]
+        );
       }
     ?>
     <?=$this->headScript()?>
