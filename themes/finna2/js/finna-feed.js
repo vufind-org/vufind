@@ -228,7 +228,7 @@ finna.feed = (function finnaFeed() {
       slidesToScroll: settings.scrolledItems.desktop,
       speed: calculateScrollSpeed(settings.scrolledItems.desktop, settings.scrollSpeed),
       vertical: settings.vertical,
-      lazyLoad: (typeof settings.lazyLoad !== 'undefined') ? settings.lazyLoad : 'anticipated',
+      lazyLoad: (typeof settings.lazyLoad !== 'undefined') ? settings.lazyLoad : 'ondemand',
       responsive: [
         {
           breakpoint: 1200,
