@@ -246,11 +246,23 @@ function setupAutocomplete() {
   if (searchbox.length < 1) {
     return;
   }
+  // Auto-submit based on config
+  var acCallback = function ac_cb_noop() {};
+  if (searchbox.hasClass("ac-auto-submit")) {
+    acCallback = function autoSubmitAC(item, input) {
+      input.val(item.value);
+      $("#searchForm").submit();
+      return false;
+    };
+  }
   // Search autocomplete
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
+    // Auto-submit selected item
+    callback: acCallback,
+    // AJAX call for autocomplete results
     handler: function vufindACHandler(input, cb) {
       var query = input.val();
       var searcher = extractClassParams(input);

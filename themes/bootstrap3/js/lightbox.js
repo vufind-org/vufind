@@ -70,7 +70,7 @@ VuFind.register('lightbox', function Lightbox() {
   var _constrainLink;
   var _formSubmit;
   function render(content) {
-    if (!content.match) {
+    if (typeof content !== "string") {
       return;
     }
     // Isolate successes
@@ -352,6 +352,29 @@ VuFind.register('lightbox', function Lightbox() {
     $('form[data-lightbox]').each(function bindFormSubmitsLightbox(i, form) {
       $(form).find('[type=submit]').click(_storeClickedStatus);
       $('[type="submit"][form="' + form.id + '"]').click(_storeClickedStatus);
+    });
+
+    // Display images in the lightbox
+    $('[data-lightbox-image]', el).each(function lightboxOpenImage(i, link) {
+      $(link).unbind("click", _constrainLink);
+      $(link).bind("click", function lightboxImageRender(event) {
+        event.preventDefault();
+        var url = link.dataset.lightboxHref || link.href || link.src;
+        var imageCheck = $.ajax({
+          url: url,
+          method: "HEAD"
+        });
+        imageCheck.done(function lightboxImageCheckDone(content, status, jq_xhr) {
+          if (
+            jq_xhr.status === 200 && 
+            jq_xhr.getResponseHeader("content-type").substr(0, 5) === "image"
+          ) {
+            render('<div class="lightbox-image"><img src="' + url + '"/></div>');
+          } else {
+            location.href = url;
+          }
+        });
+      });
     });
   }
 

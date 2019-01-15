@@ -87,7 +87,7 @@ abstract class Base
      * Sets up the EDS API Client
      *
      * @param array $settings Associative array of setting to use in
-     *                         conjunction with the EDS API
+     *                        conjunction with the EDS API
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
      *      <li>orgid - Organization making calls to the EDS API </li>
