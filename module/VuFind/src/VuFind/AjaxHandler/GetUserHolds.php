@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for AbstractIlsAndUserAction AJAX handlers.
+ * "Get User Holds" AJAX handler
  *
  * PHP version 7
  *
@@ -27,10 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
-use Interop\Container\ContainerInterface;
-
 /**
- * Factory for AbstractIlsAndUserAction AJAX handlers.
+ * "Get User Holds" AJAX handler
  *
  * @category VuFind
  * @package  AJAX
@@ -38,34 +36,12 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractIlsAndUserActionFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetUserHolds extends AbstractUserRequestAction
 {
     /**
-     * Create an object
+     * ILS driver method for data retrieval.
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @var string
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
-            ...($options ?: [])
-        );
-    }
+    protected $lookupMethod = 'getMyHolds';
 }
