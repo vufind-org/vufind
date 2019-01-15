@@ -270,7 +270,7 @@ class SideFacets extends AbstractFacets
                 );
                 $facetSet[$hierarchicalFacet]['list']
                     = $this->hierarchicalFacetHelper
-                    ->flattenFacetHierarchy($facetArray);
+                        ->flattenFacetHierarchy($facetArray);
             }
         }
 
