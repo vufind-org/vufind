@@ -108,17 +108,6 @@
             . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
-    ?>
-    <?php
-      $root = rtrim($this->url('home'), '/');
-      $translations = $this->jsTranslations()->getJSON();
-      $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = <<<JS
-VuFind.path = '{$root}';
-VuFind.defaultSearchBackend = '{$dsb}';
-VuFind.addTranslations({$translations});
-JS;
-      $this->headScript()->appendScript($setupJS);
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
@@ -135,6 +124,16 @@ JS;
           ]
         );
       }
+
+      $root = rtrim($this->url('home'), '/');
+      $translations = $this->jsTranslations()->getJSON();
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $setupJS = <<<JS
+VuFind.path = '{$root}';
+VuFind.defaultSearchBackend = '{$dsb}';
+VuFind.addTranslations({$translations});
+JS;
+      $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>
   </head>
