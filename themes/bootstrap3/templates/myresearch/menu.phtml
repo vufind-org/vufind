@@ -29,13 +29,13 @@
       </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
-      <a href="<?=$this->url('myresearch-storageretrievalrequests')?>"<?=$this->active == 'storageRetrievalRequests' ? ' class="active"' : ''?>>
+      <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="flex<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
         <span class="flex-col"><i class="fa fa-fw fa-archive" aria-hidden="true"></i> <?=$this->transEsc('Storage Retrieval Requests')?></span>
         <span class="storageretrievalrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
       </a>
     <?php endif; ?>
     <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
-      <a href="<?=$this->url('myresearch-illrequests')?>"<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>>
+      <a href="<?=$this->url('myresearch-illrequests')?>" class="flex<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
         <span class="flex-col"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?></span>
         <span class="illrequests-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
       </a>
