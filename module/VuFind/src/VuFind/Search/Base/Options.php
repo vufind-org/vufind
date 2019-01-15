@@ -231,7 +231,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $autocompleteAutoSubmit = false;
+    protected $autocompleteAutoSubmit = true;
 
     /**
      * Configuration file to read global settings from
