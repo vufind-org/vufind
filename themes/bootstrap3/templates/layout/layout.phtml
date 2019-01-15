@@ -37,6 +37,7 @@
             'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
+            'hold_available' => 'hold_available',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
             'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
@@ -96,7 +97,7 @@
             ]
           );
         }
-        $this->headScript()->appendScript(
+        $this->headScript()->prependScript(
           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
@@ -107,8 +108,24 @@
             . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
-    ?>
-    <?php
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'account_has_alerts' => 'account_has_alerts',
+            'Checked Out Items' => 'Checked Out Items',
+            'ill_request_available' => 'ill_request_available',
+            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
+            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
+            'request_in_transit' => 'request_in_transit',
+            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
+          ]
+        );
+      }
+
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
