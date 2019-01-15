@@ -44,3 +44,6 @@ body.rtl .modal-loading { float: left; }
 // Utility classes
 .lightbox-only { display: none; }
 #modal .lightbox-only { display: initial; }
+
+// Image display
+.lightbox-image { text-align: center; }
