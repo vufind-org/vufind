@@ -7,8 +7,17 @@ if [ -z "$TUEFIND_FLAVOUR" ]; then
     exit 0
 fi
 
-echo "Updating TueFind configuration (git hook post-merge)"
+CHANGED_FILES="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
 DIR="$(dirname $(readlink --canonicalize "$0"))"
-php $DIR/../../util/cssBuilder.php
+
+# $1 - command
+# $2 - grep pattern
+# $3 - message
+run_if_file_changed() {
+    echo "$CHANGED_FILES" | grep --quiet "$2" && echo $3 && eval "$1"
+}
+
+echo "Updating TueFind configuration (git hook post-merge)"
+run_if_file_changed "php $DIR/../../util/cssBuilder.php" ".less" "LESS files changed, starting cssBuilder..."
 $DIR/../../update_tuefind_config.sh
 $DIR/../../clean_vufind_cache.sh
