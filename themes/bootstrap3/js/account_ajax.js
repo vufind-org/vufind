@@ -68,8 +68,16 @@ VuFind.register('account', function Account() {
       }
     }
     $("#account-icon").attr("class", _accountIcons[accountStatus]);
+    if (accountStatus > ICON_LEVELS.NONE) {
+      $("#account-icon")
+        .attr("data-toggle", "tooltip")
+        .attr("data-placement", "bottom")
+        .attr("title", VuFind.translate("account_has_alerts"))
+        .tooltip();
+    } else {
+      $("#account-icon").tooltip("destroy");
+    }
   };
-
   var _ajaxLookup = function _ajaxLookup(module) {
     $.ajax({
       url: VuFind.path + '/AJAX/JSON?method=' + _submodules[module].ajaxMethod,
