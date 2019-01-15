@@ -78,12 +78,8 @@ class GetUserFines extends AbstractIlsAndUserAction
         if (!$this->ils->checkCapability('getMyFines')) {
             return $this->formatResponse('', self::STATUS_ERROR, 405);
         }
-        $fines = $this->ils->getMyFines($patron);
-        if (count($fines) === 0) {
-            return $this->formatResponse(0);
-        }
         $sum = 0;
-        foreach ($fines as $fine) {
+        foreach ($this->ils->getMyFines($patron) as $fine) {
             $sum += $fine['balance'];
         }
         $value = $sum / 100;
