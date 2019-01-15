@@ -30,11 +30,15 @@ VuFind.register('account', function Account() {
   };
 
   // Clearing save forces AJAX update next page load
-  var clearCache = function clearCache() {
-    for (var sub in _submodules) {
-      if (_submodules.hasOwnProperty(sub)) {
-        sessionStorage.removeItem(_sessionDataPrefix + sub);
+  var clearCache = function clearCache(name) {
+    if (typeof name === "undefined") {
+      for (var sub in _submodules) {
+        if (_submodules.hasOwnProperty(sub)) {
+          clearCache(sub);
+        }
       }
+    } else {
+      sessionStorage.removeItem(_sessionDataPrefix + name);
     }
   };
 
@@ -117,10 +121,6 @@ VuFind.register('account', function Account() {
   };
 
   var init = function init() {
-    if (!userIsLoggedIn) {
-      clearCache();
-      return false;
-    }
     // Update information when certain actions are performed
     $('#cancelHold, #renewals').submit(clearCache);
   };
@@ -142,7 +142,8 @@ VuFind.register('account', function Account() {
   return {
     init: init,
     clearCache: clearCache,
-    register: register
+    // if user is logged out, clear cache instead of register
+    register: userIsLoggedIn ? register : clearCache
   };
 });
 
