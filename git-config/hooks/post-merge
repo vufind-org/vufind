@@ -14,7 +14,7 @@ DIR="$(dirname $(readlink --canonicalize "$0"))"
 # $2 - grep pattern
 # $3 - message
 run_if_file_changed() {
-    echo "$CHANGED_FILES" | grep --quiet "$2" && echo $3 && eval "$1"
+    echo "$CHANGED_FILES" | grep --quiet "$2" && echo "$3" && eval "$1"
 }
 
 echo "Updating TueFind configuration (git hook post-merge)"
