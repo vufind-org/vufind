@@ -38,7 +38,7 @@
       <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
     <?php endif; ?>
 
-    Page <?=$pages->current ?> of <?=$pages->pageCount ?>
+    #<?=$pages->current ?> of <?=$pages->pageCount ?>
 
     <?php if (isset($pages->next)): ?>
       <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($pages->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
@@ -73,9 +73,11 @@
     <?php foreach ($this->results->getResults() as $current): ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($current)?>"><?=$current->getTitle(); ?></a>
-        <?=$this->transEsc('by') ?> <?=$current->getPrimaryAuthor() ?>
         <?php if (!empty($years = $current->getPublicationDates())): ?>
           (<?=$years[0] ?>)
+        <?php endif; ?>
+        <?php if (!empty($author = $current->getPrimaryAuthor())): ?>
+          <?=$this->transEsc('by') ?> <?=$author ?>
         <?php endif; ?>
       </li>
     <?php endforeach; ?>

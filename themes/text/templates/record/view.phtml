@@ -12,7 +12,7 @@
 <?php endif; ?>
 
 <?php if($coverLink): ?>
-  <p><a href="<?=$coverLink ?>">View Cover</a></p>
+  <p><a href="<?=$coverLink ?>"><?=$this->transEsc('Book Cover') ?></a></p>
 <?php endif; ?>
 
 <ul>
@@ -31,7 +31,7 @@
   $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false;
 ?>
 <?php if ($summary): ?>
-  <div><?=$summary?></div>
+  <div style="margin-bottom: 1rem"><?=$summary?></div>
 <?php endif; ?>
 
 <?php /* Display Main Details */ ?>
