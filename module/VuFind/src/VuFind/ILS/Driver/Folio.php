@@ -184,23 +184,11 @@ class Folio extends AbstractAPI implements
         }
     }
 
-    /**
-     * Return local bibID from a record based on FOLIO parameters
-     *
-     * @param string      $instanceId Instance level id (lowest level)
-     * @param string|null $holdingId  Holdings level id (looked up if absent)
-     * @param string|null $itemId     Item level id (looked up if absent)
-     *
-     * @return string
-     */
     protected function getBibId($instanceId, $holdingId = null, $itemId = null)
     {
         if ($instanceId == null) {
             if ($holdingId == null) {
-                $response = $this->makeRequest(
-                    'GET',
-                    '/item-storage/items/' . $itemId
-                );
+                $response = $this->makeRequest('GET', '/item-storage/items/' . $itemId);
                 $item = json_decode($response->getBody());
                 $holdingId = $item->holdingsRecordId;
             }
@@ -220,17 +208,15 @@ class Folio extends AbstractAPI implements
     /**
      * Get raw object of item from inventory/items/
      *
-     * @param string $bibId Item-level id
+     * @param string $itemId Item-level id
      *
-     * @throws ILSException
+     * @throw
      * @return array
      */
     protected function getInstance($bibId)
     {
         $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = [
-            'query' => '(id="' . $escaped . '" or identifiers="' . $escaped . '")'
-        ];
+        $query = ['query' => '(id="' . $escaped . '" or identifiers="' . $escaped . '")'];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
@@ -285,12 +271,12 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for holding information.
      *
-     * @param string $bibId  Item-level id
-     * @param array  $patron Patron login information
+     * @param string $itemId      Item-level id
+     * @param array  $patronLogin Patron login information
      *
      * @return array An array of associative holding arrays
      */
-    public function getHolding($bibId, array $patron = null)
+    public function getHolding($bibId, array $patronLogin = null)
     {
         $instance = $this->getInstance($bibId);
         $query = ['query' => '(instanceId="' . $instance->id . '")'];
@@ -345,7 +331,7 @@ class Folio extends AbstractAPI implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed Associative array of patron info on successful login,
+     * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -392,13 +378,27 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for a patron's current profile information
      *
-     * @param array $patron Patron login information
+     *     Input: Patron array returned by patronLogin method
+     *     Output: An associative array with the following keys (all strings):
+     *         firstname
+     *         lastname
+     *         address1
+     *         address2
+     *         city (added in VuFind 2.3)
+     *         country (added in VuFind 2.3)
+     *         zip
+     *         phone
+     *         mobile_phone (added in VuFind 5.0)
+     *         group – i.e. Student, Staff, Faculty, etc.
+     *         expiration_date – account expiration date (added in VuFind 4.1)
+     *
+     * @param array $patronLogin Patron login information
      *
      * @return array Profile data in associative array
      */
-    public function getMyProfile($patron)
+    public function getMyProfile($patronLogin)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'username == "' . $patronLogin['username'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
@@ -419,13 +419,49 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for a patron's current checked out items
      *
-     * @param array $patron Patron information returned by the patronLogin method.
+     * Input: Patron array returned by patronLogin method
+     * Output: Returns an array of associative arrays.
+     *         Each associative array contains these keys:
+     *         duedate - The item's due date (a string).
+     *         dueTime - The item's due time (a string, optional).
+     *         dueStatus - A special status – may be 'due' (for items due very soon)
+     *                     or 'overdue' (for overdue items). (optional).
+     *         id - The bibliographic ID of the checked out item.
+     *         source - The search backend from which the record may be retrieved
+     *                  (optional - defaults to Solr). Introduced in VuFind 2.4.
+     *         barcode - The barcode of the item (optional).
+     *         renew - The number of times the item has been renewed (optional).
+     *         renewLimit - The maximum number of renewals allowed
+     *                      (optional - introduced in VuFind 2.3).
+     *         request - The number of pending requests for the item (optional).
+     *         volume – The volume number of the item (optional).
+     *         publication_year – The publication year of the item (optional).
+     *         renewable – Whether or not an item is renewable
+     *                     (required for renewals).
+     *         message – A message regarding the item (optional).
+     *         title - The title of the item (optional – only used if the record
+     *                                        cannot be found in VuFind's index).
+     *         item_id - this is used to match up renew responses and must match
+     *                   the item_id in the renew response.
+     *         institution_name - Display name of the institution that owns the item.
+     *         isbn - An ISBN for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         issn - An ISSN for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         oclc - An OCLC number for use in cover image loading
+     *                (optional – introduced in release 2.3)
+     *         upc - A UPC for use in cover image loading
+     *               (optional – introduced in release 2.3)
+     *         borrowingLocation - A string describing the location where the item
+     *                         was checked out (optional – introduced in release 2.4)
+     *
+     * @param array $patronLogin Patron login information
      *
      * @return array Transactions associative arrays
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patronLogin)
     {
-        $query = ['query' => 'userId==' . $patron['username']];
+        $query = ['query' => 'userId==' . $patronLogin['username']];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json['loans']) == 0) {
@@ -453,7 +489,8 @@ class Folio extends AbstractAPI implements
      * This is responsible get a list of valid locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by the patronLogin method.
+     * @param array $patron Patron information returned by the patronLogin
+     *                      method.
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
@@ -475,14 +512,32 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for a patron's current holds
      *
-     * @param array $patron Patron information returned by the patronLogin method.
+     * Input: Patron array returned by patronLogin method
+     * Output: Returns an array of associative arrays, one for each hold associated with the specified account. Each associative array contains these keys:
+     *     type - A string describing the type of hold – i.e. hold vs. recall (optional).
+     *     id - The bibliographic record ID associated with the hold (optional).
+     *     source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
+     *     location - A string describing the pickup location for the held item (optional). In VuFind 1.2, this should correspond with a locationID value from getPickUpLocations. In VuFind 1.3 and later, it may be either a locationID value or a raw ready-to-display string.
+     *     reqnum - A control number for the request (optional).
+     *     expire - The expiration date of the hold (a string).
+     *     create - The creation date of the hold (a string).
+     *     position – The position of the user in the holds queue (optional)
+     *     available – Whether or not the hold is available (true) or not (false) (optional)
+     *     item_id – The item id the request item (optional).
+     *     volume – The volume number of the item (optional)
+     *     publication_year – The publication year of the item (optional)
+     *     title - The title of the item (optional – only used if the record cannot be found in VuFind's index).
+     *     isbn - An ISBN for use in cover image loading (optional – introduced in release 2.3)
+     *     issn - An ISSN for use in cover image loading (optional – introduced in release 2.3)
+     *     oclc - An OCLC number for use in cover image loading (optional – introduced in release 2.3)
+     *     upc - A UPC for use in cover image loading (optional – introduced in release 2.3)
+     *     cancel_details - The cancel token, or a blank string if cancel is illegal for this hold; if omitted, this will be dynamically generated using getCancelHoldDetails(). You should only fill this in if it is more efficient to calculate the value up front; if it is an expensive calculation, you should omit the value entirely and let getCancelHoldDetails() do its job on demand. This optional feature was introduced in release 3.1.
      *
-     * @return array An array of associative arrays, one for each hold
      */
-    public function getMyHolds($patron)
+    public function getMyHolds($patronLogin)
     {
         // Get user id
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'username == "' . $patronLogin['username'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $query = [
@@ -518,10 +573,7 @@ class Folio extends AbstractAPI implements
     public function placeHold($holdDetails)
     {
         try {
-            $requiredBy = date_create_from_format(
-                'm-d-Y',
-                $holdDetails['requiredBy']
-            );
+            $requiredBy = date_create_from_format('m-d-Y', $holdDetails['requiredBy']);
         } catch (Exception $e) {
             throw new ILSException('hold_date_invalid');
         }
@@ -568,7 +620,6 @@ class Folio extends AbstractAPI implements
      */
     public function getRequestBlocks($patron)
     {
-        // TODO
         return false;
     }
 
@@ -579,116 +630,81 @@ class Folio extends AbstractAPI implements
      *     Output: Array of associative arrays, each with a single key:
      *         issue - String describing the issue
      *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
+     * Currently, most drivers do not implement this method, instead always returning an empty array. It is only necessary to implement this in more detail if you want to populate the “Most Recent Received Issues” section of the record holdings tab.
      */
     public function getPurchaseHistory($bibID)
     {
-        // TODO
         return [];
     }
 
     /**
      * This method returns items that are on reserve for the specified course, instructor and/or department.
      *
-     *     Input: CourseID, InstructorID, DepartmentID (these values come from the
-     * corresponding getCourses, getInstructors and getDepartments methods;
-     * any of these three filters may be set to a blank string to skip)
-     *     Output: An array of associative arrays representing reserve items.
+     *     Input: CourseID, InstructorID, DepartmentID (these values come from the corresponding getCourses, getInstructors and getDepartments methods; any of these three filters may be set to a blank string to skip)
+     *     Output: An array of associative arrays representing reserve items. Array keys:
      *         BIB_ID - The record ID of the current reserve item.
-     *         COURSE_ID - The course ID associated with the current reserve item,
-     * if any (required when using Solr-based reserves).
-     *         DEPARTMENT_ID - The department ID associated with the current reserve
-     * item, if any (required when using Solr-based reserves).
-     *         INSTRUCTOR_ID - The instructor ID associated with the current reserve
-     * item, if any (required when using Solr-based reserves).
+     *         COURSE_ID - The course ID associated with the current reserve item, if any (required when using Solr-based reserves).
+     *         DEPARTMENT_ID - The department ID associated with the current reserve item, if any (required when using Solr-based reserves).
+     *         INSTRUCTOR_ID - The instructor ID associated with the current reserve item, if any (required when using Solr-based reserves).
+     *         DISPLAY_CALL_NO - The call number of the current reserve item (never used; deprecated).
+     *         AUTHOR - The author of the current reserve item (never used; deprecated).
+     *         TITLE - The title of the current reserve item (never used; deprecated).
+     *         PUBLISHER - The publisher of the current reserve item (never used; deprecated).
+     *         PUBLISHER_DATE - The publication date of the current reserve item (never used; deprecated).
      *
      */
     public function findReserves($courseID, $instructorID, $departmentID)
     {
-        // TODO
-        return [];
     }
 
     /**
      * This method queries the ILS for a patron's current fines
      *
      *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each fine
-     * associated with the specified account. Each associative array contains these keys:
-     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust
-     * decimal points appropriately (i.e. for a $1.00 fine, amount should be
-     * set to 100).
-     *         checkout - A string representing the date when the item was
-     * checked out.
-     *         fine - A string describing the reason for the fine
-     * (i.e. “Overdue”, “Long Overdue”).
+     *     Output: Returns an array of associative arrays, one for each fine associated with the specified account. Each associative array contains these keys:
+     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust decimal points appropriately (i.e. for a $1.00 fine, amount should be set to 100).
+     *         checkout - A string representing the date when the item was checked out.
+     *         fine - A string describing the reason for the fine (i.e. “Overdue”, “Long Overdue”).
      *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was
-     * accrued (optional)
+     *         createdate – A string representing the date when the fine was accrued (optional)
      *         duedate - A string representing the date when the item was due.
      *         id - The bibliographic ID of the record involved in the fine.
-     *         source - The search backend from which the record may be retrieved
-     * (optional - defaults to Solr). Introduced in VuFind 2.4.
+     *         source - The search backend from which the record may be retrieved (optional - defaults to Solr). Introduced in VuFind 2.4.
      *
      */
-    public function getMyFines($patron)
+    public function getMyFines($patronLogin)
     {
-        // TODO
         return [];
     }
 
     /**
-     * Get a list of funds that can be used to limit the “new item” search. Note that
-     * “fund” may be a misnomer – if funds are not an appropriate way to limit your
-     * new item results, you can return a different set of values from this function.
-     * For example, you might just make this a wrapper for getDepartments().
-     * The important thing is that whatever you return from this function, the IDs
-     * can be used as a limiter to the getNewItems() function, and the names are
-     * appropriate for display on the new item search screen. If you do not want or
-     * support such limits, just return an empty array here and the limit control on
-     * the new item search screen will disappear.
+     * Get a list of funds that can be used to limit the “new item” search. Note that “fund” may be a misnomer – if funds are not an appropriate way to limit your new item results, you can return a different set of values from this function. For example, you might just make this a wrapper for getDepartments(). The important thing is that whatever you return from this function, the IDs can be used as a limiter to the getNewItems() function, and the names are appropriate for display on the new item search screen. If you do not want or support such limits, just return an empty array here and the limit control on the new item search screen will disappear.
      *
      *     Output: An associative array with key = fund ID, value = fund name.
      *
-     * IMPORTANT: The return value for this method changed in r2184. If you are using
-     * VuFind 1.0RC2 or earlier, this function returns a flat array of options
-     * (no ID-based keys), and empty return values may cause problems. It is
-     * recommended that you update to newer code before implementing the new item
-     * feature in your driver.
+     * IMPORTANT: The return value for this method changed in r2184. If you are using VuFind 1.0RC2 or earlier, this function returns a flat array of options (no ID-based keys), and empty return values may cause problems. It is recommended that you update to newer code before implementing the new item feature in your driver.
      */
     public function getFunds()
     {
-        // TODO
         return [];
     }
 
     /**
-     * This method retrieves a patron's historic transactions
-     * (previously checked out items).
+     * This method retrieves a patron's historic transactions (previously checked out items).
      *
-     * :!: The getConfig method must return a non-false value for this feature to be
-     * enabled. For privacy reasons, the entire feature should be disabled by default
-     * unless explicitly turned on in the driver's .ini file.
+     * :!: The getConfig method must return a non-false value for this feature to be enabled. For privacy reasons, the entire feature should be disabled by default unless explicitly turned on in the driver's .ini file.
      *
      * This feature was added in VuFind 5.0.
      *
-     *     getConfig may return the following keys if the service supports paging on
-     * the ILS side:
-     *         max_results - Maximum number of results that can be requested at once.
-     * Overrides the config.ini Catalog section setting historic_loan_page_size.
-     *         page_size - An array of allowed page sizes (# of records per page)
+     *     getConfig may return the following keys if the service supports paging on the ILS side:
+     *         max_results - Maximum number of results that can be requested at once. Overrides the config.ini Catalog section setting historic_loan_page_size.
+     *         page_size - An array of allowed page sizes (number of records per page)
      *         default_page_size - Default number of records per page
-     *     getConfig may return  the following keys if the service supports sorting:
-     *         sort - An associative array where each key is a sort key and its value
-     * is a translation key
+     *     getConfig may return also the following keys if the service supports sorting:
+     *         sort - An associative array where each key is a sort key and its value is a translation key
      *         default_sort - Default sort key
-     *     Input: Patron array returned by patronLogin method and an array of
-     * optional parameters (keys = 'limit', 'page', 'sort').
-     *     Output: Returns an array of associative arrays containing some or all of
-     * these keys:
+     *     Input: Patron array returned by patronLogin method and an array of optional parameters (keys = 'limit', 'page', 'sort').
+     *     Output: Returns an array of associative arrays containing some or all of these keys:
      *         title - item title
      *         checkoutDate - date checked out
      *         dueDate - date due
@@ -702,9 +718,8 @@ class Folio extends AbstractAPI implements
      *         message - message about the transaction
      *
      */
-    public function getMyTransactionHistory($patron)
+    public function getMyTransactionHistory($patronLogin)
     {
-        // TODO
         return[];
     }
 
@@ -722,7 +737,6 @@ class Folio extends AbstractAPI implements
      */
     public function getNewItems($page = 1, $limit, $daysOld = 30, $fundID = null)
     {
-        // TODO
         return [];
     }
 

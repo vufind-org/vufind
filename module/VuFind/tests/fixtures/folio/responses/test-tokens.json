@@ -1,5 +1,5 @@
 [
-  { "status": 400, "body": "{ \"users\": [ { \"id\": \"id\" } ] }" },
   { "headers": { "X-Okapi-Token": "x-okapi-token-config-tenant" } },
+  { "status": 400, "body": "{ \"users\": [ { \"id\": \"id\" } ] }" },
   { "body": { "username": "challberg", "id": "427db840-8a6d-485f-81ca-77c1865fdcc4" } }
 ]

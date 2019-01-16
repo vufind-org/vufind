@@ -44,14 +44,14 @@ use Zend\Http\Response as HttpResponse;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FolioTest extends \VuFindTest\Unit\ILSDriverTestCase
+class FolioTest extends \VuFindTest\Unit\TestCase
 {
     protected $testConfig = [
         'API' => [
             'base_url' => 'localhost',
-            'tenant' => 'config-tenant',
-            'username' => 'config-username',
-            'password' => 'config-password'
+            'tenant' => 'config_tenant',
+            'username' => 'config_username',
+            'password' => 'config_password'
         ]
     ];
 
@@ -87,11 +87,12 @@ class FolioTest extends \VuFindTest\Unit\ILSDriverTestCase
         // Create response
         $testResponse = array_shift($this->testResponses);
         $response = new \Zend\Http\Response();
-        $response->setStatusCode($testResponse->status ?? 200);
-        $response->setContent($testResponse->body ?? '');
-        $respHeaders = new \Zend\Http\Headers();
-        $httpHeaders->addHeaders((array) ($testResponse->headers ?? []));
-        $response->setHeaders($respHeaders);
+        $response->setStatusCode($testResponse['status'] ?? 200);
+        $response->setContent($testResponse['body'] ?? '');
+        // $respHeaders = new \Zend\Http\Headers();
+        // $httpHeaders->addHeaders((array) ($testResponse['headers'] ?? []));
+        // $response->setHeaders($respHeaders);
+        $response->getHeaders()->addHeaders($testResponse['headers'] ?? []);
         return $response;
     }
 
@@ -107,27 +108,44 @@ class FolioTest extends \VuFindTest\Unit\ILSDriverTestCase
                 sprintf('Unable to load fixture file: %s ', $file)
             );
         }
-        $this->testResponses = json_decode(file_get_contents($file));
+        $this->testResponses = json_decode(file_get_contents($file), true);
         // Reset log
         $this->testRequestLog = [];
+        // Session factory
+        $factory = function ($namespace) {
+            $manager = new \Zend\Session\SessionManager();
+            return new \Zend\Session\Container("Folio_$namespace", $manager);
+        };
         // Create a stub for the SomeClass class.
-        $mock = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), null])
+        $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
             ->setMethods(['makeRequest'])
             ->getMock();
         // Configure the stub.
-        $mock->setConfig($this->testConfig);
-        $mock->expects($this->any())
+        $this->driver->setConfig($this->testConfig);
+        $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));
-        return $mock;
+        $this->driver->init();
     }
 
     function testTokens()
     {
-        $this->driver = $this->createConnector('test-tokens');
-        $this->driver->getMyProfile(['username' => 'whatever']);
-        error_log(print_r($this->testRequestLog, false));
-        $this->driver->assertEquals(2, 3);
+        $this->createConnector('test-tokens');
+        $profile = $this->driver->getMyProfile(['username' => 'whatever']);
+        // Get token
+        // - Right URL
+        $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
+        // - Right tenant
+        $this->assertEquals(
+            $this->testConfig['API']['tenant'],
+            $this->testRequestLog[0]['headers']['X-Okapi-Tenant']
+        );
+        // Profile request
+        // - Passed correct token
+        $this->assertEquals(
+            'x-okapi-token-config-tenant', // from test-tokens.json
+            $this->testRequestLog[1]['headers']['X-Okapi-Token']
+        );
     }
 }
