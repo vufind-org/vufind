@@ -464,11 +464,11 @@ class Folio extends AbstractAPI implements
         $query = ['query' => 'userId==' . $patronLogin['username']];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
-        if (count($json['loans']) == 0) {
+        if (count($json->loans) == 0) {
             return [];
         }
         $transactions = [];
-        foreach ($json['loans'] as $trans) {
+        foreach ($json->loans as $trans) {
             $dueDate = date_create($trans['dueDate']);
             $transactions[] = [
                 'duedate' => date_format($date, "j M Y"),
