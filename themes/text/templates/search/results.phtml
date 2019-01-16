@@ -61,7 +61,6 @@
   </p>
 <?php else: ?>
   <p><?=$this->context()->renderInContext('search/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?></p>
-  <?=$pagination ?>
   <?php
     /* Show results */
     if (!isset($this->indexStart)) {
