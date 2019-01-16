@@ -89,13 +89,16 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         $response = new \Zend\Http\Response();
         $response->setStatusCode($testResponse['status'] ?? 200);
         $response->setContent($testResponse['body'] ?? '');
-        // $respHeaders = new \Zend\Http\Headers();
-        // $httpHeaders->addHeaders((array) ($testResponse['headers'] ?? []));
-        // $response->setHeaders($respHeaders);
         $response->getHeaders()->addHeaders($testResponse['headers'] ?? []);
         return $response;
     }
 
+    /**
+     * Generate a new Folio driver to return responses set in a json fixture
+     *
+     * Overwrites $this->driver
+     * Uses session cache
+     */
     protected function createConnector($test)
     {
         // Setup test responses
@@ -116,12 +119,12 @@ class FolioTest extends \VuFindTest\Unit\TestCase
             $manager = new \Zend\Session\SessionManager();
             return new \Zend\Session\Container("Folio_$namespace", $manager);
         };
-        // Create a stub for the SomeClass class.
+        // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
             ->setMethods(['makeRequest'])
             ->getMock();
-        // Configure the stub.
+        // Configure the stub
         $this->driver->setConfig($this->testConfig);
         $this->driver->expects($this->any())
             ->method('makeRequest')
@@ -129,9 +132,12 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         $this->driver->init();
     }
 
+    /**
+     * Request a token where one does not exist
+     */
     function testTokens()
     {
-        $this->createConnector('get-tokens');
+        $this->createConnector('get-tokens'); // saves to $this->driver
         $profile = $this->driver->getMyProfile(['username' => 'whatever']);
         // Get token
         // - Right URL
@@ -149,6 +155,9 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         );
     }
 
+    /**
+     * Check a valid token retrieved from session cache
+     */
     function testCheckValidToken()
     {
         $this->createConnector('check-valid-token');
@@ -164,6 +173,9 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         );
     }
 
+    /**
+     * Check and renew an invalid token retrieved from session cache
+     */
     function testCheckInvalidToken()
     {
         $this->createConnector('check-invalid-token');
