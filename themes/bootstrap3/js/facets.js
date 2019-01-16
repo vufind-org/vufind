@@ -165,6 +165,18 @@ VuFind.register('sideFacets', function SideFacets() {
     });
   }
 
+  function facetBlocking() {
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+    window.location.assign($(this).attr('href'));
+  }
+
+  function activateFacetBlocking(context) {
+    if (typeof context === "undefined") {
+      context = $(document.body);
+    }
+    context.find('a.facet:not(.narrow-toggle),.facet a').click(facetBlocking);
+  }
+
   function loadAjaxSideFacets() {
     var $container = $('.side-facets-container-ajax');
     if ($container.length === 0) {
@@ -205,6 +217,7 @@ VuFind.register('sideFacets', function SideFacets() {
             }
           } else if (typeof facetData.html !== 'undefined') {
             $facetContainer.html(facetData.html);
+            activateFacetBlocking($facetContainer);
           } else {
             // TODO: this block copied from facets.js, refactor
             var treeNode = $facetContainer.find('.jstree-facet');
@@ -261,11 +274,8 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function init() {
-    // Advanced facets
-    $('a.facet:not(.narrow-toggle),.facet a').click(function facetBlocking() {
-      $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-      window.location.assign($(this).attr('href'));
-    });
+    // Display "loading" message after user clicks facet:
+    activateFacetBlocking();
 
     // Side facet status saving
     $('.facet-group .collapse').each(function openStoredFacets(index, item) {
