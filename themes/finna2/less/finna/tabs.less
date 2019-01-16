@@ -29,17 +29,6 @@
         }
       }
     }
-    &:not(.many-tabs) {
-      > li {
-        flex-basis: 50%;
-        a {
-          flex-basis: 90%;
-        }
-        button {
-          flex-basis: 10%;
-        }
-      }
-    }
     > li {
       color: @body-bg;
       display: flex;
@@ -47,6 +36,12 @@
       justify-content: center;
       padding-bottom: 1px;
       cursor: pointer;
+      @media (max-width: @screen-sm) {
+        &:not(.many-tabs) {
+          flex-basis: 50%;
+        }
+      }
+
       > a {
         background-color: @main-tabs-background-color;
         padding: 10px 5px;
@@ -62,8 +57,8 @@
         align-items: center;
         justify-content: center;
         height: 100%;
+        width: 100%;
         @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-          max-width: 120px;
           word-break: break-word;
         }
       }
