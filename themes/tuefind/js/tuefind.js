@@ -52,6 +52,7 @@ $(document).ready(function() {
     $("#searchForm_type").val(saved_search_handler);
     // We also have to set the handler explicitly adjusting the selection
     $("#searchForm_type [value=" + saved_search_handler + "]").attr('selected', 'selected');
+    // Make sure the type is adjusted for the next form submission
     $("[name=type]").val(saved_search_handler);
   }
   $("#searchForm_type").on('focus', function () {
@@ -61,7 +62,6 @@ $(document).ready(function() {
      sessionStorage.setItem("saved_search_handler", current_search_handler);
      $("#searchForm_type [value=" + previous_search_handler + "]").removeAttr('selected');
      $("#searchForm_type [value=" + current_search_handler + "]").attr('selected', 'selected');
-     // Make sure the type is adjusted for the next form submission
      $("[name=type]").val(current_search_handler);
   });
 });
