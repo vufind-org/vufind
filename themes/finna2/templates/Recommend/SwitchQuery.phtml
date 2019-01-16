@@ -1,0 +1,10 @@
+<?php $suggestions = $this->recommend->getSuggestions(); if (!empty($suggestions)): ?>
+  <div class="noresults alert alert-info">
+    <p><strong><?=$this->transEsc('switchquery_intro')?></strong></p>
+    <ul>
+      <?php foreach ($suggestions as $desc => $query): ?>
+        <li><?=$this->transEsc($desc)?>: <a href="<?=$this->recommend->getResults()->getUrlQuery()->setSearchTerms($query)?>"><?=$this->escapeHtml($query)?></a>.</li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+<?php endif; ?>

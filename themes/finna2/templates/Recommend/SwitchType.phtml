@@ -1,0 +1,7 @@
+<?php if ($handler = $this->recommend->getNewHandler()): ?>
+  <div class="noresults alert alert-info">
+    <p><strong><?=$this->translate('widen_prefix_info') ?></strong></p>
+    <?=$this->translate('widen_prefix')?>
+    <a href="<?=$this->recommend->getResults()->getUrlQuery()->setHandler($handler)?>"><?=$this->transEsc($this->recommend->getNewHandlerName())?></a>.
+  </div>
+<?php endif; ?>
