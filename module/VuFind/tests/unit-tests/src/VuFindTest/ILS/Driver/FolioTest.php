@@ -31,9 +31,6 @@ namespace VuFindTest\ILS\Driver;
 use InvalidArgumentException;
 
 use VuFind\ILS\Driver\Folio;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-
-use Zend\Http\Response as HttpResponse;
 
 /**
  * ILS driver test
@@ -135,7 +132,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     /**
      * Request a token where one does not exist
      */
-    function testTokens()
+    public function testTokens()
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
         $profile = $this->driver->getMyProfile(['username' => 'whatever']);
@@ -158,7 +155,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     /**
      * Check a valid token retrieved from session cache
      */
-    function testCheckValidToken()
+    public function testCheckValidToken()
     {
         $this->createConnector('check-valid-token');
         $profile = $this->driver->getMyTransactions(['username' => 'whatever']);
@@ -176,7 +173,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     /**
      * Check and renew an invalid token retrieved from session cache
      */
-    function testCheckInvalidToken()
+    public function testCheckInvalidToken()
     {
         $this->createConnector('check-invalid-token');
         $profile = $this->driver->getPickupLocations(['username' => 'whatever']);

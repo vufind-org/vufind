@@ -28,8 +28,8 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 /**
  * FOLIO REST API driver
