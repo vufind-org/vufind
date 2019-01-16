@@ -90,4 +90,17 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $view->setTemplate('feedback/response');
         return $view;
     }
+
+    /**
+     * Legacy support for locally customized forms.
+     *
+     * @return void
+     */
+    public function emailAction()
+    {
+        $post = $this->getRequest()->getPost();
+        $post->set('message', $post->get('comments'));
+
+        return $this->forwardTo('Feedback', 'Form');
+    }
 }
