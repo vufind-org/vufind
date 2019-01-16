@@ -64,6 +64,9 @@ class FormFactory extends \VuFind\Form\FormFactory
         if (isset($config['Site']['institution'])) {
             $form->setInstitution($config['Site']['institution']);
         }
+        if (isset($config['Site']['email'])) {
+            $form->setInstitutionEmail($config['Site']['email']);
+        }
         if ($user = $container->get('VuFind\Auth\Manager')->isLoggedIn()) {
             $roles= $container->get('VuFind\Role\PermissionManager')
                 ->getActivePermissions();

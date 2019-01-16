@@ -53,6 +53,13 @@ class Form extends \VuFind\Form\Form
     protected $institution;
 
     /**
+     * Institution email
+     *
+     * @var string
+     */
+    protected $institutionEmail;
+
+    /**
      * User
      *
      * @var User
@@ -93,6 +100,18 @@ class Form extends \VuFind\Form\Form
     }
 
     /**
+     * Set institution email
+     *
+     * @param string $email Email
+     *
+     * @return void
+     */
+    public function setInstitutionEmail($email)
+    {
+        $this->institutionEmail = $email;
+    }
+
+    /**
      * Set user
      *
      * @param User  $user  User
@@ -104,6 +123,21 @@ class Form extends \VuFind\Form\Form
     {
         $this->user = $user;
         $this->userRoles = $roles;
+    }
+
+    /**
+     * Return form recipient.
+     *
+     * @return array with name, email or null if not configured
+     */
+    public function getRecipient()
+    {
+        $recipient = parent::getRecipient();
+
+        if ($recipient[1] === null && $this->institutionEmail) {
+            return ['', $this->institutionEmail];
+        }
+        return $recipient;
     }
 
     /**
