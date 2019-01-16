@@ -171,10 +171,8 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function activateFacetBlocking(context) {
-    if (typeof context === "undefined") {
-      context = $(document.body);
-    }
-    context.find('a.facet:not(.narrow-toggle),.facet a').click(facetBlocking);
+    var finalContext = (typeof context === "undefined") ?  $(document.body) : context;
+    finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(facetBlocking);
   }
 
   function loadAjaxSideFacets() {
