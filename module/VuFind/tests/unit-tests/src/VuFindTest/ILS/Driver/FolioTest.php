@@ -131,7 +131,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
 
     function testTokens()
     {
-        $this->createConnector('test-tokens');
+        $this->createConnector('get-tokens');
         $profile = $this->driver->getMyProfile(['username' => 'whatever']);
         // Get token
         // - Right URL
@@ -144,8 +144,40 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Profile request
         // - Passed correct token
         $this->assertEquals(
-            'x-okapi-token-config-tenant', // from test-tokens.json
+            'x-okapi-token-config-tenant', // from fixtures: get-tokens.json
             $this->testRequestLog[1]['headers']['X-Okapi-Token']
+        );
+    }
+
+    function testCheckValidToken()
+    {
+        $this->createConnector('check-valid-token');
+        $profile = $this->driver->getMyTransactions(['username' => 'whatever']);
+        // Check token
+        $this->assertEquals('/users', $this->testRequestLog[0]['path']);
+        // Move to method call
+        $this->assertEquals('/circulation/loans', $this->testRequestLog[1]['path']);
+        // - Passed correct token
+        $this->assertEquals(
+            'x-okapi-token-config-tenant', // from fixtures: get-tokens.json (cached)
+            $this->testRequestLog[1]['headers']['X-Okapi-Token']
+        );
+    }
+
+    function testCheckInvalidToken()
+    {
+        $this->createConnector('check-invalid-token');
+        $profile = $this->driver->getPickupLocations(['username' => 'whatever']);
+        // Check token
+        $this->assertEquals('/users', $this->testRequestLog[0]['path']);
+        // Request new token
+        $this->assertEquals('/authn/login', $this->testRequestLog[1]['path']);
+        // Move to method call
+        $this->assertEquals('/locations', $this->testRequestLog[2]['path']);
+        // - Passed correct token
+        $this->assertEquals(
+            'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json
+            $this->testRequestLog[2]['headers']['X-Okapi-Token']
         );
     }
 }
