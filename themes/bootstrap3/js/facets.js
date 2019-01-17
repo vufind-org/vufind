@@ -80,20 +80,9 @@ function initFacetTree(treeNode, inSidebar)
   }
   treeNode.data('loaded', true);
 
-  // Enable keyboard navigation also when a screen reader is active
-  treeNode.bind('select_node.jstree', function selectNode(event, data) {
-    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-    window.location = data.node.data.url;
-    event.preventDefault();
-    return false;
-  });
-
   var source = treeNode.data('source');
   var facet = treeNode.data('facet');
   var operator = treeNode.data('operator');
-  var currentPath = treeNode.data('path');
-  var allowExclude = treeNode.data('exclude');
-  var excludeTitle = treeNode.data('exclude-title');
   var sort = treeNode.data('sort');
   var query = window.location.href.split('?')[1];
 
@@ -111,26 +100,42 @@ function initFacetTree(treeNode, inSidebar)
       facetOperator: operator
     },
     function getFacetData(response/*, textStatus*/) {
-      var results = buildFacetNodes(response.data.facets, currentPath, allowExclude, excludeTitle, inSidebar);
-      treeNode.find('.fa-spinner').parent().remove();
-      if (inSidebar) {
-        treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-          treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-          treeNode.find('a.exclude').click(function excludeLinkClick(e) {
-            $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-            window.location = this.href;
-            e.preventDefault();
-            return false;
-          });
-        });
-      }
-      treeNode.jstree({
-        'core': {
-          'data': results
-        }
-      });
+      buildFacetTree(treeNode, response.data.facets, inSidebar);
     }
   );
+}
+
+function buildFacetTree(treeNode, facetData, inSidebar) {
+  // Enable keyboard navigation also when a screen reader is active
+  treeNode.bind('select_node.jstree', function selectNode(event, data) {
+    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+    window.location = data.node.data.url;
+    event.preventDefault();
+    return false;
+  });
+
+  var currentPath = treeNode.data('path');
+  var allowExclude = treeNode.data('exclude');
+  var excludeTitle = treeNode.data('exclude-title');
+
+  var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
+  treeNode.find('.fa-spinner').parent().remove();
+  if (inSidebar) {
+    treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
+      treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+      treeNode.find('a.exclude').click(function excludeLinkClick(e) {
+        $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
+        window.location = this.href;
+        e.preventDefault();
+        return false;
+      });
+    });
+  }
+  treeNode.jstree({
+    'core': {
+      'data': results
+    }
+  });
 }
 
 function collapseTopFacets() {
@@ -149,22 +154,6 @@ function collapseTopFacets() {
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
-  function addJSTreeListener(treeNode) {
-    treeNode.bind('ready.jstree', function onReadyJstree() {
-      var tree = $(this);
-      // if hierarchical facet contains 2 or less top level items, it is opened by default
-      if (tree.find('ul > li').length <= 2) {
-        tree.find('ul > li.jstree-node.jstree-closed > i.jstree-ocl').each(function openNode() {
-          tree.jstree('open_node', this, null, false);
-        });
-      }
-      // open facet if it has children and it is selected
-      $(tree.find('.jstree-node.active.jstree-closed')).each(function openNode() {
-        tree.jstree('open_node', this, null, false);
-      });
-    });
-  }
-
   function facetBlocking() {
     $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
@@ -217,37 +206,10 @@ VuFind.register('sideFacets', function SideFacets() {
             $facetContainer.html(facetData.html);
             activateFacetBlocking($facetContainer);
           } else {
-            // TODO: this block copied from facets.js, refactor
             var treeNode = $facetContainer.find('.jstree-facet');
-
-            // Enable keyboard navigation also when a screen reader is active
-            treeNode.bind('select_node.jstree', function selectNode(event, data) {
-              window.location = data.node.data.url;
-              event.preventDefault();
-              return false;
-            });
-
-            addJSTreeListener(treeNode);
             VuFind.emit('VuFind.sidefacets.treenodeloaded', {node: treeNode});
 
-            var currentPath = treeNode.data('path');
-            var allowExclude = treeNode.data('exclude');
-            var excludeTitle = treeNode.data('exclude-title');
-
-            var results = buildFacetNodes(facetData.list, currentPath, allowExclude, excludeTitle, true);
-            treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-              treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-              treeNode.find('a.exclude').click(function excludeLinkClick(e) {
-                window.location = this.href;
-                e.preventDefault();
-                return false;
-              });
-            });
-            treeNode.jstree({
-              'core': {
-                'data': results
-              }
-            });
+            buildFacetTree(treeNode, facetData.list, true);
           }
           $facetContainer.find('.facet-load-indicator').remove();
         });
