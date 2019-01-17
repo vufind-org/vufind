@@ -43,14 +43,22 @@ class Recommend extends AbstractClassBasedTemplateRenderer
      *
      * @param \VuFind\Recommend\RecommendInterface $recommend The recommendation
      * object to render
+     * @param string                               $location  Recommendation location
+     * (side, top)
+     * @param int                                  $index     Index of the
+     * recommendation configuration used
      *
      * @return string
      */
-    public function __invoke($recommend)
+    public function __invoke($recommend, $location = null, $index = null)
     {
         $template = 'Recommend/%s.phtml';
         $className = get_class($recommend);
-        $context = ['recommend' => $recommend];
+        $context = [
+            'recommend' => $recommend,
+            'location' => $location,
+            'configIndex' => $index
+        ];
         return $this->renderClassTemplate($template, $className, $context);
     }
 }

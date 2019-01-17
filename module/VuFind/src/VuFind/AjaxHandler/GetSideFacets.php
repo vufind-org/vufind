@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -130,8 +130,9 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
-        $recommend = $results->getRecommendations('side');
-        $recommend = reset($recommend);
+        $recommend = $results->getRecommendations($request['location'] ?? 'side');
+        $configIndex = $request['configIndex'] ?? 0;
+        $recommend = $recommend[(int)$configIndex] ?? [];
 
         $context = [
             'recommend' => $recommend,

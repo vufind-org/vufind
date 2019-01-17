@@ -133,8 +133,8 @@
 
 <?php /* Narrow Search Options */ ?>
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
-    <?=$this->recommend($current)?>
+  <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+    <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
 </div>
 <?php /* End Narrow Search Options */ ?>
