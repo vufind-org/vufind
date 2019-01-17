@@ -193,7 +193,7 @@
         <input type="hidden" name="limit" value="<?= $this->escapeHtmlAttr($lastLimit)?>" />
       <?php endif; ?>
       <?php if (!empty($lastSort)): ?>
-        <input type="hidden" name="sort" value="<?=($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '')?>" data-value="<?=$this->escapeHtmlAttr($lastSort)?>" />';
+        <input type="hidden" name="sort" value="<?=($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '')?>" data-value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <?php endif; ?>
     </form>
     </div>
