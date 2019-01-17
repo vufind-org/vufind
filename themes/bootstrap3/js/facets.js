@@ -72,39 +72,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
   return json;
 }
 
-function initFacetTree(treeNode, inSidebar)
-{
-  var loaded = treeNode.data('loaded');
-  if (loaded) {
-    return;
-  }
-  treeNode.data('loaded', true);
-
-  var source = treeNode.data('source');
-  var facet = treeNode.data('facet');
-  var operator = treeNode.data('operator');
-  var sort = treeNode.data('sort');
-  var query = window.location.href.split('?')[1];
-
-  if (inSidebar) {
-    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
-  } else {
-    treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
-  }
-  $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
-    {
-      method: "getFacetData",
-      source: source,
-      facetName: facet,
-      facetSort: sort,
-      facetOperator: operator
-    },
-    function getFacetData(response/*, textStatus*/) {
-      buildFacetTree(treeNode, response.data.facets, inSidebar);
-    }
-  );
-}
-
 function buildFacetTree(treeNode, facetData, inSidebar) {
   // Enable keyboard navigation also when a screen reader is active
   treeNode.bind('select_node.jstree', function selectNode(event, data) {
@@ -136,6 +103,39 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
       'data': results
     }
   });
+}
+
+function initFacetTree(treeNode, inSidebar)
+{
+  var loaded = treeNode.data('loaded');
+  if (loaded) {
+    return;
+  }
+  treeNode.data('loaded', true);
+
+  var source = treeNode.data('source');
+  var facet = treeNode.data('facet');
+  var operator = treeNode.data('operator');
+  var sort = treeNode.data('sort');
+  var query = window.location.href.split('?')[1];
+
+  if (inSidebar) {
+    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
+  } else {
+    treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
+  }
+  $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
+    {
+      method: "getFacetData",
+      source: source,
+      facetName: facet,
+      facetSort: sort,
+      facetOperator: operator
+    },
+    function getFacetData(response/*, textStatus*/) {
+      buildFacetTree(treeNode, response.data.facets, inSidebar);
+    }
+  );
 }
 
 function collapseTopFacets() {
