@@ -74,12 +74,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
 function buildFacetTree(treeNode, facetData, inSidebar) {
   // Enable keyboard navigation also when a screen reader is active
-  treeNode.bind('select_node.jstree', function selectNode(event, data) {
-    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-    window.location = data.node.data.url;
-    event.preventDefault();
-    return false;
-  });
+  treeNode.bind('select_node.jstree', VuFind.sideFacets.showLoadingOverlay);
 
   var currentPath = treeNode.data('path');
   var allowExclude = treeNode.data('exclude');
@@ -90,12 +85,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
       treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-      treeNode.find('a.exclude').click(function excludeLinkClick(e) {
-        $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-        window.location = this.href;
-        e.preventDefault();
-        return false;
-      });
+      treeNode.find('a.exclude').click(VuFind.sideFacets.showLoadingOverlay);
     });
   }
   treeNode.jstree({
@@ -154,14 +144,23 @@ function collapseTopFacets() {
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
-  function facetBlocking() {
-    $(this).closest(".collapse").find(".facet-loading-overlay").removeClass("hidden");
-    window.location.assign($(this).attr('href'));
+  function showLoadingOverlay(e, data) {
+    e.preventDefault();
+    var overlay = '<div class="facet-loading-overlay">'
+      + '<span class="facet-loading-overlay-label">' + VuFind.translate('loading')
+      + "...</span></div>";
+    $(this).closest(".collapse").append(overlay);
+    // This callback operates both as a click handler and a JSTree callback;
+    // if the data element is undefined, we assume we are handling a click.
+    var href = typeof data.node.data.url === "undefined"
+      ? $(this).attr('href') : data.node.data.url;
+    window.location.assign(href);
+    return false;
   }
 
   function activateFacetBlocking(context) {
     var finalContext = (typeof context === "undefined") ? $(document.body) : context;
-    finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(facetBlocking);
+    finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(showLoadingOverlay);
   }
 
   function loadAjaxSideFacets() {
@@ -267,7 +266,7 @@ VuFind.register('sideFacets', function SideFacets() {
     loadAjaxSideFacets();
   }
 
-  return { init: init };
+  return { init: init, showLoadingOverlay: showLoadingOverlay };
 });
 
 /* --- Lightbox Facets --- */
