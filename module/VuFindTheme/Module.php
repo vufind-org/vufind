@@ -27,7 +27,7 @@
  */
 namespace VuFindTheme;
 
-use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * ZF2 module definition for the VuFind theme system.
@@ -65,17 +65,12 @@ class Module
     {
         return [
             'factories' => [
-                'VuFindTheme\MixinGenerator' =>
-                    'VuFindTheme\Module::getMixinGenerator',
-                'VuFindTheme\Mobile' =>
-                    'Zend\ServiceManager\Factory\InvokableFactory',
-                'VuFindTheme\ResourceContainer' =>
-                    'Zend\ServiceManager\Factory\InvokableFactory',
-                'VuFindTheme\ThemeCompiler' =>
-                    'VuFindTheme\Module::getThemeCompiler',
-                'VuFindTheme\ThemeGenerator' =>
-                    'VuFindTheme\Module::getThemeGenerator',
-                'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
+                MixinGenerator::class => ThemeInfoInjectorFactory::class,
+                Mobile::class => InvokableFactory::class,
+                ResourceContainer::class => InvokableFactory::class,
+                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
+                ThemeGenerator::class => ThemeInfoInjectorFactory::class,
+                ThemeInfo::class => ThemeInfoFactory::class,
             ],
         ];
     }
@@ -105,51 +100,5 @@ class Module
                 'imageLink' => 'VuFindTheme\View\Helper\ImageLink',
             ],
         ];
-    }
-
-    /**
-     * Factory function for MixinGenerator object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return MixinGenerator
-     */
-    public static function getMixinGenerator(ServiceManager $sm)
-    {
-        return new MixinGenerator($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeCompiler object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return ThemeCompiler
-     */
-    public static function getThemeCompiler(ServiceManager $sm)
-    {
-        return new ThemeCompiler($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeGenerator object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return ThemeGenerator
-     */
-    public static function getThemeGenerator(ServiceManager $sm)
-    {
-        return new ThemeGenerator($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeInfo object.
-     *
-     * @return ThemeInfo
-     */
-    public static function getThemeInfo()
-    {
-        return new ThemeInfo(realpath(APPLICATION_PATH . '/themes'), 'bootprint3');
     }
 }
