@@ -1,4 +1,4 @@
-@import "vendor/bootstrap/bootstrap";   //Bootstrap v3.3.7
+@import "../../bootstrap3/less/vendor/bootstrap/bootstrap";   //Bootstrap v3.4.0
 @import "finna-variables";
 
 // Import bootstrap3 components
@@ -340,4 +340,24 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .well {
     background-color: mix(@body-bg, contrast(@body-bg), 95%);
     border: 1px solid mix(@body-bg, contrast(@body-bg), 85%);
+}
+
+//Bootstrap 3.4.0 >>
+.caret {
+    display: initial;
+    width: initial;
+    height: initial;
+    margin-left: initial;
+    vertical-align: initial;
+    border: initial;
+
+    &::before {
+        font-family: icomoon;
+        content: "\E613";
+        vertical-align: bottom;
+    }
+}
+
+.navbar-nav > li {
+    float: none;
 }
