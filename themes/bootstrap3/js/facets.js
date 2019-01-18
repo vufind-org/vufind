@@ -152,7 +152,7 @@ VuFind.register('sideFacets', function SideFacets() {
     $(this).closest(".collapse").append(overlay);
     // This callback operates both as a click handler and a JSTree callback;
     // if the data element is undefined, we assume we are handling a click.
-    var href = typeof data.node.data.url === "undefined"
+    var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
       ? $(this).attr('href') : data.node.data.url;
     window.location.assign(href);
     return false;
