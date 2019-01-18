@@ -192,4 +192,12 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       $manager = $auth->getManager();
       return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
   }
+
+  /**
+   * Check if user account deletion is enabled in config file.
+   */
+  function isUserAccountDeletionEnabled() {
+      $config = $this->container->get('VuFind\Config')->get('config');
+      return !empty($config->Authentication->account_deletion);
+  }
 }
