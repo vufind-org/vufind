@@ -15,20 +15,18 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
+            'KrimDok\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'KrimDok\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
+            'VuFind\ILSDriverPluginManager' => 'KrimDok\ILS\Driver\PluginManager',
+            'VuFind\ILS\Driver\PluginManager' => 'KrimDok\ILS\Driver\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'KrimDok\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'KrimDok\RecordDriver\PluginManager',
         ],
     ],
     'vufind' => [
         'plugin_managers' => [
-            'ils_driver' => [
-                'factories' => [
-                    'KrimDokILS' => 'KrimDok\ILS\Driver\Factory::getKrimDokILS'
-                ],
-            ],
             'recorddriver' => [
                 'factories' => [
                     'solrdefault' => 'KrimDok\RecordDriver\Factory::getSolrDefault',
