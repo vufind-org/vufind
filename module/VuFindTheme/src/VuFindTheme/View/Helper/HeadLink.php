@@ -193,7 +193,11 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     public function getType($item)
     {
-        return isset($item->media) ? $item->media : 'all';
+        $type = $item->media ?? 'all';
+        if (isset($item->conditionalStylesheet)) {
+            $type .= '_' . $item->conditionalStylesheet;
+        }
+        return $type;
     }
 
     /**
