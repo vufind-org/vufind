@@ -14,11 +14,15 @@ $config = [
         ],
     ],
     'service_manager' => [
+        //note: TueFind\ContentBlock\PluginManager needs to be configured here!
+        //      Overriding in TueFind module config won't work!
         'factories' => [
+            'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'KrimDok\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'KrimDok\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
+            'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
             'VuFind\ILSDriverPluginManager' => 'KrimDok\ILS\Driver\PluginManager',
             'VuFind\ILS\Driver\PluginManager' => 'KrimDok\ILS\Driver\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'KrimDok\RecordDriver\PluginManager',

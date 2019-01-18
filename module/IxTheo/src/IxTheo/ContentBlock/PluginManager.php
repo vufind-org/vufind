@@ -2,7 +2,6 @@
 
 namespace IxTheo\ContentBlock;
 
-
 class PluginManager extends \VuFind\ContentBlock\PluginManager
 {
     public function __construct($configOrContainerInstance = null,
