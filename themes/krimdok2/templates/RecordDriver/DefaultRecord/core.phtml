@@ -212,10 +212,10 @@
         </tr>
       <? endif; ?>
 
-      <?=$this->render('RecordDriver/SolrDefault/JOP.phtml'); ?>
-      <?=$this->render('RecordDriver/SolrDefault/Availability.phtml'); ?>
-      <?=$this->render('RecordDriver/SolrDefault/HBZ.phtml'); ?>
-      <?=$this->render('RecordDriver/SolrDefault/PDA.phtml'); ?>
+      <?=$this->render('RecordDriver/DefaultRecord/JOP.phtml'); ?>
+      <?=$this->render('RecordDriver/DefaultRecord/Availability.phtml'); ?>
+      <?=$this->render('RecordDriver/DefaultRecord/HBZ.phtml'); ?>
+      <?=$this->render('RecordDriver/DefaultRecord/PDA.phtml'); ?>
 
       <? $issn = $this->driver->getCleanISSN(); $isbn = $this->driver->getCleanISBN();
       if (!empty($issn) || !empty($isbn)):
