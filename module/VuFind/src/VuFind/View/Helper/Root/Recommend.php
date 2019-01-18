@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use \VuFind\Recommend\RecommendInterface;
+use VuFind\Recommend\RecommendInterface;
 
 /**
  * Recommendation module view helper
