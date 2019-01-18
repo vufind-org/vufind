@@ -118,12 +118,12 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get the mediatype
+     * Get the mediatypes
      */
-    public function getMediaType()
+    public function getMediaTypes()
     {
         return (isset($this->fields['mediatype'])) ?
-            $this->fields['mediatype'] : '';
+            $this->fields['mediatype'] : array();
     }
 
     public function getOtherTitles() {

@@ -29,6 +29,7 @@ $config = [
     'controllers' => [
         'factories' => [
             'TueFind\Controller\AcquisitionRequestController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\AjaxController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'TueFind\Controller\PDAProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'TueFind\Controller\ProxyControllerFactory',
@@ -37,6 +38,7 @@ $config = [
         ],
         'aliases' => [
             'acquisition_request' => 'TueFind\Controller\AcquisitionRequestController',
+            'ajax' => 'TueFind\Controller\AjaxController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',

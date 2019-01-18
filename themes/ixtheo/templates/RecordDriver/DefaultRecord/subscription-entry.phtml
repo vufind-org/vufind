@@ -59,8 +59,13 @@ $is_missing_record = get_class($this->driver) == "VuFind\RecordDriver\Missing";
         </div>
 
         <div class="last">
-            <?= str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()) ?>
-            <?= $this->record($this->driver)->getPreviews() ?>
+            <? $formats = $this->driver->getFormats(); ?>
+            <? if (in_array("Subscription Bundle", $formats)):?>
+                <?=str_replace('class="', 'class="label label-success"', $this->record($this->driver)->getFormatList()) ?>
+            <? else: ?>
+                <?=str_replace('class="', 'class="label label-info"', $this->record($this->driver)->getFormatList()); ?>
+            <? endif; ?>
+            <?=$this->record($this->driver)->getPreviews() ?>
         </div>
     </div>
 

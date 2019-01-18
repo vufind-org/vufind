@@ -1,11 +1,13 @@
 <?
 $i=0;
-  $formats = $this->driver->getFormats();  
-  $media_type = $this->driver->tryMethod('getMediaType');
-  if (!is_null($media_type) && in_array("Electronic", $media_type)):
-      $formats = array_merge(["Electronic"], $formats);
+$formats = $this->driver->getFormats();
+$media_types = $this->driver->tryMethod('getMediaTypes');
+if (isset($media_types)) {
+  if (in_array("Electronic", $media_types)):
+    $formats = array_merge(["Electronic"], $formats);
   endif;
   $i = 0;
-  foreach ($formats as $format): ?>
-  <span class="iconlabel <?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?><?=($i++ < count($formats) - 1) ? " |" : ""?> </span>
-<? endforeach; ?>
+  foreach ($formats as $format) { ?>
+    <span class="iconlabel <?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?><?=(++$i < count($formats) - 1) ? " |" : ""?> </span>
+  <? }
+}?>
