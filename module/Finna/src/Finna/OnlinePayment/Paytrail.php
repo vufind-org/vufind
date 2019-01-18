@@ -179,7 +179,8 @@ class Paytrail extends BaseHandler
                     $code = $fineType;
                 }
                 if (isset($organizationProductCodeMappings[$fineOrg])) {
-                    $code = $organizationProductCodeMappings[$fineOrg] . $code;
+                    $code = $organizationProductCodeMappings[$fineOrg]
+                        . ($productCodeMappings[$fineType] ?? '');
                 }
                 $code = substr($code, 0, 16);
 

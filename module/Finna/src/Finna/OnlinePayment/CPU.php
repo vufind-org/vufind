@@ -174,7 +174,8 @@ class CPU extends BaseHandler
 
             $code = $productCodeMappings[$fineType] ?? $productCode;
             if (isset($organizationProductCodeMappings[$fineOrg])) {
-                $code = $organizationProductCodeMappings[$fineOrg] . $code;
+                $code = $organizationProductCodeMappings[$fineOrg]
+                    . ($productCodeMappings[$fineType] ?? '');
             }
             $code = substr($code, 0, 25);
             $product = new \Cpu_Client_Product(
