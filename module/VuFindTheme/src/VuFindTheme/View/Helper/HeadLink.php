@@ -143,6 +143,30 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     }
 
     /**
+     * Forcibly prepend a stylesheet removing it from any existing position
+     *
+     * @param string $href                  Stylesheet href
+     * @param string $media                 Media
+     * @param string $conditionalStylesheet Any conditions
+     * @param array  $extras                Array of extra attributes
+     *
+     * @return void
+     */
+    public function forcePrependStylesheet($href, $media = 'screen',
+        $conditionalStylesheet = '', $extras = []
+    ) {
+        // Look for existing entry and remove it if found. Comparison method
+        // copied from isDuplicate().
+        foreach ($this->getContainer() as $offset => $item) {
+            if (($item->rel == 'stylesheet') && ($item->href == $href)) {
+                $this->offsetUnset($offset);
+                break;
+            }
+        }
+        parent::prependStylesheet($href, $media, $conditionalStylesheet, $extras);
+    }
+
+    /**
      * Returns true if file should not be included in the compressed concat file
      * Required by ConcatTrait
      *

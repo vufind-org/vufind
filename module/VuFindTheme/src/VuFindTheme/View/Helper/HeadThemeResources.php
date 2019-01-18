@@ -129,7 +129,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 $parts[1] .= ':' . $parts[2];
                 array_splice($parts, 2, 1);
             }
-            $headLink()->prependStylesheet(
+            $headLink()->forcePrependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
@@ -140,7 +140,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
             $parts = $this->parseSetting($current);
-            $headLink()->prependStylesheet(
+            $headLink()->forcePrependStylesheet(
                 $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
@@ -171,7 +171,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         $headScript = $this->getView()->plugin('headScript');
         foreach (array_reverse($this->container->getJs()) as $current) {
             $parts =  $this->parseSetting($current);
-            $headScript()->prependFile(
+            $headScript()->forcePrependFile(
                 trim($parts[0]),
                 'text/javascript',
                 isset($parts[1])
