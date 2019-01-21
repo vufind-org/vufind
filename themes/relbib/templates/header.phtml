@@ -80,15 +80,17 @@
     </nav>
   </div>
   <?php endif; ?>
-  <section class="visible-lg section-home">
+  <section class="section-home">
     <div class="panel-home">
       <br />
       <br />
-      <h1>
-        <a href="<?=$this->url('home')?>" title="<?=$this->transEsc("Religionswissenschaftliche Bibliographie")?>"><?=$this->transEsc("Religionswissenschaftliche Bibliographie")?></a>
-      </h1>
-      <small><?=$this->transEsc("relbib_subtitle")?></small>
-      <br />
+      <div class="visible-lg">
+        <h1>
+          <a href="<?=$this->url('home')?>" title="<?=$this->transEsc("Religionswissenschaftliche Bibliographie")?>"><?=$this->transEsc("Religionswissenschaftliche Bibliographie")?></a>
+        </h1>
+        <small><?=$this->transEsc("relbib_subtitle")?></small>
+        <br />
+      </div>
       <?php if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
         <div class="alert alert-warning">
           <h2><?= $this->transEsc('ils_offline_title') ?></h2>

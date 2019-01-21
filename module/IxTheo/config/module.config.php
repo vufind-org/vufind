@@ -86,6 +86,8 @@ $config = [
         ]
     ],
     'service_manager' => [
+        //note: TueFind\ContentBlock\PluginManager needs to be configured here!
+        //      Overriding in TueFind module config won't work!
         'factories' => [
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',

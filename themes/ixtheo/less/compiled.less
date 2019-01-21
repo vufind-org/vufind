@@ -121,19 +121,6 @@ section.section-home {
   margin: auto auto 0;
 }
 
-
-#searchForm {
-    width: 100%;
-
-    #searchForm_row {
-        display: flex;
-
-        #searchForm_lookfor {
-            flex: 1;
-        }
-    }
-}
-
 .input-group .searchForm_lookfor:not(:first-child):not(:last-child) {
   border-radius: @input-border-radius 0 0 @input-border-radius;
 }
@@ -175,8 +162,11 @@ section.section-home {
   border-radius: @border-radius-base;
 }
 
-
 @media (max-width: @screen-md-max) {
+  .panel-home {
+    width: 90%;
+  }
+
   .background {
     height: 135px;
   }
@@ -237,8 +227,19 @@ section.section-home {
   .form-control {
     max-width: 100%;
   }
-}
 
+  #searchForm {
+    width: 100%;
+
+    #searchForm_row {
+        display: flex;
+
+        #searchForm_lookfor {
+            flex: 1;
+        }
+    }
+  }
+}
 
 .read-more-state {
   display: none;
