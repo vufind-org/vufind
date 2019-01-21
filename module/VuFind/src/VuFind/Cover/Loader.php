@@ -2,7 +2,7 @@
 /**
  * Book Cover Generator
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,7 +27,9 @@
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
+
+use VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFindCode\ISBN;
 
 /**
  * Book Cover Generator
@@ -41,6 +43,14 @@ use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
  */
 class Loader extends \VuFind\ImageLoader
 {
+    /**
+     * Class for rendering cover images dynamically if no API match found. Omit
+     * to disable functionality.
+     *
+     * @var Generator
+     */
+    protected $generator = null;
+
     /**
      * Filename constructed from ISBN
      *
@@ -70,11 +80,11 @@ class Loader extends \VuFind\ImageLoader
     protected $apiManager;
 
     /**
-     * HTTP client
+     * HTTP client factory
      *
-     * @var \Zend\Http\Client
+     * @var \VuFindHttp\HttpService
      */
-    protected $client;
+    protected $httpService;
 
     /**
      * Directory to store downloaded images
@@ -142,22 +152,23 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config    $config  VuFind configuration
-     * @param ApiManager             $manager Plugin manager for API handlers
-     * @param \VuFindTheme\ThemeInfo $theme   VuFind theme tools
-     * @param \Zend\Http\Client      $client  HTTP client
-     * @param string                 $baseDir Directory to store downloaded images
-     * (set to system temp dir if not otherwise specified)
+     * @param \Zend\Config\Config     $config      VuFind configuration
+     * @param ApiManager              $manager     Plugin manager for API handlers
+     * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
+     * @param \VuFindHttp\HttpService $httpService HTTP client factory
+     * @param string                  $baseDir     Directory to store downloaded
+     * images (set to system temp dir if not otherwise specified)
      */
     public function __construct($config, ApiManager $manager,
-        \VuFindTheme\ThemeInfo $theme, \Zend\Http\Client $client, $baseDir = null
+        \VuFindTheme\ThemeInfo $theme, \VuFindHttp\HttpService $httpService,
+        $baseDir = null
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
         $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
             ? $config->Content->noCoverAvailableImage : null;
         $this->apiManager = $manager;
-        $this->client = $client;
+        $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
             ? rtrim(sys_get_temp_dir(), '\\/') . '/covers'
             : rtrim($baseDir, '\\/');
@@ -191,19 +202,15 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Get Cover Generator Object (or return false if disabled)
+     * Set Cover Generator Object
      *
-     * @return VuFind\Cover\Generator|bool
+     * @param Generator $generator Cover generator
+     *
+     * @return void
      */
-    public function getCoverGenerator()
+    public function setCoverGenerator(Generator $generator)
     {
-        if (isset($this->config->Content->makeDynamicCovers)
-            && $this->config->Content->makeDynamicCovers
-        ) {
-            $settings = $this->getCoverGeneratorSettings();
-            return new \VuFind\Cover\Generator($this->themeTools, $settings);
-        }
-        return false;
+        $this->generator = $generator;
     }
 
     /**
@@ -301,11 +308,12 @@ class Loader extends \VuFind\ImageLoader
         // are able to display an ISBN or content-type-based image.
         if (!in_array($this->size, $this->validSizes)) {
             $this->loadUnavailable();
-        } else if (!$this->fetchFromAPI()
+        } elseif (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
-            if ($generator = $this->getCoverGenerator()) {
-                $this->image = $generator->generate(
+            if ($this->generator) {
+                $this->generator->setOptions($this->getCoverGeneratorSettings());
+                $this->image = $this->generator->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']
                 );
                 $this->contentType = 'image/png';
@@ -333,13 +341,13 @@ class Loader extends \VuFind\ImageLoader
                 return $this->getCachePath($this->size, $ids['isbn']->get10());
             }
             return $file;
-        } else if (isset($ids['issn'])) {
+        } elseif (isset($ids['issn'])) {
             return $this->getCachePath($this->size, $ids['issn']);
-        } else if (isset($ids['oclc'])) {
+        } elseif (isset($ids['oclc'])) {
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
-        } else if (isset($ids['upc'])) {
+        } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
-        } else if (isset($ids['recordid']) && isset($ids['source'])) {
+        } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
                 'ID' . md5($ids['source'] . '|' . $ids['recordid'])
@@ -397,7 +405,7 @@ class Loader extends \VuFind\ImageLoader
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } else if (isset($this->config->Content->coverimages)) {
+        } elseif (isset($this->config->Content->coverimages)) {
             $providers = explode(',', $this->config->Content->coverimages);
             foreach ($providers as $provider) {
                 $provider = explode(':', trim($provider));
@@ -561,7 +569,7 @@ class Loader extends \VuFind\ImageLoader
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
             if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
                 $cache = true;
-            } else if ($conf === false || $conf === 0 || $conf === '0'
+            } elseif ($conf === false || $conf === 0 || $conf === '0'
                 || $conf === 'false'
             ) {
                 $cache = false;
@@ -596,7 +604,7 @@ class Loader extends \VuFind\ImageLoader
             return true;
         } else {
             // Attempt to pull down the image:
-            $result = $this->client->setUri($url)->send();
+            $result = $this->httpService->createClient($url)->send();
             if (!$result->isSuccess()) {
                 $this->debug('Failed to retrieve image from ' . $url);
                 return false;

@@ -2,7 +2,7 @@
 /**
  * VuFind Search Memory
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
+
 use Zend\Session\Container;
 
 /**
@@ -112,10 +113,16 @@ class Memory
      */
     public function rememberParams(\VuFind\Search\Base\Params $params)
     {
+        // Since default sort may vary based on search handler, we don't want
+        // to force the sort value to stick unless the user chose a non-default
+        // option. Otherwise, if you switch between search types, unpredictable
+        // sort options may result.
+        $sort = $params->getSort();
+        $defaultSort = $params->getDefaultSort();
         $settings = [
             'hiddenFilters' => $params->getHiddenFilters(),
             'limit' => $params->getLimit(),
-            'sort' => $params->getSort(),
+            'sort' => $sort === $defaultSort ? null : $sort,
             'view' => $params->getView(),
         ];
         // Special case: RSS view should not be persisted:

@@ -2,7 +2,7 @@
 /**
  * Excerpts content loader plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,31 @@ namespace VuFind\Content\Excerpts;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'demo' => 'VuFind\Content\Excerpts\Demo',
+        'syndetics' => 'VuFind\Content\Excerpts\Syndetics',
+        'syndeticsplus' => 'VuFind\Content\Excerpts\SyndeticsPlus',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\Content\Excerpts\Demo' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\Content\Excerpts\Syndetics' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+        'VuFind\Content\Excerpts\SyndeticsPlus' =>
+            'VuFind\Content\AbstractSyndeticsFactory',
+    ];
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.

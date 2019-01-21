@@ -3,7 +3,7 @@
  * Class to determine which account capabilities are available, based on
  * configuration and other factors.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -21,12 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
+
 use VuFind\Auth\Manager as AuthManager;
 use Zend\Config\Config;
 
@@ -35,7 +36,7 @@ use Zend\Config\Config;
  * configuration and other factors.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site

@@ -2,7 +2,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -26,10 +26,14 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Cookie\CookieManager,
-    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException,
-    Zend\Config\Config, Zend\Session\SessionManager, Zend\Validator\Csrf;
+
+use VuFind\Cookie\CookieManager;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\User as UserTable;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Validator\Csrf;
+use Zend\Config\Config;
+use Zend\Session\SessionManager;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -120,10 +124,11 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
+     * @param Csrf           $csrf           CSRF validator
      */
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm,
-        CookieManager $cookieManager
+        CookieManager $cookieManager, Csrf $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -131,18 +136,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
+        $this->csrf = $csrf;
 
         // Set up session:
         $this->session = new \Zend\Session\Container('Account', $sessionManager);
-
-        // Set up CSRF:
-        $this->csrf = new Csrf(
-            [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
-                'salt' => isset($this->config->Security->HMACkey)
-                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
-            ]
-        );
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -426,7 +423,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
                     ? false : $results->current();
-            } else if (isset($this->session->userDetails)) {
+            } elseif (isset($this->session->userDetails)) {
                 // privacy mode
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
@@ -445,11 +442,15 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * If no CSRF token currently exists, or should be regenerated, generates one.
      *
      * @param bool $regenerate Should we regenerate token? (default false)
+     * @param int  $maxTokens  The maximum number of tokens to store in the
+     * session.
      *
      * @return string
      */
-    public function getCsrfHash($regenerate = false)
+    public function getCsrfHash($regenerate = false, $maxTokens = 5)
     {
+        // Reset token store if we've overflowed the limit:
+        $this->csrf->trimTokenList($maxTokens);
         return $this->csrf->getHash($regenerate);
     }
 
@@ -518,6 +519,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function create($request)
     {
         $user = $this->getAuth()->create($request);
+        $this->updateUser($user);
         $this->updateSession($user);
         return $user;
     }
@@ -555,11 +557,14 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->getAuth()->preLoginCheck($request);
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
-            && !$this->csrf->isValid($request->getPost()->get('csrf'))
-        ) {
-            $this->getAuth()->resetState();
-            throw new AuthException('authentication_error_technical');
+        if (!$this->getAuth()->getSessionInitiator(null)) {
+            if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
+                $this->getAuth()->resetState();
+                throw new AuthException('authentication_error_technical');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
+            }
         }
 
         // Perform authentication:
@@ -580,6 +585,9 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             error_log($e);
             throw new AuthException('authentication_error_technical');
         }
+
+        // Update user object
+        $this->updateUser($user);
 
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
@@ -614,6 +622,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             );
         }
     }
+
     /**
      * Validate the credentials in the provided request, but do not change the state
      * of the current logged-in user. Return true for valid credentials, false
@@ -628,5 +637,24 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function validateCredentials($request)
     {
         return $this->getAuth()->validateCredentials($request);
+    }
+
+    /**
+     * Update common user attributes on login
+     *
+     * @param \VuFind\Db\Row\User $user User object
+     *
+     * @return void
+     */
+    protected function updateUser($user)
+    {
+        if ($this->getAuth() instanceof ChoiceAuth) {
+            $method = $this->getAuth()->getSelectedAuthOption();
+        } else {
+            $method = $this->activeAuth;
+        }
+        $user->auth_method = strtolower($method);
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->save();
     }
 }

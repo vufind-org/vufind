@@ -18,21 +18,20 @@
  */
 
 namespace TueFind\RecordDriver;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
-class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocatorAwareInterface
+class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 {
-    protected $serviceLocator;
+    protected $container;
 
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function setContainer(ContainerInterface $container)
     {
-        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        $this->container = $container;
     }
 
-    public function getServiceLocator()
+    public function getContainer()
     {
-        return $this->serviceLocator;
+        return $this->container;
     }
 
     /**
@@ -144,7 +143,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc implements ServiceLocato
     }
 
     public function getRecordDriverByPPN($ppn) {
-        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $recordLoader = $this->container->get('VuFind\RecordLoader');
         return $recordLoader->load($ppn, 'Solr', false);
     }
 

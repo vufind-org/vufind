@@ -2,7 +2,7 @@
 /**
  * Amazon cover content loader.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content\Covers;
+
 use ZendService\Amazon\Amazon as AmazonService;
 
 /**

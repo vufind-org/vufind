@@ -103,9 +103,9 @@
       }
 
       // Session keep-alive
-      if ($this->KeepAlive()) {
+      if ($this->keepAlive()) {
           $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->KeepAlive());
+            . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>

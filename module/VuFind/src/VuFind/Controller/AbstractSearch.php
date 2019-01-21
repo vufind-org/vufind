@@ -2,7 +2,7 @@
 /**
  * VuFind Search Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
+
+use VuFind\Search\RecommendListener;
+use VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -84,7 +86,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->options = $this->serviceLocator
-            ->get('VuFind\SearchOptionsPluginManager')->get($this->searchClassId);
+            ->get('VuFind\Search\Options\PluginManager')->get($this->searchClassId);
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -100,7 +102,7 @@ class AbstractSearch extends AbstractBase
         // to properly populate special controls on the advanced screen.
         if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
             $view->saved = $this->serviceLocator
-                ->get('VuFind\SearchResultsPluginManager')
+                ->get('VuFind\Search\Results\PluginManager')
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
                 new \Zend\StdLib\Parameters([])
@@ -189,7 +191,7 @@ class AbstractSearch extends AbstractBase
             || $noRecommend === 'true' || $noRecommend === true
         ) {
             return [];
-        } else if ($noRecommend === 0 || $noRecommend === '0'
+        } elseif ($noRecommend === 0 || $noRecommend === '0'
             || $noRecommend === 'false' || $noRecommend === false
         ) {
             return $all;
@@ -212,7 +214,7 @@ class AbstractSearch extends AbstractBase
             return null;
         }
 
-        $rManager = $this->serviceLocator->get('VuFind\RecommendPluginManager');
+        $rManager = $this->serviceLocator->get('VuFind\Recommend\PluginManager');
 
         // Special case: override recommend settings through parameter (used by
         // combined search)
@@ -241,6 +243,18 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $blocks = $this->serviceLocator->get('VuFind\ContentBlock\BlockLoader')
+            ->getFromSearchClassId($this->searchClassId);
+        return $this->createViewModel(compact('blocks'));
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -255,7 +269,7 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
@@ -305,7 +319,8 @@ class AbstractSearch extends AbstractBase
         }
 
         // Search toolbar
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         $view->showBulkOptions = isset($config->Site->showBulkOptions)
           && $config->Site->showBulkOptions;
 
@@ -324,7 +339,8 @@ class AbstractSearch extends AbstractBase
     {
         // Jump to only result, if configured
         $default = null;
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get('config');
         if (isset($config->Record->jump_to_single_search_result)
             && $config->Record->jump_to_single_search_result
             && $results->getResultTotal() == 1
@@ -361,7 +377,7 @@ class AbstractSearch extends AbstractBase
     protected function retrieveSearchSecurely($searchId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $user = $this->getUser();
         $userId = $user ? $user->id : null;
         return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
@@ -377,7 +393,7 @@ class AbstractSearch extends AbstractBase
     protected function saveSearchToHistory($results)
     {
         $user = $this->getUser();
-        $sessId = $this->serviceLocator->get('VuFind\SessionManager')->getId();
+        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,
@@ -431,7 +447,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\Search\Results\PluginManager');
     }
 
     /**
@@ -491,7 +507,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get($config);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
         $fields = isset($config->SpecialFacets->$section)
             ? $config->SpecialFacets->$section->toArray() : [];
 
@@ -640,11 +657,12 @@ class AbstractSearch extends AbstractBase
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
         // Set defaults for missing parameters:
-        $config = isset($params[0]) ? $params[0] : 'facets';
-        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+        $config = $params[0] ?? 'facets';
+        $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->serviceLocator->get('VuFind\Config')->get($config);
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+            ->get($config);
 
         // Process checkbox settings in config:
         if (substr($section, 0, 1) == '~') {        // reverse flag
@@ -693,7 +711,7 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
-        $page = (int) $this->params()->fromQuery('facetpage', 1);
+        $page = (int)$this->params()->fromQuery('facetpage', 1);
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions();
         $sort = $this->params()->fromQuery('facetsort', null);
@@ -702,7 +720,7 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->serviceLocator->get('VuFind\Config')
+        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
             ->get($options->getFacetsIni());
         $limit = isset($config->Results_Settings->lightboxLimit)
             ? $config->Results_Settings->lightboxLimit
@@ -712,7 +730,7 @@ class AbstractSearch extends AbstractBase
             [$facet], false, $limit, $sort, $page,
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
-        $list = $facets[$facet]['data']['list'];
+        $list = $facets[$facet]['data']['list'] ?? [];
         $params->activateAllFacets();
         $facetLabel = $params->getFacetLabel($facet);
 
@@ -725,9 +743,10 @@ class AbstractSearch extends AbstractBase
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
-                'anotherPage' => $facets[$facet]['more'],
+                'anotherPage' => $facets[$facet]['more'] ?? '',
                 'sort' => $sort,
-                'sortOptions' => $facetSortOptions
+                'sortOptions' => $facetSortOptions,
+                'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
             ]
         );
         $view->setTemplate('search/facet-list');

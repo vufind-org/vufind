@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\Primo;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for Primo backend.

@@ -1,12 +1,16 @@
 .facet-group {
   display: block;
   margin-bottom: 1rem;
+  padding-left: 0;
 
   .facet,
   .title {
     display: block;
     padding: 8px 15px;
     line-height: 1.5rem;
+    width: 100%;
+    text-align: left;
+    background-color: transparent;
 
     .badge,
     .status {
@@ -86,10 +90,10 @@
 
 .active-filters .facet,
 .facet-group .active {
-  padding-right: .65rem;
-  background-color: $brand-primary;
+  background-color: $list-group-active-bg;
   color: #fff;
 
+  .jstree-icon,
   a { color: #fff; }
 }
 .facet.active .badge,
@@ -123,3 +127,20 @@
   margin-left: 0.5rem;
 }
 body.rtl .full-facet-list .active .fa { float: left; }
+
+.jstree-node {
+  .facet {
+    padding: 0;
+    border: none;
+  }
+}
+.jstree-facet {
+  .jstree-anchor {
+    padding: 0;
+  }
+  .list-group-item {
+    padding-right: 0;
+    border: 0;
+    border-bottom: 1px solid $list-group-border;
+  }
+}

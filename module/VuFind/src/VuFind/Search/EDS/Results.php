@@ -2,7 +2,7 @@
 /**
  * EDS API Results
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use EBSCO\EdsApi\SearchCriteria;
-
 /**
  * EDS API Results
  *
@@ -40,23 +38,6 @@ use EBSCO\EdsApi\SearchCriteria;
  */
 class Results extends \VuFind\Search\Base\Results
 {
-    /**
-     * Search criteria available for a given search
-     *
-     * @var array
-     */
-    protected $searchCriteria;
-
-    /**
-     * Obtain the search criteria available for this searching session (if present)
-     *
-     * @return SearchCriteria
-     */
-    public function getSearchCriteria()
-    {
-        return $this->searchCriteria;
-    }
-
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
@@ -99,6 +80,12 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
+        // If there is no filter, we'll use all facets as the filter:
+        if (null === $filter) {
+            $filter = $this->getParams()->getFacetConfig();
+        }
+        $filterFields = array_keys($filter);
+
         // Loop through the facets returned by EDS
         $facetResult = [];
         if (is_array($this->responseFacets)) {
@@ -110,6 +97,11 @@ class Results extends \VuFind\Search\Base\Results
                 // EBSCO's side -- we'll probably need to translate this to a
                 // different value for actual display!
                 $field = $current['displayName'];
+
+                // If we are filtering out the field, skip it!
+                if (!in_array($field, $filterFields)) {
+                    continue;
+                }
 
                 // Should we translate values for the current facet?
                 if ($translate = in_array($field, $translatedFacets)) {
@@ -124,8 +116,7 @@ class Results extends \VuFind\Search\Base\Results
                     // present in the filter list?  Second, is the current value
                     // an active filter for the current field?
                     $orField = '~' . $field;
-                    $itemsToCheck = isset($filterList[$field])
-                        ? $filterList[$field] : [];
+                    $itemsToCheck = $filterList[$field] ?? [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -149,8 +140,7 @@ class Results extends \VuFind\Search\Base\Results
                         = $facetDetails['value'];
                 }
                 // The EDS API returns facets in the order they should be displayed
-                $current['label'] = isset($filter[$field])
-                    ? $filter[$field] : $field;
+                $current['label'] = $filter[$field] ?? $field;
 
                 // Create a reference to counts called list for consistency with
                 // Solr output format -- this allows the facet recommendations

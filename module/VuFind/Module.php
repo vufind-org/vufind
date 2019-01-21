@@ -2,7 +2,7 @@
 /**
  * ZF2 module definition for the VuFind application
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org
  */
 namespace VuFind;
+
 use Zend\Mvc\MvcEvent;
 
 /**

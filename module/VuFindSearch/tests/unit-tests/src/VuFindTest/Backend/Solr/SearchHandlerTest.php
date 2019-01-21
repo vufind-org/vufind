@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR search handler.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\SearchHandler;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for SOLR search handler.
@@ -40,7 +40,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchHandlerTest extends PHPUnit_Framework_TestCase
+class SearchHandlerTest extends TestCase
 {
     /**
      * Test creating simple dismax query.
@@ -65,6 +65,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
         $hndl = new SearchHandler($spec);
         $this->assertEquals('(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))', $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"'));
     }
+
     /**
      * Test toArray() method.
      *

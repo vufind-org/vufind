@@ -2,6 +2,7 @@
 ChangeLog
 \#*
 .\#*
+.php_cs_cache
 TAGS
 *~
 
@@ -12,15 +13,12 @@ composer.phar
 import/solrmarc.log*
 node_modules
 public/swagger-ui
-/import/marc_local.properties
 .vagrant
-.idea
+lessphp_*.list
 
 # CUSTOM TUEFIND IGNORES START HERE
+/import/marc_local.properties
 nbproject
-
-# active instance flag
-tuefind.instance
 
 # Schema files & links
 schema_local_types.xml

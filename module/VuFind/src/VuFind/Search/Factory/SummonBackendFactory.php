@@ -3,7 +3,7 @@
 /**
  * Factory for Summon backends.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,15 +28,15 @@
  */
 namespace VuFind\Search\Factory;
 
-use SerialsSolutions\Summon\Zend2 as Connector;
-use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\Summon\QueryBuilder;
-use VuFindSearch\Backend\Summon\Backend;
+use Interop\Container\ContainerInterface;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\FactoryInterface;
+use SerialsSolutions\Summon\Zend2 as Connector;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Backend\Summon\Backend;
+use VuFindSearch\Backend\Summon\QueryBuilder;
+use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
+
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Summon backends.
@@ -59,7 +59,7 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -78,20 +78,24 @@ class SummonBackendFactory implements FactoryInterface
     protected $summonConfig;
 
     /**
-     * Create the backend.
+     * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator Superior service manager
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
      *
-     * @return BackendInterface
+     * @return Backend
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        $this->serviceLocator = $serviceLocator;
-        $configReader = $this->serviceLocator->get('VuFind\Config');
+        $this->serviceLocator = $sm;
+        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');
-        if ($this->serviceLocator->has('VuFind\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Logger');
+        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -127,7 +131,8 @@ class SummonBackendFactory implements FactoryInterface
             ? $this->config->Summon->apiKey : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+            ->createClient();
         $timeout = isset($this->summonConfig->General->timeout)
             ? $this->summonConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
@@ -172,7 +177,7 @@ class SummonBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
         $stripSnippets = !isset($this->summonConfig->General->snippets)
             || !$this->summonConfig->General->snippets;
         $callback = function ($data) use ($manager, $stripSnippets) {

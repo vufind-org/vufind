@@ -2,7 +2,7 @@
 /**
  * Database authentication test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
+
+use VuFind\Auth\Database;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Stdlib\Parameters;
 
 /**
  * Database authentication test class.
@@ -249,7 +252,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getDatabase($table)
     {
         $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
-            ->setMethods(['get'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

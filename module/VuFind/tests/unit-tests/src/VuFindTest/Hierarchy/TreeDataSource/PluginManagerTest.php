@@ -2,7 +2,7 @@
 /**
  * Hierarchy Tree Data Source Plugin Manager Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Hierarchy\TreeDataSource;
+
 use VuFind\Hierarchy\TreeDataSource\PluginManager;
 
 /**
@@ -46,8 +47,10 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testShareByDefault()
     {
-        $pm = new PluginManager(null);
-        $this->assertTrue($pm->shareByDefault());
+        $pm = new PluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
+        $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
 
     /**
@@ -55,12 +58,14 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Zend\ServiceManager\Exception\RuntimeException
+     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
      * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Hierarchy\TreeDataSource\AbstractBase
      */
     public function testExpectedInterface()
     {
-        $pm = new PluginManager(null);
-        $pm->validatePlugin(new \ArrayObject());
+        $pm = new PluginManager(
+            $this->createMock('Interop\Container\ContainerInterface')
+        );
+        $pm->validate(new \ArrayObject());
     }
 }

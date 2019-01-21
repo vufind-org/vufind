@@ -3,7 +3,7 @@
 /**
  * Unit tests for multiindex listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,12 +28,12 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindSearch\ParamBag;
+use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
-use VuFind\Search\Solr\MultiIndexListener;
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 

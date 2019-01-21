@@ -2,7 +2,7 @@
 /**
  * Row Definition for user
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,12 +26,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate,
-    Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Openssl,
-    Zend\Crypt\Password\Bcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
+
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
+use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for user
@@ -239,12 +237,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $listId     Filter for tags tied to a specific list (null for no
      * filter).
      * @param string $source     Filter for tags tied to a specific record source.
+     * (null for no filter).
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getTags($resourceId = null, $listId = null,
-        $source = DEFAULT_SEARCH_BACKEND
-    ) {
+    public function getTags($resourceId = null, $listId = null, $source = null)
+    {
         return $this->getDbTable('Tags')
             ->getForUser($this->id, $resourceId, $listId, $source);
     }
@@ -257,13 +255,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * for no filter).
      * @param int    $listId     Filter for tags tied to a specific list (null for no
      * filter).
-     * @param string $source     Filter for tags tied to a specific record source.
+     * @param string $source     Filter for tags tied to a specific record source
+     * (null for no filter).
      *
      * @return string
      */
-    public function getTagString($resourceId = null, $listId = null,
-        $source = DEFAULT_SEARCH_BACKEND
-    ) {
+    public function getTagString($resourceId = null, $listId = null, $source = null)
+    {
         $myTagList = $this->getTags($resourceId, $listId, $source);
         $tagStr = '';
         if (count($myTagList) > 0) {
@@ -613,9 +611,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Destroy the user.
      *
+     * @param bool $removeComments Whether to remove user's comments
+     *
      * @return int The number of rows deleted.
      */
-    public function delete()
+    public function delete($removeComments = true)
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
@@ -628,6 +628,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
         $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyLinks(null, $this->id);
+        if ($removeComments) {
+            $comments = $this->getDbTable('Comments');
+            $comments->deleteByUser($this);
+        }
 
         // Remove the user itself:
         return parent::delete();
@@ -642,7 +646,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $hash = md5($this->username . $this->password . $this->pass_hash . rand());
         // Make totally sure the timestamp is exactly 10 characters:
-        $time = str_pad(substr((string) time(), 0, 10), 10, '0', STR_PAD_LEFT);
+        $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
         $this->verify_hash = $hash . $time;
         return $this->save();
     }

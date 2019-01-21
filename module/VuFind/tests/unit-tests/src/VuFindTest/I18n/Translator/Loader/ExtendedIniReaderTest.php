@@ -2,7 +2,7 @@
 /**
  * ExtendedIniReader Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\I18n\Translator\Loader;
+
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
 /**

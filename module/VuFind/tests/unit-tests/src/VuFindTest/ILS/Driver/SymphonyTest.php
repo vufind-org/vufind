@@ -2,7 +2,7 @@
 /**
  * ILS driver test
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
+
 use VuFind\ILS\Driver\Symphony;
 
 /**
@@ -39,12 +40,19 @@ use VuFind\ILS\Driver\Symphony;
  */
 class SymphonyTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Driver object
+     *
+     * @var Symphony
+     */
     protected $driver;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $loader = $this->getMockBuilder('VuFind\Record\Loader')
             ->disableOriginalConstructor()->getMock();

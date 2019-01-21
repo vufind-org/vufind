@@ -2,7 +2,7 @@
 /**
  * Summon Search Parameters
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,9 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Summon;
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
+
+use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -41,6 +42,8 @@ use SerialsSolutions_Summon_Query as SummonQuery,
  */
 class Params extends \VuFind\Search\Base\Params
 {
+    use \VuFind\Search\Params\FacetLimitTrait;
+
     /**
      * Settings for all the facets
      *
@@ -54,6 +57,19 @@ class Params extends \VuFind\Search\Base\Params
      * @var array
      */
     protected $dateFacetSettings = [];
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($options, $configLoader);
+        $config = $configLoader->get($options->getFacetsIni());
+        $this->initFacetLimitsFromConfig($config->Facet_Settings ?? null);
+    }
 
     /**
      * Add a field to facet on.
@@ -212,24 +228,16 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->configLoader->get('Summon');
-        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
-            ? $config->Facet_Settings->facet_limit : 30;
-        $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
-            ? $config->Facet_Settings->facet_limit_by_field : null;
-
         $finalFacets = [];
         foreach ($this->getFullFacetSettings() as $facet) {
             // See if parameters are included as part of the facet name;
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $bestDefaultFacetLimit = isset($fieldSpecificLimits->$facetName)
-                ? $fieldSpecificLimits->$facetName : $defaultFacetLimit;
             $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
-            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $bestDefaultFacetLimit;
+            $facetMode = $parts[1] ?? $defaultMode;
+            $facetPage = $parts[2] ?? 1;
+            $facetLimit = $parts[3] ?? $this->getFacetLimitForField($facetName);
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
             $finalFacets[] = "{$facetName},{$facetParams}";
         }
@@ -260,34 +268,33 @@ class Params extends \VuFind\Search\Base\Params
                         $params->set(
                             'holdings', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'queryExpansion') {
+                    } elseif ($filt['field'] == 'queryExpansion') {
                         // Special case -- "query expansion" is a separate parameter
                         // from other facets.
                         $params->set(
                             'expand', strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'openAccessFilter') {
+                    } elseif ($filt['field'] == 'openAccessFilter') {
                         // Special case -- "open access filter" is a separate
                         // parameter from other facets.
                         $params->set(
                             'openAccessFilter',
                             strtolower(trim($safeValue)) == 'true'
                         );
-                    } else if ($filt['field'] == 'excludeNewspapers') {
+                    } elseif ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
                         $params
                             ->add('filters', "ContentType,Newspaper Article,true");
-                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
+                    } elseif ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = SummonQuery::escapeParam($range['from']);
                         $to = SummonQuery::escapeParam($range['to']);
                         $params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
-                    } else if ($filt['operator'] == 'OR') {
+                    } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
-                        $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
-                            ? $orFacets[$filt['field']] : [];
+                        $orFacets[$filt['field']] = $orFacets[$filt['field']] ?? [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
@@ -330,7 +337,7 @@ class Params extends \VuFind\Search\Base\Params
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
             // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
-        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+        } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (strtolower($matches[3]) == strtolower($matches[1])
@@ -341,6 +348,67 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         return $filter;
+    }
+
+    /**
+     * Initialize facet settings for the specified configuration sections.
+     *
+     * @param string $facetList     Config section containing fields to activate
+     * @param string $facetSettings Config section containing related settings
+     * @param string $cfgFile       Name of configuration to load (null to load
+     * default facets configuration).
+     *
+     * @return bool                 True if facets set, false if no settings found
+     */
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
+    {
+        $config = $this->configLoader
+            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        // Special case -- when most settings are in Results_Settings, the limits
+        // can be found in Facet_Settings.
+        $limitSection = ($facetSettings === 'Results_Settings')
+            ? 'Facet_Settings' : $facetSettings;
+        $this->initFacetLimitsFromConfig($config->$limitSection ?? null);
+        return parent::initFacetList($facetList, $facetSettings, $cfgFile);
+    }
+
+    /**
+     * Initialize facet settings for the advanced search screen.
+     *
+     * @return void
+     */
+    public function initAdvancedFacets()
+    {
+        // If no configuration was found, set up defaults instead:
+        if (!$this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings')) {
+            $defaults = ['Language' => 'Language', 'ContentType' => 'Format'];
+            foreach ($defaults as $key => $value) {
+                $this->addFacet($key, $value);
+            }
+        }
+    }
+
+    /**
+     * Initialize facet settings for the home page.
+     *
+     * @return void
+     */
+    public function initHomePageFacets()
+    {
+        // Load Advanced settings if HomePage settings are missing (legacy support):
+        if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
+            $this->initAdvancedFacets();
+        }
+    }
+
+    /**
+     * Initialize facet settings for the standard search screen.
+     *
+     * @return void
+     */
+    public function initBasicFacets()
+    {
+        $this->initFacetList('Facets', 'Results_Settings');
     }
 
     /**
@@ -356,8 +424,17 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function activateAllFacets($preferredSection = false)
     {
-        $this->initFacetList('Facets', 'Results_Settings', 'Summon');
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
-        $this->initCheckboxFacets('CheckboxFacets', 'Summon');
+        // Based on preference, change the order of initialization to make sure
+        // that preferred facet labels come in last.
+        if ($preferredSection == 'Advanced') {
+            $this->initHomePageFacets();
+            $this->initBasicFacets();
+            $this->initAdvancedFacets();
+        } else {
+            $this->initHomePageFacets();
+            $this->initAdvancedFacets();
+            $this->initBasicFacets();
+        }
+        $this->initCheckboxFacets();
     }
 }

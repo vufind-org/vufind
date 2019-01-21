@@ -3,9 +3,10 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
-            'helptext' => 'TueFind\View\Helper\Root\Factory::getHelpText',
-            'piwik' => 'TueFind\View\Helper\Root\Factory::getPiwik',
-            'tuefind' => 'TueFind\View\Helper\TueFind\Factory::getTueFind',
+            'helptext' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
+            'tuefind' => 'TueFind\View\Helper\TueFind\Factory',
         ],
     ],
     'css' => [

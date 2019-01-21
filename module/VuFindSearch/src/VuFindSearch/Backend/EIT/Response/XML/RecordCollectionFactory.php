@@ -2,7 +2,7 @@
 /**
  * Simple XML-based factory for record collection.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFindSearch\Backend\EIT\Response\XML;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Simple XML-based factory for record collection.

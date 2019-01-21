@@ -26,7 +26,7 @@
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
-    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, true);
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true);
   }
 
   // Step 1: Load the javascript

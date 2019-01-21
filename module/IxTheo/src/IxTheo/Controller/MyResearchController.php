@@ -200,9 +200,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $this->updateProfile($this->getRequest(), $user, $ixTheoUser);
         }
         $view = $this->createViewModel();
-        $view->user= $user;
+        $view->user = $user;
         $view->ixTheoUser = $ixTheoUser;
         $view->request = $this->mergePostDataWithUserData($this->getRequest()->getPost(), $user, $ixTheoUser);
+        $config = $this->getConfig();
+        $view->accountDeletion = !empty($config->Authentication->account_deletion);
         return $view;
     }
 

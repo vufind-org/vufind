@@ -2,7 +2,7 @@
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *
- * PHP version 5
+ * PHP version 7
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +25,9 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, VuFind\Exception\ILS as ILSException;
+
+use File_MARC;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -394,7 +396,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -573,7 +575,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -631,7 +633,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -758,7 +760,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

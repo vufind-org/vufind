@@ -2,7 +2,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -29,11 +29,15 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, Yajra\Pdo\Oci8, PDO, PDOException,
-    VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator;
+
+use File_MARC;
+use PDO;
+use PDOException;
+use VuFind\Date\DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Yajra\Pdo\Oci8;
+use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -91,6 +95,13 @@ class Voyager extends AbstractBase
     protected $useHoldingsSortGroups;
 
     /**
+     * Loan interval types for which to display the due time (empty = all)
+     *
+     * @var array
+     */
+    protected $displayDueTimeIntervals;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -141,6 +152,12 @@ class Voyager extends AbstractBase
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+
+        $this->displayDueTimeIntervals
+            = isset($this->config['Loans']['display_due_time_only_for_intervals'])
+            ? explode(
+                ':', $this->config['Loans']['display_due_time_only_for_intervals']
+            ) : [];
     }
 
     /**
@@ -227,8 +244,10 @@ class Voyager extends AbstractBase
         $status = $statusArray[0];
         $rank = $this->getStatusRanking($status);
         for ($x = 1; $x < count($statusArray); $x++) {
-            if ($this->getStatusRanking($statusArray[$x]) < $rank) {
+            $thisRank = $this->getStatusRanking($statusArray[$x]);
+            if ($thisRank < $rank) {
                 $status = $statusArray[$x];
+                $rank = $thisRank;
             }
         }
 
@@ -471,9 +490,7 @@ class Voyager extends AbstractBase
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => isset($row['SORT_SEQ'])
-                        ? $row['SORT_SEQ']
-                        : PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX
                 ];
             } else {
                 $statusFound = in_array(
@@ -590,8 +607,10 @@ class Voyager extends AbstractBase
     public function getStatuses($idList)
     {
         $status = [];
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
+        if (is_array($idList)) {
+            foreach ($idList as $id) {
+                $status[] = $this->getStatus($id);
+            }
         }
         return $status;
     }
@@ -747,17 +766,12 @@ EOT;
         $data = [];
 
         foreach ($sqlRows as $row) {
-            // Determine Copy Number (always use sequence number; append volume
-            // when available)
+            // Determine Copy Number
             $number = $row['ITEM_SEQUENCE_NUMBER'];
-            if (isset($row['ITEM_ENUM'])) {
-                $number .= ' (' . utf8_encode($row['ITEM_ENUM']) . ')';
-            }
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID'])
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
@@ -1000,9 +1014,7 @@ EOT;
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => isset($sqlRow['SORT_SEQ'])
-                ? $sqlRow['SORT_SEQ']
-                : PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX
         ];
     }
 
@@ -1043,7 +1055,7 @@ EOT;
                         = $this->pickStatus($availability['otherStatuses']);
                 }
 
-                 // Convert Voyager Format to display format
+                // Convert Voyager Format to display format
                 $dueDate = false;
                 if (!empty($row['DUEDATE'])) {
                     $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1057,8 +1069,7 @@ EOT;
                     );
                 }
 
-                $requests_placed = isset($row['HOLDS_PLACED'])
-                    ? $row['HOLDS_PLACED'] : 0;
+                $requests_placed = $row['HOLDS_PLACED'] ?? 0;
                 if (isset($row['RECALLS_PLACED'])) {
                     $requests_placed += $row['RECALLS_PLACED'];
                 }
@@ -1072,6 +1083,8 @@ EOT;
                 }
                 $holding[$i] += [
                     'availability' => $availability['available'],
+                    'enumchron' => isset($row['ITEM_ENUM'])
+                        ? utf8_encode($row['ITEM_ENUM']) : null,
                     'duedate' => $dueDate,
                     'number' => $number,
                     'requests_placed' => $requests_placed,
@@ -1254,16 +1267,16 @@ EOT;
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $primary = !is_null($row['LOGIN'])
+                $primary = null !== $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
                     : null;
-                $fallback = $fallback_login_field && is_null($row['LOGIN'])
+                $fallback = $fallback_login_field && null === $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((!is_null($primary) && ($primary == $compareLogin
+                if ((null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
-                    || ($fallback_login_field && is_null($primary)
+                    || ($fallback_login_field && null === $primary
                     && $fallback == $compareLogin)
                 ) {
                     return [
@@ -1304,13 +1317,15 @@ EOT;
             "MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID",
             "MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM",
             "MAX(MFHD_ITEM.YEAR) AS YEAR",
+            "MAX(ITEM_BARCODE.ITEM_BARCODE) AS ITEM_BARCODE",
             "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
             "MAX(BIB_TEXT.TITLE) AS TITLE",
             "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
             . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
-            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION"
+            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION",
+            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL"
         ];
 
         // From
@@ -1320,6 +1335,7 @@ EOT;
             $this->dbName . ".ITEM",
             $this->dbName . ".ITEM_STATUS",
             $this->dbName . ".ITEM_STATUS_TYPE",
+            $this->dbName . ".ITEM_BARCODE",
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".CIRC_POLICY_MATRIX",
@@ -1338,6 +1354,11 @@ EOT;
             "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
             "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
             "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
+            "ITEM.ITEM_ID = ITEM_BARCODE.ITEM_ID(+)",
+            "(ITEM_BARCODE.BARCODE_STATUS IS NULL OR " .
+            "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
+            "$this->dbName.ITEM_BARCODE_STATUS " .
+            " WHERE BARCODE_STATUS_DESC = 'Active'))"
         ];
 
         // Order
@@ -1410,7 +1431,7 @@ EOT;
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -1419,8 +1440,8 @@ EOT;
         $transaction = [
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
+            'barcode' => utf8_encode($sqlRow['ITEM_BARCODE']),
             'duedate' => $dueDate,
-            'dueTime' => $dueTime,
             'dueStatus' => $dueStatus,
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
@@ -1431,9 +1452,13 @@ EOT;
             'message' =>
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
-        if (isset($this->config['Loans']['display_borrowing_location'])
-            && $this->config['Loans']['display_borrowing_location']
+        // Display due time only if loan interval is not in days if configured
+        if (empty($this->displayDueTimeIntervals)
+            || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
+            $transaction['dueTime'] = $dueTime;
+        }
+        if (!empty($this->config['Loans']['display_borrowing_location'])) {
             $transaction['borrowingLocation']
                 = utf8_encode($sqlRow['BORROWING_LOCATION']);
         }
@@ -1722,7 +1747,6 @@ EOT;
         $returnList = [];
 
         if (!empty($holdList)) {
-
             $sortHoldList = [];
             // Get a unique List of Bib Ids
             foreach ($holdList as $holdItem) {
@@ -1954,16 +1978,24 @@ EOT;
                "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
                "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
                "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
-               "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME " .
+               "PATRON_PHONE.PHONE_NUMBER, PHONE_TYPE.PHONE_DESC, " .
+               "PATRON_GROUP.PATRON_GROUP_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
-               "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
-               "$this->dbName.PATRON_GROUP " .
+               "$this->dbName.PATRON_PHONE, $this->dbName.PHONE_TYPE, " .
+               "$this->dbName.PATRON_BARCODE, $this->dbName.PATRON_GROUP " .
                "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
                "AND PATRON_ADDRESS.ADDRESS_ID = PATRON_PHONE.ADDRESS_ID (+) " .
                "AND PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID (+) " .
                "AND PATRON_BARCODE.PATRON_GROUP_ID = " .
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
+               "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
+        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
+            ? $this->config['Profile']['primary_phone']
+            : 'Primary';
+        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
+            ? $this->config['Profile']['mobile_phone']
+            : 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -1975,7 +2007,11 @@ EOT;
                     $patron['lastname'] = utf8_encode($row['LAST_NAME']);
                 }
                 if (!empty($row['PHONE_NUMBER'])) {
-                    $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    if ($primaryPhoneType === $row['PHONE_DESC']) {
+                        $patron['phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    } elseif ($mobilePhoneType === $row['PHONE_DESC']) {
+                        $patron['mobile_phone'] = utf8_encode($row['PHONE_NUMBER']);
+                    }
                 }
                 if (!empty($row['PATRON_GROUP_NAME'])) {
                     $patron['group'] = utf8_encode($row['PATRON_GROUP_NAME']);
@@ -1984,7 +2020,7 @@ EOT;
                 $addr1 = utf8_encode($row['ADDRESS_LINE1']);
                 if ($validator->isValid($addr1)) {
                     $patron['email'] = $addr1;
-                } else if (!isset($patron['address1'])) {
+                } elseif (!isset($patron['address1'])) {
                     if (!empty($addr1)) {
                         $patron['address1'] = $addr1;
                     }
@@ -2002,7 +2038,7 @@ EOT;
                     }
                 }
             }
-            return (empty($patron) ? null : $patron);
+            return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
@@ -2415,6 +2451,107 @@ EOT;
             throw new ILSException($e->getMessage());
         }
 
+        return $recordList;
+    }
+
+    /**
+     * Get bib records for recently returned items.
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days to consider "recently
+     * returned."
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRecentlyReturnedBibs($limit = 30, $maxage = 30,
+        $patron = null
+    ) {
+        $recordList = [];
+
+        // Oracle does not support the SQL LIMIT clause before version 12, so
+        // instead we need to provide an optimizer hint, which requires us to
+        // ensure that $limit is a valid integer.
+        $intLimit = intval($limit);
+        $safeLimit = $intLimit < 1 ? 30 : $intLimit;
+
+        $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
+            . "max(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RETURNED "
+            . "from $this->dbName.CIRC_TRANS_ARCHIVE "
+            . "join $this->dbName.MFHD_ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MFHD "
+            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . "join $this->dbName.BIB_MASTER "
+            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
+            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
+            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
+            . "group by BIB_MFHD.BIB_ID "
+            . "order by RETURNED desc";
+        try {
+            $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
+            while (count($recordList) < $limit
+                && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
+            ) {
+                $recordList[] = ['id' => $row['BIB_ID']];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+        return $recordList;
+    }
+
+    /**
+     * Get bib records for "trending" items (recently returned with high usage).
+     *
+     * @param int   $limit  Maximum number of records to retrieve (default = 30)
+     * @param int   $maxage The maximum number of days' worth of data to examine.
+     * @param array $patron Patron Data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
+    {
+        $recordList = [];
+
+        // Oracle does not support the SQL LIMIT clause before version 12, so
+        // instead we need to provide an optimizer hint, which requires us to
+        // ensure that $limit is a valid integer.
+        $intLimit = intval($limit);
+        $safeLimit = $intLimit < 1 ? 30 : $intLimit;
+
+        $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
+            . "count(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE) as RECENT, "
+            . "sum(ITEM.HISTORICAL_CHARGES) as OVERALL "
+            . "from $this->dbName.CIRC_TRANS_ARCHIVE "
+            . "join $this->dbName.MFHD_ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = MFHD_ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MFHD "
+            . "on BIB_MFHD.MFHD_ID = MFHD_ITEM.MFHD_ID "
+            . "join $this->dbName.ITEM "
+            . "on CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID "
+            . "join $this->dbName.BIB_MASTER "
+            . "on BIB_MASTER.BIB_ID = BIB_MFHD.BIB_ID "
+            . "where CIRC_TRANS_ARCHIVE.DISCHARGE_DATE is not null "
+            . "and CIRC_TRANS_ARCHIVE.DISCHARGE_DATE > SYSDATE - :maxage "
+            . "and BIB_MASTER.SUPPRESS_IN_OPAC='N' "
+            . "group by BIB_MFHD.BIB_ID "
+            . "order by RECENT desc, OVERALL desc";
+        try {
+            $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
+            while (count($recordList) < $limit
+                && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
+            ) {
+                $recordList[] = ['id' => $row['BIB_ID']];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
         return $recordList;
     }
 

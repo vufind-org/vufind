@@ -2,7 +2,7 @@
 /**
  * Summon Search Options
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -38,6 +38,8 @@ namespace VuFind\Search\Summon;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Search\Options\ViewOptionsTrait;
+
     /**
      * Maximum number of topic recommendations to show (false for none)
      *
@@ -98,9 +100,6 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
-        }
         if (isset($searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
@@ -148,16 +147,9 @@ class Options extends \VuFind\Search\Base\Options
                 = $searchSettings->General->empty_search_relevance_override;
         }
 
-        // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
-        } else {
-            $this->viewOptions = ['list' => 'List'];
-        }
+        // Set up views
+        $this->initViewOptions($searchSettings);
+
         // Load list view for result (controls AJAX embedding vs. linking)
         if (isset($searchSettings->List->view)) {
             $this->listviewOption = $searchSettings->List->view;

@@ -3,7 +3,7 @@
 /**
  * EIT backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -28,14 +28,14 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
-use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Backend\AbstractBackend;
 
 use VuFindSearch\ParamBag;
 
-use VuFindSearch\Response\RecordCollectionInterface;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\AbstractBackend;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * EIT backend.

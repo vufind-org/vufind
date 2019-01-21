@@ -2,7 +2,7 @@
 /**
  * LDAP authentication test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\LDAP, Zend\Config\Config;
+
+use VuFind\Auth\LDAP;
+use Zend\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -51,7 +53,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = clone($this->getAuthManager()->get('LDAP'));
+        $obj = clone $this->getAuthManager()->get('LDAP');
         $obj->setConfig($config);
         return $obj;
     }
@@ -78,10 +80,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingHost()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $config = $this->getAuthConfig();
         unset($config->LDAP->host);
         $this->getAuthObject($config)->getConfig();
@@ -91,10 +94,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing port causes failure.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingPort()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $config = $this->getAuthConfig();
         unset($config->LDAP->port);
         $this->getAuthObject($config)->getConfig();
@@ -104,10 +108,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing baseDN causes failure.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingBaseDN()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $config = $this->getAuthConfig();
         unset($config->LDAP->basedn);
         $this->getAuthObject($config)->getConfig();
@@ -117,10 +122,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing UID causes failure.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingUid()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $config = $this->getAuthConfig();
         unset($config->LDAP->username);
         $this->getAuthObject($config)->getConfig();
@@ -181,10 +187,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -193,10 +200,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
+     *
+     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException('VuFind\Exception\Auth');
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }

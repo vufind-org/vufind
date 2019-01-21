@@ -2,7 +2,7 @@
 /**
  * Pazpar2 Search Options
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -49,7 +49,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'Pazpar2';
 
         $this->limitOptions = [$this->defaultLimit];
-        
+
         // Load source settings
         $searchSettings = $configLoader->get($this->searchIni);
         if (isset($searchSettings->IndexSources)

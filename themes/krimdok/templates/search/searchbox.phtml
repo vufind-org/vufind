@@ -18,14 +18,14 @@
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
     $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
-    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
         if (empty($hiddenFilters)) {
-            $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
+            $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
         }
     }
-    $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+    $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">
@@ -116,5 +116,4 @@
       }
     ?>
   </form>
-  <script type="text/javascript">tuefindSetFocus(".searchForm_lookfor:visible")</script>
 <? endif; ?>

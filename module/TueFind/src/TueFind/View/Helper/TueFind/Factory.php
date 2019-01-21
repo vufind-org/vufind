@@ -2,19 +2,20 @@
 
 namespace TueFind\View\Helper\TueFind;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
-class Factory
+class Factory implements FactoryInterface
 {
-    /**
-     * Construct the TueFind helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return TueFind
-     */
-    public static function getTueFind(ServiceManager $sm)
-    {
-        return new TueFind($sm);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
+        }
+
+        return new TueFind(
+            $container
+        );
     }
 }

@@ -2,7 +2,7 @@
 /**
  * FavoriteFacets recommendation module Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Recommend;
+
 use VuFind\Recommend\FavoriteFacets;
 
 /**
@@ -51,6 +52,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
         $params->expects($this->exactly(0))->method('addFacet'); // no facets are expected in this case
         $this->getFavoriteFacets($results, 'disabled');
     }
+
     /**
      * Test facet initialization with enabled tags.
      *

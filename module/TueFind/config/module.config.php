@@ -2,21 +2,10 @@
 namespace TueFind\Module\Config;
 
 $config = [
-    'controllers' => [
-        'factories' => [
-            'ajax' => 'TueFind\Controller\Factory::getAjaxController',
-            'acquisition_request' => 'TueFind\Controller\Factory::getAcquisitionRequestController',
-            'feedback' => 'TueFind\Controller\Factory::getFeedbackController',
-            'pdaproxy' => 'TueFind\Controller\Factory::getPDAProxyController',
-            'proxy' => 'TueFind\Controller\Factory::getProxyController',
-            'search' => 'TueFind\Controller\Factory::getSearchController',
-            'StaticPage' => 'TueFind\Controller\Factory::getStaticPageController',
-        ],
-    ],
     'router' => [
         'routes' => [
             'proxy-load' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Proxy/Load',
                     'defaults' => [
@@ -26,7 +15,7 @@ $config = [
                 ],
             ],
             'pdaproxy-load' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
                     'route'    => '/PDAProxy/Load',
                     'defaults' => [
@@ -37,20 +26,37 @@ $config = [
             ],
         ],
     ],
-    'vufind' => [
-        'plugin_managers' => [
-            'recorddriver' => [
-                'factories' => [
-                    'solrauth' => 'TueFind\RecordDriver\Factory::getSolrAuth',
-                    'solrdefault' => 'TueFind\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'TueFind\RecordDriver\Factory::getSolrMarc',
-                ],
-            ],
-            'search_results' => [
-                'factories' => [
-                    'solr' => 'TueFind\Search\Results\Factory::getSolr',
-                ],
-            ],
+    'controllers' => [
+        'factories' => [
+            'TueFind\Controller\AcquisitionRequestController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\AjaxController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\PDAProxyController' => 'TueFind\Controller\PDAProxyControllerFactory',
+            'TueFind\Controller\ProxyController' => 'TueFind\Controller\ProxyControllerFactory',
+            'TueFind\Controller\SearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'acquisition_request' => 'TueFind\Controller\AcquisitionRequestController',
+            'ajax' => 'TueFind\Controller\AjaxController',
+            'feedback' => 'TueFind\Controller\FeedbackController',
+            'pdaproxy' => 'TueFind\Controller\PDAProxyController',
+            'proxy' => 'TueFind\Controller\ProxyController',
+            'search' => 'TueFind\Controller\SearchController',
+            'StaticPage' => 'TueFind\Controller\StaticPageController',
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+        ],
+        'aliases' => [
+            'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
+            'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
+            'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
+            'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
         ],
     ],
     'service_manager' => [
@@ -61,7 +67,7 @@ $config = [
 ];
 
 $config['router']['routes']['static-page'] = [
-    'type'    => 'Zend\Mvc\Router\Http\Segment',
+    'type'    => 'Zend\Router\Http\Segment',
     'options' => [
         'route'    => "/:page",
         'constraints' => [

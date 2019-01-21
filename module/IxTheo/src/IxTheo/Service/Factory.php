@@ -16,8 +16,8 @@ class Factory extends \VuFind\Service\Factory  {
     public static function getExport(ServiceManager $sm)
     {
         return new \IxTheo\Export(
-            $sm->get('\VuFind\Config')->get('config'),
-            $sm->get('\VuFind\Config')->get('export')
+            $sm->get('VuFind\Config\PluginManager')->get('config'),
+            $sm->get('VuFind\Config\PluginManager')->get('export')
         );
     }
 }

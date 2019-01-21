@@ -2,7 +2,7 @@
 /**
  * Record loader
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -28,10 +28,10 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
-use VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService,
-    VuFind\Record\Cache;
+
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Record loader
@@ -254,8 +254,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // objects:
         foreach ($ids as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
-                $fields = isset($details['extra_fields'])
-                    ? $details['extra_fields'] : [];
+                $fields = $details['extra_fields'] ?? [];
                 $fields['id'] = $details['id'];
                 $retVal[$i] = $this->recordFactory->get('Missing');
                 $retVal[$i]->setRawData($fields);

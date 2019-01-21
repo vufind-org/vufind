@@ -3,7 +3,7 @@
 /**
  * Unit tests for EIT backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\EIT;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\QueryBuilder;
 use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for EIT backend.

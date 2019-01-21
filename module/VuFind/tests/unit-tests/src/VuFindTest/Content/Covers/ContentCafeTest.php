@@ -3,7 +3,7 @@
 /**
  * Unit tests for ContentCafe cover loader.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,7 +27,10 @@
  * @link     https://vufind.org
  */
 namespace VuFindTest\Content\Covers;
-use VuFindCode\ISBN, VuFind\Content\Covers\ContentCafe, Zend\Config\Config;
+
+use VuFind\Content\Covers\ContentCafe;
+use VuFindCode\ISBN;
+use Zend\Config\Config;
 
 /**
  * Unit tests for ContentCafe cover loader.
@@ -38,7 +41,7 @@ use VuFindCode\ISBN, VuFind\Content\Covers\ContentCafe, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ContentCafeTest extends \PHPUnit_Framework_TestCase
+class ContentCafeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading

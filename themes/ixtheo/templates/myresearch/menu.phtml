@@ -59,15 +59,22 @@
     </a>
   <? endif; ?>
 </div>
-<? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
+<? if ($this->auth()->isLoggedIn()): ?>
   <h4><?=$this->transEsc('Preferences')?></h4>
   <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
     <i class="fa fa-fw fa-user"></i> <?=$this->transEsc('Profile')?>
   </a>
   <div class="list-group">
+    <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
     <a href="<?=$this->url('myresearch-changepassword') ?>" class="list-group-item<?=$this->active == 'newpassword' ? ' active' : ''?>">
       <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
     </a>
+    <?php endif; ?>
+    <?php if ($this->tuefind()->isUserAccountDeletionEnabled()): ?>
+      <a href="<?=$this->url('myresearch-deleteaccount') ?>" class="list-group-item">
+        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('delete_account_title') ?>
+      </a>
+    <?php endif; ?>
   </div>
 <? endif; ?>
 <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>

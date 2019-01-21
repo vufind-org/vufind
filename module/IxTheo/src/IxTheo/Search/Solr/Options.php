@@ -2,7 +2,7 @@
 
 namespace IxTheo\Search\Solr;
 
-class Options extends \VuFind\Search\Solr\Options
+class Options extends \TueFind\Search\Solr\Options
 {
     /**
      * Searches with forced own default sort only

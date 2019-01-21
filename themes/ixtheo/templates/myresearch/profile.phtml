@@ -1,13 +1,15 @@
-<?
-// Set up page title:
-$this->headTitle($this->translate('My Profile'));
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
 
-// Set up breadcrumbs:
-$this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 
+    // Template for use by the renderArray helper:
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
 
-<div class="row">    
+<div class="row">
     <div class="<?=$this->layoutClass('mainbody')?>">
         <h1><?=$this->translate('My Profile')?></h1>
         <form method="post" name="accountForm" id="accountForm" class="form-horizontal" data-toggle="validator" role="form">
@@ -21,6 +23,6 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
         </form>
     </div>
     <div class="<?=$this->layoutClass('sidebar')?>">
-        <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'))?>
+        <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
     </div>
 </div>

@@ -9,6 +9,8 @@
     <div class="record-number">
       <?=$recordNumber ?>
     </div>
-    <?=$this->record($current)->getSearchResult('list')?>
+    <div class="col-xs-9 col-sm-11">
+        <?=$this->record($current)->getSearchResult('list') //see contents in RecordDriver/DefaultRecord/result-list.phtml ?>
+    </div>
   </div>
 <? endforeach; ?>

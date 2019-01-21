@@ -2,7 +2,7 @@
 /**
  * Amicus ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Scanbit 2011.
  *
@@ -26,8 +26,11 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Amicus ILS Driver
@@ -437,7 +440,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -592,7 +595,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -625,7 +628,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -662,7 +665,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */

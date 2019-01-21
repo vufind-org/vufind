@@ -2,7 +2,7 @@
 /**
  * Abstract base for deferred-load Summon recommendations modules
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -113,7 +113,7 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
         for ($i = 0; $i < $this->paramCount; $i++) {
-            $settings[$i] = isset($settings[$i]) ? $settings[$i] : '';
+            $settings[$i] = $settings[$i] ?? '';
         }
 
         // Collect the best possible search term(s):

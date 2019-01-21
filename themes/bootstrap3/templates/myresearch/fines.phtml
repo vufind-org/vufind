@@ -1,4 +1,4 @@
-<?
+<?php
     // Set up page title:
     $this->headTitle($this->translate('My Fines'));
 
@@ -11,10 +11,11 @@
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
-  <? if (empty($this->fines)): ?>
+  <?php if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
-  <? else: ?>
-    <table class="table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
+  <?php else: ?>
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
     <tr>
       <th><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('Checked Out')?></th>
@@ -23,29 +24,29 @@
       <th><?=$this->transEsc('Fee')?></th>
       <th><?=$this->transEsc('Balance')?></th>
     </tr>
-    <? $totalDue = 0; ?>
-    <? foreach ($this->fines as $record): ?>
+    <?php $totalDue = 0; ?>
+    <?php foreach ($this->fines as $record): ?>
       <tr>
         <td>
-          <? if (empty($record['title'])): ?>
+          <?php if (empty($record['title'])): ?>
             <?=$this->transEsc('not_applicable')?>
-          <? elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
+          <?php elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
             <?=$this->escapeHtml(trim($record['title'], '/:'))?>
-          <? else: ?>
+          <?php else: ?>
             <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
-          <? endif; ?>
+          <?php endif; ?>
         </td>
         <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
         <td><?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></td>
         <td><?=isset($record['fine']) ? $this->escapeHtml($record['fine']) : ''?></td>
-        <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
-        <td><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
+        <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount'] / 100.00) : ''?></td>
+        <td><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : ''?></td>
       </tr>
-      <? $totalDue += $record['balance']; ?>
-    <? endforeach; ?>
-      <tr style="font-weight:bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue/100.00) ?></td></tr>
+      <?php $totalDue += $record['balance']; ?>
+    <?php endforeach; ?>
+      <tr style="font-weight:bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td></tr>
     </table>
-  <? endif; ?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

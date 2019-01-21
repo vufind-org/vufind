@@ -2,7 +2,7 @@
 /**
  * AuthorityRecommend Recommendations Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -27,8 +27,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Recommend;
-use VuFindSearch\Backend\Exception\RequestErrorException,
-    Zend\Http\Request, Zend\StdLib\Parameters;
+
+use VuFindSearch\Backend\Exception\RequestErrorException;
+use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module
@@ -93,6 +94,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $resultsManager;
 
     /**
+     * Which lookup mode(s) to use.
+     *
+     * @var string
+     */
+    protected $mode = '*';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -116,6 +124,8 @@ class AuthorityRecommend implements RecommendInterface
             if (isset($params[$i + 1])) {
                 if ($params[$i] == '__resultlimit__') {
                     $this->resultLimit = intval($params[$i + 1]);
+                } elseif ($params[$i] == '__mode__') {
+                    $this->mode = strtolower($params[$i + 1]);
                 } else {
                     $this->filters[] = $params[$i] . ':' . $params[$i + 1];
                 }
@@ -134,11 +144,119 @@ class AuthorityRecommend implements RecommendInterface
      * request.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function init($params, $request)
     {
         // Save user search query:
         $this->lookfor = $request->get('lookfor');
+    }
+
+    /**
+     * Perform a search of the authority index.
+     *
+     * @param array $params Array of request parameters.
+     *
+     * @return array
+     */
+    protected function performSearch($params)
+    {
+        // Initialise and process search (ignore Solr errors -- no reason to fail
+        // just because search syntax is not compatible with Authority core):
+        try {
+            $authResults = $this->resultsManager->get('SolrAuth');
+            $authParams = $authResults->getParams();
+            $authParams->initFromRequest(new Parameters($params));
+            foreach ($this->filters as $filter) {
+                $authParams->addHiddenFilter($filter);
+            }
+            return $authResults->getResults();
+        } catch (RequestErrorException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Return true if $a and $b are similar enough to represent the same heading.
+     *
+     * @param string $a First string to compare
+     * @param string $b Second string to compare
+     *
+     * @return bool
+     */
+    protected function fuzzyCompare($a, $b)
+    {
+        $normalize = function ($str) {
+            return trim(strtolower(preg_replace('/\W/', '', $str)));
+        };
+        return $normalize($a) == $normalize($b);
+    }
+
+    /**
+     * Add main headings from records that match search terms on use_for/see_also.
+     *
+     * @return void
+     */
+    protected function addUseForHeadings()
+    {
+        // Build an advanced search request that prevents Solr from retrieving
+        // records that would already have been retrieved by a search of the biblio
+        // core, i.e. it only returns results where $lookfor IS found in in the
+        // "Heading" search and IS NOT found in the "MainHeading" search defined
+        // in authsearchspecs.yaml.
+        $params = [
+            'join' => 'AND',
+            'bool0' => ['AND'],
+            'lookfor0' => [$this->lookfor],
+            'type0' => ['Heading'],
+            'bool1' => ['NOT'],
+            'lookfor1' => [$this->lookfor],
+            'type1' => ['MainHeading']
+        ];
+
+        // loop through records and assign id and headings to separate arrays defined
+        // above
+        foreach ($this->performSearch($params) as $result) {
+            $this->recommendations[] = $result->getBreadcrumb();
+        }
+    }
+
+    /**
+     * Add "see also" headings from records that match search terms on main heading.
+     *
+     * @return void
+     */
+    protected function addSeeAlsoReferences()
+    {
+        // Build a simple "MainHeading" search.
+        $params = [
+            'lookfor' => [$this->lookfor],
+            'type' => ['MainHeading']
+        ];
+
+        // loop through records and assign id and headings to separate arrays defined
+        // above
+        foreach ($this->performSearch($params) as $result) {
+            foreach ($result->getSeeAlso() as $seeAlso) {
+                // check for duplicates before adding record to recordSet
+                if (!$this->fuzzyCompare($seeAlso, $this->lookfor)) {
+                    $this->recommendations[] = $seeAlso;
+                }
+            }
+        }
+    }
+
+    /**
+     * Is the specified mode configured to be active?
+     *
+     * @param string $mode Mode to check
+     *
+     * @return bool
+     */
+    protected function isModeActive($mode)
+    {
+        return $this->mode === '*' || strpos($this->mode, $mode) !== false;
     }
 
     /**
@@ -166,52 +284,14 @@ class AuthorityRecommend implements RecommendInterface
             return;
         }
 
-        // Build an advanced search request that prevents Solr from retrieving
-        // records that would already have been retrieved by a search of the biblio
-        // core, i.e. it only returns results where $lookfor IS found in in the
-        // "Heading" search and IS NOT found in the "MainHeading" search defined
-        // in authsearchspecs.yaml.
-        $request = new Parameters(
-            [
-                'join' => 'AND',
-                'bool0' => ['AND'],
-                'lookfor0' => [$this->lookfor],
-                'type0' => ['Heading'],
-                'bool1' => ['NOT'],
-                'lookfor1' => [$this->lookfor],
-                'type1' => ['MainHeading']
-            ]
-        );
-
-        // Initialise and process search (ignore Solr errors -- no reason to fail
-        // just because search syntax is not compatible with Authority core):
-        try {
-            $authResults = $this->resultsManager->get('SolrAuth');
-            $authParams = $authResults->getParams();
-            $authParams->initFromRequest($request);
-            foreach ($this->filters as $filter) {
-                $authParams->addHiddenFilter($filter);
-            }
-            $results = $authResults->getResults();
-        } catch (RequestErrorException $e) {
-            return;
+        // see if we can add main headings matching use_for/see_also fields...
+        if ($this->isModeActive('usefor')) {
+            $this->addUseForHeadings();
         }
 
-        // loop through records and assign id and headings to separate arrays defined
-        // above
-        foreach ($results as $result) {
-            // Extract relevant details:
-            $recordArray = [
-                'id' => $result->getUniqueID(),
-                'heading' => $result->getBreadcrumb()
-            ];
-
-            // check for duplicates before adding record to recordSet
-            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
-                array_push($this->recommendations, $recordArray);
-            } else {
-                continue;
-            }
+        // see if we can add see-also references associated with main headings...
+        if ($this->isModeActive('seealso')) {
+            $this->addSeeAlsoReferences();
         }
     }
 
@@ -222,7 +302,7 @@ class AuthorityRecommend implements RecommendInterface
      */
     public function getRecommendations()
     {
-        return $this->recommendations;
+        return array_unique($this->recommendations);
     }
 
     /**
@@ -233,27 +313,5 @@ class AuthorityRecommend implements RecommendInterface
     public function getResults()
     {
         return $this->results;
-    }
-
-    /**
-     * Helper function to do recursive searches of multi-dimensional arrays.
-     *
-     * @param string $needle   Search term
-     * @param array  $haystack Multi-dimensional array
-     *
-     * @return bool
-     */
-    protected function inArrayR($needle, $haystack)
-    {
-        foreach ($haystack as $v) {
-            if ($needle == $v) {
-                return true;
-            } elseif (is_array($v)) {
-                if ($this->inArrayR($needle, $v)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

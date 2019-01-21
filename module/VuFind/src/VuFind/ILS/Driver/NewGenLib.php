@@ -2,7 +2,7 @@
 /**
  * ILS Driver for NewGenLib
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Verus Solutions Pvt.Ltd 2010.
  *
@@ -26,7 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+
+use PDO;
+use PDOException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for NewGenLib
@@ -82,7 +85,7 @@ class NewGenLib extends AbstractBase
      * @param string $RecordID The record id to retrieve the holdings for
      * @param array  $patron   Patron data
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -126,7 +129,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -194,7 +197,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -331,7 +334,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws \VuFind\Exception\Date
+     * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -503,8 +506,7 @@ class NewGenLib extends AbstractBase
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
 

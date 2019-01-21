@@ -8,12 +8,16 @@ return [
     ],
     'helpers' => [
         'factories' => [
-            'citation' => 'IxTheo\View\Helper\Root\Factory::getCitation',
-            'record' => 'IxTheo\View\Helper\Root\Factory::getRecord',
-            'ixtheo' => 'IxTheo\View\Helper\Root\Factory::getIxTheo',
+            'IxTheo\View\Helper\Root\Browse' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\View\Helper\Root\Citation' => 'IxTheo\View\Helper\Root\CitationFactory',
+            'IxTheo\View\Helper\Root\IxTheo' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\View\Helper\Root\Record' => 'IxTheo\View\Helper\Root\RecordFactory',
         ],
-        'invokables' => [
+        'aliases' => [
             'browse' => 'IxTheo\View\Helper\Root\Browse',
+            'citation' => 'IxTheo\View\Helper\Root\Citation',
+            'ixtheo' => 'IxTheo\View\Helper\Root\IxTheo',
+            'record' => 'IxTheo\View\Helper\Root\Record',
         ],
     ],
     'js' => [

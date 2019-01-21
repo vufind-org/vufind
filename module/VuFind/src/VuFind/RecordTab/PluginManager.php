@@ -2,7 +2,7 @@
 /**
  * Record tab plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
@@ -39,6 +40,78 @@ use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'collectionhierarchytree' => 'VuFind\RecordTab\CollectionHierarchyTree',
+        'collectionlist' => 'VuFind\RecordTab\CollectionList',
+        'description' => 'VuFind\RecordTab\Description',
+        'excerpt' => 'VuFind\RecordTab\Excerpt',
+        'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
+        'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
+        'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
+        'map' => 'VuFind\RecordTab\Map',
+        'preview' => 'VuFind\RecordTab\Preview',
+        'reviews' => 'VuFind\RecordTab\Reviews',
+        'similaritemscarousel' => 'VuFind\RecordTab\SimilarItemsCarousel',
+        'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
+        'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
+        'toc' => 'VuFind\RecordTab\TOC',
+        'usercomments' => 'VuFind\RecordTab\UserComments',
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        'VuFind\RecordTab\CollectionHierarchyTree' =>
+            'VuFind\RecordTab\Factory::getCollectionHierarchyTree',
+        'VuFind\RecordTab\CollectionList' =>
+            'VuFind\RecordTab\Factory::getCollectionList',
+        'VuFind\RecordTab\Description' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\RecordTab\Excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
+        'VuFind\RecordTab\HierarchyTree' =>
+            'VuFind\RecordTab\Factory::getHierarchyTree',
+        'VuFind\RecordTab\HoldingsILS' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+        'VuFind\RecordTab\HoldingsWorldCat' =>
+            'VuFind\RecordTab\Factory::getHoldingsWorldCat',
+        'VuFind\RecordTab\Map' => 'VuFind\RecordTab\Factory::getMap',
+        'VuFind\RecordTab\Preview' => 'VuFind\RecordTab\Factory::getPreview',
+        'VuFind\RecordTab\Reviews' => 'VuFind\RecordTab\Factory::getReviews',
+        'VuFind\RecordTab\SimilarItemsCarousel' =>
+            'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
+        'VuFind\RecordTab\StaffViewArray' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\RecordTab\StaffViewMARC' =>
+            'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\RecordTab\TOC' => 'VuFind\RecordTab\Factory::getTOC',
+        'VuFind\RecordTab\UserComments' =>
+            'VuFind\RecordTab\Factory::getUserComments',
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory('VuFind\RecordTab\PluginFactory');
+        $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Load the specified key from the configuration array using the best
      * available match to the class of the provided driver. Return the default

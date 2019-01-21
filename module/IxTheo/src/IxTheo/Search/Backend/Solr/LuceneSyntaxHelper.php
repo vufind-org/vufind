@@ -46,13 +46,6 @@ namespace IxTheo\Search\Backend\Solr;
  */
 class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
 {
-    public function __construct($csBools = true, $csRanges = true)
-    {
-        $this->caseSensitiveBooleans = $csBools;
-        $this->caseSensitiveRanges = $csRanges;
-    }
-
-
     /**
      * Extract search terms from a query string for spell checking.
      *

@@ -3,7 +3,7 @@
 /**
  * Unit tests for BrowZine backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -28,14 +28,14 @@
  */
 namespace VuFindTest\Backend\BrowZine;
 
+use InvalidArgumentException;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
+use VuFindSearch\Query\Query;
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
-use VuFindSearch\Query\Query;
-use InvalidArgumentException;
 
 /**
  * Unit tests for BrowZine backend.

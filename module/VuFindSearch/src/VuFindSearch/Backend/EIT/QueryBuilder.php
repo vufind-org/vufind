@@ -2,7 +2,7 @@
 /**
  * EIT QueryBuilder.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,11 +30,12 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryGroup;
+
 /**
  * EIT QueryBuilder.
  * Largely copied from the WorldCat QueryBuilder
