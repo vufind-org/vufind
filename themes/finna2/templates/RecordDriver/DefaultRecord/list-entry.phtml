@@ -43,9 +43,13 @@
       <div class="result-body">
         <div class="resultItemLine1">
           <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
-          <?php if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?php endif; ?>
-            <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
-          <?php if (!$missing): ?><span class="sr-only"> <?=$this->transEsc('To the record')?></span></a><?php endif; ?>
+          <?php if (!$missing): ?>
+            <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+          <?php endif; ?>
+          <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
+          <?php if (!$missing): ?>
+            <span class="sr-only"> <?=$this->transEsc('To the record')?></span></a>
+          <?php endif; ?>
         </div>
         <?php if ($titleAltScript = $this->driver->tryMethod('getShortTitleAltScript')): ?>
           <div class="title-alt-script">
@@ -101,16 +105,16 @@
         </div>
 
         <div class="last">
-        <?php if(!$this->driver->isCollection()) {
-            if ($snippet = $this->driver->getHighlightedSnippet()) {
-              if (!empty($snippet['caption'])) {
-                echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
-              }
-              if (!empty($snippet['snippet'])) {
-                echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
-              }
-            }
-          } ?>
+          <?php if(!$this->driver->isCollection()): ?>
+            <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+              <?php if (!empty($snippet['caption'])): ?>
+                <strong><?=$this->transEsc($snippet['caption'])?>:</strong>
+              <?php endif; ?>
+              <?php if (!empty($snippet['snippet'])): ?>
+                <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet'])?>...<span class="quoteend">&#8221;</span><br/>
+              <?php endif; ?>
+            <?php endif; ?>
+          <?php endif; ?>
 
           <?php $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
               null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
@@ -139,27 +143,27 @@
           }
         ?>
           <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Description')?>:</strong></div>
-          <div class="resource-note markdown">
-            <?php if ($list_id): ?>
+          <?php if ($list_id): ?>
+            <div class="resource-note markdown">
               <i class="fa fa-pen icon"></i>
-            <?php endif; ?>
-            <div class="editable" data-empty="<?= $hasNote ? '0' : '1' ?>" data-markdown="<?=$hasNote && $notes ? $this->escapeHtmlAttr($notes) : ''?>">
-              <?php if ($notes): ?>
-                <?= $this->markdown()->toHtml($notes); ?>
-              <?php else: ?>
-                <?=$this->transEsc('Add note')?>
-              <?php endif; ?>
+              <div class="editable" data-empty="<?= $hasNote ? '0' : '1' ?>" data-markdown="<?=$hasNote && $notes ? $this->escapeHtmlAttr($notes) : ''?>">
+                <?php if ($notes): ?>
+                  <?= $this->markdown()->toHtml($notes); ?>
+                <?php else: ?>
+                  <?=$this->transEsc('Add note')?>
+                <?php endif; ?>
+              </div>
             </div>
-          </div>
+          <?php endif;?>
         </div>
         <?php if (count($this->lists) > 0 && !$list): ?>
-        <div class="saved-lists">
-          <strong><?=$this->transEsc('Saved in')?>:</strong>
-          <?php $i = 0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
-          <?php endforeach; ?>
-          <br/>
-        </div>
+          <div class="saved-lists">
+            <strong><?=$this->transEsc('Saved in')?>:</strong>
+            <?php $i = 0;foreach($this->lists as $current): ?>
+              <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+            <?php endforeach; ?>
+            <br/>
+          </div>
         <?php endif; ?>
 
         <?php $countNotes = count($this->driver->getListNotes($list_id, $user_id)); ?>
