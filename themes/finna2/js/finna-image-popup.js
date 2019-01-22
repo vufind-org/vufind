@@ -370,7 +370,7 @@ finna.imagePopup = (function finnaImagePopup() {
           $(this).parent().addClass('no-image');
           $(this).closest('a.image-popup-trigger').unbind('click');
           $('.record.large-image-layout').addClass('no-image-layout').removeClass('large-image-layout');
-          $('.large-image-sidebar').addClass('visible-xs');
+          $('.large-image-sidebar').addClass('visible-xs visible-sm');
           $('.record-main').addClass('mainbody left');
           var href = $(this).parent().attr('href');
           $(this).parent().attr({'href': href.split('#')[0], 'title': ''});
