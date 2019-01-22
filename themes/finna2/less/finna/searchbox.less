@@ -199,7 +199,20 @@
     display: flex;
     align-items: center;
     .disabled {
-      color: mix(@finna-search-background, contrast(@finna-search-background), 50%);
+      > a {
+        background-color: transparent;
+        border: 2px solid mix(@finna-search-background, contrast(@finna-search-background), 50%);
+        > .fa {
+          color: mix(@finna-search-background, contrast(@finna-search-background), 50%);
+        }
+      }
+    }
+    li > a {
+      font-size: 20px;
+      border-radius: 50%;
+      .fa {
+        color: white;
+      }
     }
   }
   .search-tooltip {
