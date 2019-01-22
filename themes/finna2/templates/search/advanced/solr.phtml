@@ -1,21 +1,21 @@
 <!-- START of: finna - search/advanced/solr.phtml -->
 <?php if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
 <?php
-    if (isset($this->saved) && is_object($this->saved)) {
-      $searchFilters = $this->saved->getParams()->getFilterList(true);
-      $checkboxFilters = $this->saved->getParams()->getCheckboxFacets();
-      $usedCheckboxFilters = [];
-      foreach ($checkboxFilters as $filter) {
-          if ($filter['selected']) {
-              array_push($usedCheckboxFilters, $filter);
-          }
-      }
-      // Remove date range filter (search_daterange_mv) and geographic filters so that
-      // they don't get included in the list of active filters
-      $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
-      $searchFilters = $this->saved->getParams()->removeGeographicFilters($searchFilters);
-      $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
+  if (isset($this->saved) && is_object($this->saved)) {
+    $searchFilters = $this->saved->getParams()->getFilterList(true);
+    $checkboxFilters = $this->saved->getParams()->getCheckboxFacets();
+    $usedCheckboxFilters = [];
+    foreach ($checkboxFilters as $filter) {
+        if ($filter['selected']) {
+            array_push($usedCheckboxFilters, $filter);
+        }
     }
+    // Remove date range filter (search_daterange_mv) and geographic filters so that
+    // they don't get included in the list of active filters
+    $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
+    $searchFilters = $this->saved->getParams()->removeGeographicFilters($searchFilters);
+    $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
+  }
 ?>
   <div>
     <h4><?=$this->transEsc('Limit To')?></h4>
@@ -42,16 +42,16 @@
                     <?php endforeach; ?>
                   <?php else: ?>
                     <?php
-                    // Sort the current facet list alphabetically; we'll use this data
-                    // along with the foreach below to display facet options in the
-                    // correct order.
-                    $sorted = [];
-                    foreach ($list['list'] as $i => $value) {
-                      if (!empty($value['displayText'])) {
-                        $sorted[$i] = $value['displayText'];
+                      // Sort the current facet list alphabetically; we'll use this data
+                      // along with the foreach below to display facet options in the
+                      // correct order.
+                      $sorted = [];
+                      foreach ($list['list'] as $i => $value) {
+                        if (!empty($value['displayText'])) {
+                          $sorted[$i] = $value['displayText'];
+                        }
                       }
-                    }
-                    natcasesort($sorted);
+                      natcasesort($sorted);
                     ?>
                     <?php foreach ($sorted as $i => $display): ?>
                       <?php $value = $list['list'][$i]; ?>
@@ -79,18 +79,7 @@
     <?php endif; ?>
   </div>
 <?php endif; ?>
-<div aria-hidden="true" class="search-map-container">
-  <div>
-    <h4><?=$this->transEsc('Geographical Area') ?></h4>
-  </div>
-  <div class="map-container">
-    <fieldset class="well map">
-      <legend class="sr-only"><?=$this->transEsc('Geographical Area') ?></legend>
-      <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $this->searchClassId, 'saved' => $this->saved])?>
-      <div class="information information-geo bg-info"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_map')?></p></div>
-    </fieldset>
-  </div>
-</div>
+<?=$this->render('search/advanced/map.phtml', ['searchClassId' => $this->searchClassId, 'saved' => $this->saved])?>
 <?php if (isset($this->illustratedLimit)): ?>
   <fieldset>
     <legend><?=$this->transEsc("Illustrated")?>:</legend>
