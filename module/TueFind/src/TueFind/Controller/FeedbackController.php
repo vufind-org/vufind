@@ -1,6 +1,8 @@
 <?php
 
 namespace TueFind\Controller;
+
+use VuFind\Exception\Mail as MailException;
 use Zend\Mail\Address;
 
 class FeedbackController extends \VuFind\Controller\FeedbackController
@@ -21,14 +23,13 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
-
             if (empty($view->email) || empty($view->comments)) {
                 $this->flashMessenger()->addMessage('bulk_error_missing', 'error');
                 return;
             }
 
             // These settings are set in the feedback settion of your config.ini
-            $config = $this->serviceLocator->get('VuFind\Config')
+            $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $site = isset($config->Site) ? $config->Site : null;
@@ -44,7 +45,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 ? $feedback->sender_name : 'VuFind Feedback';
             if ($recipient_email == null) {
                 throw new \Exception(
-                    'Feedback Module Error: Recipient Email Unset (see config.ini)'
+                    'Feedback Module Error: Recipient Email Unset (see local_overrides)'
                 );
             }
 
@@ -57,11 +58,10 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $email_message .= "Cookies:        " . htmlentities($this->getRequest()->getCookie()->getFieldValue()) . "\n";
             $email_message .= "----------------------------------------------------------------------------------------------\n\n";
 
-
             // This sets up the email to be sent
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer = $this->serviceLocator->get('VuFind\Mailer');
+                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
                 $mailer->send(
                     new Address($recipient_email, $recipient_name),
                     new Address($sender_email, $sender_name),

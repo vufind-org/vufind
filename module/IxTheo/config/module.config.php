@@ -2,6 +2,73 @@
 namespace Ixtheo\Module\Config;
 
 $config = [
+    'router' => [
+        'routes' => [
+            'classification' => [
+                'type' => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/classification[/:notation]',
+                    'constraints' => [
+                        'notation' => '[a-zA-Z][a-zA-Z]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Classification',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'controllers' => [
+        'factories' => [
+            'IxTheo\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
+            'IxTheo\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'IxTheo\Controller\ClassificationController' => 'VuFind\Controller\AbstractBaseFactory',
+            'IxTheo\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'IxTheo\Controller\RecordController' => 'VuFind\Controller\RecordControllerFactory',
+            'IxTheo\Controller\Search\KeywordChainSearchController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'Alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
+            'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
+            'Browse' => 'IxTheo\Controller\BrowseController',
+            'browse' => 'IxTheo\Controller\BrowseController',
+            'classification' => 'IxTheo\Controller\ClassificationController',
+            'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
+            'Keywordchainsearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
+            'MyResearch' => 'IxTheo\Controller\MyResearchController',
+            'myresearch' => 'IxTheo\Controller\MyResearchController',
+            'Record' => 'IxTheo\Controller\RecordController',
+            'record' => 'IxTheo\Controller\RecordController',
+        ],
+    ],
+    'controller_plugins' => [
+        'factories' => [
+            'subscriptions' => 'IxTheo\Controller\Plugin\Factory::getSubscriptions',
+            'pdasubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
+        ]
+    ],
+    'service_manager' => [
+        'factories' => [
+            'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
+            'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
+            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
+            'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
+            'VuFind\Db\Row\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\Table\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+        ],
+        'aliases' => [
+            'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
+            'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
+            'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
+            'VuFind\Search\Params\PluginManager' => 'IxTheo\Search\Params\PluginManager',
+            'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
+        ],
+    ],
     'vufind' => [
         'plugin_managers' => [
             'auth' => [
@@ -56,73 +123,6 @@ $config = [
                     'Similar' => null,
                     'TOC' => null,
                     'UserComments' => null,
-                ],
-            ],
-        ],
-    ],
-    'controllers' => [
-        'factories' => [
-            'IxTheo\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
-            'IxTheo\Controller\BrowseController' => 'VuFind\Controller\BrowseControllerFactory',
-            'IxTheo\Controller\ClassificationController' => 'VuFind\Controller\AbstractBaseFactory',
-            'IxTheo\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
-            'IxTheo\Controller\RecordController' => 'VuFind\Controller\RecordControllerFactory',
-            'IxTheo\Controller\Search\KeywordChainSearchController' => 'VuFind\Controller\AbstractBaseFactory',
-        ],
-        'aliases' => [
-            'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
-            'browse' => 'IxTheo\Controller\BrowseController',
-            'classification' => 'IxTheo\Controller\ClassificationController',
-            'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
-            'Keywordchainsearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
-            'MyResearch' => 'IxTheo\Controller\MyResearchController',
-            'record' => 'IxTheo\Controller\RecordController',
-        ],
-    ],
-    'controller_plugins' => [
-        'factories' => [
-            'subscriptions' => 'IxTheo\Controller\Plugin\Factory::getSubscriptions',
-            'pdasubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
-        ]
-    ],
-    'service_manager' => [
-        //note: TueFind\ContentBlock\PluginManager needs to be configured here!
-        //      Overriding in TueFind module config won't work!
-        'factories' => [
-            'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
-            'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
-            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
-            'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
-            'VuFind\Db\Row\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Db\Table\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-        ],
-        'aliases' => [
-            'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
-            'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
-            'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
-            'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
-            'VuFind\Search\Params\PluginManager' => 'IxTheo\Search\Params\PluginManager',
-            'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
-        ],
-    ],
-    'router' => [
-        'routes' => [
-            'classification' => [
-                'type' => 'Zend\Router\Http\Segment',
-                'options' => [
-                    'route'    => '/classification[/:notation]',
-                    'constraints' => [
-                        'notation' => '[a-zA-Z][a-zA-Z]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Classification',
-                        'action'     => 'Home',
-                    ],
                 ],
             ],
         ],
