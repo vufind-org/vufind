@@ -2,21 +2,25 @@
 
 namespace TueFind\Mailer;
 
+use Interop\Container\ContainerInterface;
+
 class Factory extends \VuFind\Mailer\Factory {
 
-    /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $sm Service manager
-     *
-     * @return mixed
-     */
-    public function createService(\Zend\ServiceManager\ServiceLocatorInterface $sm)
-    {
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+
         // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new Mailer($this->getTransport($config), $sm);
+        $class = new $requestedName($this->getTransport($config), $container);
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }

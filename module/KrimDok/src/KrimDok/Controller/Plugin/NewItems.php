@@ -1,12 +1,7 @@
 <?php
 namespace KrimDok\Controller\Plugin;
 
-use \Zend\ServiceManager\ServiceLocatorAwareTrait;
-use \Zend\ServiceManager\ServiceLocatorAwareInterface;
-
-class NewItems extends \VuFind\Controller\Plugin\NewItems implements ServiceLocatorAwareInterface {
-
-    use ServiceLocatorAwareTrait;
+class NewItems extends \VuFind\Controller\Plugin\NewItems {
 
     /**
      * - This function is needed to raise the limit from perPage * resultPages (e.g. 200)
@@ -22,12 +17,15 @@ class NewItems extends \VuFind\Controller\Plugin\NewItems implements ServiceLoca
      * @param \VuFind\Search\Solr\Params                 $params  Solr parameters
      * @param string                                     $range   Range setting
      * @param string                                     $dept    Department setting
-     * @param \Zend\Mvc\Controller\Plugin\FlashMessenger $flash   Flash messenger
+     * @param FlashMessenger             $flash   Flash messenger
      *
      * @return array
      */
     public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
     {
+        // The code always pulls in enough catalog results to get a fixed number
+        // of pages worth of Solr results.  Note that if the Solr index is out of
+        // sync with the ILS, we may see fewer results than expected.
         $resultPages = $this->getResultPages();
         $perPage = $params->getLimit();
         $maxResultSize = $perPage * $resultPages;

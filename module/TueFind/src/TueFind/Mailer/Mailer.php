@@ -1,17 +1,17 @@
 <?php
 namespace TueFind\Mailer;
 
-use \VuFind\Exception\Mail as MailException;
+use VuFind\Exception\Mail as MailException;
+use Interop\Container\ContainerInterface;
 
 class Mailer extends \VuFind\Mailer\Mailer {
 
-    protected $sm;
+    protected $container;
 
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport, \Zend\ServiceManager\ServiceManager $sm)
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport, ContainerInterface $container)
     {
         parent::__construct($transport);
-        $this->sm = $sm;
-
+        $this->container = $container;
     }
 
     /**
@@ -29,7 +29,7 @@ class Mailer extends \VuFind\Mailer\Mailer {
      */
     public function send($to, $from, $subject, $body, $cc = null, $reply_to = null)
     {
-        $config = $this->sm->get('VuFind\Config')->get('config');
+        $config = $this->container->get('VuFind\Config')->get('config');
         $email = $config->Site->email;
         $email_from = $config->Site->email_from;
 
@@ -55,28 +55,22 @@ class Mailer extends \VuFind\Mailer\Mailer {
      * @see VuFind\Controller\AbstractBase->translate
      */
     public function translate($msg, $tokens = [], $default = null) {
-        return $this->sm->get('ViewRenderer')->plugin('translate')->__invoke($msg, $tokens, $default);
+        return $this->container->get('ViewRenderer')->plugin('translate')->__invoke($msg, $tokens, $default);
     }
 
     /*
      * Assemble the complete message but do not yet send it
      * @return The Mail message
      */
-    function assembleMail($to, $from, $subject, $body, $cc = null, $reply_to = null) {
-         if ($to instanceof AddressList) {
-            $recipients = $to;
-        } else if ($to instanceof Address) {
-            $recipients = new AddressList();
-            $recipients->add($to);
-        } else {
-            $recipients = $this->stringToAddressList($to);
-        }
+    function assembleMail($to, $from, $subject, $body, $cc = null, $replyTo = null) {
+        $recipients = $this->convertToAddressList($to);
+        $replyTo = $this->convertToAddressList($replyTo);
 
         // Validate email addresses:
-        if ($this->maxRecipients > 0
-            && $this->maxRecipients < count($recipients)
-        ) {
-            throw new MailException('Too Many Email Recipients');
+        if ($this->maxRecipients > 0) {
+            if ($this->maxRecipients < count($recipients)) {
+                throw new MailException('Too Many Email Recipients');
+            }
         }
         $validator = new \Zend\Validator\EmailAddress();
         if (count($recipients) == 0) {
@@ -87,11 +81,32 @@ class Mailer extends \VuFind\Mailer\Mailer {
                 throw new MailException('Invalid Recipient Email Address');
             }
         }
+        foreach ($replyTo as $current) {
+            if (!$validator->isValid($current->getEmail())) {
+                throw new MailException('Invalid Reply-To Email Address');
+            }
+        }
         $fromEmail = ($from instanceof Address)
             ? $from->getEmail() : $from;
         if (!$validator->isValid($fromEmail)) {
             throw new MailException('Invalid Sender Email Address');
         }
+
+        if (!empty($this->fromAddressOverride)
+            && $this->fromAddressOverride != $fromEmail
+        ) {
+            $replyTo->add($fromEmail);
+            if (!($from instanceof Address)) {
+                $from = new Address($from);
+            }
+            $name = $from->getName();
+            if (!$name) {
+                list($fromPre) = explode('@', $from->getEmail());
+                $name = $fromPre ? $fromPre : null;
+            }
+            $from = new Address($this->fromAddressOverride, $name);
+        }
+
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Assemble message
@@ -99,11 +114,12 @@ class Mailer extends \VuFind\Mailer\Mailer {
                 ->addFrom($from)
                 ->addTo($recipients)
                 ->setBody($body)
-                ->setSubject($subject)
-                ->setReplyTo(!is_null($reply_to) ? $reply_to : $from);
-
+                ->setSubject($subject);
             if ($cc !== null) {
                 $message->addCc($cc);
+            }
+            if ($replyTo) {
+                $message->addReplyTo($replyTo);
             }
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
