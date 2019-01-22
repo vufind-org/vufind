@@ -17,16 +17,66 @@
 .finna-filters {
   color: @filterContent-text-color;
   padding: 5px 0 5px 0;
-  .checkbox label {
-    display: inline-block;
-    padding: 10px 0px;
-    @media (max-width: @screen-sm-min) {
-      float: right;
-      padding: 0px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  width: 100%;
+  .filter-options {
+    display: flex;
+    @media (min-width: @screen-md-min) {
+      padding-right: 10px;
+      align-items: flex-start;
     }
+    @media (max-width: @screen-md-min) {
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .filters-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      text-transform: uppercase;
+      color: @filterContent-text-color;
+      font-weight: bold;
+      height: 40px;
+      padding: 0;
+      @media (max-width: @screen-md-min) {
+        font-size: 80%;
+        display: flex !important
+      }
+    }
+    .checkbox {
+      display: flex;
+      align-items: center;
+      padding-left: 0;
+      padding-right: 0;
+      margin: 0;
+      height: 40px;
+      label {
+        @media (max-width: @screen-xxs) {
+          font-size: 80%;
+        }
+        display: inline-block;
+        padding: 10px 0px;
+      } 
+    }
+  }
+  .filters {
+    width: 100%;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
   }
   .filters-term {
     font-size: 0.8em
+  }
+
+  .filter-title-group {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    flex-wrap: wrap;
   }
   .filter-value {
     padding: 5px 10px;
@@ -35,19 +85,18 @@
     background: @filters-background-color;
     color: @filters-text-color;
     border-radius: @border-radius-large;
-    white-space: nowrap;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    max-height: 30px;
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
     a {
       color: @filters-icon-color;
       margin: 4px;
-    }
-  }
-  .checkbox {
-    display: inline;
-    padding-left: 0;
-    padding-right: 0;
-    @media (min-width: @screen-sm-min) {
-      padding-right: 20px;
     }
   }
 }
@@ -63,29 +112,23 @@
   }
 }
 
-.filters-toggle-bar {
-  line-height: 40px;
-  .filters-toggle {
-    cursor: pointer;
-    text-transform: uppercase;
-    float: left;
-    color: @filterContent-text-color;
-    font-weight: bold;
-    i {
-      vertical-align: middle;
-      margin-top: -5px;
-    }
+.filters {
+  &.filters-bar {
+    max-width: 100%;
   }
 }
 
 @media (max-width: @screen-sm) {
+  .filters {
+    width: 100%;
+  }
   .filters-title, .filter-value {
     font-size: 80%;
   }
-  .filters-toggle, .retain-filters {
-    font-size: 90%;
-  }
   .finna-filters .retain-filters .checkbox label:before {
     font-size: 15px;
+  }
+  .filter-value {
+    max-width: 100%;
   }
 }

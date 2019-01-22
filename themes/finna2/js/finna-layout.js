@@ -885,16 +885,34 @@ finna.layout = (function finnaLayout() {
   }
 
   function initFiltersToggle () {
+    if ($(window).width() <= 991) {
+      $('.finna-filters .filters').addClass('hidden');
+    }
+
+    $(window).resize(function checkFiltersEnabled(){
+      if ($(window).width() > 991 && $('.finna-filters .filters').hasClass('hidden')) {
+        $('.finna-filters .filters').removeClass('hidden');
+      }
+    });
+
     $('.filters-toggle').click(function filterToggleClicked(e) {
       var finnaFilters = $(e.target).closest('.finna-filters');
-      var filtersBar = finnaFilters.find('.filters-bar');
-      if (filtersBar.hasClass('hidden')) {
-        filtersBar.removeClass('hidden');
+      var filters = finnaFilters.find('.filters');
+      if (filters.hasClass('hidden')) {
+        filters.removeClass('hidden');
         finnaFilters.find('.fa-arrow-down').removeClass('fa-arrow-down').addClass('fa-arrow-up');
       } else {
-        filtersBar.addClass('hidden');
+        filters.addClass('hidden');
         finnaFilters.find('.fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
       }
+    });
+  }
+
+  function initFiltersCheckbox() {
+    $('#filter-checkbox').change(function setCheckboxClass(){
+      $('.finna-filters .checkbox').toggleClass('checked');
+      var sort = $(this).closest('form').find('input[name=sort]');
+      sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');
     });
   }
 
@@ -1003,6 +1021,7 @@ finna.layout = (function finnaLayout() {
       initKeyboardNavigation();
       initPriorityNav();
       initFiltersToggle();
+      initFiltersCheckbox();
       initCookieConsent();
     }
   };
