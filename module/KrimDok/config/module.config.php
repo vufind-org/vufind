@@ -4,13 +4,22 @@ namespace KrimDok\Module\Config;
 $config = [
     'controllers' => [
         'factories' => [
-            'browse' => 'KrimDok\Controller\Factory::getBrowseController',
-            'help' => 'KrimDok\Controller\Factory::getHelpController',
+            'KrimDok\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'KrimDok\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'Browse' => 'KrimDok\Controller\BrowseController',
+            'browse' => 'KrimDok\Controller\BrowseController',
+            'Help' => 'KrimDok\Controller\HelpController',
+            'help' => 'KrimDok\Controller\HelpController',
         ],
     ],
     'controller_plugins' => [
         'factories' => [
-            'newitems' => 'KrimDok\Controller\Plugin\Factory::getNewItems',
+            'KrimDok\Controller\Plugin\NewItems' => 'KrimDok\Controller\Plugin\Factory::getNewItems',
+        ],
+        'aliases' => [
+            'newItems' => 'KrimDok\Controller\Plugin\NewItems',
         ],
     ],
     'service_manager' => [
