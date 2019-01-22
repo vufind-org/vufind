@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'daia' => 'VuFind\ILS\Driver\DAIA',
         'demo' => 'VuFind\ILS\Driver\Demo',
         'evergreen' => 'VuFind\ILS\Driver\Evergreen',
+        'folio' => 'VuFind\ILS\Driver\Folio',
         'horizon' => 'VuFind\ILS\Driver\Horizon',
         'horizonxmlapi' => 'VuFind\ILS\Driver\HorizonXMLAPI',
         'innovative' => 'VuFind\ILS\Driver\Innovative',
@@ -86,6 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',
         'VuFind\ILS\Driver\Evergreen' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
+        'VuFind\ILS\Driver\Folio' => 'VuFind\ILS\Driver\FolioFactory',
         'VuFind\ILS\Driver\Horizon' =>
             'VuFind\ILS\Driver\DriverWithDateConverterFactory',
         'VuFind\ILS\Driver\HorizonXMLAPI' =>
