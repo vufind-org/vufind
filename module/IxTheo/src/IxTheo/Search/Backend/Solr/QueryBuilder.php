@@ -28,6 +28,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
         $result = parent::build($query);
         $result->set('q', $newQuery);
         $query->setString($queryString);
+        $result->set('defType', 'bibleRangeParser');
         return $result;
     }
 
@@ -54,7 +55,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
             // if no bible references were found for given query, search for a range which doesn't exist to get no result.
             $bibleReferences = ["99999999_99999999"];
         }
-        $searchString = "{!bibleRangeParser}" . implode(',', $bibleReferences);
+        $searchString = implode(',', $bibleReferences);
         return $searchString;
     }
 

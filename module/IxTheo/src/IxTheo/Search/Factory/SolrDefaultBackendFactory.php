@@ -14,27 +14,6 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Create the SOLR backend.
-     *
-     * @param Connector $connector Connector
-     *
-     * @return Backend
-     */
-    protected function createBackend(Connector $connector)
-    {
-        $backend = new Backend($connector);
-        $backend->setQueryBuilder($this->createQueryBuilder());
-        $backend->setSimilarBuilder($this->createSimilarBuilder());
-        if ($this->logger) {
-            $backend->setLogger($this->logger);
-        }
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
-        $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
-        $backend->setRecordCollectionFactory($factory);
-        return $backend;
-    }
-
-    /**
      * Create the SOLR connector
      * Set the language code
      *
@@ -43,7 +22,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     protected function createConnector()
     {
         $config = $this->config->get($this->mainConfig);
-
+        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
         $current_lang = $this->getTranslatorLocale();
 
         // On the Solr side we use different naming scheme
@@ -55,8 +34,10 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
         $handlers = [
             'select' => [
                 'fallback' => true,
-                'defaults' => ['fl' => '*,score', 'lang' => $current_lang],
-                'appends'  => ['fq' => [], 'defType' => 'multiLanguageQueryParser', 'df' => 'allfields'],
+                'defaults' => ['fl' => '*,score', 'lang' => $current_lang,
+                               'defType' => 'multiLanguageQueryParser', 'df' => 'allfields'
+                              ],
+                'appends'  => ['fq' => []],
             ],
             'term' => [
                 'functions' => ['terms'],
