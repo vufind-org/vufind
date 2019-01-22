@@ -63,7 +63,8 @@ class NavibarFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get('VuFind\Config\PluginManager')->get('navibar'),
-            $container->get('Finna\OrganisationInfo\OrganisationInfo')
+            $container->get('Finna\OrganisationInfo\OrganisationInfo'),
+            $container->get('Router')
         );
     }
 }
