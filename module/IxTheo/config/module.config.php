@@ -45,8 +45,6 @@ $config = [
         ]
     ],
     'service_manager' => [
-        //note: TueFind\ContentBlock\PluginManager needs to be configured here!
-        //      Overriding in TueFind module config won't work!
         'factories' => [
             'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
@@ -54,14 +52,12 @@ $config = [
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
             'VuFind\Db\Row\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
-            'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
