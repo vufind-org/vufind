@@ -51,10 +51,13 @@ $config = [
         ],
         'aliases' => [
             'acquisition_request' => 'TueFind\Controller\AcquisitionRequestController',
+            'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
+            'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
+            'Search' => 'TueFind\Controller\SearchController',
             'search' => 'TueFind\Controller\SearchController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
         ],
