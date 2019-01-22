@@ -1,6 +1,6 @@
 <?php
 namespace TueFind\Controller;
-use Zend\ServiceManager\ServiceLocatorInterface;
+
 
 class AjaxController extends \VuFind\Controller\AjaxController
 {
@@ -10,11 +10,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct(\VuFind\AjaxHandler\PluginManager $am)
     {
         // Add notices to a key in the output
         set_error_handler(['TueFind\Controller\AjaxController', "storeError"]);
-        parent::__construct($sm);
+        parent::__construct($am);
     }
 
 
