@@ -25,9 +25,9 @@
   & > .facet:first-child { border-top: 1px solid @list-group-border; }
 }
 
-
 .facet,
-.facet-group .title {
+.facet-group .title,
+.facet-load-indicator {
   display: flex;
   padding: .5rem;
   width: 100%;
@@ -51,7 +51,8 @@
     padding-left: 0.5rem;
   }
 }
-.facet {
+.facet-group .facet,
+.facet-load-indicator {
   border-bottom: 1px solid @list-group-border;
 }
 .facet-group .title {
@@ -94,9 +95,12 @@
   border: 1px solid @list-group-border;
 }
 
+.checkboxFilter {
+  padding-bottom: 0.5rem;
+}
 .checkbox-filter {
-  display: block;
-  padding-bottom: 1rem;
+  display: flex;
+  width: 100%;
   font-weight: bold;
   color: @text-color;
 }
