@@ -274,13 +274,17 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 //Finna mixins
 .truncate-field {
     overflow: hidden;
+    display: none;
+    &.truncate-done {
+        display: block;
+    }
 }
 .less-link i, .less-link-top i {
     padding-top: 2px;
     vertical-align: middle;
 }
 .more-link, .less-link, .less-link-top {
-    cursor: default;
+    cursor: pointer;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.9em;
