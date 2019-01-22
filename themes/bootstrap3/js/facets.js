@@ -149,6 +149,25 @@ function collapseTopFacets() {
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
+  function showLoadingOverlay(e, data) {
+    e.preventDefault();
+    var overlay = '<div class="facet-loading-overlay">'
+      + '<span class="facet-loading-overlay-label">' + VuFind.translate('loading')
+      + "...</span></div>";
+    $(this).closest(".collapse").append(overlay);
+    // This callback operates both as a click handler and a JSTree callback;
+    // if the data element is undefined, we assume we are handling a click.
+    var href = typeof data === "undefined" || typeof data.node.data.url === "undefined"
+      ? $(this).attr('href') : data.node.data.url;
+    window.location.assign(href);
+    return false;
+  }
+
+  function activateFacetBlocking(context) {
+    var finalContext = (typeof context === "undefined") ? $(document.body) : context;
+    finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(showLoadingOverlay);
+  }
+
   function facetSessionStorage(e) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
@@ -161,11 +180,8 @@ VuFind.register('sideFacets', function SideFacets() {
   }
 
   function init() {
-    // Advanced facets
-    $('a.facet:not(.narrow-toggle),.facet a').click(function facetBlocking() {
-      $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-      window.location.assign($(this).attr('href'));
-    });
+    // Display "loading" message after user clicks facet:
+    activateFacetBlocking();
 
     // Side facet status saving
     $('.facet-group .collapse').each(function openStoredFacets(index, item) {
@@ -189,7 +205,7 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
   }
 
-  return { init: init };
+  return { init: init, showLoadingOverlay: showLoadingOverlay };
 });
 
 /* --- Lightbox Facets --- */
