@@ -300,6 +300,7 @@
   <requestDispatcher handleSelect="true" >
     <!--Make sure your system has some authentication before enabling remote streaming!  -->
     <requestParsers enableRemoteStreaming="false" 
+                    enableStreamBody="true"
                     multipartUploadLimitInKB="2048"
                     formdataUploadLimitInKB="2048"/>
         
