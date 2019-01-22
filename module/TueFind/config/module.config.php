@@ -24,6 +24,19 @@ $config = [
                     ],
                 ],
             ],
+            'static-page' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/:page",
+                    'constraints' => [
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'StaticPage',
+                        'action'     => 'staticPage',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -64,20 +77,6 @@ $config = [
             'VuFind\Mailer' => 'TueFind\Mailer\Factory',
         ],
     ],
-];
-
-$config['router']['routes']['static-page'] = [
-    'type'    => 'Zend\Router\Http\Segment',
-    'options' => [
-        'route'    => "/:page",
-        'constraints' => [
-            'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-        ],
-        'defaults' => [
-            'controller' => 'StaticPage',
-            'action'     => 'staticPage',
-        ]
-    ]
 ];
 
 $recordRoutes = [];

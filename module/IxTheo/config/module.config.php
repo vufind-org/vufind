@@ -2,60 +2,19 @@
 namespace Ixtheo\Module\Config;
 
 $config = [
-    'vufind' => [
-        'plugin_managers' => [
-            'auth' => [
-                'invokables' => [
-                    'database' => 'IxTheo\Auth\Database',
-                ],
-            ],
-            'autocomplete' => [
-                'factories' => [
-                    'solr' => 'IxTheo\Autocomplete\Factory::getSolr',
-                ],
-            ],
-            'db_table' => [
-                'factories' => [
-                    'tags' => 'IxTheo\Db\Table\Factory::getTags',
-                ],
-            ],
-            'recommend' => [
-                'invokables' => [
-                    'bibleranges' => 'IxTheo\Recommend\BibleRanges',
-                ],
-            ],
-            'recorddriver' => [
-                'factories' => [
-                    'solrdefault' => 'IxTheo\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'IxTheo\RecordDriver\Factory::getSolrMarc',
-                ],
-            ],
-            'search_options' => [
-                'factories' => [
-                    'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
-                    'Subscriptions' => 'IxTheo\Search\Options\Factory::getSubscriptions',
-                ],
-            ],
-            'search_results' => [
-                'factories' => [
-                    'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
-                    'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
-                ],
-            ],
-        ],
-        'recorddriver_tabs' => [
-            'VuFind\RecordDriver\SolrMarc' => [
-                'tabs' => [
-                    // Disable certain tabs (overwrite value with null)
-                    'Excerpt' => null,
-                    'HierarchyTree' => null,
-                    'Holdings' => null,
-                    'Map' => null,
-                    'Preview' => null,
-                    'Reviews' => null,
-                    'Similar' => null,
-                    'TOC' => null,
-                    'UserComments' => null,
+    'router' => [
+        'routes' => [
+            'classification' => [
+                'type' => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/classification[/:notation]',
+                    'constraints' => [
+                        'notation' => '[a-zA-Z][a-zA-Z]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Classification',
+                        'action'     => 'Home',
+                    ],
                 ],
             ],
         ],
@@ -110,19 +69,60 @@ $config = [
             'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
         ],
     ],
-    'router' => [
-        'routes' => [
-            'classification' => [
-                'type' => 'Zend\Router\Http\Segment',
-                'options' => [
-                    'route'    => '/classification[/:notation]',
-                    'constraints' => [
-                        'notation' => '[a-zA-Z][a-zA-Z]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Classification',
-                        'action'     => 'Home',
-                    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'auth' => [
+                'invokables' => [
+                    'database' => 'IxTheo\Auth\Database',
+                ],
+            ],
+            'autocomplete' => [
+                'factories' => [
+                    'solr' => 'IxTheo\Autocomplete\Factory::getSolr',
+                ],
+            ],
+            'db_table' => [
+                'factories' => [
+                    'tags' => 'IxTheo\Db\Table\Factory::getTags',
+                ],
+            ],
+            'recommend' => [
+                'invokables' => [
+                    'bibleranges' => 'IxTheo\Recommend\BibleRanges',
+                ],
+            ],
+            'recorddriver' => [
+                'factories' => [
+                    'solrdefault' => 'IxTheo\RecordDriver\Factory::getSolrDefault',
+                    'solrmarc' => 'IxTheo\RecordDriver\Factory::getSolrMarc',
+                ],
+            ],
+            'search_options' => [
+                'factories' => [
+                    'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
+                    'Subscriptions' => 'IxTheo\Search\Options\Factory::getSubscriptions',
+                ],
+            ],
+            'search_results' => [
+                'factories' => [
+                    'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
+                    'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
+                ],
+            ],
+        ],
+        'recorddriver_tabs' => [
+            'VuFind\RecordDriver\SolrMarc' => [
+                'tabs' => [
+                    // Disable certain tabs (overwrite value with null)
+                    'Excerpt' => null,
+                    'HierarchyTree' => null,
+                    'Holdings' => null,
+                    'Map' => null,
+                    'Preview' => null,
+                    'Reviews' => null,
+                    'Similar' => null,
+                    'TOC' => null,
+                    'UserComments' => null,
                 ],
             ],
         ],
