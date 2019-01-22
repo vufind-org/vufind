@@ -26,12 +26,15 @@ $config = [
         'factories' => [
             'KrimDok\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'KrimDok\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'KrimDok\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
             'VuFind\ILSDriverPluginManager' => 'KrimDok\ILS\Driver\PluginManager',
             'VuFind\ILS\Driver\PluginManager' => 'KrimDok\ILS\Driver\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'KrimDok\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'KrimDok\RecordDriver\PluginManager',
+            'VuFind\SearchParamsPluginManager' => 'KrimDok\Search\Params\PluginManager',
+            'VuFind\Search\Params\PluginManager' => 'KrimDok\Search\Params\PluginManager',
         ],
     ],
     'vufind' => [
@@ -41,9 +44,6 @@ $config = [
                     'solrdefault' => 'KrimDok\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'KrimDok\RecordDriver\Factory::getSolrMarc'
                 ],
-            ],
-            'search_params' => [
-                'abstract_factories' => ['KrimDok\Search\Params\PluginFactory'],
             ],
         ],
         'recorddriver_tabs' => [
