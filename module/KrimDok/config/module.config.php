@@ -38,14 +38,6 @@ $config = [
         ],
     ],
     'vufind' => [
-        'plugin_managers' => [
-            'recorddriver' => [
-                'factories' => [
-                    'solrdefault' => 'KrimDok\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'KrimDok\RecordDriver\Factory::getSolrMarc'
-                ],
-            ],
-        ],
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
