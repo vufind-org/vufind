@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e36f3f6d18574567c8552e9a687ab41",
+    "content-hash": "94edc553071f73a08d55f201460442cb",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1854,7 +1854,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -2160,16 +2160,16 @@
         },
         {
             "name": "vufind-org/vufindcode",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindcode.git",
-                "reference": "3a0a7628b7422e32a1313108f7aa972488c95e01"
+                "reference": "c95683bbe2ed5259a807669fd3d0f58ad24964fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/3a0a7628b7422e32a1313108f7aa972488c95e01",
-                "reference": "3a0a7628b7422e32a1313108f7aa972488c95e01",
+                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/c95683bbe2ed5259a807669fd3d0f58ad24964fe",
+                "reference": "c95683bbe2ed5259a807669fd3d0f58ad24964fe",
                 "shasum": ""
             },
             "require": {
@@ -2203,7 +2203,7 @@
             ],
             "description": "Class for representing ISBNs (a VuFind support library)",
             "homepage": "https://vufind.org/",
-            "time": "2018-05-23T18:48:59+00:00"
+            "time": "2019-01-22T14:41:47+00:00"
         },
         {
             "name": "vufind-org/vufinddate",
@@ -3082,23 +3082,23 @@
         },
         {
             "name": "zendframework/zend-form",
-            "version": "2.13.0",
+            "version": "2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-form.git",
-                "reference": "c713a12ccbd43148b71c9339e171ca11e3f8a1da"
+                "reference": "afab173513e6930aa8ae86cc755e3b2d4874d6f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-form/zipball/c713a12ccbd43148b71c9339e171ca11e3f8a1da",
-                "reference": "c713a12ccbd43148b71c9339e171ca11e3f8a1da",
+                "url": "https://api.github.com/repos/zendframework/zend-form/zipball/afab173513e6930aa8ae86cc755e3b2d4874d6f6",
+                "reference": "afab173513e6930aa8ae86cc755e3b2d4874d6f6",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.6 || ^7.0",
                 "zendframework/zend-hydrator": "^1.1 || ^2.1 || ^3.0",
                 "zendframework/zend-inputfilter": "^2.8",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
+                "zendframework/zend-stdlib": "^3.2.1"
             },
             "require-dev": {
                 "doctrine/annotations": "~1.0",
@@ -3130,8 +3130,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.13.x-dev",
-                    "dev-develop": "2.14.x-dev"
+                    "dev-master": "2.14.x-dev",
+                    "dev-develop": "2.15.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Form",
@@ -3156,26 +3156,26 @@
                 "form",
                 "zf"
             ],
-            "time": "2018-12-11T22:51:29+00:00"
+            "time": "2019-01-07T21:38:04+00:00"
         },
         {
             "name": "zendframework/zend-http",
-            "version": "2.8.2",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-http.git",
-                "reference": "2c8aed3d25522618573194e7cc51351f8cd4a45b"
+                "reference": "7027fa2f70f8f9865ec14728cea05087a5f4d9c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/2c8aed3d25522618573194e7cc51351f8cd4a45b",
-                "reference": "2c8aed3d25522618573194e7cc51351f8cd4a45b",
+                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/7027fa2f70f8f9865ec14728cea05087a5f4d9c0",
+                "reference": "7027fa2f70f8f9865ec14728cea05087a5f4d9c0",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.6 || ^7.0",
                 "zendframework/zend-loader": "^2.5.1",
-                "zendframework/zend-stdlib": "^3.1 || ^2.7.7",
+                "zendframework/zend-stdlib": "^3.2.1",
                 "zendframework/zend-uri": "^2.5.2",
                 "zendframework/zend-validator": "^2.10.1"
             },
@@ -3190,8 +3190,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8.x-dev",
-                    "dev-develop": "2.9.x-dev"
+                    "dev-master": "2.9.x-dev",
+                    "dev-develop": "2.10.x-dev"
                 }
             },
             "autoload": {
@@ -3211,7 +3211,7 @@
                 "zend",
                 "zf"
             ],
-            "time": "2018-08-13T18:47:03+00:00"
+            "time": "2019-01-08T16:41:31+00:00"
         },
         {
             "name": "zendframework/zend-hydrator",
@@ -4780,7 +4780,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/zendframework/ZendRest/zipball/7427d242b4546e5aef1206d2c97e402109d8843e",
                 "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-                "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
@@ -4794,10 +4794,10 @@
                     "ZendRest": "library/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": " ",
             "homepage": "http://packages.zendframework.com/",
             "keywords": [
                 "rest",
@@ -4918,16 +4918,16 @@
         },
         {
             "name": "zendframework/zendxml",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendXml.git",
-                "reference": "267db6a2c431a08a8f8ff0f1f4c302a5ba6f5b99"
+                "reference": "8159bcc1c440df36a788ec3609ba02174911c508"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/ZendXml/zipball/267db6a2c431a08a8f8ff0f1f4c302a5ba6f5b99",
-                "reference": "267db6a2c431a08a8f8ff0f1f4c302a5ba6f5b99",
+                "url": "https://api.github.com/repos/zendframework/ZendXml/zipball/8159bcc1c440df36a788ec3609ba02174911c508",
+                "reference": "8159bcc1c440df36a788ec3609ba02174911c508",
                 "shasum": ""
             },
             "require": {
@@ -4960,7 +4960,7 @@
                 "xml",
                 "zf"
             ],
-            "time": "2018-04-30T15:11:04+00:00"
+            "time": "2019-01-22T18:18:29+00:00"
         },
         {
             "name": "zf-commons/zfc-rbac",
