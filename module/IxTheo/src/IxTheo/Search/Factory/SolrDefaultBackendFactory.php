@@ -13,6 +13,28 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+     /**
+     * Create the SOLR backend.
+     *
+     * @param Connector $connector Connector
+     *
+     * @return Backend
+     */
+    protected function createBackend(Connector $connector)
+    {
+        $backend = new Backend($connector);
+        $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setSimilarBuilder($this->createSimilarBuilder());
+        if ($this->logger) {
+            $backend->setLogger($this->logger);
+        }
+        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
+        $backend->setRecordCollectionFactory($factory);
+        return $backend;
+    }
+
+
     /**
      * Create the SOLR connector
      * Set the language code
