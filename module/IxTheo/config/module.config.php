@@ -88,18 +88,6 @@ $config = [
                     'bibleranges' => 'IxTheo\Recommend\BibleRanges',
                 ],
             ],
-            'search_options' => [
-                'factories' => [
-                    'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
-                    'Subscriptions' => 'IxTheo\Search\Options\Factory::getSubscriptions',
-                ],
-            ],
-            'search_results' => [
-                'factories' => [
-                    'pdasubscriptions' => 'IxTheo\Search\Results\Factory::getPDASubscriptions',
-                    'Subscriptions' => 'IxTheo\Search\Results\Factory::getSubscriptions',
-                ],
-            ],
         ],
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\SolrMarc' => [
