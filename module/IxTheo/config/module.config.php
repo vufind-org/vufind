@@ -54,10 +54,12 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFind\AuthManager' => 'IxTheo\Auth\Factory::getManager',
             'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
             'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
+
+            'IxTheo\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
+            'IxTheo\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -67,6 +69,10 @@ $config = [
             'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
+            'VuFind\AuthManager' => 'IxTheo\Auth\Manager',
+            'VuFind\Auth\Manager' => 'IxTheo\Auth\Manager',
+            'VuFind\AuthPluginManager' => 'IxTheo\Auth\PluginManager',
+            'VuFind\Auth\PluginManager' => 'IxTheo\Auth\PluginManager',
             'VuFind\Autocomplete\PluginManager' => 'IxTheo\Autocomplete\PluginManager',
             'VuFind\DbRowPluginManager' => 'IxTheo\Db\Row\PluginManager',
             'VuFind\Db\Row\PluginManager' => 'IxTheo\Db\Row\PluginManager',
@@ -81,11 +87,6 @@ $config = [
     ],
     'vufind' => [
         'plugin_managers' => [
-            'auth' => [
-                'invokables' => [
-                    'database' => 'IxTheo\Auth\Database',
-                ],
-            ],
             'recommend' => [
                 'invokables' => [
                     'bibleranges' => 'IxTheo\Recommend\BibleRanges',
