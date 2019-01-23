@@ -4,8 +4,6 @@
 
 namespace IxTheo;
 
-use Zend\Config\Config;
-
 class Export extends \VuFind\Export
 {
     /**
@@ -61,7 +59,7 @@ class Export extends \VuFind\Export
      */
     public function useExportOutputAsParameter($format)
     {
-         return isset($this->exportConfig->$format->useExportOutputAsParameter);
+        return isset($this->exportConfig->$format->useExportOutputAsParameter);
     }
 
 
