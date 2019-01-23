@@ -49,7 +49,7 @@
         "zendframework/zend-feed": "2.10.3",
         "zendframework/zend-filter": "2.9.1",
         "zendframework/zend-form": "2.14.0",
-        "zendframework/zend-http": "2.9.0",
+        "zendframework/zend-http": "2.9.1",
         "zendframework/zend-i18n": "2.9.0",
         "zendframework/zend-loader": "2.6.0",
         "zendframework/zend-log": "2.10.0",
