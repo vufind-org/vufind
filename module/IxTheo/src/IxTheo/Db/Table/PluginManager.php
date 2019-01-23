@@ -18,10 +18,12 @@ class PluginManager extends \VuFind\Db\Table\PluginManager {
         $this->aliases['IxTheoUser']                        = 'IxTheo\Db\Table\IxTheoUser';
         $this->aliases['pdasubscription']                   = 'IxTheo\Db\Table\PDASubscription';
         $this->aliases['subscription']                      = 'IxTheo\Db\Table\Subscription';
+        $this->aliases['tags']                              = 'IxTheo\Db\Table\Tags';
 
         $this->factories['IxTheo\Db\Table\IxTheoUser']      = 'VuFind\Db\Table\GatewayFactory';
         $this->factories['IxTheo\Db\Table\PDASubscription'] = 'VuFind\Db\Table\GatewayFactory';
         $this->factories['IxTheo\Db\Table\Subscription']    = 'VuFind\Db\Table\GatewayFactory';
+        $this->factories['IxTheo\Db\Table\Tags']            = 'VuFind\Db\Table\CaseSensitiveTagsFactory';
 
         $this->addAbstractFactory('IxTheo\Db\Table\PluginFactory');
         return parent::__construct($configOrContainerInstance, $v3config);

@@ -86,11 +86,6 @@ $config = [
                     'database' => 'IxTheo\Auth\Database',
                 ],
             ],
-            'db_table' => [
-                'factories' => [
-                    'tags' => 'IxTheo\Db\Table\Factory::getTags',
-                ],
-            ],
             'recommend' => [
                 'invokables' => [
                     'bibleranges' => 'IxTheo\Recommend\BibleRanges',
