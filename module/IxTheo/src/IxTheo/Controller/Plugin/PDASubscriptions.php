@@ -14,11 +14,20 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  */
 class PDASubscriptions extends AbstractPlugin
 {
+    protected $mailer;
+    protected $dbTableManager;
+    protected $recordLoader;
+    protected $config;
+    protected $renderer;
 
-    protected $pm;
-
-    public function __construct(\Zend\Mvc\Controller\PluginManager $pm) {
-        $this->pm = $pm;
+    public function __construct(\IxTheo\Db\Table\PluginManager $dbTableManager, \TueFind\Mailer\Mailer $mailer,
+                                \VuFind\Record\Loader $recordLoader, \VuFind\Config\PluginManager $config,
+                                \Zend\View\Renderer\PhpRenderer $renderer) {
+        $this->dbTableManager = $dbTableManager;
+        $this->mailer = $mailer;
+        $this->recordLoader = $recordLoader;
+        $this->config = $config;
+        $this->renderer = $renderer;
     }
 
 
@@ -60,11 +69,11 @@ class PDASubscriptions extends AbstractPlugin
     }
 
     function getUserData($userId) {
-       $userTable = $this->pm->getServiceLocator()->get('Vufind\DbTablePluginManager')->get('User');
+       $userTable = $this->dbTableManager->get('User');
        $select = $userTable->getSql()->select()->where(['id' => $userId]);
 
        $userRow = $userTable->selectWith($select)->current();
-       $ixtheoUserTable = $this->pm->getServiceLocator()->get('Vufind\DbTablePluginManager')->get('IxTheoUser');
+       $ixtheoUserTable = $this->dbTableManager->get('IxTheoUser');
        $ixtheoSelect = $ixtheoUserTable->getSql()->select()->where(['id' => $userId]);
        $ixtheoUserRow = $ixtheoUserTable->selectWith($ixtheoSelect)->current();
        $userData = [ 'title' => $ixtheoUserRow->title != "Other" ? $ixtheoUserRow->title . " " : "",
@@ -103,7 +112,7 @@ class PDASubscriptions extends AbstractPlugin
      */
     function sendEmail($recipientEmail, $recipientName, $senderEmail, $senderName, $emailSubject, $emailMessage) {
         try {
-            $mailer = $this->pm->getServiceLocator()->get('VuFind\Mailer');
+            $mailer = $this->mailer;
             $recipients = $this->constructAddress($recipientEmail, $recipientName);
             $mailer->setMaxRecipients(3);
             $mailer->send(
@@ -146,7 +155,7 @@ class PDASubscriptions extends AbstractPlugin
 
 
     function getBookInformation($id) {
-        $recordLoader = $this->pm->getServiceLocator()->get('VuFind\RecordLoader');
+        $recordLoader = $this->recordLoader;
         $driver = $recordLoader->load($id, 'Solr', false);
         $year = $driver->getPublicationDates()[0];
         $isbn = $driver->getISBNs()[0];
@@ -161,7 +170,7 @@ class PDASubscriptions extends AbstractPlugin
      * @param $realm category e.g. ixtheo, relbib
      */
     function getPDASenderData($realm) {
-        $config = $this->pm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->config->get('config');
         $site = isset($config->Site) ? $config->Site : null;
         $pda_sender = 'pda_sender_' . $realm;
         $pda_sender_name = 'pda_sender_name';
@@ -171,7 +180,7 @@ class PDASubscriptions extends AbstractPlugin
     }
 
     function getPDAInstitutionRecipientData($realm) {
-        $config = $this->pm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $this->config->get('config');
         $site = isset($config->Site) ? $config->Site : null;
         $pda_email = 'pda_email_' . $realm;
         $email = isset($site->$pda_email) ? $site->$pda_email : null;
@@ -191,7 +200,7 @@ class PDASubscriptions extends AbstractPlugin
         $bookInformation = $this->controller->translate("Book Information") . ":\r\n" . $this->getBookInformation($id) . "\r\n\r\n";
         $opening = $this->controller->translate("Dear") . " " . $userData[0] . ",\r\n\r\n" .
                    $this->controller->translate("you triggered a PDA order") . ".\r\n";
-        $renderer = $this->pm->getServiceLocator()->get('ViewRenderer');
+        $renderer = $this->renderer;
         $infoText = $renderer->render($this->controller->forward()->dispatch('StaticPage', array(
             'action' => 'staticPage',
             'page' => 'PDASubscriptionMailInfoText'

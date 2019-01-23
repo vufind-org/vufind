@@ -138,7 +138,6 @@ class RecordController extends \VuFind\Controller\RecordController
             'action' => 'staticPage',
             'page' => 'PDASubscriptionInfoText'
         ));
-        $fields = $driver->fields;
         $bookDescription = $driver->getAuthorsAsString() . ": " .
                            $driver->getTitle() .  ($driver->getYear() != "" ? "(" . $driver->getYear() . ")" : "") .
                            ", ISBN: " . $driver->getISBNs()[0];

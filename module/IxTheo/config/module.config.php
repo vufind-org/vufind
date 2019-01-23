@@ -45,11 +45,13 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'IxTheo\Controller\Plugin\Subscriptions' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'IxTheo\Controller\Plugin\PDASubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
+            'IxTheo\Controller\Plugin\PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptionsFactory',
         ],
         'aliases' => [
             'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
             'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
+            'Subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+            'PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
         ],
     ],
     'service_manager' => [
@@ -79,7 +81,6 @@ $config = [
             'VuFind\DbTablePluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Export' => 'IxTheo\Export',
-            'VuFind\Mailer\Mailer' => 'IxTheo\Mailer\Mailer',
             'VuFind\RecommendPluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
