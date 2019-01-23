@@ -54,8 +54,6 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFind\Export' => 'IxTheo\Service\Factory::getExport',
-            'VuFind\Mailer' => 'IxTheo\Mailer\Factory',
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
 
             'IxTheo\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
@@ -63,6 +61,7 @@ $config = [
             'IxTheo\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Export' => 'VuFind\ExportFactory',
             'IxTheo\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -79,6 +78,8 @@ $config = [
             'VuFind\Db\Row\PluginManager' => 'IxTheo\Db\Row\PluginManager',
             'VuFind\DbTablePluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\Db\Table\PluginManager',
+            'VuFind\Export' => 'IxTheo\Export',
+            'VuFind\Mailer\Mailer' => 'IxTheo\Mailer\Mailer',
             'VuFind\RecommendPluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
