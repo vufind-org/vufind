@@ -50,6 +50,8 @@ $config = [
         'aliases' => [
             'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
             'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
+            'Subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+            'PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
         ],
     ],
     'service_manager' => [
@@ -79,7 +81,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Export' => 'IxTheo\Export',
-            'VuFind\Mailer\Mailer' => 'IxTheo\Mailer\Mailer',
+            'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecommendPluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
