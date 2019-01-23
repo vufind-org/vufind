@@ -63,6 +63,7 @@ $config = [
             'IxTheo\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -78,6 +79,8 @@ $config = [
             'VuFind\Db\Row\PluginManager' => 'IxTheo\Db\Row\PluginManager',
             'VuFind\DbTablePluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\Db\Table\PluginManager',
+            'VuFind\RecommendPluginManager' => 'IxTheo\Recommend\PluginManager',
+            'VuFind\Recommend\PluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
@@ -86,13 +89,6 @@ $config = [
         ],
     ],
     'vufind' => [
-        'plugin_managers' => [
-            'recommend' => [
-                'invokables' => [
-                    'bibleranges' => 'IxTheo\Recommend\BibleRanges',
-                ],
-            ],
-        ],
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
