@@ -34,19 +34,8 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
     overflow-x: hidden; /* Prevent scroll on narrow devices */
     transition: margin .5s;
   }
-  .offcanvas-overlay { cursor: pointer; }
-  .offcanvas-left {
-    .sidebar { left: -$offcanvas-offset; }
-    .offcanvas-overlay { right: -100%; }
-    .offcanvas-toggle { left: 0; }
-  }
-  .offcanvas-right {
-    .sidebar { right: -$offcanvas-offset; }
-    .offcanvas-overlay { left: -100%; }
-    .offcanvas-toggle { right: 0; }
-  }
   .offcanvas-overlay {
-    display: block;
+    display: none;
     position: fixed;
     top: 0;
     width: 100%;
@@ -55,6 +44,17 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
     z-index: 3;
     opacity: 0;
     transition: opacity .5s;
+    cursor: pointer;
+  }
+  .offcanvas-left {
+    .sidebar { left: -$offcanvas-offset; }
+    .offcanvas-overlay { right: -100%; display: block; }
+    .offcanvas-toggle { left: 0; }
+  }
+  .offcanvas-right {
+    .sidebar { right: -$offcanvas-offset; }
+    .offcanvas-overlay { left: -100%; display: block; }
+    .offcanvas-toggle { right: 0; }
   }
   .offcanvas .sidebar {
     position: fixed;
