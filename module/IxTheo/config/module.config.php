@@ -91,12 +91,6 @@ $config = [
                     'bibleranges' => 'IxTheo\Recommend\BibleRanges',
                 ],
             ],
-            'recorddriver' => [
-                'factories' => [
-                    'solrdefault' => 'IxTheo\RecordDriver\Factory::getSolrDefault',
-                    'solrmarc' => 'IxTheo\RecordDriver\Factory::getSolrMarc',
-                ],
-            ],
             'search_options' => [
                 'factories' => [
                     'PDASubscriptions' => 'IxTheo\Search\Options\Factory::getPDASubscriptions',
