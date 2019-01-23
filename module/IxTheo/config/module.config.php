@@ -44,9 +44,13 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'subscriptions' => 'IxTheo\Controller\Plugin\Factory::getSubscriptions',
-            'pdasubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
-        ]
+            'IxTheo\Controller\Plugin\Subscriptions' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\Controller\Plugin\PDASubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
+        ],
+        'aliases' => [
+            'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+            'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
+        ],
     ],
     'service_manager' => [
         'factories' => [

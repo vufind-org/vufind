@@ -8,9 +8,4 @@ class Factory
     {
         return new PDASubscriptions($sm);
     }
-
-    public static function getSubscriptions()
-    {
-        return new Subscriptions();
-    } 
 }
