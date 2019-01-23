@@ -130,7 +130,7 @@ VuFind.register('account', function Account() {
       _submodules[name] = typeof module == 'function' ? module() : module;
     }
     var $el = $(_submodules[name].selector);
-    if ($el) {
+    if ($el.length > 0) {
       $el.removeClass("hidden");
       _statuses[name] = LOADING;
       _load(name);
