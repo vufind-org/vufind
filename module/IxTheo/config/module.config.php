@@ -56,12 +56,14 @@ $config = [
             'VuFind\Search\BackendManager' => 'IxTheo\Search\BackendManagerFactory',
             'VuFind\Db\Row\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
+            'VuFind\Autocomplete\PluginManager' => 'IxTheo\Autocomplete\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'IxTheo\RecordDriver\PluginManager',
             'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
@@ -74,11 +76,6 @@ $config = [
             'auth' => [
                 'invokables' => [
                     'database' => 'IxTheo\Auth\Database',
-                ],
-            ],
-            'autocomplete' => [
-                'factories' => [
-                    'solr' => 'IxTheo\Autocomplete\Factory::getSolr',
                 ],
             ],
             'db_table' => [

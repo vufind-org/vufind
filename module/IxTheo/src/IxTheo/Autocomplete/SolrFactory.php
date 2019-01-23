@@ -3,7 +3,7 @@
 namespace IxTheo\Autocomplete;
 use Zend\ServiceManager\ServiceManager;
 
-class Factory
+class SolrFactory extends \VuFind\Autocomplete\SolrFactory
 {
     /**
      * Construct the Solr plugin.
