@@ -44,8 +44,8 @@ $config = [
             'TueFind\Controller\AcquisitionRequestController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
-            'TueFind\Controller\PDAProxyController' => 'TueFind\Controller\PDAProxyControllerFactory',
-            'TueFind\Controller\ProxyController' => 'TueFind\Controller\ProxyControllerFactory',
+            'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
