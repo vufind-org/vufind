@@ -45,7 +45,7 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'subscriptions' => 'IxTheo\Controller\Plugin\Factory::getSubscriptions',
-            'pdasubscriptions' => 'IxTheo\Controller\Plugin\Factory::getPDASubscriptions',
+            'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptionsFactory',
         ]
     ],
     'service_manager' => [
