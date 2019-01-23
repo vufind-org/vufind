@@ -81,7 +81,6 @@ $config = [
             'VuFind\DbTablePluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Db\Table\PluginManager' => 'IxTheo\Db\Table\PluginManager',
             'VuFind\Export' => 'IxTheo\Export',
-            'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecommendPluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'IxTheo\Recommend\PluginManager',
             'VuFind\RecordDriverPluginManager' => 'IxTheo\RecordDriver\PluginManager',
