@@ -1,7 +1,8 @@
 <?php
 
 namespace IxTheo\Autocomplete;
-use Zend\ServiceManager\ServiceManager;
+
+use Interop\Container\ContainerInterface;
 
 class SolrFactory extends \VuFind\Autocomplete\SolrFactory
 {
