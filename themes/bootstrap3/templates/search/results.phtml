@@ -63,8 +63,8 @@
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-        <a class="search-filter-toggle visible-xs" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
-          <?=$this->transEsc('Narrow Search') ?>
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+          <?=$this->transEsc('Refine Results') ?>
         </a>
       <?php else: ?>
         <h2><?=$this->transEsc('nohit_heading')?></h2>
@@ -132,7 +132,7 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Narrow Search Options */ ?>
-<div class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
   <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
     <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
