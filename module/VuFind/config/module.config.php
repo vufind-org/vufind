@@ -393,7 +393,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
             'VuFindSearch\Service' => 'VuFind\Service\Factory::getSearchService',
             'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
-            'Zend\Mvc\I18n\Translator' => 'VuFind\Service\Factory::getTranslator',
+            'Zend\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
         'initializers' => [
