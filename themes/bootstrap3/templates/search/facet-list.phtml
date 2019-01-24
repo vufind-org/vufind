@@ -11,6 +11,7 @@
     $searchAction .= urlencode($this->baseUriExtra);
     $urlBase .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
   }
+  $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
 <?php if (count($this->sortOptions) > 1): ?>

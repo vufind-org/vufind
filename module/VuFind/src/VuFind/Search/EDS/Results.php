@@ -57,12 +57,12 @@ class Results extends \VuFind\Search\Base\Results
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();
 
-            //Add a publication date facet
+            // Add a publication date facet
             $this->responseFacets[] = [
-                        'fieldName' => 'PublicationDate',
-                        'displayName' => 'PublicationDate',
-                        'displayText' => 'Publication Date',
-                        'counts' => []
+                'fieldName' => 'PublicationDate',
+                'displayName' => 'PublicationDate',
+                'displayText' => 'Publication Date',
+                'counts' => []
             ];
 
             // Construct record drivers for all the items in the response:

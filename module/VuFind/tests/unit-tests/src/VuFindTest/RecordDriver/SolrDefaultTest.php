@@ -55,6 +55,18 @@ class SolrDefaultTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test a snippet caption.
+     *
+     * @return void
+     */
+    public function testGetSnippetCaption()
+    {
+        $config = ['Snippet_Captions' => ['foo' => 'bar']];
+        $driver = $this->getDriver([], $config);
+        $this->assertEquals('bar', $driver->getSnippetCaption('foo'));
+    }
+
+    /**
      * Test an OpenURL for an article.
      *
      * @return void
@@ -118,13 +130,77 @@ XML;
     }
 
     /**
+     * Test getContainerRecordID for a record.
+     *
+     * @return void
+     */
+    public function testGetContainerRecordID()
+    {
+        $this->assertEquals("", $this->getDriver()->getContainerRecordID());
+    }
+
+    /**
+     * Test getChildRecordCount for a record.
+     *
+     * @return void
+     */
+    public function testGetChildRecordCount()
+    {
+        $this->assertEquals(0, $this->getDriver()->getChildRecordCount());
+    }
+
+    /**
+     * Test getHighlightedTitle for a record.
+     *
+     * @return void
+     */
+    public function testGetHighlightedTitle()
+    {
+        $this->assertEquals("", $this->getDriver()->getHighlightedTitle());
+    }
+
+    /**
+     * Test getHighlightedSnippet for a record.
+     *
+     * @return void
+     */
+    public function testGetHighlightedSnippet()
+    {
+        $this->assertEquals(false, $this->getDriver()->getHighlightedSnippet());
+    }
+
+    /**
+     * Test HighlightDetails for a record.
+     *
+     * @return void
+     */
+    public function testHighlightDetails()
+    {
+        $details['author'] = 'test';
+        $driver = $this->getDriver();
+        $driver->setHighlightDetails($details);
+        $this->assertEquals($details, $driver->getHighlightDetails());
+    }
+
+    /**
+     * Test getRawAuthorHighlights for a record.
+     *
+     * @return void
+     */
+    public function testGetRawAuthorHighlights()
+    {
+        $this->assertEquals([], $this->getDriver()->getRawAuthorHighlights());
+    }
+
+    /**
      * Get a record driver with fake data.
      *
-     * @param array $overrides Fixture fields to override.
+     * @param array $overrides    Fixture fields to override.
+     * @param array $searchConfig Search configuration.
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = [], $searchConfig = [])
     {
         $fixture = json_decode(
             file_get_contents(
@@ -135,7 +211,7 @@ XML;
             true
         );
 
-        $record = new SolrDefault();
+        $record = new SolrDefault(null, null, new \Zend\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

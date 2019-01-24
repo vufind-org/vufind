@@ -210,4 +210,82 @@ class UserResource extends Gateway
         $result = $statement->execute();
         return (array)$result->current();
     }
+
+    /**
+     * Get a list of duplicate rows (this sometimes happens after merging IDs,
+     * for example after a Summon resource ID changes).
+     *
+     * @return mixed
+     */
+    public function getDuplicates()
+    {
+        $callback = function ($select) {
+            $select->columns(
+                [
+                    'resource_id' => new Expression(
+                        'MIN(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'list_id' => new Expression(
+                        'MIN(?)', ['list_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'user_id' => new Expression(
+                        'MIN(?)', ['user_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'cnt' => new Expression(
+                        'COUNT(?)', ['resource_id'], [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'id' => new Expression(
+                        'MIN(?)', ['id'], [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
+            $select->group(['resource_id', 'list_id', 'user_id']);
+            $select->having('COUNT(resource_id) > 1');
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
+     *
+     * @return void
+     */
+    public function deduplicate()
+    {
+        foreach ($this->getDuplicates() as $dupe) {
+            // Do this as a transaction to prevent odd behavior:
+            $connection = $this->getAdapter()->getDriver()->getConnection();
+            $connection->beginTransaction();
+
+            // Merge notes together...
+            $mainCriteria = [
+                'resource_id' => $dupe['resource_id'],
+                'list_id' => $dupe['list_id'],
+                'user_id' => $dupe['user_id'],
+            ];
+            $dupeRows = $this->select($mainCriteria);
+            $notes = [];
+            foreach ($dupeRows as $row) {
+                if (!empty($row['notes'])) {
+                    $notes[] = $row['notes'];
+                }
+            }
+            $this->update(
+                ['notes' => implode(' ', $notes)],
+                ['id' => $dupe['id']]
+            );
+            // Now delete extra rows...
+            $callback = function ($select) use ($dupe, $mainCriteria) {
+                // match on all relevant IDs in duplicate group
+                $select->where($mainCriteria);
+                // getDuplicates returns the minimum id in the set, so we want to
+                // delete all of the duplicates with a higher id value.
+                $select->where->greaterThan('id', $dupe['id']);
+            };
+            $this->delete($callback);
+
+            // Done -- commit the transaction:
+            $connection->commit();
+        }
+    }
 }

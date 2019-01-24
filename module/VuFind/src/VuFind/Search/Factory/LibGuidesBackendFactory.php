@@ -102,8 +102,7 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $defaultSearch = isset($this->libGuidesConfig->General->defaultSearch)
-            ? $this->libGuidesConfig->General->defaultSearch : null;
+        $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(), $defaultSearch
         );
@@ -120,20 +119,20 @@ class LibGuidesBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         // Load credentials:
-        $iid = isset($this->libGuidesConfig->General->iid)
-            ? $this->libGuidesConfig->General->iid : null;
+        $iid = $this->libGuidesConfig->General->iid ?? null;
 
         // Pick version:
-        $ver = isset($this->libGuidesConfig->General->version)
-            ? $this->libGuidesConfig->General->version : 1;
+        $ver = $this->libGuidesConfig->General->version ?? 1;
+
+        // Get base URI, if available:
+        $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFindHttp\HttpService')
-            ->createClient();
-        $timeout = isset($this->libGuidesConfig->General->timeout)
-            ? $this->libGuidesConfig->General->timeout : 30;
+            ->createClient($baseUrl);
+        $timeout = $this->libGuidesConfig->General->timeout ?? 30;
         $client->setOptions(['timeout' => $timeout]);
-        $connector = new Connector($iid, $client, $ver);
+        $connector = new Connector($iid, $client, $ver, $baseUrl);
         $connector->setLogger($this->logger);
         return $connector;
     }

@@ -74,6 +74,7 @@ CREATE TABLE `resource` (
   `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
+  `extra_metadata` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -192,7 +193,7 @@ CREATE TABLE `user` (
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,
-  `cat_pass_enc` varchar(170) DEFAULT NULL,
+  `cat_pass_enc` varchar(255) DEFAULT NULL,
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',
@@ -259,8 +260,8 @@ CREATE TABLE `user_card` (
   `user_id` int(11) NOT NULL,
   `card_name` varchar(255) NOT NULL DEFAULT '',
   `cat_username` varchar(50) NOT NULL DEFAULT '',
-  `cat_password` varchar(50) DEFAULT NULL,
-  `cat_pass_enc` varchar(110) DEFAULT NULL,
+  `cat_password` varchar(70) DEFAULT NULL,
+  `cat_pass_enc` varchar(255) DEFAULT NULL,
   `home_library` varchar(100) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
