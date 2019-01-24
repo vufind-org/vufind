@@ -1,6 +1,6 @@
 <?php
 /**
- * ZF2 module definition for the VuFind theme system.
+ * Module definition for the VuFind theme system.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFindTheme;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
- * ZF2 module definition for the VuFind theme system.
+ * Module definition for the VuFind theme system.
  *
  * @category VuFind
  * @package  Theme
@@ -84,20 +84,23 @@ class Module
     {
         return [
             'factories' => [
-                'VuFindTheme\View\Helper\HeadThemeResources' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
-                'VuFindTheme\View\Helper\ImageLink' =>
-                    'VuFindTheme\View\Helper\Factory::getImageLink',
-                'Zend\View\Helper\HeadLink' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadLink',
-                'Zend\View\Helper\HeadScript' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadScript',
-                'Zend\View\Helper\InlineScript' =>
-                    'VuFindTheme\View\Helper\Factory::getInlineScript',
+                View\Helper\HeadThemeResources::class =>
+                    View\Helper\HeadThemeResourcesFactory::class,
+                View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
+                View\Helper\HeadLink::class =>
+                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\HeadScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\InlineScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
             ],
             'aliases' => [
-                'headThemeResources' => 'VuFindTheme\View\Helper\HeadThemeResources',
-                'imageLink' => 'VuFindTheme\View\Helper\ImageLink',
+                'headThemeResources' => View\Helper\HeadThemeResources::class,
+                'imageLink' => View\Helper\ImageLink::class,
+                \Zend\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
+                \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
+                \Zend\View\Helper\InlineScript::class =>
+                    View\Helper\InlineScript::class,
             ],
         ];
     }
