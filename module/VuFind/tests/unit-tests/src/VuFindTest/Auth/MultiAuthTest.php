@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\MultiAuth;
 use Zend\Config\Config;
 
 /**

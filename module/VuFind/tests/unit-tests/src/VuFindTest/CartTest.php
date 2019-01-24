@@ -73,11 +73,11 @@ class CartTest extends \PHPUnit\Framework\TestCase
      * @return CookieManager
      */
     protected function getMockCookieManager($cookies = [], $path = '/',
-        $domain = null, $secure = false
+        $domain = null, $secure = false, $httpOnly = false
     ) {
         return $this->getMockBuilder('VuFind\Cookie\CookieManager')
             ->setMethods(['set'])
-            ->setConstructorArgs([$cookies, $path, $domain, $secure])
+            ->setConstructorArgs([$cookies, $path, $domain, $secure, $httpOnly])
             ->getMock();
     }
 

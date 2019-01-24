@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'libraryh3lp' => 'VuFind\Recommend\Libraryh3lp',
         'mapselection' => 'VuFind\Recommend\MapSelection',
         'sidefacets' => 'VuFind\Recommend\SideFacets',
+        'sidefacetsdeferred' => 'VuFind\Recommend\SideFacetsDeferred',
         'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
         'openlibrarysubjectsdeferred' =>
             'VuFind\Recommend\OpenLibrarySubjectsDeferred',
@@ -123,6 +124,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'VuFind\Recommend\MapSelection' =>
             'VuFind\Recommend\Factory::getMapSelection',
         'VuFind\Recommend\SideFacets' => 'VuFind\Recommend\Factory::getSideFacets',
+        'VuFind\Recommend\SideFacetsDeferred'
+            => 'VuFind\Recommend\Factory::getSideFacetsDeferred',
         'VuFind\Recommend\OpenLibrarySubjects' =>
             'Zend\ServiceManager\Factory\InvokableFactory',
         'VuFind\Recommend\OpenLibrarySubjectsDeferred' =>

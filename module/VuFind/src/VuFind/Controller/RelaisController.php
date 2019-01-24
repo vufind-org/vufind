@@ -64,7 +64,7 @@ class RelaisController extends AbstractBase
             . '&dest=discovery&group=patron&PI='
             . urlencode($patron['cat_username']);
         if (!empty($q)) {
-            $url .= '&query=' . urlencode($q);
+            $url .= '&query=' . rawurlencode($q);
         }
         return $this->redirect()->toUrl($url);
     }
