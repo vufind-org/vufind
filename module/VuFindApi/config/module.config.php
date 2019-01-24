@@ -12,6 +12,12 @@ $config = [
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFindApi\Formatter\FacetFormatter' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
+        ],
+    ],
     'router' => [
         'routes' => [
             'apiHome' => [

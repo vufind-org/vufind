@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -142,6 +142,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     ];
 
     /**
+     * Available API version
+     *
+     * @var int
+     */
+    protected $apiVersion = 5;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -220,6 +227,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $this->itemStatusMappings = array_merge(
                 $this->itemStatusMappings, $this->config['ItemStatusMappings']
             );
+        }
+
+        if (isset($this->config['Catalog']['api_version'])) {
+            $this->apiVersion = $this->config['Catalog']['api_version'];
         }
 
         // Init session cache for session-specific data
@@ -393,7 +404,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $lastname = '';
         if (!empty($result['names'])) {
             $name = $result['names'][0];
-            list($lastname, $firstname) = explode(', ', $name, 2);
+            $parts = explode(', ', $name, 2);
+            $lastname = $parts[0];
+            $firstname = $parts[1] ?? '';
         }
         return [
             'id' => $result['id'],
@@ -501,18 +514,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
+        $pageSize = $params['limit'] ?? 50;
+        $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
+
         $result = $this->makeRequest(
             ['v3', 'patrons', $patron['id'], 'checkouts'],
             [
-                'limit' => 10000,
-                'offset' => 0,
+                'limit' => $pageSize,
+                'offset' => $offset,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
                     . ',callNumber,barcode'
             ],
@@ -520,7 +537,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $patron
         );
         if (empty($result['entries'])) {
-            return [];
+            return [
+                'count' => $result['total'],
+                'records' => []
+            ];
         }
         $transactions = [];
         foreach ($result['entries'] as $entry) {
@@ -567,7 +587,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $transactions[] = $transaction;
         }
 
-        return $transactions;
+        return [
+            'count' => $result['total'],
+            'records' => $transactions
+        ];
     }
 
     /**
@@ -720,12 +743,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getMyHolds($patron)
     {
+        $fields = 'id,record,frozen,placed,location,pickupLocation,status'
+            . ',recordType,priority,priorityQueueLength';
+        if ($this->apiVersion >= 5) {
+            $fields .= ',pickupByDate';
+        }
         $result = $this->makeRequest(
             ['v3', 'patrons', $patron['id'], 'holds'],
             [
                 'limit' => 10000,
-                'fields' => 'id,record,frozen,placed,location,pickupLocation'
-                    . ',status,recordType,priority,priorityQueueLength'
+                'fields' => $fields
             ],
             'GET',
             $patron
@@ -768,17 +795,24 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $position = $entry['priorityQueueLength'] . ' / '
                     . $entry['priorityQueueLength'];
             } else {
-                $position = ($entry['priority'] + 1) . ' / '
+                $position = $entry['priority'] . ' / '
                     . $entry['priorityQueueLength'];
             }
+            $lastPickup = !empty($entry['pickupByDate'])
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['pickupByDate']
+                ) : '';
             $holds[] = [
                 'id' => $bibId,
                 'requestId' => $this->extractId($entry['id']),
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
-                'location' => $entry['pickupLocation']['name'],
+                // note that $entry['pickupLocation']['name'] may contain misleading
+                // text, so we instead use the code here:
+                'location' => $entry['pickupLocation']['code'],
                 'create' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['placed']
                 ),
+                'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
                 'in_transit' => $entry['status']['code'] == 't',
@@ -804,7 +838,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['item_id'];
+            : $holdDetails['requestId'];
     }
 
     /**
@@ -827,7 +861,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         foreach ($details as $holdId) {
             $result = $this->makeRequest(
-                ['v5', 'patrons', 'holds', $holdId], [], 'DELETE', $patron
+                ['v5', 'patrons', 'holds', $holdId], '', 'DELETE', $patron
             );
 
             if (!empty($result['code'])) {
@@ -1206,6 +1240,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getConfig($function, $params = null)
     {
+        if ('getMyTransactions' === $function) {
+            return [
+                'max_results' => 100
+            ];
+        }
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;
@@ -1399,14 +1438,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function renewAccessToken($patron = false)
     {
         $patronCode = false;
-        if ($patron) {
+        if ($patron && !empty($this->config['Catalog']['redirect_uri'])) {
             // Do a patron login and then perform an authorization grant request
-            if (empty($this->config['Catalog']['redirect_uri'])) {
-                $this->error(
-                    'Catalog/redirect_uri is required for patron authentication'
-                );
-                throw new ILSException('Problem with Sierra REST driver config.');
-            }
             $params = [
                 'client_id' => $this->config['Catalog']['client_key'],
                 'redirect_uri' => $this->config['Catalog']['redirect_uri'],

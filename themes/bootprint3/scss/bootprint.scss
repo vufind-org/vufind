@@ -11,23 +11,23 @@ $active-orange: #E70 !default;
 
 body {
   background: $brand-primary;
-  font-size: 13px
+  font-size: 13px;
 }
 
 #commentList .comment:nth-child(even) { background: $gray-lighter; }
 #dateVisColorSettings { stroke: $brand-primary; }
 #hierarchyRecord { background: #fff; }
 .cart-controls .checkbox { line-height: 2rem; }
+.myresearch-menu a:hover { text-decoration: none; }
 
 /* --- Layout --- */
 .main .container { padding-top: 1rem; }
 .main .sidebar { background-color: #fff; }
-body.offcanvas .sidebar {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
+
 @media (min-width: 768px) {
   .main .sidebar { padding: 0; }
+  .sidebar.left { padding-right: 1rem; }
+  .sidebar.right { padding-left: 1rem;   }
 }
 
 /* --- Header --- */
@@ -82,24 +82,15 @@ footer ul { padding-left: 30px; }
 [id^=list].list-group .col-sm-9 { margin: 0; }
 
 /* --- Channels --- */
+.channel {
+  max-width: 96%;
+  margin-left: 2%;
+  margin-right: 2%;
+}
 .channel,
 .channel-title.no-results { margin-bottom: 2rem; }
 .channel-title { margin-top: 1rem; }
 .channel-title .fa { margin-top: 4px; }
-
-/* --- Offcanvas --- */
-body.offcanvas {
-  .offcanvas-toggle {
-    padding-bottom: 18px;
-    font-size: 16px;
-    background: #fff;
-    box-shadow: 0 0 2px #000;
-    color: $brand-primary;
-  }
-  .sidebar .list-group { color: #000; }
-  &.active .sidebar { color: #FFF; }
-  &.active .offcanvas-toggle { box-shadow: none; }
-}
 
 /* --- Random Items (results view) --- */
 ul.random {
@@ -149,8 +140,9 @@ ul.random.image li img { margin: 0 auto; }
   .facet .badge a { color: #fff; }
 
   .facet.facetOR { padding-left: 1rem; }
-  .facet.excludable { padding-right: 0; }
 }
+.checkboxFilter .facet { padding-left: 1px; }
+
 .slider-container .slider-handle {
   background: $brand-primary;
   border: 1px solid $brand-primary;
@@ -164,5 +156,8 @@ ul.random.image li img { margin: 0 auto; }
   color: #fff;
   &:hover { color: $brand-danger; }
 }
-.jstree-facet .facet { padding: 0; }
+.jstree-facet .facet {
+  padding: 0;
+  padding-right: 10px;
+}
 .jstree-node.active { background-color: $active-orange; }

@@ -64,7 +64,8 @@ class LoaderFactory implements FactoryInterface
         return new $requestedName(
             $container->get('VuFindSearch\Service'),
             $container->get('VuFind\RecordDriver\PluginManager'),
-            $container->get('VuFind\Record\Cache')
+            $container->get('VuFind\Record\Cache'),
+            $container->get('VuFind\Record\FallbackLoader\PluginManager')
         );
     }
 }

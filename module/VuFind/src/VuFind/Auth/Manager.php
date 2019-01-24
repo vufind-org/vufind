@@ -363,6 +363,28 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Is login currently allowed?
+     *
+     * @return bool
+     */
+    public function ajaxEnabled()
+    {
+        // Assume ajax is enabled unless explicitly turned off:
+        return $this->config->Authentication->enableAjax ?? true;
+    }
+
+    /**
+     * Is login currently allowed?
+     *
+     * @return bool
+     */
+    public function dropdownEnabled()
+    {
+        // Assume dropdown is disabled unless explicitly turned on:
+        return $this->config->Authentication->enableDropdown ?? false;
+    }
+
+    /**
      * Log out the current user.
      *
      * @param string $url     URL to redirect user to after logging out.

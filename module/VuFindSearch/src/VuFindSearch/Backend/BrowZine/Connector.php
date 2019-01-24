@@ -88,6 +88,35 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Perform a DOI lookup
+     *
+     * @param string $doi            DOI
+     * @param bool   $includeJournal Include journal data in response?
+     *
+     * @return mixed
+     */
+    public function lookupDoi($doi, $includeJournal = false)
+    {
+        // Documentation says URL encoding of DOI is not necessary.
+        return $this->request(
+            'articles/doi/' . $doi,
+            $includeJournal ? ['include' => 'journal'] : []
+        );
+    }
+
+    /**
+     * Perform an ISSN lookup.
+     *
+     * @param string|array $issns ISSN(s) to look up.
+     *
+     * @return mixed
+     */
+    public function lookupIssns($issns)
+    {
+        return $this->request('search', ['issns' => implode(',', (array)$issns)]);
+    }
+
+    /**
      * Perform a search
      *
      * @param string $query Search query

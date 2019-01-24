@@ -209,7 +209,7 @@ class Holds
 
             $grb = 'getRequestBlocks'; // use variable to shorten line below:
             $blocks
-                = $patron && $this->catalog->checkCapability($grb, compact($patron))
+                = $patron && $this->catalog->checkCapability($grb, compact('patron'))
                 ? $this->catalog->getRequestBlocks($patron) : false;
 
             $mode = $this->catalog->getHoldsMode();
