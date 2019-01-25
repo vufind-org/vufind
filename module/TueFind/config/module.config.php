@@ -49,7 +49,7 @@ $config = [
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
-            'acquisition_request' => 'TueFind\Controller\AcquisitionRequestController',
+            'AcquisitionRequest' => 'TueFind\Controller\AcquisitionRequestController',
             'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
