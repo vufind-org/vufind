@@ -147,7 +147,7 @@ button.list-group-item {
   margin-top: 1em;
 }
 
-.similar-records {
+.similar-records, .work-expressions {
   .list-group-item {
     border: @sidebar-border;
   }
@@ -162,6 +162,19 @@ button.list-group-item {
   }
   @media print {
     display: none;
+  }
+
+  .list-group {
+    .more-link, .less-link, .show-all-link {
+      display: block;
+      margin: 0;
+      padding-top: 5px;
+      color: @gray;
+
+      i {
+        top: 0
+      }
+    }
   }
 }
 

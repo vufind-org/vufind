@@ -82,6 +82,20 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the search service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFindSearch\Service
+     */
+    public static function getSearchService(ServiceManager $sm)
+    {
+        return new \FinnaSearch\Service(
+            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
+        );
+    }
+
+    /**
      * Construct the Location Service.
      *
      * @param ServiceManager $sm Service manager.

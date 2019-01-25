@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library 2015-2018.
+ * Copyright (C) The National Library 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -823,6 +823,16 @@ trait SolrFinna
             );
         }
         return $results;
+    }
+
+    /**
+     * Get work identification keys
+     *
+     * @return array
+     */
+    public function getWorkKeys()
+    {
+        return $this->fields['work_keys_str_mv'] ?? [];
     }
 
     /**

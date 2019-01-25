@@ -55,7 +55,9 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if (($context == 'search' || $context == 'similar') && $params) {
+            if ($params
+                && in_array($context, ['search', 'similar', 'workExpressions'])
+            ) {
                 // Check for a special filter that enables deduplication
                 $fq = $params->get('fq');
                 if ($fq) {
@@ -78,7 +80,14 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
                 }
             }
         }
-        $result = parent::onSearchPre($event);
+        if ($event->getParam('context') === 'workExpressions') {
+            // Handle workExpressions like similar records in the upstream code
+            $event->setParam('context', 'similar');
+            $result = parent::onSearchPre($event);
+            $event->setParam('context', 'workExpressions');
+        } else {
+            $result = parent::onSearchPre($event);
+        }
         $this->enabled = $saveEnabled;
         return $result;
     }
@@ -100,7 +109,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         }
         $context = $event->getParam('context');
         $params = $event->getParam('params');
-        if ($params && ($context == 'search' || $context == 'similar')) {
+        if ($params && in_array($context, ['search', 'similar', 'workExpression'])) {
             if ($params->contains('finna.deduplication', '1')) {
                 $this->enabled = true;
             } elseif ($params->contains('finna.deduplication', '0')) {
@@ -108,7 +117,14 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             }
         }
 
-        $result = parent::onSearchPost($event);
+        if ($event->getParam('context') === 'workExpressions') {
+            // Handle workExpressions like similar records in the upstream code
+            $event->setParam('context', 'similar');
+            $result = parent::onSearchPost($event);
+            $event->setParam('context', 'workExpressions');
+        } else {
+            $result = parent::onSearchPost($event);
+        }
         $this->enabled = $saveEnabled;
         return $result;
     }

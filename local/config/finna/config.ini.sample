@@ -1125,6 +1125,7 @@ hide_holdings[] = "World Wide Web"
 ;    WorldCatEditions - Alternate editions (in the WorldCat index) based on WorldCat
 ;        lookup
 ;    WorldCatSimilar - Similarity based on WorldCat lookup
+;    WorkExpressions - Other expressions or versions of the record
 related[] = "SimilarDeferred"
 
 ; Presenter roles that are displayed separately from other authors

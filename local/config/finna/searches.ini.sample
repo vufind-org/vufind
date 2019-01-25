@@ -629,3 +629,10 @@ lang[] = "eng"
 ;params = "qf=title,title_short,callnumber-label,topic,language,author,publishDate mintf=1 mindf=1";
 ; This setting can be used to limit the maximum number of suggestions. Default is 5.
 ;count = 5
+
+; This section defines settings used to fetch different expressions (versions)
+[WorkExpressions]
+; Number of records displayed by default. Default is 5.
+;count = 5
+; Maximum number of records displayed when clicking the show more link. Default is 30.
+showMoreCount = 30

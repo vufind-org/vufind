@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Related Record Module Factory Class
+ * Work expressions feature interface definition.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,49 +21,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Related_Records
+ * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
+ * @link     https://vufind.org
  */
-namespace Finna\Related;
+namespace FinnaSearch\Feature;
 
-use Zend\ServiceManager\ServiceManager;
+use VuFindSearch\ParamBag;
 
 /**
- * Related Record Module Factory Class
+ * Work expressions feature interface definition.
  *
  * @category VuFind
- * @package  Related_Records
+ * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
- *
- * @codeCoverageIgnore
+ * @link     https://vufind.org
  */
-class Factory
+interface WorkExpressionsInterface
 {
     /**
-     * Factory for Nothing module.
+     * Return work expressions.
      *
-     * @param ServiceManager $sm Service manager.
+     * @param string   $id            Id of record to compare with
+     * @param array    $workKeys      Work identification keys
+     * @param ParamBag $defaultParams Search backend parameters
      *
-     * @return Similar
+     * @return RecordCollectionInterface
      */
-    public static function getNothing(ServiceManager $sm)
-    {
-        return new Nothing();
-    }
-
-    /**
-     * Factory for SimilarDeferred module.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Similar
-     */
-    public static function getSimilarDeferred(ServiceManager $sm)
-    {
-        return new SimilarDeferred();
-    }
+    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null);
 }

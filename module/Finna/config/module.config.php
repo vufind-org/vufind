@@ -245,6 +245,8 @@ $config = [
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
 
+            'FinnaSearch\Service' => 'Finna\Service\Factory::getSearchService',
+
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
 
             'Zend\Session\SessionManager' => 'Finna\Session\ManagerFactory',
@@ -265,6 +267,8 @@ $config = [
             'VuFind\Role\PermissionManager' => 'Finna\Role\PermissionManager',
             'VuFind\Search\Memory' => 'Finna\Search\Memory',
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
+
+            'VuFindSearch\Service' => 'FinnaSearch\Service',
         ]
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
@@ -617,9 +621,15 @@ $config = [
             ],
             'related' => [
                 'factories' => [
-                    'nothing' => 'Finna\Related\Factory::getNothing',
-                    'similardeferred' => 'Finna\Related\Factory::getSimilarDeferred',
+                    'Finna\Related\Nothing' => 'Zend\ServiceManager\Factory\InvokableFactory',
+                    'Finna\Related\SimilarDeferred' => 'Zend\ServiceManager\Factory\InvokableFactory',
+                    'Finna\Related\WorkExpressions' => 'Finna\Related\WorkExpressionsFactory',
                 ],
+                'aliases' =>  [
+                    'nothing' => 'Finna\Related\Nothing',
+                    'similardeferred' => 'Finna\Related\SimilarDeferred',
+                    'workexpressions' => 'Finna\Related\WorkExpressions',
+                ]
             ],
         ],
         'recorddriver_collection_tabs' => [

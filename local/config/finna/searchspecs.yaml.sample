@@ -445,3 +445,9 @@ PublicationPlace:
     publication_place_txt_mv:
       - [and, 100]
       - [or, ~]
+
+WorkKeys:
+  QueryFields:
+    work_keys_str_mv:
+      - [and, 100]
+      - [or, ~]
