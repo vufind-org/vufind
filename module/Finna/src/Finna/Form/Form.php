@@ -240,13 +240,25 @@ class Form extends \VuFind\Form\Form
     {
         $elements = parent::parseConfig($formId, $config);
 
-        // Add help text for sender name & email fields
-        if (!empty($this->formConfig['senderInfoHelp'])) {
-            $help = $this->formConfig['senderInfoHelp'];
-            foreach ($elements as &$el) {
+        if (!empty($this->formConfig['hideSenderInfo'])) {
+            // Remove default sender info fields
+            $filtered = [];
+            foreach ($elements as $el) {
                 if (isset($el['group']) && $el['group'] === '__sender__') {
-                    $el['help'] = $help;
-                    break;
+                    continue;
+                }
+                $filtered[] = $el;
+            }
+            $elements = $filtered;
+        } else {
+            // Add help text for default sender name & email fields
+            if (!empty($this->formConfig['senderInfoHelp'])) {
+                $help = $this->formConfig['senderInfoHelp'];
+                foreach ($elements as &$el) {
+                    if (isset($el['group']) && $el['group'] === '__sender__') {
+                        $el['help'] = $help;
+                        break;
+                    }
                 }
             }
         }
@@ -263,7 +275,9 @@ class Form extends \VuFind\Form\Form
     {
         $fields = parent::getFormSettingFields();
 
-        $fields = array_merge($fields, ['allowLocaloverride', 'senderInfoHelp']);
+        $fields = array_merge(
+            $fields, ['allowLocaloverride', 'hideSenderInfo', 'senderInfoHelp']
+        );
 
         return $fields;
     }

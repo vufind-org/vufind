@@ -25,8 +25,15 @@
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
 #   response (string) Reponse after form submit (translation key)
-#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
-#   senderInfoHelp (string) Info text for sender name/email (translation key)
+#
+#   By default, the form renders input fields for sender name and email address with the
+#   following options:
+#      senderInfoRequired (boolean)  Require sender to fill out name and email fields 
+#      senderInfoHelp (string) Info text for sender name/email (translation key)
+#
+#   If needed, the default sender fields can be hidden (in case they are not needed
+#   or a different set of fields is configured in 'fields' list):
+#      hideSenderInfo (boolean) Hide default sender fields (name & email)
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
@@ -73,6 +80,7 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: false 
     senderInfoHelp: feedback_info
+    hideSenderInfo: false
     #help:
     #  pre: feedback_help_pre
     #  post: feedback_help_post
