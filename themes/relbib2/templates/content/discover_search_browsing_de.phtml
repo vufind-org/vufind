@@ -1,0 +1,50 @@
+<h1 id="anchor">Suchen</h1>
+<p>In RelBib können Sie für Ihre Suchanfrage zwischen zwei verschiedenen Modi wählen: „Einfache Suche“ und „Erweiterte Suche“.</p>
+<h2>Einfache Suche</h2>
+<p>
+   Geben Sie einen Begriff in den Suchschlitz ein und belassen den Suchaspekt auf „Alle Felder“, dann wird der Begriff in allen Suchfeldern gesucht. Über das Auswahlmenü können Sie eine Suche des eingegebenen Begriffs auch in einzelnen Feldern (Titel, Verfasser, DDC, Schlagwort oder ISBN bzw. ISSN) auslösen.</p>
+<p>
+   Die Filtereinstellungen, die in der rechten Spalte neben der Trefferliste angezeigt werden, ermöglichen eine Präzisierung Ihres Suchergebnisses nach folgenden Aspekten:
+  <ul>
+    <li>Zeit: Erscheinungsjahr</li>
+    <li>Medium: Open Access, Medientyp, Medienart</li>
+    <li>Klassifikation: DDC, RelBib-Klassifikation</li>
+    <li>Inhalt: Thema (Schlagwort), Genre (Schlagwort), Zeit (Schlagwort), Region (Schlagwort)</li>
+    <li>Form: Sprache, Verfasser, Verlag</li>
+  </ul>
+</p>
+<p>Bei einigen Filtern ist eine Mehrfachauswahl eingerichtet.</p>
+
+<h2>Erweiterte Suche</h2>
+<p>Zur erweiterten Suche gelangen Sie über den Link unterhalb des großen Suchschlitzes. Im Unterschied zur einfachen Suche können Sie in
+   diesem Modus Begriffe gleichzeitig in verschiedenen Feldern suchen und ihre Suche dadurch gezielt eingrenzen. Die Suchfelder lassen sich
+   durch Auswahl einer Suchbedingung in verschiedene Relationen zueinander bringen. Für komplexere Anfragen können Sie auch eine Suche
+   über Suchgruppen durchführen.</p>
+<p>Außerdem lässt sich in der erweiterten Suche von vornherein eine Eingrenzung mit Hilfe folgender Facetten vornehmen: RelBib Notation;
+   Medienart; Sprache. Darüber hinaus können auch der Erscheinungszeitraum der gesuchten Literatur sowie die angezeigte Trefferanzahl
+   pro Seite vorab festgelegt werden.</p>
+
+<h1 id="anchor">Browsen</h1>
+<p>Neben einfacher und erweiterter Suche stellt RelBib drei verschiedene Arten des Browsens zur Verfügung: Damit können Sie die Bibliographie nach
+   RelBib-spezifischen Schlagwortfolgen („Thema Browsen“), bestimmten Kategorien („Browsen / nach Kategorien“) oder alphabetisch („Alphabetisch Browsen“)
+   durchblättern. </p>
+<h2>Thema Browsen</h2>
+<p>Beim <a href="<?=$this->url('keywordchainsearch-home')?>" target="_blank"><?=$this->transEsc('Browse Keywordchains')?></a>
+   können Sie sich durch Eingabe eines oder mehrerer Suchbegriffe Schlagwörter und normierte Schlagwortfolgen anzeigen
+   lassen, die gegebenen Suchbegriffen „ähnlich“ sind. Dies eignet sich insbesondere, um Hinweise auf thematisch verwandte Schlagwortketten
+   und dazugehörige Titel zu bekommen. Aus der Volltitelanzeige gelangen Sie über den Button
+   <span class="iconlabel label label-info">B</span> ebenfalls in den Modus „Thema Browsen“: Auf diese Weise werden Sie zu weiteren Titeln mit
+   derselben oder einer ähnlichen Schlagwortfolge in der Datenbank geführt.</p>
+<h2>Browsen / nach Kategorien</h2>
+<p>Das <a href="<?=$this->url('browse-home')?>" target="_blank"><?=$this->transEsc('Browse by Category')?></a> bietet Ihnen die Möglichkeit,
+   ausgehend von Oberkategorien nach bestimmten Aspekten zu einer Ergebnismenge zu kommen,
+   ohne dass im Vorfeld Suchbegriffe bekannt sein müssen. Sie wählen Ihren Einstieg aus einem der folgenden Felder aus: DDC,
+   RelBib-Klassifikation, Thema (Schlagwort), Verfasser oder Verlag. Über eine Baumstruktur mit vier Ebenen haben Sie die Möglichkeit,
+   Ihr Suchergebnis durch Auswahl weiterer Unterfelder einzuschränken.</p>
+<h2>Alphabetisch Browsen</h2>
+<p>Im Modus <a href="<?=$this->url('alphabrowse-home')?>" target="_blank"><?=$this->transEsc('Browse Alphabetically')?></a> steht eine umfassende,
+   alphabetisch sortierte Liste der Inhalte der jeweiligen Kategorien zur Verfügung. Dies
+   ist zu z.B. für eine Überblicksrecherche von Vorteil. So wählen Sie einen der Aspekte Thema, Verfasser, Titel oder DDC aus und können
+   nach Eingabe eines Wortes oder Wortanfangs bestimmen, an welcher Stelle des Alphabets Sie in das Browsen einsteigen wollen.
+   Das alphabetische Browsen kann auch dann hilfreich sein, wenn Sie sich bei der Schreibweise eines Autorennamen oder Begriffs nicht
+   sicher sind: Hier reicht die Eingabe eines Wortanfangs aus.</p>
