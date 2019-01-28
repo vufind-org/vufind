@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for various top-level VuFind services.
+ * VuFind HTTP Service factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,31 +27,42 @@
  */
 namespace VuFind\Service;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for various top-level VuFind services.
+ * VuFind HTTP Service factory.
  *
  * @category VuFind
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class HttpServiceFactory implements FactoryInterface
 {
     /**
-     * Construct the HTTP service.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return \VuFindHttp\HttpService
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    public static function getHttp(ServiceManager $sm)
-    {
-        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $options = [];
         if (isset($config->Proxy->host)) {
             $options['proxy_host'] = $config->Proxy->host;
@@ -64,39 +75,6 @@ class Factory
         }
         $defaults = isset($config->Http)
             ? $config->Http->toArray() : [];
-        return new \VuFindHttp\HttpService($options, $defaults);
-    }
-
-    /**
-     * Construct the ProxyManager configuration.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \ProxyManager\Configuration
-     */
-    public static function getProxyConfig(ServiceManager $sm)
-    {
-        $config = new \ProxyManager\Configuration();
-        $cacheManager = $sm->get('VuFind\Cache\Manager');
-        $dir = $cacheManager->getCacheDir() . 'objects';
-        $config->setProxiesTargetDir($dir);
-        if (APPLICATION_ENV != 'development') {
-            spl_autoload_register($config->getProxyAutoloader());
-        }
-        return $config;
-    }
-
-    /**
-     * Construct the search service.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFindSearch\Service
-     */
-    public static function getSearchService(ServiceManager $sm)
-    {
-        return new \VuFindSearch\Service(
-            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
-        );
+        return new $requestedName($options, $defaults);
     }
 }
