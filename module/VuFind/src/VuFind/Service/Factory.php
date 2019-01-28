@@ -43,18 +43,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the date converter.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Zend\Db\Adapter\Adapter
-     */
-    public static function getDbAdapter(ServiceManager $sm)
-    {
-        return $sm->get('VuFind\Db\AdapterFactory')->getAdapter();
-    }
-
-    /**
      * Construct the HTTP service.
      *
      * @param ServiceManager $sm Service manager.

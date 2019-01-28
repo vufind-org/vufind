@@ -392,7 +392,7 @@ $config = [
             'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
             'VuFindSearch\Service' => 'VuFind\Service\Factory::getSearchService',
-            'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
+            'Zend\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
             'Zend\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
