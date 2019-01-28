@@ -1,10 +1,10 @@
 <div class="background-lightblue">
     <div class="container">
         <div class="row">
-            <?=$this->render('partials/news.phtml'); ?>
-            <?=$this->render('partials/discover.phtml'); ?>
-            <?=$this->render('partials/repositories.phtml'); ?>
-            <?=$this->render('partials/externals.phtml'); ?>
+            <?=$this->HelpText()->render('partials/news', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/discover', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/repositories', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/externals', null, 'static'); ?>
         </div>
     </div>
 </div>
@@ -14,10 +14,10 @@
 <div class="background-lightblue">
     <div class="container">
         <div class="row">
-            <?=$this->render('partials/printing.phtml'); ?>
-            <?=$this->render('partials/authors.phtml'); ?>
-            <?=$this->render('partials/publishers.phtml'); ?>
-            <?=$this->render('partials/librarians.phtml'); ?>
+            <?=$this->HelpText()->render('partials/printing', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/authors', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/publishers', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/librarians', null, 'static'); ?>
         </div>
     </div>
 </div>
