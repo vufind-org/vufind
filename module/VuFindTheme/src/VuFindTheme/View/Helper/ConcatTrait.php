@@ -172,6 +172,7 @@ trait ConcatTrait
                 $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            // Deal with special case: $path was not found in any theme.
             if (null === $details) {
                 $errorMsg = "Could not find file '$path' in theme files";
                 method_exists($this, 'logError')
