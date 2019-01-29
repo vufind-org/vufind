@@ -68,7 +68,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        $this->getServiceManager()->get('VuFind\Record\Loader'),
+                        $this->getServiceManager()->get(\VuFind\Record\Loader::class),
                         new \Zend\Config\Config([])
                     )
                 ]
@@ -119,7 +119,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('view', 'rss');
 
         $results = $this->getServiceManager()
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();

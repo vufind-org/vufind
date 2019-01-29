@@ -136,7 +136,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             ) {
                 if ($sm && $sm->has('VuFind\Hierarchy\Driver\PluginManager')) {
                     $instance->setHierarchyDriverManager(
-                        $sm->get('VuFind\Hierarchy\Driver\PluginManager')
+                        $sm->get(\VuFind\Hierarchy\Driver\PluginManager::class)
                     );
                 }
             }

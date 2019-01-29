@@ -54,7 +54,7 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get('VuFind\Form\Form');
+        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
         $form->setFormId($formId);
 
         if (!$form->isEnabled()) {
@@ -148,7 +148,7 @@ class FeedbackController extends AbstractBase
         $replyToName, $replyToEmail, $emailSubject, $emailMessage
     ) {
         try {
-            $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+            $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
             if ($replyToEmail) {
                 $mailer->setFromAddressOverride('');
             }

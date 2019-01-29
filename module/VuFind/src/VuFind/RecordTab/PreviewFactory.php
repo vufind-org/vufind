@@ -62,7 +62,7 @@ class PreviewFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get('VuFind\Config\PluginManager')->get('config');
+        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         // currently only active if config [content] [previews] contains google
         // and googleoptions[tab] is not empty.
         $active = false;

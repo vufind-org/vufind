@@ -66,8 +66,8 @@ class GetRecordDetailsFactory
         return new $requestedName(
             $container->get('Config'),
             $container->get('Request'),
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\RecordTab\PluginManager'),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\RecordTab\PluginManager::class),
             $container->get('ViewRenderer')
         );
     }

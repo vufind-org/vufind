@@ -61,12 +61,12 @@ class DemoFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function () use ($container) {
-            $manager = $container->get('Zend\Session\SessionManager');
+            $manager = $container->get(\Zend\Session\SessionManager::class);
             return new \Zend\Session\Container('DemoDriver', $manager);
         };
         return parent::__invoke(
             $container, $requestedName,
-            [$container->get('VuFindSearch\Service'), $sessionFactory]
+            [$container->get(\VuFindSearch\Service::class), $sessionFactory]
         );
     }
 }

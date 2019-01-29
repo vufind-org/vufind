@@ -62,7 +62,7 @@ class HelpTextFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $lang = $container->has('Zend\Mvc\I18n\Translator')
-            ? $container->get('Zend\Mvc\I18n\Translator')->getLocale()
+            ? $container->get(\Zend\Mvc\I18n\Translator::class)->getLocale()
             : 'en';
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName($helpers->get('context'), $lang);

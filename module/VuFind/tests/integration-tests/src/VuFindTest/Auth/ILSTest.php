@@ -113,7 +113,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $authenticator
         );
         $auth->setDbTableManager(
-            $this->getServiceManager()->get('VuFind\Db\Table\PluginManager')
+            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
         );
         $auth->getCatalog()->setDriver($driver);
         return $auth;

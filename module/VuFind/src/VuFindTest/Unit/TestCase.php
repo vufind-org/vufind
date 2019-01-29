@@ -200,10 +200,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager->setService(
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
             );
+            $driverManager = $this->serviceManager
+                ->get(\VuFind\RecordDriver\PluginManager::class);
             $this->serviceManager->setService(
                 'VuFind\Record\Loader', new \VuFind\Record\Loader(
-                    $this->serviceManager->get('VuFindSearch\Service'),
-                    $this->serviceManager->get('VuFind\RecordDriver\PluginManager')
+                    $this->serviceManager->get(\VuFindSearch\Service::class),
+                    $driverManager
                 )
             );
             $this->serviceManager->setService('Config', []);
@@ -228,7 +230,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $authManager = new \VuFind\Auth\PluginManager($sm);
             $sm->setService('VuFind\Auth\PluginManager', $authManager);
         }
-        return $sm->get('VuFind\Auth\PluginManager');
+        return $sm->get(\VuFind\Auth\PluginManager::class);
     }
 
     /**

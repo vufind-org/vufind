@@ -66,15 +66,15 @@ class AlmaFactory implements FactoryInterface
         // Set up the driver with the date converter (and any extra parameters
         // passed in as options):
         $driver = new $requestedName(
-            $container->get('VuFind\Date\Converter'),
-            $container->get('VuFind\Config\PluginManager'),
+            $container->get(\VuFind\Date\Converter::class),
+            $container->get(\VuFind\Config\PluginManager::class),
             ...($options ?: [])
         );
 
         // Populate cache storage if a setCacheStorage method is present:
         if (method_exists($driver, 'setCacheStorage')) {
             $driver->setCacheStorage(
-                $container->get('VuFind\Cache\Manager')->getCache('object')
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
             );
         }
 

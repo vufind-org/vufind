@@ -60,7 +60,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     public function testAlphaBrowseSeeAlso()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
         $extras = new ParamBag(['extras' => 'id']);
         $result = $solr->alphabeticBrowse('author', 'Dublin Society', 0, 1, $extras);
@@ -79,7 +79,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     public function testAlphaBrowseUseInstead()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
         $extras = new ParamBag(['extras' => 'id']);
         $result = $solr
@@ -99,7 +99,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     public function testDeweyValues()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
         $extras = new ParamBag(['extras' => 'id']);
         $result = $solr->alphabeticBrowse('dewey', '123.45 .I39', 0, 1, $extras);
@@ -121,7 +121,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     public function testTermsHandler()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
         $currentPageInfo = $solr->terms('id', 'test', 1)->getFieldTerms('id');
         $this->assertEquals(1, count($currentPageInfo));

@@ -90,12 +90,13 @@ class WorldCatBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $this->config = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $this->wcConfig = $this->serviceLocator
-            ->get('VuFind\Config\PluginManager')->get('WorldCat');
+            ->get(\VuFind\Config\PluginManager::class)->get('WorldCat');
         if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -128,11 +129,9 @@ class WorldCatBackendFactory implements FactoryInterface
             ? $this->config->WorldCat->apiKey : null;
         $connectorOptions = isset($this->wcConfig->Connector)
             ? $this->wcConfig->Connector->toArray() : [];
-        $connector = new Connector(
-            $wsKey,
-            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
-            $connectorOptions
-        );
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
+            ->createClient();
+        $connector = new Connector($wsKey, $client, $connectorOptions);
         $connector->setLogger($this->logger);
         return $connector;
     }
@@ -156,7 +155,8 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('WorldCat');
             $driver->setRawData($data);

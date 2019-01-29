@@ -63,11 +63,11 @@ class DeleteRecordCommentFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
-        $capabilities = $container->get('VuFind\Config\AccountCapabilities');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $tablePluginManager->get('VuFind\Db\Table\Comments'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $tablePluginManager->get(\VuFind\Db\Table\Comments::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled'
         );
     }

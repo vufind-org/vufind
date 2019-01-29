@@ -61,9 +61,11 @@ class RelaisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $url = $config->Relais->authenticateurl ?? null;
-        $client = $container->get('VuFindHttp\HttpService')->createClient($url);
+        $client = $container->get(\VuFindHttp\HttpService::class)
+            ->createClient($url);
         $client->setOptions(['timeout' => $config->Relais->timeout ?? 500]);
         return new $requestedName($client, $config->Relais ?? null);
     }

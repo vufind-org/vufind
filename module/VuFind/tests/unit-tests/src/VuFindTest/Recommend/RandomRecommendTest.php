@@ -129,7 +129,7 @@ class RandomRecommendTest extends TestCase
 
         // Use Solr since some Base components are abstract:
         $params = $this->getServiceManager()
-            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock('\Zend\StdLib\Parameters');
@@ -161,13 +161,13 @@ class RandomRecommendTest extends TestCase
             ->will(
                 $this->returnValue(
                     $this->getServiceManager()
-                        ->get('VuFind\Search\Params\PluginManager')->get('Solr')
+                        ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr')
                 )
             );
 
         // Use Solr since some Base components are abstract:
         $params = $this->getServiceManager()
-            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock('\Zend\StdLib\Parameters');
@@ -194,7 +194,7 @@ class RandomRecommendTest extends TestCase
 
         // Use Solr since some Base components are abstract:
         $results = $this->getServiceManager()
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
@@ -232,7 +232,7 @@ class RandomRecommendTest extends TestCase
 
         // Use Solr since some Base components are abstract:
         $results = $this->getServiceManager()
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
