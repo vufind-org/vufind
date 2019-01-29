@@ -9,9 +9,11 @@
 namespace TueFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException;
+use Elasticsearch\ClientBuilder;
 use \Exception as Exception;
 use Zend\Log\Logger as Logger;
 use Zend\View\Model\JsonModel;
+
 
 /**
  * Proxy for Fulltext Snippets in Elasticsearch
@@ -23,6 +25,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected $base_url = 'nu.ub.uni-tuebingen.de:9200';
     protected $index = 'fulltext';
+    protected $es; // Elasticsearch interface
+    protected $logger;
+
+
+    public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger) {
+        $this->es = $builder;
+        $this->logger = $logger;
+    } 
 
 
     protected function getFulltext($search_query) {
@@ -46,7 +56,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'status' => 'NO RESULTS'
                 ]);
 
-        $this->serviceLocator->get('VuFind\Logger')->log(Logger::NOTICE, 'Fulltext Snippet ' . json_encode($snippets));
+        $this->logger->log(Logger::NOTICE, 'Fulltext Snippet ' . json_encode($snippets));
         return new JsonModel([
                'status' => 'SUCCESS',
                'snippets' =>  $snippets

@@ -55,7 +55,7 @@ $config = [
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
-            'TueFind\Controller\FulltextSnippetProxyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
