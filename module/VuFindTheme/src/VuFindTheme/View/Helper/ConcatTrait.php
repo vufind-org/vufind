@@ -173,7 +173,9 @@ trait ConcatTrait
                 ThemeInfo::RETURN_ALL_DETAILS
             );
             if (null === $details) {
-                $this->logError("Could not find file '$path' in theme files");
+                $errorMsg = "Could not find file '$path' in theme files";
+                method_exists($this, 'logError')
+                    ? $this->logError($errorMsg) : error_log($errorMsg);
                 $this->groups[] = [
                     'other' => true,
                     'item' => $item
