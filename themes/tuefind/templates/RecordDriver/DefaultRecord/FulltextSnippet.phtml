@@ -1,0 +1,29 @@
+  <span id="fulltext_snippets">
+      <div style="color:grey" id="snippet_place_holder"><?=$this->transEsc("Loading")?>...</div>
+  </span>
+  <script type="text/javascript" language="javascript">
+      var query="TESTQUERY";
+      // Try to determine status
+      $.ajax({
+        type: "GET",
+        url: "<?=$this->url('home')?>fulltextsnippetproxy/load?search_query="+query,
+        dataType: "json",
+        success: function(json) {
+          $(document).ready(function() { 
+             var snippets = json['snippets'];
+             $("#snippet_place_holder").each(function() {
+                if (snippets) {
+                  $(this).replaceWith(snippets.join('</br>'));
+                }
+                else
+                  $("#fulltext_snippets").remove();
+             });
+          });
+        }, // end success
+        error: function (xhr, ajaxOptions, thrownError) {
+            $("#snippet_place_holder").each(function() {
+              $(this).replaceWith('Invalid server response!!!!!');
+            })
+        }
+     }); // end ajax
+  </script>
