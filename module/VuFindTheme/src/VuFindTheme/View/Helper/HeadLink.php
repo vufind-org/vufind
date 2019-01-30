@@ -39,8 +39,10 @@ use VuFindTheme\ThemeInfo;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class HeadLink extends \Zend\View\Helper\HeadLink
+    implements \Zend\Log\LoggerAwareInterface
 {
     use ConcatTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Theme information service
