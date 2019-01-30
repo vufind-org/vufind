@@ -234,6 +234,18 @@ class Factory
     }
 
     /**
+     * Factory for SideFacetsDeferred module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SideFacets
+     */
+    public static function getSideFacetsDeferred(ServiceManager $sm)
+    {
+        return new SideFacetsDeferred($sm->get('VuFind\Config\PluginManager'));
+    }
+
+    /**
      * Factory for SummonBestBets module.
      *
      * @param ServiceManager $sm Service manager.

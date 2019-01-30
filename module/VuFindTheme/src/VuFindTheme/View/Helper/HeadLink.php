@@ -39,8 +39,10 @@ use VuFindTheme\ThemeInfo;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class HeadLink extends \Zend\View\Helper\HeadLink
+    implements \Zend\Log\LoggerAwareInterface
 {
     use ConcatTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Theme information service
@@ -193,7 +195,11 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     public function getType($item)
     {
-        return isset($item->media) ? $item->media : 'all';
+        $type = $item->media ?? 'all';
+        if (isset($item->conditionalStylesheet)) {
+            $type .= '_' . $item->conditionalStylesheet;
+        }
+        return $type;
     }
 
     /**

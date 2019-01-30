@@ -514,18 +514,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
+        $pageSize = $params['limit'] ?? 50;
+        $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
+
         $result = $this->makeRequest(
             ['v3', 'patrons', $patron['id'], 'checkouts'],
             [
-                'limit' => 10000,
-                'offset' => 0,
+                'limit' => $pageSize,
+                'offset' => $offset,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
                     . ',callNumber,barcode'
             ],
@@ -533,7 +537,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $patron
         );
         if (empty($result['entries'])) {
-            return [];
+            return [
+                'count' => $result['total'],
+                'records' => []
+            ];
         }
         $transactions = [];
         foreach ($result['entries'] as $entry) {
@@ -580,7 +587,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $transactions[] = $transaction;
         }
 
-        return $transactions;
+        return [
+            'count' => $result['total'],
+            'records' => $transactions
+        ];
     }
 
     /**
@@ -1230,6 +1240,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getConfig($function, $params = null)
     {
+        if ('getMyTransactions' === $function) {
+            return [
+                'max_results' => 100
+            ];
+        }
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;
@@ -1423,14 +1438,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function renewAccessToken($patron = false)
     {
         $patronCode = false;
-        if ($patron) {
+        if ($patron && !empty($this->config['Catalog']['redirect_uri'])) {
             // Do a patron login and then perform an authorization grant request
-            if (empty($this->config['Catalog']['redirect_uri'])) {
-                $this->error(
-                    'Catalog/redirect_uri is required for patron authentication'
-                );
-                throw new ILSException('Problem with Sierra REST driver config.');
-            }
             $params = [
                 'client_id' => $this->config['Catalog']['client_key'],
                 'redirect_uri' => $this->config['Catalog']['redirect_uri'],
