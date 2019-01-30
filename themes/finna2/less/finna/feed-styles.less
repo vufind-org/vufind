@@ -1,0 +1,50 @@
+/**
+* Usage: <div class="feed-bg-white"><?= $this->feed("carousel-small"); ?></div>
+* Wrap your feed function call inside a div and add the desired class to the div, multiple classes are fine too
+*/
+
+//Hides the dots from a carousel feed
+.feed-dotless {
+    .slick-dots {
+        display: none !important;
+    }
+}
+//Aligns items always to the left side if there is few items in carousel
+.feed-align-left {
+    .slick-track {
+        margin-left: 0;
+    }
+}
+//Aligns items always to the right side it there is few items in carousel
+.feed-align-right {
+    .slick-track {
+        margin-right: 0;
+    }
+}
+//Only show the first image in list style feed
+.feed-first-image {
+    li:not(:first-child) {
+        img {
+            display: none;
+            width: 0;
+        }
+        .title, .text {
+            width: 100% !important;
+            padding-left: 45px;
+            float: left !important;
+        }
+    }
+}
+//Hides the mobile link in the bottom from a carousel
+.feed-mb-no-link {
+    .carousel-description {
+        display: none;
+    }
+}
+
+//Sets the default background color of feed wrapper to white
+.feed-bg-white {
+    .wrapper {
+        background-color: white !important;
+    }
+}
