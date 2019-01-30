@@ -39,10 +39,12 @@ use VuFindTheme\ThemeInfo;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
+    implements \Zend\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;
     }
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Theme information service
