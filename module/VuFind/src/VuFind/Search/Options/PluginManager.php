@@ -44,27 +44,27 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'browzine' => 'VuFind\Search\BrowZine\Options',
-        'combined' => 'VuFind\Search\Combined\Options',
-        'eds' => 'VuFind\Search\EDS\Options',
-        'eit' => 'VuFind\Search\EIT\Options',
-        'emptyset' => 'VuFind\Search\EmptySet\Options',
-        'favorites' => 'VuFind\Search\Favorites\Options',
-        'libguides' => 'VuFind\Search\LibGuides\Options',
-        'mixedlist' => 'VuFind\Search\MixedList\Options',
-        'pazpar2' => 'VuFind\Search\Pazpar2\Options',
-        'primo' => 'VuFind\Search\Primo\Options',
-        'search2' => 'VuFind\Search\Search2\Options',
-        'solr' => 'VuFind\Search\Solr\Options',
-        'solrauth' => 'VuFind\Search\SolrAuth\Options',
-        'solrauthor' => 'VuFind\Search\SolrAuthor\Options',
-        'solrauthorfacets' => 'VuFind\Search\SolrAuthorFacets\Options',
-        'solrcollection' => 'VuFind\Search\SolrCollection\Options',
-        'solrreserves' => 'VuFind\Search\SolrReserves\Options',
-        'solrweb' => 'VuFind\Search\SolrWeb\Options',
-        'summon' => 'VuFind\Search\Summon\Options',
-        'tags' => 'VuFind\Search\Tags\Options',
-        'worldcat' => 'VuFind\Search\WorldCat\Options',
+        'browzine' => \VuFind\Search\BrowZine\Options::class,
+        'combined' => \VuFind\Search\Combined\Options::class,
+        'eds' => \VuFind\Search\EDS\Options::class,
+        'eit' => \VuFind\Search\EIT\Options::class,
+        'emptyset' => \VuFind\Search\EmptySet\Options::class,
+        'favorites' => \VuFind\Search\Favorites\Options::class,
+        'libguides' => \VuFind\Search\LibGuides\Options::class,
+        'mixedlist' => \VuFind\Search\MixedList\Options::class,
+        'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
+        'primo' => \VuFind\Search\Primo\Options::class,
+        'search2' => \VuFind\Search\Search2\Options::class,
+        'solr' => \VuFind\Search\Solr\Options::class,
+        'solrauth' => \VuFind\Search\SolrAuth\Options::class,
+        'solrauthor' => \VuFind\Search\SolrAuthor\Options::class,
+        'solrauthorfacets' => \VuFind\Search\SolrAuthorFacets\Options::class,
+        'solrcollection' => \VuFind\Search\SolrCollection\Options::class,
+        'solrreserves' => \VuFind\Search\SolrReserves\Options::class,
+        'solrweb' => \VuFind\Search\SolrWeb\Options::class,
+        'summon' => \VuFind\Search\Summon\Options::class,
+        'tags' => \VuFind\Search\Tags\Options::class,
+        'worldcat' => \VuFind\Search\WorldCat\Options::class,
     ];
 
     /**
@@ -73,30 +73,28 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Search\BrowZine\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Combined\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\EDS\Options' => 'VuFind\Search\EDS\OptionsFactory',
-        'VuFind\Search\EIT\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\EmptySet\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Favorites\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\LibGuides\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\MixedList\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Pazpar2\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Primo\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Search2\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Solr\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrAuth\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrAuthor\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrAuthorFacets\Options' =>
-            'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrCollection\Options' =>
-            'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrReserves\Options' =>
-            'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\SolrWeb\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Summon\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\Tags\Options' => 'VuFind\Search\Options\OptionsFactory',
-        'VuFind\Search\WorldCat\Options' => 'VuFind\Search\Options\OptionsFactory',
+        \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
+        \VuFind\Search\Combined\Options::class => OptionsFactory::class,
+        \VuFind\Search\EDS\Options::class =>
+            \VuFind\Search\EDS\OptionsFactory::class,
+        \VuFind\Search\EIT\Options::class => OptionsFactory::class,
+        \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
+        \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
+        \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
+        \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
+        \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
+        \VuFind\Search\Primo\Options::class => OptionsFactory::class,
+        \VuFind\Search\Search2\Options::class => OptionsFactory::class,
+        \VuFind\Search\Solr\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuth\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuthor\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuthorFacets\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrCollection\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrReserves\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrWeb\Options::class => OptionsFactory::class,
+        \VuFind\Search\Summon\Options::class => OptionsFactory::class,
+        \VuFind\Search\Tags\Options::class => OptionsFactory::class,
+        \VuFind\Search\WorldCat\Options::class => OptionsFactory::class,
     ];
 
     /**
@@ -111,7 +109,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\Search\Options\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -123,6 +121,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Search\Base\Options';
+        return \VuFind\Search\Base\Options::class;
     }
 }

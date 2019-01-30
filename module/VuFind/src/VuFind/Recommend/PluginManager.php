@@ -161,6 +161,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Recommend\RecommendInterface';
+        return RecommendInterface::class;
     }
 }
