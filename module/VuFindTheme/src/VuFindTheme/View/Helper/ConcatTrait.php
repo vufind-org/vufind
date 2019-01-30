@@ -145,10 +145,10 @@ trait ConcatTrait
 
     /**
      * Initialize class properties related to concatenation of resources.
-     * All of the elements to be concatenated into groups and
-     * and those that need to remain on their own special group 'other'.
+     * All of the elements to be concatenated into ($this->concatItems)
+     * and those that need to remain on their own ($this->otherItems).
      *
-     * @return bool True if there are items
+     * @return void
      */
     protected function filterItems()
     {
@@ -167,23 +167,10 @@ trait ConcatTrait
                 continue;
             }
 
-            $path = $this->getFileType() . '/' . $this->getResourceFilePath($item);
             $details = $this->themeInfo->findContainingTheme(
-                $path,
+                $this->getFileType() . '/' . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
-            // Deal with special case: $path was not found in any theme.
-            if (null === $details) {
-                $errorMsg = "Could not find file '$path' in theme files";
-                method_exists($this, 'logError')
-                    ? $this->logError($errorMsg) : error_log($errorMsg);
-                $this->groups[] = [
-                    'other' => true,
-                    'item' => $item
-                ];
-                $groupTypes[] = 'other';
-                continue;
-            }
 
             $type = $this->getType($item);
             $index = array_search($type, $groupTypes);
