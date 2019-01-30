@@ -187,9 +187,9 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $conf = $this->getConfig();
                 if ($conf->noAccessString) {
                     if (strpos(
-                            $this->sessionContainer->odAccessMessage,
-                            $conf->noAccessString
-                        ) !== false
+                        $this->sessionContainer->odAccessMessage,
+                        $conf->noAccessString
+                    ) !== false
                     ) {
                         //this user should not have access to OD
                         $result->code = "od_account_noaccess";
@@ -270,8 +270,8 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Gets availability for up to 25 titles at once.  This is used by the
      * the ajax availability system
      *
-     * @param  array $overDriveIds The Overdrive ID (reserve IDs) of the
-     *                             eResources
+     * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
+     *                            eResources
      *
      * @return array|bool see getAvailability
      *
@@ -837,8 +837,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             $baseUrl = $conf->discURL;
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
-                    ",", $overDriveIds
-                );
+                ",", $overDriveIds
+            );
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
             foreach ($md as $item) {
@@ -869,8 +869,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
                 if (strtolower($checkout->reserveId) == strtolower(
-                        $overDriveId
-                    )
+                    $overDriveId
+                )
                 ) {
                     return $checkout;
                 }
@@ -888,7 +888,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * for the current user
      *
      * @param string $overDriveId Overdrive resource id
-     * @param  bool  $refresh     Whether or not to ignore cache and get latest
+     * @param bool   $refresh     Whether or not to ignore cache and get latest
      *
      * @return object|false PHP object that represents the checkout or false
      * the checkout is not in the current list of checkouts for the current
@@ -915,7 +915,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Overdrive Checkouts (or a user)
      *
-     * @param  bool $refresh Whether or not to ignore cache and get latest
+     * @param bool $refresh Whether or not to ignore cache and get latest
      *
      * @return object Results of the call
      */
@@ -1012,14 +1012,14 @@ class OverdriveConnector implements LoggerAwareInterface,
                             $holdExpires = new \DateTime($hold->holdExpires);
                             $result->data[$key]->holdExpires
                                 = $holdExpires->format(
-                                (string)$config->displayDateFormat
-                            );
+                                    (string)$config->displayDateFormat
+                                );
                         }
                         $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
                         $result->data[$key]->holdPlacedDate
                             = $holdPlacedDate->format(
-                            (string)$config->displayDateFormat
-                        );
+                                (string)$config->displayDateFormat
+                            );
                     }
                     $this->sessionContainer->holds = $response->holds;
                 } else {
@@ -1321,7 +1321,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($forceNewConnection
             || $patronTokenData == null
             || ($patronTokenData->expirationTime
-                && time() >= $patronTokenData->expirationTime)
+            && time() >= $patronTokenData->expirationTime)
         ) {
             $this->debug("connecting to patron API for new token.");
             $url = $config->patronTokenURL;

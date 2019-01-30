@@ -613,11 +613,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @since x.x.x
      *
-     * @param type  $var     Description.
-     * @param type  $var     Optional. Description. Default.
+     * @param type $var Description.
+     * @param type $var Optional. Description. Default.
      *
-     * @see   Function/method/class relied on
-     * @link  URL
+     * @see    Function/method/class relied on
+     * @link   URL
      * @global type $varname Description.
      * @global type $varname Description.
      *
