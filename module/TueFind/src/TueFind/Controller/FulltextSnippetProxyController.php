@@ -27,7 +27,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected $index = 'fulltext';
     protected $es; // Elasticsearch interface
     protected $logger;
-
+    const FIELD = 'document_chunk';
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger) {
@@ -37,17 +37,58 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
 
     protected function getFulltext($search_query) {
+
         $params = [
              'index' => $this->index,
              'type' => '_doc',
-             'id' => 'eClyV2gB1ukGMpO-bbil'
+             'body' => [
+                 '_source' => false,
+                 'query' => [
+                     'match' => [
+                           self::FIELD => $search_query
+                      ]
+                 ],
+                 'highlight' => [
+                     'fields' => [
+                          self::FIELD => [
+                               'fragmenter' => 'sentence',
+                               'phrase_limit' => '1'
+                           ]
+                      ]
+                 ]
+             ]
         ];
-        $response = $this->es->get($params);
-        $source = array_key_exists('_source', $response) ? $response['_source'] : false;
-        if ($source == false)
+
+        $top_level_hits = [];
+        $hits = [];
+        $highlight_results = [];
+        $response = $this->es->search($params);
+        return $this->extractSnippets($response);
+    }
+
+
+    protected function extractSnippets($response) {
+        if (empty($response))
             return false;
-        return [ $source['document_id'], $source['document_chunk'] ];
-        return false;
+        if (array_key_exists('hits', $response))
+            $top_level_hits = $response['hits'];
+        if (empty($top_level_hits))
+            return false;
+        //second order hits
+        if (array_key_exists('hits', $top_level_hits))
+            $hits = $top_level_hits['hits'];
+        if (empty($top_level_hits))
+            return false;
+
+        $snippets = [];
+        foreach ($hits as $hit) {
+            if (array_key_exists('highlight', $hit))
+                $highlight_results = $hit['highlight'][self::FIELD];
+            foreach ($highlight_results as $highlight_result) {
+                array_push($snippets, $highlight_result);
+            }
+        }
+        return empty($snippets) ? false : $snippets;
     }
 
 
