@@ -56,6 +56,8 @@ class LayoutClass extends \VuFind\View\Helper\Bootstrap3\LayoutClass
             return 'mainbody right myresearch-body';
         } elseif ('sidebar-myresearch' === $class) {
             return 'sidebar left hidden-print sidebar-on-left';
+        } elseif ('mainbody-myresearch-no-menu' === $class) {
+            return 'mainbody myresearch-body';
         }
 
         $result = parent::__invoke($class);

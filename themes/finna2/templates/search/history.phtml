@@ -7,21 +7,17 @@
 
   $layoutLoggedIn = $saveSupported && $this->auth()->isLoggedIn();
   // Set up myresearch menu
-  if (!$layoutLoggedIn):
-    $this->layout()->finnaMainHeader = '<div><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
-  endif;
-
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 ?>
 
-<?php if($layoutLoggedIn): ?>
+<?php if ($layoutLoggedIn): ?>
   <!-- Leftside navigationbar -->
   <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history']); ?>
 <?php endif; ?>
 
-<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
+<div class="<?=$layoutLoggedIn ? $this->layoutClass('mainbody-myresearch') : $this->layoutClass('mainbody-myresearch-no-menu')?>">
   <div class="history-holder">
     <?php if ($this->alertemail): ?>
       <div class="alert alert-info alert-email-notification hidden">
