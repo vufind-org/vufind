@@ -14,9 +14,11 @@
   }
 }
 
-.finna-filters {
+.finna-filters, .noresults {
   color: @filterContent-text-color;
   padding: 5px 0 5px 0;
+  // < ie 10
+  display: inline-block;
   display: inline-flex;
   flex-wrap: wrap;
   width: 100%;
@@ -64,6 +66,8 @@
   .filters {
     width: 100%;
     flex: 1;
+    // < ie 10 
+    display: inline-block;
     display: inline-flex;
     align-items: center;
     flex-wrap: wrap;
@@ -73,6 +77,8 @@
   }
 
   .filter-title-group {
+    // < ie 10
+    display: inline-block;
     display: inline-flex;
     align-items: center;
     max-width: 100%;
@@ -85,10 +91,12 @@
     background: @filters-background-color;
     color: @filters-text-color;
     border-radius: @border-radius-large;
+    // < ie 10
+    display: inline-block;
     display: inline-flex;
     align-items: center;
     max-height: 30px;
-    p {
+    .filter-text {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -129,6 +137,6 @@
     font-size: 15px;
   }
   .filter-value {
-    max-width: 100%;
+    max-width: 95%;
   }
 }

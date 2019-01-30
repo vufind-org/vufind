@@ -5,10 +5,14 @@
   <?php foreach ($checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <span class="filter-value">
-        <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : ''; ?>
-        <?=$this->translate($filter['desc']) ?>
+        <?php
+          $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : '';
+          $desc = $this->translate($filter['desc']);
+          $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
+        ?>
+        <?=$desc?>
         <?php if($removeLink): ?>
-          <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+          <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
         <?php endif; ?>
       </span>
     <?php endif ?>
@@ -17,9 +21,13 @@
   <?php foreach ($filterList as $field => $data): ?>
       <?php if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
         <span class="filter-value">
-          <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
+          <?php
+            $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';
+            $desc = $this->transEsc($field);
+            $ariaLabel = $this->translate('Remove filter') . ' ' . $desc;
+          ?>
           <?=$this->transEsc($field)?>
-          <?php if($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
+          <?php if($removeLink): ?><a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
         </span>
       <?php else: ?>
         <div class="filter-title-group">
@@ -29,6 +37,8 @@
           $operatorLabel = '';
           $operatorClass = "filters-" . $this->escapeHtmlAttr(strtolower($value['operator']));
           $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';
+          $desc = $this->escapeHtml($value['displayText']);
+          $ariaLabel = $this->translate('Remove filter') . ' ' . $desc;
 
           if ($value['operator'] === 'NOT') {
             $operatorLabel = $this->transEsc('NOT');
@@ -42,16 +52,16 @@
             <span class="filters-term <?= $operatorClass ?>"><?= $operatorLabel ?></span>
           <?php endif; ?>
           <span class="filter-value <?= $operatorClass ?>">
-            <p>
+            <span class="filter-text">
               <?php // Always handle online_boolean and free_online_boolean even if not configured ?>
               <?php if ($isOnlineFacet): ?>
                 <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
               <?php else: ?>
-                <?=$this->escapeHtml($value['displayText'])?>
+                <?=$desc?>
               <?php endif; ?>
-            </p>
+            </span>
             <?php if($removeLink): ?>
-              <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+              <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
             <?php endif; ?>
           </span>
           <?php if ($index === 0): ?>

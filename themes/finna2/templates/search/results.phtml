@@ -125,10 +125,16 @@
       <?php $geoRemoveLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
     <?php else: ?>
       <?php foreach ($data as $index => $value): ?>
-        <?php $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';?>
+        <?php
+          $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';
+          $desc = $this->escapeHtml($value['displayText']);
+          $ariaLabel = $this->translate('Remove filter') . ' ' . $desc;
+        ?>
         <span class="filter-value">
-          <?=$this->escapeHtml($value['displayText'])?>
-          <?php if ($removeLink): ?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
+          <span class="filter-text">
+            <?=$desc?>
+          </span>
+          <?php if ($removeLink): ?><a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
         </span>
       <?php endforeach; ?>
     <?php endif; ?>
@@ -159,15 +165,13 @@
             <?php if ($geoFilter): ?>
               <p><?= $this->translate('nohit_active_geographic_filter_html'); ?></p>
               <?= $this->transEsc('try_to_remove_geographical_filters') ?>:
-              <p class="filter-value">
-              <?=$this->transEsc($geoFilter)?>
-              <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$geoRemoveLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
-              </p>
-              <?php if (count($filterList) > 1): ?>
-                <p><?= $this->transEsc('try_to_remove_filters')?>:<?= $filters ?>
-              <?php endif; ?>
-            <?php else: ?>
-              <p><?= $this->transEsc('try_to_remove_filters')?>:<?= $filters ?></p>
+              <span class="filter-value">
+                <?=$this->transEsc($geoFilter)?>
+                <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$geoRemoveLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+              </span>
+            <?php endif; ?>
+            <?php if (count($filterList) > 1): ?>
+              <div class="filters"><?= $this->transEsc('try_to_remove_filters')?>:<?= $filters ?></div>
             <?php endif; ?>
           </div>
         <?php endif; ?> 
