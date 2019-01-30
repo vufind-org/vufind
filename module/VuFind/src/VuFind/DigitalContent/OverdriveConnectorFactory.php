@@ -28,7 +28,6 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\DigitalContent;
 
 use Interop\Container\ContainerInterface;
@@ -86,7 +85,6 @@ class OverdriveConnectorFactory implements
                 'object', "Overdrive"
             )
         );
-
 
         return $connector;
     }

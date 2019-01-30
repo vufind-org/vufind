@@ -26,17 +26,15 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\DigitalContent;
 
-
 use Exception;
-use Zend\Log\LoggerAwareInterface;
+use VuFind\Cache\KeyGeneratorTrait;
 
+use Zend\Cache\Storage\StorageInterface;
+use Zend\Log\LoggerAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
-use Zend\Cache\Storage\StorageInterface;
-use VuFind\Cache\KeyGeneratorTrait;
 
 /**
  * OverdriveConnector
@@ -114,7 +112,6 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @var StorageInterface
      */
     protected $cache = null;
-
 
     /**
      * Constructor
@@ -206,7 +203,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $result->msg = $this->sessionContainer->odAccessMessage;
                 $this->sessionContainer->odAccess = $result;
             }
-
         } else {
             $result = $this->sessionContainer->odAccess;
         }
@@ -263,7 +259,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $result->status = true;
                 $result->data = $res;
             }
-
         }
 
         return $result;
@@ -282,7 +277,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @todo if more tan 25 passed in, make multiple calls
      */
-    public function getAvailabilityBulk($overDriveIds = array())
+    public function getAvailabilityBulk($overDriveIds = [])
     {
         $result = $this->getResultObject();
         $loginRequired = false;
@@ -312,7 +307,6 @@ class OverdriveConnector implements LoggerAwareInterface,
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                //
                 if ($res->errorCode == "NotFound" || $res->totalItems == 0) {
                     if ($loginRequired) {
                         //consortium support is turned on but user is no
@@ -398,14 +392,13 @@ class OverdriveConnector implements LoggerAwareInterface,
             if ($res) {
                 $collectionToken = $res->collectionToken;
                 $this->putCachedData("collectionToken", $collectionToken);
-                //$this->sessionContainer->collectionToken = $collectionToken;
+            //$this->sessionContainer->collectionToken = $collectionToken;
             } else {
                 return false;
             }
         }
         return $collectionToken;
     }
-
 
     /**
      * Overdrive Checkout
@@ -426,9 +419,9 @@ class OverdriveConnector implements LoggerAwareInterface,
         }
         if ($config = $this->getConfig()) {
             $url = $config->circURL . '/v1/patrons/me/checkouts';
-            $params = array(
+            $params = [
                 'reserveId' => $overDriveId,
-            );
+            ];
 
             $response = $this->callPatronUrl(
                 $user["cat_username"],
@@ -481,12 +474,12 @@ class OverdriveConnector implements LoggerAwareInterface,
             $autoCheckout = true;
             $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds';
-            $params = array(
+            $params = [
                 'reserveId' => $overDriveId,
                 'emailAddress' => $email,
                 'autoCheckout' => $autoCheckout,
                 'ignoreHoldEmail' => $ignoreHoldEmail,
-            );
+            ];
 
             $response = $this->callPatronUrl(
                 $user["cat_username"],
@@ -545,7 +538,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         return $holdResult;
     }
 
-
     /**
      * Return Resource
      * Return a title early.
@@ -578,7 +570,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         }
         return $result;
     }
-
 
     /**
      * Get Download Link for an Overdrive Resource
@@ -674,9 +665,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected function getLinkTemplate($checkout, $format)
     {
         foreach ($checkout->formats as $f) {
-
             if ($f->formatType == $format) {
-
                 return $f->linkTemplates;
             }
         }
@@ -710,7 +699,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             return $result;
         }
         //doublecheck this format is an option.
-        $availableFormats = array();
+        $availableFormats = [];
         //$params = array();
         foreach ($checkout->actions->format->fields as $field) {
             if ($field->name == 'formatType') {
@@ -724,9 +713,9 @@ class OverdriveConnector implements LoggerAwareInterface,
                 "for this resource.";
             return $result;
         } else {
-            $params = array(
+            $params = [
                 'reserveId' => $overDriveId, 'formatType' => $format
-            );
+            ];
         }
 
         if ($config = $this->getConfig()) {
@@ -806,7 +795,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         return $conf;
     }
 
-
     /**
      * Returns an array of Overdrive Formats
      *
@@ -814,7 +802,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     public function getFormatNames()
     {
-        return array(
+        return [
             'ebook-kindle' => "Kindle Book",
             'ebook-overdrive' => "OverDrive Read eBook",
             'ebook-epub-adobe' => "Adobe EPUB eBook",
@@ -825,7 +813,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             'audiobook-overdrive' => "OverDrive Listen audiobook",
             'audiobook-mp3' => "MP3 audiobook",
             'video-streaming' => "streaming video file",
-        );
+        ];
     }
 
     /**
@@ -837,12 +825,12 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @todo if more tan 25 passed in, make multiple calls
      */
-    public function getMetadata($overDriveIds = array())
+    public function getMetadata($overDriveIds = [])
     {
-        $metadata = array();
+        $metadata = [];
         if (!$overDriveIds || count($overDriveIds) < 1) {
             $this->logWarning("no overdrive content IDs waere passed in.");
-            return array();
+            return [];
         }
         if ($conf = $this->getConfig()) {
             $productsKey = $this->getCollectionToken();
@@ -880,7 +868,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($result->status) {
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
-
                 if (strtolower($checkout->reserveId) == strtolower(
                         $overDriveId
                     )
@@ -889,7 +876,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
             }
             return false;
-
         } else {
             return false;
         }
@@ -921,7 +907,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
             }
             return false;
-
         } else {
             return false;
         }
@@ -1050,7 +1035,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         return $result;
     }
 
-
     /**
      * Call a URL on the API
      *
@@ -1080,10 +1064,10 @@ class OverdriveConnector implements LoggerAwareInterface,
                 return false;
             }
             if ($headers === null) {
-                $headers = array(
+                $headers = [
                     "Authorization: {$tokenData->token_type} " .
                     "{$tokenData->access_token}", "User-Agent: VuFind"
-                );
+                ];
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
@@ -1155,10 +1139,10 @@ class OverdriveConnector implements LoggerAwareInterface,
             $authHeader = base64_encode(
                 $conf->clientKey . ":" . $conf->clientSecret
             );
-            $headers = array(
+            $headers = [
                 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
                 "Authorization: Basic $authHeader"
-            );
+            ];
 
             try {
                 $client = $this->getHttpClient();
@@ -1212,7 +1196,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         return $tokenData;
     }
 
-
     /**
      * Call a Patron URL on the API
      *
@@ -1237,11 +1220,11 @@ class OverdriveConnector implements LoggerAwareInterface,
             $patronTokenData = $this->sessionContainer->patronTokenData;
             $authorizationData = $patronTokenData->token_type .
                 ' ' . $patronTokenData->access_token;
-            $headers = array(
+            $headers = [
                 "Authorization: $authorizationData",
                 "User-Agent: VuFind",
                 "Content-Type: application/json"
-            );
+            ];
             try {
                 $client = $this->getHttpClient();
             } catch (Exception $e) {
@@ -1254,12 +1237,12 @@ class OverdriveConnector implements LoggerAwareInterface,
             $client->setMethod($requestType);
             $client->setUri($url);
             if ($params != null) {
-                $jsonData = array('fields' => array());
+                $jsonData = ['fields' => []];
                 foreach ($params as $key => $value) {
-                    $jsonData['fields'][] = array(
+                    $jsonData['fields'][] = [
                         'name' => $key,
                         'value' => $value
-                    );
+                    ];
                 }
                 $postData = json_encode($jsonData);
                 $client->setRawBody($postData);
@@ -1268,7 +1251,6 @@ class OverdriveConnector implements LoggerAwareInterface,
             $this->debug("patronURL method: " . $client->getMethod());
             $this->debug("client: " . $client->getRequest());
             try {
-
                 $response = $client->send();
             } catch (Exception $ex) {
                 $this->error(
@@ -1279,7 +1261,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             }
             $body = $response->getBody();
 
-            //if all goes well for DELETE, the code will be 204 
+            //if all goes well for DELETE, the code will be 204
             //and response is empty.
             if ($requestType == "DELETE") {
                 if ($response->getStatusCode() == 204) {
@@ -1298,11 +1280,9 @@ class OverdriveConnector implements LoggerAwareInterface,
             $this->debug("response from call: " . print_r($returnVal, true));
 
             if ($returnVal != null) {
-
                 if (!isset($returnVal->message)
                     || $returnVal->message != 'An unexpected error has occurred.'
                 ) {
-
                     return $returnVal;
                 } else {
                     $this->debug(
@@ -1336,7 +1316,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         $patronPin = '1234',
         $forceNewConnection = false
     ) {
-
         $patronTokenData = $this->sessionContainer->patronTokenData;
         $config = $this->getConfig();
         if ($forceNewConnection
@@ -1351,11 +1330,11 @@ class OverdriveConnector implements LoggerAwareInterface,
             $authHeader = base64_encode(
                 $config->clientKey . ":" . $config->clientSecret
             );
-            $headers = array(
+            $headers = [
                 "Content-Type: application/x-www-form-urlencoded;charset=UTF-8",
                 "Authorization: Basic $authHeader",
                 "User-Agent: VuFind"
-            );
+            ];
             try {
                 $client = $this->getHttpClient($url);
             } catch (Exception $e) {
@@ -1406,14 +1385,12 @@ class OverdriveConnector implements LoggerAwareInterface,
                 return false;
             }
             $this->sessionContainer->patronTokenData = $patronTokenData;
-
         }
         if (isset($patronTokenData->error)) {
             return false;
         }
         return $patronTokenData;
     }
-
 
     /**
      * Get an HTTP client
@@ -1431,7 +1408,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         if (!$this->client) {
             $this->client = $this->httpService->createClient($url);
             //set keep alive to true since we are sending to the same server
-            $this->client->setOptions(array('keepalive', true));
+            $this->client->setOptions(['keepalive', true]);
         }
         $this->client->resetParameters();
         return $this->client;
@@ -1526,7 +1503,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         $this->cache->removeItem($this->getCacheKey($key));
     }
 
-
     /**
      * Get Result Object
      *
@@ -1545,5 +1521,4 @@ class OverdriveConnector implements LoggerAwareInterface,
             'code' => $code
         ];
     }
-
 }

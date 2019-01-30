@@ -46,8 +46,6 @@ class Formats extends AbstractBase
      */
     protected $enabled;
 
-
-
     /**
      * Constructor
      *
@@ -57,10 +55,7 @@ class Formats extends AbstractBase
     public function __construct($enabled = true, $urc = false)
     {
         $this->enabled = $enabled;
-
     }
-
-
 
     /**
      * Is this tab active?

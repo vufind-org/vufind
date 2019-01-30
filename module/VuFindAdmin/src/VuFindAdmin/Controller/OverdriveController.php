@@ -81,5 +81,4 @@ class OverdriveController extends AbstractAdmin
         //$view->statistics = $this->getTable('resourcetags')->getStatistics(true);
         return $view;
     }
-
 }

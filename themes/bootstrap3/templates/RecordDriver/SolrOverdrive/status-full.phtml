@@ -1,12 +1,12 @@
-<?php 
+<?php
 //json response. array of html strings
 //todo check result first
 $jsonResult = new stdClass;
-$data = array();
+$data = [];
 $isError = false;
-$loginForAvail= false;
-$noshow=false;
-error_log(print_r($this->result,true));
+$loginForAvail = false;
+$noshow = false;
+error_log(print_r($this->result, true));
 
 if($this->result->code == 'od_code_login_for_avail'){
     $loginForAvail = true;

@@ -2,23 +2,23 @@
 $user = $this->auth()->isLoggedIn();
 $avail = $this->driver->getOverdriveAvailability();
 $previews = $this->driver->getPreviewLinks();
-$this->OverdrivePreview =false;
+$this->OverdrivePreview = false;
 if($previews->url){
-    $this->OverdrivePreview ="<a href=\"{$previews->url}\" target=\"_blank\" class=\"btn btn-primary\">Sample</a>";
+    $this->OverdrivePreview = "<a href=\"{$previews->url}\" target=\"_blank\" class=\"btn btn-primary\">Sample</a>";
 }
 $this->OverdriveAction = false;
 $this->OverdriveAvail = false;
 //if we didn't get availability, we can't show the proper action buttons
-if($avail->code=='od_code_login_for_avail'):
-    $odaction = "<p class='alert-info'><strong>".$this->transEsc('od_code_login_for_avail')."</strong></p>";
+if($avail->code == 'od_code_login_for_avail'):
+    $odaction = "<p class='alert-info'><strong>" . $this->transEsc('od_code_login_for_avail') . "</strong></p>";
     $this->OverdriveAvail = $odaction;
-elseif($avail->code=='od_account_noaccess'):
-    $odaction = "<p class='alert-info'><strong>".$this->transEsc('od_code_contentnotavail')."</strong></p>";
+elseif($avail->code == 'od_account_noaccess'):
+    $odaction = "<p class='alert-info'><strong>" . $this->transEsc('od_code_contentnotavail') . "</strong></p>";
     $this->OverdriveAvail = $odaction;
 elseif($avail->data):
     $od_id = $this->driver->getOverdriveID();
     $rec_id = $this->driver->getUniqueID();
-    $hold_url = $this->url ('overdrive-hold');
+    $hold_url = $this->url('overdrive-hold');
     $checkedOut = $isOnHold = false;
 
     $checkedOutResult = $this->driver->isCheckedOut();
@@ -37,7 +37,7 @@ elseif($avail->data):
 
         if($checkedOut):
             $odaction .= "<div class=\"od_status checkedout alert alert-info\">
-                          {$this->transEsc("od_is_checkedout",["%%due_date%%"=>$checkedOut->expires])}
+                          {$this->transEsc("od_is_checkedout", ["%%due_date%%" => $checkedOut->expires])}
                           </div>";
 
             if($checkedOut->isReturnable):
@@ -57,9 +57,9 @@ elseif($avail->data):
                 $odaction .= "<div class=\"od_status onhold  alert alert-info\">
                              {$this->transEsc('od_is_on_hold')}";
                       if($hold->holdReadyForCheckout){
-                          $odaction .=  $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$hold->holdExpires]);
+                          $odaction .= $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $hold->holdExpires]);
                       }else{
-                          $odaction .=  $this->transEsc("od_hold_queue", ["%%holdPosition%%"=>$hold->holdListPosition, "%%numberOfHolds%%"=>$hold->numberOfHolds]);
+                          $odaction .= $this->transEsc("od_hold_queue", ["%%holdPosition%%" => $hold->holdListPosition, "%%numberOfHolds%%" => $hold->numberOfHolds]);
                       }
 
                $odaction .= "</div>

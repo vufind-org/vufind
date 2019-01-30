@@ -29,11 +29,11 @@
 
     <div class="action <?php echo $action ?>">
 
-    <?php if($action=="checkoutConfirm"): ?>
+    <?php if($action == "checkoutConfirm"): ?>
         <?php  if($result->status):?>
             <div class="odformats">
                 <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key=>$format):?>
+                <?php foreach($formats as $key => $format):?>
                 <ul><li><?php echo $key?></li></ul>
                 <?php endforeach;?>
             </div>
@@ -47,7 +47,7 @@
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
             <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
                 <div class="moreInfo">
-                    <?php echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$result->data->checkout->expires]); ?>
+                    <?php echo $this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
                 </div>
             </div>
         <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
@@ -55,11 +55,11 @@
                 <div class="moreInfo">
                     <?php echo $this->transEsc("od_is_on_hold");
                     if($hold->holdReadyForCheckout):
-                        echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$result->data->hold->holdExpires]);
+                        echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                     else:
                         echo $this->transEsc("od_hold_queue",
-                            ["%%holdPosition%%"=>$result->data->hold->holdListPosition,
-                                "%%numberOfHolds%%"=>$result->data->hold->numberOfHolds]);
+                            ["%%holdPosition%%" => $result->data->hold->holdListPosition,
+                                "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
                     endif;?>
                 </div>
             </div>
@@ -69,7 +69,7 @@
             </div>
 
         <?php endif;?>
-    <?php elseif($action=="holdConfirm"):    ?>
+    <?php elseif($action == "holdConfirm"):    ?>
 
         <?php  if($result->status):?>
      <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
@@ -85,7 +85,7 @@
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
         <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
             <div class="moreInfo">
-                <?php echo $this->transEsc("od_is_checkedout",["%%due_date%%"=>$result->data->checkout->expires]); ?>
+                <?php echo $this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
             </div>
         </div>
         <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
@@ -93,11 +93,11 @@
             <div class="moreInfo">
                 <?php echo $this->transEsc("od_is_on_hold");
                 if($hold->holdReadyForCheckout):
-                    echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%"=>$result->data->hold->holdExpires]);
+                    echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                 else:
                     echo $this->transEsc("od_hold_queue",
-                        ["%%holdPosition%%"=>$result->data->hold->holdListPosition,
-                            "%%numberOfHolds%%"=>$result->data->hold->numberOfHolds]);
+                        ["%%holdPosition%%" => $result->data->hold->holdListPosition,
+                            "%%numberOfHolds%%" => $result->data->hold->numberOfHolds]);
                 endif;?>
             </div>
         </div>
@@ -108,7 +108,7 @@
 
         <?php endif;?>
 
-    <?php elseif($action=="cancelHoldConfirm"): ?>
+    <?php elseif($action == "cancelHoldConfirm"): ?>
             <form class="" method="POST" name="cancelHold" data-lightbox-onclose="VuFind.refreshPage">
 
                 <div class="form-group pull-right">
@@ -118,7 +118,7 @@
             </form>
 
 
-    <?php elseif($action=="returnTitleConfirm"): ?>
+    <?php elseif($action == "returnTitleConfirm"): ?>
         <form class="" method="POST" name="returnTitle" data-lightbox-onclose="VuFind.refreshPage">
             <div class="pull-right">
 
@@ -127,30 +127,30 @@
             </div>
         </form>
 
-    <?php elseif($action=="getTitleConfirm"): ?>
+    <?php elseif($action == "getTitleConfirm"): ?>
 
             <div class="pull-right">
 
                 <input name="doAction" value="getTitle" type="hidden">
                 <div class="odformats">
                     <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-                    <?php foreach($formats as $key=>$format):
+                    <?php foreach($formats as $key => $format):
                         //$od_id = $this->driver->getOverdriveID();
                         //$rec_id = $this->driver->getUniqueID();
                         ?>
                         <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?php echo $key ?>" type="submit"> -->
                         <a data-lightbox-ignore class="btn btn-primary" target="_blank"
-                           href="<?php echo $this->url('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
+                           href="<?php echo $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
                             <?php echo $format ?></a>
                     <?php endforeach;?>
                 </div>
             </div>
             <form class="" method="POST" name="getTitle" data-lightbox-onclose="VuFind.refreshPage"></form>
 
-    <?php elseif($action =='placeHold'): ?>
+    <?php elseif($action == 'placeHold'): ?>
         <?php  if($result->status):?>
             <div class="alert alert-success"><i class='fa fa-check'></i>
-            <?php echo $this->transEsc("od_hold_place_success", ["%%holdListPosition%%"=>$result->data->holdListPosition]); ?>
+            <?php echo $this->transEsc("od_hold_place_success", ["%%holdListPosition%%" => $result->data->holdListPosition]); ?>
             </div>
 
         <?php else: ?>
@@ -164,7 +164,7 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
         </div>
 
-        <?php elseif($action =='cancelHold'): ?>
+        <?php elseif($action == 'cancelHold'): ?>
         <?php  if($result->status):?>
           <div class="alert alert-success"><i class='fa fa-check'></i>
             <?php echo $this->transEsc("od_hold_cancel_success"); ?>
@@ -180,15 +180,15 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
         </div>
 
-    <?php elseif($action=="doCheckout"): ?>
+    <?php elseif($action == "doCheckout"): ?>
         <?php  if($result->status):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
-        <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%'=>$result->data->expires]); ?>
+        <?php echo $this->transEsc("od_docheckout_success", ['%%expireDate%%' => $result->data->expires]); ?>
       </div>
         <!--
             <div class="odformats">
                 <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key=>$format):?>
+                <?php foreach($formats as $key => $format):?>
                     <button type="button" class="btn btn-primary" aria-hidden="true"><?php echo $key?></button>
 
                 <?php endforeach;?>
@@ -196,13 +196,13 @@
             -->
             <div class="odformats">
                 <h3><?php echo $this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key=>$format):
+                <?php foreach($formats as $key => $format):
                     //$od_id = $this->driver->getOverdriveID();
                     //$rec_id = $this->driver->getUniqueID();
                     ?>
                     <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?php echo $key ?>" type="submit"> -->
                     <a data-lightbox-ignore class="btn btn-primary" target="_blank"
-                       href="<?php echo $this->url('overdrive-hold')."?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
+                       href="<?php echo $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
                         <?php echo $format->name ?></a>
                 <?php endforeach;?>
             </div>
@@ -217,7 +217,7 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo $this->transEsc("close"); ?></button>
         </div>
 
-    <?php elseif($action=="returnTitle"): ?>
+    <?php elseif($action == "returnTitle"): ?>
     <?php if($result->status):?>
       <div class="alert alert-success"><i class='fa fa-check'></i>
         <?php echo $this->transEsc("od_return_success"); ?>
@@ -229,7 +229,7 @@
       </div>
         <?php endif;?>
 
-        <?php elseif($action=="getTitle"): ?>
+        <?php elseif($action == "getTitle"): ?>
     <?php if($result->status):?>
             <div class="alert alert-success"><i class='fa fa-check'></i>
                 <?php echo $this->transEsc("od_return_success"); ?>

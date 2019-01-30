@@ -10,12 +10,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Log\LoggerAwareInterface;
-
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Overdrive Controller supports actions for Overdrive Integration
@@ -53,7 +51,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $this->debug("ODRC constructed");
     }
 
-
     /**
      * My Content Action
      * Prepares the view for the Overdrive MyContent template.
@@ -70,8 +67,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-        $holds = array();
-        $checkouts = array();
+        $holds = [];
+        $checkouts = [];
         $checkoutsUnavailable = false;
         $holdsUnavailable = false;
 
@@ -79,7 +76,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!$odAccessResult->status) {
-
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code,
@@ -89,7 +85,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $checkoutsUnavailable = true;
             $holdsUnavailable = true;
         }
-
 
         if ($odAccessResult->status) {
             //get the current Overdrive checkouts
@@ -218,7 +213,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $action = "checkoutConfirm";
             } else {
                 $action = "holdConfirm";
-
             }
         }
 
@@ -238,7 +232,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $result->status = true;
             }
             $actionTitleCode = "od_checkout";
-
         } elseif ($action == "holdConfirm") {
             $result = $this->connector->getResultObject();
             //check to make sure they don't already have this checked out
@@ -258,37 +251,28 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $result->status = true;
             }
             $actionTitleCode = "od_hold";
-
         } elseif ($action == "cancelHoldConfirm") {
             $actionTitleCode = "od_cancel_hold";
-
         } elseif ($action == "returnTitleConfirm") {
             $actionTitleCode = "od_early_return";
-
         } elseif ($action == "getTitleConfirm") {
             //$checkout = $this->connector->getCheckout($od_id, false);
             //get only formats that are available...
             $formats = $driver->getAvailableDigitalFormats();
             $actionTitleCode = "od_get_title";
-
         } elseif ($action == "doCheckout") {
             $actionTitleCode = "od_checkout";
             $result = $this->connector->doOverdriveCheckout($od_id);
-
-
         } elseif ($action == "placeHold") {
             $actionTitleCode = "od_hold";
             $email = $this->params()->fromPost('email');
             $result = $this->connector->placeOverDriveHold($od_id, $email);
-
         } elseif ($action == "cancelHold") {
             $actionTitleCode = "od_cancel_hold";
             $result = $this->connector->cancelHold($od_id);
-
         } elseif ($action == "returnTitle") {
             $actionTitleCode = "od_early_return";
             $result = $this->connector->returnResource($od_id);
-
         } elseif ($action == "getTitle") {
             $actionTitleCode = "od_get_title";
             //need to get server name etc.  maybe this: getServerUrl();
@@ -305,7 +289,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 header("Location: $url");
                 exit();
             }
-
         } else {
             $this->logWarning("overdrive action not defined: $action");
         }

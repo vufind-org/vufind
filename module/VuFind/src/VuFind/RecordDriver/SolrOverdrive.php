@@ -29,9 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-
 namespace VuFind\RecordDriver;
-
 
 use Zend\Log\LoggerAwareInterface;
 
@@ -51,7 +49,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-
 
     /**
      * Overdrive Connector
@@ -85,7 +82,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $this->debug("SolrOverdrive Rec Driver constructed");
     }
 
-
     /**
      * Supports OpenURL
      *
@@ -106,7 +102,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return false;
     }
 
-
     /**
      * Get Available Digital Formats
      *
@@ -117,7 +112,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getAvailableDigitalFormats()
     {
-        $formats = array();
+        $formats = [];
         //$allFormats = $this->getDigitalFormats();
         $formatNames = $this->connector->getFormatNames();
         $od_id = $this->getOverdriveID();
@@ -131,7 +126,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
                 //if we aren't locked in, we can show all formats
             } else {
-
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $format->name;
                 }
@@ -150,10 +144,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getDigitalFormats()
     {
-        $formats = array();
+        $formats = [];
         if ($this->config->isMarc) {
             $od_id = $this->getOverdriveID();
-            $fulldata = $this->connector->getMetadata(array($od_id));
+            $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
         } else {
             $jsonData = $this->fields['fullrecord'];
@@ -167,7 +161,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return $formats;
     }
 
-
     /**
      * Get an array of all the formats associated with the record. This array
      * is designed to be used in a template.
@@ -177,10 +170,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedDigitalFormats()
     {
-
-        $results = array();
+        $results = [];
         foreach ($this->getDigitalFormats() as $format) {
-            $tmpresults = array();
+            $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
                     $size = round($format->fileSize / 1000000);
@@ -193,8 +185,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     $size .= " KB";
                 }
                 $tmpresults["File Size"] = $size;
-
-
             }
             if ($format->partCount) {
                 $tmpresults["Parts"] = $format->partCount;
@@ -223,10 +213,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getPreviewLinks()
     {
-        $results = array();
+        $results = [];
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
-            $fulldata = $this->connector->getMetadata(array($od_id));
+            $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
         } else {
             $jsonData = $this->fields['fullrecord'];
@@ -246,7 +236,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return $results;
     }
 
-
     /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
@@ -257,7 +246,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         //TODO add this as an overdrive configuration to turn it off
         return true;
     }
-
 
     /**
      * Get Overdrive Access
@@ -304,7 +292,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result = strtolower(
                     $this->getFieldArray($field, $subfield)[0]
                 );
-
             } else {
                 $result = strtolower($this->getUniqueID());
             }
@@ -326,7 +313,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return $this->connector->getAvailability($overDriveId);
     }
 
-
     /**
      * Is Checked Out
      *
@@ -338,7 +324,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isCheckedOut()
     {
-        $this->debug(" ischeckout", array(), true);
+        $this->debug(" ischeckout", [], true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
         if ($result->status) {
@@ -354,12 +340,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if (!$checkedout) {
                 $result->data = false;
             }
-
         }
         //if it didn't work, an error should be logged from the connector
         return $result;
     }
-
 
     /**
      * Is Held
@@ -412,12 +396,17 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             return parent::getMarcRecord();
         } else {
             //return new fake marc class
-            return (new class
-            {
-                public function getField($f) { return ""; }
+            return new class {
+                public function getField($f)
+                {
+                    return "";
+                }
 
-                public function getFields($f) { return []; }
-            });
+                public function getFields($f)
+                {
+                    return [];
+                }
+            };
         }
     }
 
@@ -474,7 +463,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->config->isMarc) {
             return parent::getGeneralNotes();
         } else {
-
             return [];
         }
     }
@@ -508,7 +496,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         //if the record is marc then the cover links probably aren't there.
         if ($this->config->isMarc) {
             $od_id = $this->getOverdriveID();
-            $fulldata = $this->connector->getMetadata(array($od_id));
+            $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
         } else {
             $result = false;
@@ -538,7 +526,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
             $newDesc = preg_replace("/&#8217;/i", "", $desc);
             $newDesc = strip_tags($newDesc);
-            return array("Summary" => $newDesc);
+            return ["Summary" => $newDesc];
         }
     }
 
@@ -550,7 +538,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getRawData()
     {
-
         if ($this->config->isMarc) {
             return parent::getRawData();
         } else {
@@ -558,7 +545,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $data = json_decode($jsonData, true);
             return $data;
         }
-
     }
 
     /**
@@ -614,10 +600,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                         : [$i];
                 };
                 return array_map($callback, array_unique($headings));
-
             }
         } else {
-            return array();
+            return [];
         }
     }
 
@@ -640,11 +625,10 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedRawData()
     {
-
-        $result = array();
+        $result = [];
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
-        $c_arr = array();
+        $c_arr = [];
         foreach ($data['creators'] as $creator) {
             $c_arr[] = "<strong>{$creator["role"]}<strong>: "
                 . $creator["name"];

@@ -3,11 +3,11 @@
   $this->headTitle('Formats' . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="table table-striped">
-  <?php foreach ($this->driver->getFormattedDigitalFormats() as $formatkey=>$format): ?>
+  <?php foreach ($this->driver->getFormattedDigitalFormats() as $formatkey => $format): ?>
     <tr>
       <th colspan="2"><?=$formatkey?></th>
     </tr>
-        <?php foreach ((array)$format as $key=>$value): ?>
+        <?php foreach ((array)$format as $key => $value): ?>
         <tr>
           <td><?=$key ?></td><td><?=$value ?></td>
         </tr>
