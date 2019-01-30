@@ -114,7 +114,7 @@ abstract class DbTestCase extends TestCase
             $this->addRowManager($sm);
             $sm->setService(
                 'Zend\Session\SessionManager',
-                $this->createMock('Zend\Session\SessionManager')
+                $this->createMock(\Zend\Session\SessionManager::class)
             );
 
             // Override the configuration so PostgreSQL tests can work:

@@ -49,13 +49,13 @@ class SimilarTest extends \VuFindTest\Unit\TestCase
     {
         // Similar is really just a thin wrapper around the search service; make
         // sure it does its job properly with the help of some mocks.
-        $driver = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+        $driver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->setMethods(['getUniqueId'])
             ->getMock();
         $driver->expects($this->once())
             ->method('getUniqueId')
             ->will($this->returnValue('fakeid'));
-        $service = $this->getMockBuilder('VuFindSearch\Service')
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->setMethods(['similar'])
             ->getMock();
         $service->expects($this->once())

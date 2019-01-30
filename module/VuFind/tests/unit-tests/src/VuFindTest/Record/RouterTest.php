@@ -174,7 +174,7 @@ class RouterTest extends TestCase
      */
     protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
         $driver->expects($this->any())->method('getSourceIdentifier')
@@ -195,11 +195,11 @@ class RouterTest extends TestCase
         if (null === $record) {
             $record = $this->getDriver();
         }
-        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+        $loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->setConstructorArgs(
                 [
-                    $this->createMock('VuFindSearch\Service'),
-                    $this->createMock('VuFind\RecordDriver\PluginManager')
+                    $this->createMock(\VuFindSearch\Service::class),
+                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
                 ]
             )->getMock();
         $loader->expects($this->any())->method('load')

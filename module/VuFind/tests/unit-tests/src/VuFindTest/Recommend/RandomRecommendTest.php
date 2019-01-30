@@ -51,8 +51,8 @@ class RandomRecommendTest extends TestCase
     public function setup()
     {
         $this->recommend = new Random(
-            $this->createMock('VuFindSearch\Service'),
-            $this->createMock('VuFind\Search\Params\PluginManager')
+            $this->createMock(\VuFindSearch\Service::class),
+            $this->createMock(\VuFind\Search\Params\PluginManager::class)
         );
     }
 
@@ -123,8 +123,8 @@ class RandomRecommendTest extends TestCase
      */
     public function testCanInitialise()
     {
-        $service = $this->createMock('VuFindSearch\Service');
-        $paramManager = $this->createMock('VuFind\Search\Params\PluginManager');
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
 
         // Use Solr since some Base components are abstract:
@@ -132,14 +132,14 @@ class RandomRecommendTest extends TestCase
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock('\Zend\StdLib\Parameters');
+        $request = $this->createMock(\Zend\StdLib\Parameters::class);
 
         $service->expects($this->once())->method('random')
             ->with(
                 $this->equalTo("Solr"),
                 $this->equalTo($params->getQuery()),
                 $this->equalTo(10)
-            )->will($this->returnValue($this->createMock('VuFindSearch\Response\RecordCollectionInterface')));
+            )->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
@@ -152,8 +152,8 @@ class RandomRecommendTest extends TestCase
      */
     public function testCanInitialiseInDisregardMode()
     {
-        $service = $this->createMock('VuFindSearch\Service');
-        $paramManager = $this->createMock('VuFind\Search\Params\PluginManager');
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
 
         $paramManager->expects($this->once())->method('get')
@@ -170,11 +170,11 @@ class RandomRecommendTest extends TestCase
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock('\Zend\StdLib\Parameters');
+        $request = $this->createMock(\Zend\StdLib\Parameters::class);
 
         $service->expects($this->once())->method('random')
             ->with($this->equalTo("Solr"))
-            ->will($this->returnValue($this->createMock('VuFindSearch\Response\RecordCollectionInterface')));
+            ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
@@ -187,8 +187,8 @@ class RandomRecommendTest extends TestCase
      */
     public function testWillReturnEmptyForMinimumResultLimit()
     {
-        $service = $this->createMock('VuFindSearch\Service');
-        $paramManager = $this->createMock('VuFind\Search\Params\PluginManager');
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
         $records = ["1", "2", "3", "4", "5"];
 
@@ -198,9 +198,9 @@ class RandomRecommendTest extends TestCase
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock('\Zend\StdLib\Parameters');
+        $request = $this->createMock(\Zend\StdLib\Parameters::class);
 
-        $results = $this->createMock('VuFindSearch\Response\RecordCollectionInterface');
+        $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')
             ->will($this->returnValue($records));
 
@@ -225,8 +225,8 @@ class RandomRecommendTest extends TestCase
      */
     public function testWillReturnResults()
     {
-        $service = $this->createMock('VuFindSearch\Service');
-        $paramManager = $this->createMock('VuFind\Search\Params\PluginManager');
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
         $records = ["1", "2", "3", "4", "5"];
 
@@ -236,9 +236,9 @@ class RandomRecommendTest extends TestCase
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock('\Zend\StdLib\Parameters');
+        $request = $this->createMock(\Zend\StdLib\Parameters::class);
 
-        $results = $this->createMock('VuFindSearch\Response\RecordCollectionInterface');
+        $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')
             ->will($this->returnValue($records));
 
