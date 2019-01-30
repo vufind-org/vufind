@@ -61,7 +61,7 @@ class ChannelsControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $loader = $container->get('VuFind\ChannelProvider\ChannelLoader');
+        $loader = $container->get(\VuFind\ChannelProvider\ChannelLoader::class);
         return new $requestedName($loader);
     }
 }

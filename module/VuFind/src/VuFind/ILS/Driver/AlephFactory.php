@@ -61,7 +61,9 @@ class AlephFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         return parent::__invoke(
-            $container, $requestedName, [$container->get('VuFind\Cache\Manager')]
+            $container,
+            $requestedName,
+            [$container->get(\VuFind\Cache\Manager::class)]
         );
     }
 }

@@ -50,8 +50,8 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $themeInfo = $this->serviceLocator->get('VuFindTheme\ThemeInfo');
-        $language = $this->serviceLocator->get('Zend\Mvc\I18n\Translator')
+        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 

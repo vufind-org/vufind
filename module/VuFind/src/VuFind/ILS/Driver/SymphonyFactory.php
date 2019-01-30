@@ -62,8 +62,8 @@ class SymphonyFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Cache\Manager')
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Cache\Manager::class)
         );
     }
 }

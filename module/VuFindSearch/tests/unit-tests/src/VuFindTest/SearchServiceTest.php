@@ -136,7 +136,7 @@ class SearchServiceTest extends TestCase
     public function testRetrieveBatchInterface()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestClassForRetrieveBatchInterface');
+        $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -165,7 +165,7 @@ class SearchServiceTest extends TestCase
     {
         $service = $this->getService();
         $backend = $this->getBackend();
-        $mockRecord = $this->createMock('VuFindSearch\Response\RecordInterface');
+        $mockRecord = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
         $response1 = $this->getRecordCollection();
         $response1->expects($this->once())->method('add')
             ->with($this->equalTo($mockRecord));
@@ -198,7 +198,7 @@ class SearchServiceTest extends TestCase
     public function testRetrieveBatchInterfaceException()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestClassForRetrieveBatchInterface');
+        $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -253,7 +253,7 @@ class SearchServiceTest extends TestCase
     public function testRandomInterface()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestClassForRandomInterface');
+        $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -291,7 +291,7 @@ class SearchServiceTest extends TestCase
     public function testRandomInterfaceWithException()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestClassForRandomInterface');
+        $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -348,7 +348,7 @@ class SearchServiceTest extends TestCase
         for ($i = 1; $i < $limit + 1; $i++) {
             $response = $this->getRecordCollection();
             $response->expects($this->any())->method('first')
-                ->will($this->returnValue($this->createMock('VuFindSearch\Response\RecordInterface')));
+                ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordInterface::class)));
             $backend->expects($this->at($i))->method('search')
                 ->with(
                     $this->equalTo($query),
@@ -575,7 +575,7 @@ class SearchServiceTest extends TestCase
     public function testSimilar()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestBackendClassForSimilar');
+        $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -621,7 +621,7 @@ class SearchServiceTest extends TestCase
     public function testSimilarException()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock('VuFindTest\TestBackendClassForSimilar');
+        $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -651,9 +651,9 @@ class SearchServiceTest extends TestCase
      */
     public function testFailedResolve()
     {
-        $mockResponse = $this->createMock('Zend\EventManager\ResponseCollection');
+        $mockResponse = $this->createMock(\Zend\EventManager\ResponseCollection::class);
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
-        $em = $this->createMock('Zend\EventManager\EventManagerInterface');
+        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
             ->with(
@@ -674,7 +674,7 @@ class SearchServiceTest extends TestCase
     protected function getBackend()
     {
         if (!$this->backend) {
-            $this->backend = $this->createMock('VuFindSearch\Backend\BackendInterface');
+            $this->backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
         }
         return $this->backend;
     }
@@ -686,7 +686,7 @@ class SearchServiceTest extends TestCase
      */
     protected function getService()
     {
-        $em = $this->createMock('Zend\EventManager\EventManagerInterface');
+        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
         $service = new SearchServiceMock($this->getBackend());
         $service->setEventManager($em);
         return $service;
@@ -701,7 +701,7 @@ class SearchServiceTest extends TestCase
      */
     protected function getRecordCollection()
     {
-        return $this->createMock('VuFindSearch\Response\AbstractRecordCollection');
+        return $this->createMock(\VuFindSearch\Response\AbstractRecordCollection::class);
     }
 }
 

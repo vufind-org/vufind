@@ -51,17 +51,17 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $context = new \VuFind\View\Helper\Root\Context();
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
-                $this->getMockBuilder('VuFind\Auth\Manager')->disableOriginalConstructor()->getMock(),
-                $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')->disableOriginalConstructor()->getMock()
+                $this->getMockBuilder(\VuFind\Auth\Manager::class)->disableOriginalConstructor()->getMock(),
+                $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)->disableOriginalConstructor()->getMock()
             ),
             'context' => $context,
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
-            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')->disableOriginalConstructor()->getMock()),
+            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
-            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockBuilder('VuFind\Record\Router')->disableOriginalConstructor()->getMock()),
+            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockBuilder(\VuFind\Record\Router::class)->disableOriginalConstructor()->getMock()),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($this->getServiceManager())),
-            'searchTabs' => $this->getMockBuilder('VuFind\View\Helper\Root\SearchTabs')->disableOriginalConstructor()->getMock(),
+            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
@@ -81,7 +81,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $methods = [
             'getBuilding', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
         ];
-        $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+        $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->setMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
@@ -136,7 +136,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $match = new \Zend\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
-            ->setRouter($this->createMock('Zend\Router\RouteStackInterface'))
+            ->setRouter($this->createMock(\Zend\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
         // Inject the view object into all of the helpers:

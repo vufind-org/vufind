@@ -135,20 +135,19 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }//end runItemAjax
   };
 
-  //store the handlers in a "hash" obj
   //add you own overridden handler here
-    var OdItemStatusHandler=Object.create(ItemStatusHandler);
-    OdItemStatusHandler.url = '/Overdrive/getStatus';
-    OdItemStatusHandler.itemStatusDelay = 200;
-    OdItemStatusHandler.name = "overdrive";
-    OdItemStatusHandler.itemStatusIds = [];
-    OdItemStatusHandler.itemStatusEls = [];
+  var OdItemStatusHandler=Object.create(ItemStatusHandler);
+  OdItemStatusHandler.url = '/Overdrive/getStatus';
+  OdItemStatusHandler.itemStatusDelay = 200;
+  OdItemStatusHandler.name = "overdrive";
+  OdItemStatusHandler.itemStatusIds = [];
+  OdItemStatusHandler.itemStatusEls = [];
 
-//store the handlers in a "hash" obj
-var checkItemHandlers = {
+  //store the handlers in a "hash" obj
+  var checkItemHandlers = {
     'ils': ItemStatusHandler,
     'overdrive': OdItemStatusHandler,
-};
+  };
 
   function checkItemStatus(el) {
     var $item = $(el);
@@ -163,7 +162,7 @@ var checkItemHandlers = {
     if ($item.find('.handler-name').length > 0) {
       handlerName = $item.find('.handler-name').val();
     }
-    
+
     //queue the element into the handler
     checkItemHandlers[handlerName].itemQueueAjax(id, $item);
   }
@@ -199,7 +198,7 @@ var checkItemHandlers = {
         { enter: checkItemStatus }
       );
     }
-  };
+  }
 
   return { init: init, check: checkItemStatuses };
 });

@@ -44,20 +44,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'changetracker' => 'VuFind\Db\Row\ChangeTracker',
-        'comments' => 'VuFind\Db\Row\Comments',
-        'externalsession' => 'VuFind\Db\Row\ExternalSession',
-        'oairesumption' => 'VuFind\Db\Row\OaiResumption',
-        'record' => 'VuFind\Db\Row\Record',
-        'resource' => 'VuFind\Db\Row\Resource',
-        'resourcetags' => 'VuFind\Db\Row\ResourceTags',
-        'search' => 'VuFind\Db\Row\Search',
-        'session' => 'VuFind\Db\Row\Session',
-        'tags' => 'VuFind\Db\Row\Tags',
-        'user' => 'VuFind\Db\Row\User',
-        'usercard' => 'VuFind\Db\Row\UserCard',
-        'userlist' => 'VuFind\Db\Row\UserList',
-        'userresource' => 'VuFind\Db\Row\UserResource',
+        'changetracker' => ChangeTracker::class,
+        'comments' => Comments::class,
+        'externalsession' => ExternalSession::class,
+        'oairesumption' => OaiResumption::class,
+        'record' => Record::class,
+        'resource' => Resource::class,
+        'resourcetags' => ResourceTags::class,
+        'search' => Search::class,
+        'session' => Session::class,
+        'tags' => Tags::class,
+        'user' => User::class,
+        'usercard' => UserCard::class,
+        'userlist' => UserList::class,
+        'userresource' => UserResource::class,
     ];
 
     /**
@@ -66,20 +66,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Db\Row\ChangeTracker' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Comments' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\ExternalSession' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\OaiResumption' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Record' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Resource' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\ResourceTags' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Search' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Session' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\Tags' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\User' => 'VuFind\Db\Row\UserFactory',
-        'VuFind\Db\Row\UserCard' => 'VuFind\Db\Row\RowGatewayFactory',
-        'VuFind\Db\Row\UserList' => 'VuFind\Db\Row\UserListFactory',
-        'VuFind\Db\Row\UserResource' => 'VuFind\Db\Row\RowGatewayFactory',
+        ChangeTracker::class => RowGatewayFactory::class,
+        Comments::class => RowGatewayFactory::class,
+        ExternalSession::class => RowGatewayFactory::class,
+        OaiResumption::class => RowGatewayFactory::class,
+        Record::class => RowGatewayFactory::class,
+        Resource::class => RowGatewayFactory::class,
+        ResourceTags::class => RowGatewayFactory::class,
+        Search::class => RowGatewayFactory::class,
+        Session::class => RowGatewayFactory::class,
+        Tags::class => RowGatewayFactory::class,
+        User::class => UserFactory::class,
+        UserCard::class => RowGatewayFactory::class,
+        UserList::class => UserListFactory::class,
+        UserResource::class => RowGatewayFactory::class,
     ];
 
     /**
@@ -90,6 +90,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Db\Row\RowGateway';
+        return RowGateway::class;
     }
 }

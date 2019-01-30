@@ -62,9 +62,9 @@ class FormFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get('VuFind\Config\PluginManager')
+        $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->toArray();
-        $yamlReader = $container->get('VuFind\Config\YamlReader');
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
 
         return new $requestedName(
             $yamlReader, $config['Feedback'] ?? null
