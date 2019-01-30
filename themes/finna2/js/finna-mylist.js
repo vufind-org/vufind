@@ -390,7 +390,7 @@ finna.myList = (function finnaMyList() {
       var textArea = $('<textarea/>');
       var currentVal = null;
       currentVal = container.data('markdown');
-      textArea.text(decodeURIComponent(currentVal));
+      textArea.text(currentVal);
       container.hide();
       textArea.insertAfter(container);
       if (editor) {
