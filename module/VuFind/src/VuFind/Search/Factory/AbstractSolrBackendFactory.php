@@ -150,7 +150,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $this->serviceLocator = $sm;
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
@@ -351,7 +351,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
-        if ($this->serviceLocator->has('VuFindHttp\HttpService')) {
+        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
             $connector->setProxy(
                 $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             );

@@ -87,7 +87,7 @@ class EITBackendFactory implements FactoryInterface
         $this->config = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
             ->get('EIT');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();

@@ -105,7 +105,7 @@ abstract class DbTestCase extends TestCase
         $sm = parent::getServiceManager();
 
         // Add database service:
-        if (!$sm->has('VuFind\Db\Table\PluginManager')) {
+        if (!$sm->has(\VuFind\Db\Table\PluginManager::class)) {
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get(\VuFind\Config\PluginManager::class)->get('config')
             );

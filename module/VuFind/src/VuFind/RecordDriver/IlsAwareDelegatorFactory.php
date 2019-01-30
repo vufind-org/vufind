@@ -60,7 +60,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
 
         // Attach the ILS if at least one backend supports it:
         $ilsBackends = $this->getIlsBackends($container);
-        if (!empty($ilsBackends) && $container->has('VuFind\ILS\Connection')) {
+        if (!empty($ilsBackends) && $container->has(\VuFind\ILS\Connection::class)) {
             $driver->attachILS(
                 $container->get(\VuFind\ILS\Connection::class),
                 $container->get(\VuFind\ILS\Logic\Holds::class),

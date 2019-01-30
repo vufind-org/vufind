@@ -86,7 +86,7 @@ class LibGuidesBackendFactory implements FactoryInterface
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
         $this->libGuidesConfig = $configReader->get('LibGuides');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();

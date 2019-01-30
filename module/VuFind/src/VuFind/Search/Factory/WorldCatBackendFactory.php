@@ -95,7 +95,7 @@ class WorldCatBackendFactory implements FactoryInterface
             ->get('config');
         $this->wcConfig = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)->get('WorldCat');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();

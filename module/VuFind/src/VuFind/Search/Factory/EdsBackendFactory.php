@@ -93,7 +93,7 @@ class EdsBackendFactory implements FactoryInterface
         $this->edsConfig = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
             ->get('EDS');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();

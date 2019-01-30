@@ -444,7 +444,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has('VuFind\Log\Logger')) {
+            if ($sm->has(\VuFind\Log\Logger::class)) {
                 $log = $sm->get(\VuFind\Log\Logger::class);
                 if (is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
