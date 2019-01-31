@@ -270,13 +270,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $operation  the SymWS operation name
      * @param array  $parameters the request parameters for the operation
      * @param array  $options    An associative array of additional options:
-     *                           - 'login': login to use for the operation;
-     *                                      omit for configured default
-     *                                      credentials or anonymous
-     *                           - 'password': password associated with login;
-     *                                         omit for no password
-     *                           - 'header': SoapHeader to use for the request;
-     *                                       omit to handle automatically
+     * - 'login': login to use for the operation; omit for configured default
+     * credentials or anonymous
+     * - 'password': password associated with login; omit for no password
+     * - 'header': SoapHeader to use for the request; omit to handle automatically
      *
      * @return mixed the result of the SOAP call
      */

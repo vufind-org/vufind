@@ -62,7 +62,8 @@ class BrowZineFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backend = $container->get('VuFind\Search\BackendManager')->get('BrowZine');
+        $backend = $container->get(\VuFind\Search\BackendManager::class)
+            ->get('BrowZine');
         return new $requestedName($backend->getConnector());
     }
 }

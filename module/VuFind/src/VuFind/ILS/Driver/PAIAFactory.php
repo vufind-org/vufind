@@ -62,7 +62,7 @@ class PAIAFactory extends DriverWithDateConverterFactory
         }
         return parent::__invoke(
             $container, $requestedName,
-            [$container->get('Zend\Session\SessionManager')]
+            [$container->get(\Zend\Session\SessionManager::class)]
         );
     }
 }

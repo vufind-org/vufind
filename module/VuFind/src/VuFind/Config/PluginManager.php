@@ -52,7 +52,7 @@ class PluginManager extends Base
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\Config\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

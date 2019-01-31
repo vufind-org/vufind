@@ -30,7 +30,6 @@ namespace VuFind\ChannelProvider;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use Zend\Mvc\Controller\Plugin\Url;
 

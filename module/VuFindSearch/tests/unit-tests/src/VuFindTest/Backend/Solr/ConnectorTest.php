@@ -134,7 +134,7 @@ class ConnectorTest extends TestCase
     public function testSaveThrowsUnknownFormat()
     {
         $conn = $this->createConnector();
-        $document = $this->createMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
+        $document = $this->createMock(\VuFindSearch\Backend\Solr\Document\UpdateDocument::class);
         $conn->write($document, 'unknown', 'update');
     }
 

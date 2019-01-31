@@ -27,6 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFindApi\Formatter\RecordFormatter;
+
 /**
  * OAIController Class
  *
@@ -105,7 +108,7 @@ class OaiController extends AbstractBase
                 $this->getViewRenderer()->plugin('recordLink')
             );
             $server->setRecordFormatter(
-                $this->serviceLocator->get('VuFindApi\Formatter\RecordFormatter')
+                $this->serviceLocator->get(RecordFormatter::class)
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {

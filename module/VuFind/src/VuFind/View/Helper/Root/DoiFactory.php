@@ -61,7 +61,8 @@ class DoiFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName($helpers->get('context'), $config->DOI ?? null);
     }

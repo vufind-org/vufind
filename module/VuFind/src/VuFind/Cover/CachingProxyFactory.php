@@ -61,10 +61,10 @@ class CachingProxyFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get('VuFind\Cache\Manager')
+        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCache('cover')->getOptions()->getCacheDir();
-        $client = $container->get('VuFindHttp\HttpService')->createClient();
-        $config = $container->get('VuFind\Config\PluginManager')->get('config')
+        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
             ->toArray();
         $whitelist = isset($config['Content']['coverproxyCache'])
             ? (array)$config['Content']['coverproxyCache'] : [];
