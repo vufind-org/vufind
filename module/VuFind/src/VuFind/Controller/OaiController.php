@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
