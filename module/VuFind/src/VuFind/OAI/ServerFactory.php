@@ -62,9 +62,9 @@ class ServerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager'),
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Db\Table\PluginManager')
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Db\Table\PluginManager::class)
         );
     }
 }
