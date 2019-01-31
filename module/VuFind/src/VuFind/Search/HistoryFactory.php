@@ -61,10 +61,11 @@ class HistoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $searchTable = $container->get('VuFind\Db\Table\PluginManager')
+        $searchTable = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('Search');
-        $resultsManager = $container->get('VuFind\Search\Results\PluginManager');
-        $sessionId = $container->get('Zend\Session\SessionManager')->getId();
+        $resultsManager = $container
+            ->get(\VuFind\Search\Results\PluginManager::class);
+        $sessionId = $container->get(\Zend\Session\SessionManager::class)->getId();
         return new $requestedName($searchTable, $sessionId, $resultsManager);
     }
 }

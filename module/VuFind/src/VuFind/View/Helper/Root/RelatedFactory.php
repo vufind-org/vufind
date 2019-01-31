@@ -62,9 +62,9 @@ class RelatedFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Related\PluginManager'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Search\Options\PluginManager')
+            $container->get(\VuFind\Related\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Search\Options\PluginManager::class)
         );
     }
 }

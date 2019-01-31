@@ -165,7 +165,7 @@ trait HoldsTrait
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup

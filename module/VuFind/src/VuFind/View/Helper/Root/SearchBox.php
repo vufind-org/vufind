@@ -127,6 +127,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Is autocomplete enabled for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteAutoSubmit($activeSearchClass)
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteAutoSubmit();
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *

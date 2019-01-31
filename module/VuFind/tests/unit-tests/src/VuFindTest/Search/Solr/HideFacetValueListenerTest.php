@@ -53,7 +53,7 @@ class HideFacetValueListenerTest extends TestCase
      */
     protected function getMockBackend($id = 'Solr')
     {
-        $backend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->any())->method('getIdentifier')->will(
             $this->returnValue($id)
@@ -120,7 +120,7 @@ class HideFacetValueListenerTest extends TestCase
     public function testAttach()
     {
         $listener = $this->getListener();
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('post'),

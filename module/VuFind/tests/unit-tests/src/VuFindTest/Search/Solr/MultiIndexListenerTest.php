@@ -182,7 +182,7 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testAttach()
     {
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),

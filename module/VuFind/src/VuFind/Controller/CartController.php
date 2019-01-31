@@ -69,7 +69,7 @@ class CartController extends AbstractBase
      */
     protected function getCart()
     {
-        return $this->serviceLocator->get('VuFind\Cart');
+        return $this->serviceLocator->get(\VuFind\Cart::class);
     }
 
     /**
@@ -270,7 +270,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+                $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
@@ -315,7 +315,7 @@ class CartController extends AbstractBase
      */
     protected function getExport()
     {
-        return $this->serviceLocator->get('VuFind\Export');
+        return $this->serviceLocator->get(\VuFind\Export::class);
     }
 
     /**

@@ -96,7 +96,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
-        $configLoader = $serviceLocator->get('VuFind\Config\PluginManager');
+        $configLoader = $serviceLocator->get(\VuFind\Config\PluginManager::class);
         $permissions = $configLoader->get('permissions')->toArray();
 
         // If we're configured to map legacy settings, do so now:

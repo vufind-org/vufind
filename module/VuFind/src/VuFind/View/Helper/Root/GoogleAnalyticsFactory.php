@@ -61,7 +61,8 @@ class GoogleAnalyticsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $key = $config->GoogleAnalytics->apiKey ?? false;
         $universal = $config->GoogleAnalytics->universal ?? false;
         return new $requestedName($key, $universal);

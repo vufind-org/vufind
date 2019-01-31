@@ -63,11 +63,11 @@ class GetItemStatusesFactory implements \Zend\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $container->get('VuFind\ILS\Connection'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
-            $container->get('VuFind\ILS\Logic\Holds')
+            $container->get(\VuFind\ILS\Logic\Holds::class)
         );
     }
 }
