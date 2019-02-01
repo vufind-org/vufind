@@ -729,13 +729,11 @@ class Server
         $headersOnly = ($verb != 'ListRecords');
 
         // Get deleted records in the requested range (if applicable):
-        $deleted = $this->listRecordsGetDeleted($from, $until)->toArray();
-        $deletedCount = count($deleted);
-        if ($currentCursor < $deletedCount) {
-            $limit = $currentCursor + $this->pageSize;
-            $limit = $limit > $deletedCount ? $deletedCount : $limit;
-            for ($i = $currentCursor; $i < $limit; $i++) {
-                $this->attachDeleted($xml, $deleted[$i], $headersOnly);
+        $deletedCount = $this->listRecordsGetDeletedCount($from, $until);
+        if ($deletedCount > 0 && $currentCursor < $deletedCount) {
+            $deleted = $this->listRecordsGetDeleted($from, $until, $currentCursor);
+            foreach ($deleted as $current) {
+                $this->attachDeleted($xml, $current, $headersOnly);
                 $currentCursor++;
             }
         }
@@ -840,18 +838,42 @@ class Server
     }
 
     /**
-     * Get an object to list deleted records in the specified range.
+     * Get an object containing the next page of deleted records from the specified
+     * date range.
+     *
+     * @param int $from          Start date.
+     * @param int $until         End date.
+     * @param int $currentCursor Offset into result set
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    protected function listRecordsGetDeleted($from, $until, $currentCursor)
+    {
+        $tracker = $this->tableManager->get('ChangeTracker');
+        return $tracker->retrieveDeleted(
+            $this->core,
+            date('Y-m-d H:i:s', $from),
+            date('Y-m-d H:i:s', $until),
+            $currentCursor,
+            $this->pageSize
+        );
+    }
+
+    /**
+     * Get a count of all deleted records in the specified date range.
      *
      * @param int $from  Start date.
      * @param int $until End date.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return int
      */
-    protected function listRecordsGetDeleted($from, $until)
+    protected function listRecordsGetDeletedCount($from, $until)
     {
         $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeleted(
-            $this->core, date('Y-m-d H:i:s', $from), date('Y-m-d H:i:s', $until)
+        return $tracker->retrieveDeletedCount(
+            $this->core,
+            date('Y-m-d H:i:s', $from),
+            date('Y-m-d H:i:s', $until)
         );
     }
 
