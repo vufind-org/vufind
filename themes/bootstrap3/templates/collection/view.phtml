@@ -66,7 +66,7 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="record">
-  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?>"<?php endif; ?>>
+  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?> solo"<?php endif; ?>>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
@@ -109,13 +109,5 @@
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
-
-  <?php if (isset($activeTabObj) && is_callable([$activeTabObj, 'getSideRecommendations'])): ?>
-    <div class="<?=$this->layoutClass('sidebar')?>">
-      <?php foreach ($activeTabObj->getSideRecommendations() as $current): ?>
-        <?=$this->recommend($current)?>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
 </div>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
