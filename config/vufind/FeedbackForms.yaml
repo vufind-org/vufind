@@ -40,14 +40,14 @@
 #     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select)
+#     type (string)      Element type (text|textarea|email|url|select|radio)
 #     help (string)      Element help text (translation key)
 #     
-#     And for select elements one of:
+#     And for select and radio elements:
 # 
 #     options (array) List of select values (translation keys)
 #
-#     or
+#     or for select elements alternatively:
 #
 #     optionGroups (array) List of option groups with keys:
 #       label (string) Group label (translation key)
@@ -141,3 +141,11 @@ forms:
         type: text
         label: Format
         required: true
+
+      - name: boolean
+        type: radio
+        label: Need Help?
+        required: true
+        options:
+          - Yes
+          - No

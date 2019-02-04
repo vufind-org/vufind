@@ -229,10 +229,15 @@ class Form extends \Zend\Form\Form implements
                 $value = $el[$field];
                 $element[$field] = $value;
             }
+
+            if ($element['type'] === 'radio' && ! isset($element['group'])) {
+                $element['group'] = $element['name'];
+            }
+
             $element['label'] = $this->translate($el['label']);
 
             $elementType = $element['type'];
-            if ($elementType === 'select') {
+            if (in_array($elementType, ['radio', 'select'])) {
                 if (empty($el['options']) && empty($el['optionGroups'])) {
                     continue;
                 }
@@ -367,6 +372,25 @@ class Form extends \Zend\Form\Form implements
         }
 
         switch ($type) {
+        case 'radio':
+            $options = [];
+            if (isset($el['options'])) {
+                $options = $el['options'];
+            }
+            $optionElements = [];
+            $first = true;
+            foreach ($options as $key => $val) {
+                $optionElements[] = [
+                    'label' => $key,
+                    'value' => $val,
+                    'label_attributes' => ['for' => $val],
+                    'attributes' => ['id' => $val],
+                    'selected' => $first
+                ];
+                $first = false;
+            }
+            $conf['options'] = ['value_options' => $optionElements];
+            break;
         case 'select':
             if (isset($el['options'])) {
                 $conf['options'] = ['value_options' => $el['options']];
@@ -401,6 +425,7 @@ class Form extends \Zend\Form\Form implements
             'url' => '\Zend\Form\Element\Url',
             'email' => '\Zend\Form\Element\Email',
             'textarea' => '\Zend\Form\Element\Textarea',
+            'radio' => '\Zend\Form\Element\Radio',
             'select' => '\Zend\Form\Element\Select',
             'submit' => '\Zend\Form\Element\Submit'
         ];
@@ -547,7 +572,7 @@ class Form extends \Zend\Form\Form implements
             }
             $value = $requestParams[$el['name']] ?? null;
 
-            if ($type === 'select') {
+            if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
             }
 
