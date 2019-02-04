@@ -300,8 +300,10 @@ class LoggerFactory implements FactoryInterface
                 $max = Logger::EMERG; // Emergency: system is unusable
                 $min = Logger::ALERT; // Alert: action must be taken immediately
                 break;
-            default:                    // INVALID FILTER
-                continue;
+            default:
+                // INVALID FILTER, so skip it. We must continue 2 levels, so we
+                // continue the foreach loop instead of just breaking the switch.
+                continue 2;
             }
 
             // Clone the submitted writer since we'll need a separate instance of the
