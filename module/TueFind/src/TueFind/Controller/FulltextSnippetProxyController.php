@@ -28,6 +28,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected $es; // Elasticsearch interface
     protected $logger;
     const FIELD = 'document_chunk';
+    const DOCUMENT_ID = 'document_id';
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger) {
@@ -36,7 +37,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function getFulltext($search_query) {
+    protected function getFulltext($doc_id, $search_query) {
 
         $params = [
              'index' => $this->index,
@@ -44,8 +45,11 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
              'body' => [
                  '_source' => false,
                  'query' => [
-                     'match' => [
-                           self::FIELD => $search_query
+                     'bool' => [
+                           'must' => [
+                               [ 'match' => [ self::FIELD => $search_query ] ],
+                               [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
+                           ]
                       ]
                  ],
                  'highlight' => [
@@ -59,15 +63,15 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
              ]
         ];
 
-        $top_level_hits = [];
-        $hits = [];
-        $highlight_results = [];
-        $response = $this->es->search($params);
+       $response = $this->es->search($params);
         return $this->extractSnippets($response);
     }
 
 
     protected function extractSnippets($response) {
+        $top_level_hits = [];
+        $hits = [];
+        $highlight_results = [];
         if (empty($response))
             return false;
         if (array_key_exists('hits', $response))
@@ -97,18 +101,22 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         $query = $this->getRequest()->getUri()->getQuery();
         $parameters = [];
         parse_str($query, $parameters);
-        $search_query = ($parameters['search_query']);
+        $doc_id = $parameters['doc_id'];
+        if (empty($doc_id))
+            return new JsonModel([
+               'status' => 'EMPTY DOC_ID'
+                ]);
+        $search_query = $parameters['search_query'];
         if (empty($search_query))
             return new JsonModel([
                 'status' => 'EMPTY QUERY'
                 ]);
-        $snippets = $this->getFulltext($search_query);
+        $snippets = $this->getFulltext($doc_id, $search_query);
         if (empty($snippets))
             return new JsonModel([
                  'status' => 'NO RESULTS'
                 ]);
 
-        //$this->logger->log(Logger::NOTICE, 'Fulltext Snippet ' . json_encode($snippets));
         return new JsonModel([
                'status' => 'SUCCESS',
                'snippets' =>  $snippets
