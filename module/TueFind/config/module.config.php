@@ -62,12 +62,14 @@ $config = [
     'service_manager' => [
         'factories' => [
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
+            'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
