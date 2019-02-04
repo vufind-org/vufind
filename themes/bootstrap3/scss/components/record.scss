@@ -140,3 +140,13 @@
       margin: 0 0.5rem 0.5rem 0;
     }
 }
+
+/* ------ Tabs ------ */
+.tab-pane::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+.tab-pane .result {
+  margin-left: 0;
+}
