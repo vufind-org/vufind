@@ -4,6 +4,8 @@ namespace TueFind\Controller;
 
 class FeedbackController extends \VuFind\Controller\FeedbackController
 {
+    protected $overwritableFields = ['title'];
+
     /**
      * Handles rendering and submit of dynamic forms.
      * Form configurations are specified in FeedbackForms.json
@@ -35,6 +37,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
 
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            $form = $this->prefillUrlInfo($form);
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -77,5 +80,15 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $this->showResponse($view, $form, $success, $errorMsg);
 
         return $view;
+    }
+
+    public function prefillUrlInfo($form) {
+        foreach ($this->overwritableFields as $overwritableField) {
+            $value = $this->params()->fromQuery($overwritableField);
+            if ($value != null) {
+                $form->setData([$overwritableField => $value]);
+            }
+        }
+        return $form;
     }
 }
