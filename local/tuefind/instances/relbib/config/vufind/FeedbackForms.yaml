@@ -87,57 +87,28 @@ forms:
   # Example for an acquisition request form
 
   AcquisitionRequest:
-    enabled: false
+    enabled: true
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
     title: Acquisition Request,
     response: Thank you for your feedback.
+    senderInfoRequired: true
 
     recipient:
       name: Your Library
       email: feedback@myuniversity.edu
 
     help:
-      pre: acquisition_request_info_pre
-      post: acquisition_request_info_post
+      pre: acquisition_request_description
+      #post: acquisition_request_info_post
 
     fields:
-      - name: receiver
-        type: select
-        label: acquisition_request_receiver
-        required: true,
-        options:
-          - Feedback
-          - bar
-
-      - name: receiver2
-        type: select
-        label: acquisition_request_receiver
-        required: true,
-        optionGroups:
-          - label: Library 1
-            options:
-              - Branch 1
-              - Branch 2
-              - Branch 3
-
-          - label: Library 2
-            options:
-              - Branch 1
-              - Branch 2
-
       - name: title
         type: text
-        label: Title
+        label: Book Request
         required: true
 
-      - name: author
-        type: text
-        label: Author
-        required: true
-
-      - name: format
-        type: text
-        label: Format
-        required: true
+      - name: message
+        type: textarea
+        label: Comments
