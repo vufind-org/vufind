@@ -42,6 +42,16 @@
     </div>
   </div>
 
+  <?php if (!empty($params->getFilterList(false))): ?>
+    <?=$this->render('search/filters.phtml',
+      [
+        'params' => $params,
+        'urlQuery' => $results->getUrlQuery(),
+        'isCollectionTab' => true
+      ]
+    ); ?>
+  <?php endif; ?>
+
   <?php if ($recordTotal > 0): ?>
     <div class="clearfix hidden-print">
       <div class="pull-left flip">
@@ -59,16 +69,6 @@
         <?php endif; ?>
       </div>
     </div>
-    <?php if (!empty($params->getFilterList(false))): ?>
-      <?=$this->render('search/filters.phtml',
-        [
-          'params' => $params,
-          'urlQuery' => $results->getUrlQuery(),
-          'isCollectionTab' => true
-        ]
-      ); ?>
-    <?php endif; ?>
-
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
       <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
