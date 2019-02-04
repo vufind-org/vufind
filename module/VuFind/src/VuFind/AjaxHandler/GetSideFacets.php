@@ -124,20 +124,20 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         // Allow both GET and POST variables:
         $request = $params->fromQuery() + $params->fromPost();
 
-        $results = $this->getFacetResults($request);
+        $configIndex = $request['configIndex'] ?? 0;
+        $configLocation = $request['location'] ?? 'side';
+        $results = $this->getFacetResults($request, $configIndex, $configLocation);
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Faceting request failed');
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
-        $recommend = $results->getRecommendations($request['location'] ?? 'side');
-        $configIndex = $request['configIndex'] ?? 0;
-        $recommend = $recommend[(int)$configIndex] ?? [];
+        $recommend = $results->getRecommendations($configLocation)[0];
 
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => DEFAULT_SEARCH_BACKEND
+            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND
         ];
         if (isset($request['enabledFacets'])) {
             // Render requested facets separately
@@ -158,24 +158,25 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Perform search and return the results
      *
-     * @param array $request Request params
+     * @param array  $request Request params
+     * @param string $index   Index of SideFacetsDeferred in configuration
+     * @param string $loc     Location where SideFacetsDeferred is configured
      *
      * @return Results
      */
-    protected function getFacetResults(array $request)
+    protected function getFacetResults(array $request, $index, $loc)
     {
-        $rManager = $this->recommendPluginManager;
-        $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
-            $listener = new RecommendListener($rManager, $searchId);
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+            $listener = new RecommendListener(
+                $this->recommendPluginManager, $searchId
+            );
             $config = [];
             $rawConfig = $params->getOptions()
                 ->getRecommendationSettings($params->getSearchHandler());
-            foreach ($rawConfig['side'] as $value) {
-                $settings = explode(':', $value);
-                if ($settings[0] === 'SideFacetsDeferred') {
-                    $settings[0] = 'SideFacets';
-                    $config['side'][] = implode(':', $settings);
-                }
+            $settings = explode(':', $rawConfig[$loc][$index] ?? '');
+            if ($settings[0] === 'SideFacetsDeferred') {
+                $settings[0] = 'SideFacets';
+                $config[$loc][] = implode(':', $settings);
             }
             $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
