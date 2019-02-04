@@ -60,7 +60,7 @@ class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testSimpleSearch()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('SolrAuth');
 
         // Search for a term known to exist in the sample data; request just one

@@ -61,6 +61,6 @@ class IlsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFind\ILS\Connection'));
+        return new $requestedName($container->get(\VuFind\ILS\Connection::class));
     }
 }

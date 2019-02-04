@@ -66,8 +66,9 @@ class CsrfFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $sessionManager = $container->get('Zend\Session\SessionManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $sessionManager = $container->get(\Zend\Session\SessionManager::class);
         return new $requestedName(
             [
                 'session' => new \Zend\Session\Container('csrf', $sessionManager),

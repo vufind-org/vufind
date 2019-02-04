@@ -61,10 +61,10 @@ class AbstractIlsAndUserActionFactory
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             ...($options ?: [])
         );
     }

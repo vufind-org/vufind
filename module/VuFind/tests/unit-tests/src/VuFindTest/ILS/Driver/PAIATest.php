@@ -616,7 +616,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         }
         $service = new \VuFindHttp\HttpService();
         $service->setDefaultAdapter($adapter);
-        $conn = $this->getMockBuilder('VuFind\ILS\Driver\PAIA')
+        $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([ new \VuFind\Date\Converter(),
                 new \Zend\Session\SessionManager()
             ])

@@ -62,7 +62,7 @@ class AccountCapabilitiesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\AccountCapabilities')
+            $container->get(\VuFind\Config\AccountCapabilities::class)
         );
     }
 }
