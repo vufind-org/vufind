@@ -85,7 +85,6 @@ class FeedbackController extends AbstractBase
 
         list($senderName, $senderEmail) = $this->getSender();
 
-        $replyToName = $replyToEmail = null;
         $replyToName = $params->fromPost(
             'name',
             $user ? trim($user->firstname . ' ' . $user->lastname) : null
@@ -99,7 +98,7 @@ class FeedbackController extends AbstractBase
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
-        list($success, $errorMsg)= $this->sendEmail(
+        list($success, $errorMsg) = $this->sendEmail(
             $recipientName, $recipientEmail, $senderName, $senderEmail,
             $replyToName, $replyToEmail, $emailSubject, $emailMessage
         );
@@ -150,6 +149,9 @@ class FeedbackController extends AbstractBase
     ) {
         try {
             $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+            if ($replyToEmail) {
+                $mailer->setFromAddressOverride('');
+            }
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),

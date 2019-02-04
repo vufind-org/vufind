@@ -41,7 +41,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'TueFind\Controller\AcquisitionRequestController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -49,7 +48,6 @@ $config = [
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
-            'AcquisitionRequest' => 'TueFind\Controller\AcquisitionRequestController',
             'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
@@ -62,12 +60,14 @@ $config = [
     'service_manager' => [
         'factories' => [
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
         ],
         'aliases' => [
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
+            'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
@@ -78,10 +78,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = [
-    'AcquisitionRequest/Create',
-    'AcquisitionRequest/Send',
-];
+$staticRoutes = [];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);

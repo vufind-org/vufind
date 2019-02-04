@@ -242,7 +242,7 @@ class Factory
      */
     public static function getSideFacetsDeferred(ServiceManager $sm)
     {
-        return new SideFacetsDeferred($sm->get('VuFind\Config'));
+        return new SideFacetsDeferred($sm->get('VuFind\Config\PluginManager'));
     }
 
     /**
