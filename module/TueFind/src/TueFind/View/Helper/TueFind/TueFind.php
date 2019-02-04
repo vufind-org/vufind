@@ -145,7 +145,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                 $child = $item->firstChild;
                 while ($child != null) {
                     if ($child instanceof \DOMElement) {
-                        $rss_item[$child->tagName] = $child->nodeValue;
+                        $rss_item[$child->tagName] = htmlspecialchars_decode($child->nodeValue);
                     }
                     $child = $child->nextSibling;
                 }
@@ -179,7 +179,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                 $html .= '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />';
                 $html .= '</a>';
                 $html .= '&nbsp;';
-                $html .= '<a target="_blank" href="'.$rss_item['link'].'" title="' . $rss_item['description'] . '" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">';
+                $description = str_replace('"', '&quot;', strip_tags($rss_item['description']));
+                $html .= '<a target="_blank" href="'.$rss_item['link'].'" title="' . $description . '" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">';
                 $html .= $rss_item['title'];
                 $html .= '</a>';
                 $html .= '</li>';

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Home -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <!-- KrimDok and FID subpages -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/krimdok</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/fid</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <!-- Notifications & Dates subpages -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/call_for_papers</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/events</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/jobs</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/employments</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+
+    <!-- FID-Services subpages -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/fulltexts</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/journals</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/research_data_management</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <!-- Cooperations -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/partners</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <!-- Acquisition profile -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/acquisition</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <!-- Catalogues and databases -->
+    <url>
+        <loc>https://krimdok.uni-tuebingen.de/Content/catalogs</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+</urlset>

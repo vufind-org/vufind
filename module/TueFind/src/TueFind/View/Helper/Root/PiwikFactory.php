@@ -3,9 +3,8 @@
 namespace TueFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
-class PiwikFactory implements FactoryInterface
+class PiwikFactory extends \VuFind\View\Helper\Root\PiwikFactory
 {
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null)
@@ -39,7 +38,7 @@ class PiwikFactory implements FactoryInterface
         ];
         $request = $container->get('Request');
         $router = $container->get('Router');
-        
+
         return new $requestedName($url, $settings, $customVars, $router, $request);
     }
 }
