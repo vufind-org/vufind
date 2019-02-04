@@ -177,11 +177,9 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         $results = [];
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
-                if (is_array($value)) {
-                    $results[] = $value['field'] . ':"' . $value['value'] . '"';
-                } else {
-                    $results[] = "$field:\"$value\"";
-                }
+                $results[] = is_array($value)
+                    ? $value['field'] . ':"' . $value['value'] . '"';
+                    : "$field:\"$value\"";
             }
         }
         foreach ($checkboxFilters as $current) {
