@@ -35,8 +35,8 @@
                     <xsl:value-of select="//identifier"/>
                 </field>
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">dspace</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">dspace</field>
 
                 <!-- ALLFIELDS -->
                 <xsl:for-each select="//dim:field">
