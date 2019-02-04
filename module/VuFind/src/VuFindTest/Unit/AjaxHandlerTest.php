@@ -49,7 +49,7 @@ abstract class AjaxHandlerTest extends MockContainerTest
      */
     protected function getMockUser()
     {
-        return $this->container->get('VuFind\Db\Row\User');
+        return $this->container->get(\VuFind\Db\Row\User::class);
     }
 
     /**

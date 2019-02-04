@@ -27,6 +27,7 @@ Vagrant.configure("2") do |config|
   # Network configuration to forward ports.
   config.vm.network :forwarded_port, guest: 80, host: 4567
   config.vm.network :forwarded_port, guest: 8080, host: 4568
+  config.vm.synced_folder ".", "/vagrant", :owner => 'ubuntu'
   
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -41,7 +42,7 @@ Vagrant.configure("2") do |config|
     # Install package dependencies.
     apt-get update
     apt-get install -y git zip unzip apache2 default-jdk mysql-server
-    apt-get install -y libapache2-mod-php php-mbstring php-pear php php-dev php-gd php-intl php-json php-ldap php-mysql php-xml php-curl
+    apt-get install -y libapache2-mod-php php-mbstring php-pear php php-dev php-gd php-intl php-json php-ldap php-mysql php-soap php-xml php-curl
     
     # Install composer.
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

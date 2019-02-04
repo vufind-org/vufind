@@ -61,7 +61,7 @@ class SierraRestFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get('Zend\Session\SessionManager');
+            $manager = $container->get(\Zend\Session\SessionManager::class);
             return new \Zend\Session\Container("SierraRest_$namespace", $manager);
         };
         return parent::__invoke($container, $requestedName, [$sessionFactory]);

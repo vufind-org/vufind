@@ -178,16 +178,6 @@ function getUrlRoot(url) {
   }
   return urlroot;
 }
-function facetSessionStorage(e) {
-  var source = $('#result0 .hiddenSource').val();
-  var id = e.target.id;
-  var key = 'sidefacet-' + source + id;
-  if (!sessionStorage.getItem(key)) {
-    sessionStorage.setItem(key, document.getElementById(id).className);
-  } else {
-    sessionStorage.removeItem(key);
-  }
-}
 
 // Phone number validation
 function phoneNumberFormHandler(numID, regionCode) {
@@ -241,21 +231,11 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick() {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
+    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+      e.preventDefault();
       $('body.offcanvas').toggleClass('active');
-      var active = $('body.offcanvas').hasClass('active');
-      var right = $('body.offcanvas').hasClass('offcanvas-right');
-      if ((active && !right) || (!active && right)) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
-      } else {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
-      }
-      $('.offcanvas-toggle .fa').attr('title', VuFind.translate(active ? 'sidebar_close' : 'sidebar_expand'));
     });
-    $('[data-toggle="offcanvas"]').click().click();
-  } else {
-    $('[data-toggle="offcanvas"]').addClass('hidden');
   }
 }
 
@@ -265,11 +245,23 @@ function setupAutocomplete() {
   if (searchbox.length < 1) {
     return;
   }
+  // Auto-submit based on config
+  var acCallback = function ac_cb_noop() {};
+  if (searchbox.hasClass("ac-auto-submit")) {
+    acCallback = function autoSubmitAC(item, input) {
+      input.val(item.value);
+      $("#searchForm").submit();
+      return false;
+    };
+  }
   // Search autocomplete
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
+    // Auto-submit selected item
+    callback: acCallback,
+    // AJAX call for autocomplete results
     handler: function vufindACHandler(input, cb) {
       var query = input.val();
       var searcher = extractClassParams(input);
@@ -348,38 +340,6 @@ function keyboardShortcuts() {
   }
 }
 
-/**
- * Setup facets
- */
-function setupFacets() {
-  // Advanced facets
-  $('.facetAND a,.facetOR a').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="facet">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
-
-  // Side facet status saving
-  $('.facet-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-    if (storedItem) {
-      var saveTransition = $.support.transition;
-      try {
-        $.support.transition = false;
-        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
-          $(item).collapse('show');
-        } else {
-          $(item).collapse('hide');
-        }
-      } finally {
-        $.support.transition = saveTransition;
-      }
-    }
-  });
-  $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
-}
-
 function setupIeSupport() {
   // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
   // Cannot use conditional comments since IE 11 doesn't support them but still has
@@ -453,8 +413,6 @@ $(document).ready(function commonDocReady() {
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
-
-  setupFacets();
 
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {

@@ -44,31 +44,35 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'checkRequestIsValid' => 'VuFind\AjaxHandler\CheckRequestIsValid',
-        'commentRecord' => 'VuFind\AjaxHandler\CommentRecord',
-        'deleteRecordComment' => 'VuFind\AjaxHandler\DeleteRecordComment',
-        'doiLookup' => 'VuFind\AjaxHandler\DoiLookup',
-        'getACSuggestions' => 'VuFind\AjaxHandler\GetACSuggestions',
-        'getFacetData' => 'VuFind\AjaxHandler\GetFacetData',
-        'getIlsStatus' => 'VuFind\AjaxHandler\GetIlsStatus',
-        'getItemStatuses' => 'VuFind\AjaxHandler\GetItemStatuses',
-        'getLibraryPickupLocations' =>
-            'VuFind\AjaxHandler\GetLibraryPickupLocations',
-        'getRecordCommentsAsHTML' => 'VuFind\AjaxHandler\GetRecordCommentsAsHTML',
-        'getRecordDetails' => 'VuFind\AjaxHandler\GetRecordDetails',
-        'getRecordTags' => 'VuFind\AjaxHandler\GetRecordTags',
-        'getRequestGroupPickupLocations' =>
-            'VuFind\AjaxHandler\GetRequestGroupPickupLocations',
-        'getResolverLinks' => 'VuFind\AjaxHandler\GetResolverLinks',
-        'getSaveStatuses' => 'VuFind\AjaxHandler\GetSaveStatuses',
-        'getVisData' => 'VuFind\AjaxHandler\GetVisData',
-        'keepAlive' => 'VuFind\AjaxHandler\KeepAlive',
-        'recommend' => 'VuFind\AjaxHandler\Recommend',
-        'relaisAvailability' => 'VuFind\AjaxHandler\RelaisAvailability',
-        'relaisInfo' => 'VuFind\AjaxHandler\RelaisInfo',
-        'relaisOrder' => 'VuFind\AjaxHandler\RelaisOrder',
-        'systemStatus' => 'VuFind\AjaxHandler\SystemStatus',
-        'tagRecord' => 'VuFind\AjaxHandler\TagRecord',
+        'checkRequestIsValid' => CheckRequestIsValid::class,
+        'commentRecord' => CommentRecord::class,
+        'deleteRecordComment' => DeleteRecordComment::class,
+        'doiLookup' => DoiLookup::class,
+        'getACSuggestions' => GetACSuggestions::class,
+        'getFacetData' => GetFacetData::class,
+        'getIlsStatus' => GetIlsStatus::class,
+        'getItemStatuses' => GetItemStatuses::class,
+        'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
+        'getRecordCommentsAsHTML' => GetRecordCommentsAsHTML::class,
+        'getRecordDetails' => GetRecordDetails::class,
+        'getRecordTags' => GetRecordTags::class,
+        'getRequestGroupPickupLocations' => GetRequestGroupPickupLocations::class,
+        'getResolverLinks' => GetResolverLinks::class,
+        'getSaveStatuses' => GetSaveStatuses::class,
+        'getSideFacets' => GetSideFacets::class,
+        'getUserFines' => GetUserFines::class,
+        'getUserHolds' => GetUserHolds::class,
+        'getUserILLRequests' => GetUserILLRequests::class,
+        'getUserStorageRetrievalRequests' => GetUserStorageRetrievalRequests::class,
+        'getUserTransactions' => GetUserTransactions::class,
+        'getVisData' => GetVisData::class,
+        'keepAlive' => KeepAlive::class,
+        'recommend' => Recommend::class,
+        'relaisAvailability' => RelaisAvailability::class,
+        'relaisInfo' => RelaisInfo::class,
+        'relaisOrder' => RelaisOrder::class,
+        'systemStatus' => SystemStatus::class,
+        'tagRecord' => TagRecord::class,
     ];
 
     /**
@@ -77,47 +81,37 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\AjaxHandler\CheckRequestIsValid' =>
-            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
-        'VuFind\AjaxHandler\CommentRecord' =>
-            'VuFind\AjaxHandler\CommentRecordFactory',
-        'VuFind\AjaxHandler\DeleteRecordComment' =>
-            'VuFind\AjaxHandler\DeleteRecordCommentFactory',
-        'VuFind\AjaxHandler\DoiLookup' => 'VuFind\AjaxHandler\DoiLookupFactory',
-        'VuFind\AjaxHandler\GetACSuggestions' =>
-            'VuFind\AjaxHandler\GetACSuggestionsFactory',
-        'VuFind\AjaxHandler\GetFacetData' =>
-            'VuFind\AjaxHandler\GetFacetDataFactory',
-        'VuFind\AjaxHandler\GetIlsStatus' =>
-            'VuFind\AjaxHandler\GetIlsStatusFactory',
-        'VuFind\AjaxHandler\GetItemStatuses' =>
-            'VuFind\AjaxHandler\GetItemStatusesFactory',
-        'VuFind\AjaxHandler\GetLibraryPickupLocations' =>
-            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
-        'VuFind\AjaxHandler\GetRecordCommentsAsHTML' =>
-            'VuFind\AjaxHandler\GetRecordCommentsAsHTMLFactory',
-        'VuFind\AjaxHandler\GetRecordDetails' =>
-            'VuFind\AjaxHandler\GetRecordDetailsFactory',
-        'VuFind\AjaxHandler\GetRecordTags' =>
-            'VuFind\AjaxHandler\GetRecordTagsFactory',
-        'VuFind\AjaxHandler\GetRequestGroupPickupLocations' =>
-            'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
-        'VuFind\AjaxHandler\GetResolverLinks' =>
-            'VuFind\AjaxHandler\GetResolverLinksFactory',
-        'VuFind\AjaxHandler\GetSaveStatuses' =>
-            'VuFind\AjaxHandler\GetSaveStatusesFactory',
-        'VuFind\AjaxHandler\GetVisData' => 'VuFind\AjaxHandler\GetVisDataFactory',
-        'VuFind\AjaxHandler\KeepAlive' => 'VuFind\AjaxHandler\KeepAliveFactory',
-        'VuFind\AjaxHandler\Recommend' => 'VuFind\AjaxHandler\RecommendFactory',
-        'VuFind\AjaxHandler\RelaisAvailability' =>
-            'VuFind\AjaxHandler\AbstractRelaisActionFactory',
-        'VuFind\AjaxHandler\RelaisInfo' =>
-            'VuFind\AjaxHandler\AbstractRelaisActionFactory',
-        'VuFind\AjaxHandler\RelaisOrder' =>
-            'VuFind\AjaxHandler\AbstractRelaisActionFactory',
-        'VuFind\AjaxHandler\SystemStatus' =>
-            'VuFind\AjaxHandler\SystemStatusFactory',
-        'VuFind\AjaxHandler\TagRecord' => 'VuFind\AjaxHandler\TagRecordFactory',
+        CheckRequestIsValid::class => AbstractIlsAndUserActionFactory::class,
+        CommentRecord::class => CommentRecordFactory::class,
+        DeleteRecordComment::class => DeleteRecordCommentFactory::class,
+        DoiLookup::class => DoiLookupFactory::class,
+        GetACSuggestions::class => GetACSuggestionsFactory::class,
+        GetFacetData::class => GetFacetDataFactory::class,
+        GetIlsStatus::class => GetIlsStatusFactory::class,
+        GetItemStatuses::class => GetItemStatusesFactory::class,
+        GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
+        GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
+        GetRecordDetails::class => GetRecordDetailsFactory::class,
+        GetRecordTags::class => GetRecordTagsFactory::class,
+        GetRequestGroupPickupLocations::class =>
+            AbstractIlsAndUserActionFactory::class,
+        GetResolverLinks::class => GetResolverLinksFactory::class,
+        GetSaveStatuses::class => GetSaveStatusesFactory::class,
+        GetSideFacets::class => GetSideFacetsFactory::class,
+        GetUserFines::class => GetUserFinesFactory::class,
+        GetUserHolds::class => AbstractIlsAndUserActionFactory::class,
+        GetUserILLRequests::class => AbstractIlsAndUserActionFactory::class,
+        GetUserStorageRetrievalRequests::class =>
+            AbstractIlsAndUserActionFactory::class,
+        GetUserTransactions::class => AbstractIlsAndUserActionFactory::class,
+        GetVisData::class => GetVisDataFactory::class,
+        KeepAlive::class => KeepAliveFactory::class,
+        Recommend::class => RecommendFactory::class,
+        RelaisAvailability::class => AbstractRelaisActionFactory::class,
+        RelaisInfo::class =>  AbstractRelaisActionFactory::class,
+        RelaisOrder::class => AbstractRelaisActionFactory::class,
+        SystemStatus::class => SystemStatusFactory::class,
+        TagRecord::class => TagRecordFactory::class,
     ];
 
     /**
@@ -128,6 +122,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\AjaxHandler\AjaxHandlerInterface';
+        return AjaxHandlerInterface::class;
     }
 }

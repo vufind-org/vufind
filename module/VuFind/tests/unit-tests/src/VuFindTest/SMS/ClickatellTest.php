@@ -195,6 +195,6 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockClient()
     {
-        return $this->createMock('Zend\Http\Client');
+        return $this->createMock(\Zend\Http\Client::class);
     }
 }

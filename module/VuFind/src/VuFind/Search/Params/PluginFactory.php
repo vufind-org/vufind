@@ -64,10 +64,10 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         array $extras = null
     ) {
         $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
-        $options = $container->get('VuFind\Search\Options\PluginManager')
+        $options = $container->get(\VuFind\Search\Options\PluginManager::class)
             ->get($optionsService);
         $class = $this->getClassName($requestedName);
-        $configLoader = $container->get('VuFind\Config\PluginManager');
+        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         // Clone the options instance in case caller modifies it:
         return new $class(clone $options, $configLoader, ...($extras ?: []));
     }
