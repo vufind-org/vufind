@@ -174,6 +174,13 @@ class Server
      */
     protected $setQueries = [];
 
+    /*
+     * Default query used when a set is not specified
+     *
+     * @var string
+     */
+    protected $defaultQuery = '';
+
     /**
      * Default query used when a set is not specified
      *
