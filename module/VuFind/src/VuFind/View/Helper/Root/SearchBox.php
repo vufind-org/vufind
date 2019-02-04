@@ -178,7 +178,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
                 $results[] = is_array($value)
-                    ? $value['field'] . ':"' . $value['value'] . '"';
+                    ? $value['field'] . ':"' . $value['value'] . '"'
                     : "$field:\"$value\"";
             }
         }
