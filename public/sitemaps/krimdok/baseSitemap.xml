@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+   xmlns:xhtml="http://www.w3.org/1999/xhtml"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -9,65 +10,91 @@
     <url>
         <loc>https://krimdok.uni-tuebingen.de/</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/?lng=en" />
     </url>
 
     <!-- KrimDok and FID subpages -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/krimdok</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/krimdok?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/krimdok?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/fid</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/fid?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/fid?lng=en" />
     </url>
 
     <!-- Notifications & Dates subpages -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/call_for_papers</loc>
         <changefreq>weekly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/call_for_papers?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/call_for_papers?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/events</loc>
         <changefreq>weekly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/events?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/events?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/jobs</loc>
         <changefreq>weekly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/jobs?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/jobs?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/employments</loc>
         <changefreq>weekly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/employments?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/employments?lng=en" />
     </url>
 
     <!-- FID-Services subpages -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/fulltexts</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/fulltexts?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/fulltexts?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/journals</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/journals?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/journals?lng=en" />
     </url>
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/research_data_management</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/research_data_management?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/research_data_management?lng=en" />
     </url>
 
     <!-- Cooperations -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/partners</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/partners?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/partners?lng=en" />
     </url>
 
     <!-- Acquisition profile -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/acquisition</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/acquisition?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/acquisition?lng=en" />
     </url>
 
     <!-- Catalogues and databases -->
     <url>
         <loc>https://krimdok.uni-tuebingen.de/Content/catalogs</loc>
         <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://krimdok.uni-tuebingen.de/Content/catalogs?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://krimdok.uni-tuebingen.de/Content/catalogs?lng=en" />
     </url>
 </urlset>
