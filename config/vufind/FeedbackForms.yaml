@@ -73,8 +73,8 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
-    help:
-      pre: foo_html
+    # help:
+    #  pre: feedback_help_pre
     #  post: feedback_help_post
 
     fields:
@@ -83,12 +83,12 @@ forms:
         label: Comments
         required: true
         settings:
-        help: foo_html
+        # help: message_help
 
   # Example for an acquisition request form
 
   AcquisitionRequest:
-    enabled: true
+    enabled: false
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
