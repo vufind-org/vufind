@@ -11,10 +11,9 @@
   $checkboxFilters = $params->getCheckboxFacets();
   $lastSort = $this->searchMemory()->getLastSort($params->getSearchClassId());
   $options = $this->searchOptions($params->getSearchClassId());
-  $defaultSortApplied = $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
-  $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : '';
+  $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : '';
   $advancedSearch = $params->getSearchType() === 'advanced';
 ?>
 <?php ob_start(); ?>
