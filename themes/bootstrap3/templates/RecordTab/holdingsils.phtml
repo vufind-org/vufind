@@ -86,7 +86,7 @@
       <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
         <?php foreach ($textFields as $current): ?>
-          <?=$this->escapeHtml($current)?><br/>
+          <?=$this->linkify($this->escapeHtml($current))?><br/>
         <?php endforeach; ?>
       </td>
     </tr>
