@@ -29,7 +29,6 @@
 
     if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
         $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
-        $params->activateAllFacets();
         $filterList = $params->getFilterList(true);
         $checkboxFilters = $params->getCheckboxFacets();
     } else {
