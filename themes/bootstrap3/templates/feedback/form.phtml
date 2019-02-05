@@ -69,7 +69,7 @@
 
     <div class="form-group">
     <?php if (!empty($el['help'])): ?>
-      <p class="info"><?= $this->transEsc($el['help']) ?></p>
+      <p class="info"><?= substr($el['help'], -5) === '_html' ? $this->translate($el['help']) : $this->transEsc($el['help']) ?></p>
     <?php endif ?>
     <?php if ($el['type'] !== 'submit'): ?>
       <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=!empty($el['required']) ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
