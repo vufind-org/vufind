@@ -163,12 +163,8 @@ VuFind.register('sideFacets', function SideFacets() {
     finalContext.find('a.facet:not(.narrow-toggle),.facet a').click(showLoadingOverlay);
   }
 
-  function loadAjaxSideFacets() {
-    var $container = $('.side-facets-container-ajax');
-    if ($container.length === 0) {
-      return;
-    }
-
+  function activateSingleAjaxFacetContainer() {
+    var $container = $(this);
     var facetList = [];
     var $facets = $container.find('div.collapse.in[data-facet], .checkbox-filter[data-facet]');
     $facets.each(function addFacet() {
@@ -221,6 +217,10 @@ VuFind.register('sideFacets', function SideFacets() {
         $container.find('.facet-load-indicator').remove();
         $container.find('.facet-load-failed').removeClass('hidden');
       });
+  }
+
+  function loadAjaxSideFacets() {
+    $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
 
   function facetSessionStorage(e) {
