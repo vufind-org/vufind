@@ -41,7 +41,8 @@
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
 #     type (string)      Element type (text|textarea|email|url|select)
-#     help (string)      Element help text (translation key)
+#     help (string)      Element help text (translation key).
+#                        May contain HTML-formatting if postfixed with '_html'.
 #     
 #     And for select elements one of:
 # 
@@ -72,8 +73,8 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
-    #help:
-    #  pre: feedback_help_pre
+    help:
+      pre: foo_html
     #  post: feedback_help_post
 
     fields:
@@ -82,12 +83,12 @@ forms:
         label: Comments
         required: true
         settings:
-        # help: message_help
+        help: foo_html
 
   # Example for an acquisition request form
 
   AcquisitionRequest:
-    enabled: false
+    enabled: true
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
