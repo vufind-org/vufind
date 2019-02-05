@@ -42,7 +42,8 @@
 #       - [class, "custom-css-class another-class"]
 #     type (string)      Element type (text|textarea|email|url|select|radio)
 #     help (string)      Element help text (translation key).
-#                        May contain HTML-formatting only if key ends with '_html'.
+#                        To include HTML formatting, use a translation key ending
+#                        in '_html' here, and define markup in the language files.
 #     
 #     And for select and radio elements:
 # 
