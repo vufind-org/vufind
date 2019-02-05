@@ -1,6 +1,6 @@
 <?php
 /**
- * Piwik helper factory.
+ * OAI Server factory.
  *
  * PHP version 7
  *
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\OAI;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Piwik helper factory.
+ * OAI Server factory.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PiwikFactory implements FactoryInterface
+class ServerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,17 +61,10 @@ class PiwikFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $url = $config->Piwik->url ?? false;
-        $settings = [
-            'siteId' => $config->Piwik->site_id ?? 1,
-            'searchPrefix' => $config->Piwik->searchPrefix ?? null,
-            'disableCookies' => $config->Piwik->disableCookies ?? false
-        ];
-        $customVars = $config->Piwik->custom_variables ?? false;
-        $request = $container->get('Request');
-        $router = $container->get('Router');
-        return new $requestedName($url, $settings, $customVars, $router, $request);
+        return new $requestedName(
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Db\Table\PluginManager::class)
+        );
     }
 }
