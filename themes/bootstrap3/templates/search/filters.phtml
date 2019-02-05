@@ -7,7 +7,6 @@
     $params = clone $this->params;
   }
 
-  $params->activateAllFacets();
   $filterList = $params->getFilterList(true);
   $checkboxFilters = $params->getCheckboxFacets();
   $lastSort = $this->searchMemory()->getLastSort($params->getSearchClassId());
@@ -22,20 +21,14 @@
   <?php foreach ($checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <span class="filter-value">
-        <?php if ($filter['displayText'] == '[* TO *]'): ?>
-          <?=$this->translate('filter_wildcard')?>
-        <?php else: ?>
-          <?=$this->translate($filter['desc'])?>
-        <?php endif; ?>
-        <?php if (isset($this->urlQuery)): ?>
-          <?php
-            if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
-              $removeLink = $this->urlQuery->replaceTerm($filter['value'], '');
-            } else {
-              $removeLink = $this->urlQuery->removeFacet($filter['field'], $filter['value'], $filter['operator']);
-            }
-          ?>
-          <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+        <?php
+          $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : '';
+          $desc = $this->translate($filter['desc']);
+          $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
+        ?>
+        <?=$desc?>
+        <?php if($removeLink): ?>
+          <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
         <?php endif; ?>
       </span>
     <?php endif ?>
