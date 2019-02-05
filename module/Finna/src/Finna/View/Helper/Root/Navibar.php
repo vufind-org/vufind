@@ -237,7 +237,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
 
             $data['route'] = true;
             if (strncmp($url, '/', 1) === 0) {
-                $url = $this->view->serverUrl(true) . substr($url, 1);
+                $url = $this->view->serverUrl() . $this->router->getBaseUrl() . $url;
                 $request = new Request();
                 $request->setUri($url);
                 $routeMatch = $this->router->match($request);
