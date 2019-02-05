@@ -59,6 +59,15 @@ class Params extends \VuFind\Search\Base\Params
     protected $dateFacetSettings = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'HomePage_Facets', 'FacetsTop', 'Facets'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -134,20 +143,18 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
         // search object.
-        return isset($this->facetConfig[$field])
-            ? $this->facetConfig[$field] : $field;
+        return parent::getFacetLabel($field, $value, $default ?: $field);
     }
 
     /**
@@ -399,42 +406,5 @@ class Params extends \VuFind\Search\Base\Params
         if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
             $this->initAdvancedFacets();
         }
-    }
-
-    /**
-     * Initialize facet settings for the standard search screen.
-     *
-     * @return void
-     */
-    public function initBasicFacets()
-    {
-        $this->initFacetList('Facets', 'Results_Settings');
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // Based on preference, change the order of initialization to make sure
-        // that preferred facet labels come in last.
-        if ($preferredSection == 'Advanced') {
-            $this->initHomePageFacets();
-            $this->initBasicFacets();
-            $this->initAdvancedFacets();
-        } else {
-            $this->initHomePageFacets();
-            $this->initAdvancedFacets();
-            $this->initBasicFacets();
-        }
-        $this->initCheckboxFacets();
     }
 }

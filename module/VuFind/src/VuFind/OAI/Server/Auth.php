@@ -49,17 +49,11 @@ class Auth extends Base
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
-     * @param \Zend\Config\Config                  $config  VuFind configuration
-     * @param string                               $baseURL The base URL for the OAI
-     * server
-     * @param array                                $params  The incoming OAI-PMH
-     * parameters (i.e. $_GET)
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        \Zend\Config\Config $config, $baseURL, $params
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
     ) {
-        parent::__construct($results, $loader, $tables, $config, $baseURL, $params);
+        parent::__construct($results, $loader, $tables);
         $this->core = 'authority';
         $this->searchClassId = 'SolrAuth';
     }

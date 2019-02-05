@@ -18,8 +18,8 @@
                     <xsl:value-of select="nlm:identifier"/>
                 </field>
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">NLMOJS</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">NLMOJS</field>
 
                 <!-- ALLFIELDS -->
                 <field name="allfields">
