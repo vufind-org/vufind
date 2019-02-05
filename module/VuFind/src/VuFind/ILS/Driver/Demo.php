@@ -652,7 +652,7 @@ class Demo extends AbstractBase
             $status[$i]['item_notes'] = [];
             for ($j = 1; $j <= $noteCount; $j++) {
                 $status[$i]['holdings_notes'][] = "Item $itemNum holdings note $j"
-                    . ($j === 1 ? ' https://www.vufind.org' : '');
+                    . ($j === 1 ? ' https://vufind.org#demo_link' : '');
                 $status[$i]['item_notes'][] = "Item $itemNum note $j";
             }
             $summCount = rand(1, 3);
