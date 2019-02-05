@@ -73,7 +73,7 @@
 
     <div class="form-group <?= $el['type'] ?>">
     <?php if (!empty($el['help'])): ?>
-      <p class="info"><?= $this->transEsc($el['help']) ?></p>
+      <p class="info"><?= substr($el['help'], -5) === '_html' ? $this->translate($el['help']) : $this->transEsc($el['help']) ?></p>
     <?php endif ?>
     <?php if ($el['type'] !== 'submit'): ?>
       <?php if ($el['type'] === 'radio'): ?>
