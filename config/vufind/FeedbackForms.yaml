@@ -73,7 +73,7 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: false 
 
-    # help:
+    #help:
     #  pre: feedback_help_pre
     #  post: feedback_help_post
 
