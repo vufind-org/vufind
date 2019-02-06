@@ -64,8 +64,8 @@ class GetACSuggestionsFactory implements
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Autocomplete\Suggester')
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Autocomplete\Suggester::class)
         );
     }
 }

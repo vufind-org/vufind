@@ -65,7 +65,7 @@ class ConfigurationBasedFactory
         $parts = explode('\\', $requestedName);
         $config = end($parts);
         // Set up options based on global VuFind settings:
-        $configReader = $sm->get('VuFind\Config\PluginManager');
+        $configReader = $sm->get(\VuFind\Config\PluginManager::class);
         $globalConfig = $configReader->get('config');
         $options = [
             'enabled' => $globalConfig->Hierarchy->showTree ?? false
@@ -77,8 +77,8 @@ class ConfigurationBasedFactory
         // Build object:
         return new ConfigurationBased(
             $driverConfig,
-            $sm->get('VuFind\Hierarchy\TreeDataSource\PluginManager'),
-            $sm->get('VuFind\Hierarchy\TreeRenderer\PluginManager'),
+            $sm->get(\VuFind\Hierarchy\TreeDataSource\PluginManager::class),
+            $sm->get(\VuFind\Hierarchy\TreeRenderer\PluginManager::class),
             $options
         );
     }

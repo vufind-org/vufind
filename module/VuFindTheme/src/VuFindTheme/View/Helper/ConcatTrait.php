@@ -145,10 +145,10 @@ trait ConcatTrait
 
     /**
      * Initialize class properties related to concatenation of resources.
-     * All of the elements to be concatenated into ($this->concatItems)
-     * and those that need to remain on their own ($this->otherItems).
+     * All of the elements to be concatenated into groups and
+     * and those that need to remain on their own special group 'other'.
      *
-     * @return void
+     * @return bool True if there are items
      */
     protected function filterItems()
     {
@@ -167,10 +167,23 @@ trait ConcatTrait
                 continue;
             }
 
+            $path = $this->getFileType() . '/' . $this->getResourceFilePath($item);
             $details = $this->themeInfo->findContainingTheme(
-                $this->getFileType() . '/' . $this->getResourceFilePath($item),
+                $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            // Deal with special case: $path was not found in any theme.
+            if (null === $details) {
+                $errorMsg = "Could not find file '$path' in theme files";
+                method_exists($this, 'logError')
+                    ? $this->logError($errorMsg) : error_log($errorMsg);
+                $this->groups[] = [
+                    'other' => true,
+                    'item' => $item
+                ];
+                $groupTypes[] = 'other';
+                continue;
+            }
 
             $type = $this->getType($item);
             $index = array_search($type, $groupTypes);
@@ -230,7 +243,10 @@ trait ConcatTrait
         }
         // Locate/create concatenated asset file
         $filename = md5($group['key']) . '.min.' . $this->getFileType();
-        $concatPath = $this->getResourceCacheDir() . $filename;
+        // Minifier uses realpath, so do that here too to make sure we're not
+        // pointing to a symlink. Otherwise the path converter won't find the correct
+        // shared directory part.
+        $concatPath = realpath($this->getResourceCacheDir()) . '/' . $filename;
         if (!file_exists($concatPath)) {
             $lockfile = "$concatPath.lock";
             $handle = fopen($lockfile, 'c+');
@@ -276,6 +292,7 @@ trait ConcatTrait
                 . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
+            $details['path'] = realpath($details['path']);
             $data[] = $this->getMinifiedData($details, $concatPath);
         }
         // Separate each file's data with a new line so that e.g. a file

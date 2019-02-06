@@ -1,6 +1,6 @@
 <?php $limitList = $this->params->getLimitList(); ?>
 <?php if (count($limitList) > 1): ?>
-  <form class="form-inline" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="post">
+  <form class="form-inline search-result-limit" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="post">
     <label for="limit"><?=$this->transEsc('Results per page')?></label>
     <select id="limit" name="limit" class="jumpMenu form-control">
       <?php foreach ($limitList as $limitVal => $limitData): ?>

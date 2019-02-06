@@ -52,7 +52,8 @@ class FacetCacheFactory implements FactoryInterface
      */
     protected function getResults(ContainerInterface $container, $name)
     {
-        return $container->get('VuFind\Search\Results\PluginManager')->get($name);
+        return $container->get(\VuFind\Search\Results\PluginManager::class)
+            ->get($name);
     }
 
     /**
@@ -78,8 +79,8 @@ class FacetCacheFactory implements FactoryInterface
         $parts = explode('\\', $requestedName);
         $requestedNamespace = $parts[count($parts) - 2];
         $results = $this->getResults($container, $requestedNamespace);
-        $cacheManager = $container->get('VuFind\Cache\Manager');
-        $language = $container->get('Zend\Mvc\I18n\Translator')->getLocale();
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
+        $language = $container->get(\Zend\Mvc\I18n\Translator::class)->getLocale();
         return new $requestedName($results, $cacheManager, $language);
     }
 }

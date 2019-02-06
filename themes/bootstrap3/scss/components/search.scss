@@ -33,15 +33,15 @@ $thumbnail-width-large:  160px !default;
 
 header .container.navbar { margin-bottom: 0; }
 
-.search-sort { display: flex; }
-.search-sort label {
+.search-sort, .search-result-limit { display: flex; }
+.search-sort label, .search-result-limit label {
   line-height: $input-height-base;
   padding-right: .5rem;
 }
 .search-stats {
   display: block;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 @media (min-width: 768px) {

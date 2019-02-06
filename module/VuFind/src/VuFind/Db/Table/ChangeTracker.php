@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for change_tracker
@@ -78,6 +79,41 @@ class ChangeTracker extends Gateway
     }
 
     /**
+     * Build a callback function for use by the retrieveDeleted* methods.
+     *
+     * @param string $core    The Solr core holding the record.
+     * @param string $from    The beginning date of the range to search.
+     * @param string $until   The end date of the range to search.
+     * @param int    $offset  Record number to retrieve first.
+     * @param int    $limit   Retrieval limit (null for no limit)
+     * @param array  $columns Columns to retrieve (null for all)
+     *
+     * @return \Callable
+     */
+    public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
+        $limit = null, $columns = null
+    ) {
+        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
+        return function ($select) use ($params) {
+            extract($params);
+            if ($columns !== null) {
+                $select->columns($columns);
+            }
+            $select->where
+                ->equalTo('core', $core)
+                ->greaterThanOrEqualTo('deleted', $from)
+                ->lessThanOrEqualTo('deleted', $until);
+            $select->order('deleted');
+            if ($offset > 0) {
+                $select->offset($offset);
+            }
+            if ($limit !== null) {
+                $select->limit($limit);
+            }
+        };
+    }
+
+    /**
      * Retrieve a set of deleted rows from the database.
      *
      * @param string $core  The Solr core holding the record.
@@ -86,15 +122,35 @@ class ChangeTracker extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function retrieveDeleted($core, $from, $until)
+    public function retrieveDeletedCount($core, $from, $until)
     {
-        $callback = function ($select) use ($core, $from, $until) {
-            $select->where
-                ->equalTo('core', $core)
-                ->greaterThanOrEqualTo('deleted', $from)
-                ->lessThanOrEqualTo('deleted', $until);
-            $select->order('deleted');
-        };
+        $columns = ['count' => new Expression('COUNT(*)')];
+        $callback = $this
+            ->getRetrieveDeletedCallback($core, $from, $until, 0, null, $columns);
+        $select = $this->sql->select();
+        $callback($select);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        return ((array)$result->current())['count'];
+    }
+
+    /**
+     * Retrieve a set of deleted rows from the database.
+     *
+     * @param string $core   The Solr core holding the record.
+     * @param string $from   The beginning date of the range to search.
+     * @param string $until  The end date of the range to search.
+     * @param int    $offset Record number to retrieve first.
+     * @param int    $limit  Retrieval limit (null for no limit)
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    public function retrieveDeleted($core, $from, $until, $offset = 0,
+        $limit = null
+    ) {
+        $callback = $this->getRetrieveDeletedCallback(
+            $core, $from, $until, $offset, $limit
+        );
         return $this->select($callback);
     }
 

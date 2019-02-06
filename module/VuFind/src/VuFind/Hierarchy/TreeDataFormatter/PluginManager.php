@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Hierarchy tree data formatter plugin manager
  *
@@ -44,8 +46,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'json' => 'VuFind\Hierarchy\TreeDataFormatter\Json',
-        'xml' => 'VuFind\Hierarchy\TreeDataFormatter\Xml',
+        'json' => Json::class,
+        'xml' => Xml::class,
     ];
 
     /**
@@ -54,10 +56,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Hierarchy\TreeDataFormatter\Json' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Hierarchy\TreeDataFormatter\Xml' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
+        Json::class => InvokableFactory::class,
+        Xml::class => InvokableFactory::class,
     ];
 
     /**
@@ -68,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Hierarchy\TreeDataFormatter\AbstractBase';
+        return AbstractBase::class;
     }
 }

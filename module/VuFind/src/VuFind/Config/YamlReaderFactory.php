@@ -61,6 +61,6 @@ class YamlReaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFind\Cache\Manager'));
+        return new $requestedName($container->get(\VuFind\Cache\Manager::class));
     }
 }
