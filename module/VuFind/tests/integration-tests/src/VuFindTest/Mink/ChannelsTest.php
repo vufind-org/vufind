@@ -109,8 +109,12 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Check facet
         $this->assertEquals(
-            'Clear Filter Suggested Topics: Adult children of aging parents',
-            $this->findCss($page, '.active-filters .facet')->getText()
+            'Suggested Topics:',
+            $this->findCss($page, '.filters .filters-title')->getText()
+        );
+        $this->assertEquals(
+            'Adult children of aging parents',
+            $this->findCss($page, '.filters .filter-value')->getText()
         );
     }
 }

@@ -39,6 +39,13 @@ namespace VuFindTest\Mink;
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
     /**
+     * CSS selector for finding active filters
+     *
+     * @var string
+     */
+    protected $activeFilterSelector = '.filters .filter-value';
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -160,7 +167,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -192,7 +199,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -219,7 +226,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->find('css', '.active-filters')));
+        $this->assertEquals(1, count($page->find('css', $this->activeFilterSelector)));
     }
 
     /**
@@ -237,8 +244,10 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
-        $filter = $this->findCss($page, '.active-filters .facet');
-        $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $label = $this->findCss($page, '.filters .filters-title');
+        $this->assertEquals('hierarchy:', $label->getText());
+        $this->assertEquals('1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 
@@ -311,21 +320,21 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     public function testRetainFilters()
     {
         $page = $this->getFilteredSearch();
-        $this->findCss($page, '.active-filters'); // Make sure we're filtered
+        $this->findCss($page, $this->activeFilterSelector); // Make sure we're filtered
         // Perform search with retain
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
-        $this->findCss($page, '.active-filters');
+        $this->findCss($page, $this->activeFilterSelector);
         // Perform search double click retain
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
-        $this->findCss($page, '.active-filters');
+        $this->findCss($page, $this->activeFilterSelector);
         // Perform search without retain
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
-        $items = $page->findAll('css', '.active-filters');
+        $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertEquals(0, count($items));
     }
 }
