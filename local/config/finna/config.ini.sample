@@ -264,6 +264,17 @@ title_level_holds_mode = "driver"
 ; - item_agency_id,location
 holdings_grouping = holdings_id,location
 
+; Text fields such as holdings_notes gathered from items to be displayed in each
+; holdings group in the display order.
+; The default list is 'holdings_notes', 'summary', 'supplements' and 'indexes'. The
+; deprecated field 'notes' is used as an alias for 'holdings_notes'.
+; Note that displayed information depends on what the ILS driver returns.
+holdings_text_fields[] = 'holdings_notes'
+holdings_text_fields[] = 'summary'
+holdings_text_fields[] = 'supplements'
+holdings_text_fields[] = 'indexes'
+holdings_text_fields[] = 'links'
+
 ; Whether support for multiple library cards is enabled. Default is false.
 library_cards = true
 

@@ -1515,6 +1515,17 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             }
         }
 
+        // Get links
+        if (isset($this->config['Holdings']['links'])) {
+            $data = $this->getMFHDData(
+                $holding['_marcRecord'],
+                $this->config['Holdings']['links']
+            );
+            if ($data) {
+                $marcDetails['links'] = $data;
+            }
+        }
+
         // Make sure to return an empty array unless we have details to display
         if (!empty($marcDetails)) {
             $marcDetails['holdings_id'] = $holding['holding_id'];
