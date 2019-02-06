@@ -31,10 +31,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\Forbidden;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * PAIA ILS Driver for VuFind to get patron information
@@ -932,9 +931,9 @@ class PAIA extends DAIA
      * Handle PAIA request errors and throw appropriate exception.
      *
      * @param array $array Array containing error messages
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws AuthException
      * @throws ILSException
      */
@@ -951,9 +950,8 @@ class PAIA extends DAIA
                 //                          access token
             case 'access_denied':
                 throw new AuthException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
 
                 // invalid_grant 	401 	The access token was missing, invalid, or
@@ -964,9 +962,8 @@ class PAIA extends DAIA
                 //                              lacks permission for the request
             case 'insufficient_scope':
                 throw new ForbiddenException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
 
                 // not_found 	404 	Unknown request URL or unknown patron.
@@ -1012,9 +1009,8 @@ class PAIA extends DAIA
 
             default:
                 throw new ILSException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
             }
         }
