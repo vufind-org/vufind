@@ -18,7 +18,7 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
   <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex) ?>">
 <?php endif; ?>
-<?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
+<?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
