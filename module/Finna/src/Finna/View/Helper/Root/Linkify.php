@@ -53,9 +53,13 @@ class Linkify extends AbstractHelper
         $proxyUrl = $this->getView()->plugin('proxyUrl');
         $escapeHtml = $this->getView()->plugin('escapeHtml');
         $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
+        $truncateUrl = $this->getView()->plugin('truncateUrl');
         $callback = function ($url, $caption, $isEmail) use ($proxyUrl, $escapeHtml,
-            $escapeHtmlAttr
+            $escapeHtmlAttr, $truncateUrl
         ) {
+            if ($caption === $url) {
+                $caption = $truncateUrl($caption);
+            }
             return '<i class="fa fa-external-link"></i> <a href="'
                 . $escapeHtmlAttr($proxyUrl($url)) . '" target="_blank">'
                 . $escapeHtml($caption) . '</a>';
