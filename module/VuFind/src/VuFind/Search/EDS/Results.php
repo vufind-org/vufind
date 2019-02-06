@@ -57,12 +57,12 @@ class Results extends \VuFind\Search\Base\Results
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();
 
-            //Add a publication date facet
+            // Add a publication date facet
             $this->responseFacets[] = [
-                        'fieldName' => 'PublicationDate',
-                        'displayName' => 'PublicationDate',
-                        'displayText' => 'Publication Date',
-                        'counts' => []
+                'fieldName' => 'PublicationDate',
+                'displayName' => 'PublicationDate',
+                'displayText' => 'Publication Date',
+                'counts' => []
             ];
 
             // Construct record drivers for all the items in the response:
@@ -80,6 +80,12 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
+        // If there is no filter, we'll use all facets as the filter:
+        if (null === $filter) {
+            $filter = $this->getParams()->getFacetConfig();
+        }
+        $filterFields = array_keys($filter);
+
         // Loop through the facets returned by EDS
         $facetResult = [];
         if (is_array($this->responseFacets)) {
@@ -91,6 +97,11 @@ class Results extends \VuFind\Search\Base\Results
                 // EBSCO's side -- we'll probably need to translate this to a
                 // different value for actual display!
                 $field = $current['displayName'];
+
+                // If we are filtering out the field, skip it!
+                if (!in_array($field, $filterFields)) {
+                    continue;
+                }
 
                 // Should we translate values for the current facet?
                 if ($translate = in_array($field, $translatedFacets)) {

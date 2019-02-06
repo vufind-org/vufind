@@ -18,7 +18,7 @@
         ?></a>
       </td>
       <td>
-        <?php $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
+        <?php foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
           <?php foreach ($filters as $i => $filter): ?>
             <?php if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>

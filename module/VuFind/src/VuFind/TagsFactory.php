@@ -61,7 +61,8 @@ class TagsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $maxLength = isset($config->Social->max_tag_length)
             ? $config->Social->max_tag_length : 64;
         return new $requestedName($maxLength);

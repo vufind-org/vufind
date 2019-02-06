@@ -18,8 +18,8 @@
                     <xsl:value-of select="//identifier"/>
                 </field>
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">dspace</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">dspace</field>
 
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!

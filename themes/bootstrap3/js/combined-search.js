@@ -1,4 +1,4 @@
-/*global VuFind, checkItemStatuses, checkSaveStatuses */
+/*global VuFind, checkSaveStatuses */
 VuFind.combinedSearch = (function CombinedSearch() {
   var init = function init(container, url) {
     container.load(url, '', function containerLoad(responseText) {
@@ -6,7 +6,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
         container.hide();
       } else {
         VuFind.openurl.init(container);
-        checkItemStatuses(container);
+        VuFind.itemStatuses.check(container);
         checkSaveStatuses(container);
       }
     });

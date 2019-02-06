@@ -244,8 +244,10 @@ class Voyager extends AbstractBase
         $status = $statusArray[0];
         $rank = $this->getStatusRanking($status);
         for ($x = 1; $x < count($statusArray); $x++) {
-            if ($this->getStatusRanking($statusArray[$x]) < $rank) {
+            $thisRank = $this->getStatusRanking($statusArray[$x]);
+            if ($thisRank < $rank) {
                 $status = $statusArray[$x];
+                $rank = $thisRank;
             }
         }
 
@@ -1579,7 +1581,7 @@ EOT;
         }
 
         return ['amount' => $sqlRow['FINE_FEE_AMOUNT'],
-              'fine' => $sqlRow['FINE_FEE_DESC'],
+              'fine' => utf8_encode($sqlRow['FINE_FEE_DESC']),
               'balance' => $sqlRow['FINE_FEE_BALANCE'],
               'createdate' => $createDate,
               'checkout' => $chargeDate,

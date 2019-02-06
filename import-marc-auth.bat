@@ -9,7 +9,7 @@ goto end
 
 rem Make sure we know where the VuFind home directory lives:
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -23,22 +23,6 @@ echo You need to set the VUFIND_HOME environmental variable before running this 
 goto end
 :vufindhomefound
 
-rem Always use the standard authority mappings; if the user specified an override
-rem file, add that to the setting.
-if not exist %VUFIND_LOCAL_DIR%\import\marc_auth.properties goto nolocalmappings
-set MAPPINGS_FILE=%VUFIND_LOCAL_DIR%\import\marc_auth.properties
-goto mappingsset
-:nolocalmappings
-set MAPPINGS_FILE=%VUFIND_HOME%\import\marc_auth.properties
-:mappingsset
-if "!%2!"=="!!" goto noextramappings
-if not exist %VUFIND_LOCAL_DIR%\import\%2 goto nolocalextramappings
-set MAPPINGS_FILE=%MAPPINGS_FILE%,%VUFIND_LOCAL_DIR%\import\%2
-goto noextramappings
-:nolocalextramappings
-set MAPPINGS_FILE=%MAPPINGS_FILE%,%VUFIND_HOME%\import\%2
-:noextramappings
-
 rem Override some settings in the standard import script:
 if not exist %VUFIND_LOCAL_DIR%\import\import_auth.properties goto nolocalproperties
 set PROPERTIES_FILE=%VUFIND_LOCAL_DIR%\import\import_auth.properties
@@ -47,8 +31,29 @@ goto propertiesfound
 set PROPERTIES_FILE=%VUFIND_HOME%\import\import_auth.properties
 :propertiesfound
 
+rem Always use the authority mappings from PROPERTIES_FILE
+rem if the user specified an override file, add that to the setting.
+set MAPPINGS_FILENAMES=""
+for /f "delims=" %%a in ('findstr "^solr.indexer.properties" %PROPERTIES_FILE%') do set MAPPINGS_FILENAMES=%%a
+set MAPPINGS_FILENAMES="%MAPPINGS_FILENAMES:solr.indexer.properties=%"
+if not "%2"=="" set MAPPINGS_FILENAMES=%MAPPINGS_FILENAMES%,%2
+set MAPPINGS_FILENAMES=%MAPPINGS_FILENAMES:"=%
+
+setlocal EnableDelayedExpansion
+set MAPPINGS_FILES=""
+for %%a in (%MAPPINGS_FILENAMES%) do (
+    if not !MAPPINGS_FILES!=="" set MAPPINGS_FILES=!MAPPINGS_FILES!,
+    if exist %VUFIND_LOCAL_DIR%\import\%%a (
+        set MAPPINGS_FILES=!MAPPINGS_FILES!%VUFIND_LOCAL_DIR%\import\%%a
+    ) else (
+        set MAPPINGS_FILES=!MAPPINGS_FILES!%VUFIND_HOME%\import\%%a
+    )
+)
+set MAPPINGS_FILES=%MAPPINGS_FILES:~2,99999%
+setlocal DisableDelayedExpansion
+
 set SOLRCORE="authority"
-set EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=%MAPPINGS_FILE%"
+set EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=%MAPPINGS_FILES%"
 
 rem Call the standard script:
 call %VUFIND_HOME%\import-marc.bat %1

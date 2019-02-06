@@ -127,6 +127,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Is autocomplete enabled for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteAutoSubmit($activeSearchClass)
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteAutoSubmit();
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *
@@ -285,6 +298,33 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Support method for getCombinedHandlers(): get alphabrowse options.
+     *
+     * @param string $activeHandler Current active search handler
+     * @param bool   $indent        Should we indent these options?
+     *
+     * @return array
+     */
+    protected function getAlphabrowseHandlers($activeHandler, $indent = true)
+    {
+        $alphaBrowseBase = $this->getView()->plugin('url')
+            ->__invoke('alphabrowse-home');
+        $labelPrefix = $this->getView()->translate('Browse Alphabetically') . ': ';
+        $handlers = [];
+        foreach ($this->alphabrowseConfig as $source => $label) {
+            $alphaBrowseUrl = $alphaBrowseBase . '?source=' . urlencode($source)
+                . '&from=';
+            $handlers[] = [
+                'value' => 'External:' . $alphaBrowseUrl,
+                'label' => $labelPrefix . $this->getView()->translate($label),
+                'indent' => $indent,
+                'selected' => $activeHandler == 'AlphaBrowse:' . $source
+            ];
+        }
+        return $handlers;
+    }
+
+    /**
      * Support method for getHandlers() -- load combined settings.
      *
      * @param string $activeSearchClass Active search class ID
@@ -298,6 +338,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         $handlers = [];
         $selectedFound = false;
         $backupSelectedIndex = false;
+        $addedBrowseHandlers = false;
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
         $typeCount = count($settings['type']);
         for ($i = 0; $i < $typeCount; $i++) {
@@ -330,6 +371,14 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                         'selected' => $selected
                     ];
                 }
+
+                // Should we add alphabrowse links?
+                if ($target === 'Solr' && $this->alphaBrowseOptionsEnabled()) {
+                    $addedBrowseHandlers = true;
+                    $handlers = array_merge(
+                        $handlers, $this->getAlphaBrowseHandlers($activeHandler)
+                    );
+                }
             } elseif ($type == 'External') {
                 $handlers[] = [
                     'value' => $type . ':' . $target, 'label' => $label,
@@ -338,22 +387,12 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             }
         }
 
-        // Should we add alphabrowse links?
-        if ($this->alphaBrowseOptionsEnabled()) {
-            $alphaBrowseBase = $this->getView()->plugin('url')
-                ->__invoke('alphabrowse-home');
-            $labelPrefix = $this->getView()->translate('Browse Alphabetically')
-                . ': ';
-            foreach ($this->alphabrowseConfig as $source => $label) {
-                $alphaBrowseUrl = $alphaBrowseBase . '?source=' . urlencode($source)
-                    . '&from=';
-                $handlers[] = [
-                    'value' => 'External:' . $alphaBrowseUrl,
-                    'label' => $labelPrefix . $this->getView()->translate($label),
-                    'indent' => false,
-                    'selected' => $activeHandler == 'AlphaBrowse:' . $source
-                ];
-            }
+        // If we didn't add alphabrowse links above as part of the Solr section
+        // but we are configured to include them, we should add them now:
+        if (!$addedBrowseHandlers && $this->alphaBrowseOptionsEnabled()) {
+            $handlers = array_merge(
+                $handlers, $this->getAlphaBrowseHandlers($activeHandler, false)
+            );
         }
 
         // If we didn't find an exact match for a selected index, use a fuzzy

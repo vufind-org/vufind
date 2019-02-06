@@ -70,7 +70,7 @@ class ConfigController extends AbstractAdmin
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            $this->serviceLocator->get('VuFind\Config\PluginManager')
+            $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
                 ->reload('config');
         } else {
             $this->flashMessenger()->addMessage(

@@ -223,6 +223,54 @@ class Resource extends Gateway
     }
 
     /**
+     * Update the database to reflect a changed record identifier.
+     *
+     * @param string $oldId  Original record ID
+     * @param string $newId  Revised record ID
+     * @param string $source Record source
+     *
+     * @return void
+     */
+    public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
+    {
+        if ($oldId !== $newId
+            && $resource = $this->findResource($oldId, $source)
+        ) {
+            // Do this as a transaction to prevent odd behavior:
+            $connection = $this->getAdapter()->getDriver()->getConnection();
+            $connection->beginTransaction();
+            // Does the new ID already exist?
+            if ($newResource = $this->findResource($newId, $source)) {
+                // Special case: merge new ID and old ID:
+                $tableObjects = [];
+                foreach (['comments', 'userresource', 'resourcetags'] as $table) {
+                    $tableObjects[$table] = $this->getDbTable($table);
+                    $tableObjects[$table]->update(
+                        ['resource_id' => $newResource->id],
+                        ['resource_id' => $resource->id]
+                    );
+                }
+                $resource->delete();
+            } else {
+                // Default case: just update the record ID:
+                $resource->record_id = $newId();
+                $resource->save();
+            }
+            // Done -- commit the transaction:
+            $connection->commit();
+
+            // Deduplicate rows where necessary (this can be safely done outside
+            // of the transaction):
+            if (isset($tableObjects['resourcetags'])) {
+                $tableObjects['resourcetags']->deduplicate();
+            }
+            if (isset($tableObjects['userresource'])) {
+                $tableObjects['userresource']->deduplicate();
+            }
+        }
+    }
+
+    /**
      * Apply a sort parameter to a query on the resource table.
      *
      * @param \Zend\Db\Sql\Select $query Query to modify

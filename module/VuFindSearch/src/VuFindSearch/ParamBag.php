@@ -73,7 +73,7 @@ class ParamBag implements \Countable
      */
     public function get($name)
     {
-        return isset($this->params[$name]) ? $this->params[$name] : null;
+        return $this->params[$name] ?? null;
     }
 
     /**

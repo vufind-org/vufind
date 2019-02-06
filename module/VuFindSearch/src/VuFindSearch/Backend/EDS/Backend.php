@@ -70,21 +70,21 @@ class Backend extends AbstractBackend
      *
      * @var string
      */
-    protected $userName = null;
+    protected $userName;
 
     /**
      * Password for EBSCO EDS API account if using UID Authentication
      *
      * @var string
      */
-    protected $password = null;
+    protected $password;
 
     /**
      * Profile for EBSCO EDS API account (may be overridden)
      *
      * @var string
      */
-    protected $profile = null;
+    protected $profile;
 
     /**
      * Default profile for EBSCO EDS API account (taken from initial config and
@@ -92,21 +92,21 @@ class Backend extends AbstractBackend
      *
      * @var string
      */
-    protected $defaultProfile = null;
+    protected $defaultProfile;
 
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
      *
      * @var bool
      */
-    protected $ipAuth = false;
+    protected $ipAuth;
 
     /**
      * Organization EDS API requests are being made for
      *
      * @var string
      */
-    protected $orgId = null;
+    protected $orgId;
 
     /**
      * Vufind Authentication manager
@@ -158,23 +158,13 @@ class Backend extends AbstractBackend
         $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
-        if (isset($config->EBSCO_Account->user_name)) {
-            $this->userName = $config->EBSCO_Account->user_name;
-        }
-        if (isset($config->EBSCO_Account->password)) {
-            $this->password = $config->EBSCO_Account->password;
-        }
-        if (isset($config->EBSCO_Account->ip_auth)) {
-            $this->ipAuth = $config->EBSCO_Account->ip_auth;
-        }
-        if (isset($config->EBSCO_Account->profile)) {
-            $this->profile = $config->EBSCO_Account->profile;
-        }
-        if (isset($config->EBSCO_Account->organization_id)) {
-            $this->orgId = $config->EBSCO_Account->organization_id;
-        }
+        $this->userName = $config->EBSCO_Account->user_name ?? null;
+        $this->password = $config->EBSCO_Account->password ?? null;
+        $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
+        $this->profile = $config->EBSCO_Account->profile ?? null;
+        $this->orgId = $config->EBSCO_Account->organization_id ?? null;
 
-        // Save default profile value, since profile property may be overriden:
+        // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
     }
 
@@ -271,7 +261,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authenticationToken = $this->getAuthenticationToken();
-            // check to see if the profile is overriden
+            // check to see if the profile is overridden
             $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
                 $this->profile = $overrideProfile;

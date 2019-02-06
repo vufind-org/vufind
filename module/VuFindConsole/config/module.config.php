@@ -55,6 +55,7 @@ $routes = [
     'generate/extendclass' => 'generate extendclass [--extendfactory] [<class>] [<target>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
+    'generate/plugin' => 'generate plugin [<class>] [<factory>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
     'generate/theme' => 'generate theme [<themename>]',
@@ -77,7 +78,7 @@ $routes = [
     'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
-    'util/sitemap' => 'util sitemap',
+    'util/sitemap' => 'util sitemap [--verbose]',
     'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];

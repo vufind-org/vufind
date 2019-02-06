@@ -50,7 +50,7 @@ class ParamsTest extends \VuFindTest\Unit\TestCase
     {
         // Use Solr since some Base components are abstract:
         $params = $this->getServiceManager()
-            ->get('VuFind\Search\Params\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');

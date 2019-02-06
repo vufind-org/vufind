@@ -27,6 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Recommend\RecommendInterface;
+
 /**
  * Recommendation module view helper
  *
@@ -41,16 +43,22 @@ class Recommend extends AbstractClassBasedTemplateRenderer
     /**
      * Render the output of a recommendation module.
      *
-     * @param \VuFind\Recommend\RecommendInterface $recommend The recommendation
-     * object to render
+     * @param RecommendInterface $recommend The recommendation object to render
+     * @param string             $location  Recommendation location (side, top)
+     * @param int                $index     Index of the recommendation configuration
      *
      * @return string
      */
-    public function __invoke($recommend)
-    {
+    public function __invoke(RecommendInterface $recommend, $location = null,
+        $index = null
+    ) {
         $template = 'Recommend/%s.phtml';
         $className = get_class($recommend);
-        $context = ['recommend' => $recommend];
+        $context = [
+            'recommend' => $recommend,
+            'location' => $location,
+            'configIndex' => $index
+        ];
         return $this->renderClassTemplate($template, $className, $context);
     }
 }

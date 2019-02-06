@@ -4,6 +4,7 @@ php:
   - 7.0
   - 7.1
   - 7.2
+  - 7.3
 
 env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
@@ -13,6 +14,7 @@ before_script:
   - phpenv rehash
   - composer install
   - npm install -g eslint@"<5.0.0"
+  - npm install -g jshint@"2.9.6"
 
 cache:
   directories:
@@ -21,4 +23,4 @@ cache:
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint phpunitfast phpcs-console php-cs-fixer-dryrun
+  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun
