@@ -326,7 +326,7 @@ class Form extends \VuFind\Form\Form
 
         $fields = array_merge(
             $fields,
-            ['allowLocaloverride', 'hideSenderInfo', 'sendMethod', 'senderInfoHelp']
+            ['hideSenderInfo', 'sendMethod', 'senderInfoHelp']
         );
 
         return $fields;
