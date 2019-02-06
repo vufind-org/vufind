@@ -34,7 +34,7 @@
     <?php endif;?>
     <div <?= !isset($heading) ? ' class="details-info"' : ''?>>
     <?php foreach ($textFields as $current): ?>
-      <?=$this->escapeHtml($current)?><br/>
+      <?=$this->linkify($this->escapeHtml($current))?><br/>
     <?php endforeach; ?>
     </div>
   </div>
