@@ -946,7 +946,7 @@ class PAIA extends DAIA
             switch ($array['error']) {
                 // cf. http://gbv.github.io/paia/paia.html#request-errors
                 // error        code    error_description
-                // access_denied 	403 	Wrong or missing credentials to get an
+                // access_denied     403     Wrong or missing credentials to get an
                 //                          access token
             case 'access_denied':
                 throw new AuthException(
@@ -954,11 +954,11 @@ class PAIA extends DAIA
                     $array['code'] ?? ''
                 );
 
-                // invalid_grant 	401 	The access token was missing, invalid, or
+                // invalid_grant     401     The access token was missing, invalid, or
                 //                          expired
             case 'invalid_grant':
 
-                // insufficient_scope 	403 	The access token was accepted but it
+                // insufficient_scope     403     The access token was accepted but it
                 //                              lacks permission for the request
             case 'insufficient_scope':
                 throw new ForbiddenException(
@@ -966,44 +966,44 @@ class PAIA extends DAIA
                     $array['code'] ?? ''
                 );
 
-                // not_found 	404 	Unknown request URL or unknown patron.
+                // not_found     404     Unknown request URL or unknown patron.
                 //                      Implementations SHOULD first check
                 //                      authentication and prefer error invalid_grant
                 //                      or access_denied to prevent leaking patron
                 //                      identifiers.
             case 'not_found':
 
-                // not_implemented 	501 	Known but unsupported request URL (for
+                // not_implemented     501     Known but unsupported request URL (for
                 //                          instance a PAIA auth server server may
                 //                          not implement
                 //                          http://example.org/core/change)
             case 'not_implemented':
 
-                // invalid_request 	405 	Unexpected HTTP verb
-                // invalid_request 	400 	Malformed request (for instance error
+                // invalid_request     405     Unexpected HTTP verb
+                // invalid_request     400     Malformed request (for instance error
                 //                          parsing JSON, unsupported request content
                 //                          type, etc.)
-                // invalid_request 	422 	The request parameters could be parsed
+                // invalid_request     422     The request parameters could be parsed
                 //                          but they don’t match the request method
                 //                          (for instance missing fields, invalid
                 //                          values, etc.)
             case 'invalid_request':
 
-                // internal_error 	500 	An unexpected error occurred. This error
+                // internal_error     500     An unexpected error occurred. This error
                 //                          corresponds to a bug in the
                 //                          implementation of a PAIA auth/core server
             case 'internal_error':
 
-                // service_unavailable 	503 	The request couldn’t be serviced
+                // service_unavailable     503     The request couldn’t be serviced
                 //                              because of a temporary failure
             case 'service_unavailable':
 
-                // bad_gateway 	502 	The request couldn’t be serviced because of a
+                // bad_gateway     502     The request couldn’t be serviced because of a
                 //                      backend failure (for instance the library
                 //                      system’s database)
             case 'bad_gateway':
 
-                // gateway_timeout 	504 	The request couldn’t be serviced because
+                // gateway_timeout     504     The request couldn’t be serviced because
                 //                          of a backend failure
             case 'gateway_timeout':
 
