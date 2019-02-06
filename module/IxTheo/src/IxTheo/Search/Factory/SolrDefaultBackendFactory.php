@@ -7,9 +7,9 @@ use IxTheo\Search\Backend\Solr\QueryBuilder;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use TueFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
-class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBackendFactory implements TranslatorAwareInterface
+class SolrDefaultBackendFactory extends \TueFind\Search\Factory\SolrDefaultBackendFactory implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

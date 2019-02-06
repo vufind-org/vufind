@@ -76,6 +76,7 @@ $config = [
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFindSearch\Service' => 'TueFind\Service\Factory::getSearchService',
         ],
         'aliases' => [
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
@@ -83,7 +84,9 @@ $config = [
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
+            'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
+            'VuFindSearch\Service' => 'TueFindSearch\Service',
         ],
     ],
     'view_manager' => [
