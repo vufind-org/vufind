@@ -72,7 +72,7 @@ function processGBSBookInfo(booksInfo) {
         if (viewOptions.tab.indexOf(booksInfo[bibkey].preview) >= 0
         && (booksInfo[bibkey].embeddable)) {
           // make tab visible
-          $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
+          $('ul.nav-tabs li.hidden[data-tab="preview"]').removeClass('hidden');
         }
       }
     }
@@ -112,9 +112,7 @@ function setIndexOf() {
       throw new TypeError();
     }
     var t = Object(this);
-    /*jslint bitwise: false*/
-    var len = t.length >>> 0;
-    /*jslint bitwise: true*/
+    var len = t.length;
     if (len === 0) {
       return -1;
     }

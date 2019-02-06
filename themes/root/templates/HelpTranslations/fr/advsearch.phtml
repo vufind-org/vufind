@@ -1,4 +1,4 @@
-<h1>Aide sur la recherche avencée</h1>
+<h1>Aide sur la recherche avancée</h1>
 
 <ul class="HelpMenu">
   <li><a href="#Search Fields">Champ de recherche</a></li>
@@ -8,59 +8,48 @@
 <dl class="Content">
   <dt><a name="Search Fields"></a>Champ de recherche</dt>
   <dd>
-    <p>Lorsque vous visitez la première fois la recherche avancée, plusieures
-       champs de saisie vous sont présentés. Vous pouvez taper dans chaque
-       champ de saisie tous les mots que vous désirez rechercher. Certaines 
+    <p>Dans chaque champ de recherche, vous pouvez saisir les mots pour lesquels vous désirez trouver un résultat. Certaines 
        chaînes de caractères, ou <a href="<?=$this->url('help-home')?>?topic=search">« opérateurs »</a>
-       , modifient le comportement VuFind.
+       , modifient le comportement de la recherche.
     </p>
-    <p>Chaque champ est accomapgner par un menu déroulant, avec lequel vous
-       pouvez specifiquer le type de recherche (titre, auteur etc.).
-       Vous pouvez mélanger les types de recherche comme vous voulez.
+    <p>Pour chaque champ de recherche, un menu déroulant permet de
+       préciser la fonction du terme recherché (titre, auteur etc.).
+       Vous pouvez ainsi combiner plusieurs critères.
     </p>
-    <p>Le réglage "correspond à" permet de modifier le comportement de recherche
+    <p>Le paramètre "correspond à" permet de modifier le comportement de recherche
        avec plusieur champs de recherche:
     </p>
     <ul>
-      <li>TOUS les mots suivant - Affiche les dossiers qui correspondent
-        avec chaque terme.</li>
-      <li>AU MOINS un des mots suivants - Affiche les dossiers qui correspondent
-          avec au moins un des termes.</li>
-      <li>AUCUN des mots suivants -- Affiche tous les dossiers, sauf celui qui
-          correspond avec les termes de recherche.</li>
+      <li>TOUS les termes - Pour afficher les notices qui correspondent
+        à l'ensemble des mots saisis (ET).</li>
+      <li>UN des termes - Pour afficher les notices qui correspondent
+          à au moins l'un ou l'autre des mots saisis (OU).</li>
+      <li>AUCUN terme - À utiliser seul dans un groupe de recherche pour exclure les notices
+          qui ne correspondent pas aux mots saisis.</li>
     </ul>
-    <p>Vous pouvez ajouter tant de champ de recherche que vous voulez, en
+    <p>Vous pouvez ajouter tant de champ de recherche que nécessaire, en
        cliquant sur "Ajouter un champ de recherche".
     </p>
   </dd>
   
   <dt><a name="Search Groups"></a>Groupe de recherche</dt>
   <dd>
-    <p>Pour des recherches plus complexe, une simple recherche ne suffit pas.
-       Par exemple, supposons que voud recherchez des livres sur l'histoire de
-       Chine et de l'Inde. Si vous faites une recherche "TOUS les mots suivants"
-       vous obtiendrez des livres d'histoire sur l'Inde ET la Chine. Si vous
-       faites une recherche avec "AU MOINS un des mots suivants" vous obtiendrez
-       des livre qui non rien avoir avec l'Inde ou la Chine.
+    <p>Un groupe de recherche permet de formuler une recherche plus complexe, en 
+       combinant plusieurs groupes de champs de recherche. Il est possible d'ajouter
+       un nouveau groupe en cliquant sur "Ajouter un groupe de recherche",
+       ou d'en effacer un en cliquant sur "Effacer un groupe de
+       recherche". Pour combiner les critères définis par chaque groupe, vous pouvez 
+       choisir "TOUS les groupes" ou "UN des groupes".
     </p>
-    <p>Un groupe de recherche est une possibilité de soumettre une requête à
-       l'aide de differentes groupes de champs de rechereche. Chaque fois que
-       vous cliquez sur "Ajouter un groupe de recherche", un nouveau groupe de
-       recherche est ajouter. Dès que vous avez plusieurs groupes de recherche
-       il est possible d'effacer un groupe en cliquant sur "Effacer un groupe de
-       recherche". Vous pouvez ensuite régler la recherche en spécifiant une
-       recherche avec "TOUTES les groupes de recherche" ou
-       "AU MOINS un groupe de recherche".
-    </p>
-    <p>Pour rechercher des livre sur l'histoire de Chine ou de l'Inde
-       vous pouvez par exemple faire une recherche de la manière suivante:
+    <p>Exemple : pour trouver des ressources sur l'histoire de Chine ou de l'Inde
+       vous pouvez faire une recherche de la manière suivante:
     </p>
     <ul>
-      <li>Tapez dans le premier groupe "Inde" et "Chine" et choisisez "AU MOINS
-          un des mot suivant"
+      <li>Dans le premier groupe, saisir "Inde" dans le premier champ, "Chine" dans le deuxième, 
+          et choisir la correspondance "UN des termes".
       </li>
-      <li>Ajoutez un second groupe de recherche et tapez "histoire".</li>
-      <li>Réglez la recherche sur "TOUS les groupes de recherche".
+      <li>Ajouter un second groupe de recherche et saisir "histoire".</li>
+      <li>Choisir la correspondance sur "TOUS les groupes de recherche".
       </li>
     </ul>
   </dd>

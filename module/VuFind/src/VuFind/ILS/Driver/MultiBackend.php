@@ -220,7 +220,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 } catch (ILSException $e) {
                     $statuses = array_map(
                         function ($id) {
-                            return ['id' => $id, 'error' => 'An error has occurred'];
+                            return [
+                                ['id' => $id, 'error' => 'An error has occurred']
+                            ];
                         },
                         $localIds
                     );
@@ -479,16 +481,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @return mixed      Array of the patron's transactions
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactions(
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source), $params
             );
             return $this->addIdPrefixes($transactions, $source);
         }
@@ -1130,7 +1133,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'placeILLRequest', compact($details))
+            && $this->methodSupported($driver, 'placeILLRequest', compact('details'))
         ) {
             // Patron is not stripped so that the correct library can be determined
             $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);

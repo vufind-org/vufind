@@ -62,8 +62,8 @@ class RouterFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Config\PluginManager')->get('config')
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

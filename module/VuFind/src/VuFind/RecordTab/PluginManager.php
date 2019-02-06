@@ -28,6 +28,7 @@
 namespace VuFind\RecordTab;
 
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager
@@ -46,21 +47,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'collectionhierarchytree' => 'VuFind\RecordTab\CollectionHierarchyTree',
-        'collectionlist' => 'VuFind\RecordTab\CollectionList',
-        'description' => 'VuFind\RecordTab\Description',
-        'excerpt' => 'VuFind\RecordTab\Excerpt',
-        'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
-        'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
-        'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
-        'map' => 'VuFind\RecordTab\Map',
-        'preview' => 'VuFind\RecordTab\Preview',
-        'reviews' => 'VuFind\RecordTab\Reviews',
-        'similaritemscarousel' => 'VuFind\RecordTab\SimilarItemsCarousel',
-        'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
-        'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
-        'toc' => 'VuFind\RecordTab\TOC',
-        'usercomments' => 'VuFind\RecordTab\UserComments',
+        'collectionhierarchytree' => CollectionHierarchyTree::class,
+        'collectionlist' => CollectionList::class,
+        'description' => Description::class,
+        'excerpt' => Excerpt::class,
+        'hierarchytree' => HierarchyTree::class,
+        'holdingsils' => HoldingsILS::class,
+        'holdingsworldcat' => HoldingsWorldCat::class,
+        'map' => Map::class,
+        'preview' => Preview::class,
+        'reviews' => Reviews::class,
+        'similaritemscarousel' => SimilarItemsCarousel::class,
+        'staffviewarray' => StaffViewArray::class,
+        'staffviewmarc' => StaffViewMARC::class,
+        'toc' => TOC::class,
+        'usercomments' => UserComments::class,
     ];
 
     /**
@@ -69,30 +70,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\RecordTab\CollectionHierarchyTree' =>
-            'VuFind\RecordTab\Factory::getCollectionHierarchyTree',
-        'VuFind\RecordTab\CollectionList' =>
-            'VuFind\RecordTab\Factory::getCollectionList',
-        'VuFind\RecordTab\Description' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\Excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
-        'VuFind\RecordTab\HierarchyTree' =>
-            'VuFind\RecordTab\Factory::getHierarchyTree',
-        'VuFind\RecordTab\HoldingsILS' => 'VuFind\RecordTab\Factory::getHoldingsILS',
-        'VuFind\RecordTab\HoldingsWorldCat' =>
-            'VuFind\RecordTab\Factory::getHoldingsWorldCat',
-        'VuFind\RecordTab\Map' => 'VuFind\RecordTab\Factory::getMap',
-        'VuFind\RecordTab\Preview' => 'VuFind\RecordTab\Factory::getPreview',
-        'VuFind\RecordTab\Reviews' => 'VuFind\RecordTab\Factory::getReviews',
-        'VuFind\RecordTab\SimilarItemsCarousel' =>
-            'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
-        'VuFind\RecordTab\StaffViewArray' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\StaffViewMARC' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\TOC' => 'VuFind\RecordTab\Factory::getTOC',
-        'VuFind\RecordTab\UserComments' =>
-            'VuFind\RecordTab\Factory::getUserComments',
+        CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
+        CollectionList::class => CollectionListFactory::class,
+        Description::class => InvokableFactory::class,
+        Excerpt::class => ExcerptFactory::class,
+        HierarchyTree::class => HierarchyTreeFactory::class,
+        HoldingsILS::class => HoldingsILSFactory::class,
+        HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
+        Map::class => MapFactory::class,
+        Preview::class => PreviewFactory::class,
+        Reviews::class => ReviewsFactory::class,
+        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
+        StaffViewArray::class => InvokableFactory::class,
+        StaffViewMARC::class => InvokableFactory::class,
+        TOC::class => TOCFactory::class,
+        UserComments::class => UserCommentsFactory::class,
     ];
 
     /**
@@ -107,7 +99,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\RecordTab\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
         parent::__construct($configOrContainerInstance, $v3config);
     }
@@ -149,7 +141,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\RecordTab\TabInterface';
+        return TabInterface::class;
     }
 
     /**

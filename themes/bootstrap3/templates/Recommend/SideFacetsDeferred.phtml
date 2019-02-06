@@ -1,0 +1,81 @@
+<?php
+  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('facets.js');
+
+  $results = $this->recommend->getResults();
+  $activeFacets = $this->recommend->getActiveFacets();
+  $rangeFacets = $this->recommend->getAllRangeFacets();
+
+  foreach ($activeFacets as $field => $facetName) {
+    if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
+      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      break;
+    }
+  }
+?>
+<?php if ($results->getResultTotal() > 0): ?>
+  <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
+  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex) ?>">
+<?php endif; ?>
+<?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
+<?php $checkboxesShown = false; ?>
+<?php if (count($checkboxFilters) > 0):
+    foreach ($checkboxFilters as $current) {
+      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+        $checkboxesShown = true;
+        break;
+      }
+    }
+  ?>
+  <?php if ($checkboxesShown): ?>
+    <div class="checkboxFilter">
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+    </div>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
+<?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
+<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<?php if (!empty($filterList)): ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
+    'collapsedFacets' => $collapsedFacets,
+    'extraFilters' => $extraFilters,
+    'filterList' => $filterList,
+  ]); ?>
+<?php endif; ?>
+<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
+<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
+<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
+<?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($activeFacets as $field => $facetName): ?>
+    <?php $allowExclude = $this->recommend->excludeAllowed($field); ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
+      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
+        <?=$this->transEsc($facetName)?>
+      </button>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>">
+        <span class="facet-load-indicator hidden">
+          <span class="text">
+            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
+          </span>
+        </span>
+        <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
+        <?php if (in_array($field, $hierarchicalFacets)): ?>
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+              data-facet="<?=$this->escapeHtmlAttr($field)?>"
+              data-path=""
+              data-exclude="<?=$allowExclude?>"
+              data-operator="<?=$this->recommend->getFacetOperator($field)?>"
+              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?php if ($results->getResultTotal() > 0): ?>
+  </div>
+<?php endif; ?>

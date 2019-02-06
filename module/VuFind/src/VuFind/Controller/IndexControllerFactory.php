@@ -61,8 +61,9 @@ class IndexControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $authManager = $container->get('VuFind\Auth\Manager');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $authManager = $container->get(\VuFind\Auth\Manager::class);
         return new $requestedName($config, $authManager);
     }
 }

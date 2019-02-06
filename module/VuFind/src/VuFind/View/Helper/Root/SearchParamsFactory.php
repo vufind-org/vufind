@@ -62,7 +62,7 @@ class SearchParamsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Params\PluginManager')
+            $container->get(\VuFind\Search\Params\PluginManager::class)
         );
     }
 }

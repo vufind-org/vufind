@@ -48,7 +48,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
     public function testShareByDefault()
     {
         $pm = new PluginManager(
-            $this->createMock('Interop\Container\ContainerInterface')
+            $this->createMock(\Interop\Container\ContainerInterface::class)
         );
         $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
@@ -64,7 +64,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
     public function testExpectedInterface()
     {
         $pm = new PluginManager(
-            $this->createMock('Interop\Container\ContainerInterface')
+            $this->createMock(\Interop\Container\ContainerInterface::class)
         );
         $pm->validate(new \ArrayObject());
     }

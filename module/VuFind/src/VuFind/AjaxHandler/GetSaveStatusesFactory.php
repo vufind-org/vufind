@@ -63,8 +63,8 @@ class GetSaveStatusesFactory implements \Zend\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ControllerPluginManager')->get('url')
         );
     }

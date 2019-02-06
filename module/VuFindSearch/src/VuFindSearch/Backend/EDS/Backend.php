@@ -164,7 +164,7 @@ class Backend extends AbstractBackend
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
 
-        // Save default profile value, since profile property may be overriden:
+        // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
     }
 
@@ -261,7 +261,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authenticationToken = $this->getAuthenticationToken();
-            // check to see if the profile is overriden
+            // check to see if the profile is overridden
             $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
                 $this->profile = $overrideProfile;
