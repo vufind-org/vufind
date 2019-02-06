@@ -65,7 +65,7 @@ class ThemeMobileTest extends Unit\TestCase
      */
     public function testDetection()
     {
-        $detector = $this->getMockBuilder('uagent_info')
+        $detector = $this->getMockBuilder(\uagent_info::class)
             ->setMethods(['DetectMobileLong'])
             ->getMock();
         $detector->expects($this->once())

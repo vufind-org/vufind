@@ -62,7 +62,7 @@ class EdsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Search\BackendManager')->get('EDS')
+            $container->get(\VuFind\Search\BackendManager::class)->get('EDS')
         );
     }
 }

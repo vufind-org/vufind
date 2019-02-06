@@ -132,7 +132,7 @@ trait StorageRetrievalRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup

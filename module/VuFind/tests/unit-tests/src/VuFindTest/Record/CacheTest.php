@@ -257,7 +257,7 @@ class CacheTest extends TestCase
             return false;
         };
 
-        $recordTable = $this->getMockBuilder('VuFind\Db\Table\Record')
+        $recordTable = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
             ->disableOriginalConstructor()->getMock();
         $recordTable->method('findRecords')
             ->will($this->returnCallback($findRecordsCallback));
@@ -325,7 +325,7 @@ class CacheTest extends TestCase
      */
     protected function getDriver($id = 'test', $source = 'Solr')
     {
-        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())
             ->method('getUniqueId')
             ->will($this->returnValue($id));

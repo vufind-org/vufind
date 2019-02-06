@@ -7,35 +7,72 @@
   $params = $this->tab->getParams();
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1];
 ?>
-<?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-  <?php foreach ($results->getRecommendations('top') as $current): ?>
-    <?=$this->recommend($current)?>
-  <?php endforeach; ?>
-  <div class="clearfix hidden-print">
-    <div class="pull-left flip">
-      <?php
-        $transParams = [
-          '%%start%%' => $this->localizedNumber($results->getStartRecord()),
-          '%%end%%' => $this->localizedNumber($results->getEndRecord()),
-          '%%total%%' => $this->localizedNumber($recordTotal)
-        ];
-      ?>
-      <?php if (!isset($this->skipTotalCount)): ?>
-        <?=$this->translate('showing_items_of_html', $transParams); ?>
-      <?php else: ?>
-        <?=$this->translate('showing_items_html', $transParams); ?>
-      <?php endif; ?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <?php foreach ($results->getRecommendations('top') as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
+  <div class="collection-list-controls">
+    <div class="collection-control">
+      <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
+        <div class="input-group">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEsc('Search within collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control">
+          <?php foreach ($params->getFilterList(true) as $field => $filters): ?>
+            <?php foreach ($filters as $filter): ?>
+              <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
+            <?php endforeach; ?>
+          <?php endforeach; ?>
+          <input type="hidden" name="limit" value="<?=$params->getLimit() ?>" />
+          <input type="hidden" name="sort" value="<?=$params->getSort() ?>" />
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="submit" name="submit">
+              <span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i>
+            </button>
+          </span>
+        </div>
+      </form>
     </div>
-    <div class="pull-right flip">
+    <div class="collection-control">
       <?=$this->render('search/controls/limit.phtml', $searchDetails)?>
+    </div>
+    <div class="collection-control">
       <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
     </div>
   </div>
-  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
-    <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
-    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
-  </form>
-<?php else: ?>
-  <?=$this->transEsc('collection_empty')?>
-<?php endif; ?>
+
+  <?php if ($recordTotal > 0): ?>
+    <div class="clearfix hidden-print">
+      <div class="pull-left flip">
+        <?php
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($results->getStartRecord()),
+            '%%end%%' => $this->localizedNumber($results->getEndRecord()),
+            '%%total%%' => $this->localizedNumber($recordTotal)
+          ];
+        ?>
+        <?php if (!isset($this->skipTotalCount)): ?>
+          <?=$this->translate('showing_items_of_html', $transParams); ?>
+        <?php else: ?>
+          <?=$this->translate('showing_items_html', $transParams); ?>
+        <?php endif; ?>
+      </div>
+    </div>
+    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
+      <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+      <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+    </form>
+  <?php else: ?>
+    <h4><?=$this->transEsc($params->getDisplayQuery() || $filterCount > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
+    <div class="clearfix">
+    </div>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?php foreach ($results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <?php endforeach; ?>
+</div>

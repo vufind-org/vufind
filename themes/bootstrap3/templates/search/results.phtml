@@ -54,8 +54,8 @@
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-    <?php foreach ($this->results->getRecommendations('top') as $current): ?>
-      <?=$this->recommend($current)?>
+    <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
+      <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
   <?php endif; ?>
   <?=$this->flashmessages()?>
@@ -63,8 +63,8 @@
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-        <a class="search-filter-toggle visible-xs" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
-          <?=$this->transEsc('Narrow Search') ?>
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+          <?=$this->transEsc('Refine Results') ?>
         </a>
       <?php else: ?>
         <h2><?=$this->transEsc('nohit_heading')?></h2>
@@ -93,12 +93,12 @@
     <?php if (isset($this->parseError)): ?>
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
     <?php endif; ?>
-    <?php foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
-      <?=$this->recommend($current)?>
+    <?php foreach (($top = $this->results->getRecommendations('top')) as $index => $current): ?>
+      <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
-    <?php foreach ($this->results->getRecommendations('noresults') as $current): ?>
+    <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
       <?php if (!in_array($current, $top)): ?>
-        <?=$this->recommend($current)?>
+        <?=$this->recommend($current, 'noresults', $index)?>
       <?php endif; ?>
     <?php endforeach; ?>
   <?php else: ?>
@@ -132,9 +132,9 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Narrow Search Options */ ?>
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
-    <?=$this->recommend($current)?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+  <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+    <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
 </div>
 <?php /* End Narrow Search Options */ ?>

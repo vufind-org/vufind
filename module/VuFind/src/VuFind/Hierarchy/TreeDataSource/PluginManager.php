@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Hierarchy tree data source plugin manager
  *
@@ -44,8 +46,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'solr' => 'VuFind\Hierarchy\TreeDataSource\Solr',
-        'xmlfile' => 'VuFind\Hierarchy\TreeDataSource\XMLFile',
+        'solr' => Solr::class,
+        'xmlfile' => XMLFile::class,
     ];
 
     /**
@@ -54,10 +56,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Hierarchy\TreeDataSource\Solr' =>
-            'VuFind\Hierarchy\TreeDataSource\SolrFactory',
-        'VuFind\Hierarchy\TreeDataSource\XMLFile' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
+        Solr::class => SolrFactory::class,
+        XMLFile::class => InvokableFactory::class,
     ];
 
     /**
@@ -68,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Hierarchy\TreeDataSource\AbstractBase';
+        return AbstractBase::class;
     }
 }

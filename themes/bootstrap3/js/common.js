@@ -231,12 +231,11 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick() {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
+    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+      e.preventDefault();
       $('body.offcanvas').toggleClass('active');
     });
-  } else {
-    $('[data-toggle="offcanvas"]').addClass('hidden');
   }
 }
 

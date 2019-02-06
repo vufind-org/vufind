@@ -60,7 +60,7 @@ class SearchController extends AbstractSolrSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up reCaptcha
@@ -126,7 +126,8 @@ class SearchController extends AbstractSolrSearch
         }
         $userId = is_object($user) ? $user->id : null;
 
-        $searchHistoryHelper = $this->serviceLocator->get('VuFind\Search\History');
+        $searchHistoryHelper = $this->serviceLocator
+            ->get(\VuFind\Search\History::class);
 
         if ($this->params()->fromQuery('purge')) {
             $searchHistoryHelper->purgeSearchHistory($userId);
@@ -280,7 +281,7 @@ class SearchController extends AbstractSolrSearch
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
@@ -415,7 +416,8 @@ class SearchController extends AbstractSolrSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        $suggester = $this->serviceLocator
+            ->get(\VuFind\Autocomplete\Suggester::class);
         $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
@@ -435,7 +437,7 @@ class SearchController extends AbstractSolrSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

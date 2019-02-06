@@ -149,6 +149,16 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Get cursorMark.
+     *
+     * @return string
+     */
+    public function getCursorMark()
+    {
+        return $this->response['nextCursorMark'] ?? '';
+    }
+
+    /**
      * Get raw Solr input parameters from the response.
      *
      * @return array

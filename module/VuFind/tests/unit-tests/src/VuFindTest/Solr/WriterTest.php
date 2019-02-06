@@ -135,10 +135,10 @@ class WriterTest extends \VuFindTest\Unit\TestCase
     {
         $sm = new \Zend\ServiceManager\ServiceManager();
         $pm = new BackendManager($sm);
-        $mockBackend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockConnector = $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+        $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()
             ->setMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
             ->getMock();
@@ -156,7 +156,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockChangeTracker()
     {
-        return $this->getMockBuilder('VuFind\Db\Table\ChangeTracker')
+        return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
             ->disableOriginalConstructor()
             ->setMethods(['markDeleted'])
             ->getMock();

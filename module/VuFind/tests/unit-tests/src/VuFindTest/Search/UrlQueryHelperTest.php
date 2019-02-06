@@ -144,7 +144,7 @@ class UrlQueryHelperTest extends TestCase
     public function testFactory()
     {
         $factory = new UrlQueryHelperFactory();
-        $config = $this->createMock('VuFind\Config\PluginManager');
+        $config = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
             new \VuFindTest\Search\TestHarness\Options($config), $config
         );

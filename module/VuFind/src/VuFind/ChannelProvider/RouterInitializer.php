@@ -52,8 +52,10 @@ class RouterInitializer implements InitializerInterface
     public function __invoke(ContainerInterface $container, $instance)
     {
         if ($instance instanceof AbstractChannelProvider) {
-            $instance->setCoverRouter($container->get('VuFind\Cover\Router'));
-            $instance->setRecordRouter($container->get('VuFind\Record\Router'));
+            $instance->setCoverRouter($container->get(\VuFind\Cover\Router::class));
+            $instance->setRecordRouter(
+                $container->get(\VuFind\Record\Router::class)
+            );
         }
         return $instance;
     }
