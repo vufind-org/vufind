@@ -1,0 +1,56 @@
+<?php $this->headScript()->appendFile('collection_record.js'); ?>
+<div class="media">
+  <?php
+    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
+  <?php if ($QRCode || $cover || $preview): ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if($cover): ?>
+        <?=$cover?>
+      <?php endif; ?>
+
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if($QRCode): ?>
+        <span class="hidden-xs">
+          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+        </span>
+      <?php endif; ?>
+
+      <?php if ($preview): ?><?=$preview?><?php endif; ?>
+    </div>
+  <?php endif; ?>
+  <div class="media-body">
+
+    <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+
+    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
+    <?php if ($summary): ?>
+      <p><?=$this->escapeHtml($summary)?></p>
+    <?php endif; ?>
+
+    <?php /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists" id="savedLists">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+
+    <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
+    <?php /* Display Main Details */ ?>
+    <?php
+      $formatter = $this->recordDataFormatter();
+      $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
+    ?>
+    <?php if (!empty($fields)): ?>
+      <table id="collectionInfo" class="table table-striped">
+        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+        <?php foreach ($fields as $current): ?>
+          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+    <?php /* End Main Details */ ?>
+  </div>
+</div>

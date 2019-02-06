@@ -2,7 +2,7 @@
 /**
  * XSLT importer support methods for sitemaps.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (c) Demian Katz 2010.
  *
@@ -174,7 +174,7 @@ class VuFindSitemap extends VuFind
         preg_match_all(
             '/<meta name="useCount" content="([^"]*)"/ms', $html, $matches
         );
-        $useCount = isset($matches[1][0]) ? $matches[1][0] : 1;
+        $useCount = $matches[1][0] ?? 1;
 
         return [
             'category' => $categories,

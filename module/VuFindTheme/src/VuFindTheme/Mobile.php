@@ -2,7 +2,7 @@
 /**
  * Mobile Device Detection Wrapper
  *
- * PHP version 5
+ * PHP version 7
  *
  * This file is a wrapper around the mobileesp library for browser detection.
  * We chose mobileesp as VuFind's default option because it is fairly robust
@@ -29,9 +29,10 @@
  * @package  Theme
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://code.google.com/p/mobileesp/ MobileESP Project
+ * @link     https://github.com/ahand/mobileesp MobileESP Project
  */
 namespace VuFindTheme;
+
 use uagent_info;
 
 /**
@@ -41,7 +42,7 @@ use uagent_info;
  * @package  Theme
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://code.google.com/p/mobileesp/ MobileESP Project
+ * @link     https://github.com/ahand/mobileesp MobileESP Project
  */
 class Mobile
 {

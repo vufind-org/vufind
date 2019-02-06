@@ -23,6 +23,9 @@
 #   Home of Java installation (not directly used by this script, but passed along to
 #   the standard Solr control script).
 #
+# SOLR_ADDITIONAL_START_OPTIONS
+#   Additional options to pass to the solr binary at startup.
+#
 # SOLR_ADDITIONAL_JVM_OPTIONS
 #   Additional options to pass to the JVM when launching Solr.
 #
@@ -39,8 +42,15 @@ usage()
 # Set VUFIND_HOME
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=$(dirname "$0")
+  # set VUFIND_HOME to the absolute path of the directory containing this script
+  # https://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+  VUFIND_HOME="$(cd "$(dirname "$0")" && pwd -P)"
+  if [ -z "$VUFIND_HOME" ]
+  then
+    exit 1
+  fi
 fi
+
 
 if [ -z "$SOLR_HOME" ]
 then
@@ -67,10 +77,15 @@ then
   SOLR_PORT="8080"
 fi
 
+if [ -z "$SOLR_ADDITIONAL_START_OPTIONS" ]
+then
+  SOLR_ADDITIONAL_START_OPTIONS=""
+fi
+
 if [ -z "$SOLR_ADDITIONAL_JVM_OPTIONS" ]
 then
   SOLR_ADDITIONAL_JVM_OPTIONS=""
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"
+"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"

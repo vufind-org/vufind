@@ -3,7 +3,7 @@
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,8 +29,8 @@
 namespace VuFind\Search;
 
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 use Zend\StdLib\Parameters;
 
 /**
@@ -58,9 +58,9 @@ abstract class QueryAdapter
     {
         // Use array_key_exists since null is also valid
         if (array_key_exists('l', $search)) {
-            $handler = isset($search['i']) ? $search['i'] : $search['f'];
+            $handler = $search['i'] ?? $search['f'];
             return new Query(
-                $search['l'], $handler, isset($search['o']) ? $search['o'] : null
+                $search['l'], $handler, $search['o'] ?? null
             );
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
@@ -170,29 +170,31 @@ abstract class QueryAdapter
      */
     public static function fromRequest(Parameters $request, $defaultHandler)
     {
-        $groupCount = 0;
         $groups = [];
-
-        // Loop through each search group
-        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
+        // Loop through all parameters and look for 'lookforX'
+        foreach ($request as $key => $value) {
+            if (!preg_match('/^lookfor(\d+)$/', $key, $matches)) {
+                continue;
+            }
+            $groupId = $matches[1];
             $group = [];
             $lastBool = null;
 
             // Loop through each term inside the group
-            for ($i = 0; $i < count($lookfor); $i++) {
+            for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
-                if ($lookfor[$i] != '') {
+                if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get('type' . $groupCount);
+                    $typeArr = $request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get('op' . $groupCount);
+                    $opArr = $request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get('bool' . $groupCount);
-                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : 'AND';
-                    $group[] = new Query($lookfor[$i], $handler, $operator);
+                    $boolArr = $request->get("bool$groupId");
+                    $lastBool = $boolArr[0] ?? 'AND';
+                    $group[] = new Query($value[$i], $handler, $operator);
                 }
             }
 
@@ -201,9 +203,6 @@ abstract class QueryAdapter
                 // Add the completed group to the list
                 $groups[] = new QueryGroup($lastBool, $group);
             }
-
-            // Increment
-            $groupCount++;
         }
 
         return (count($groups) > 0)
@@ -249,6 +248,13 @@ abstract class QueryAdapter
                     'b' => $operator
                 ];
                 if (null !== ($op = $current->getOperator())) {
+                    // Some search forms omit the operator for the first element;
+                    // if we have an operator in a subsequent element, we should
+                    // backfill a blank here for consistency; otherwise, VuFind
+                    // may not construct correct search URLs.
+                    if (isset($retVal[0]['f']) && !isset($retVal[0]['o'])) {
+                        $retVal[0]['o'] = '';
+                    }
                     $currentArr['o'] = $op;
                 }
                 $retVal[] = $currentArr;

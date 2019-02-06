@@ -2,7 +2,7 @@
 /**
  * Database row plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -39,6 +39,50 @@ namespace VuFind\Db\Row;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'changetracker' => ChangeTracker::class,
+        'comments' => Comments::class,
+        'externalsession' => ExternalSession::class,
+        'oairesumption' => OaiResumption::class,
+        'record' => Record::class,
+        'resource' => Resource::class,
+        'resourcetags' => ResourceTags::class,
+        'search' => Search::class,
+        'session' => Session::class,
+        'tags' => Tags::class,
+        'user' => User::class,
+        'usercard' => UserCard::class,
+        'userlist' => UserList::class,
+        'userresource' => UserResource::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        ChangeTracker::class => RowGatewayFactory::class,
+        Comments::class => RowGatewayFactory::class,
+        ExternalSession::class => RowGatewayFactory::class,
+        OaiResumption::class => RowGatewayFactory::class,
+        Record::class => RowGatewayFactory::class,
+        Resource::class => RowGatewayFactory::class,
+        ResourceTags::class => RowGatewayFactory::class,
+        Search::class => RowGatewayFactory::class,
+        Session::class => RowGatewayFactory::class,
+        Tags::class => RowGatewayFactory::class,
+        User::class => UserFactory::class,
+        UserCard::class => RowGatewayFactory::class,
+        UserList::class => UserListFactory::class,
+        UserResource::class => RowGatewayFactory::class,
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +90,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Db\Row\RowGateway';
+        return RowGateway::class;
     }
 }

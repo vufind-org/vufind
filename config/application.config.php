@@ -1,13 +1,16 @@
 <?php
 
 // Set up modules:
-$modules = array(
-    'ZfcRbac', 'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
-);
-if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
+$modules = [
+    'Zend\Form', 'Zend\Router', 'ZfcRbac',
+    'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
+];
+if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
+    $modules[] = 'Zend\Mvc\Console';
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
+    array_push($modules, 'Zf2Whoops');
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
@@ -49,27 +52,27 @@ if (!is_dir($cacheDir)) {
 }
 
 // Enable caching unless in dev mode or running tests:
-$useCache = APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING');
+$useCache = APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
 
 // Build configuration:
-return array(
+return [
     'modules' => array_unique($modules),
-    'module_listener_options' => array(
-        'config_glob_paths'    => array(
+    'module_listener_options' => [
+        'config_glob_paths'    => [
             'config/autoload/{,*.}{global,local}.php',
-        ),
+        ],
         'config_cache_enabled' => $useCache,
         'module_map_cache_enabled' => $useCache,
         'check_dependencies' => (APPLICATION_ENV == 'development'),
         'cache_dir'            => $cacheDir,
-        'module_paths' => array(
+        'module_paths' => [
             './module',
             './vendor',
-        ),
-    ),
-    'service_manager' => array(
+        ],
+    ],
+    'service_manager' => [
         'use_defaults' => true,
-        'factories'    => array(
-        ),
-    ),
-);
+        'factories'    => [
+        ],
+    ],
+];

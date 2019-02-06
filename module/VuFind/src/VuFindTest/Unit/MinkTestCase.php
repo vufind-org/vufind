@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,10 +27,12 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
-use Behat\Mink\Driver\Selenium2Driver, Behat\Mink\Session,
-    Behat\Mink\Element\Element,
-    VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Writer as ConfigWriter;
+
+use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.
@@ -242,6 +244,36 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Set a value within an element selected via CSS; retry if set fails
+     * due to browser bugs.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $value    Value to set
+     * @param int     $timeout  Wait timeout for CSS selection (in ms)
+     * @param int     $retries  Retry count for set loop
+     *
+     * @return mixed
+     */
+    protected function findCssAndSetValue(Element $page, $selector, $value,
+        $timeout = 1000, $retries = 6
+    ) {
+        $field = $this->findCss($page, $selector, $timeout);
+
+        // Workaround for Chromedriver bug; sometimes setting a value
+        // doesn't work on the first try.
+        for ($i = 0; $i < $retries; $i++) {
+            $field->setValue($value);
+            // Did it work? If so, we're done and can leave....
+            if ($field->getValue() === $value) {
+                return;
+            }
+        }
+
+        throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+    }
+
+    /**
      * Retrieve a link and assert that it exists before returning it.
      *
      * @param Element $page Page element
@@ -273,6 +305,28 @@ abstract class MinkTestCase extends DbTestCase
             }
         }
         return false;
+    }
+
+    /**
+     * Search for the specified query.
+     *
+     * @param string $query   Search term(s)
+     * @param string $handler Search type (optional)
+     *
+     * @return \Behat\Mink\Element\Element
+     */
+    protected function performSearch($query, $handler = null)
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue($query);
+        if ($handler) {
+            $this->findCss($page, '#searchForm_type')->setValue($handler);
+        }
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->snooze();
+        return $page;
     }
 
     /**

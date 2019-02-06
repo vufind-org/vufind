@@ -2,7 +2,7 @@
 /**
  * Factory for instantiating content loaders
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
-use Zend\ServiceManager\ServiceManager;
+
+use Interop\Container\ContainerInterface;
 
 /**
  * Factory for instantiating content loaders
@@ -39,56 +40,65 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @codeCoverageIgnore
  */
-class Factory
+class Factory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create Author Notes loader
+     * Get the configuration setting name to get content provider settings.
      *
-     * @param ServiceManager $sm Service manager
+     * @param string $name Requested service name
      *
-     * @return mixed
+     * @return string
      */
-    public static function getAuthorNotes(ServiceManager $sm)
+    protected function getConfigSettingName($name)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentAuthorNotesPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $providers = isset($config->Content->authorNotes)
-            ? $config->Content->authorNotes : '';
-        return new Loader($loader, $providers);
+        // Account for one special exception:
+        $lcName = strtolower($name);
+        return $lcName === 'authornotes' ? 'authorNotes' : $lcName;
     }
 
     /**
-     * Create Excerpts loader
+     * Get the plugin manager service name to build a content provider service.
      *
-     * @param ServiceManager $sm Service manager
+     * @param string $name Requested service name
      *
-     * @return mixed
+     * @return string
      */
-    public static function getExcerpts(ServiceManager $sm)
+    protected function getPluginManagerServiceName($name)
     {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentExcerptsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $providers = isset($config->Content->excerpts)
-            ? $config->Content->excerpts : '';
-        return new Loader($loader, $providers);
+        $lcName = strtolower($name);
+        // Account for two special legacy exceptions:
+        $exceptions = ['authornotes' => 'AuthorNotes', 'toc' => 'TOC'];
+        $formattedName = $exceptions[$lcName] ?? ucfirst($lcName);
+        return 'VuFind\Content\\' . $formattedName . '\PluginManager';
     }
 
     /**
-     * Create Reviews loader
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public static function getReviews(ServiceManager $sm)
-    {
-        $loader = $sm->getServiceLocator()
-            ->get('VuFind\ContentReviewsPluginManager');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $providers = isset($config->Content->reviews)
-            ? $config->Content->reviews : '';
-        return new Loader($loader, $providers);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $pm = $container->get($this->getPluginManagerServiceName($requestedName));
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $setting = $this->getConfigSettingName($requestedName);
+        $providers = $config->Content->$setting ?? '';
+        return new Loader($pm, $providers);
     }
 }

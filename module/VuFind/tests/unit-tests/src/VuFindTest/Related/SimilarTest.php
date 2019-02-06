@@ -2,7 +2,7 @@
 /**
  * Similar Related Items Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Related;
+
 use VuFind\Related\Similar;
 
 /**
@@ -48,13 +49,13 @@ class SimilarTest extends \VuFindTest\Unit\TestCase
     {
         // Similar is really just a thin wrapper around the search service; make
         // sure it does its job properly with the help of some mocks.
-        $driver = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+        $driver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->setMethods(['getUniqueId'])
             ->getMock();
         $driver->expects($this->once())
             ->method('getUniqueId')
             ->will($this->returnValue('fakeid'));
-        $service = $this->getMockBuilder('VuFindSearch\Service')
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->setMethods(['similar'])
             ->getMock();
         $service->expects($this->once())

@@ -3,7 +3,7 @@
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,9 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use Zend\Console\Console,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Mvc\Controller\AbstractActionController;
+
+use Zend\Console\Console;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -55,7 +56,7 @@ class AbstractBase extends AbstractActionController
             throw new \Exception('Access denied to command line tools.');
         }
 
-        $this->setServiceLocator($sm);
+        $this->serviceLocator = $sm;
 
         // Switch the context back to the original working directory so that
         // relative paths work as expected. (This constant is set in
@@ -116,7 +117,8 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config')->get($id);
+        return $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)->get($id);
     }
 
     /**
@@ -126,7 +128,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->serviceLocator->get('VuFind\ILSConnection');
+        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -138,7 +140,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
             ->get($table);
     }
 }

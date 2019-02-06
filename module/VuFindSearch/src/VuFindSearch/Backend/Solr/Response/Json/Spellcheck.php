@@ -3,7 +3,7 @@
 /**
  * SOLR spellcheck information.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use IteratorAggregate;
 use ArrayObject;
 use Countable;
+use IteratorAggregate;
 
 /**
  * SOLR spellcheck information.
@@ -75,7 +75,9 @@ class Spellcheck implements IteratorAggregate, Countable
     public function __construct(array $spellcheck, $query)
     {
         $this->terms = new ArrayObject();
-        $list = new NamedList($spellcheck);
+        // Solr 6.4 and before use an array of arrays with two elements, while
+        // from Solr 6.5 on the array is associative.
+        $list = isset($spellcheck[0]) ? new NamedList($spellcheck) : $spellcheck;
         foreach ($list as $term => $info) {
             if (is_array($info)) {
                 $this->terms->offsetSet($term, $info);
@@ -198,7 +200,6 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function compareTermLength($a, $b)
     {
-        return (strlen($b) - strlen($a));
+        return strlen($b) - strlen($a);
     }
-
 }

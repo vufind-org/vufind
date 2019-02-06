@@ -2,7 +2,7 @@
 /**
  * Mink test class to test advanced search.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
+use Behat\Mink\Element\Element;
 
 /**
  * Mink test class to test advanced search.
@@ -67,17 +69,32 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that the home page is available.
+     * Find the "edit advanced search link" and click it.
+     *
+     * @param Element $page Page element
      *
      * @return void
      */
-    public function testBootstrapThree()
+    protected function editAdvancedSearch(Element $page)
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
+        $links = $page->findAll('css', '.adv_search_links a');
+        foreach ($links as $link) {
+            if ($this->checkVisibility($link)
+                && $link->getHtml() == 'Edit this Advanced Search'
+            ) {
+                $link->click();
+                break;
+            }
+        }
+    }
 
+    /**
+     * Test that the advanced search form is operational.
+     *
+     * @return void
+     */
+    public function testAdvancedSearch()
+    {
         // Go to the advanced search page
         $session = $this->getMinkSession();
         $path = '/Search/Advanced';
@@ -94,12 +111,12 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '#search0_3');
         // No visible x next to lonely search term
-        $this->findCss($page, '#search1_0 .close.hidden');
+        $this->findCss($page, '#search1_0 .adv-term-remove.hidden');
         // Add a search term in another group
         $session->executeScript("addSearch(1)"); // add_search_link_1 click
         $this->findCss($page, '#search1_1');
         // Visible x next to lonely search term
-        $this->findCss($page, '#search1_0 .close:not(.hidden)');
+        $this->findCss($page, '#search1_0 .adv-term-remove:not(.hidden)');
 
         // Enter search for bride of the tomb
         $this->findCss($page, '#search_lookfor0_0')->setValue('bride');
@@ -108,32 +125,26 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#search_lookfor0_2')->setValue('garbage');
         $this->findCss($page, '#search_lookfor0_3')->setValue('1883');
         $this->findCss($page, '#search_type0_3')->selectOption('year');
+        $this->findCss($page, '#search_lookfor1_0')->setValue('miller');
 
         // Submit search form
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search
         $this->assertEquals(
-            '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883)',
+            '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883) AND (All Fields:miller)',
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
 
         // Test edit search
-        $links = $page->findAll('css', '.adv_search_links a');
-        foreach ($links as $link) {
-            if ($this->checkVisibility($link)
-                && $link->getHtml() == 'Edit this Advanced Search'
-            ) {
-                $link->click();
-                break;
-            }
-        }
+        $this->editAdvancedSearch($page);
         $this->assertEquals('bride', $this->findCss($page, '#search_lookfor0_0')->getValue());
-        $this->assertEquals('tomb',  $this->findCss($page, '#search_lookfor0_1')->getValue());
+        $this->assertEquals('tomb', $this->findCss($page, '#search_lookfor0_1')->getValue());
         $this->assertEquals('Title', $this->findCss($page, '#search_type0_1')->getValue());
-        $this->assertEquals('garbage',  $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('1883',  $this->findCss($page, '#search_lookfor0_3')->getValue());
-        $this->assertEquals('year',  $this->findCss($page, '#search_type0_3')->getValue());
+        $this->assertEquals('garbage', $this->findCss($page, '#search_lookfor0_2')->getValue());
+        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_3')->getValue());
+        $this->assertEquals('year', $this->findCss($page, '#search_type0_3')->getValue());
+        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor1_0')->getValue());
 
         // Term removal
         $session->executeScript("deleteSearch(0, 2)"); // search0_2 x click
@@ -141,5 +152,21 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         // Terms collapsing up
         $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_2')->getValue());
         $this->assertEquals('year', $this->findCss($page, '#search_type0_2')->getValue());
+
+        // Group removal
+        $session->executeScript("deleteGroup(0)");
+
+        // Submit search form
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search (second group only)
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCss($page, '.adv_search_terms strong')->getHtml()
+        );
+
+        // Test edit search (modified search is restored properly)
+        $this->editAdvancedSearch($page);
+        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor0_0')->getValue());
     }
 }

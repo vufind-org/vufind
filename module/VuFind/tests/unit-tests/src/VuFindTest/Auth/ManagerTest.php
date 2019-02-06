@@ -2,7 +2,7 @@
 /**
  * Authentication manager test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,9 +26,13 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Manager, VuFind\Auth\PluginManager,
-    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    Zend\Config\Config, Zend\Session\SessionManager;
+
+use VuFind\Auth\Manager;
+use VuFind\Auth\PluginManager;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\User as UserTable;
+use Zend\Config\Config;
+use Zend\Session\SessionManager;
 
 /**
  * Authentication manager test class.
@@ -82,7 +86,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 
         // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
         $pm = $this->getMockPluginManager();
-        $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
+        $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(false));
@@ -477,7 +481,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $manager = $this->getManager([], $table);
 
         // Fake the session inside the manager:
-        $mockSession = $this->getMockBuilder('Zend\Session\Container')
+        $mockSession = $this->getMockBuilder(\Zend\Session\Container::class)
             ->setMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
@@ -510,7 +514,15 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $pm = $this->getMockPluginManager();
         }
         $cookies = new \VuFind\Cookie\CookieManager([]);
-        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        $csrf = new \VuFind\Validator\Csrf(
+            [
+                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'salt' => 'csrftest'
+            ]
+        );
+        return new Manager(
+            $config, $userTable, $sessionManager, $pm, $cookies, $csrf
+        );
     }
 
     /**
@@ -520,7 +532,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockUserTable()
     {
-        return $this->getMockBuilder('VuFind\Db\Table\User')
+        return $this->getMockBuilder(\VuFind\Db\Table\User::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -532,7 +544,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockSessionManager()
     {
-        return $this->getMockBuilder('Zend\Session\SessionManager')
+        return $this->getMockBuilder(\Zend\Session\SessionManager::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -544,24 +556,24 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager();
-        $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
+        $pm = new PluginManager($this->getServiceManager());
+        $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
-        $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
+        $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockMulti = $this->getMockBuilder('VuFind\Auth\MultiILS')
+        $mockMulti = $this->getMockBuilder(\VuFind\Auth\MultiILS::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
+        $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pm->setService('ChoiceAuth', $mockChoice);
-        $pm->setService('Database', $mockDb);
-        $pm->setService('MultiILS', $mockMulti);
-        $pm->setService('Shibboleth', $mockShib);
+        $pm->setService('VuFind\Auth\ChoiceAuth', $mockChoice);
+        $pm->setService('VuFind\Auth\Database', $mockDb);
+        $pm->setService('VuFind\Auth\MultiILS', $mockMulti);
+        $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
     }
 
@@ -572,7 +584,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockUser()
     {
-        return $this->getMockBuilder('VuFind\Db\Row\User')
+        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -584,7 +596,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRequest()
     {
-        $mock = $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+        $mock = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
         $post = new \Zend\Stdlib\Parameters();

@@ -2,7 +2,7 @@
 /**
  * Database authentication test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
+
+use VuFind\Auth\Database;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Stdlib\Parameters;
 
 /**
  * Database authentication test class.
@@ -192,7 +195,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     protected function getMockRow()
     {
-        return $this->getMockBuilder('VuFind\Db\Row\User')
+        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -207,7 +210,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getMockTable($methods = [])
     {
         $methods[] = 'getResultSetPrototype';
-        $mock = $this->getMockBuilder('VuFind\Db\Table\User')
+        $mock = $this->getMockBuilder(\VuFind\Db\Table\User::class)
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
@@ -232,7 +235,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getRequest($post = [])
     {
         $post = new Parameters($post);
-        $request = $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+        $request = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
             ->setMethods(['getPost'])->getMock();
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
@@ -248,8 +251,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     protected function getDatabase($table)
     {
-        $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
-            ->setMethods(['get'])->getMock();
+        $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
+            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

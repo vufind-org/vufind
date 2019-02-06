@@ -1,0 +1,127 @@
+/* ------ Border radius changes ------ */
+@list-group-border-radius: 0;
+@border-radius-large: 0; // modal
+
+/* ------ Common element changes ------ */
+.help-block {
+  h1,
+  h2,
+  h3,
+  h4 { margin: 0; }
+}
+
+.highlight,
+mark { background-color: @highlighter-color; }
+table { font-size: @reduced-font-size; }
+
+/* ------ Bootstrap class overrides ------ */
+.badge {
+  margin-bottom: 1px;
+  font-size: 10px;
+}
+.btn {
+  height: 34px;
+  border-radius: .25rem;
+  border-color: @silver;
+}
+.btn-default:hover,
+.btn-default:focus {
+  color: @white;
+  border-color: transparent;
+}
+.btn-link,
+.btn-primary { border-color: transparent; }
+.btn-primary:hover {
+  background-color: @action-hover-bg;
+  color: @action-color;
+  border-color: @brand-primary;
+}
+.btn-link { color: @brand-primary; }
+
+.media,
+.media-body { overflow: initial; }
+
+.form-control { box-shadow: none; }
+.form-control:hover,
+.form-control:focus { border-color: @brand-primary; }
+.form-control:focus {
+  padding-bottom: 4px; // Prevent jumping
+  border-bottom: 3px solid @brand-secondary;
+  box-shadow: none;
+}
+select.form-control {
+  padding-bottom: @padding-base-vertical;
+  border: 1px solid @light-silver;
+}
+
+.breadcrumb a { color: @dark-gray; }
+.breadcrumb .active { color: @near-black; }
+
+.nav > li > a { color: @brand-primary; }
+.navbar-collapse,
+.navbar-form { box-shadow: none; }
+
+.alert {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  color: @black;
+
+  .btn {
+    color: @mid-gray;
+    background-color: @white;
+    border-color: @gray;
+  }
+  .btn-primary {
+    color: @action-color;
+    background-color: @white;
+    border-color: @action-color;
+  }
+}
+.alert-info,
+.alert-info:hover {
+  color: @navy;
+  background-color: @lightest-blue;
+  a { color: @blue; }
+}
+.alert-success,
+.alert-success:hover {
+  color: @dark-green;
+  background-color: @washed-green;
+  a { color: @green; }
+}
+.alert-danger,
+.alert-danger:hover {
+  color: @white;
+  background-color: @red;
+  a { color: @washed-red; }
+}
+
+.label { font-weight: 400; }
+
+@pagination-border: transparent;
+@pagination-hover-border: transparent;
+.pagination {
+  .clearfix();
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0;
+}
+.pagination > li > a,
+.pagination > li > span {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1rem;
+
+  &.page-prev,
+  &.page-next {
+    font-size: 1rem;
+    font-weight: bold;
+    color: @brand-primary;
+  }
+}
+.pagination > .active > a,
+.pagination > .active > span { border-radius: @border-radius-base; }

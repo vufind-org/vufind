@@ -1,4 +1,4 @@
-/*global extractClassParams, VuFind */
+/*global extractClassParams, Hunt, VuFind */
 VuFind.register('openurl', function OpenUrl() {
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
@@ -11,17 +11,18 @@ VuFind.register('openurl', function OpenUrl() {
       dataType: 'json',
       url: url
     })
-    .done(function getResolverLinksDone(response) {
-      $target.removeClass('ajax_availability').empty().append(response.data);
-    })
-    .fail(function getResolverLinksFail(response, textStatus) {
-      $target.removeClass('ajax_availability').addClass('text-danger').empty();
-      if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
-      $target.append(response.responseJSON.data);
-    });
+      .done(function getResolverLinksDone(response) {
+        $target.removeClass('ajax_availability').empty().append(response.data.html);
+      })
+      .fail(function getResolverLinksFail(response, textStatus) {
+        $target.removeClass('ajax_availability').addClass('text-danger').empty();
+        if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
+        $target.append(response.responseJSON.data);
+      });
   }
 
-  function embedOpenUrlLinks(element) {
+  function embedOpenUrlLinks(el) {
+    var element = $(el);
     // Extract the OpenURL associated with the clicked element:
     var openUrl = element.children('span.openUrl:first').attr('title');
 
@@ -43,7 +44,7 @@ VuFind.register('openurl', function OpenUrl() {
   // combined results fetched with AJAX are loaded.
   function init(_container) {
     var container = _container || $('body');
-     // assign action to the openUrlWindow link class
+    // assign action to the openUrlWindow link class
     container.find('a.openUrlWindow').unbind('click').click(function openUrlWindowClick() {
       var params = extractClassParams(this);
       var settings = params.window_settings;
@@ -53,11 +54,18 @@ VuFind.register('openurl', function OpenUrl() {
 
     // assign action to the openUrlEmbed link class
     container.find('.openUrlEmbed a').unbind('click').click(function openUrlEmbedClick() {
-      embedOpenUrlLinks($(this));
+      embedOpenUrlLinks(this);
       return false;
     });
 
-    container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+    if (typeof Hunt === 'undefined') {
+      container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+    } else {
+      new Hunt(
+        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray(),
+        { enter: embedOpenUrlLinks }
+      );
+    }
   }
   return {
     init: init,

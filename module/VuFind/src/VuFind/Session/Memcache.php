@@ -5,7 +5,7 @@
  * Note: This relies on PHP's Memcache extension
  * (see http://us.php.net/manual/en/book.memcache.php)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -86,7 +86,8 @@ class Memcache extends AbstractBase
      */
     public function read($sess_id)
     {
-        return $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        $value = $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        return empty($value) ? '' : $value;
     }
 
     /**

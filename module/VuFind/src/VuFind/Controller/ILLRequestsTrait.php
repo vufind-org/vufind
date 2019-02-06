@@ -2,7 +2,7 @@
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,17 +38,6 @@ namespace VuFind\Controller;
  */
 trait ILLRequestsTrait
 {
-    /**
-     * Action for dealing with blocked ILL requests.
-     *
-     * @return mixed
-     */
-    public function blockedILLRequestAction()
-    {
-        $this->flashMessenger()->addMessage('ill_request_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
     /**
      * Action for dealing with ILL requests.
      *
@@ -89,8 +78,12 @@ trait ILLRequestsTrait
         $validRequest = $catalog->checkILLRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
-            return $this->blockedILLRequestAction();
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'ill_request_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
@@ -99,7 +92,7 @@ trait ILLRequestsTrait
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeILLRequest'))) {
+        if (null !== $this->params()->fromPost('placeILLRequest')) {
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 
@@ -139,7 +132,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries
@@ -160,8 +153,7 @@ trait ILLRequestsTrait
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/illrequest');

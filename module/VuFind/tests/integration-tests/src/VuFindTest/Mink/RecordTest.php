@@ -2,7 +2,7 @@
 /**
  * Mink test class for basic record functionality.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -146,6 +146,5 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
         );
         $this->tryRecordTabsOnId('testsample1');
         $this->tryLoadingTabHashAndReturningToDefault('testsample2');
-
     }
 }

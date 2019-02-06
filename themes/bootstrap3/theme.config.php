@@ -1,16 +1,16 @@
 <?php
-return array(
+return [
     'extends' => 'root',
-    'css' => array(
+    'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
         //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
-    ),
-    'js' => array(
-        'vendor/base64.js:lt IE 10', // btoa polyfill
+        'flex-fallback.css::lt IE 10', // flex polyfill
+    ],
+    'js' => [
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
@@ -19,21 +19,26 @@ return array(
         'lib/autocomplete.js',
         'common.js',
         'lightbox.js',
-    ),
-    'less' => array(
+    ],
+    'less' => [
         'active' => false,
         'compiled.less'
-    ),
+    ],
     'favicon' => 'vufind-favicon.ico',
-    'helpers' => array(
-        'factories' => array(
-            'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
-            'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
-            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
-        ),
-        'invokables' => array(
+    'helpers' => [
+        'factories' => [
+            'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
+            'VuFind\View\Helper\Bootstrap3\Highlight' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
+            'VuFind\View\Helper\Bootstrap3\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
+            'VuFind\View\Helper\Bootstrap3\Search' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        ],
+        'aliases' => [
+            'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
+            'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
+            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Recaptcha',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        )
-    )
-);
+        ]
+    ]
+];

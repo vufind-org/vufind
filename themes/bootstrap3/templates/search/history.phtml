@@ -1,39 +1,37 @@
-<?
+<?php
   // Set page title.
   $this->headTitle($this->translate('Search History'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
 
-<div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-    <?=$this->flashmessages()?>
-    <? if ($saveSupported && !empty($this->saved)): ?>
-      <h2><?=$this->transEsc("history_saved_searches")?></h2>
-      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
-    <? endif; ?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?=$this->flashmessages()?>
+  <?php if ($saveSupported && !empty($this->saved)): ?>
+    <h2><?=$this->transEsc("history_saved_searches")?></h2>
+    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+  <?php endif; ?>
 
-    <h2><?=$this->transEsc("history_recent_searches")?></h2>
-    <? if (!empty($this->unsaved)): ?>
-      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
-      <a href="?purge=true"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a>
-    <? else: ?>
-      <?=$this->transEsc("history_no_searches")?>
-    <? endif; ?>
-  </div>
-
-  <? if ($saveSupported): ?>
-    <div class="<?=$this->layoutClass('sidebar')?>">
-      <?=$this->context($this)->renderInContext(
-          "myresearch/menu.phtml",
-          // Only activate search history in account menu if user is logged in.
-          $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
-       );
-       ?>
-    </div>
-  <? endif; ?>
+  <h2><?=$this->transEsc("history_recent_searches")?></h2>
+  <?php if (!empty($this->unsaved)): ?>
+    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
+    <a href="?purge=true"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a>
+  <?php else: ?>
+    <?=$this->transEsc("history_no_searches")?>
+  <?php endif; ?>
 </div>
+
+<?php if ($saveSupported): ?>
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->context($this)->renderInContext(
+        "myresearch/menu.phtml",
+        // Only activate search history in account menu if user is logged in.
+        $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
+     );
+     ?>
+  </div>
+<?php endif; ?>

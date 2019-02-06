@@ -2,7 +2,7 @@
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
-use VuFind\View\Helper\Root\Translate;
+
 use VuFind\I18n\TranslatableString;
+use VuFind\View\Helper\Root\Translate;
 
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
@@ -38,7 +39,7 @@ use VuFind\I18n\TranslatableString;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TranslateTest extends \PHPUnit_Framework_TestCase
+class TranslateTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test translation without a loaded translator
@@ -219,7 +220,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testLocaleWithTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock('Zend\I18n\Translator\Translator');
+        $translator = $this->createMock(\Zend\I18n\Translator\Translator::class);
         $translator->expects($this->once())->method('getLocale')
             ->will($this->returnValue('foo'));
         $translate->setTranslator($translator);
@@ -234,7 +235,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testGetTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }
@@ -249,10 +250,9 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     protected function getMockTranslator($translations)
     {
         $callback = function ($str, $domain) use ($translations) {
-            return isset($translations[$domain][$str])
-                ? $translations[$domain][$str] : $str;
+            return $translations[$domain][$str] ?? $str;
         };
-        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         return $translator;

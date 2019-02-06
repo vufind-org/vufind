@@ -2,7 +2,7 @@
 /**
  * Auth handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Auth;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Auth handler plugin manager
  *
@@ -39,6 +41,63 @@ namespace VuFind\Auth;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'almadatabase' => AlmaDatabase::class,
+        'cas' => CAS::class,
+        'choiceauth' => ChoiceAuth::class,
+        'database' => Database::class,
+        'facebook' => Facebook::class,
+        'ils' => ILS::class,
+        'ldap' => LDAP::class,
+        'multiauth' => MultiAuth::class,
+        'multiils' => MultiILS::class,
+        'shibboleth' => Shibboleth::class,
+        'sip2' => SIP2::class,
+        // for legacy 1.x compatibility
+        'db' => Database::class,
+        'sip' => SIP2::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        AlmaDatabase::class => ILSFactory::class,
+        CAS::class => InvokableFactory::class,
+        ChoiceAuth::class => ChoiceAuthFactory::class,
+        Database::class => InvokableFactory::class,
+        Facebook::class => FacebookFactory::class,
+        ILS::class => ILSFactory::class,
+        LDAP::class => InvokableFactory::class,
+        MultiAuth::class => MultiAuthFactory::class,
+        MultiILS::class => ILSFactory::class,
+        Shibboleth::class => ShibbolethFactory::class,
+        SIP2::class => InvokableFactory::class,
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(PluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +105,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Auth\AbstractBase';
+        return AbstractBase::class;
     }
 }

@@ -1,4 +1,4 @@
-<?
+<?php
     // This is a text-only email template; do not include HTML!
 
     // If this record supports real-time status, we'll assume it's a local
@@ -18,14 +18,14 @@
         foreach ($holdings['holdings'] as $details) {
             $location = $details['location'];
             foreach ($details['items'] as $item) {
-                $callno = isset($item['callnumber']) ? $item['callnumber'] : false;
+                $callno = $item['callnumber'] ?? false;
                 if ($item['availability']) {
                     if ($callno) {
                         // Best case scenario -- available item with call number!
                         // Exit loop in this situation.
                         $useBackupLocation = false;
                         break 2;
-                    } else if (!$backupLocation) {
+                    } elseif (!$backupLocation) {
                         // Save first "available" location without call # as backup
                         // (better than an unavailable location if no call #'s found)
                         $backupLocation = $location;

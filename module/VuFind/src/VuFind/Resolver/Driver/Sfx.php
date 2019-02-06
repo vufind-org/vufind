@@ -2,7 +2,7 @@
 /**
  * SFX Link Resolver Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -72,8 +72,9 @@ class Sfx extends AbstractBase
     public function fetchLinks($openURL)
     {
         // Make the call to SFX and load results
-        $url = $this->baseUrl .
-            '?sfx.response_type=multi_obj_detailed_xml&svc.fulltext=yes&' . $openURL;
+        $url = $this->getResolverUrl(
+            'sfx.response_type=multi_obj_detailed_xml&svc.fulltext=yes&' . $openURL
+        );
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }

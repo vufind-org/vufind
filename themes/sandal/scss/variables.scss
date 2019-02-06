@@ -1,0 +1,23 @@
+$reduced-font-size: 14px !default;
+$img-path: "../../sandal/images/" !default;
+
+$banner-height: 60px !default;
+$banner-height-sm: 40px !default;
+$search-tab-height: 2rem !default;
+
+$result-checkbox-width: 28px !default;
+$result-checkbox-height: 80px !default;
+$result-sm-icon-size: 1.5rem !default;
+
+/* ------ Mixins ------ */
+@mixin full-width(){ // Break out of the container
+  margin-right: calc(50% - 50vw + .5rem); // .5rem seems to be the margin of error in Chrome
+  margin-left: calc(50% - 50vw + .5rem);
+  @media (min-width: 992px) {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+@mixin background-image($file){
+  background-image: url("#{$img-path}#{$file}");
+}

@@ -2,7 +2,7 @@
 /**
  * Search API Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -114,7 +114,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
-        $params->activateAllFacets();
 
         $viewParams = [
             'config' => $config,
@@ -189,7 +188,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->serviceLocator->get('VuFind\RecordLoader');
+        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource($request['id']);
@@ -253,7 +252,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
         try {
             $results = $runner->run(
                 $request,
@@ -261,7 +260,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 function ($runner, $params, $searchId) use (
                     $hierarchicalFacets, $request, $requestedFields
                 ) {
-                    foreach (isset($request['facet']) ? $request['facet'] : []
+                    foreach ($request['facet'] ?? []
                        as $facet
                     ) {
                         if (!isset($hierarchicalFacets[$facet])) {
@@ -269,7 +268,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                         }
                     }
                     if ($requestedFields) {
-                        $limit = isset($request['limit']) ? $request['limit'] : 20;
+                        $limit = $request['limit'] ?? 20;
                         $params->setLimit($limit);
                     } else {
                         $params->setLimit(0);
@@ -297,7 +296,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $response['records'] = $records;
         }
 
-        $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
+        $requestedFacets = $request['facet'] ?? [];
         $hierarchicalFacetData = $this->getHierarchicalFacetData(
             array_intersect($requestedFacets, $hierarchicalFacets)
         );
@@ -333,7 +332,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\HierarchicalFacetHelper');
+            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $facetList = [];
         foreach ($facets as $facet) {

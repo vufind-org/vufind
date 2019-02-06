@@ -3,7 +3,7 @@
 /**
  * Unit tests for simple JSON-based record collection.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Backend\Solr\Json\Response;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindTest\RecordDriver\TestHarness;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for simple JSON-based record collection.
@@ -41,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends PHPUnit_Framework_TestCase
+class RecordCollectionTest extends TestCase
 {
     /**
      * Test that the object returns appropriate defaults for missing elements.
@@ -78,7 +78,7 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
             ]
         );
         for ($i = 0; $i < 5; $i++) {
-            $coll->add($this->createMock('VuFindSearch\Response\RecordInterface'));
+            $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
         $coll->rewind();
         $this->assertEquals(5, $coll->key());

@@ -1,37 +1,39 @@
-<?
+<?=$this->piwik()?>
+<?=$this->googleanalytics()?>
+<?php
   $this->defaultTab = strtolower($this->defaultTab);
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 <ul class="list-tabs nav nav-tabs">
-  <? $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
-  <? if (!empty($coreMetadata)): ?>
-    <li<? if($this->defaultTab === 'information'): ?> class="active"<? endif; ?>>
+  <?php $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
+  <?php if (!empty($coreMetadata)): ?>
+    <li<?php if($this->defaultTab === 'information'): ?> class="active"<?php endif; ?>>
       <a id="information_<?=$idSuffix?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#information_<?=$idSuffix?>-content" class="noajax">
         <?=$this->translate('ajaxview_label_information') ?>
       </a>
     </li>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
-  <? if (!empty($toolbar)): ?>
-    <li<? if($this->defaultTab === 'tools'): ?> class="active"<? endif; ?>>
+  <?php $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
+  <?php if (!empty($toolbar)): ?>
+    <li<?php if($this->defaultTab === 'tools'): ?> class="active"<?php endif; ?>>
       <a id="tools_<?=$idSuffix?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#tools_<?=$idSuffix?>-content" class="noajax">
       <?=$this->translate('ajaxview_label_tools') ?>
       </a>
     </li>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? $list = $this->related()->getList($this->driver); ?>
-  <? if (!empty($list)): ?>
-    <li<? if($this->defaultTab === 'related'): ?> class="active"<? endif; ?>>
+  <?php $list = $this->related()->getList($this->driver); ?>
+  <?php if (!empty($list)): ?>
+    <li<?php if($this->defaultTab === 'related'): ?> class="active"<?php endif; ?>>
       <a id="related_<?=$idSuffix?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#related_<?=$idSuffix?>-content" class="noajax">
         <?=$this->transEsc("Related Items")?>
       </a>
     </li>
-  <? endif; ?>
+  <?php endif; ?>
 
-  <? foreach ($this->tabs as $tab => $obj): ?>
-    <? // add current tab to breadcrumbs if applicable:
+  <?php foreach ($this->tabs as $tab => $obj): ?>
+    <?php // add current tab to breadcrumbs if applicable:
       $desc = $obj->getDescription();
       $tab_classes = [];
       if ($this->defaultTab === strtolower($tab)) {
@@ -43,31 +45,31 @@
       if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
     ?>
     <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><?=$this->transEsc($desc)?></a>
+      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
     </li>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </ul>
 <div class="tab-content">
-  <? if (!empty($coreMetadata)): ?>
-    <div class="list-tab-content record tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-content">
+  <?php if (!empty($coreMetadata)): ?>
+    <div class="list-tab-content record tab-pane<?php if($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffix?>-content">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$coreMetadata ?>
     </div>
-  <? endif; ?>
-  <? if (!empty($toolbar)): ?>
-    <div class="list-tab-content tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-content">
+  <?php endif; ?>
+  <?php if (!empty($toolbar)): ?>
+    <div class="list-tab-content tab-pane<?php if($this->defaultTab === 'tools'): ?> active<?php endif; ?>" id="tools_<?=$idSuffix?>-content">
       <?=$toolbar ?>
     </div>
-  <? endif; ?>
-  <? if (!empty($list)): ?>
-    <div class="list-tab-content tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=$idSuffix?>-content">
-      <? foreach ($list as $current): ?>
+  <?php endif; ?>
+  <?php if (!empty($list)): ?>
+    <div class="list-tab-content tab-pane<?php if($this->defaultTab === 'related'): ?> active<?php endif; ?>" id="related_<?=$idSuffix?>-content">
+      <?php foreach ($list as $current): ?>
         <?=$this->related()->render($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
-  <? foreach ($this->tabs as $tab => $obj): ?>
-    <div class="list-tab-content tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
-  <? endforeach; ?>
+  <?php endif; ?>
+  <?php foreach ($this->tabs as $tab => $obj): ?>
+    <div class="list-tab-content tab-pane<?php if($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
+  <?php endforeach; ?>
 </div>

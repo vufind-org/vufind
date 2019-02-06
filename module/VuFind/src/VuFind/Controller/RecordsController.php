@@ -2,7 +2,7 @@
 /**
  * Records Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

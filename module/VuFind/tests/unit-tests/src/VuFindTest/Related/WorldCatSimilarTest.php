@@ -2,7 +2,7 @@
 /**
  * WorldCat Similar Related Items Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Related;
-use VuFind\Related\WorldCatSimilar, VuFindSearch\Query\Query;
+
+use VuFind\Related\WorldCatSimilar;
+use VuFindSearch\Query\Query;
 
 /**
  * WorldCat Similar Related Items Test Class
@@ -46,7 +48,7 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetResults()
     {
-        $driver = $this->getMockBuilder('VuFind\RecordDriver\WorldCat')
+        $driver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
             ->setMethods(['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier'])
             ->getMock();
         $driver->expects($this->once())
@@ -68,10 +70,10 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
         $driver->expects($this->once())
             ->method('getSourceIdentifier')
             ->will($this->returnValue('WorldCat'));
-        $service = $this->getMockBuilder('VuFindSearch\Service')
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->setMethods(['search'])->getMock();
         $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
-        $response = $this->getMockBuilder('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection')
+        $response = $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection::class)
             ->setMethods(['getRecords'])
             ->setConstructorArgs([['offset' => 0, 'total' => 0]])
             ->getMock();

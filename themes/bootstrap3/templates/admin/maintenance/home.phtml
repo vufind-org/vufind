@@ -1,35 +1,36 @@
-<?
+<?php
     // Set page title.
     $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
 ?>
-<div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-    <h2><?=$this->transEsc('System Maintenance')?></h2>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('System Maintenance')?></h2>
 
-    <h3>Utilities</h3>
-    <?=$this->flashmessages()?>
-    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSearches'))?>">
-      <label for="del_daysOld">Delete unsaved user search histories older than</label>
-      <input id="del_daysOld" type="text" name="daysOld" size="5" value="2"/> days.
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
-    </form>
-    <hr />
-    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSessions'))?>">
-      <label for="delsess_daysOld">Delete user sessions older than</label>
-      <input id="delsess_daysOld" type="text" name="daysOld" size="5" value="2"/> days.
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
-    </form>
-    <hr />
-    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'ClearCache'))?>">
-      Clear cache(s):
-      <? foreach ($caches as $cache): ?>
-        <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>" /> <?=$this->escapeHtml($cache) ?>
-      <? endforeach; ?>
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
-    </form>
-  </div>
+  <h3>Utilities</h3>
+  <?=$this->flashmessages()?>
+  <form class="form-admin-maintenance expired-searches" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSearches'])?>">
+    <label for="del_daysOld">Delete unsaved user search histories older than</label>
+    <input id="del_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"/> days.
+    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+  </form>
+  <hr />
+  <form class="form-admin-maintenance expired-sessions" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'DeleteExpiredSessions'])?>">
+    <label for="delsess_daysOld">Delete user sessions older than</label>
+    <input id="delsess_daysOld" type="number" name="daysOld" size="5" value="2" class="form-control"/> days.
+    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+  </form>
+  <hr />
+  <form class="form-admin-maintenance clear-cache" method="get" action="<?=$this->url('admin/maintenance', ['action' => 'ClearCache'])?>">
+    Clear cache(s):
+    <?php foreach ($caches as $cache): ?>
+      <label>
+        <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>" />
+        <?=$this->escapeHtml($cache) ?>
+      </label>
+    <?php endforeach; ?>
+    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="btn btn-danger"/>
+  </form>
+</div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->render("admin/menu.phtml")?>
-  </div>
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render("admin/menu.phtml")?>
 </div>

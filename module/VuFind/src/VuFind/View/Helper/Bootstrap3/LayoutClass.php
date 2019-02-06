@@ -3,7 +3,7 @@
  * Helper class for managing bootstrap theme's high-level (body vs. sidebar) page
  * layout.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -53,20 +53,20 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     {
         switch ($class) {
         case 'mainbody':
-            return $this->left
-                ? 'col-sm-9 col-sm-push-3'
-                : 'col-sm-9';
+            return $this->sidebarOnLeft
+                ? 'mainbody right'
+                : 'mainbody left';
         case 'sidebar':
-            return $this->left
-                ? 'sidebar col-sm-3 col-sm-pull-9 hidden-print'
-                : 'sidebar col-sm-3 hidden-print';
+            return $this->sidebarOnLeft
+                ? 'sidebar left hidden-print'
+                : 'sidebar right hidden-print';
         case 'offcanvas-row':
             if (!$this->offcanvas) {
                 return "";
             }
-            return $this->left
-                ? 'offcanvas offcanvas-left flip'
-                : 'offcanvas offcanvas-right flip';
+            return $this->sidebarOnLeft
+                ? 'offcanvas offcanvas-left'
+                : 'offcanvas offcanvas-right';
         }
     }
 }

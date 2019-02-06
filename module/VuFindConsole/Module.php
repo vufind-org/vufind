@@ -2,7 +2,7 @@
 /**
  * ZF2 module definition for the VuFind console module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindConsole;
+
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
@@ -78,6 +79,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      * @param Console $console Console adapter
      *
      * @return string|null
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsoleBanner(Console $console)
     {
@@ -96,11 +99,15 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getConsoleUsage(Console $console)
     {
         return [
+            'compile theme' => 'Flatten a theme hierarchy for improved performance',
             'generate dynamicroute' => 'Add a dynamic route',
+            'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
+            'generate plugin' => 'Create a new plugin class',
             'generate recordroute' => 'Add a record route',
             'generate staticroute' => 'Add a static route',
+            'generate theme' => 'Create and configure a new theme',
             'harvest harvest_oai' => 'OAI-PMH harvester',
             'harvest merge-marc' => 'MARC merge tool',
             'import import-xsl' => 'XSLT importer',

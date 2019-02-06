@@ -2,7 +2,7 @@
 /**
  * Class for accessing OCLC WorldCat search API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Andrew Nagy 2008.
  *
@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -48,17 +49,27 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     protected $wskey;
 
     /**
+     * Additional options
+     *
+     * @var array
+     */
+    protected $options;
+
+    /**
      * Constructor
      *
-     * @param string            $wsKey  Web services key
-     * @param \Zend\Http\Client $client An HTTP client object
+     * @param string            $wsKey   Web services key
+     * @param \Zend\Http\Client $client  An HTTP client object
+     * @param array             $options Additional config settings
      */
-    public function __construct($wsKey, \Zend\Http\Client $client)
-    {
+    public function __construct($wsKey, \Zend\Http\Client $client,
+        array $options = []
+    ) {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
         $this->wskey = $wsKey;
+        $this->options = $options;
     }
 
     /**
@@ -72,8 +83,17 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     public function getHoldings($id)
     {
         $this->client->resetParameters();
-        $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}";
-        $uri .= "?wskey={$this->wskey}&servicelevel=full";
+        if (!isset($this->options['useFrbrGroupingForHoldings'])) {
+            $grouping = 'on';   // default to "on" for backward compatibility
+        } else {
+            $grouping = $this->options['useFrbrGroupingForHoldings'] ? 'on' : 'off';
+        }
+        $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
+            . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
+        if (isset($this->options['latLon'])) {
+            list($lat, $lon) = explode(',', $this->options['latLon']);
+            $uri .= '&lat=' . urlencode($lat) . '&lon=' . urlencode($lon);
+        }
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();
@@ -136,7 +156,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->call('POST', $params->getArrayCopy(), false);
 
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->records->record) ? $xml->records->record : [];
+        $docs = $xml->records->record ?? [];
         $finalDocs = [];
         foreach ($docs as $doc) {
             $finalDocs[] = $doc->recordData->asXML();
@@ -144,7 +164,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
+            'total' => (int)($xml->numberOfRecords ?? 0)
         ];
     }
 }

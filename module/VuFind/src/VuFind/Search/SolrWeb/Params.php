@@ -2,7 +2,7 @@
 /**
  * Solr Web aspect of the Search Multi-class (Params)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -38,4 +38,11 @@ namespace VuFind\Search\SolrWeb;
  */
 class Params extends \VuFind\Search\Solr\Params
 {
+    /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = ['Facets'];
 }

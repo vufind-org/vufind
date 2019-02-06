@@ -2,7 +2,7 @@
 /**
  * Config Factory Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
+
 use VuFind\Config\Locator;
 
 /**
@@ -133,9 +134,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConfig($name)
     {
-        return $this->factory->createServiceWithName(
-            $this->createMock('Zend\ServiceManager\ServiceLocatorInterface'),
-            $name, $name
+        return $this->factory->__invoke(
+            $this->createMock(\Interop\Container\ContainerInterface::class), $name
         );
     }
 
@@ -251,6 +251,8 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test configuration is read-only.
      *
      * @return void
+     *
+     * @expectedException Zend\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {
@@ -258,7 +260,6 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
             $this->markTestSkipped('Could not write test configurations.');
         }
         $config = $this->getConfig('unit-test-parent');
-        $this->setExpectedException('Zend\Config\Exception\RuntimeException');
         $config->Section1->z = 'bad';
     }
 

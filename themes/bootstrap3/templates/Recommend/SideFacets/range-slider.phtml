@@ -1,0 +1,69 @@
+<div class="facet">
+  <form name="<?=$this->escapeHtmlAttr($this->title)?>Filter" id="<?=$this->escapeHtmlAttr($this->title)?>Filter">
+    <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
+    <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
+    <div class="date-fields">
+      <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+      <div class="date-from">
+        <label for="<?=$this->escapeHtmlAttr($this->title)?>from">
+          <?=$this->transEsc('date_from')?>:
+        </label>
+        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>from" id="<?=$this->escapeHtmlAttr($this->title)?>from" value="<?=isset($this->facet['values'][0])?$this->escapeHtmlAttr($this->facet['values'][0]):''?>" <?=$extraInputAttribs?>/>
+      </div>
+      <div class="date-to">
+        <label for="<?=$this->escapeHtmlAttr($this->title)?>to">
+          <?=$this->transEsc('date_to')?>:
+        </label>
+        <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($this->title)?>to" id="<?=$this->escapeHtmlAttr($this->title)?>to" value="<?=isset($this->facet['values'][1])?$this->escapeHtmlAttr($this->facet['values'][1]):''?>" <?=$extraInputAttribs?>/>
+      </div>
+    </div>
+    <?php if ($this->facet['type'] == 'date'): ?>
+      <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($this->title)?><?=$this->escapeHtml($this->facet['type'])?>Slider"/></div>
+    <?php endif; ?>
+    <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Set')?>"/>
+  </form>
+</div>
+<?php if ($this->facet['type'] == 'date'): ?>
+  <?php $this->headScript()->appendFile('vendor/bootstrap-slider.min.js'); ?>
+  <?php $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
+  <?php
+    $min = !empty($this->facet['values'][0]) ? min($this->facet['values'][0], 1400) : 1400;
+    $future = date('Y', time() + 31536000); // next year
+    $max = !empty($this->facet['values'][1]) ? max($future, $this->facet['values'][1]) : $future;
+    $low = !empty($this->facet['values'][0]) ? $this->facet['values'][0] : $min;
+    $high = !empty($this->facet['values'][1]) ? $this->facet['values'][1] : $max;
+    $script = <<<JS
+$(document).ready(function() {
+  var fillTexts = function() {
+    var v = {$this->escapeHtmlAttr($this->title)}dateSlider.getValue();
+    $('#{$this->escapeHtmlAttr($this->title)}from').val(v[0]);
+    $('#{$this->escapeHtmlAttr($this->title)}to').val(v[1]);
+  };
+  var {$this->escapeHtmlAttr($this->title)}dateSlider = $('#{$this->escapeHtmlAttr($this->title)}dateSlider')
+    .slider({
+      'min':{$min},
+      'max':{$max},
+      'handle':"square",
+      'tooltip':"hide",
+      'value':[{$low},{$high}]
+    })
+    .on('change', fillTexts)
+    .data('slider');
+});
+
+$('#{$this->escapeHtmlAttr($this->title)}from, #{$this->escapeHtmlAttr($this->title)}to').change(function () {
+  var fromValue = Number($('#{$this->escapeHtmlAttr($this->title)}from').val());
+  var toValue = Number($('#{$this->escapeHtmlAttr($this->title)}to').val());
+  $('#{$this->escapeHtmlAttr($this->title)}dateSlider').slider(
+    'setValue',
+    [
+      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+    ],
+    true
+  );
+});
+JS;
+  ?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<?php endif; ?>

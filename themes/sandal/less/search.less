@@ -1,0 +1,268 @@
+.search {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.list-group-item.title { color: @dark-gray; }
+.bulkActionButtons {
+  label {
+    font-weight: 500;
+    color: @mid-gray;
+  }
+}
+.search-header.search-header { padding-top: 0; } // Duplicate to increase specificity
+.search-stats > h2 { margin: 0; } // No results padding
+
+.author-facets { font-size: @reduced-font-size; }
+
+.result {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 1rem;
+  padding-right: 0;
+  border-bottom: 1px solid @moon-gray;
+  font-size: @reduced-font-size;
+
+  .media-left { padding-left: 0; }
+  .media-right { padding-right: 0; }
+  .record-cover img { border: 1px solid @gray-lighter; }
+  .record-number {
+    font-size: @reduced-font-size;
+    font-weight: bold;
+    color: @gray;
+  }
+
+  .title { font-size: 1rem; }
+  .callnumAndLocation {
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    font-size: 12px;
+  }
+  .format,
+  .label {
+    display: inline-block;
+    padding: 4px .75rem;
+    font-size: 11px;
+  }
+  .savedLists {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  .savedLists > ol,
+  .savedLists > ul { padding-left: 1rem; }
+}
+@media (min-width: 768px) {
+  .result {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+  }
+}
+
+.grid-result {
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+  text-align: center;
+
+  .title { font-size: @reduced-font-size; }
+}
+
+.result.checked,
+.grid-result.checked {
+  color: @search-row-selected-color;
+  background-color: @search-row-selected-bg;
+  border-color: @white;
+  a {
+    color: @search-row-selected-color;
+    text-decoration: underline;
+  }
+  .format,
+  .label {
+    color: @brand-primary;
+    background-color: #fff;
+  }
+  .record-number { color: @search-row-selected-color; }
+  .alert { background-color: @search-row-selected-color; }
+  .alert a { color: @search-row-selected-color; }
+}
+.result-body,
+.result-links {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+.result-body { width: 85%; }
+.result-links {
+  width: 15%;
+  text-align: center;
+}
+@media (max-width: 767px) {
+  .result-link-icon,
+  .result .cart-link-icon {
+    width: 100%;
+    margin: 0;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    font-size: @result-sm-icon-size;
+    color: @dark-gray;
+  }
+  .result-link-label,
+  .result .cart-link-label { display: none; }
+}
+
+.grid-result .grid-checkbox label { width: 100%; }
+@media (min-width: 768px) {
+  .result-body { width: 75%; }
+  .result-links {
+    width: 25%;
+    text-align: left;
+  }
+  .result-link-icon,
+  .result .cart-link-icon {
+    margin-right: .2rem;
+    padding: 0;
+    font-size: inherit;
+    color: @gray-darker;
+  }
+  .result-link-icon { margin-right: 0; }
+  .result-link-label,
+  .result .cart-link-label { display: inline; }
+}
+
+.top-facets,
+.search-header { font-size: @reduced-font-size; }
+.search-header {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+#searchForm { font-size: @reduced-font-size; }
+#searchForm_lookfor,
+#searchForm_type { margin-bottom: 4px; }
+
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  border-color: @sidebar-active-bg;
+  background-color: @sidebar-active-bg;
+}
+
+.searchHomeContent {
+  .full-width();
+  .clearfix();
+  position: relative;
+  padding: 1rem;
+  padding-bottom: 2rem;
+  background-color: @header-bg;
+  background-image: url('../../sandal/images/forest.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  box-shadow: 0 .5rem 2rem rgba(0,0,0,.1);
+  .btn-link,
+  .nav-tabs a {
+    color: @white;
+    text-shadow: 0 1px 0 @black;
+  }
+  @media (min-width: 768px) {
+    height: 300px;
+    padding: 7rem 3rem;
+    padding-left: ~"calc(50vw - 50% + .5rem)"; // Align searchbox with container
+  }
+}
+.searchHomeContent::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  padding: .25rem .5rem;
+  padding-left: 1rem;
+  font-size: 10px;
+  color: #fff;
+  background-color: rgba(0,0,0,.3);
+  content: "Photo by Paul Gilmore on Unsplash";
+  @media (min-width: 768px) {
+    left: auto;
+    right: ~"calc(50% - 50vw + .5rem)";
+    width: auto;
+    padding-left: .5rem;
+  }
+}
+.template-dir-search.template-name-home .breadcrumbs { border: 0; }
+.home-facet h2 { margin-top: 1rem; }
+
+.search { border: 0; }
+#searchForm {
+  padding-top: .5rem;
+  padding-bottom: calc(@search-tab-height + 1.5rem);
+}
+.nav.searchbox,
+#searchForm {
+  position: relative;
+  width: 100%;
+
+  .nav-tabs {
+    position: absolute;
+    bottom: 0;
+    margin-top: .5rem;
+    border: 0;
+    white-space: nowrap;
+  }
+  .nav-tabs > li {
+    float: none;
+    display: inline-block;
+  }
+  .nav-tabs a,
+  .nav-tabs a:hover {
+    border: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-tabs a {
+    height: calc(@search-tab-height + .5rem);
+    line-height: calc(@search-tab-height + .5rem);
+    padding: 0 1rem;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .nav-tabs a:hover {
+    border-color: @white-50;
+    color: @header-light;
+    background-color: transparent;
+  }
+  .nav-tabs .active a {
+    color: #fff;
+    border-color: @white;
+  }
+}
+@media (min-width: 768px) {
+  #searchForm_lookfor,
+  #searchForm_type { margin-bottom: 0; }
+  #searchForm { padding-bottom: @search-tab-height; }
+  .nav.searchbox .nav-tabs a,
+  #searchForm .nav-tabs a {
+    height: @search-tab-height;
+    padding-bottom: 3px;
+    line-height: @search-tab-height;
+  }
+}
+
+/* ------ Advanced ------ */
+.solr-adv-facet { padding-right: 1rem; }
+.solr-adv-facet:last-child { padding-right: 0; }
+.adv_search_links { margin-bottom: 0; }
+.adv_search_links a { text-decoration: underline; }
+.tab-content .adv_search_links { margin-bottom: 1.5rem; } // Advanced links with search tabs
+
+/* ------ Combined ------ */
+#content > [name="bulkActionForm"] .bulkActionButtons {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.template-dir-combined.template-name-results {
+    .bulkActionButtons {
+        max-width: 1170px;
+        margin: auto;
+    }
+    .main .container {
+        width: 100%;
+    }
+}

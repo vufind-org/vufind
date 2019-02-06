@@ -2,7 +2,7 @@
 /**
  * Template for ZF2 module for storing local overrides.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,9 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindLocalTemplate;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+
+use Zend\ModuleManager\ModuleManager;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Template for ZF2 module for storing local overrides.

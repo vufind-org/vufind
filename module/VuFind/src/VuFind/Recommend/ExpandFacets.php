@@ -2,7 +2,7 @@
 /**
  * ExpandFacets Module Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Recommendations
@@ -102,7 +102,7 @@ class ExpandFacets implements RecommendInterface
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
-        $iniName = isset($settings[1]) ? $settings[1] : 'facets';
+        $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information...
         $config = $this->configLoader->get($iniName);

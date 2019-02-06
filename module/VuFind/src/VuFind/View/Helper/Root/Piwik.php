@@ -2,9 +2,9 @@
 /**
  * Piwik view helper
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -53,6 +53,20 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $siteId;
 
     /**
+     * Search prefix (see config.ini for details)
+     *
+     * @var string
+     */
+    protected $searchPrefix;
+
+    /**
+     * Whether to disable cookies (see config.ini for details)
+     *
+     * @var bool
+     */
+    protected $disableCookies;
+
+    /**
      * Whether to track use custom variables to track additional information
      *
      * @var bool
@@ -69,7 +83,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Router object
      *
-     * @var Zend\Mvc\Router\Http\RouteMatch
+     * @var Zend\Router\Http\RouteMatch
      */
     protected $router;
 
@@ -100,19 +114,26 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      *
      * @param string|bool                      $url        Piwik address
      * (false if disabled)
-     * @param int                              $siteId     Piwik site ID
+     * @param int|array                        $options    Options array (or,
+     * if a single value, the Piwik site ID -- for backward compatibility)
      * @param bool                             $customVars Whether to track
      * additional information in custom variables
-     * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
+     * @param Zend\Router\Http\RouteMatch      $router     Request
      * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
-    public function __construct($url, $siteId, $customVars, $router, $request)
+    public function __construct($url, $options, $customVars, $router, $request)
     {
         $this->url = $url;
         if ($url && substr($url, -1) != '/') {
             $this->url .= '/';
         }
-        $this->siteId = $siteId;
+        if (is_array($options)) {
+            $this->siteId = $options['siteId'];
+            $this->searchPrefix = $options['searchPrefix'] ?? '';
+            $this->disableCookies = $options['disableCookies'] ?? '';
+        } else {
+            $this->siteId = $options;
+        }
         $this->customVars = $customVars;
         $this->router = $router;
         $this->request = $request;
@@ -244,10 +265,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getSearchResults()
     {
         $viewModel = $this->getView()->plugin('view_model');
-        $children = $viewModel->getCurrent()->getChildren();
+        $current = $viewModel->getCurrent();
+        if (null === $current || 'layout/lightbox' === $current->getTemplate()) {
+            return null;
+        }
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $template = $children[0]->getTemplate();
-            if (!strstr($template, '/home')) {
+            if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
                 $results = $children[0]->getVariable('results');
                 if (is_a($results, 'VuFind\Search\Base\Results')) {
                     return $results;
@@ -288,8 +313,16 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getRecordDriver()
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $children = $viewModel->getCurrent()->getChildren();
+        $view = $this->getView();
+        $viewModel = $view->plugin('view_model');
+        $current = $viewModel->getCurrent();
+        if (null === $current) {
+            $driver = $view->vars('driver');
+            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+                return $driver;
+            }
+        }
+        $children = $current->getChildren();
         if (isset($children[0])) {
             $driver = $children[0]->getVariable('driver');
             if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
@@ -400,16 +433,25 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode()
     {
-        return <<<EOT
+        $escape = $this->getView()->plugin('escapejs');
+        $code = <<<EOT
 
 function initVuFindPiwikTracker{$this->timestamp}(){
     var VuFindPiwikTracker = Piwik.getTracker();
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
     VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl('{$this->getCustomUrl()}');
+    VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
 
 EOT;
+        if ($this->disableCookies) {
+            $code .= <<<EOT
+    VuFindPiwikTracker.disableCookies();
+
+EOT;
+        }
+
+        return $code;
     }
 
     /**
@@ -419,7 +461,7 @@ EOT;
      */
     protected function getCustomUrl()
     {
-        $path = $this->request->getUri()->getPath();
+        $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
@@ -508,7 +550,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        '$backendId|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}$backendId|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;
@@ -543,7 +585,7 @@ EOT;
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
     VuFindPiwikTracker.trackSiteSearch(
-        'Combined|$searchTerms', '$searchType', $resultCount
+        '{$this->searchPrefix}Combined|$searchTerms', '$searchType', $resultCount
     );
 
 EOT;

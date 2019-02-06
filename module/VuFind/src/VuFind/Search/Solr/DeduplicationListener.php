@@ -3,7 +3,7 @@
 /**
  * Solr deduplication (merged records) listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2013.
@@ -32,8 +32,8 @@ namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
 
-use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
+use Zend\EventManager\SharedEventManagerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -183,7 +183,7 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords($event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
         $recordSources = !empty($searchConfig->Records->sources)
@@ -238,7 +238,7 @@ class DeduplicationListener
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => isset($localPriority) ? $localPriority : 99999
+                    'priority' => $localPriority ?? 99999
                 ];
             }
             $fields['dedup_id'] = $dedupId;
@@ -362,5 +362,4 @@ class DeduplicationListener
         array_unshift($result, '');
         return array_flip($result);
     }
-
 }

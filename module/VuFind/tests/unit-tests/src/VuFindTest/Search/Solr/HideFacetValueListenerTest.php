@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hide Facet Value Listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindTest\Unit\TestCase;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
+use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 
 /**
@@ -53,7 +53,7 @@ class HideFacetValueListenerTest extends TestCase
      */
     protected function getMockBackend($id = 'Solr')
     {
-        $backend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->any())->method('getIdentifier')->will(
             $this->returnValue($id)
@@ -120,7 +120,7 @@ class HideFacetValueListenerTest extends TestCase
     public function testAttach()
     {
         $listener = $this->getListener();
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('post'),

@@ -2,7 +2,7 @@
 /**
  * VuFind XSLT importer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
+
 use DOMDocument;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
@@ -80,7 +81,7 @@ class Importer
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $solr->save($index, new RawXMLDocument($xml));
         } else {
             Console::write($xml . "\n");
@@ -168,8 +169,7 @@ class Importer
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
                 : [$options['General']['custom_class']];
-            $truncate = isset($options['General']['truncate_custom_class'])
-                ? $options['General']['truncate_custom_class'] : true;
+            $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
                 if (false === strpos($class, '\\')) {

@@ -2,7 +2,7 @@
 /**
  * Logger Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Log;
+
 use VuFind\Log\Logger;
 
 /**
@@ -77,7 +78,7 @@ CONTEXT;
                 && false !== strpos($a[5], 'function =')
                 && count($a) == 5;
         };
-        $logger = $this->getMockBuilder('VuFind\Log\Logger')
+        $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
             ->setMethods(['log'])
             ->getMock();
         $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));

@@ -2,7 +2,7 @@
 /**
  * Record tab plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager
@@ -39,6 +41,69 @@ use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'collectionhierarchytree' => CollectionHierarchyTree::class,
+        'collectionlist' => CollectionList::class,
+        'description' => Description::class,
+        'excerpt' => Excerpt::class,
+        'hierarchytree' => HierarchyTree::class,
+        'holdingsils' => HoldingsILS::class,
+        'holdingsworldcat' => HoldingsWorldCat::class,
+        'map' => Map::class,
+        'preview' => Preview::class,
+        'reviews' => Reviews::class,
+        'similaritemscarousel' => SimilarItemsCarousel::class,
+        'staffviewarray' => StaffViewArray::class,
+        'staffviewmarc' => StaffViewMARC::class,
+        'toc' => TOC::class,
+        'usercomments' => UserComments::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
+        CollectionList::class => CollectionListFactory::class,
+        Description::class => InvokableFactory::class,
+        Excerpt::class => ExcerptFactory::class,
+        HierarchyTree::class => HierarchyTreeFactory::class,
+        HoldingsILS::class => HoldingsILSFactory::class,
+        HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
+        Map::class => MapFactory::class,
+        Preview::class => PreviewFactory::class,
+        Reviews::class => ReviewsFactory::class,
+        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
+        StaffViewArray::class => InvokableFactory::class,
+        StaffViewMARC::class => InvokableFactory::class,
+        TOC::class => TOCFactory::class,
+        UserComments::class => UserCommentsFactory::class,
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(PluginFactory::class);
+        $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Load the specified key from the configuration array using the best
      * available match to the class of the provided driver. Return the default
@@ -76,7 +141,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\RecordTab\TabInterface';
+        return TabInterface::class;
     }
 
     /**

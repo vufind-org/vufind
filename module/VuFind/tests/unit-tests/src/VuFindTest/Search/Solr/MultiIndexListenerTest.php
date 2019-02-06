@@ -3,7 +3,7 @@
 /**
  * Unit tests for multiindex listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,12 +28,12 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFindSearch\ParamBag;
+use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
-use VuFind\Search\Solr\MultiIndexListener;
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 
@@ -182,7 +182,7 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testAttach()
     {
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),

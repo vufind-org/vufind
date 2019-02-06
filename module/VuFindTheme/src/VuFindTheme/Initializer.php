@@ -2,7 +2,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
+
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
@@ -85,6 +87,13 @@ class Initializer
     protected $cookieManager;
 
     /**
+     * A static flag used to determine if the theme has been initialized
+     *
+     * @var bool
+     */
+    protected static $themeInitialized = false;
+
+    /**
      * Constructor
      *
      * @param Config   $config Configuration object containing these keys:
@@ -114,13 +123,14 @@ class Initializer
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
         // Get the cookie manager from the service manager:
-        $this->cookieManager = $this->serviceManager->get('VuFind\CookieManager');
+        $this->cookieManager = $this->serviceManager
+            ->get(\VuFind\Cookie\CookieManager::class);
 
         // Get base directory from tools object:
-        $this->tools = $this->serviceManager->get('VuFindTheme\ThemeInfo');
+        $this->tools = $this->serviceManager->get(\VuFindTheme\ThemeInfo::class);
 
         // Set up mobile device detector:
-        $this->mobile = $this->serviceManager->get('VuFindTheme\Mobile');
+        $this->mobile = $this->serviceManager->get(\VuFindTheme\Mobile::class);
         $this->mobile->enable(isset($this->config->mobile_theme));
     }
 
@@ -178,6 +188,12 @@ class Initializer
      */
     public function init()
     {
+        // Make sure to initialize the theme just once
+        if (self::$themeInitialized) {
+            return;
+        }
+        self::$themeInitialized = true;
+
         // Determine the current theme:
         $currentTheme = $this->pickTheme($this->event->getRequest());
 
@@ -215,6 +231,9 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
+        if (Console::isConsole()) {
+            return $standardTheme;
+        }
         $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 
@@ -268,10 +287,12 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        $viewModel = $this->serviceManager->get('viewmanager')->getViewModel();
+        if (!Console::isConsole()) {
+            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
-        // Send down the view options:
-        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+            // Send down the view options:
+            $viewModel->setVariable('themeOptions', $this->getThemeOptions());
+        }
     }
 
     /**
@@ -330,7 +351,8 @@ class Initializer
         $templatePathStack = [];
 
         // Grab the resource manager for tracking CSS, JS, etc.:
-        $resources = $this->serviceManager->get('VuFindTheme\ResourceContainer');
+        $resources = $this->serviceManager
+            ->get(\VuFindTheme\ResourceContainer::class);
 
         // Set generator if necessary:
         if (isset($this->config->generator)) {
@@ -411,11 +433,11 @@ class Initializer
 
         if (!empty($pathStack)) {
             try {
-                $translator = $this->serviceManager->get('VuFind\Translator');
-
+                $translator = $this->serviceManager
+                    ->get(\Zend\Mvc\I18n\Translator::class);
                 $pm = $translator->getPluginManager();
-                $pm->get('extendedini')->addToPathStack($pathStack);
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                $pm->get('ExtendedIni')->addToPathStack($pathStack);
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
                 return;
@@ -424,13 +446,14 @@ class Initializer
             // Override the default cache with a theme-specific cache to avoid
             // key collisions in a multi-theme environment.
             try {
-                $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
+                $cacheManager = $this->serviceManager
+                    ->get(\VuFind\Cache\Manager::class);
                 $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
                 $translator->setCache($cacheManager->getCache($cacheName));
             } catch (\Exception $e) {
                 // Don't let a cache failure kill the whole application, but make
                 // note of it:
-                $logger = $this->serviceManager->get('VuFind\Logger');
+                $logger = $this->serviceManager->get(\VuFind\Log\Logger::class);
                 $logger->debug(
                     'Problem loading cache: ' . get_class($e) . ' exception: '
                     . $e->getMessage()

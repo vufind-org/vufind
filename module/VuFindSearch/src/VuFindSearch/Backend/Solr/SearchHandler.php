@@ -3,7 +3,7 @@
 /**
  * VuFind SearchHandler.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -82,7 +82,7 @@ class SearchHandler
     public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
-            $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : [];
+            $this->specs[$key] = $spec[$key] ?? [];
         }
         // Set dismax handler to default if not specified:
         if (empty($this->specs['DismaxHandler'])) {
@@ -140,7 +140,7 @@ class SearchHandler
                 list($name, $value) = $param;
                 if ($name === 'bq') {
                     $boostQuery[] = $value;
-                } else if ($name === 'bf') {
+                } elseif ($name === 'bf') {
                     // BF parameter may contain multiple space-separated functions
                     // with individual boosts.  We need to parse this into _val_
                     // query components:
@@ -195,6 +195,25 @@ class SearchHandler
     public function hasExtendedDismax()
     {
         return $this->hasDismax() && ('edismax' == $this->getDismaxHandler());
+    }
+
+    /**
+     * Get a list of all Solr fields searched by this handler.
+     *
+     * @return array
+     */
+    public function getAllFields()
+    {
+        // If we have non-Dismax rules, the keys are the field names.
+        $queryFields = array_keys($this->mungeRules());
+
+        // If we have Dismax fields, we need to strip off boost values.
+        $callback = function ($f) {
+            return current(explode('^', $f));
+        };
+        $dismaxFields = array_map($callback, $this->getDismaxFields());
+
+        return array_unique(array_merge($queryFields, $dismaxFields));
     }
 
     /**
@@ -456,7 +475,7 @@ class SearchHandler
                     ')';
                 // ...and add a weight if we have one
                 $weight = $sw[1];
-                if (!is_null($weight) && $weight && $weight > 0) {
+                if (null !== $weight && $weight && $weight > 0) {
                     $sstring .= '^' . $weight;
                 }
                 // push it onto the stack of clauses
@@ -470,7 +489,7 @@ class SearchHandler
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
                     $weight = $spec[1];
-                    if (!is_null($weight) && $weight && $weight > 0) {
+                    if (null !== $weight && $weight && $weight > 0) {
                         $sstring .= '^' . $weight;
                     }
                     // ..and push it on the stack of clauses

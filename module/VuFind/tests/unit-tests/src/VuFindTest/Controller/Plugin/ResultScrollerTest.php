@@ -3,7 +3,7 @@
 /**
  * ResultScroller controller plugin tests.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -44,13 +44,36 @@ use Zend\Session\Container;
 class ResultScrollerTest extends TestCase
 {
     /**
+     * Test next_prev_nav bug
+     * Expect next_prev to behave like it's disabled if the last search didn't return any results
+     *
+     * @return void
+     */
+    public function testNextPrevNavBug()
+    {
+        $results = $this->getMockResults(0, 0, 0, true, 'sorted');
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertFalse($plugin->init($results));
+
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => null, 'nextRecord' => null,
+            'currentPosition' => null, 'resultTotal' => null
+        ];
+
+        $this->assertEquals($expected, $plugin->getScrollData(
+            $results->getMockRecordDriver('sorted20'))
+        );
+    }
+
+    /**
      * Test disabled behavior
      *
      * @return void
      */
     public function testDisabled()
     {
-        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $plugin = new ResultScroller(new Container('test'), $mockManager, false);
         $results = $this->getMockResults();
@@ -326,7 +349,7 @@ class ResultScrollerTest extends TestCase
     protected function getMockResults($page = 1, $limit = 20, $total = 0,
         $firstLast = true, $sort = null
     ) {
-        $pm = $this->getMockBuilder('VuFind\Config\PluginManager')->disableOriginalConstructor()->getMock();
+        $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
         $config = new \Zend\Config\Config(
             $firstLast ? $this->getFirstLastConfig() : []
         );
@@ -338,9 +361,9 @@ class ResultScrollerTest extends TestCase
         if (null !== $sort) {
             $params->setSort($sort, true);
         }
-        $ss = $this->getMockBuilder('VuFindSearch\Service')
+        $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $rl = $this->getMockBuilder('VuFind\Record\Loader')
+        $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()->getMock();
         $results = new \VuFindTest\Search\TestHarness\Results(
             $params, $ss, $rl, $total
@@ -357,8 +380,9 @@ class ResultScrollerTest extends TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results) {
-        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+    protected function getMockResultScroller($results)
+    {
+        $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         return new ResultScrollerMock($mockManager, $results);
     }

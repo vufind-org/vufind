@@ -2,7 +2,7 @@
 /**
  * Resolver driver plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Resolver\Driver;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Resolver driver plugin manager
  *
@@ -39,6 +41,52 @@ namespace VuFind\Resolver\Driver;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        '360link' => Threesixtylink::class,
+        'demo' => Demo::class,
+        'ezb' => Ezb::class,
+        'sfx' => Sfx::class,
+        'redi' => Redi::class,
+        'threesixtylink' => Threesixtylink::class,
+        'generic' => Generic::class,
+        'other' => 'generic'
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Threesixtylink::class => DriverWithHttpClientFactory::class,
+        Demo::class => InvokableFactory::class,
+        Ezb::class => DriverWithHttpClientFactory::class,
+        Sfx::class => DriverWithHttpClientFactory::class,
+        Redi::class => DriverWithHttpClientFactory::class,
+        Generic::class => AbstractBaseFactory::class,
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(PluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +94,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Resolver\Driver\DriverInterface';
+        return DriverInterface::class;
     }
 }

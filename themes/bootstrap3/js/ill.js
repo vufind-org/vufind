@@ -14,19 +14,19 @@ function setUpILLRequestForm(recordId) {
       cache: false,
       url: url
     })
-    .done(function illPickupLocationsDone(response) {
-      $.each(response.data.locations, function illPickupLocationEach() {
-        var option = $("<option></option>").attr("value", this.id).text(this.name);
-        if (this.isDefault) {
-          option.attr("selected", "selected");
-        }
-        $("#ILLRequestForm #pickupLibraryLocation").append(option);
+      .done(function illPickupLocationsDone(response) {
+        $.each(response.data.locations, function illPickupLocationEach() {
+          var option = $("<option></option>").attr("value", this.id).text(this.name);
+          if (this.isDefault) {
+            option.attr("selected", "selected");
+          }
+          $("#ILLRequestForm #pickupLibraryLocation").append(option);
+        });
+        $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
+      })
+      .fail(function illPickupLocationsFail(/*response*/) {
+        $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
       });
-      $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
-    })
-    .fail(function illPickupLocationsFail(/*response*/) {
-      $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
-    });
   });
   $("#ILLRequestForm #pickupLibrary").change();
 }

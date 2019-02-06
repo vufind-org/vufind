@@ -1,10 +1,12 @@
-<?
+<?php
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
 $formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
-if (is_array($formats)) {
+if (is_array($formats) && !empty($formats)) {
     foreach ($formats as $format) {
         echo "RT $format\n";
     }
+} else {
+    echo "RT Generic\n";
 }
 
 $title = rtrim($this->driver->getTitle(), " /");
@@ -68,7 +70,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "PP " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\n";
+            echo "PP " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
         if (isset($pubNames[$i])) {
             echo "PB " . rtrim($pubNames[$i], ", ") . "\n";

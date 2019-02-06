@@ -2,7 +2,7 @@
 /**
  * ILS Authenticator Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,11 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\ILSAuthenticator, VuFind\Auth\Manager,
-    VuFind\Db\Row\User, VuFind\ILS\Connection as ILSConnection;
+
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\Manager;
+use VuFind\Db\Row\User;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * ILS Authenticator Manager Test Class
@@ -199,7 +202,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockUser($methods = null)
     {
-        return $this->getMockBuilder('VuFind\Db\Row\User')
+        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
@@ -214,7 +217,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockManager($methods = null)
     {
-        return $this->getMockBuilder('VuFind\Auth\Manager')
+        return $this->getMockBuilder(\VuFind\Auth\Manager::class)
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
@@ -229,7 +232,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConnection($methods = null)
     {
-        return $this->getMockBuilder('VuFind\ILS\Connection')
+        return $this->getMockBuilder(\VuFind\ILS\Connection::class)
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();

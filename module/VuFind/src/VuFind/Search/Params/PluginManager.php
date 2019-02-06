@@ -2,7 +2,7 @@
 /**
  * Search params plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,6 +39,66 @@ namespace VuFind\Search\Params;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'browzine' => \VuFind\Search\BrowZine\Params::class,
+        'combined' => \VuFind\Search\Combined\Params::class,
+        'eds' => \VuFind\Search\EDS\Params::class,
+        'eit' => \VuFind\Search\EIT\Params::class,
+        'emptyset' => \VuFind\Search\EmptySet\Params::class,
+        'favorites' => \VuFind\Search\Favorites\Params::class,
+        'libguides' => \VuFind\Search\LibGuides\Params::class,
+        'mixedlist' => \VuFind\Search\MixedList\Params::class,
+        'pazpar2' => \VuFind\Search\Pazpar2\Params::class,
+        'primo' => \VuFind\Search\Primo\Params::class,
+        'search2' => \VuFind\Search\Search2\Params::class,
+        'solr' => \VuFind\Search\Solr\Params::class,
+        'solrauth' => \VuFind\Search\SolrAuth\Params::class,
+        'solrauthor' => \VuFind\Search\SolrAuthor\Params::class,
+        'solrauthorfacets' => \VuFind\Search\SolrAuthorFacets\Params::class,
+        'solrcollection' => \VuFind\Search\SolrCollection\Params::class,
+        'solrreserves' => \VuFind\Search\SolrReserves\Params::class,
+        'solrweb' => \VuFind\Search\SolrWeb\Params::class,
+        'summon' => \VuFind\Search\Summon\Params::class,
+        'tags' => \VuFind\Search\Tags\Params::class,
+        'worldcat' => \VuFind\Search\WorldCat\Params::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        \VuFind\Search\BrowZine\Params::class => ParamsFactory::class,
+        \VuFind\Search\Combined\Params::class => ParamsFactory::class,
+        \VuFind\Search\EDS\Params::class => ParamsFactory::class,
+        \VuFind\Search\EIT\Params::class => ParamsFactory::class,
+        \VuFind\Search\EmptySet\Params::class => ParamsFactory::class,
+        \VuFind\Search\Favorites\Params::class => ParamsFactory::class,
+        \VuFind\Search\LibGuides\Params::class => ParamsFactory::class,
+        \VuFind\Search\MixedList\Params::class => ParamsFactory::class,
+        \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
+        \VuFind\Search\Primo\Params::class => ParamsFactory::class,
+        \VuFind\Search\Search2\Params::class =>
+            \VuFind\Search\Solr\ParamsFactory::class,
+        \VuFind\Search\Solr\Params::class =>
+            \VuFind\Search\Solr\ParamsFactory::class,
+        \VuFind\Search\SolrAuth\Params::class => ParamsFactory::class,
+        \VuFind\Search\SolrAuthor\Params::class => ParamsFactory::class,
+        \VuFind\Search\SolrAuthorFacets\Params::class =>  ParamsFactory::class,
+        \VuFind\Search\SolrCollection\Params::class => ParamsFactory::class,
+        \VuFind\Search\SolrReserves\Params::class => ParamsFactory::class,
+        \VuFind\Search\SolrWeb\Params::class => ParamsFactory::class,
+        \VuFind\Search\Summon\Params::class => ParamsFactory::class,
+        \VuFind\Search\Tags\Params::class => ParamsFactory::class,
+        \VuFind\Search\WorldCat\Params::class => ParamsFactory::class,
+    ];
+
+    /**
      * Constructor
      *
      * Make sure plugins are properly initialized.
@@ -52,8 +112,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
+        $this->sharedByDefault = false;
 
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -65,6 +126,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Search\Base\Params';
+        return \VuFind\Search\Base\Params::class;
     }
 }

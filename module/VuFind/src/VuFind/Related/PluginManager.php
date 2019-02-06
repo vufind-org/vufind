@@ -2,7 +2,7 @@
 /**
  * Related record plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Related;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Related record plugin manager
  *
@@ -38,6 +40,31 @@ namespace VuFind\Related;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'channels' => Channels::class,
+        'editions' => Deprecated::class,
+        'similar' => Similar::class,
+        'worldcateditions' => Deprecated::class,
+        'worldcatsimilar' => WorldCatSimilar::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Channels::class => InvokableFactory::class,
+        Deprecated::class => InvokableFactory::class,
+        Similar::class => SimilarFactory::class,
+        WorldCatSimilar::class => SimilarFactory::class,
+    ];
+
     /**
      * Constructor
      *
@@ -52,8 +79,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
-        $this->setShareByDefault(false);
-
+        $this->sharedByDefault = false;
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -65,6 +92,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Related\RelatedInterface';
+        return RelatedInterface::class;
     }
 }

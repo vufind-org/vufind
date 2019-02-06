@@ -2,7 +2,7 @@
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Oliver Goldschmidt, Magda Roos, Till Kinstler, André Lahmann 2013,
  * 2014, 2015.
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -83,7 +83,7 @@ class PAIA extends DAIA
     /**
      * SessionManager
      *
-     * @var \VuFind\SessionManager
+     * @var \Zend\Session\SessionManager
      */
     protected $sessionManager;
 
@@ -146,7 +146,7 @@ class PAIA extends DAIA
      */
     protected function getCacheKey($suffix = null)
     {
-        return \VuFind\ILS\Driver\AbstractBase::getCacheKey(
+        return $this->getBaseCacheKey(
             md5($this->baseUrl . $this->paiaURL) . $suffix
         );
     }
@@ -312,7 +312,7 @@ class PAIA extends DAIA
             }
 
             // If caching is enabled for PAIA clear the cache as at least for one
-            // item cancel was successfull and therefore the status changed.
+            // item cancel was successful and therefore the status changed.
             // Otherwise the changed status will not be shown before the cache
             // expires.
             if ($this->paiaCacheEnabled) {
@@ -643,18 +643,18 @@ class PAIA extends DAIA
         if (isset($fees['fee'])) {
             foreach ($fees['fee'] as $fee) {
                 $result = [
-                    // fee.amount 	1..1 	money 	amount of a single fee
+                    // fee.amount    1..1   money    amount of a single fee
                     'amount'      => $feeConverter($fee['amount']),
                     'checkout'    => '',
-                    // fee.feetype 	0..1 	string 	textual description of the type
+                    // fee.feetype   0..1   string   textual description of the type
                     // of service that caused the fee
                     'fine'    => ($fee['feetype'] ?? null),
                     'balance' => $feeConverter($fee['amount']),
-                    // fee.date 	0..1 	date 	date when the fee was claimed
+                    // fee.date      0..1   date     date when the fee was claimed
                     'createdate'  => (isset($fee['date'])
                         ? $this->convertDate($fee['date']) : null),
                     'duedate' => '',
-                    // fee.edition 	0..1 	URI 	edition that caused the fee
+                    // fee.edition   0..1   URI      edition that caused the fee
                     'id' => (isset($fee['edition'])
                         ? $this->getAlternativeItemId($fee['edition']) : ''),
                 ];
@@ -685,9 +685,9 @@ class PAIA extends DAIA
         }
 
         // custom PAIA fields
-        // fee.about 	0..1 	string 	textual information about the fee
-        // fee.item 	0..1 	URI 	item that caused the fee
-        // fee.feeid 	0..1 	URI 	URI of the type of service that
+        // fee.about     0..1     string    textual information about the fee
+        // fee.item      0..1     URI       item that caused the fee
+        // fee.feeid     0..1     URI       URI of the type of service that
         // caused the fee
         $additionalData['feeid']      = ($fee['feeid'] ?? null);
         $additionalData['about']      = ($fee['about'] ?? null);
@@ -1242,7 +1242,7 @@ class PAIA extends DAIA
             }
 
             // If caching is enabled for PAIA clear the cache as at least for one
-            // item renew was successfull and therefore the status changed. Otherwise
+            // item renew was successful and therefore the status changed. Otherwise
             // the changed status will not be shown before the cache expires.
             if ($this->paiaCacheEnabled) {
                 $this->removeCachedData($patron['cat_username']);

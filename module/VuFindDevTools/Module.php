@@ -2,7 +2,7 @@
 /**
  * VuFind Developer Tools module.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,6 @@
  * @link     https://vufind.org/wiki/development
  */
 namespace VuFindDevTools;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Developer Tools module.

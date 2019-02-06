@@ -2,7 +2,7 @@
 /**
  * Mink record actions test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -70,11 +70,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function gotoRecord()
     {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $page = $this->performSearch('Dewey');
         $this->findCss($page, '.result a.title')->click();
         return $page;
     }
@@ -102,11 +98,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddComment()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
@@ -132,15 +123,15 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // "Add" empty comment
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
-        $this->findCss($page, '.comment.row');
+        $this->findCss($page, '.comment');
         // Remove comment
-        $this->findCss($page, '.comment.row .delete')->click();
+        $this->findCss($page, '.comment .delete')->click();
         $this->snooze(); // wait for UI update
-        $this->assertNull($page->find('css', '.comment.row'));
+        $this->assertNull($page->find('css', '.comment'));
         // Logout
         $this->findCss($page, '.logoutOptions a.logout')->click();
     }
@@ -152,11 +143,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddTag()
     {
-        // Change the theme:
-        $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
-        );
-
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
@@ -243,17 +229,35 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test searching for one of the tags created above.
+     */
+    public function testTagSearch()
+    {
+        // First try an undefined tag:
+        $page = $this->performSearch('tag-not-in-system', 'tag');
+        $this->assertEquals('No Results!', $this->findCss($page, 'h2')->getText());
+        // Now try a tag defined earlier:
+        $page = $this->performSearch('five', 'tag');
+        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $this->assertEquals(
+            $expected, substr(
+                $this->findCss($page, '.search-stats')->getText(), 0,
+                strlen($expected)
+            )
+        );
+    }
+
+    /**
      * Test adding case sensitive tags on records.
      *
      * @return void
      */
     public function testAddSensitiveTag()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Social' => ['case_sensitive_tags' => 'true']
                 ]
             ]
@@ -284,11 +288,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testEmail()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]
@@ -357,11 +360,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testSMS()
     {
-        // Change the theme:
+        // Set up configs:
         $this->changeConfigs(
             [
                 'config' => [
-                    'Site' => ['theme' => 'bootstrap3'],
                     'Mail' => ['testOnly' => 1],
                 ]
             ]

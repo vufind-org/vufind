@@ -2,7 +2,7 @@
 /**
  * Upgrade Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -28,13 +28,15 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use ArrayObject, VuFind\Config\Locator as ConfigLocator,
-    VuFind\Cookie\Container as CookieContainer,
-    VuFind\Cookie\CookieManager,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Mvc\MvcEvent,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container;
+
+use ArrayObject;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Cookie\Container as CookieContainer;
+use VuFind\Cookie\CookieManager;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 /**
  * Class controls VuFind upgrading.
@@ -235,7 +237,7 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $factory = $this->serviceLocator->get('VuFind\DbAdapterFactory');
+            $factory = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class);
             $adapter = $factory->getAdapter(
                 $this->session->dbRootUser, $this->session->dbRootPass
             );
@@ -300,7 +302,7 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager');
+            ->get(\VuFind\Search\Results\PluginManager::class);
         $search = $this->getTable('search');
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $search->select($searchWhere);
@@ -394,6 +396,43 @@ class UpgradeController extends AbstractBase
                 ->updateModifiedColumns($modifiedCols, $this->logsql);
         }
 
+        // Check for missing constraints.
+        $missingConstraints = $this->dbUpgrade()->getMissingConstraints($mT);
+        if (!empty($missingConstraints)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Added constraint(s) to table(s): "
+                    . implode(', ', array_keys($missingConstraints))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->createMissingConstraints($missingConstraints, $this->logsql);
+        }
+
+        // Check for modified constraints.
+        $mC = $this->logsql ? $missingConstraints : [];
+        $modifiedConstraints = $this->dbUpgrade()->getModifiedConstraints($mT, $mC);
+        if (!empty($modifiedConstraints)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified constraint(s) in table(s): "
+                    . implode(', ', array_keys($modifiedConstraints))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->updateModifiedConstraints($modifiedConstraints, $this->logsql);
+        }
+
         // Check for encoding problems.
         $encProblems = $this->dbUpgrade()->getEncodingProblems();
         if (!empty($encProblems)) {
@@ -459,7 +498,8 @@ class UpgradeController extends AbstractBase
                 // If this is a MySQL connection, we can do an automatic upgrade;
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
-                $adapter = $this->serviceLocator->get('VuFind\DbAdapter');
+                $adapter = $this->serviceLocator
+                    ->get(\Zend\Db\Adapter\Adapter::class);
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
@@ -558,7 +598,7 @@ class UpgradeController extends AbstractBase
                 try {
                     // Query a table known to exist
                     $factory = $this->serviceLocator
-                        ->get('VuFind\DbAdapterFactory');
+                        ->get(\VuFind\Db\AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query("SELECT * FROM user;");
                     $this->session->dbRootUser = $dbrootuser;
@@ -586,7 +626,7 @@ class UpgradeController extends AbstractBase
         if ($action == 'Change') {
             $this->session->dbChangeEncoding = true;
             return $this->forwardTo('Upgrade', 'FixDatabase');
-        } else if ($action == 'Keep') {
+        } elseif ($action == 'Keep') {
             $this->session->dbChangeEncoding = false;
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -686,7 +726,7 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted('submit')) {
-            $converter = $this->serviceLocator->get('VuFind\DateConverter');
+            $converter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()
@@ -717,7 +757,7 @@ class UpgradeController extends AbstractBase
             if (!is_dir($dir)) {
                 $this->flashMessenger()
                     ->addMessage($dir . ' does not exist.', 'error');
-            } else if (!file_exists($dir . '/build.xml')) {
+            } elseif (!file_exists($dir . '/build.xml')) {
                 $this->flashMessenger()->addMessage(
                     'Could not find build.xml in source directory;'
                     . ' upgrade does not support VuFind versions prior to 1.1.',
@@ -761,7 +801,7 @@ class UpgradeController extends AbstractBase
             if (floor($version) < 2) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
-            } else if ($version >= $this->cookie->newVersion) {
+            } elseif ($version >= $this->cookie->newVersion) {
                 $this->flashMessenger()->addMessage(
                     "Source version must be less than {$this->cookie->newVersion}.",
                     'error'
@@ -789,7 +829,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->serviceLocator->get('VuFind\CacheManager');
+        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }

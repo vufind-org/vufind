@@ -2,7 +2,7 @@
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,18 +38,6 @@ namespace VuFind\Controller;
  */
 trait StorageRetrievalRequestsTrait
 {
-    /**
-     * Action for dealing with blocked storage retrieval requests.
-     *
-     * @return mixed
-     */
-    public function blockedStorageRetrievalRequestAction()
-    {
-        $this->flashMessenger()
-            ->addMessage('storage_retrieval_request_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
     /**
      * Action for dealing with storage retrieval requests.
      *
@@ -90,8 +78,13 @@ trait StorageRetrievalRequestsTrait
         $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
-            return $this->blockedStorageRetrievalRequestAction();
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status']
+                    : 'storage_retrieval_request_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
@@ -100,7 +93,7 @@ trait StorageRetrievalRequestsTrait
             ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
-        if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
+        if (null !== $this->params()->fromPost('placeStorageRetrievalRequest')) {
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 
@@ -139,7 +132,7 @@ trait StorageRetrievalRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -156,8 +149,7 @@ trait StorageRetrievalRequestsTrait
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => isset($checkRequests['helpText'])
-                    ? $checkRequests['helpText'] : null
+                'helpText' => $checkRequests['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/storageretrievalrequest');

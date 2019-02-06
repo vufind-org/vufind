@@ -2,7 +2,7 @@
 /**
  * Collection list tab
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use VuFind\Recommend\PluginManager as RecommendManager,
-    VuFind\Search\RecommendListener, VuFind\Search\SearchRunner;
+
+use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Search\RecommendListener;
+use VuFind\Search\SearchRunner;
 
 /**
  * Collection list tab
@@ -120,23 +122,13 @@ class CollectionList extends AbstractBase
     }
 
     /**
-     * Get side recommendations.
-     *
-     * @return array
-     */
-    public function getSideRecommendations()
-    {
-        return $this->getResults()->getRecommendations('side');
-    }
-
-    /**
      * Can this tab be loaded via AJAX?
      *
      * @return bool
      */
     public function supportsAjax()
     {
-        // No, special sidebar needed.
+        // No, search parameters from the URL are needed.
         return false;
     }
 }

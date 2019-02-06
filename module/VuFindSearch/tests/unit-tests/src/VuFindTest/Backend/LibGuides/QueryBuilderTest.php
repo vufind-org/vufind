@@ -3,7 +3,7 @@
 /**
  * Unit tests for LibGuides query builder
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for LibGuides query builder
@@ -42,7 +42,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryBuilderTest extends PHPUnit_Framework_TestCase
+class QueryBuilderTest extends TestCase
 {
     /**
      * Test basic query parsing

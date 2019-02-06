@@ -1,85 +1,71 @@
-<?
+<?php
   $view = $currentSearch['view'];
   $results = $view->results;
   $params = $results->getParams();
-  $lookfor = $params->getDisplayQuery();
+  $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
 
   // More link should use default limit, not custom limit:
-  $limit = $params->getLimit();
-  $params->setLimit($params->getOptions()->getDefaultLimit());
-  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
-  $params->setLimit($limit);
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
 ?>
-<? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+<?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link"><i class="fa fa-gears" aria-hidden="true"></i> <?=$this->transEsc('More options')?></a>
   </div>
   <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
-<? else: ?>
+<?php else: ?>
   <h2><?=$this->transEsc($currentSearch['label'])?></h2>
-<? endif; ?>
-<? if (isset($currentSearch['sublabel'])): ?>
+<?php endif; ?>
+<?php if (isset($currentSearch['sublabel'])): ?>
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
-<? endif; ?>
+<?php endif; ?>
 <div class="clearfix">
   <div class="pull-left flip help-block">
-    <? if ($recordTotal > 0): ?>
-      <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
+    <?php if ($recordTotal > 0): ?>
+      <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
-      <?=$this->transEsc("Showing")?>
-      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
-      <? if (!isset($view->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-      <? endif; ?>
-      <? if (isset($view->overrideSearchHeading)): ?>
-        <?=$view->overrideSearchHeading?>
-      <? elseif ($params->getSearchType() == 'basic'): ?>
-        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
-      <? endif; ?>
-      <? if ($qtime = $results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
-      <? endif; ?>
-    <? else: ?>
+      <?php endforeach; ?>
+      <?=$this->context()->renderInContext('search/controls/showing.phtml',
+                                          ['lookfor' => $lookfor, 'recordTotal' => $recordTotal,
+                                           'params' => $params, 'results' => $results]) ?>
+    <?php else: ?>
       <h3><?=$this->transEsc('nohit_heading')?></h3>
-    <? endif; ?>
+    <?php endif; ?>
   </div>
 </div>
-<? /* End Listing Options */ ?>
+<?php /* End Listing Options */ ?>
 
-<? if ($recordTotal < 1): ?>
+<?php if ($recordTotal < 1): ?>
   <p class="alert alert-danger">
-    <? if (isset($view->overrideEmptyMessage)): ?>
+    <?php if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
-    <? else: ?>
-      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
-    <? endif; ?>
+    <?php else: ?>
+      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
+    <?php endif; ?>
   </p>
-  <? if (isset($view->parseError)): ?>
+  <?php if (isset($view->parseError)): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
-  <? endif; ?>
-  <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
+  <?php endif; ?>
+  <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
     <?=$this->recommend($current)?>
-  <? endforeach; ?>
-  <? foreach ($results->getRecommendations('noresults') as $current): ?>
-    <? if (!in_array($current, $top)): ?>
+  <?php endforeach; ?>
+  <?php foreach ($results->getRecommendations('noresults') as $current): ?>
+    <?php if (!in_array($current, $top)): ?>
       <?=$this->recommend($current)?>
-    <? endif; ?>
-  <? endforeach; ?>
-<? else: ?>
-  <?
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?php
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
     $viewParams = [
       'results' => $results,
       'params' => $params,
-      'showCartControls' => $this->showCartControls,
-      'showBulkOptions' => $this->showBulkOptions
+      'showCheckboxes' => $this->showCartControls || $this->showBulkOptions
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
     <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></p>
-  <? endif; ?>
-<? endif; ?>
+  <?php endif; ?>
+<?php endif; ?>

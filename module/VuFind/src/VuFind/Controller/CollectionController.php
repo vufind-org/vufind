@@ -2,7 +2,7 @@
 /**
  * Collection Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+
 use Zend\Config\Config;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -78,6 +79,12 @@ class CollectionController extends AbstractRecord
      */
     protected function showTab($tab, $ajax = false)
     {
+        // Check that collections are enabled and redirect if necessary
+        $config = $this->getConfig();
+        if (empty($config->Collections->collections)) {
+            return $this->redirectToRecord();
+        }
+
         $result = parent::showTab($tab, $ajax);
         if (!$ajax && $result instanceof \Zend\View\Model\ViewModel) {
             $result->setTemplate('collection/view');
@@ -92,8 +99,9 @@ class CollectionController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        return isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation;
     }
 }

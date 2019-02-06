@@ -1,0 +1,30 @@
+<div class="facet-group active-filters">
+  <div class="title"><?=$this->transEsc('Remove Filters')?></div>
+  <?php foreach ($filterList as $field => $filters): ?>
+    <?php foreach ($filters as $i => $filter): ?>
+      <?php
+        $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+        if ($index !== false) {
+          unset($collapsedFacets[$index]); // Open if we have a match
+        }
+        if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
+          $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($filter['value'], '');
+        } else {
+          $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], $filter['operator']);
+        }
+        if ($filter['displayText'] == '[* TO *]') {
+          $filter['displayText'] = $this->translate('filter_wildcard');
+        }
+      ?>
+      <a class="facet" href="<?=$removeLink ?>" title="<?=$this->transEsc('clear_tag_filter') ?>">
+        <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
+        <span class="text">
+            <?php if ($filter['operator'] == 'NOT'): ?><?=$this->transEsc('NOT') ?><?php endif; ?>
+            <?php if ($filter['operator'] == 'OR' && $i > 0): ?><?=$this->transEsc('OR') ?><?php endif; ?>
+            <?=$this->transEsc($field) ?>: <?=$this->escapeHtml($filter['displayText']) ?>
+        </span>
+        <span class="status"><i class="fa fa-times" aria-hidden="true"></i></span>
+      </a>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+</div>

@@ -2,7 +2,7 @@
 /**
  * VuFind Action Helper - New Items Support Methods
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,10 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Config\Config;
+
+use Zend\Config\Config;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
 /**
  * Zend action helper to perform new items-related actions
@@ -59,11 +62,11 @@ class NewItems extends AbstractPlugin
     /**
      * Figure out which bib IDs to load from the ILS.
      *
-     * @param \VuFind\ILS\Connection                     $catalog ILS connection
-     * @param \VuFind\Search\Solr\Params                 $params  Solr parameters
-     * @param string                                     $range   Range setting
-     * @param string                                     $dept    Department setting
-     * @param \Zend\Mvc\Controller\Plugin\FlashMessenger $flash   Flash messenger
+     * @param \VuFind\ILS\Connection     $catalog ILS connection
+     * @param \VuFind\Search\Solr\Params $params  Solr parameters
+     * @param string                     $range   Range setting
+     * @param string                     $dept    Department setting
+     * @param FlashMessenger             $flash   Flash messenger
      *
      * @return array
      */

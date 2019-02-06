@@ -1,39 +1,39 @@
-<?
+<?php
     $this->headTitle('Deminifier');
 ?>
 
 <h2>Deminifier</h2>
 
-<? if (!$min): ?>
+<?php if (empty($min)): ?>
   <form method='POST'>
     Minified text:
     <textarea name="min"></textarea>
     <input type="submit" />
   </form>
-<? else: ?>
+<?php else: ?>
   <h3>Minified Object</h3>
-  <pre><? print_r($min) ?></pre>
-<? endif; ?>
+  <pre><?php print_r($min) ?></pre>
+<?php endif; ?>
 
-<? if ($results): ?>
+<?php if (isset($results)): ?>
   <h3>Results Object</h3>
   <p>Class: <?=get_class($results)?></p>
-<? endif; ?>
+<?php endif; ?>
 
-<? if ($query): ?>
+<?php if (isset($query)): ?>
   <h3>Query Object</h3>
-  <pre><? print_r($query) ?></pre>
-<? endif; ?>
+  <pre><?php print_r($query) ?></pre>
+<?php endif; ?>
 
-<? if ($backendParams || $queryParams): ?>
+<?php if (isset($backendParams) || isset($queryParams)): ?>
   <h3>Backend Parameters</h3>
-  <? if ($queryParams): ?>
+  <?php if (isset($queryParams)): ?>
     <h4>Query Parameters</h4>
-    <pre><? print_r($queryParams) ?></pre>
-  <? endif ; ?>
-  <? if ($backendParams): ?>
+    <pre><?php print_r($queryParams) ?></pre>
+  <?php endif; ?>
+  <?php if (isset($backendParams)): ?>
     <h4>Non-query Parameters</h4>
-    <pre><? print_r($backendParams) ?></pre>
-  <? endif ; ?>
-<? endif; ?>
+    <pre><?php print_r($backendParams) ?></pre>
+  <?php endif; ?>
+<?php endif; ?>
 

@@ -2,7 +2,7 @@
 /**
  * Head link view helper (extended for VuFind's theme system)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -38,8 +39,10 @@ use VuFindTheme\ThemeInfo;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class HeadLink extends \Zend\View\Helper\HeadLink
+    implements \Zend\Log\LoggerAwareInterface
 {
     use ConcatTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Theme information service
@@ -192,7 +195,11 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     public function getType($item)
     {
-        return isset($item->media) ? $item->media : 'all';
+        $type = $item->media ?? 'all';
+        if (isset($item->conditionalStylesheet)) {
+            $type .= '_' . $item->conditionalStylesheet;
+        }
+        return $type;
     }
 
     /**
@@ -203,6 +210,6 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected function getMinifier()
     {
-        return new \MatthiasMullie\Minify\CSS();
+        return new \VuFindTheme\Minify\CSS();
     }
 }

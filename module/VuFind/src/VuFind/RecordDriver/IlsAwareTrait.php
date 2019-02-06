@@ -2,7 +2,7 @@
 /**
  * ILS support for MARC and other types of records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -49,18 +49,25 @@ trait IlsAwareTrait
     protected $ils = null;
 
     /**
+     * Backends with ILS integration.
+     *
+     * @var string[]
+     */
+    protected $ilsBackends = [];
+
+    /**
      * Hold logic
      *
      * @var \VuFind\ILS\Logic\Holds
      */
-    protected $holdLogic;
+    protected $holdLogic = null;
 
     /**
      * Title hold logic
      *
      * @var \VuFind\ILS\Logic\TitleHolds
      */
-    protected $titleHoldLogic;
+    protected $titleHoldLogic = null;
 
     /**
      * Attach an ILS connection and related logic to the driver
@@ -87,7 +94,8 @@ trait IlsAwareTrait
      */
     protected function hasILS()
     {
-        return null !== $this->ils;
+        return null !== $this->ils
+            && in_array($this->getSourceIdentifier(), $this->ilsBackends);
     }
 
     /**
@@ -139,6 +147,18 @@ trait IlsAwareTrait
         }
 
         return false;
+    }
+
+    /**
+     * Set the list of backends that support ILS integration.
+     *
+     * @param array $backends List of backends that support ILS integration
+     *
+     * @return string[]
+     */
+    public function setIlsBackends($backends)
+    {
+        $this->ilsBackends = $backends;
     }
 
     /**

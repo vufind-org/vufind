@@ -2,7 +2,7 @@
 /**
  * AbstractBase for Resolver Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -68,7 +68,10 @@ abstract class AbstractBase implements DriverInterface
      */
     public function getResolverUrl($openURL)
     {
-        return $this->baseUrl . '?' . $openURL;
+        $url = $this->baseUrl;
+        $url .= strpos($url, '?') === false ? '?' : '&';
+        $url .= $openURL;
+        return $url;
     }
 
     /**

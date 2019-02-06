@@ -2,7 +2,7 @@
 /**
  * Row Definition for external_session
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyrught (C) The National Library of Finland 2016.

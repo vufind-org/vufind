@@ -2,7 +2,7 @@
 /**
  * QR Code Loader Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\QRCode;
+
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 use Zend\Config\Config;
@@ -58,7 +59,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMockBuilder('VuFindTheme\ThemeInfo')
+        $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], $theme);
@@ -94,7 +95,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if ($mock) {
-            return $this->getMockBuilder('VuFind\QRCode\Loader')
+            return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
                 ->setMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();

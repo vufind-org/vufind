@@ -1,8 +1,8 @@
-/*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
+/*global Event, grecaptcha, isPhoneNumberValid */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
-window.console = window.console || {log: function polyfillLog() {}};
+window.console = window.console || { log: function polyfillLog() {} };
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -11,14 +11,31 @@ var VuFind = (function VuFind() {
   var _submodules = [];
   var _translations = {};
 
+  // Emit a custom event
+  // Recommendation: prefix with vf-
+  var emit = function emit(name, detail) {
+    if (typeof detail === 'undefined') {
+      document.dispatchEvent(new Event(name));
+    } else {
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
+      document.dispatchEvent(event);
+    }
+  };
+  // Listen shortcut to put everyone on the same element
+  var listen = function listen(name, func) {
+    document.addEventListener(name, func, false);
+  };
+
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
       _submodules.push(name);
       this[name] = typeof module == 'function' ? module() : module;
-    }
-    // If the object has already initialized, we should auto-init on register:
-    if (_initialized && this[name].init) {
-      this[name].init();
+
+      // If the object has already initialized, we should auto-init on register:
+      if (_initialized && this[name].init) {
+        this[name].init();
+      }
     }
   };
   var init = function init() {
@@ -37,8 +54,17 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var translate = function translate(op) {
-    return _translations[op] || op;
+  var translate = function translate(op, _replacements) {
+    var replacements = _replacements || [];
+    var translation = _translations[op] || op;
+    if (replacements) {
+      for (var key in replacements) {
+        if (replacements.hasOwnProperty(key)) {
+          translation = translation.replace(key, replacements[key]);
+        }
+      }
+    }
+    return translation;
   };
 
   /**
@@ -64,6 +90,8 @@ var VuFind = (function VuFind() {
 
     addTranslations: addTranslations,
     init: init,
+    emit: emit,
+    listen: listen,
     refreshPage: refreshPage,
     register: register,
     translate: translate
@@ -130,15 +158,25 @@ function lessFacets(id) {
   $('#more-' + id).removeClass('hidden');
   return false;
 }
-function facetSessionStorage(e) {
-  var source = $('#result0 .hiddenSource').val();
-  var id = e.target.id;
-  var key = 'sidefacet-' + source + id;
-  if (!sessionStorage.getItem(key)) {
-    sessionStorage.setItem(key, document.getElementById(id).className);
+function getUrlRoot(url) {
+  // Parse out the base URL for the current record:
+  var urlroot = null;
+  var urlParts = url.split(/[?#]/);
+  var urlWithoutFragment = urlParts[0];
+  if (VuFind.path === '') {
+    // special case -- VuFind installed at site root:
+    var chunks = urlWithoutFragment.split('/');
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
-    sessionStorage.removeItem(key);
+    // standard case -- VuFind has its own path under site:
+    var slashSlash = urlWithoutFragment.indexOf('//');
+    var pathInUrl = slashSlash > -1
+      ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
+      : urlWithoutFragment.indexOf(VuFind.path);
+    var parts = urlWithoutFragment.substring(pathInUrl + VuFind.path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
   }
+  return urlroot;
 }
 
 // Phone number validation
@@ -193,29 +231,37 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick() {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
+    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+      e.preventDefault();
       $('body.offcanvas').toggleClass('active');
-      var active = $('body.offcanvas').hasClass('active');
-      var right = $('body.offcanvas').hasClass('offcanvas-right');
-      if ((active && !right) || (!active && right)) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
-      } else {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
-      }
-      $('.offcanvas-toggle .fa').attr('title', VuFind.translate(active ? 'sidebar_close' : 'sidebar_expand'));
     });
-    $('[data-toggle="offcanvas"]').click().click();
-  } else {
-    $('[data-toggle="offcanvas"]').addClass('hidden');
   }
 }
 
 function setupAutocomplete() {
+  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
+  var searchbox = $('#searchForm_lookfor.autocomplete');
+  if (searchbox.length < 1) {
+    return;
+  }
+  // Auto-submit based on config
+  var acCallback = function ac_cb_noop() {};
+  if (searchbox.hasClass("ac-auto-submit")) {
+    acCallback = function autoSubmitAC(item, input) {
+      input.val(item.value);
+      $("#searchForm").submit();
+      return false;
+    };
+  }
   // Search autocomplete
-  $('#searchForm_lookfor').autocomplete({
+  searchbox.autocomplete({
+    rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
+    // Auto-submit selected item
+    callback: acCallback,
+    // AJAX call for autocomplete results
     handler: function vufindACHandler(input, cb) {
       var query = input.val();
       var searcher = extractClassParams(input);
@@ -234,10 +280,10 @@ function setupAutocomplete() {
         },
         dataType: 'json',
         success: function autocompleteJSON(json) {
-          if (json.data.length > 0) {
+          if (json.data.suggestions.length > 0) {
             var datums = [];
-            for (var j = 0; j < json.data.length; j++) {
-              datums.push(json.data[j]);
+            for (var j = 0; j < json.data.suggestions.length; j++) {
+              datums.push(json.data.suggestions[j]);
             }
             cb(datums);
           } else {
@@ -249,7 +295,7 @@ function setupAutocomplete() {
   });
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
-    $('#searchForm_lookfor').autocomplete('clear cache');
+    searchbox.autocomplete().clearCache();
   });
 }
 
@@ -294,38 +340,6 @@ function keyboardShortcuts() {
   }
 }
 
-/**
- * Setup facets
- */
-function setupFacets() {
-  // Advanced facets
-  $('.facetAND a,.facetOR a').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
-
-  // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-    if (storedItem) {
-      var saveTransition = $.support.transition;
-      try {
-        $.support.transition = false;
-        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
-          $(item).collapse('show');
-        } else {
-          $(item).collapse('hide');
-        }
-      } finally {
-        $.support.transition = saveTransition;
-      }
-    }
-  });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
-}
-
 function setupIeSupport() {
   // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
   // Cannot use conditional comments since IE 11 doesn't support them but still has
@@ -334,6 +348,11 @@ function setupIeSupport() {
   if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
     $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
   }
+}
+
+function setupJumpMenus(_container) {
+  var container = _container || $('body');
+  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
 }
 
 $(document).ready(function commonDocReady() {
@@ -347,7 +366,7 @@ $(document).ready(function commonDocReady() {
   keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  setupJumpMenus();
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
@@ -395,16 +414,14 @@ $(document).ready(function commonDocReady() {
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
-  setupFacets();
-
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
+    $('.applied-filter').prop('checked', this.checked);
   });
   if (sessionStorage.getItem('vufind_retain_filters')) {
     var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
-    $('.searchFormKeepFilters').prop('checked', state);
-    $('#applied-filter').prop('checked', state);
+    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
   }
 
   setupIeSupport();

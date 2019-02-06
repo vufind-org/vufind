@@ -2,7 +2,7 @@
 /**
  * Recommendation module view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
+
+use VuFind\Recommend\RecommendInterface;
 
 /**
  * Recommendation module view helper
@@ -37,50 +38,27 @@ use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends AbstractHelper
+class Recommend extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Render the output of a recommendation module.
      *
-     * @param \VuFind\Recommend\RecommendInterface $recommend The recommendation
-     * object to render
+     * @param RecommendInterface $recommend The recommendation object to render
+     * @param string             $location  Recommendation location (side, top)
+     * @param int                $index     Index of the recommendation configuration
      *
      * @return string
      */
-    public function __invoke($recommend)
-    {
-        // Set up the rendering context:
-        $contextHelper = $this->getView()->plugin('context');
-        $oldContext = $contextHelper($this->getView())->apply(
-            ['recommend' => $recommend]
-        );
-
-        // Get the current recommendation module's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // template.
+    public function __invoke(RecommendInterface $recommend, $location = null,
+        $index = null
+    ) {
+        $template = 'Recommend/%s.phtml';
         $className = get_class($recommend);
-        $resolver = $this->getView()->resolver();
-        while (true) {
-            // Guess the template name for the current class:
-            $classParts = explode('\\', $className);
-            $template = 'Recommend/' . array_pop($classParts) . '.phtml';
-            if ($resolver->resolve($template)) {
-                // Try to render the template....
-                $html = $this->getView()->render($template);
-                $contextHelper($this->getView())->restore($oldContext);
-                return $html;
-            } else {
-                // If the template doesn't exist, let's see if we can inherit a
-                // template from a parent recommendation class:
-                $className = get_parent_class($className);
-                if (empty($className)) {
-                    // No more parent classes left to try?  Throw an exception!
-                    throw new RuntimeException(
-                        'Cannot find template for recommendation class: ' .
-                        get_class($recommend)
-                    );
-                }
-            }
-        }
+        $context = [
+            'recommend' => $recommend,
+            'location' => $location,
+            'configIndex' => $index
+        ];
+        return $this->renderClassTemplate($template, $className, $context);
     }
 }

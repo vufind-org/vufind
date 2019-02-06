@@ -2,7 +2,7 @@
 /**
  * Browse Module Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
+
 use VuFind\Exception\Forbidden as ForbiddenException;
 use Zend\Config\Config;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -170,7 +171,7 @@ class BrowseController extends AbstractBase
             'Author', 'Topic', 'Genre', 'Region', 'Era'
         ];
         foreach ($remainingOptions as $current) {
-            $option = strToLower($current);
+            $option = strtolower($current);
             if (!isset($this->config->Browse->$option)
                 || $this->config->Browse->$option == true
             ) {
@@ -258,7 +259,7 @@ class BrowseController extends AbstractBase
                 ? 'filter[]=' . $this->params()->fromQuery('query_field') . ':'
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
-            switch($this->getCurrentAction()) {
+            switch ($this->getCurrentAction()) {
             case 'LCC':
                 $view->paramTitle .= 'filter[]=callnumber-subject:';
                 break;
@@ -457,7 +458,7 @@ class BrowseController extends AbstractBase
             'era'          => 'By Era'
         ];
 
-        return $this->performBrowse('Author', $categoryList, false);
+        return $this->performBrowse('Author', $categoryList, true);
     }
 
     /**
@@ -538,7 +539,7 @@ class BrowseController extends AbstractBase
     protected function getSecondaryList($facet)
     {
         $category = $this->getCategory();
-        switch($facet) {
+        switch ($facet) {
         case 'alphabetical':
             return ['', $this->getAlphabetList()];
         case 'dewey':
@@ -595,7 +596,7 @@ class BrowseController extends AbstractBase
         $sort = 'count', $query = '[* TO *]'
     ) {
         $results = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {
@@ -659,7 +660,7 @@ class BrowseController extends AbstractBase
         if ($action == null) {
             $action = $this->getCurrentAction();
         }
-        switch(strToLower($action)) {
+        switch (strtolower($action)) {
         case 'alphabetical':
             return $this->getCategory();
         case 'dewey':
@@ -701,9 +702,14 @@ class BrowseController extends AbstractBase
 
         // ALPHABET TO ['value','displayText']
         // (value has asterix appended for Solr, but is unmodified for tags)
-        $suffix = $this->getCurrentAction() == 'Tag' ? '' : '*';
-        $callback = function ($letter) use ($suffix) {
-            return ['value' => $letter . $suffix, 'displayText' => $letter];
+        $action = $this->getCurrentAction();
+        $callback = function ($letter) use ($action) {
+            // Tag is a special case because it is database-backed; for everything
+            // else, use a Solr query that will allow case-insensitive lookups.
+            $value = ($action == 'Tag')
+                ? $letter
+                : '(' . strtoupper($letter) . '* OR ' . strtolower($letter) . '*)';
+            return ['value' => $value, 'displayText' => $letter];
         };
         preg_match_all('/(.)/u', $chars, $matches);
         return array_map($callback, $matches[1]);

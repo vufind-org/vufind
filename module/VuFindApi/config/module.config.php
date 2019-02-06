@@ -4,14 +4,24 @@ namespace VuFindApi\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'api' => 'VuFindApi\Controller\Factory::getApiController',
-            'searchapi' => 'VuFindApi\Controller\Factory::getSearchApiController',
-        ]
+            'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
+            'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
+        ],
+        'aliases' => [
+            'Api' => 'VuFindApi\Controller\ApiController',
+            'SearchApi' => 'VuFindApi\Controller\SearchApiController',
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            'VuFindApi\Formatter\FacetFormatter' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
+        ],
     ],
     'router' => [
         'routes' => [
             'apiHome' => [
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => 'Zend\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api[/v1][/]',
@@ -22,7 +32,7 @@ $config = [
                 ],
             ],
             'searchApiv1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/search',
@@ -33,7 +43,7 @@ $config = [
                 ]
             ],
             'recordApiv1' => [
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/record',

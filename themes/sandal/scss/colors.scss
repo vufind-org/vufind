@@ -1,0 +1,50 @@
+@import 'vendor/tachyons-colors'; // Import colors from the tachyons library
+
+/* Material Colors can be found here: https://material.io/guidelines/style/color.html */
+$brand-primary: #1976d2 !default; /* Material Blue 700 */
+$brand-secondary: #ff6d00 !default; /* Material Orange A700 */
+
+$header-bg: #607d8b !default; /* Material Blue Grey 500 */
+$header-light: #cfd8dc !default; /* Material Blue Grey 100 */
+
+$action-color: $brand-primary !default;
+$action-hover-bg: $white !default;
+$action-hover-color: $black !default;
+$passive-icon-color: $gray !default;
+$highlighter-color: lighten(#FF0, 20%) !default;
+
+$search-row-bg: $white !default;
+$search-row-bg-alt: $light-gray !default;
+$search-row-bg-hover: $lightest-blue !default;
+$search-row-selected-bg: $brand-primary !default;
+$search-row-selected-color: $white !default;
+
+$sidebar-title-bg: $white !default;
+$sidebar-title-color: $near-black !default;
+$sidebar-title-icon-color: $gray-light !default;
+$sidebar-item-bg: $white !default;
+$sidebar-item-color: $black !default;
+$sidebar-item-hover-bg: $lightest-blue !default;
+$sidebar-item-badge: $gray !default;
+$sidebar-active-bg: $brand-secondary !default;
+$sidebar-active-color: $white !default;
+
+/* Bootstrap variable changes */
+
+$link-color: #1565c0 !default; /* Material Blue 800 */
+$link-color-hover: #0d47a1 !default; /* Material Blue 900 */
+
+$input-border:              $light-silver !default;
+$input-color:               $dark-gray !default;
+$btn-default-bg:            $light-gray !default;
+$btn-default-color:         $near-black !default;
+$btn-primary-bg:            $action-color !default;
+
+$input-border-radius:         .25rem !default;
+
+$autocomplete-hover-bg:     $header-light !default;
+$dropdown-link-hover-bg:    $header-light !default;
+$dropdown-link-hover-color: $black !default;
+$list-group-active-bg:      $brand-secondary !default;
+$table-bg-hover:            $header-light !default;
+$pagination-color:          $header-bg !default;

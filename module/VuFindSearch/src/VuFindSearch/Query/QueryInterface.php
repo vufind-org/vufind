@@ -3,7 +3,7 @@
 /**
  * Common methods that must be shared by all query objects.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *

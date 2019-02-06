@@ -2,7 +2,7 @@
 /**
  * Base formatter for API responses
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  API_Formatter
@@ -56,12 +56,15 @@ class BaseFormatter
                 $this->resetArrayIndices($value);
             }
 
-            if ((is_array($value) && empty($value))
+            // We don't want to return empty values -- unless it's an empty array
+            // with a non-numeric key, since the key could be significant (e.g. in
+            // the case of an author name => roles array with no assigned roles).
+            if ((is_numeric($key) && is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {
                 unset($array[$key]);
-            } else if (is_bool($value) || $value === 'true' || $value === 'false') {
+            } elseif (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
         }

@@ -1,13 +1,14 @@
 /* https://github.com/vufind-org/autocomplete.js 1.0b */
 $autocomplete-item-bg   : #fff !default;
 $autocomplete-active-bg : $brand-primary !default;
-$autocomplete-hover-bg  : lighten($brand-primary, 60%) !default;
+$autocomplete-hover-bg  : lighten($brand-primary, 40%) !default;
 $autocomplete-border    : lightgray !default;
 $autocomplete-secondary : darkgray !default; // item description
 
 .autocomplete-results {
   position: absolute;
   display: table;
+  max-width: 500px; /* CUSTOMIZED */
   margin: 0;
   margin-top: 2px;
   padding: 0;
@@ -16,7 +17,7 @@ $autocomplete-secondary : darkgray !default; // item description
   overflow: hidden;
   z-index: 50;
 
-  .item {
+  .ac-item {
     display: block;
     margin: 0;
     padding: .5rem;
@@ -28,7 +29,7 @@ $autocomplete-secondary : darkgray !default; // item description
     &.loading { background-color: $autocomplete-item-bg; }
     &.selected {
       background-color: $autocomplete-active-bg;
-      color: if(lightness($autocomplete-active-bg) > 50, black, white);
+      color: contrast($autocomplete-active-bg);
     }
 
     small {

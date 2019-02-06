@@ -2,7 +2,7 @@
 /**
  * Cover Loader Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,10 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Cover;
+
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
 use Zend\Config\Config;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
 
 /**
  * Cover Loader Test Class
@@ -59,7 +59,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMockBuilder('VuFindTheme\ThemeInfo')
+        $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
@@ -133,32 +133,30 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param array                                $config  Configuration
      * @param \VuFind\Content\Covers\PluginManager $manager Plugin manager (null to create mock)
      * @param ThemeInfo                            $theme   Theme info object (null to create default)
-     * @param \Zend\Http\Client                    $client  HTTP client (null to create TestAdapter)
+     * @param \VuFindHttp\HttpService              $httpService  HTTP client factory
      * @param array|bool                           $mock    Array of functions to mock, or false for real object
      *
      * @return Loader
      */
-    protected function getLoader($config = [], $manager = null, $theme = null, $client = null, $mock = false)
+    protected function getLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
     {
         $config = new Config($config);
         if (null === $manager) {
-            $manager = $this->createMock('VuFind\Content\Covers\PluginManager');
+            $manager = $this->createMock(\VuFind\Content\Covers\PluginManager::class);
         }
         if (null === $theme) {
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
-        if (null === $client) {
-            $adapter = new TestAdapter();
-            $client = new \Zend\Http\Client();
-            $client->setAdapter($adapter);
+        if (null === $httpService) {
+            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
                 ->setMethods($mock)
-                ->setConstructorArgs([$config, $manager, $theme, $client])
+                ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
         }
-        return new Loader($config, $manager, $theme, $client);
+        return new Loader($config, $manager, $theme, $httpService);
     }
 
     /**

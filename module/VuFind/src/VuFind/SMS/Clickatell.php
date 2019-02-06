@@ -2,7 +2,7 @@
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\SMS;
+
 use VuFind\Exception\Mail as MailException;
 
 /**
@@ -56,8 +57,7 @@ class Clickatell extends AbstractBase
     public function __construct(\Zend\Config\Config $config, $options = [])
     {
         parent::__construct($config, $options);
-        $this->client = isset($options['client'])
-            ? $options['client'] : new \Zend\Http\Client();
+        $this->client = $options['client'] ?? new \Zend\Http\Client();
     }
 
     /**

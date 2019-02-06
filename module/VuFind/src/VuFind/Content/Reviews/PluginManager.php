@@ -2,7 +2,7 @@
 /**
  * Reviews content loader plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,6 +39,36 @@ namespace VuFind\Content\Reviews;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'amazon' => Amazon::class,
+        'amazoneditorial' => AmazonEditorial::class,
+        'booksite' => Booksite::class,
+        'demo' => Demo::class,
+        'guardian' => Guardian::class,
+        'syndetics' => Syndetics::class,
+        'syndeticsplus' => SyndeticsPlus::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Amazon::class => \VuFind\Content\AbstractAmazonFactory::class,
+        AmazonEditorial::class => \VuFind\Content\AbstractAmazonFactory::class,
+        Booksite::class => BooksiteFactory::class,
+        Demo::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        Guardian::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
+        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +76,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Content\AbstractBase';
+        return \VuFind\Content\AbstractBase::class;
     }
 }

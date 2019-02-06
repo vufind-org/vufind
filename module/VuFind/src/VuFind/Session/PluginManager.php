@@ -2,9 +2,10 @@
 /**
  * Session handler plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010,
+ *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
+
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Session handler plugin manager
@@ -33,11 +37,65 @@ namespace VuFind\Session;
  * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'database' => Database::class,
+        'file' => File::class,
+        'memcache' => Memcache::class,
+        // for legacy 1.x compatibility
+        'filesession' => File::class,
+        'memcachesession' => Memcache::class,
+        'mysqlsession' => Database::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Database::class => InvokableFactory::class,
+        File::class => InvokableFactory::class,
+        Memcache::class => InvokableFactory::class,
+    ];
+
+    /**
+     * Default delegator factories.
+     *
+     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     */
+    protected $delegators = [
+        Database::class => [SecureDelegatorFactory::class],
+        File::class => [SecureDelegatorFactory::class],
+        Memcache::class => [SecureDelegatorFactory::class],
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(PluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
@@ -46,6 +104,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'Zend\Session\SaveHandler\SaveHandlerInterface';
+        return HandlerInterface::class;
     }
 }

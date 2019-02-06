@@ -5,8 +5,18 @@
       width: 8px;
       height: 8px;
       margin: 2px;
-      background-color: rgba(255,255,255,.3);
-      border-color: @gray-darker;
+      margin-bottom: 4px;
+      background-color: #fff;
+      border: 1px solid @gray-darker;
+      box-shadow: none;
+      transition-duration: .4s;
+      transition-property: width, height, margin;
+
+      &.active {
+        width: 16px;
+        height: 16px;
+        margin-bottom: 0;
+      }
     }
   }
   .hover-overlay {
@@ -33,5 +43,11 @@
     }
     &:hover .content {display: block;}
   }
+  .item {
+    padding: 0 4em;
+    &.prev,
+    &.active,
+    &.next { display: flex; }
+  }
+  .carousel-item { flex-basis: 25%; }
 }
-#similar-items-carousel .item {padding: 0 4em;}

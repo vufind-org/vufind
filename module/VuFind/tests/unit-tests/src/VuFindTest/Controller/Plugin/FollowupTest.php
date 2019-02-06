@@ -3,7 +3,7 @@
 /**
  * Followup controller plugin tests.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -100,7 +100,7 @@ class FollowupTest extends TestCase
      */
     protected function getMockController($url = 'http://localhost/default-url')
     {
-        $controller = $this->getMockBuilder('VuFind\Controller\AbstractBase')
+        $controller = $this->getMockBuilder(\VuFind\Controller\AbstractBase::class)
             ->disableOriginalConstructor()->getMock();
         $controller->expects($this->any())->method('getServerUrl')->will($this->returnValue($url));
         return $controller;

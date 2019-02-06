@@ -2,7 +2,7 @@
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,17 +38,6 @@ namespace VuFind\Controller;
  */
 trait HoldsTrait
 {
-    /**
-     * Action for dealing with blocked holds.
-     *
-     * @return mixed
-     */
-    public function blockedholdAction()
-    {
-        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
     /**
      * Action for dealing with holds.
      *
@@ -87,8 +76,12 @@ trait HoldsTrait
         $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if (!$validRequest) {
-            return $this->blockedholdAction();
+        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+            $this->flashMessenger()->addErrorMessage(
+                is_array($validRequest)
+                    ? $validRequest['status'] : 'hold_error_blocked'
+            );
+            return $this->redirectToRecord('#top');
         }
 
         // Send various values to the view so we can build the form:
@@ -172,7 +165,7 @@ trait HoldsTrait
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -199,8 +192,7 @@ trait HoldsTrait
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => isset($checkHolds['helpText'])
-                    ? $checkHolds['helpText'] : null
+                'helpText' => $checkHolds['helpText'] ?? null
             ]
         );
         $view->setTemplate('record/hold');

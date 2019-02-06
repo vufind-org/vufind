@@ -1,50 +1,59 @@
-<?
+<?php
   // TODO: This file needs love
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
 ?>
-<? if (isset($topFacetSet)): ?>
-  <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
-    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
-    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
-    <div class="row top-row">
-    <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
-    <? foreach($cluster['list'] as $thisFacet): ?>
-      <? /* More link */ ?>
-      <? if ($iter == $corner+1): ?>
-        </div><div id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="row top-row">
-          <span class="col-sm-12 narrow-toggle"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
-        </div><div class="row top-row <?=$moreClass ?>">
-      <? endif; ?>
-      <? /* Columns */ ?>
-      <span class="col-sm-<?=floor(12/$topFacetSettings['cols'])?><? if ($iter == $corner+1) echo $moreClass ?>">
-        <? if ($thisFacet['isApplied']):
-          if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
-          } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
-          } ?>
-          <a href="<?=$removeLink ?>" class="applied">
-            <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i>
-          </a>
-        <? else: ?>
-          <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
-          <? if ($allowExclude): ?>
-            <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
-          <? endif; ?>
+<?php if (isset($topFacetSet)): ?>
+  <?php foreach($topFacetSet as $title => $cluster): ?>
+    <?php $moreClass = ' NarrowGroupHidden_' . $this->escapeHtml($title) . ' hidden'; ?>
+    <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <div class="top-facets">
+      <!--Toggle for mobile collapse -->
+      <?php $topLabel = $this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]); ?>
+      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><i class="fa fa-caret-right"></i> <?=$topLabel ?></a>
+      <!--Regular title for non-mobile -->
+      <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
+      <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
+        <?php $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
+        <?php foreach($cluster['list'] as $index => $thisFacet): ?>
+          <span class="facet top-facet <?=$index > $limit ? $moreClass : '' ?>">
+            <?php if ($thisFacet['isApplied']):
+              if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
+                $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
+              } else {
+                $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
+              } ?>
+              <a href="<?=$removeLink ?>" class="applied">
+                <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
+           --></a>
+            <?php else: ?>
+              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
+                <?=$this->escapeHtml($thisFacet['displayText'])?><!--
+           --></a>
+              <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
+              <?php if ($allowExclude): ?>
+                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+              <?php endif; ?>
+            <?php endif; ?>
           </span>
-        <? endif; ?>
-      </span>
-      <? /* Close rows */ ?>
-      <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
-      <? /* Less link */ ?>
-      <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
-        <a class="col-sm-12 narrow-toggle" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
-      <? endif; ?>
-      <? $iter++; ?>
-    <? endforeach; ?>
+          <?php /* More link */ ?>
+          <?php if ($index == $limit): ?>
+            <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
+              <a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
+                <?=$this->transEsc('more') ?> ...
+              </a>
+            </span>
+          <?php endif; ?>
+        <?php endforeach; ?>
+        <?php if (count($cluster['list']) > $limit): ?>
+          <a class="narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
+            <?=$this->transEsc('less') ?> ...
+          </a>
+        <?php endif; ?>
+      </div>
     </div>
-  <? endforeach; ?>
-<? endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, 'collapseTopFacets()', 'SET')?>

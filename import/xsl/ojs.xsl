@@ -16,8 +16,8 @@
                     <xsl:value-of select="//identifier"/>
                 </field>
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">ojs</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">ojs</field>
 
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!

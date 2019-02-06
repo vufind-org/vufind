@@ -2,7 +2,7 @@
 /**
  * Hierarchy tree data source plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Hierarchy tree data source plugin manager
  *
@@ -39,6 +41,26 @@ namespace VuFind\Hierarchy\TreeDataSource;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'solr' => Solr::class,
+        'xmlfile' => XMLFile::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Solr::class => SolrFactory::class,
+        XMLFile::class => InvokableFactory::class,
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Hierarchy\TreeDataSource\AbstractBase';
+        return AbstractBase::class;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Config Upgrade Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
+
 use VuFind\Config\Upgrade;
 
 /**
@@ -98,7 +99,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
                 . "the default theme. Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3. You may need to "
                 . "reimplement your custom theme.";
-        } else if ((float)$version < 2.4) {
+        } elseif ((float)$version < 2.4) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the blueprint theme. Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3. You may need to "
@@ -405,6 +406,18 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
                 . 'for important information on how to upgrade your Analytics.',
                 $warnings
             )
+        );
+        $this->assertTrue(
+            in_array(
+                'Google Maps is no longer a supported Content/recordMap option;'
+                . ' please review your config.ini.',
+                $warnings
+            )
+        );
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['Content']['recordMap']));
+        $this->assertFalse(
+            isset($results['config.ini']['Content']['googleMapApiKey'])
         );
     }
 

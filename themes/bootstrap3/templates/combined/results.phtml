@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
@@ -38,6 +38,8 @@
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
   // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -47,16 +49,16 @@
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
-      <? foreach ($recs as $current): ?>
+      <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
-  <?
+  <?php
     $viewParams = [
       'searchClassId' => $searchClassId,
       'combinedResults' => $this->combinedResults,
@@ -65,12 +67,13 @@
       'showBulkOptions' => $this->showBulkOptions
     ];
   ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
-  <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <?php $recs = $combinedResults->getRecommendations('bottom'); ?>
+  <?php if (!empty($recs)): ?>
     <div>
-      <? foreach ($recs as $current): ?>
+      <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </div>
-  <? endif; ?>
+  <?php endif; ?>
 </form>

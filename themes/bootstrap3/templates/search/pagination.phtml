@@ -1,27 +1,27 @@
-<? if ($this->pageCount): ?>
+<?php if ($this->pageCount): ?>
   <ul class="pagination">
-    <? if (isset($this->previous)): ?>
-      <? if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
+    <?php if (isset($this->previous)): ?>
+      <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
-      <? endif; ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
-    <? endif; ?>
+      <?php endif; ?>
+      <li><a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+    <?php endif; ?>
 
-    <? if (count($this->pagesInRange) > 1): ?>
-      <? foreach ($this->pagesInRange as $page): ?>
-        <? if ($page != $this->current): ?>
+    <?php if (count($this->pagesInRange) > 1): ?>
+      <?php foreach ($this->pagesInRange as $page): ?>
+        <?php if ($page != $this->current): ?>
           <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
-        <? else: ?>
+        <?php else: ?>
           <li class="active"><span><?=$page?></span></li>
-        <? endif; ?>
-      <? endforeach; ?>
-    <? endif; ?>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
 
-    <? if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
-      <? if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
+    <?php if (isset($this->next)): ?>
+      <li><a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
+      <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
-      <? endif; ?>
-    <? endif; ?>
+      <?php endif; ?>
+    <?php endif; ?>
   </ul>
-<? endif; ?>
+<?php endif; ?>

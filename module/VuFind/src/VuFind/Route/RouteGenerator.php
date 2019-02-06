@@ -2,7 +2,7 @@
 /**
  * Route Generator Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,10 +59,8 @@ class RouteGenerator
         if (null === $nonTabRecordActions) {
             $this->nonTabRecordActions = [
                 'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save',
-                'Email', 'SMS', 'Cite', 'Export', 'RDF', 'Hold', 'BlockedHold',
-                'Home', 'StorageRetrievalRequest', 'AjaxTab',
-                'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest',
-                'PDF',
+                'Email', 'SMS', 'Cite', 'Export', 'RDF', 'Hold', 'Home',
+                'StorageRetrievalRequest', 'AjaxTab', 'ILLRequest', 'PDF',
             ];
         } else {
             $this->nonTabRecordActions = $nonTabRecordActions;
@@ -83,7 +81,7 @@ class RouteGenerator
     {
         list($actionName) = explode('/', $action, 2);
         $config['router']['routes'][$routeName] = [
-            'type'    => 'Zend\Mvc\Router\Http\Segment',
+            'type'    => 'Zend\Router\Http\Segment',
             'options' => [
                 'route'    => "/$controller/$action",
                 'constraints' => [
@@ -130,7 +128,7 @@ class RouteGenerator
     {
         // catch-all "tab" route:
         $config['router']['routes'][$routeBase] = [
-            'type'    => 'Zend\Mvc\Router\Http\Segment',
+            'type'    => 'Zend\Router\Http\Segment',
             'options' => [
                 'route'    => '/' . $controller . '/[:id[/[:tab]]]',
                 'constraints' => [
@@ -146,7 +144,7 @@ class RouteGenerator
         // special non-tab actions that each need their own route:
         foreach ($this->nonTabRecordActions as $action) {
             $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
                     'route'    => '/' . $controller . '/[:id]/' . $action,
                     'constraints' => [
@@ -191,7 +189,7 @@ class RouteGenerator
         list($controller, $action) = explode('/', $route);
         $routeName = str_replace('/', '-', strtolower($route));
         $config['router']['routes'][$routeName] = [
-            'type' => 'Zend\Mvc\Router\Http\Literal',
+            'type' => 'Zend\Router\Http\Literal',
             'options' => [
                 'route'    => '/' . $route,
                 'defaults' => [

@@ -2,7 +2,7 @@
 /**
  * Covers content loader plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Content\Covers;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Covers content loader plugin manager
  *
@@ -39,6 +41,44 @@ namespace VuFind\Content\Covers;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'amazon' => Amazon::class,
+        'booksite' => Booksite::class,
+        'buchhandel' => Buchhandel::class,
+        'browzine' => BrowZine::class,
+        'contentcafe' => ContentCafe::class,
+        'google' => Google::class,
+        'librarything' => LibraryThing::class,
+        'localfile' => LocalFile::class,
+        'openlibrary' => OpenLibrary::class,
+        'summon' => Summon::class,
+        'syndetics' => Syndetics::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Amazon::class => AmazonFactory::class,
+        Booksite::class => BooksiteFactory::class,
+        BrowZine::class => BrowZineFactory::class,
+        Buchhandel::class => BuchhandelFactory::class,
+        ContentCafe::class => ContentCafeFactory::class,
+        Google::class => InvokableFactory::class,
+        LibraryThing::class => InvokableFactory::class,
+        LocalFile::class => InvokableFactory::class,
+        OpenLibrary::class => InvokableFactory::class,
+        Summon::class => InvokableFactory::class,
+        Syndetics::class => SyndeticsFactory::class,
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +86,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Content\AbstractCover';
+        return \VuFind\Content\AbstractCover::class;
     }
 }

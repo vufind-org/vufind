@@ -2,7 +2,7 @@
 /**
  * EDS API Params
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\EDS;
-use VuFindSearch\ParamBag;
+
 use VuFindSearch\Backend\EDS\SearchRequestModel as SearchRequestModel;
+use VuFindSearch\ParamBag;
 
 /**
  * EDS API Params
@@ -53,6 +54,15 @@ class Params extends \VuFind\Search\Base\Params
      * @var array
      */
     protected $extraFilterList = [];
+
+    /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
 
     /**
      * Is the request using this parameters objects for setup only?
@@ -286,25 +296,23 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
-        //Also store Limiter/Search Mode IDs/Values in the config file
-        $facetId = $field;
+        // Also store Limiter/Search Mode IDs/Values in the config file
         if (substr($field, 0, 6) == 'LIMIT|') {
             $facetId = substr($field, 6);
-        }
-        if (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
             $facetId = substr($field, 11);
+        } else {
+            $facetId = $field;
         }
-        return isset($this->facetConfig[$facetId])
-            ? $this->facetConfig[$facetId] : $facetId;
+        return parent::getFacetLabel($facetId, $value, $default ?: $facetId);
     }
 
     /**
@@ -333,7 +341,6 @@ class Params extends \VuFind\Search\Base\Params
                     $ssLimiter['selectedvalue'], $ssLimiter['description']
                 );
             }
-
         }
     }
 
@@ -353,7 +360,6 @@ class Params extends \VuFind\Search\Base\Params
                     $expander['selectedvalue'], $expander['description']
                 );
             }
-
         }
     }
 

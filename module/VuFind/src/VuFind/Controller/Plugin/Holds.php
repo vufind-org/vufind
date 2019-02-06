@@ -2,7 +2,7 @@
 /**
  * VuFind Action Helper - Holds Support Methods
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -58,7 +58,7 @@ class Holds extends AbstractRequestBase
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
                     = $catalog->getCancelHoldLink($ilsDetails);
-            } else if (isset($ilsDetails['cancel_details'])) {
+            } elseif (isset($ilsDetails['cancel_details'])) {
                 // The ILS driver provided cancel details up front. If the
                 // details are an empty string (flagging lack of support), we
                 // should unset it to prevent confusion; otherwise, we'll leave it
@@ -106,7 +106,7 @@ class Holds extends AbstractRequestBase
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
@@ -159,18 +159,17 @@ class Holds extends AbstractRequestBase
                 $flashMsg->addMessage('hold_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
-                    // TODO : add a mechanism for inserting tokens into translated
-                    // messages so we can avoid a double translation here.
                     $msg = $this->getController()
-                        ->translate('hold_cancel_success_items');
-                    $flashMsg->addMessage(
-                        $cancelResults['count'] . ' ' . $msg, 'success'
-                    );
+                        ->translate(
+                            'hold_cancel_success_items',
+                            ['%%count%%' => $cancelResults['count']]
+                        );
+                    $flashMsg->addMessage($msg, 'success');
                 }
                 return $cancelResults;
             }
         } else {
-             $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
     }

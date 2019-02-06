@@ -2,7 +2,7 @@
 /**
  * Model for EDS records.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class EDS extends SolrDefault
+class EDS extends DefaultRecord
 {
     /**
      * Document types that are treated as PDF links.
@@ -199,8 +199,8 @@ class EDS extends SolrDefault
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 $items[] = [
-                    'Label' => isset($item['Label']) ? $item['Label'] : '',
-                    'Group' => isset($item['Group']) ? $item['Group'] : '',
+                    'Label' => $item['Label'] ?? '',
+                    'Group' => $item['Group'] ?? '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
                 ];
@@ -269,7 +269,7 @@ class EDS extends SolrDefault
     {
         if (isset($this->fields['FullText']['Links'])) {
             foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type'])
+                if (!empty($link['Type']) && !empty($link['Url'])
                     && in_array($link['Type'], $this->pdfTypes)
                 ) {
                     return $link['Url']; // return PDF link
@@ -391,7 +391,6 @@ class EDS extends SolrDefault
                     return $this->toHTML($item['Data']);
                 }
             }
-
         }
         return '';
     }
@@ -408,10 +407,10 @@ class EDS extends SolrDefault
     {
         $linkedString = preg_replace_callback(
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
-            create_function(
-                '$matches',
-                'return "<a href=\'".($matches[0])."\'>".($matches[0])."</a>";'
-            ),
+            function ($matches) {
+                return "<a href='" . $matches[0] . "'>"
+                    . htmlentities($matches[0]) . "</a>";
+            },
             $string
         );
         return $linkedString;

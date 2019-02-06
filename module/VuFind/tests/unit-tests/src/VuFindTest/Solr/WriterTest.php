@@ -2,7 +2,7 @@
 /**
  * Solr Writer Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Solr;
-use VuFind\Db\Table\ChangeTracker, VuFind\Search\BackendManager;
+
+use VuFind\Db\Table\ChangeTracker;
+use VuFind\Search\BackendManager;
 use VuFind\Solr\Writer;
 
 /**
@@ -133,10 +135,10 @@ class WriterTest extends \VuFindTest\Unit\TestCase
     {
         $sm = new \Zend\ServiceManager\ServiceManager();
         $pm = new BackendManager($sm);
-        $mockBackend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockConnector = $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+        $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()
             ->setMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
             ->getMock();
@@ -154,7 +156,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockChangeTracker()
     {
-        return $this->getMockBuilder('VuFind\Db\Table\ChangeTracker')
+        return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
             ->disableOriginalConstructor()
             ->setMethods(['markDeleted'])
             ->getMock();

@@ -2,7 +2,7 @@
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
+
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
@@ -71,6 +72,15 @@ class Results extends \VuFind\Search\Base\Results
     protected $spellingProcessor = null;
 
     /**
+     * CursorMark used for deep paging (e.g. OAI-PMH Server).
+     * Set to '*' to start paging a request and use the new value returned from the
+     * search request for the next request.
+     *
+     * @var null|string
+     */
+    protected $cursorMark = null;
+
+    /**
      * Get spelling processor.
      *
      * @return SpellingProcessor
@@ -96,6 +106,28 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get cursorMark.
+     *
+     * @return null|string
+     */
+    public function getCursorMark()
+    {
+        return $this->cursorMark;
+    }
+
+    /**
+     * Set cursorMark.
+     *
+     * @param null|string $cursorMark New cursor mark
+     *
+     * @return void
+     */
+    public function setCursorMark($cursorMark)
+    {
+        $this->cursorMark = $cursorMark;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -108,6 +140,13 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $searchService = $this->getSearchService();
+        $cursorMark = $this->getCursorMark();
+        if (null !== $cursorMark) {
+            $params->set('cursorMark', '' === $cursorMark ? '*' : $cursorMark);
+            // Override any default timeAllowed since it cannot be used with
+            // cursorMark
+            $params->set('timeAllowed', -1);
+        }
 
         try {
             $collection = $searchService
@@ -135,6 +174,11 @@ class Results extends \VuFind\Search\Base\Results
         $this->spellingQuery = $spellcheck->getQuery();
         $this->suggestions = $this->getSpellingProcessor()
             ->getSuggestions($spellcheck, $this->getParams()->getQuery());
+
+        // Update current cursorMark
+        if (null !== $cursorMark) {
+            $this->setCursorMark($collection->getCursorMark());
+        }
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -231,7 +275,7 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
+        if (null === $filter) {
             $filter = $this->getParams()->getFacetConfig();
         }
 
@@ -242,7 +286,7 @@ class Results extends \VuFind\Search\Base\Results
         $fieldFacets = $this->responseFacets->getFieldFacets();
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
+            $data = $fieldFacets[$field] ?? [];
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;
@@ -302,12 +346,14 @@ class Results extends \VuFind\Search\Base\Results
     public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null, $ored = false
     ) {
-        $clone = clone($this);
+        $clone = clone $this;
         $params = $clone->getParams();
 
         // Manipulate facet settings temporarily:
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
+        // Clear field-specific limits, as they can interfere with retrieval:
+        $params->setFacetLimitByField([]);
         if (null !== $page && $limit != -1) {
             $offset = ($page - 1) * $limit;
             $params->setFacetOffset($offset);

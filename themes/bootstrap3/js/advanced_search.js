@@ -12,22 +12,22 @@ function addSearch(group, _fieldValues) {
   $newSearch.find('input.form-control')
     .attr('id', 'search_lookfor' + inputID)
     .attr('name', 'lookfor' + group + '[]')
-    .attr('value', '');
-  $newSearch.find('select.type option:first-child').attr('selected', 1);
-  $newSearch.find('select.type')
+    .val('');
+  $newSearch.find('select.adv-term-type option:first-child').attr('selected', 1);
+  $newSearch.find('select.adv-term-type')
     .attr('id', 'search_type' + inputID)
     .attr('name', 'type' + group + '[]');
-  $newSearch.find('.close a')
-    .attr('onClick', 'deleteSearch(' + group + ',' + groupLength[group] + ')');
+  $newSearch.find('.adv-term-remove')
+    .attr('onClick', 'return deleteSearch(' + group + ',' + groupLength[group] + ')');
   // Preset Values
   if (typeof fieldValues.term !== "undefined") {
-    $newSearch.find('input.form-control').attr('value', fieldValues.term);
+    $newSearch.find('input.form-control').val(fieldValues.term);
   }
   if (typeof fieldValues.field !== "undefined") {
-    $newSearch.find('select.type option[value="' + fieldValues.field + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 1);
   }
   if (typeof fieldValues.op !== "undefined") {
-    $newSearch.find('select.op option[value="' + fieldValues.op + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-op option[value="' + fieldValues.op + '"]').attr('selected', 1);
   }
   // Insert it
   $("#group" + group + "Holder").before($newSearch);
@@ -36,18 +36,19 @@ function addSearch(group, _fieldValues) {
     $newSearch.find('.first-op')
       .attr('name', 'op' + group + '[]')
       .removeClass('hidden');
-    $newSearch.find('select.op').remove();
+    $newSearch.find('select.adv-term-op').remove();
   } else {
-    $newSearch.find('select.op')
+    $newSearch.find('select.adv-term-op')
       .attr('id', 'search_op' + group + '_' + groupLength[group])
       .attr('name', 'op' + group + '[]')
       .removeClass('hidden');
     $newSearch.find('.first-op').remove();
     $newSearch.find('label').remove();
     // Show x if we have more than one search inputs
-    $('#group' + group + ' .search .close').removeClass('hidden');
+    $('#group' + group + ' .adv-term-remove').removeClass('hidden');
   }
   groupLength[group]++;
+  return false;
 }
 
 function deleteSearch(group, sindex) {
@@ -63,9 +64,10 @@ function deleteSearch(group, sindex) {
     groupLength[group]--;
     $('#search' + group + '_' + groupLength[group]).remove();
     if (groupLength[group] === 1) {
-      $('#group' + group + ' .search .close').addClass('hidden'); // Hide x
+      $('#group' + group + ' .adv-term-remove').addClass('hidden'); // Hide x
     }
   }
+  return false;
 }
 
 function addGroup(_firstTerm, _firstField, _join) {
@@ -80,10 +82,10 @@ function addGroup(_firstTerm, _firstField, _join) {
     .removeClass('hidden');
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_' + nextGroup)
-    .attr('onClick', 'addSearch(' + nextGroup + ')')
+    .attr('onClick', 'return addSearch(' + nextGroup + ')')
     .removeClass('hidden');
-  $newGroup.find('.group-close')
-    .attr('onClick', 'deleteGroup(' + nextGroup + ')');
+  $newGroup.find('.adv-group-close')
+    .attr('onClick', 'return deleteGroup(' + nextGroup + ')');
   $newGroup.find('select.form-control')
     .attr('id', 'search_bool' + nextGroup)
     .attr('name', 'bool' + nextGroup + '[]');
@@ -101,7 +103,7 @@ function addGroup(_firstTerm, _firstField, _join) {
   if (nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
     // Show x
-    $('.group .group-close').removeClass('hidden');
+    $('.adv-group-close').removeClass('hidden');
   }
   return nextGroup++;
 }
@@ -110,12 +112,13 @@ function deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
   // If the last group was removed, add an empty group
-  if ($('.group').length === 0) {
+  if ($('.adv-group').length === 0) {
     addGroup();
-  } else if ($('#advSearchForm .group').length === 1) {
+  } else if ($('#advSearchForm .adv-group').length === 1) {
     $('#groupJoin').addClass('hidden'); // Hide join menu
-    $('.group .group-close').addClass('hidden'); // Hide x
+    $('.adv-group .adv-group-close').addClass('hidden'); // Hide x
   }
+  return false;
 }
 
 $(document).ready(function advSearchReady() {

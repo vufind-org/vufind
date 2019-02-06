@@ -2,7 +2,7 @@
 /**
  * Database table plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -39,6 +39,66 @@ namespace VuFind\Db\Table;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'changetracker' => ChangeTracker::class,
+        'comments' => Comments::class,
+        'externalsession' => ExternalSession::class,
+        'oairesumption' => OaiResumption::class,
+        'record' => Record::class,
+        'resource' => Resource::class,
+        'resourcetags' => ResourceTags::class,
+        'search' => Search::class,
+        'session' => Session::class,
+        'tags' => Tags::class,
+        'user' => User::class,
+        'usercard' => UserCard::class,
+        'userlist' => UserList::class,
+        'userresource' => UserResource::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        ChangeTracker::class => GatewayFactory::class,
+        Comments::class => GatewayFactory::class,
+        ExternalSession::class => GatewayFactory::class,
+        OaiResumption::class => GatewayFactory::class,
+        Record::class => GatewayFactory::class,
+        Resource::class => ResourceFactory::class,
+        ResourceTags::class => CaseSensitiveTagsFactory::class,
+        Search::class => GatewayFactory::class,
+        Session::class => GatewayFactory::class,
+        Tags::class => CaseSensitiveTagsFactory::class,
+        User::class => UserFactory::class,
+        UserCard::class => GatewayFactory::class,
+        UserList::class => UserListFactory::class,
+        UserResource::class => GatewayFactory::class,
+    ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct($configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(PluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +106,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Db\Table\Gateway';
+        return Gateway::class;
     }
 }

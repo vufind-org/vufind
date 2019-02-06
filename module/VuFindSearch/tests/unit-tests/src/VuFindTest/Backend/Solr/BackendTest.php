@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,15 +28,15 @@
  */
 namespace VuFindTest\Backend\Solr;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
+
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-
 use Zend\Http\Response;
-use PHPUnit_Framework_TestCase;
-use InvalidArgumentException;
 
 /**
  * Unit tests for SOLR backend.
@@ -47,7 +47,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends PHPUnit_Framework_TestCase
+class BackendTest extends TestCase
 {
     /**
      * Test retrieving a record.
@@ -286,7 +286,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->getMockBuilder('VuFindSearch\ParamBag')
+        $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
             ->setMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
@@ -351,7 +351,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        return $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+        return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['http://example.org/', $map])
             ->getMock();

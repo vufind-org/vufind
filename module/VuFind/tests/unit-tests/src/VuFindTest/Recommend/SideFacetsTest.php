@@ -2,7 +2,7 @@
 /**
  * SideFacets recommendation module Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Recommend;
+
 use VuFind\Recommend\SideFacets;
 
 /**
@@ -325,7 +326,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigLoader($config = [], $key = 'facets')
     {
-        $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
+        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
             ->will($this->returnValue(new \Zend\Config\Config($config)));
@@ -344,7 +345,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -363,7 +364,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
             ->will($this->returnValue($query));

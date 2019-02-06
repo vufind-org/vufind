@@ -2,7 +2,7 @@
 /**
  * Recaptcha view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -46,9 +46,8 @@ class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
      */
     public function __construct($rc, $config)
     {
-        $this->prefixHtml = '<div class="form-group">' .
-            '<div class="col-sm-9 col-sm-offset-3">';
-        $this->suffixHtml = '</div></div>';
+        $this->prefixHtml = '<div class="form-group">';
+        $this->suffixHtml = '</div>';
         parent::__construct($rc, $config);
     }
 }

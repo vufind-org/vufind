@@ -3,7 +3,7 @@
 /**
  * SOLR facet widget interface definition.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,8 +28,8 @@
  */
 namespace VuFind\Controller\Widget\Solr;
 
-use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFind\Controller\Widget\WidgetInterface;
+use VuFindSearch\Backend\Solr\Response\Json\Facets;
 
 /**
  * SOLR facet widget interface definition.

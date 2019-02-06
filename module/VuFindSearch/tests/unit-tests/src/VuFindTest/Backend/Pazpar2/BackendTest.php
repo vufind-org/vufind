@@ -3,7 +3,7 @@
 /**
  * Unit tests for Pazpar2 backend.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Backend\Pazpar2;
 
-use VuFindSearch\Query\Query;
-use VuFindSearch\Backend\Pazpar2\Backend;
-use VuFindTest\Unit\TestCase;
 use InvalidArgumentException;
+use VuFindSearch\Backend\Pazpar2\Backend;
+use VuFindSearch\Query\Query;
+use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Pazpar2 backend.
@@ -51,12 +51,12 @@ class BackendTest extends TestCase
      */
     public function testGetConnector()
     {
-        $connector = $this->getMockBuilder('VuFindSearch\Backend\Pazpar2\Connector')
-            ->setConstructorArgs(['http://fake', $this->createMock('Zend\Http\Client')])
+        $connector = $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
+            ->setConstructorArgs(['http://fake', $this->createMock(\Zend\Http\Client::class)])
             ->getMock();
         $back = new Backend(
             $connector,
-            $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface')
+            $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class)
         );
         $this->assertEquals($connector, $back->getConnector());
     }
@@ -149,8 +149,8 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock('Zend\Http\Client');
-        return $this->getMockBuilder('VuFindSearch\Backend\Pazpar2\Connector')
+        $client = $this->createMock(\Zend\Http\Client::class);
+        return $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['fake', $client])
             ->getMock();

@@ -32,7 +32,10 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>5.5.0</luceneMatchVersion>
+  <luceneMatchVersion>7.3.1</luceneMatchVersion>
+
+  <!-- Use the classic schema style by default for VuFind -->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
@@ -318,7 +321,7 @@
                
             etagSeed="..." is an option you can change to force the ETag
             header (and validation against If-None-Match requests) to be
-            differnet even if the index has not changed (ie: when making
+            different even if the index has not changed (ie: when making
             significant changes to your config file)
 
             lastModifiedFrom and etagSeed are both ignored if you use the
@@ -346,7 +349,7 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
-  <requestHandler name="standard" class="solr.StandardRequestHandler" default="true">
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters may optionally be defined here
      <lst name="defaults">
        <int name="rows">10</int>
@@ -356,6 +359,8 @@
     -->
     <lst name="defaults">
       <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
   </requestHandler>
   
@@ -369,21 +374,25 @@
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">dismax</str>
-     <str name="echoParams">explicit</str>
+      <str name="defType">dismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
   </requestHandler>
   
   <requestHandler name="edismax" class="solr.SearchHandler">
     <lst name="defaults">
-     <str name="defType">edismax</str>
-     <str name="echoParams">explicit</str>
-     <str name="lowercaseOperators">false</str>
+      <str name="defType">edismax</str>
+      <str name="echoParams">explicit</str>
+      <str name="lowercaseOperators">false</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
     </lst>
   </requestHandler>
   
   <!-- Search component for extracting terms (useful for sitemap generation) -->
-  <searchComponent name="term" class="org.apache.solr.handler.component.TermsComponent">
+  <searchComponent name="terms" class="solr.TermsComponent">
   </searchComponent>
 
   <!--
@@ -404,9 +413,9 @@
    -->
   
   <!-- Request handler to extract terms (useful for sitemap generation) -->
-  <requestHandler name="/term" class="org.apache.solr.handler.component.SearchHandler">
+  <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
     <arr name="components">
-      <str>term</str>
+      <str>terms</str>
     </arr>
   </requestHandler>
 
@@ -541,7 +550,10 @@
   <queryResponseWriter name="xslt" class="org.apache.solr.response.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter> 
-    
+
+  <!-- Mitigate CVE-2017-12629 -->
+  <queryParser name="xmlparser" class="solr.ExtendedDismaxQParserPlugin"/>
+
   <!-- config for the admin interface --> 
   <admin>
     <defaultQuery>shakespeare</defaultQuery>

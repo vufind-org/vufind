@@ -2,7 +2,7 @@
 /**
  * SwitchQuery recommendation module Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Recommend;
+
 use VuFind\Recommend\SwitchQuery;
 
 /**
@@ -211,15 +212,15 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     protected function getMockBackendManager($csBools = true, $csRanges = true)
     {
         $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
-        $queryBuilder = $this->getMockBuilder('VuFindSearch\Backend\Solr\QueryBuilder')
+        $queryBuilder = $this->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
             ->disableOriginalConstructor()->getMock();
         $queryBuilder->expects($this->any())->method('getLuceneHelper')
             ->will($this->returnValue($helper));
-        $backend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->any())->method('getQueryBuilder')
             ->will($this->returnValue($queryBuilder));
-        $loader = $this->getMockBuilder('VuFind\Search\BackendManager')
+        $loader = $this->getMockBuilder(\VuFind\Search\BackendManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->any())->method('get')->with($this->equalTo('Solr'))
             ->will($this->returnValue($backend));
@@ -237,7 +238,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     protected function getMockResults($query = '', $type = 'basic')
     {
         $params = $this->getMockParams($query, $type);
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -254,7 +255,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockParams($query = '', $type = 'basic')
     {
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getDisplayQuery')
             ->will($this->returnValue($query));

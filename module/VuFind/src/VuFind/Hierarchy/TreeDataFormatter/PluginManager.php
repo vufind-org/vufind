@@ -2,7 +2,7 @@
 /**
  * Hierarchy tree data formatter plugin manager
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Hierarchy tree data formatter plugin manager
  *
@@ -39,6 +41,26 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'json' => Json::class,
+        'xml' => Xml::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Json::class => InvokableFactory::class,
+        Xml::class => InvokableFactory::class,
+    ];
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -46,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Hierarchy\TreeDataFormatter\AbstractBase';
+        return AbstractBase::class;
     }
 }

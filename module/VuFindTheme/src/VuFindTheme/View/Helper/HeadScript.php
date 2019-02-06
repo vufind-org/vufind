@@ -2,7 +2,7 @@
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFindTheme\View\Helper;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -38,8 +39,12 @@ use VuFindTheme\ThemeInfo;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
+    implements \Zend\Log\LoggerAwareInterface
 {
-    use ConcatTrait;
+    use ConcatTrait {
+        getMinifiedData as getBaseMinifiedData;
+    }
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Theme information service
@@ -153,5 +158,25 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected function getMinifier()
     {
         return new \MatthiasMullie\Minify\JS();
+    }
+
+    /**
+     * Get minified data for a file
+     *
+     * @param array  $details    File details
+     * @param string $concatPath Target path for the resulting file (used in minifier
+     * for path mapping)
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getMinifiedData($details, $concatPath)
+    {
+        $data = $this->getBaseMinifiedData($details, $concatPath);
+        // Play it safe by terminating a script with a semicolon
+        if (substr(trim($data), -1, 1) !== ';') {
+            $data .= ';';
+        }
+        return $data;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * GoogleAnalytics view helper Test Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
+
 use VuFind\View\Helper\Root\GoogleAnalytics;
 
 /**

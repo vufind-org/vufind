@@ -2,7 +2,7 @@
 /**
  * Authentication view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
 use Zend\View\Helper\Url;
 
 /**
@@ -70,19 +71,12 @@ class AlphaBrowse extends \Zend\View\Helper\AbstractHelper
             return null;
         }
 
-        // Linking using bib ids is generally more reliable than doing searches for
-        // headings, but headings give shorter queries and don't look as strange.
-        if ($item['count'] < 5) {
-            $safeIds = array_map([$this, 'escapeForSolr'], $item['ids']);
-            $query = ['type' => 'ids', 'lookfor' => implode(' ', $safeIds)];
-            if ($item['count'] == 1) {
-                $query['jumpto'] = 1;
-            }
-        } else {
-            $query = [
-                'type' => ucwords($source) . 'Browse',
-                'lookfor' => $this->escapeForSolr($item['heading']),
-            ];
+        $query = [
+            'type' => ucwords($source) . 'Browse',
+            'lookfor' => $this->escapeForSolr($item['heading']),
+        ];
+        if ($item['count'] == 1) {
+            $query['jumpto'] = 1;
         }
         return $this->url->__invoke('search-results', [], ['query' => $query]);
     }

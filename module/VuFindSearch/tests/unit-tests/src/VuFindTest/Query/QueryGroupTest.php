@@ -3,7 +3,7 @@
 /**
  * Unit tests for QueryGroup class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Query;
 
+use PHPUnit\Framework\TestCase;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for QueryGroup class.
@@ -41,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryGroupTest extends PHPUnit_Framework_TestCase
+class QueryGroupTest extends TestCase
 {
     /**
      * Test containsTerm() method
@@ -95,7 +95,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
     public function testClone()
     {
         $q = $this->getSampleQueryGroup();
-        $qClone = clone($q);
+        $qClone = clone $q;
         $q->replaceTerm('query', 'question');
         $qClone->setOperator('AND');
         $this->assertEquals('test question multi word question', $q->getAllTerms());

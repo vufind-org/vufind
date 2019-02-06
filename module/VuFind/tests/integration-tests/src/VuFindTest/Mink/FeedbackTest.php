@@ -2,7 +2,7 @@
 /**
  * Mink Feedback module test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -106,7 +107,7 @@ class FeedbackTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
-        $this->findCss($page, "#modal #comments")->setValue('test test test');
+        $this->findCss($page, "#modal #message")->setValue('test test test');
         $this->findCss($page, '#modal input[type="submit"]')->click();
         $this->snooze();
         $this->assertEquals(

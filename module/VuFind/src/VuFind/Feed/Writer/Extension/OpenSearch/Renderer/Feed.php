@@ -2,7 +2,7 @@
 /**
  * Zend\Feed\Renderer\Feed extension for Open Search
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *
@@ -26,8 +26,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
-use DOMDocument, DOMElement,
-    Zend\Feed\Writer\Extension\AbstractRenderer;
+
+use DOMDocument;
+use DOMElement;
+use Zend\Feed\Writer\Extension\AbstractRenderer;
 
 /**
  * Zend\Feed\Renderer\Feed extension for Open Search

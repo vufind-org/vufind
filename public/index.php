@@ -1,14 +1,14 @@
 <?php
-use Zend\Loader\AutoloaderFactory;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
-
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
-if (!empty($xhprof) && extension_loaded('xhprof')) {
-    xhprof_enable();
-} else {
-    $xhprof = false;
+if (!empty($xhprof)) {
+    if (extension_loaded('xhprof')) {
+        xhprof_enable();
+    } elseif (extension_loaded('tideways')) {
+        tideways_enable();
+    } else {
+        $xhprof = false;
+    }
 }
 
 // Define path to application directory
@@ -53,7 +53,7 @@ chdir(APPLICATION_PATH);
 // Ensure vendor/ is on include_path; some PEAR components may not load correctly
 // otherwise (i.e. File_MARC may cause a "Cannot redeclare class" error by pulling
 // from the shared PEAR directory instead of the local copy):
-$pathParts = array();
+$pathParts = [];
 $pathParts[] = APPLICATION_PATH . '/vendor';
 $pathParts[] = get_include_path();
 set_include_path(implode(PATH_SEPARATOR, $pathParts));
@@ -63,18 +63,8 @@ if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
 }
 
-// Support for ZF2_PATH environment variable
-if ($zf2Path = getenv('ZF2_PATH')) {
-    if (isset($loader)) {
-        $loader->add('Zend', $zf2Path . '/Zend');
-    } else {
-        include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-        AutoloaderFactory::factory();
-    }
-}
-
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load ZF2.');
+    throw new RuntimeException('Unable to load Zend Framework autoloader.');
 }
 
 // Run the application!
@@ -82,12 +72,14 @@ Zend\Mvc\Application::init(require 'config/application.config.php')->run();
 
 // Handle final profiling details, if necessary:
 if ($xhprof) {
-    $xhprofData = xhprof_disable();
-    include_once "xhprof_lib/utils/xhprof_lib.php";
-    include_once "xhprof_lib/utils/xhprof_runs.php";
-    $xhprofRuns = new XHProfRuns_Default();
+    $xhprofData = extension_loaded('xhprof') ? xhprof_disable() : tideways_disable();
+    $xhprofRunId = uniqid();
     $suffix = 'vufind';
-    $xhprofRunId = $xhprofRuns->save_run($xhprofData, $suffix);
+    $dir = ini_get('xhprof.output_dir');
+    if (empty($dir)) {
+        $dir = sys_get_temp_dir();
+    }
+    file_put_contents("$dir/$xhprofRunId.$suffix.xhprof", serialize($xhprofData));
     $url = "$xhprof?run=$xhprofRunId&source=$suffix";
     echo "<a href='$url'>Profiler output</a>";
 }

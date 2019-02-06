@@ -2,7 +2,7 @@
 /**
  * Hold Logic Class
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -27,8 +27,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection,
-    VuFind\Exception\ILS as ILSException;
+
+use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
@@ -115,17 +116,13 @@ class Holds
     {
         $retVal = [];
 
-        // Handle purchase history alongside other textual fields
         $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
-        $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
             $retVal[$groupKey] = [
                 'items' => $items,
-                'location' => isset($items[0]['location'])
-                    ? $items[0]['location'] : '',
-                'locationhref' => isset($items[0]['locationhref'])
-                    ? $items[0]['locationhref'] : ''
+                'location' => $items[0]['location'] ?? '',
+                'locationhref' => $items[0]['locationhref'] ?? ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -153,6 +150,16 @@ class Holds
                             if (empty($targetRef) || !in_array($field, $targetRef)) {
                                 $targetRef[] = $field;
                             }
+                        }
+                    }
+                }
+
+                // Handle purchase history
+                if (!empty($item['purchase_history'])) {
+                    $targetRef = & $retVal[$groupKey]['purchase_history'];
+                    foreach ((array)$item['purchase_history'] as $field) {
+                        if (empty($targetRef) || !in_array($field, $targetRef)) {
+                            $targetRef[] = $field;
                         }
                     }
                 }
@@ -202,14 +209,14 @@ class Holds
 
             $grb = 'getRequestBlocks'; // use variable to shorten line below:
             $blocks
-                = $patron && $this->catalog->checkCapability($grb, compact($patron))
+                = $patron && $this->catalog->checkCapability($grb, compact('patron'))
                 ? $this->catalog->getRequestBlocks($patron) : false;
 
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
-            } else if ($mode == "driver") {
+            } elseif ($mode == "driver") {
                 $holdings = $this->driverHoldings($result, $config, !empty($blocks));
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);
@@ -275,6 +282,7 @@ class Holds
                             $copy['link'] = $this->getRequestDetails(
                                 $copy, $holdConfig['HMACKeys'], 'Hold'
                             );
+                            $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
                             $copy['check'] = $copy['addLink'] === 'check';
@@ -331,7 +339,7 @@ class Holds
                             = ($holds_override && isset($copy['holdOverride']))
                             ? $copy['holdOverride'] : $type;
 
-                        switch($currentType) {
+                        switch ($currentType) {
                         case "all":
                             $addlink = true; // always provide link
                             break;
@@ -361,12 +369,16 @@ class Holds
                                     = $this->catalog->getHoldLink(
                                         $copy['id'], $copy
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = false;
                             } else {
                                 /* Build non-opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->getRequestDetails(
                                         $copy, $holdConfig['HMACKeys'], 'Hold'
                                     );
+                                $holdings[$location_key][$copy_key]['linkLightbox']
+                                    = true;
                             }
                         }
                     }
@@ -509,8 +521,7 @@ class Holds
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
-            'source' => isset($details['source'])
-                ? $details['source'] : DEFAULT_SEARCH_BACKEND,
+            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
         ];
     }
@@ -524,9 +535,9 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise
+        // Group by holdings id and location unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
-            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id,location';
 
         $groupKey = "";
 

@@ -2,7 +2,7 @@
 /**
  * VuFind Action Helper - ILL Requests Support Methods
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2014.
@@ -101,7 +101,7 @@ class ILLRequests extends AbstractRequestBase
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
-        } else if (!empty($selected)) {
+        } elseif (!empty($selected)) {
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
@@ -156,14 +156,12 @@ class ILLRequests extends AbstractRequestBase
                 $flashMsg->addMessage('ill_request_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
-                    // TODO : add a mechanism for inserting tokens into translated
-                    // messages so we can avoid a double translation here.
-                    $msg = $this->getController()->translate(
-                        'ill_request_cancel_success_items'
-                    );
-                    $flashMsg->addMessage(
-                        $cancelResults['count'] . ' ' . $msg, 'success'
-                    );
+                    $msg = $this->getController()
+                        ->translate(
+                            'ill_request_cancel_success_items',
+                            ['%%count%%' => $cancelResults['count']]
+                        );
+                    $flashMsg->addMessage($msg, 'success');
                 }
                 return $cancelResults;
             }

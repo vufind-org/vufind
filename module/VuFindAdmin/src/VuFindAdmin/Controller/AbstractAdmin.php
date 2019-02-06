@@ -2,7 +2,7 @@
 /**
  * VuFind Admin Controller Base
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindAdmin\Controller;
+
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -74,7 +75,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
             $pluginManager  = $this->serviceLocator
-                ->get('Zend\Mvc\Controller\PluginManager');
+                ->get(\Zend\Mvc\Controller\PluginManager::class);
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');
         }

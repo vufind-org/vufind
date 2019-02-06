@@ -2,9 +2,10 @@
 /**
  * VuFind Cache Manager
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2007.
+ * Copyright (C) Villanova University 2007,
+ *               2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,11 +23,15 @@
  * @category VuFind
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache;
-use Zend\Cache\StorageFactory, Zend\Config\Config;
+
+use Zend\Cache\Storage\StorageInterface;
+use Zend\Cache\StorageFactory;
+use Zend\Config\Config;
 
 /**
  * VuFind Cache Manager
@@ -36,6 +41,7 @@ use Zend\Cache\StorageFactory, Zend\Config\Config;
  * @category VuFind
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -65,7 +71,7 @@ class Manager
     /**
      * Actual cache objects generated from settings.
      *
-     * @var array
+     * @var StorageInterface[]
      */
     protected $caches = [];
 
@@ -115,26 +121,33 @@ class Manager
     /**
      * Retrieve the specified cache object.
      *
-     * @param string $key Key identifying the requested cache.
+     * @param string      $name      Name of the requested cache.
+     * @param string|null $namespace Optional namespace to use. Defaults to the
+     * value of {@see $name}.
      *
-     * @return object
+     * @return StorageInterface
+     * @throws \Exception
      */
-    public function getCache($key)
+    public function getCache($name, $namespace = null)
     {
+        $namespace = $namespace ?? $name;
+        $key = "$name:$namespace";
+
         if (!isset($this->caches[$key])) {
-            if (!isset($this->cacheSettings[$key])) {
-                throw new \Exception('Requested unknown cache: ' . $key);
+            if (!isset($this->cacheSettings[$name])) {
+                throw new \Exception('Requested unknown cache: ' . $name);
             }
             // Special case for "no-cache" caches:
-            if ($this->cacheSettings[$key] === false) {
+            if ($this->cacheSettings[$name] === false) {
                 $this->caches[$key]
                     = new \VuFind\Cache\Storage\Adapter\NoCacheAdapter();
             } else {
-                $this->caches[$key] = StorageFactory::factory(
-                    $this->cacheSettings[$key]
-                );
+                $settings = $this->cacheSettings[$name];
+                $settings['adapter']['options']['namespace'] = $namespace;
+                $this->caches[$key] = StorageFactory::factory($settings);
             }
         }
+
         return $this->caches[$key];
     }
 
@@ -159,7 +172,7 @@ class Manager
 
         if (strlen(LOCAL_CACHE_DIR) > 0) {
             $dir = LOCAL_CACHE_DIR . '/';
-        } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
+        } elseif (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {
             $dir = APPLICATION_PATH . '/data/cache/';
@@ -194,7 +207,7 @@ class Manager
     }
 
     /**
-     * Create a new file cache for the given theme name if neccessary. Return
+     * Create a new file cache for the given theme name if necessary. Return
      * the name of the cache.
      *
      * @param string $themeName Name of the theme

@@ -2,7 +2,7 @@
 /**
  * VuFind YAML Configuration Reader
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
+
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -73,17 +74,19 @@ class YamlReader
     /**
      * Return a configuration
      *
-     * @param string $filename config file name
+     * @param string  $filename        Config file name
+     * @param boolean $useLocalConfig  Use local configuration if available
+     * @param boolean $ignoreFileCache Read from file even if config has been cached.
      *
      * @return array
      */
-    public function get($filename)
+    public function get($filename, $useLocalConfig = true, $ignoreFileCache = false)
     {
         // Load data if it is not already in the object's cache:
-        if (!isset($this->files[$filename])) {
+        if ($ignoreFileCache || !isset($this->files[$filename])) {
             $this->files[$filename] = $this->getFromPaths(
                 Locator::getBaseConfigPath($filename),
-                Locator::getLocalConfigPath($filename)
+                ($useLocalConfig ? Locator::getLocalConfigPath($filename) : null)
             );
         }
 
@@ -143,7 +146,14 @@ class YamlReader
 
         // Override default parent with explicitly-defined parent, if present:
         if (isset($results['@parent_yaml'])) {
-            $defaultParent = $results['@parent_yaml'];
+            // First try parent as absolute path, then as relative:
+            $defaultParent = file_exists($results['@parent_yaml'])
+                ? $results['@parent_yaml']
+                : dirname($file) . '/' . $results['@parent_yaml'];
+            if (!file_exists($defaultParent)) {
+                $defaultParent = null;
+                error_log('Cannot find parent file: ' . $results['@parent_yaml']);
+            }
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
         }

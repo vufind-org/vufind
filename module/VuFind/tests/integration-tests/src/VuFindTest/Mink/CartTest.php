@@ -2,7 +2,7 @@
 /**
  * Mink cart test class.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -136,7 +137,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Add the current page of results to the cart.
+     * Add the current page of results to the cart (using the select all bulk
+     * controls).
      *
      * @param Element $page        Page element
      * @param Element $updateCart  Add to cart button
@@ -146,11 +148,25 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function addCurrentPageToCart(Element $page, Element $updateCart,
         $selectAllId = '#addFormCheckboxSelectAll'
-    )
-    {
+    ) {
         $selectAll = $page->find('css', $selectAllId);
         $selectAll->check();
         $updateCart->click();
+    }
+
+    /**
+     * Add the current page of results to the cart (using the individual add
+     * buttons).
+     *
+     * @param Element $page        Page element
+     *
+     * @return void
+     */
+    protected function addCurrentPageToCartUsingButtons(Element $page)
+    {
+        foreach ($page->findAll('css', '.cart-add') as $button) {
+            $button->click();
+        }
     }
 
     /**
@@ -177,20 +193,15 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericCartTest($extraConfigs = [],
-        $selectAllId = '#addFormCheckboxSelectAll'
-    ) {
+    protected function setUpGenericCartTest($extraConfigs = [])
+    {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];
         $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
-
-        // Click "add" without selecting anything.
-        $updateCart = $this->findCss($page, '#updateCart');
-
-        // Now actually select something:
-        $this->addCurrentPageToCart($page, $updateCart, $selectAllId);
+        $this->snooze();
+        $this->addCurrentPageToCartUsingButtons($page);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
 
         // Open the cart and empty it:
@@ -270,7 +281,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testAddingNothing()
     {
         // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
 
         $page = $this->getSearchResultsPage();
 
@@ -287,8 +307,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddingDuplicates()
     {
-         // Activate the cart:
-        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+        // Activate the cart:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
 
         $page = $this->getSearchResultsPage();
 
@@ -298,7 +327,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
         $this->tryAddingDuplicatesToCart($page, $updateCart);
         $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
-   }
+    }
 
     /**
      * Test that the cart limit is enforced from search results.
@@ -307,9 +336,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testOverfillingCart()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
-            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookBagMaxSize' => 1,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
         );
 
         $page = $this->getSearchResultsPage();
@@ -318,7 +355,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $updateCart = $this->findCss($page, '#updateCart');
         $this->addCurrentPageToCart($page, $updateCart);
         $this->assertEquals('1', $this->findCss($page, '#cartItems strong')->getText());
-   }
+    }
 
     /**
      * Test that the cart limit is enforced from record pages.
@@ -327,7 +364,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testOverfillingCartFromRecordPage()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
         );
@@ -352,7 +389,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $add = $this->findCss($page, '.cart-add');
         $add->click();
         $this->assertEquals('1 items (Full)', $cartItems->getText());
-   }
+    }
 
     /**
      * Test that the record "add to cart" button functions.
@@ -361,7 +398,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddingMultipleRecordsFromRecordPage()
     {
-         // Activate the cart:
+        // Activate the cart:
         $this->changeConfigs(
             ['config' => ['Site' => ['showBookBag' => true]]]
         );
@@ -374,7 +411,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
                 $x . ' items', $this->findCss($page, '#cartItems')->getText()
             );
         }
-   }
+    }
 
     /**
      * Test that we can put items in the cart and then remove them with the
@@ -437,13 +474,30 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that we can put items in the cart using the bottom checkbox.
+     * Test that we can put items in the cart using the bottom checkbox/button.
      *
      * @return void
      */
-    public function testFillCartUsingBottomCheckbox()
+    public function testFillCartUsingBottomControls()
     {
-        $this->setUpGenericCartTest([], '#bottom_addFormCheckboxSelectAll');
+        // Activate the cart:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'showBookBag' => true,
+                        'bookbagTogglesInSearch' => false
+                    ]
+                ]
+            ]
+        );
+        $page = $this->getSearchResultsPage();
+        $this->addCurrentPageToCart(
+            $page,
+            $this->findCss($page, '#bottom_updateCart'),
+            '#bottom_addFormCheckboxSelectAll'
+        );
+        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
     }
 
     /**
@@ -503,10 +557,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
-        $this->findCss($page, '.modal #email_message')->setValue('message');
-        $this->findCss($page, '.modal #email_to')
-            ->setValue('demian.katz@villanova.edu');
+        $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
+        $this->findCssAndSetValue($page, '.modal #email_message', 'message');
+        $this->findCssAndSetValue(
+            $page, '.modal #email_to', 'demian.katz@villanova.edu'
+        );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         // Check for confirmation message
@@ -663,6 +718,75 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
+    }
+
+    protected function assertVisible($combo, $elements, $name, $exp)
+    {
+        $message = $elements[$name]
+            ? $name . " should be hidden.\n" . print_r($combo, true)
+            : $name . " should be visible.\n" . print_r($combo, true);
+        $this->assertEquals($elements[$name], $exp, $message);
+    }
+
+    protected function runConfigCombo($page, $combo)
+    {
+        $this->changeConfigs(['config' => ['Site' => $combo]]);
+        $this->getMinkSession()->reload();
+        $this->snooze();
+        $elements = [
+            'headerBtn'  => $page->find('css', '#cartItems') !== null,
+            'bulkEmail'  => $page->find('css', '#ribbon-email') !== null,
+            'bulkUpdateCart' => $page->find('css', '#updateCart') !== null,
+            'resultCartBtns'   => $page->find('css', '.result .btn-bookbag-toggle') !== null,
+            'resultCheckbox'   => $page->find('css', '.result .checkbox-select-item') !== null,
+        ];
+        // Expected
+        $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
+        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions'], $combo);
+        $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
+        $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
+        $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
+        return $elements;
+    }
+
+    public function testToolbarVisibilityConfigCombinations()
+    {
+        $page = $this->getSearchResultsPage();
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'showBulkOptions' => false,
+            'bookbagTogglesInSearch' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => false,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => false,
+            'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => true,
+        ]);
+        $elements = $this->runConfigCombo($page, [
+            'showBookBag' => true,
+            'showBulkOptions' => true,
+            'bookbagTogglesInSearch' => true,
+        ]);
     }
 
     /**

@@ -2,7 +2,7 @@
 /**
  * CLI Controller Module
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,14 +26,17 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
+
+use File_MARC;
+use File_MARCXML;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
-use Zend\Crypt\Symmetric\Mcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\BlockCipher as BlockCipher;
+use Zend\Crypt\Symmetric\Openssl;
 
 /**
  * This controller handles various command-line tools
@@ -149,7 +152,7 @@ class UtilController extends AbstractBase
             && !empty($reserves)
         ) {
             // Setup Solr Connection
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
 
             // Delete existing records
             $solr->deleteAll('SolrReserves');
@@ -204,14 +207,11 @@ class UtilController extends AbstractBase
                     'id' => $id,
                     'bib_id' => [],
                     'instructor_id' => $instructor_id,
-                    'instructor' => isset($instructors[$instructor_id])
-                        ? $instructors[$instructor_id] : '',
+                    'instructor' => $instructors[$instructor_id] ?? '',
                     'course_id' => $course_id,
-                    'course' => isset($courses[$course_id])
-                        ? $courses[$course_id] : '',
+                    'course' => $courses[$course_id] ?? '',
                     'department_id' => $department_id,
-                    'department' => isset($departments[$department_id])
-                        ? $departments[$department_id] : ''
+                    'department' => $departments[$department_id] ?? ''
                 ];
             }
             $index[$id]['bib_id'][] = $record['BIB_ID'];
@@ -262,7 +262,7 @@ class UtilController extends AbstractBase
         $core = $this->getRequest()->getParam('core', 'Solr');
 
         // Commit and Optimize the Solr Index
-        $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
         $solr->commit($core);
         if ($optimize) {
             $solr->optimize($core);
@@ -278,11 +278,14 @@ class UtilController extends AbstractBase
     public function sitemapAction()
     {
         // Build sitemap and display appropriate warnings if needed:
-        $configLoader = $this->serviceLocator->get('VuFind\Config');
+        $configLoader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $generator = new Sitemap(
-            $this->serviceLocator->get('VuFind\Search\BackendManager'),
+            $this->serviceLocator->get(\VuFind\Search\BackendManager::class),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
         );
+        $request = $this->getRequest();
+        $generator->setVerbose($request->getParam('verbose', false));
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
             Console::writeLine("$warning");
@@ -396,7 +399,7 @@ class UtilController extends AbstractBase
                     . implode(', ', $ids)
                 );
             }
-            $writer = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $writer = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $writer->deleteRecords($index, $ids);
             if ($verbose) {
                 Console::writeLine('Delete operation completed.');
@@ -422,7 +425,8 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $recordTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $recordTable = $this->serviceLocator
+            ->get(\VuFind\Db\Table\PluginManager::class)
             ->get('Record');
 
         $count = $recordTable->cleanup();
@@ -539,6 +543,10 @@ class UtilController extends AbstractBase
                 . ' Delete authority records instead of bibliographic records'
             );
             Console::writeLine('--help or -h => Show this message');
+            Console::writeLine(
+                '--outfile=[/path/to/file] => Write the ID list to the specified'
+                . ' file instead of updating Solr (optional)'
+            );
             return $this->getFailureResponse();
         }
 
@@ -560,16 +568,24 @@ class UtilController extends AbstractBase
         if (!is_array($result)) {
             Console::writeLine("Could not obtain suppressed record list from ILS.");
             return $this->getFailureResponse();
-        } else if (empty($result)) {
+        } elseif (empty($result)) {
             Console::writeLine("No suppressed records to delete.");
             return $this->getSuccessResponse();
         }
 
-        // Get Suppressed Records and Delete from index
-        $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
-        $solr->deleteRecords($backend, $result);
-        $solr->commit($backend);
-        $solr->optimize($backend);
+        // If 'outfile' set, write the list
+        if ($file = $request->getParam('outfile')) {
+            if (!file_put_contents($file, implode("\n", $result))) {
+                Console::writeLine("Problem writing to $file");
+                return $this->getFailureResponse();
+            }
+        } else {
+            // Default behavior: Get Suppressed Records and Delete from index
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+            $solr->deleteRecords($backend, $result);
+            $solr->commit($backend);
+            $solr->optimize($backend);
+        }
         return $this->getSuccessResponse();
     }
 
@@ -590,9 +606,9 @@ class UtilController extends AbstractBase
         }
         $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
-        $recordLoader = $this->serviceLocator->get('VuFind\RecordLoader');
+        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $hierarchies = $this->serviceLocator
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
         if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
             $hierarchies['hierarchy_top_id']['data']['list'] = [];
@@ -650,23 +666,22 @@ class UtilController extends AbstractBase
      */
     public function cssbuilderAction()
     {
-        $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
-        $cacheManager = $this->serviceLocator->get('VuFind\CacheManager');
+        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
-        $compiler->compile(array_unique($opts->getRemainingArgs()));
+        $compiler->compile(array_unique($this->getRequest()->getParam('themes')));
         return $this->getSuccessResponse();
     }
 
     /**
      * Abstract delete method.
      *
-     * @param string $tableName     Table to operate on.
-     * @param string $successString String for reporting success.
-     * @param string $failString    String for reporting failure.
-     * @param int    $minAge        Minimum age allowed for expiration (also used
-     * as default value).
+     * @param string    $tableName     Table to operate on.
+     * @param string    $successString String for reporting success.
+     * @param string    $failString    String for reporting failure.
+     * @param int|float $minAge        Minimum age allowed for expiration in days
+     * (also used as default value).
      *
      * @return mixed
      */
@@ -676,14 +691,14 @@ class UtilController extends AbstractBase
         $request = $this->getRequest();
 
         // Use command line value as expiration age, or default to $minAge.
-        $daysOld = intval($request->getParam('daysOld', $minAge));
+        $daysOld = floatval($request->getParam('daysOld', $minAge));
 
         // Use command line values for batch size and sleep time if specified.
         $batchSize = $request->getParam('batch', 1000);
         $sleepTime = $request->getParam('sleep', 100);
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < 2) {
+        if ($daysOld < $minAge) {
             Console::writeLine(
                 str_replace(
                     '%%age%%', $minAge,
@@ -785,13 +800,13 @@ class UtilController extends AbstractBase
             return $this->getSuccessResponse();
         }
 
-        // Initialize Mcrypt first, so we can catch any illegal algorithms before
+        // Initialize Openssl first, so we can catch any illegal algorithms before
         // making any changes:
         try {
             if ($oldhash != 'none') {
-                $oldCrypt = new Mcrypt(['algorithm' => $oldhash]);
+                $oldCrypt = new Openssl(['algorithm' => $oldhash]);
             }
-            $newCrypt = new Mcrypt(['algorithm' => $newhash]);
+            $newCrypt = new Openssl(['algorithm' => $newhash]);
         } catch (\Exception $e) {
             Console::writeLine($e->getMessage());
             return $this->getFailureResponse();
@@ -811,7 +826,8 @@ class UtilController extends AbstractBase
         }
 
         // Now do the database rewrite:
-        $userTable = $this->serviceLocator->get('VuFind\DbTablePluginManager')
+        $userTable = $this->serviceLocator
+            ->get(\VuFind\Db\Table\PluginManager::class)
             ->get('User');
         $users = $userTable->select(
             function ($select) {

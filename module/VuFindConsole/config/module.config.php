@@ -4,12 +4,22 @@ namespace VuFindConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
-            'generate' => 'VuFindConsole\Controller\Factory::getGenerateController',
-            'harvest' => 'VuFindConsole\Controller\Factory::getHarvestController',
-            'import' => 'VuFindConsole\Controller\Factory::getImportController',
-            'language' => 'VuFindConsole\Controller\Factory::getLanguageController',
-            'redirect' => 'VuFindConsole\Controller\Factory::getRedirectController',
-            'util' => 'VuFindConsole\Controller\Factory::getUtilController',
+            'VuFindConsole\Controller\CompileController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\GenerateController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\HarvestController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\ImportController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\LanguageController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\RedirectController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'aliases' => [
+            'compile' => 'VuFindConsole\Controller\CompileController',
+            'generate' => 'VuFindConsole\Controller\GenerateController',
+            'harvest' => 'VuFindConsole\Controller\HarvestController',
+            'import' => 'VuFindConsole\Controller\ImportController',
+            'language' => 'VuFindConsole\Controller\LanguageController',
+            'redirect' => 'VuFindConsole\Controller\RedirectController',
+            'util' => 'VuFindConsole\Controller\UtilController',
         ],
     ],
     'console' => [
@@ -28,6 +38,11 @@ $config = [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
+        ],
+    ],
     'view_manager' => [
         // CLI tools are admin-oriented, so we should always output full errors:
         'display_exceptions' => true,
@@ -35,12 +50,17 @@ $config = [
 ];
 
 $routes = [
+    'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
     'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
+    'generate/extendclass' => 'generate extendclass [--extendfactory] [<class>] [<target>]',
     'generate/extendservice' => 'generate extendservice [<source>] [<target>]',
     'generate/nontabrecordaction' => 'generate nontabrecordaction [<newAction>] [<module>]',
+    'generate/plugin' => 'generate plugin [<class>] [<factory>]',
     'generate/recordroute' => 'generate recordroute [<base>] [<newController>] [<module>]',
     'generate/staticroute' => 'generate staticroute [<name>] [<module>]',
-    // harvest/harvest_oai is too complex to represent here; we need to rely on default-route
+    'generate/theme' => 'generate theme [<themename>]',
+    'generate/thememixin' => 'generate thememixin [<name>]',
+    'harvest/harvest_oai' => 'harvest harvest_oai [...params]',
     'harvest/merge-marc' => 'harvest merge-marc [<dir>]',
     'import/import-xsl' => 'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
     'import/webcrawl' => 'import webcrawl [--test-only] [--index=]',
@@ -51,15 +71,15 @@ $routes = [
     'util/cleanup_record_cache' => 'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
     'util/commit' => 'util commit [<core>]',
     'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [--help|-h]',
-    // util/cssBuilder relies on default-route because it has an arbitrary number of parameters
+    'util/cssBuilder' => 'util cssBuilder [...themes]',
     'util/deletes' => 'util deletes [--verbose] [<filename>] [<format>] [<index>]',
     'util/expire_external_sessions' => 'util expire_external_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
-    'util/sitemap' => 'util sitemap',
-    'util/suppressed' => 'util suppressed [--help|-h] [--authorities]',
+    'util/sitemap' => 'util sitemap [--verbose]',
+    'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];
 

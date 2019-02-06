@@ -2,7 +2,7 @@
 /**
  * Helper class for managing high-level (body vs. sidebar) page layout.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -43,7 +43,7 @@ abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
      *
      * @var bool
      */
-    protected $left;
+    protected $sidebarOnLeft;
 
     /**
      * Is the sidebar offcanvas?
@@ -60,7 +60,7 @@ abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
      */
     public function __construct($left = false, $offcanvas = false)
     {
-        $this->left = $left;
+        $this->sidebarOnLeft = $left;
         $this->offcanvas = $offcanvas;
     }
 

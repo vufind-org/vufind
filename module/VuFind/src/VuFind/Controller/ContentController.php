@@ -2,7 +2,7 @@
 /**
  * Content Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -50,8 +50,8 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $themeInfo = $this->serviceLocator->get('VuFindTheme\ThemeInfo');
-        $language = $this->serviceLocator->get('VuFind\Translator')
+        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
+        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 

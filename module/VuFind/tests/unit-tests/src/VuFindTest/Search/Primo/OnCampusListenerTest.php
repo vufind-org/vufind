@@ -3,7 +3,7 @@
 /**
  * Unit tests for OnCampus listener.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -28,11 +28,11 @@
  */
 namespace VuFindTest\Search\Primo;
 
-use VuFindSearch\ParamBag;
+use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
-use VuFind\Search\Primo\InjectOnCampusListener;
+use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 
@@ -73,7 +73,7 @@ class OnCampusListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new InjectOnCampusListener();
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -89,11 +89,11 @@ class OnCampusListenerTest extends TestCase
      */
     public function testAttachWithParameter()
     {
-        $mockPermController = $this->getMockBuilder('PrimoPermissionHandler')
+        $mockPermController = $this->getMockBuilder(\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener = new InjectOnCampusListener($mockPermController);
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -128,8 +128,8 @@ class OnCampusListenerTest extends TestCase
     public function testOnCampusDefaultSuccessfull()
     {
         $params   = new ParamBag([ ]);
-        $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
+        $mockPermController = $this
+            ->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockPermController->expects($this->any())->method('hasPermission')
@@ -156,7 +156,7 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
+            = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -179,7 +179,7 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
+            = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockPermController->expects($this->any())->method('hasPermission')
@@ -203,8 +203,8 @@ class OnCampusListenerTest extends TestCase
     public function testOnCampusOutsideNetwork()
     {
         $params   = new ParamBag([ ]);
-        $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
+        $mockPermController = $this
+            ->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockPermController->expects($this->any())->method('hasPermission')

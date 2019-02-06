@@ -3,7 +3,7 @@
 /**
  * LibGuides QueryBuilder.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,11 +29,11 @@
  */
 namespace VuFindSearch\Backend\LibGuides;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * LibGuides QueryBuilder.
