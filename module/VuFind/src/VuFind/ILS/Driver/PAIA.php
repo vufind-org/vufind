@@ -30,10 +30,10 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\Forbidden;
+
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * PAIA ILS Driver for VuFind to get patron information
@@ -370,10 +370,8 @@ class PAIA extends DAIA
                 'success'    => false,
                 'status'     => $array_response['error'],
                 'sysMessage' =>
-                    isset($array_response['error'])
-                        ? $array_response['error'] : ' ' .
-                    isset($array_response['error_description'])
-                        ? $array_response['error_description'] : ' '
+                    $array_response['error'] ?? ' ' .
+                    $array_response['error_description'] ?? ' '
             ];
         } elseif (isset($array_response['patron'])
             && $array_response['patron'] === $post_data['patron']
@@ -409,7 +407,7 @@ class PAIA extends DAIA
      */
     public function getCancelHoldDetails($checkOutDetails)
     {
-        return($checkOutDetails['cancel_details']);
+        return $checkOutDetails['cancel_details'];
     }
 
     /**
@@ -515,6 +513,7 @@ class PAIA extends DAIA
         // Not yet implemented
         return false;
     }
+
     /**
      * Place ILL Request
      *
@@ -635,7 +634,7 @@ class PAIA extends DAIA
             $paiaCurrencyPattern = "/^([0-9]+\.[0-9][0-9]) ([A-Z][A-Z][A-Z])$/";
             if (preg_match($paiaCurrencyPattern, $fee, $feeMatches)) {
                 // VuFind expects fees in PENNIES
-                return ($feeMatches[1] * 100);
+                return $feeMatches[1] * 100;
             }
             return $fee;
         };
@@ -649,7 +648,7 @@ class PAIA extends DAIA
                     'checkout'    => '',
                     // fee.feetype 	0..1 	string 	textual description of the type
                     // of service that caused the fee
-                    'fine'    => (isset($fee['feetype']) ? $fee['feetype'] : null),
+                    'fine'    => ($fee['feetype'] ?? null),
                     'balance' => $feeConverter($fee['amount']),
                     // fee.date 	0..1 	date 	date when the fee was claimed
                     'createdate'  => (isset($fee['date'])
@@ -690,12 +689,9 @@ class PAIA extends DAIA
         // fee.item 	0..1 	URI 	item that caused the fee
         // fee.feeid 	0..1 	URI 	URI of the type of service that
         // caused the fee
-        $additionalData['feeid']      = (isset($fee['feeid'])
-            ? $fee['feeid'] : null);
-        $additionalData['about']      = (isset($fee['about'])
-            ? $fee['about'] : null);
-        $additionalData['item']       = (isset($fee['item'])
-            ? $fee['item'] : null);
+        $additionalData['feeid']      = ($fee['feeid'] ?? null);
+        $additionalData['about']      = ($fee['about'] ?? null);
+        $additionalData['item']       = ($fee['item'] ?? null);
 
         return $additionalData;
     }
@@ -753,7 +749,7 @@ class PAIA extends DAIA
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => isset($patron['status']) ? $patron['status'] : null,
+                'statuscode' => $patron['status'] ?? null,
                 'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
             ];
         }
@@ -866,7 +862,7 @@ class PAIA extends DAIA
      */
     public function getRenewDetails($checkOutDetails)
     {
-        return($checkOutDetails['renew_details']);
+        return $checkOutDetails['renew_details'];
     }
 
     /**
@@ -878,7 +874,7 @@ class PAIA extends DAIA
      */
     protected function getCallNumber($doc)
     {
-        return isset($doc['label']) ? $doc['label'] : null;
+        return $doc['label'] ?? null;
     }
 
     /**
@@ -935,9 +931,9 @@ class PAIA extends DAIA
      * Handle PAIA request errors and throw appropriate exception.
      *
      * @param array $array Array containing error messages
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws AuthException
      * @throws ILSException
      */
@@ -954,9 +950,8 @@ class PAIA extends DAIA
                 //                          access token
             case 'access_denied':
                 throw new AuthException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
 
                 // invalid_grant 	401 	The access token was missing, invalid, or
@@ -967,9 +962,8 @@ class PAIA extends DAIA
                 //                              lacks permission for the request
             case 'insufficient_scope':
                 throw new ForbiddenException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
 
                 // not_found 	404 	Unknown request URL or unknown patron.
@@ -1015,9 +1009,8 @@ class PAIA extends DAIA
 
             default:
                 throw new ILSException(
-                    isset($array['error_description'])
-                        ? $array['error_description'] : $array['error'],
-                    isset($array['code']) ? $array['code'] : ''
+                    $array['error_description'] ?? $array['error'],
+                    $array['code'] ?? ''
                 );
             }
         }
@@ -1387,8 +1380,7 @@ class PAIA extends DAIA
         $user['id']        = $patron;
         $user['firstname'] = $firstname;
         $user['lastname']  = $lastname;
-        $user['email']     = (isset($user_response['email'])
-            ? $user_response['email'] : '');
+        $user['email']     = ($user_response['email'] ?? '');
         $user['major']     = null;
         $user['college']   = null;
         // add other information from PAIA - we don't want anything to get lost
@@ -1433,7 +1425,7 @@ class PAIA extends DAIA
         $result = [];
 
         // item (0..1) URI of a particular copy
-        $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
+        $result['item_id'] = ($doc['item'] ?? '');
 
         $result['cancel_details']
             = (isset($doc['cancancel']) && $doc['cancancel']
@@ -1449,16 +1441,16 @@ class PAIA extends DAIA
         $result['type'] = $this->paiaStatusString($doc['status']);
 
         // storage (0..1) textual description of location of the document
-        $result['location'] = (isset($doc['storage']) ? $doc['storage'] : null);
+        $result['location'] = ($doc['storage'] ?? null);
 
         // queue (0..1) number of waiting requests for the document or item
-        $result['position'] =  (isset($doc['queue']) ? $doc['queue'] : null);
+        $result['position'] =  ($doc['queue'] ?? null);
 
         // only true if status == 4
         $result['available'] = false;
 
         // about (0..1) textual description of the document
-        $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
+        $result['title'] = ($doc['about'] ?? null);
 
         // PAIA custom field
         // label (0..1) call number, shelf mark or similar item label
@@ -1528,10 +1520,10 @@ class PAIA extends DAIA
             $result['available'] = $doc['status'] == 4 ? true : false;
 
             $results[] = $result;
-
         }
         return $results;
     }
+
     /**
      * This PAIA helper function allows custom overrides for mapping of PAIA response
      * to getMyStorageRetrievalRequests data structure.
@@ -1548,7 +1540,6 @@ class PAIA extends DAIA
             $result = $this->getBasicDetails($doc);
 
             $results[] = $result;
-
         }
         return $results;
     }
@@ -1573,7 +1564,7 @@ class PAIA extends DAIA
                 ? $doc['canrenew'] : false;
 
             // item (0..1) URI of a particular copy
-            $result['item_id'] = (isset($doc['item']) ? $doc['item'] : '');
+            $result['item_id'] = ($doc['item'] ?? '');
 
             $result['renew_details']
                 = (isset($doc['canrenew']) && $doc['canrenew']
@@ -1589,17 +1580,17 @@ class PAIA extends DAIA
             // requested (0..1) URI that was originally requested
 
             // about (0..1) textual description of the document
-            $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
+            $result['title'] = ($doc['about'] ?? null);
 
             // queue (0..1) number of waiting requests for the document or item
-            $result['request'] = (isset($doc['queue']) ? $doc['queue'] : null);
+            $result['request'] = ($doc['queue'] ?? null);
 
             // renewals (0..1) number of times the document has been renewed
-            $result['renew'] = (isset($doc['renewals']) ? $doc['renewals'] : null);
+            $result['renew'] = ($doc['renewals'] ?? null);
 
             // reminder (0..1) number of times the patron has been reminded
             $result['reminder'] = (
-                isset($doc['reminder']) ? $doc['reminder'] : null
+                $doc['reminder'] ?? null
             );
 
             // custom PAIA field
@@ -1619,11 +1610,10 @@ class PAIA extends DAIA
             // canceled
 
             // error (0..1) error message, for instance if a request was rejected
-            $result['message'] = (isset($doc['error']) ? $doc['error'] : '');
+            $result['message'] = ($doc['error'] ?? '');
 
             // storage (0..1) textual description of location of the document
-            $result['borrowingLocation'] = (isset($doc['storage'])
-                ? $doc['storage'] : '');
+            $result['borrowingLocation'] = ($doc['storage'] ?? '');
 
             // storageid (0..1) location URI
 
@@ -1691,7 +1681,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1727,7 +1717,7 @@ class PAIA extends DAIA
             );
         }
         // return any result as error-handling is done elsewhere
-        return ($result->getBody());
+        return $result->getBody();
     }
 
     /**
@@ -1857,11 +1847,9 @@ class PAIA extends DAIA
             $session = $this->getSession();
 
             $session->patron
-                = isset($responseArray['patron'])
-                ? $responseArray['patron'] : null;
+                = $responseArray['patron'] ?? null;
             $session->access_token
-                = isset($responseArray['access_token'])
-                ? $responseArray['access_token'] : null;
+                = $responseArray['access_token'] ?? null;
             $session->scope
                 = isset($responseArray['scope'])
                 ? explode(' ', $responseArray['scope']) : null;
@@ -1953,7 +1941,7 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (isset($patron['status']) && $patron['status']  == 0
+        if (isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
             && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
         ) {
