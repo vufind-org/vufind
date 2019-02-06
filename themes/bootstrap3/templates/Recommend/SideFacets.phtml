@@ -32,7 +32,7 @@
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
-      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
