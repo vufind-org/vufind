@@ -248,6 +248,17 @@ class SideFacets extends AbstractFacets
     }
 
     /**
+     * Get checkbox facet information from the search results.
+     *
+     * @return array
+     */
+    public function getCheckboxFacetSet()
+    {
+        return $this->results->getParams()
+            ->getCheckboxFacets(array_keys($this->checkboxFacets));
+    }
+
+    /**
      * Get facet information from the search results.
      *
      * @return array

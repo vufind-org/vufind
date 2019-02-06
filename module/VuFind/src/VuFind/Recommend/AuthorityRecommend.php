@@ -101,6 +101,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $mode = '*';
 
     /**
+     * Header to use in the user interface.
+     *
+     * @var string
+     */
+    protected $header = 'See also';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -126,6 +133,8 @@ class AuthorityRecommend implements RecommendInterface
                     $this->resultLimit = intval($params[$i + 1]);
                 } elseif ($params[$i] == '__mode__') {
                     $this->mode = strtolower($params[$i + 1]);
+                } elseif ($params[$i] == '__header__') {
+                    $this->header = $params[$i + 1];
                 } else {
                     $this->filters[] = $params[$i] . ':' . $params[$i + 1];
                 }
@@ -293,6 +302,16 @@ class AuthorityRecommend implements RecommendInterface
         if ($this->isModeActive('seealso')) {
             $this->addSeeAlsoReferences();
         }
+    }
+
+    /**
+     * Get the header to display in the user interface.
+     *
+     * @return string
+     */
+    public function getHeader()
+    {
+        return $this->header;
     }
 
     /**
