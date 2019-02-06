@@ -19,11 +19,17 @@
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
 #                         that are replaced with submitted form values.
-#   recipient
+#
+#   sendMethod (string) Determines how submitted form data is handled:
+#     email    Form data is sent via email to 'recipient'
+#     database Form data is saved to the database.
+#
+#   recipient (needed only when 'sendMethod' is email)
 #     name (string)  Recipient name (default = recipient_name setting from config.ini
 #                    [Feedback] section)
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
+#
 #   response (string) Reponse after form submit (translation key)
 #
 #   By default, the form renders input fields for sender name and email address with the
@@ -83,6 +89,7 @@ forms:
     senderInfoRequired: false 
     senderInfoHelp: feedback_info
     hideSenderInfo: false
+    sendMethod: email
     #help:
     #  pre: feedback_help_pre
     #  post: feedback_help_post

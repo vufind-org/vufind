@@ -39,6 +39,20 @@ namespace Finna\Form;
 class Form extends \VuFind\Form\Form
 {
     /**
+     * Email form handler
+     *
+     * @var string
+     */
+    const HANDLER_EMAIL = 'email';
+
+    /**
+     * Database form handler
+     *
+     * @var string
+     */
+    const HANDLER_DATABASE = 'database';
+
+    /**
      * Form id
      *
      * @var string
@@ -183,8 +197,12 @@ class Form extends \VuFind\Form\Form
                 );
             }
 
-            $recipientInfo= $this->translate(
-                'feedback_recipient_info', ['%%institution%%' => $institutionName]
+            $translationKey = $this->useEmailHandler()
+                ? 'feedback_recipient_info_email'
+                : 'feedback_recipient_info';
+
+            $recipientInfo = $this->translate(
+                $translationKey, ['%%institution%%' => $institutionName]
             );
 
             if (!empty($pre)) {
@@ -226,6 +244,37 @@ class Form extends \VuFind\Form\Form
         }
 
         return [$params, $tpl];
+    }
+
+    /**
+     * Should submitted form data be sent via email?
+     *
+     * @return boolean
+     */
+    public function useEmailHandler()
+    {
+        // Send via email if not configured otherwise locally.
+        return !isset($this->formConfig['sendMethod'])
+                || $this->formConfig['sendMethod'] !== Form::HANDLER_DATABASE;
+    }
+
+    /**
+     * Get form element/field names
+     *
+     * @return array
+     */
+    public function getFormFields()
+    {
+        $elements = parent::getFormElements($this->getFormConfig($this->formId));
+        $fields = [];
+        foreach ($elements as $el) {
+            if ($el['type'] === 'submit') {
+                continue;
+            }
+            $fields[] = $el['name'];
+        }
+
+        return $fields;
     }
 
     /**
@@ -276,7 +325,8 @@ class Form extends \VuFind\Form\Form
         $fields = parent::getFormSettingFields();
 
         $fields = array_merge(
-            $fields, ['allowLocaloverride', 'hideSenderInfo', 'senderInfoHelp']
+            $fields,
+            ['allowLocaloverride', 'hideSenderInfo', 'sendMethod', 'senderInfoHelp']
         );
 
         return $fields;

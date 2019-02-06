@@ -147,6 +147,23 @@ CREATE TABLE `finna_cache` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `resource_id` (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `finna_feedback` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT null,
+  `ui_url` varchar(255) NOT NULL,
+  `form` varchar(255) NOT NULL,
+  `message_json` json DEFAULT '',
+  `message` longtext DEFAULT '',
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(255) NOT NULL DEFAULT 'open',
+  `modifier_id` int(11) DEFAULT NULL,
+  `modification_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `url_status` (`ui_url`, `status`),
+  KEY `form` (`form`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
