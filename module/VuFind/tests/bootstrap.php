@@ -1,8 +1,5 @@
 <?php
 
-// Set flag that we're in test mode
-define('VUFIND_PHPUNIT_RUNNING', 1);
-
 // Set path to this module
 define('VUFIND_PHPUNIT_MODULE_PATH', __DIR__);
 

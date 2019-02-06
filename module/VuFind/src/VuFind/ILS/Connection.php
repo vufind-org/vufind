@@ -613,6 +613,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Current Loans
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports current
+     * loans.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetMyTransactions($functionConfig, $params)
+    {
+        if ($this->checkCapability('getMyTransactions', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
      * Check Historic Loans
      *
      * A support method for checkFunction(). This is responsible for checking
@@ -922,6 +945,32 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             'getConfig', ['changePassword', compact('patron')]
         ) ? $this->getDriver()->getConfig('changePassword', compact('patron'))
             : false;
+    }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's transactions
+     */
+    public function getMyTransactions($patron, $params = [])
+    {
+        $result = $this->__call('getMyTransactions', [$patron, $params]);
+
+        // Support also older driver return value:
+        if (!isset($result['count'])) {
+            $result = [
+                'count' => count($result),
+                'records' => $result
+            ];
+        }
+
+        return $result;
     }
 
     /**

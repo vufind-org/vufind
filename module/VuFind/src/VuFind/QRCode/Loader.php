@@ -62,7 +62,7 @@ class Loader extends \VuFind\ImageLoader
     {
         $this->setThemeInfo($theme);
         $this->configuredFailImage
-            = $this->config->QRCode->noQRCodeAvailableImage ?? null;
+            = $config->QRCode->noQRCodeAvailableImage ?? null;
         $this->defaultFailImage = 'images/noQRCode.gif';
     }
 

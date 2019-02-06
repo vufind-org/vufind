@@ -70,7 +70,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
             $config['Site']['email'] = 'fake@example.com';
         }
 
-        return new Server(
+        $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
             $this->getMockTableManager(),
@@ -78,6 +78,8 @@ class ServerTest extends \VuFindTest\Unit\TestCase
             $baseURL,
             $params
         );
+        $server->setRecordFormatter($this->getMockRecordFormatter());
+        return $server;
     }
 
     /**
@@ -87,7 +89,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockResultsManager()
     {
-        return $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        return $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -99,7 +101,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRecordLoader()
     {
-        return $this->getMockBuilder('VuFind\Record\Loader')
+        return $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -111,7 +113,19 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockTableManager()
     {
-        return $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+        return $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Get a mock record formatter
+     *
+     * @return \VuFindApi\Formatter\RecordFormatter
+     */
+    protected function getMockRecordFormatter()
+    {
+        return $this->getMockBuilder(\VuFindApi\Formatter\RecordFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

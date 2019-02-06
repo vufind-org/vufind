@@ -71,7 +71,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $container->get('Zend\Db\Adapter\Adapter'),
+            $container->get(\Zend\Db\Adapter\Adapter::class),
             $table_name, $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
@@ -96,7 +96,7 @@ class LoggerFactory implements FactoryInterface
         $error_types = $parts[1] ?? '';
 
         // use smtp
-        $mailer = $container->get('VuFind\Mailer\Mailer');
+        $mailer = $container->get(\VuFind\Mailer\Mailer::class);
         $msg = $mailer->getNewMessage()
             ->addFrom($config->Site->email)
             ->addTo($email)
@@ -164,7 +164,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $writer = new Writer\Slack(
             $config->Logging->slackurl,
-            $container->get('VuFindHttp\HttpService')->createClient(),
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $options
         );
         $writer->setContentType('application/json');
@@ -185,7 +185,8 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureLogger(ContainerInterface $container, Logger $logger)
     {
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
 
         $hasWriter = false;
 
@@ -299,8 +300,10 @@ class LoggerFactory implements FactoryInterface
                 $max = Logger::EMERG; // Emergency: system is unusable
                 $min = Logger::ALERT; // Alert: action must be taken immediately
                 break;
-            default:                    // INVALID FILTER
-                continue;
+            default:
+                // INVALID FILTER, so skip it. We must continue 2 levels, so we
+                // continue the foreach loop instead of just breaking the switch.
+                continue 2;
             }
 
             // Clone the submitted writer since we'll need a separate instance of the

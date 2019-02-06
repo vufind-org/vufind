@@ -55,7 +55,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
@@ -75,7 +75,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = new Mailer($transport);
@@ -96,7 +96,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('to@example.com', 'Recipient TextName');
         $mailer = new Mailer($transport);
@@ -117,7 +117,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $list = new AddressList();
         $list->add(new Address('to@example.com', 'Recipient TextName'));
@@ -140,7 +140,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('me@example.com');
         $mailer = new Mailer($transport);
@@ -158,7 +158,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadTo()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
     }
@@ -173,7 +173,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadReplyTo()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
             'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
@@ -190,7 +190,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testEmptyTo()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('', 'from@example.com', 'subject', 'body');
     }
@@ -205,7 +205,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testTooManyRecipients()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
     }
@@ -220,7 +220,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadFrom()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
     }
@@ -235,7 +235,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadFromInAddressObject()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
     }
@@ -250,7 +250,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testTransportException()
     {
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
@@ -285,7 +285,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Search Result' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
@@ -302,7 +302,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSendRecord()
     {
-        $driver = $this->createMock('VuFind\RecordDriver\AbstractBase');
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
 
         $viewCallback = function ($in) use ($driver) {
@@ -323,7 +323,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);

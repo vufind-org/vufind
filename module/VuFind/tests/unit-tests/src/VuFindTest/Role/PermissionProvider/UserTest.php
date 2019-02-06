@@ -91,7 +91,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Convenience method for executing similiar tests
+     * Convenience method for executing similar tests
      *
      * @param string $testuser Name of testuser
      * @param array  $options  Options like settings in permissions.ini
@@ -124,7 +124,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
     protected function getMockAuthorizationService()
     {
         $authorizationService
-            = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
+            = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
                 ->disableOriginalConstructor()
                 ->getMock();
         $authorizationService
@@ -141,7 +141,7 @@ class UserTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockUser()
     {
-        $user = $this->getMockBuilder('VuFind\Db\Row\User')
+        $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
             ->getMock();
         $user->method('__get')

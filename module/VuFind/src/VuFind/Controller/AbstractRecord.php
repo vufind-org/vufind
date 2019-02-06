@@ -198,7 +198,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
-            $tagParser = $this->serviceLocator->get('VuFind\Tags');
+            $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
             $driver->addTags($user, $tagParser->parse($tags));
             $this->flashMessenger()
                 ->addMessage(['msg' => 'add_tag_success'], 'success');
@@ -287,11 +287,11 @@ class AbstractRecord extends AbstractBase
         // Perform the save operation:
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
-        $tagParser = $this->serviceLocator->get('VuFind\Tags');
+        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
         $post['mytags']
             = $tagParser->parse($post['mytags'] ?? '');
         $favorites = $this->serviceLocator
-            ->get('VuFind\Favorites\FavoritesService');
+            ->get(\VuFind\Favorites\FavoritesService::class);
         $results = $favorites->save($post, $user, $driver);
 
         // Display a success status message:
@@ -415,7 +415,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(
             null, $mailer->getDefaultRecordSubject($driver)
         );
@@ -452,7 +452,8 @@ class AbstractRecord extends AbstractBase
      */
     protected function smsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getSmsSetting() !== 'disabled';
     }
 
@@ -472,7 +473,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $sms = $this->serviceLocator->get('VuFind\SMS\SMSInterface');
+        $sms = $this->serviceLocator->get(\VuFind\SMS\SMSInterface::class);
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
@@ -527,7 +528,7 @@ class AbstractRecord extends AbstractBase
         $format = $this->params()->fromQuery('style');
 
         // Display export menu if missing/invalid option
-        $export = $this->serviceLocator->get('VuFind\Export');
+        $export = $this->serviceLocator->get(\VuFind\Export::class);
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
@@ -638,18 +639,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Alias to getRecordTabConfig for backward compatibility.
-     *
-     * @deprecated use getRecordTabConfig instead
-     *
-     * @return array
-     */
-    protected function getTabConfiguration()
-    {
-        return $this->getRecordTabConfig();
-    }
-
-    /**
      * Support method to load tab information from the RecordTab PluginManager.
      *
      * @return void
@@ -658,7 +647,7 @@ class AbstractRecord extends AbstractBase
     {
         $driver = $this->loadRecord();
         $request = $this->getRequest();
-        $rtpm = $this->serviceLocator->get('VuFind\RecordTab\PluginManager');
+        $rtpm = $this->serviceLocator->get(\VuFind\RecordTab\PluginManager::class);
         $details = $rtpm->getTabDetailsForRecord(
             $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab

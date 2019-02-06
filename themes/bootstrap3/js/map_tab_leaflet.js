@@ -3,7 +3,6 @@
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
 function loadMapTab(mapData, mapGraticule, basemap) {
-  var init = true;
   var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});	
   var geoFeatureGroup = L.featureGroup();
   // Define styles for icons
@@ -21,7 +20,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
   });
 
   $('#map-canvas').show();
-  init = function drawMap() {
+  var init = function drawMap() {
     var featureCount = mapData.length;
     var label, label_name, label_coords, split_coords;
     var i = 0;
@@ -36,22 +35,22 @@ function loadMapTab(mapData, mapGraticule, basemap) {
         label_coords = split_coords[1] + "<br>" + split_coords[2];
       }
       // Construct the entire label string
-      if (label_coords && label_name) {
-        label = '<strong>' + label_name + '</strong>' + 
-          '<br>Coordinates:<br>' + label_coords;
-      } else if (label_name) {
-        label = '<strong>' + label_name + '</strong>';
-      } else if (label_coords) {
-        label = "Coordinates:<br>" + label_coords;
-      } else {
-        label = "No information available.";
+      var labelParts = [];
+      if (label_name) {
+        labelParts[labelParts.length] = '<strong>' + label_name + '</strong>';
       }
+      if (label_coords) {
+        labelParts[labelParts.length] = VuFind.translate('Coordinates') + ":<br>"
+          + label_coords;
+      }
+      label = labelParts.length > 0
+        ? labelParts.join('<br>') : VuFind.translate('no_description');
       // Get coordinate data
       var west = mapData[i][0];
       var south = mapData[i][1];
       var east = mapData[i][2];
       var north = mapData[i][3];
- 
+
       // Create features
       var geoFeature;
       if (west === east && north === south) {
@@ -108,5 +107,4 @@ function loadMapTab(mapData, mapGraticule, basemap) {
     }
   };
   init();
-  init = false;
 }

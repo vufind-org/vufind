@@ -32,6 +32,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
 use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
@@ -47,6 +48,13 @@ use Zend\View\Model\ViewModel;
  */
 class MyResearchController extends AbstractBase
 {
+    /**
+     * ILS Pagination Helper
+     *
+     * @var PaginationHelper
+     */
+    protected $paginationHelper = null;
+
     /**
      * Are we currently in a lightbox context?
      *
@@ -310,7 +318,7 @@ class MyResearchController extends AbstractBase
     public function logoutAction()
     {
         $config = $this->getConfig();
-        if (isset($config->Site->logOutRoute)) {
+        if (!empty($config->Site->logOutRoute)) {
             $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
         } else {
             $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
@@ -355,7 +363,8 @@ class MyResearchController extends AbstractBase
     protected function setSavedFlagSecurely($searchId, $saved, $userId)
     {
         $searchTable = $this->getTable('Search');
-        $sessId = $this->serviceLocator->get('Zend\Session\SessionManager')->getId();
+        $sessId = $this->serviceLocator
+            ->get(\Zend\Session\SessionManager::class)->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');
@@ -373,7 +382,8 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         // Fail if saved searches are disabled.
-        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
         if ($check->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
@@ -465,7 +475,7 @@ class MyResearchController extends AbstractBase
      */
     public function addAccountBlocksToFlashMessenger($catalog, $patron)
     {
-        if ($catalog->checkCapability('getAccountBlocks', compact($patron))
+        if ($catalog->checkCapability('getAccountBlocks', compact('patron'))
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
@@ -615,10 +625,11 @@ class MyResearchController extends AbstractBase
      */
     protected function processEditSubmit($user, $driver, $listID)
     {
-        $lists = $this->params()->fromPost('lists');
-        $tagParser = $this->serviceLocator->get('VuFind\Tags');
+        $lists = $this->params()->fromPost('lists', []);
+        $tagParser = $this->serviceLocator->get(\VuFind\Tags::class);
         $favorites = $this->serviceLocator
-            ->get('VuFind\Favorites\FavoritesService');
+            ->get(\VuFind\Favorites\FavoritesService::class);
+        $didSomething = false;
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags' . $list);
             $favorites->save(
@@ -629,13 +640,17 @@ class MyResearchController extends AbstractBase
                 ],
                 $user, $driver
             );
+            $didSomething = true;
         }
         // add to a new list?
         $addToList = $this->params()->fromPost('addToList');
         if ($addToList > -1) {
+            $didSomething = true;
             $favorites->save(['list' => $addToList], $user, $driver);
         }
-        $this->flashMessenger()->addMessage('edit_list_success', 'success');
+        if ($didSomething) {
+            $this->flashMessenger()->addMessage('edit_list_success', 'success');
+        }
 
         $newUrl = null === $listID
             ? $this->url()->fromRoute('myresearch-favorites')
@@ -773,7 +788,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
+            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -783,7 +798,7 @@ class MyResearchController extends AbstractBase
 
             // Set up listener for recommendations:
             $rManager = $this->serviceLocator
-                ->get('VuFind\Recommend\PluginManager');
+                ->get(\VuFind\Recommend\PluginManager::class);
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
@@ -973,7 +988,7 @@ class MyResearchController extends AbstractBase
     {
         $id = $current['id'] ?? '';
         $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
-        $record = $this->serviceLocator->get('VuFind\Record\Loader')
+        $record = $this->serviceLocator->get(\VuFind\Record\Loader::class)
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -1190,30 +1205,32 @@ class MyResearchController extends AbstractBase
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
 
-        // Get checked out item details:
-        $result = $catalog->getMyTransactions($patron);
-
-        // Get page size:
+        // Get paging setup:
         $config = $this->getConfig();
-        $limit = isset($config->Catalog->checked_out_page_size)
-            ? $config->Catalog->checked_out_page_size : 50;
+        $pageOptions = $this->getPaginationHelper()->getOptions(
+            (int)$this->params()->fromQuery('page', 1),
+            $this->params()->fromQuery('sort'),
+            $config->Catalog->checked_out_page_size ?? 50,
+            $catalog->checkFunction('getMyTransactions', $patron)
+        );
+
+        // Get checked out item details:
+        $result = $catalog->getMyTransactions($patron, $pageOptions['ilsParams']);
 
         // Build paginator if needed:
-        if ($limit > 0 && $limit < count($result)) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions, $result['count'], $result['records']
+        );
+        if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
         } else {
-            $paginator = false;
             $pageStart = 0;
-            $pageEnd = count($result);
+            $pageEnd = $result['count'];
         }
 
         $transactions = $hiddenTransactions = [];
-        foreach ($result as $i => $current) {
+        foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -1226,7 +1243,7 @@ class MyResearchController extends AbstractBase
             }
 
             // Build record driver (only for the current visible page):
-            if ($i >= $pageStart && $i <= $pageEnd) {
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
@@ -1236,10 +1253,13 @@ class MyResearchController extends AbstractBase
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
 
+        $ilsPaging = $pageOptions['ilsPaging'];
+        $sortList = $pageOptions['sortList'];
+        $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
-                'transactions', 'renewForm', 'renewResult', 'paginator',
-                'hiddenTransactions', 'displayItemBarcode'
+                'transactions', 'renewForm', 'renewResult', 'paginator', 'ilsPaging',
+                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params'
             )
         );
     }
@@ -1268,73 +1288,31 @@ class MyResearchController extends AbstractBase
             return $this->createViewModel();
         }
 
-        // Get page and page size:
-        $page = (int)$this->params()->fromQuery('page', 1);
+        // Get paging setup:
         $config = $this->getConfig();
-        $limit = isset($config->Catalog->historic_loan_page_size)
-            ? $config->Catalog->historic_loan_page_size : 50;
-        $ilsPaging = true;
-        if (isset($functionConfig['max_results'])) {
-            $limit = min([$functionConfig['max_results'], $limit]);
-        } elseif (isset($functionConfig['page_size'])) {
-            if (!in_array($limit, $functionConfig['page_size'])) {
-                $limit = $functionConfig['default_page_size']
-                    ?? $functionConfig['page_size'][0];
-            }
-        } else {
-            $ilsPaging = false;
-        }
-
-        // Get sort settings
-        $sort = false;
-        if (!empty($functionConfig['sort'])) {
-            $sort = $this->params()->fromQuery('sort');
-            if (!isset($functionConfig['sort'][$sort])) {
-                if (isset($functionConfig['default_sort'])) {
-                    $sort = $functionConfig['default_sort'];
-                } else {
-                    reset($functionConfig['sort']);
-                    $sort = key($functionConfig['sort']);
-                }
-            }
-        }
-
-        // Configure call params
-        $params = [
-            'sort' => $sort
-        ];
-        if ($ilsPaging) {
-            $params['page'] = $page;
-            $params['limit'] = $limit;
-        }
+        $pageOptions = $this->getPaginationHelper()->getOptions(
+            (int)$this->params()->fromQuery('page', 1),
+            $this->params()->fromQuery('sort'),
+            $config->Catalog->historic_loan_page_size ?? 50,
+            $functionConfig
+        );
 
         // Get checked out item details:
-        $result = $catalog->getMyTransactionHistory($patron, $params);
+        $result
+            = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
 
         if (isset($result['success']) && !$result['success']) {
             $this->flashMessenger()->addErrorMessage($result['status']);
             return $this->createViewModel();
         }
 
-        // Build paginator if needed:
-        if ($ilsPaging && $limit < $result['count']) {
-            $adapter = new \Zend\Paginator\Adapter\NullFill($result['count']);
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($page);
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions, $result['count'], $result['transactions']
+        );
+        if ($paginator) {
             $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
-        } elseif ($limit > 0 && $limit < $result['count']) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter(
-                $result['transactions']
-            );
-            $paginator = new \Zend\Paginator\Paginator($adapter);
-            $paginator->setItemCountPerPage($limit);
-            $paginator->setCurrentPageNumber($page);
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
         } else {
-            $paginator = false;
             $pageStart = 0;
             $pageEnd = $result['count'];
         }
@@ -1342,25 +1320,15 @@ class MyResearchController extends AbstractBase
         $transactions = $hiddenTransactions = [];
         foreach ($result['transactions'] as $i => $current) {
             // Build record driver (only for the current visible page):
-            if ($ilsPaging || ($i >= $pageStart && $i <= $pageEnd)) {
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
                 $transactions[] = $this->getDriverForILSRecord($current);
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
 
-        // Handle view params for sorting
-        $sortList = [];
-        if (!empty($functionConfig['sort'])) {
-            foreach ($functionConfig['sort'] as $key => $value) {
-                $sortList[$key] = [
-                    'desc' => $value,
-                    'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
-                ];
-            }
-        }
-
+        $sortList = $pageOptions['sortList'];
+        $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
             compact(
                 'transactions', 'paginator', 'params',
@@ -1393,7 +1361,8 @@ class MyResearchController extends AbstractBase
                 if (strlen($row['id'] ?? '') > 0) {
                     $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
                     $row['driver'] = $this->serviceLocator
-                        ->get('VuFind\Record\Loader')->load($row['id'], $source);
+                        ->get(\VuFind\Record\Loader::class)
+                        ->load($row['id'], $source);
                     if (empty($row['title'])) {
                         $row['title'] = $row['driver']->getShortTitle();
                     }
@@ -1502,7 +1471,7 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
-                    $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+                    $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
                         $user->email,
                         $config->Site->email,
                         $this->translate('recovery_email_subject'),
@@ -1731,11 +1700,14 @@ class MyResearchController extends AbstractBase
 
         $view = $this->createViewModel(['accountDeleted' => false]);
         if ($this->formWasSubmitted('submit')) {
-            $csrf = $this->serviceLocator->get('Zend\Validator\Csrf');
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
                 throw new \VuFind\Exception\BadRequest(
                     'error_inconsistent_parameters'
                 );
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
             }
             $user->delete(
                 $config->Authentication->delete_comments_with_user ?? true
@@ -1748,5 +1720,18 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toRoute('myresearch-profile');
         }
         return $view;
+    }
+
+    /**
+     * Get the ILS pagination helper
+     *
+     * @return PaginationHelper
+     */
+    protected function getPaginationHelper()
+    {
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new PaginationHelper();
+        }
+        return $this->paginationHelper;
     }
 }

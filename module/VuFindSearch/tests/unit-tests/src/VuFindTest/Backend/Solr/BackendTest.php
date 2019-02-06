@@ -286,7 +286,7 @@ class BackendTest extends TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->getMockBuilder('VuFindSearch\ParamBag')
+        $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
             ->setMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
@@ -351,7 +351,7 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        return $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
+        return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['http://example.org/', $map])
             ->getMock();

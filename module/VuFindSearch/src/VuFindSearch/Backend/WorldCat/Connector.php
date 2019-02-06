@@ -156,7 +156,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->call('POST', $params->getArrayCopy(), false);
 
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->records->record) ? $xml->records->record : [];
+        $docs = $xml->records->record ?? [];
         $finalDocs = [];
         foreach ($docs as $doc) {
             $finalDocs[] = $doc->recordData->asXML();

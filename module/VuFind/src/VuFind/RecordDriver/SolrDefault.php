@@ -1,7 +1,7 @@
 <?php
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\RecordDriver;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * This should be used as the base class for all Solr-based record models.
  *
@@ -271,7 +271,8 @@ class SolrDefault extends DefaultRecord
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
-        return $this->searchService->search('Solr', $query, 0, 0, $params)
+        return $this->searchService
+            ->search($this->sourceIdentifier, $query, 0, 0, $params)
             ->getTotal();
     }
 

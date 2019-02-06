@@ -251,7 +251,7 @@ class JSTree extends AbstractBase
             ];
             $cache[$route] = $this->router->fromRoute($route, $params, $options);
         }
-        return str_replace('__record_id__', $id, $cache[$route]);
+        return str_replace('__record_id__', urlencode($id), $cache[$route]);
     }
 
     /**

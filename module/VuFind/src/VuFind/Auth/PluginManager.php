@@ -27,6 +27,8 @@
  */
 namespace VuFind\Auth;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Auth handler plugin manager
  *
@@ -44,19 +46,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'cas' => 'VuFind\Auth\CAS',
-        'choiceauth' => 'VuFind\Auth\ChoiceAuth',
-        'database' => 'VuFind\Auth\Database',
-        'facebook' => 'VuFind\Auth\Facebook',
-        'ils' => 'VuFind\Auth\ILS',
-        'ldap' => 'VuFind\Auth\LDAP',
-        'multiauth' => 'VuFind\Auth\MultiAuth',
-        'multiils' => 'VuFind\Auth\MultiILS',
-        'shibboleth' => 'VuFind\Auth\Shibboleth',
-        'sip2' => 'VuFind\Auth\SIP2',
+        'almadatabase' => AlmaDatabase::class,
+        'cas' => CAS::class,
+        'choiceauth' => ChoiceAuth::class,
+        'database' => Database::class,
+        'facebook' => Facebook::class,
+        'ils' => ILS::class,
+        'ldap' => LDAP::class,
+        'multiauth' => MultiAuth::class,
+        'multiils' => MultiILS::class,
+        'shibboleth' => Shibboleth::class,
+        'sip2' => SIP2::class,
         // for legacy 1.x compatibility
-        'db' => 'VuFind\Auth\Database',
-        'sip' => 'VuFind\Auth\SIP2',
+        'db' => Database::class,
+        'sip' => SIP2::class,
     ];
 
     /**
@@ -65,16 +68,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Auth\CAS' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Auth\ChoiceAuth' => 'VuFind\Auth\Factory::getChoiceAuth',
-        'VuFind\Auth\Database' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Auth\Facebook' => 'VuFind\Auth\Factory::getFacebook',
-        'VuFind\Auth\ILS' => 'VuFind\Auth\Factory::getILS',
-        'VuFind\Auth\LDAP' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Auth\MultiAuth' => 'VuFind\Auth\Factory::getMultiAuth',
-        'VuFind\Auth\MultiILS' => 'VuFind\Auth\Factory::getMultiILS',
-        'VuFind\Auth\Shibboleth' => 'VuFind\Auth\Factory::getShibboleth',
-        'VuFind\Auth\SIP2' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        AlmaDatabase::class => ILSFactory::class,
+        CAS::class => InvokableFactory::class,
+        ChoiceAuth::class => ChoiceAuthFactory::class,
+        Database::class => InvokableFactory::class,
+        Facebook::class => FacebookFactory::class,
+        ILS::class => ILSFactory::class,
+        LDAP::class => InvokableFactory::class,
+        MultiAuth::class => MultiAuthFactory::class,
+        MultiILS::class => ILSFactory::class,
+        Shibboleth::class => ShibbolethFactory::class,
+        SIP2::class => InvokableFactory::class,
     ];
 
     /**
@@ -89,7 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\Auth\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -101,6 +105,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Auth\AbstractBase';
+        return AbstractBase::class;
     }
 }

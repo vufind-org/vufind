@@ -131,6 +131,14 @@ class Params
     protected $extraFacetLabels = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -198,6 +206,23 @@ class Params
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
+
+        // Set up facet label settings, to be used as fallbacks if specific facets
+        // are not already configured:
+        $config = $configLoader->get($options->getFacetsIni());
+        $sections = $config->FacetLabels->labelSections
+            ?? $this->defaultFacetLabelSections;
+        foreach ($sections as $section) {
+            foreach ($config->$section ?? [] as $field => $label) {
+                $this->extraFacetLabels[$field] = $label;
+            }
+        }
+
+        // Activate all relevant checkboxes, also important for labeling:
+        $checkboxSections = $config->FacetLabels->checkboxSections ?? [];
+        foreach ($checkboxSections as $checkboxSection) {
+            $this->initCheckboxFacets($checkboxSection);
+        }
     }
 
     /**
@@ -922,21 +947,22 @@ class Params
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
         list($fieldName) = explode(':', $filter);
-        $this->checkboxFacets[$fieldName][]
+        $this->checkboxFacets[$fieldName][$filter]
             = ['desc' => $desc, 'filter' => $filter];
     }
 
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
+     * @return string         Human-readable description of field.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         if (!isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
@@ -948,7 +974,8 @@ class Params
             return $this->facetConfig[$field];
         }
         return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field] : 'unrecognized_facet_label';
+            ? $this->extraFacetLabels[$field]
+            : ($default ?: 'unrecognized_facet_label');
     }
 
     /**
@@ -1104,15 +1131,22 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
+     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     *
      * @return array
      */
-    public function getCheckboxFacets()
+    public function getCheckboxFacets(array $whitelist = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
+                // If the current filter is not on the whitelist, skip it (but
+                // accept everything if the whitelist is empty).
+                if (!empty($whitelist) && !in_array($facet['filter'], $whitelist)) {
+                    continue;
+                }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
                 // Is this checkbox always visible, even if non-selected on the
                 // "no results" screen?  By default, no (may be overridden by
@@ -1594,29 +1628,6 @@ class Params
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings;
-     * if multiple sections contain the same facet, this section's description
-     * will be favored.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // By default, there is only 1 set of facet settings, so this function isn't
-        // really necessary.  However, in the Search History screen, we need to
-        // use this for Solr-based Search Objects, so we need this dummy method to
-        // allow other types of Search Objects to co-exist with Solr-based ones.
-        // See the Solr Search Object for details of how this works if you need to
-        // implement context-sensitive facet settings in another module.
     }
 
     /**

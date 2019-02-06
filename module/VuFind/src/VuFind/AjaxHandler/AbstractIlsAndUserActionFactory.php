@@ -60,14 +60,12 @@ class AbstractIlsAndUserActionFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn()
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
+            ...($options ?: [])
         );
     }
 }

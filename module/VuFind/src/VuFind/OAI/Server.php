@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,6 +32,7 @@ namespace VuFind\OAI;
 use SimpleXMLElement;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * OAI Server class
@@ -39,6 +42,7 @@ use VuFind\SimpleXML;
  * @category VuFind
  * @package  OAI_Server
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -170,6 +174,28 @@ class Server
      */
     protected $setQueries = [];
 
+    /*
+     * Default query used when a set is not specified
+     *
+     * @var string
+     */
+    protected $defaultQuery = '';
+
+    /*
+     * Record formatter
+     *
+     * @var RecordFormatter
+     */
+    protected $recordFormatter = null;
+
+    /**
+     * Fields to return when the 'vufind' format is requested. Empty array means the
+     * format is disabled.
+     *
+     * @var array
+     */
+    protected $vufindApiFields = [];
+
     /**
      * Constructor
      *
@@ -177,19 +203,27 @@ class Server
      * retrieving records
      * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
-     * @param \Zend\Config\Config                  $config  VuFind configuration
-     * @param string                               $baseURL The base URL for the OAI
-     * server
-     * @param array                                $params  The incoming OAI-PMH
-     * parameters (i.e. $_GET)
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
-        \Zend\Config\Config $config, $baseURL, $params
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
+    }
+
+    /**
+     * Initialize settings
+     *
+     * @param \Zend\Config\Config $config  VuFind configuration
+     * @param string              $baseURL The base URL for the OAI server
+     * @param array               $params  The incoming OAI-PMH parameters (i.e.
+     * $_GET)
+     *
+     * @return void
+     */
+    public function init(\Zend\Config\Config $config, $baseURL, $params)
+    {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
         $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
@@ -197,7 +231,6 @@ class Server
             $this->baseHostURL .= $parts['port'];
         }
         $this->params = isset($params) && is_array($params) ? $params : [];
-        $this->initializeMetadataFormats(); // Load details on supported formats
         $this->initializeSettings($config); // Load config.ini settings
     }
 
@@ -212,6 +245,22 @@ class Server
     public function setRecordLinkHelper($helper)
     {
         $this->recordLinkHelper = $helper;
+    }
+
+    /**
+     * Add a record formatter (optional -- allows the vufind record format to be
+     * returned).
+     *
+     * @param RecordFormatter $formatter Record formatter
+     *
+     * @return void
+     */
+    public function setRecordFormatter($formatter)
+    {
+        $this->recordFormatter = $formatter;
+        // Reset metadata formats so they can be reinitialized; the formatter
+        // may enable additional options.
+        $this->metadataFormats = [];
     }
 
     /**
@@ -291,21 +340,74 @@ class Server
     }
 
     /**
+     * Support method for attachNonDeleted() to build the VuFind metadata for
+     * a record driver.
+     *
+     * @param object $record A record driver object
+     *
+     * @return string
+     */
+    protected function getVuFindMetadata($record)
+    {
+        // Root node
+        $recordDoc = new \DOMDocument();
+        $vufindFormat = $this->getMetadataFormats()['oai_vufind_json'];
+        $rootNode = $recordDoc->createElementNS(
+            $vufindFormat['namespace'], 'oai_vufind_json:record'
+        );
+        $rootNode->setAttribute(
+            'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance'
+        );
+        $rootNode->setAttribute(
+            'xsi:schemaLocation',
+            $vufindFormat['namespace'] . ' ' . $vufindFormat['schema']
+        );
+        $recordDoc->appendChild($rootNode);
+
+        // Add oai_dc part
+        $oaiDc = new \DOMDocument();
+        $oaiDc->loadXML(
+            $record->getXML('oai_dc', $this->baseHostURL, $this->recordLinkHelper)
+        );
+        $rootNode->appendChild(
+            $recordDoc->importNode($oaiDc->documentElement, true)
+        );
+
+        // Add VuFind metadata
+        $records = $this->recordFormatter->format(
+            [$record], $this->vufindApiFields
+        );
+        $metadataNode = $recordDoc->createElementNS(
+            $vufindFormat['namespace'], 'oai_vufind_json:metadata'
+        );
+        $metadataNode->setAttribute('type', 'application/json');
+        $metadataNode->appendChild(
+            $recordDoc->createCDATASection(json_encode($records[0]))
+        );
+        $rootNode->appendChild($metadataNode);
+
+        return $recordDoc->saveXML();
+    }
+
+    /**
      * Attach a non-deleted record to an XML document.
      *
      * @param SimpleXMLElement $container  XML container for new record
      * @param object           $record     A record driver object
      * @param string           $format     Metadata format to obtain (false for none)
      * @param bool             $headerOnly Only attach the header?
+     * @param string           $set        Currently active set
      *
      * @return bool
      */
     protected function attachNonDeleted($container, $record, $format,
-        $headerOnly = false
+        $headerOnly = false, $set = ''
     ) {
         // Get the XML (and display an error if it is unsupported):
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
+        } elseif ('oai_vufind_json' === $format && $this->supportsVuFindMetadata()) {
+            $xml = $this->getVuFindMetadata($record);   // special case
         } else {
             $xml = $record
                 ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
@@ -324,9 +426,12 @@ class Server
         // Check for sets:
         $fields = $record->getRawData();
         if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = $fields[$this->setField];
+            $sets = (array)$fields[$this->setField];
         } else {
             $sets = [];
+        }
+        if (!empty($set)) {
+            $sets = array_unique(array_merge($sets, [$set]));
         }
 
         // Get modification date:
@@ -444,8 +549,19 @@ class Server
     }
 
     /**
-     * Load data about metadata formats.  (This is called by the constructor
-     * and is only a separate method to allow easy override by child classes).
+     * Does the current configuration support the VuFind metadata format (using
+     * the API's record formatter.
+     *
+     * @return bool
+     */
+    protected function supportsVuFindMetadata()
+    {
+        return !empty($this->vufindApiFields) && null !== $this->recordFormatter;
+    }
+
+    /**
+     * Initialize data about metadata formats. (This is called on demand and is
+     * defined as a separate method to allow easy override by child classes).
      *
      * @return void
      */
@@ -457,6 +573,28 @@ class Server
         $this->metadataFormats['marc21'] = [
             'schema' => 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
             'namespace' => 'http://www.loc.gov/MARC21/slim'];
+
+        if ($this->supportsVuFindMetadata()) {
+            $this->metadataFormats['oai_vufind_json'] = [
+                'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
+                'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
+            ];
+        } else {
+            unset($this->metadataFormats['oai_vufind_json']);
+        }
+    }
+
+    /**
+     * Get metadata formats; initialize the list if necessary.
+     *
+     * @return array
+     */
+    protected function getMetadataFormats()
+    {
+        if (empty($this->metadataFormats)) {
+            $this->initializeMetadataFormats();
+        }
+        return $this->metadataFormats;
     }
 
     /**
@@ -493,6 +631,18 @@ class Server
         if (isset($config->OAI->set_query)) {
             $this->setQueries = $config->OAI->set_query->toArray();
         }
+
+        // Use a default query, if configured:
+        if (isset($config->OAI->default_query)) {
+            $this->defaultQuery = $config->OAI->default_query;
+        }
+
+        // Initialize VuFind API format fields:
+        $this->vufindApiFields = array_filter(
+            explode(
+                ',', $config->OAI->vufind_api_format_fields ?? ''
+            )
+        );
     }
 
     /**
@@ -517,9 +667,10 @@ class Server
         // means that no specific record ID was requested; otherwise, they only
         // apply if the current record driver supports them):
         $xml = new SimpleXMLElement('<ListMetadataFormats />');
-        foreach ($this->metadataFormats as $prefix => $details) {
+        foreach ($this->getMetadataFormats() as $prefix => $details) {
             if ($record === false
                 || $record->getXML($prefix) !== false
+                || ('oai_vufind_json' === $prefix && $this->supportsVuFindMetadata())
             ) {
                 $node = $xml->addChild('metadataFormat');
                 $node->metadataPrefix = $prefix;
@@ -578,44 +729,45 @@ class Server
         $headersOnly = ($verb != 'ListRecords');
 
         // Get deleted records in the requested range (if applicable):
-        $deleted = $this->listRecordsGetDeleted($from, $until)->toArray();
-        $deletedCount = count($deleted);
-        if ($currentCursor < $deletedCount) {
-            $limit = $currentCursor + $this->pageSize;
-            $limit = $limit > $deletedCount ? $deletedCount : $limit;
-            for ($i = $currentCursor; $i < $limit; $i++) {
-                $this->attachDeleted($xml, $deleted[$i], $headersOnly);
+        $deletedCount = $this->listRecordsGetDeletedCount($from, $until);
+        if ($deletedCount > 0 && $currentCursor < $deletedCount) {
+            $deleted = $this->listRecordsGetDeleted($from, $until, $currentCursor);
+            foreach ($deleted as $current) {
+                $this->attachDeleted($xml, $current, $headersOnly);
                 $currentCursor++;
             }
         }
 
-        // Figure out how many Solr records we need to display (and where to start):
-        if ($currentCursor >= $deletedCount) {
-            $solrOffset = $currentCursor - $deletedCount;
-        } else {
-            $solrOffset = 0;
-        }
-        $solrLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
+        // Figure out how many non-deleted records we need to display:
+        $recordLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
+        $cursorMark = $params['cursorMark'] ?? '';
 
         // Get non-deleted records from the Solr index:
+        $set = $params['set'] ?? '';
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit,
-            $params['set'] ?? ''
+            $from,
+            $until,
+            $cursorMark,
+            $recordLimit,
+            $set
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
-            if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly)) {
-                $this->unexpectedError('Cannot load document');
-            }
+            $this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set);
             $currentCursor++;
         }
+        $nextCursorMark = $result->getCursorMark();
 
         // If our cursor didn't reach the last record, we need a resumption token!
         $listSize = $deletedCount + $nonDeletedCount;
-        if ($listSize > $currentCursor) {
-            $this->saveResumptionToken($xml, $params, $currentCursor, $listSize);
-        } elseif ($solrOffset > 0) {
+        if ($listSize > $currentCursor
+            && ('' === $cursorMark || $nextCursorMark !== $cursorMark)
+        ) {
+            $this->saveResumptionToken(
+                $xml, $params, $currentCursor, $listSize, $nextCursorMark
+            );
+        } elseif ($params['cursor'] > 0) {
             // If we reached the end of the list but there is more than one page, we
             // still need to display an empty <resumptionToken> tag:
             $token = $xml->addChild('resumptionToken');
@@ -686,33 +838,57 @@ class Server
     }
 
     /**
-     * Get an object to list deleted records in the specified range.
+     * Get an object containing the next page of deleted records from the specified
+     * date range.
+     *
+     * @param int $from          Start date.
+     * @param int $until         End date.
+     * @param int $currentCursor Offset into result set
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    protected function listRecordsGetDeleted($from, $until, $currentCursor)
+    {
+        $tracker = $this->tableManager->get('ChangeTracker');
+        return $tracker->retrieveDeleted(
+            $this->core,
+            date('Y-m-d H:i:s', $from),
+            date('Y-m-d H:i:s', $until),
+            $currentCursor,
+            $this->pageSize
+        );
+    }
+
+    /**
+     * Get a count of all deleted records in the specified date range.
      *
      * @param int $from  Start date.
      * @param int $until End date.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return int
      */
-    protected function listRecordsGetDeleted($from, $until)
+    protected function listRecordsGetDeletedCount($from, $until)
     {
         $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeleted(
-            $this->core, date('Y-m-d H:i:s', $from), date('Y-m-d H:i:s', $until)
+        return $tracker->retrieveDeletedCount(
+            $this->core,
+            date('Y-m-d H:i:s', $from),
+            date('Y-m-d H:i:s', $until)
         );
     }
 
     /**
      * Get an array of information on non-deleted records in the specified range.
      *
-     * @param int    $from   Start date.
-     * @param int    $until  End date.
-     * @param int    $offset First record to obtain in full detail.
-     * @param int    $limit  Max number of full records to return.
-     * @param string $set    Set to limit to (empty string for none).
+     * @param int    $from       Start date.
+     * @param int    $until      End date.
+     * @param string $cursorMark cursorMark for the position in the full result list.
+     * @param int    $limit      Max number of full records to return.
+     * @param string $set        Set to limit to (empty string for none).
      *
      * @return \VuFind\Search\Base\Results Search result object.
      */
-    protected function listRecordsGetNonDeleted($from, $until, $offset, $limit,
+    protected function listRecordsGetNonDeleted($from, $until, $cursorMark, $limit,
         $set = ''
     ) {
         // Set up search parameters:
@@ -721,7 +897,7 @@ class Server
         $params->setLimit($limit);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
-        $params->setSort('last_indexed asc', true);
+        $params->setSort('last_indexed asc, id asc', true);
 
         // Construct a range query based on last indexed time:
         $params->setOverrideQuery(
@@ -732,18 +908,23 @@ class Server
         // Apply filters as needed.
         if (!empty($set)) {
             if (isset($this->setQueries[$set])) {
-                // use hidden filter here to allow for complex queries;
-                // plain old addFilter expects simple field:value queries.
-                $params->addHiddenFilter($this->setQueries[$set]);
+                // Put parentheses around the query so that it does not get
+                // parsed as a simple field:value filter.
+                $params->addFilter('(' . $this->setQueries[$set] . ')');
             } elseif (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
                 );
             }
+        } elseif ($this->defaultQuery) {
+            // Put parentheses around the query so that it does not get
+            // parsed as a simple field:value filter.
+            $params->addFilter('(' . $this->defaultQuery . ')');
         }
 
         // Perform a Solr search:
-        $results->overrideStartRecord($offset + 1);
+        $results->overrideStartRecord(1);
+        $results->setCursorMark($cursorMark);
 
         // Return our results:
         return $results;
@@ -805,12 +986,19 @@ class Server
             throw new \Exception('noSetHierarchy:Sets not supported');
         }
 
+        // Validate set parameter:
+        if (!empty($params['set']) && null === $this->setField
+            && !isset($this->setQueries[$params['set']])
+        ) {
+            throw new \Exception('badArgument:Invalid set specified');
+        }
+
         if (!isset($params['metadataPrefix'])) {
             throw new \Exception('badArgument:Missing metadataPrefix');
         }
 
         // Validate requested metadata format:
-        $prefixes = array_keys($this->metadataFormats);
+        $prefixes = array_keys($this->getMetadataFormats());
         if (!in_array($params['metadataPrefix'], $prefixes)) {
             throw new \Exception('cannotDisseminateFormat:Unknown Format');
         }
@@ -976,15 +1164,19 @@ class Server
      * @param int              $currentCursor Current cursor position in search
      * results.
      * @param int              $listSize      Total size of search results.
+     * @param string           $cursorMark    cursorMark for the position in the full
+     * results list.
      *
      * @return void
      */
-    protected function saveResumptionToken($xml, $params, $currentCursor, $listSize)
-    {
+    protected function saveResumptionToken($xml, $params, $currentCursor, $listSize,
+        $cursorMark
+    ) {
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
         $params['cursor'] = $currentCursor;
+        $params['cursorMark'] = $cursorMark;
 
         // Save everything to the database:
         $search = $this->tableManager->get('OaiResumption');
