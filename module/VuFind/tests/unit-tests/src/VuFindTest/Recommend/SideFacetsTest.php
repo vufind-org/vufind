@@ -276,7 +276,6 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             ],
         ];
         $results = $this->getMockResults();
-        $response = ['format' => ['dummy']];
         $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
         $this->assertEquals(['format'], $sf->getCollapsedFacets());
     }
