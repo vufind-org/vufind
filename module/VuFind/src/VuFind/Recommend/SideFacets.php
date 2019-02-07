@@ -364,7 +364,7 @@ class SideFacets extends AbstractFacets
         if (empty($this->collapsedFacets)) {
             return [];
         } elseif ($this->collapsedFacets == '*') {
-            return array_keys($this->getFacetSet());
+            return array_keys($this->mainFacets);
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
     }
