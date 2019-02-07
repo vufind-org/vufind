@@ -535,15 +535,15 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Create connector with fixture file.
+     * Create HTTP service for testing.
      *
      * @param string $fixture Fixture file
      *
-     * @return Connector
+     * @return \VuFindHttp\HttpService
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function getHttpService($fixture = null)
     {
         $adapter = new TestAdapter();
         if ($fixture) {
@@ -562,6 +562,21 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         }
         $service = new \VuFindHttp\HttpService();
         $service->setDefaultAdapter($adapter);
+        return $service;
+    }
+
+    /**
+     * Create connector with fixture file.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return Connector
+     *
+     * @throws InvalidArgumentException Fixture file does not exist
+     */
+    protected function createConnector($fixture = null)
+    {
+        $service = $this->getHttpService($fixture);
         $conn = new PAIA(
             new \VuFind\Date\Converter(),
             new \Zend\Session\SessionManager()
@@ -581,27 +596,11 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function createMockConnector($fixture = null)
     {
-        $adapter = new TestAdapter();
-        if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/paia/response/' . $fixture
-            );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
-            $adapter->setResponse($responseObj);
-        }
-        $service = new \VuFindHttp\HttpService();
-        $service->setDefaultAdapter($adapter);
+        $service = $this->getHttpService($fixture);
+        $dateConverter = new \VuFind\Date\Converter();
+        $sessionManager = new \Zend\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
-            ->setConstructorArgs([ new \VuFind\Date\Converter(),
-                new \Zend\Session\SessionManager()
-            ])
+            ->setConstructorArgs([$dateConverter, $sessionManager])
             ->setMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
