@@ -817,7 +817,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '('  || substr($filter, 0, 2) == '-(') {
+        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
             return true;
         }
         return false;
