@@ -249,7 +249,9 @@ VuFind.register('sideFacets', function SideFacets() {
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
           } else {
-            $(item).collapse('hide');
+            if (!$(item).data('forceIn')) {
+              $(item).collapse('hide');
+            }
           }
         } finally {
           $.support.transition = saveTransition;
