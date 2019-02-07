@@ -237,10 +237,4 @@ class SolrMarc extends SolrDefault
                   return $contains_description;
         }
     }
-
-
-    public function setHasFulltextMatch() {
-        $this->hasFulltextMatch = true;
-    }
-
 }

@@ -500,4 +500,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
         return $retval;
     }
+
+
+    public function setHasFulltextMatch() {
+        $this->hasFulltextMatch = true;
+    }
+
+
+    public function hasFulltextMatch() {
+        return $this->hasFulltextMatch ?? false;
+    }
+        
+
 }

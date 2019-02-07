@@ -9,9 +9,10 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         parent::__construct($response);
     }
 
-    public function getExplain()
+    public function getExplainOther()
+
     {
-        return $this->response['debug']['explain'] ?? [];
+        return $this->response['debug']['explainOther'] ?? [];
     }
 }
 ?>

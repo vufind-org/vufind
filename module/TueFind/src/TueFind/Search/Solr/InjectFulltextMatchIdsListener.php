@@ -86,10 +86,10 @@ class InjectFulltextMatchIdsListener
         $backend = $event->getParam('backend');
         if ($backend == $this->backend->getIdentifier()) {
             $result = $event->getTarget();
-            $explainIDs = $result->getExplain();
+            $explainOtherIDs = $result->getExplainOther();
             foreach ($result->getRecords() as $record) {
                 $id = $record->getUniqueId();
-                if (isset($explainIDs[$id])) {
+                if (isset($explainOtherIDs[$id])) {
                     $record->setHasFulltextMatch();
                 }
             }
