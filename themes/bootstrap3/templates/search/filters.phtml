@@ -73,7 +73,7 @@
 <?php if ($filterCount > 0): ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
-    <?php if (empty($disableFilterSummary)): ?>
+    <?php if (empty($disableRetainFilterControls)): ?>
       <?php if ($advancedSearch): ?>
         <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
       <?php else: ?>
@@ -96,7 +96,7 @@
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
         <?=$this->transEsc('show_filters_html', ['%%count%%' => $filterCount])?>
       </div>
-      <?php if (empty($disableFilterSummary)): ?>
+      <?php if (empty($disableRetainFilterControls)): ?>
         <div class="retain-filters">
           <div class="checkbox">
             <label>
