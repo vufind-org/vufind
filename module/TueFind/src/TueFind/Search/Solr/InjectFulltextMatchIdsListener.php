@@ -60,7 +60,9 @@ class InjectFulltextMatchIdsListener
                     $this->active = true;
                     $params->set('debug', 'results');
                     $params->set('debug.explain.structured', 'true');
-                    $params->set('explainOther', "fulltext:maneuvering");
+                    // The search for explainOther is unknown will only be generated in the
+                    // QueryBuilder
+                    $this->backend->getQueryBuilder()->setCreateExplainQuery(true);
                 }
             }
         }
