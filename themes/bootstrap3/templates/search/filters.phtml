@@ -79,8 +79,8 @@
       <?php else: ?>
         <div class="checkbox">
           <label>
-            <input onChange="$('.active-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> id="filter-checkbox" class="searchFormKeepFilters"/>
-            <?=$this->transEsc('basic_search_keep_filters')?>
+            <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
+            <?=$this->transEsc("basic_search_keep_filters")?>
           </label>
         </div>
       <?php endif; ?>
@@ -98,12 +98,12 @@
       </div>
       <?php if (empty($disableFilterSummary)): ?>
         <div class="retain-filters">
-          <span class="checkbox<?=$defaultFilterState ? ' checked' : ''?>">
+          <div class="checkbox">
             <label>
-              <input onChange="$('.active-filters .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.finna-filters .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-                <?=$this->transEsc('basic_search_keep_filters')?>
+              <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
+              <?=$this->transEsc("basic_search_keep_filters")?>
             </label>
-          </span>
+          </div>
         </div>
       <?php endif; ?>
       <div class="clearfix"></div>
