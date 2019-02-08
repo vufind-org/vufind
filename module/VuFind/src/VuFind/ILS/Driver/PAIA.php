@@ -925,6 +925,10 @@ class PAIA extends DAIA
                     $password
                 );
             }
+        } catch (AuthException $e) {
+            // swallow auth exceptions and return null compliant to spec at:
+            // https://vufind.org/wiki/development:plugins:ils_drivers#patronlogin
+            return null;
         } catch (Exception $e) {
             // all error handling is done in paiaHandleErrors so pass on the
             // exception
