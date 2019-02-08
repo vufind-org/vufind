@@ -122,7 +122,7 @@
   <?php foreach ($filterList as $field => $data): ?>
     <?php if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
       <?php $geoFilter = $field; ?>
-      <?php $geoRemoveLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : '';?>
+      <?php $geoRemoveLink = isset($urlQuery) ? $urlQuery->removeFacet($data[0]['field'], $data[0]['value'], $data[0]['operator']) : null;?>
     <?php else: ?>
       <?php foreach ($data as $index => $value): ?>
         <?php
@@ -163,12 +163,14 @@
           <div class="noresults alert alert-info">
             <p><?= $this->translate('nohit_active_filters_html'); ?></p>
             <?php if ($geoFilter): ?>
-              <p><?= $this->translate('nohit_active_geographic_filter_html'); ?></p>
-              <?= $this->transEsc('try_to_remove_geographical_filters') ?>:
-              <span class="filter-value">
-                <?=$this->transEsc($geoFilter)?>
-                <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$geoRemoveLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
-              </span>
+              <div>
+                <p><?= $this->translate('nohit_active_geographic_filter_html'); ?></p>
+                <?= $this->transEsc('try_to_remove_geographical_filters') ?>:
+                <span class="filter-value">
+                  <?=$this->transEsc($geoFilter)?>
+                  <?php if (isset($geoRemoveLink)) :?><a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$geoRemoveLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
+                </span>
+              </div>
             <?php endif; ?>
             <?php if (count($filterList) > 1): ?>
               <div class="filters"><?= $this->transEsc('try_to_remove_filters')?>:<?= $filters ?></div>
