@@ -14,13 +14,6 @@
   }
 }
 
-.results .noresults {
-  flex-direction: column;
-  p {
-    flex: 1;
-  }
-}
-
 .finna-filters, .results .noresults {
   color: @filterContent-text-color;
   padding: 5px 0 5px 0;
@@ -67,14 +60,14 @@
         }
         display: inline-block;
         padding: 10px 0px;
-      } 
+      }
     }
   }
   .filters {
     width: 100%;
     max-width: 100%;
     flex: 1;
-    // < ie 10 
+    // < ie 10
     display: inline-block;
     display: inline-flex;
     align-items: center;
@@ -115,6 +108,13 @@
       margin: 4px;
     }
   }
+}
+.results .noresults {
+  flex-direction: column;
+  p {
+    flex: 1;
+  }
+  padding: 10px;
 }
 
 .finna-filters .title-value-pair {
