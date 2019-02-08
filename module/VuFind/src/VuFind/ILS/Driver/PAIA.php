@@ -354,6 +354,11 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'auth/change', $post_data
             );
+        } catch (AuthException $e) {
+            return [
+                'success' => false,
+                'status' => 'password_error_auth_old'
+            ];
         } catch (Exception $e) {
             $this->debug($e->getMessage());
             return [
