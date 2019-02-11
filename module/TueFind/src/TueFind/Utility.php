@@ -22,6 +22,11 @@ class Utility {
             return $translations[$german_term];
         return $german_term;
     }
+
+
+    public static function isSurroundedByQuotes($string) {
+        return preg_match('/^(["\']).*\1/m', $string);
+    }
 }
 
 ?>

@@ -38,7 +38,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
 
     protected function getFulltext($doc_id, $search_query) {
-
+        // Is this an ordinary query or a phrase query (surrounded by quotes")
+        $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
         $params = [
              'index' => $this->index,
              'type' => '_doc',
@@ -47,7 +48,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'query' => [
                      'bool' => [
                            'must' => [
-                               [ 'match' => [ self::FIELD => $search_query ] ],
+                               [ $is_phrase_query ? 'match_phrase' : 'match' => [ self::FIELD => $search_query ] ],
                                [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
                            ]
                       ]
@@ -56,7 +57,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                      'fields' => [
                           self::FIELD => [
                                'fragmenter' => 'sentence',
-                               'phrase_limit' => '1'
+                               'phrase_limit' => '3'
                            ]
                       ]
                  ]
