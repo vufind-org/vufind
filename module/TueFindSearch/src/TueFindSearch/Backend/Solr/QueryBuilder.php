@@ -20,7 +20,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
         $params = parent::build($query);
         if ($this->createExplainQuery) {
             $query_terms =  $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms());
-            $params->set('explainOther', 'fulltext:' . $query_terms);
+            if (!empty($query_terms))
+                $params->set('explainOther', 'fulltext:' . $query_terms);
         }
         return $params;
     }
