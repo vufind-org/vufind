@@ -29,6 +29,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected $logger;
     const FIELD = 'document_chunk';
     const DOCUMENT_ID = 'document_id';
+    const highlightStartTag = '<span class="highlight">';
+    const highlightEndTag = '</span>';
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger) {
@@ -38,7 +40,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
 
     protected function getFulltext($doc_id, $search_query) {
-        // Is this an ordinary query or a phrase query (surrounded by quotes")
+        // Is this an ordinary query or a phrase query (surrounded by quotes) ?
         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
         $params = [
              'index' => $this->index,
@@ -64,7 +66,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
              ]
         ];
 
-       $response = $this->es->search($params);
+        $response = $this->es->search($params);
         return $this->extractSnippets($response);
     }
 
@@ -93,7 +95,15 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 array_push($snippets, $highlight_result);
             }
         }
-        return empty($snippets) ? false : $snippets;
+        return empty($snippets) ? false : $this->formatHighlighting($snippets);
+    }
+
+
+    protected function formatHighlighting($snippets) {
+        $formatted_snippets = [];
+        foreach ($snippets as $snippet)
+            array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
+        return $formatted_snippets;
     }
 
 
