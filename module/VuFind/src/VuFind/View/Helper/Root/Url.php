@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -34,7 +34,7 @@ use Zend\Http\PhpEnvironment\Request;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -62,18 +62,21 @@ class Url extends \Zend\View\Helper\Url
      *
      * @see Zend\Mvc\Router\RouteInterface::assemble()
      * @see Zend\Router\RouteInterface::assemble()
-     * @param  string $name Name of the route
-     * @param  array $params Parameters for the link
-     * @param  array|Traversable $options Options for the route
-     * @param  bool $reuseMatchedParams Whether to reuse matched parameters
-     * @return string Url For the link href attribute
+     * @param string            $name    Name of the route
+     * @param array             $params  Parameters for the link
+     * @param array|Traversable $options Options for the route
+     * @param bool              $reuseMatchedParams Whether to reuse matched
+     *                                              parameters
+     *
      * @throws Exception\RuntimeException If no RouteStackInterface was
-     *     provided
+     *                                    provided
      * @throws Exception\RuntimeException If no RouteMatch was provided
      * @throws Exception\RuntimeException If RouteMatch didn't contain a
-     *     matched route name
+     *                                    matched route name
      * @throws Exception\InvalidArgumentException If the params object was not
-     *     an array or Traversable object.
+     *                                            an array or Traversable object.
+     *
+     * @return string Url For the link href attribute
      */
     public function __invoke(
         $name = null, $params = [], $options = [], $reuseMatchedParams = false
