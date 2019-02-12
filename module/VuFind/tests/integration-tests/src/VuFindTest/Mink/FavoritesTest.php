@@ -368,7 +368,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '.alert.alert-success');
         // Test save status update on modal close
-        $this->findCss($page, '.modal-body .btn.btn-default')->click();
+        $this->findCss($page, '#modal .close')->click();
         $this->snooze();
         $savedLists = $page->findAll('css', '.savedLists a');
         $this->assertEquals($listCount + 1, count($savedLists));
