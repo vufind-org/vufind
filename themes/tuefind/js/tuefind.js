@@ -80,7 +80,7 @@ function tuefindGetFulltextSnippets(url, doc_id, query) {
          var snippets = json['snippets'];
          $("#snippet_place_holder").each(function() {
             if (snippets) {
-              $(this).replaceWith(snippets.join('</br>'));
+              $(this).replaceWith(snippets.join('</br>') + '</br>');
             }
             else
               $("#fulltext_snippets").remove();

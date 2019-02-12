@@ -23,19 +23,31 @@ use Zend\View\Model\JsonModel;
 class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 {
 
-    protected $base_url = 'nu.ub.uni-tuebingen.de:9200';
-    protected $index = 'fulltext';
+    protected $base_url; //Elasticsearch host and port (host:port)
+    protected $index; //Elasticsearch index
     protected $es; // Elasticsearch interface
     protected $logger;
+    protected $configLoader;
     const FIELD = 'document_chunk';
     const DOCUMENT_ID = 'document_id';
     const highlightStartTag = '<span class="highlight">';
     const highlightEndTag = '</span>';
+    const fulltextsnippetIni = 'fulltextsnippet';
 
 
-    public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger) {
-        $this->es = $builder::create()->setHosts([$this->base_url])->build();
+    public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
         $this->logger = $logger;
+        $this->configLoader = $configLoader;
+        $config = $configLoader->get($this->getFulltextSnippetIni());
+        $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
+        $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'fulltext';
+        $this->es = $builder::create()->setHosts([$this->base_url])->build();
+    }
+
+
+    protected function getFulltextSnippetIni() {
+        return self::fulltextsnippetIni;
+
     }
 
 
@@ -101,8 +113,10 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected function formatHighlighting($snippets) {
         $formatted_snippets = [];
-        foreach ($snippets as $snippet)
+        foreach ($snippets as $snippet) {
+            $snippet = '...' . $snippet . '...';
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
+        }
         return $formatted_snippets;
     }
 
