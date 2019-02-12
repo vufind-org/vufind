@@ -66,9 +66,6 @@ class DisplayLanguageOptionFactory implements FactoryInterface
         // since it configures different language/locale than the core shared
         // instance!
         $factory = new \VuFind\I18n\Translator\TranslatorFactory();
-        return new $requestedName(
-            $factory($container, Translator::class),
-            $container->get('Request')
-        );
+        return new $requestedName($factory($container, Translator::class));
     }
 }

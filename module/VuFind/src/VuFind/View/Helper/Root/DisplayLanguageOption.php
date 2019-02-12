@@ -28,7 +28,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * DisplayLanguageOption view helper
@@ -52,12 +51,10 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param TranslatorInterface $translator Main VuFind translator
-     * @param Request             $request    Request object for GET parameters
      */
-    public function __construct(TranslatorInterface $translator, Request $request)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        $this->request = $request;
         try {
             $this->translator->addTranslationFile(
                 'ExtendedIni', null, 'default', 'native'
@@ -80,25 +77,8 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($str = null)
+    public function __invoke($str)
     {
-        if ($str === null) {
-            return $this;
-        }
         return $this->view->escapeHtml($this->translator->translate($str));
-    }
-
-    /**
-     * Get URL to change the language via a GET parameter
-     *
-     * @param sring          $code Language code
-     *
-     * @return string
-     */
-    public function getUrl($code)
-    {
-        $requestQuery = $this->request->getQuery()->toArray();
-        $options = ['query' => array_merge($requestQuery, ['lng' => $code])];
-        return $this->view->url(null, [], $options);
     }
 }
