@@ -60,13 +60,14 @@ class Url extends \Zend\View\Helper\Url
     /**
      * Generates a url given the name of a route.
      *
-     * @see Zend\Mvc\Router\RouteInterface::assemble()
-     * @see Zend\Router\RouteInterface::assemble()
-     * @param string            $name    Name of the route
-     * @param array             $params  Parameters for the link
-     * @param array|Traversable $options Options for the route
+     * @param string            $name               Name of the route
+     * @param array             $params             Parameters for the link
+     * @param array|Traversable $options            Options for the route
      * @param bool              $reuseMatchedParams Whether to reuse matched
      *                                              parameters
+     *
+     * @see Zend\Mvc\Router\RouteInterface::assemble()
+     * @see Zend\Router\RouteInterface::assemble()
      *
      * @throws Exception\RuntimeException If no RouteStackInterface was
      *                                    provided
@@ -96,7 +97,7 @@ class Url extends \Zend\View\Helper\Url
     /**
      * Get URL with current GET parameters and add one
      *
-     * @param sring          $code Language code
+     * @param array $params Key-paired parameters
      *
      * @return string
      */

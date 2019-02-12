@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -36,7 +36,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -64,8 +64,7 @@ class UrlFactory implements FactoryInterface
 
         $match = $container->get('Application')
             ->getMvcEvent()
-            ->getRouteMatch()
-        ;
+            ->getRouteMatch();
 
         if ($match instanceof RouteMatch) {
             $helper->setRouteMatch($match);

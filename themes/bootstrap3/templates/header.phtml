@@ -50,9 +50,6 @@
 
           <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
             <li class="theme dropdown">
-              <form method="post" name="themeForm" id="themeForm">
-                <input type="hidden" name="ui"/>
-              </form>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <?php foreach ($this->layout()->themeOptions as $current): ?>
