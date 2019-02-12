@@ -23,7 +23,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             if (!empty($query_terms)) {
                 $query_terms_normalized =  \TueFind\Utility::isSurroundedByQuotes($query_terms) ?
                                                  $query_terms : '(' . $query_terms . ')';
-                $params->set('explainOther', 'fulltext:' . $query_terms_normalized);
+                $params->set('explainOther', 'fulltext:' . $query_terms_normalized .  ' OR fulltext_unstemmed:' . $query_terms_normalized);
             }
         }
         return $params;
