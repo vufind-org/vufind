@@ -181,6 +181,8 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
                     $result = substr($result, 0, -1) . '-';
                 } elseif (' ' === $prev) {
                     $result .= "\\-";
+                } else {
+                    $result .= '-';
                 }
             } else {
                 $result .= $c;
