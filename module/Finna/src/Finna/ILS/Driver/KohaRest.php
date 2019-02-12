@@ -1341,11 +1341,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     continue;
                 }
                 $holdingData = $this->getHoldingData($holding, true);
-                // Don't display a standalone holding unless there's some information
-                // available.
-                if (empty($holdingData)) {
-                    continue;
-                }
 
                 $i++;
                 $location = $this->getBranchName($holding['holdingbranch']);
