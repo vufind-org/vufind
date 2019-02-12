@@ -238,6 +238,15 @@ class Loader extends \VuFind\Cover\Loader
             }
         }
 
+        if (empty($keys)) {
+            if (isset($ids['recordid'])) {
+                $keys['recordid'] = $ids['recordid'];
+            }
+            if (isset($ids['source'])) {
+                $keys['source'] = $ids['source'];
+            }
+        }
+
         $keys = array_merge(
             $keys,
             [$this->index, $this->width, $this->height, $this->size]

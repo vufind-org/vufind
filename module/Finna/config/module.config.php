@@ -552,11 +552,15 @@ $config = [
             'content_covers' => [
                 'factories' => [
                     'btj' => 'Finna\Content\Covers\BTJFactory::getBTJ',
+                    'Finna\Content\Covers\CoverArtArchive' => 'Finna\Content\Covers\CoverArtArchiveFactory',
                 ],
                 'invokables' => [
                     'bookyfi' => 'Finna\Content\Covers\BookyFi',
                     'natlibfi' => 'Finna\Content\Covers\NatLibFi',
                 ],
+                'aliases' => [
+                    'coverartarchive' => 'Finna\Content\Covers\CoverArtArchive',
+                ]
             ],
             'recorddriver' => [
                 'factories' => [

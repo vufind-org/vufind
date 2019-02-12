@@ -945,4 +945,14 @@ trait SolrFinna
     {
         return ['APA', 'Chicago', 'MLA', 'Harvard'];
     }
+
+    /**
+     * Return MusicBrainz identifiers from index.
+     *
+     * @return array
+     */
+    public function getMusicBrainzIdentifiers()
+    {
+        return $this->fields['mbid_str_mv'] ?? [];
+    }
 }
