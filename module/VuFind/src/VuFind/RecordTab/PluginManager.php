@@ -75,6 +75,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         CollectionList::class => CollectionListFactory::class,
         Description::class => InvokableFactory::class,
         Excerpt::class => ExcerptFactory::class,
+        Formats::class => InvokableFactory::class,
         HierarchyTree::class => HierarchyTreeFactory::class,
         HoldingsILS::class => HoldingsILSFactory::class,
         HoldingsWorldCat::class => HoldingsWorldCatFactory::class,

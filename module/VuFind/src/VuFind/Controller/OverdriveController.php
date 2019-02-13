@@ -76,6 +76,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!$odAccessResult->status) {
+            $this->debug("result:".print_r($odAccessResult,true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code,

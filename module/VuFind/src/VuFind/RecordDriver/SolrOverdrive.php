@@ -385,7 +385,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Get Marc Record
      *
-     * override the base marc trait to return a fake marc obj.
+     * Override the base marc trait to return a fake marc obj.
      *
      * @return \File_MARCBASE
      * @throws \File_MARC_Exception
@@ -397,11 +397,21 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         } else {
             //return new fake marc class
             return new class {
+                /**
+                 * @param $f string Fieldname
+                 *
+                 * @return string
+                 */
                 public function getField($f)
                 {
                     return "";
                 }
 
+                /**
+                 * @param $f array Fieldnames
+                 *
+                 * @return array
+                 */
                 public function getFields($f)
                 {
                     return [];
@@ -556,7 +566,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getIsMarc()
     {
-        $this->debug("ismarc: " . $this->config->isMarc);
         return $this->config->isMarc;
     }
 
@@ -609,19 +618,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Get Formatted Raw Data
      *
-     * Description.
+     * Returns the raw data formatted for staff display tab
      *
-     * @since x.x.x
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description. Default.
-     *
-     * @see    Function/method/class relied on
-     * @link   URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @return type Description.
+     * @return array Multidimensional array with data
      */
     public function getFormattedRawData()
     {
@@ -640,11 +639,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Real Time Title Hold
+     * Get a link for placing a title level hold.
      *
-     * Description.
-     *
-     * @return array
+     * @return mixed A url if a hold is possible, boolean false if not
      */
     public function getRealTimeTitleHold()
     {

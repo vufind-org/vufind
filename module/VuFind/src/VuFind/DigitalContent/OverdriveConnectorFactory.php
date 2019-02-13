@@ -72,12 +72,7 @@ class OverdriveConnectorFactory implements
             'Overdrive'
         );
         $auth = $container->get('VuFind\Auth\ILSAuthenticator');
-        $session = new \Zend\Session\Container(
-            'DigitalContent\OverdriveController',
-            $container->get('Zend\Session\SessionManager')
-        );
-
-        $connector = new $requestedName($config, $odConfig, $session, $auth);
+        $connector = new $requestedName($config, $odConfig, $container, $auth);
 
         // Populate cache storage
         $connector->setCacheStorage(

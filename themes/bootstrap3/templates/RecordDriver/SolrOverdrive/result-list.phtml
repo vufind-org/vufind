@@ -85,9 +85,9 @@
 
       <?php elseif($avail = $this->driver->getOverdriveAvailability()): ?>
             <div class="availability">
-             <div class='copies'><strong><?php echo $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
-             <div class='avail'><strong><?php echo $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
-             <div class='holds'><strong><?php echo $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
+             <div class='copies'><strong><?= $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
+             <div class='avail'><strong><?= $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
+             <div class='holds'><strong><?= $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
             </div>
            
        <?php endif; ?>
