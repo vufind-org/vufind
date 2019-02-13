@@ -623,16 +623,9 @@ class PAIA extends DAIA
             throw new ForbiddenException('Exception::paia_missing_scope_read_fees');
         }
 
-        try {
-            $fees = $this->paiaGetAsArray(
-                'core/' . $patron['cat_username'] . '/fees'
-            );
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
-        }
-
+        $fees = $this->paiaGetAsArray(
+            'core/' . $patron['cat_username'] . '/fees'
+        );
         // PAIA simple data type money: a monetary value with currency (format
         // [0-9]+\.[0-9][0-9] [A-Z][A-Z][A-Z]), for instance 0.80 USD.
         $feeConverter = function ($fee) {
@@ -718,12 +711,7 @@ class PAIA extends DAIA
         //          4 - provided (the document is ready to be used by the patron)
         $filter = ['status' => [1, 4]];
         // get items-docs for given filters
-        try {
-            $items = $this->paiaGetItems($patron, $filter);
-        } catch (ForbiddenException $e) {
-            throw $e;
-        }
-
+        $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myHoldsMapping');
     }
 
@@ -783,12 +771,7 @@ class PAIA extends DAIA
         // status = 3 - held (the document is on loan by the patron)
         $filter = ['status' => [3]];
         // get items-docs for given filters
-        try {
-            $items = $this->paiaGetItems($patron, $filter);
-        } catch (ForbiddenException $e) {
-            throw $e;
-        }
-
+        $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myTransactionsMapping');
     }
 
@@ -808,12 +791,7 @@ class PAIA extends DAIA
         // status = 2 - ordered (the document is ordered by the patron)
         $filter = ['status' => [2]];
         // get items-docs for given filters
-        try {
-            $items = $this->paiaGetItems($patron, $filter);
-        } catch (ForbiddenException $e) {
-            throw $e;
-        }
-
+        $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myStorageRetrievalRequestsMapping');
     }
 
@@ -912,17 +890,10 @@ class PAIA extends DAIA
         // if we already have a session with access_token and patron id, try to get
         // patron info with session data
         if (isset($session->expires) && $session->expires > time()) {
-            try {
-                return $this->enrichUserDetails(
-                    $this->paiaGetUserDetails($session->patron),
-                    $password
-                );
-            } catch (Exception $e) {
-                $this->debug('Session expired, login again', ['info' => 'info']);
-                // all error handling is done in paiaHandleErrors so pass on the
-                // exception
-                throw $e;
-            }
+            return $this->enrichUserDetails(
+                $this->paiaGetUserDetails($session->patron),
+                $password
+            );
         }
         try {
             if ($this->paiaLogin($username, $password)) {
@@ -935,10 +906,6 @@ class PAIA extends DAIA
             // swallow auth exceptions and return null compliant to spec at:
             // https://vufind.org/wiki/development:plugins:ils_drivers#patronlogin
             return null;
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
         }
     }
 
@@ -1307,15 +1274,9 @@ class PAIA extends DAIA
         }
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
-            try {
-                $itemsResponse = $this->paiaGetAsArray(
-                    'core/' . $patron['cat_username'] . '/items'
-                );
-            } catch (Exception $e) {
-                // all error handling is done in paiaHandleErrors so pass on the
-                // exception
-                throw $e;
-            }
+            $itemsResponse = $this->paiaGetAsArray(
+                'core/' . $patron['cat_username'] . '/items'
+            );
             if ($this->paiaCacheEnabled) {
                 $this->putCachedData($patron['cat_username'], $itemsResponse);
             }
@@ -1676,17 +1637,13 @@ class PAIA extends DAIA
             $http_headers['Authorization'] = 'Bearer ' . $access_token;
         }
 
-        try {
-            $result = $this->httpService->post(
-                $this->paiaURL . $file,
-                $postData,
-                'application/json; charset=UTF-8',
-                $this->paiaTimeout,
-                $http_headers
-            );
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
+        $result = $this->httpService->post(
+            $this->paiaURL . $file,
+            $postData,
+            'application/json; charset=UTF-8',
+            $this->paiaTimeout,
+            $http_headers
+        );
 
         if (!$result->isSuccess()) {
             // log error for debugging
@@ -1714,16 +1671,10 @@ class PAIA extends DAIA
             'Authorization' => 'Bearer ' . $access_token,
             'Content-type' => 'application/json; charset=UTF-8',
         ];
-
-        try {
-            $result = $this->httpService->get(
-                $this->paiaURL . $file,
-                [], $this->paiaTimeout, $http_headers
-            );
-        } catch (Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
-
+        $result = $this->httpService->get(
+            $this->paiaURL . $file,
+            [], $this->paiaTimeout, $http_headers
+        );
         if (!$result->isSuccess()) {
             // log error for debugging
             $this->debug(
@@ -1750,12 +1701,7 @@ class PAIA extends DAIA
         // if we have an error response handle it accordingly (any will throw an
         // exception at the moment) and pass on the resulting exception
         if (isset($responseArray['error'])) {
-            try {
-                $this->paiaHandleErrors($responseArray);
-            } catch (Exception $e) {
-                // catch any exception from paiaHandleErrors and pass it on
-                throw $e;
-            }
+            $this->paiaHandleErrors($responseArray);
         }
 
         return $responseArray;
@@ -1775,15 +1721,7 @@ class PAIA extends DAIA
             $file,
             $this->getSession()->access_token
         );
-
-        try {
-            $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
-        }
-
+        $responseArray = $this->paiaParseJsonAsArray($responseJson);
         return $responseArray;
     }
 
@@ -1803,15 +1741,7 @@ class PAIA extends DAIA
             $data,
             $this->getSession()->access_token
         );
-
-        try {
-            $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
-        }
-
+        $responseArray = $this->paiaParseJsonAsArray($responseJson);
         return $responseArray;
     }
 
@@ -1840,14 +1770,7 @@ class PAIA extends DAIA
         ];
         $responseJson = $this->paiaPostRequest('auth/login', $post_data);
 
-        try {
-            $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
-        }
-
+        $responseArray = $this->paiaParseJsonAsArray($responseJson);
         if (!isset($responseArray['access_token'])) {
             throw new ILSException(
                 'Unknown error! Access denied.'
@@ -1898,14 +1821,7 @@ class PAIA extends DAIA
         $responseJson = $this->paiaGetRequest(
             'core/' . $patron, $this->getSession()->access_token
         );
-
-        try {
-            $responseArray = $this->paiaParseJsonAsArray($responseJson);
-        } catch (Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the
-            // exception
-            throw $e;
-        }
+        $responseArray = $this->paiaParseJsonAsArray($responseJson);
         return $this->paiaParseUserDetails($patron, $responseArray);
     }
 
