@@ -791,8 +791,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         );
         if ($code != 204) {
             $error = "Failed to mark payment of $amount paid for patron"
-                . " {$patron['id']}: $code: $result";
-
+                . " {$patron['id']}: $code: " . print_r($result, true);
             $this->error($error);
             throw new ILSException($error);
         }
