@@ -254,7 +254,7 @@ class PAIA extends DAIA
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
             throw new ForbiddenException(
-                'Exception::paia_missing_scope_write_items'
+                'Exception::access_denied_write_items'
             );
         }
 
@@ -339,7 +339,7 @@ class PAIA extends DAIA
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)) {
             throw new ForbiddenException(
-                'Exception::paia_missing_scope_change_password'
+                'Exception::access_denied_change_password'
             );
         }
 
@@ -620,7 +620,7 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_FEES)) {
-            throw new ForbiddenException('Exception::paia_missing_scope_read_fees');
+            throw new ForbiddenException('Exception::access_denied_read_fines');
         }
 
         $fees = $this->paiaGetAsArray(
@@ -1058,7 +1058,7 @@ class PAIA extends DAIA
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
             throw new ForbiddenException(
-                'Exception::paia_missing_scope_write_items'
+                'Exception::access_denied_write_items'
             );
         }
 
@@ -1158,7 +1158,7 @@ class PAIA extends DAIA
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
             throw new ForbiddenException(
-                'Exception::paia_missing_scope_write_items'
+                'Exception::access_denied_write_items'
             );
         }
 
@@ -1266,7 +1266,7 @@ class PAIA extends DAIA
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)) {
-            throw new ForbiddenException('Exception::paia_missing_scope_read_items');
+            throw new ForbiddenException('Exception::access_denied_read_items');
         }
 
         // check for existing data in cache
@@ -1815,7 +1815,7 @@ class PAIA extends DAIA
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_PATRON)) {
             throw new ForbiddenException(
-                'Exception::paia_missing_scope_read_patron'
+                'Exception::access_denied_read_patron'
             );
         }
 
