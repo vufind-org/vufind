@@ -937,12 +937,12 @@ class PAIA extends DAIA
                     $array['code'] ?? ''
                 );
 
-                // invalid_grant     401     The access token was missing, invalid, or
-                //                          expired
+                // invalid_grant     401     The access token was missing, invalid
+                //                          or expired
             case 'invalid_grant':
 
-                // insufficient_scope     403     The access token was accepted but it
-                //                              lacks permission for the request
+                // insufficient_scope     403     The access token was accepted but
+                //                              it lacks permission for the request
             case 'insufficient_scope':
                 throw new ForbiddenException(
                     $array['error_description'] ?? $array['error'],
@@ -972,8 +972,8 @@ class PAIA extends DAIA
                 //                          values, etc.)
             case 'invalid_request':
 
-                // internal_error     500     An unexpected error occurred. This error
-                //                          corresponds to a bug in the
+                // internal_error     500     An unexpected error occurred. This
+                //                          error corresponds to a bug in the
                 //                          implementation of a PAIA auth/core server
             case 'internal_error':
 
@@ -981,13 +981,13 @@ class PAIA extends DAIA
                 //                              because of a temporary failure
             case 'service_unavailable':
 
-                // bad_gateway     502     The request couldn’t be serviced because of a
-                //                      backend failure (for instance the library
+                // bad_gateway     502     The request couldn’t be serviced because
+                //                     of a backend failure (for instance the library
                 //                      system’s database)
             case 'bad_gateway':
 
-                // gateway_timeout     504     The request couldn’t be serviced because
-                //                          of a backend failure
+                // gateway_timeout     504     The request couldn’t be serviced
+                //                          because of a backend failure
             case 'gateway_timeout':
 
             default:
