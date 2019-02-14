@@ -10,7 +10,7 @@
   $formats = $this->driver->tryMethod('getFormats');
   $translatedFormat = $this->transEsc(end($formats));
   $recordType = $this->driver->tryMethod('getRecordType');
-  $largeImageLayout = in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead']);
+  $largeImageLayout = in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead', 'qdc']);
 ?>
 <div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
