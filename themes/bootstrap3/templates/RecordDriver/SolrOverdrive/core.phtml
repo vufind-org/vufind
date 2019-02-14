@@ -27,7 +27,7 @@ elseif($avail->data):
     //probably means that there was a connection failure
     if(!$checkedOutResult->status && $user):
         if($checkedOutResult->code == 'od_account_noaccess'):
-            $odaction .= '<div class=\"hold pull-right\"><div class=\"alert alert-warning\">'.
+            $odaction .= '<div class="hold pull-right"><div class="alert alert-warning">'.
                           $this->translate("od_code_contentnotavail").
                           '</div></div>';
         elseif($checkedOutResult->code == 'od_account_problem'):

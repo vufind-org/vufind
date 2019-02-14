@@ -651,6 +651,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($downloadLink) {
             $this->debug("dll true");
             $url = str_replace("{errorurl}", $errorURL, $downloadLink);
+            $url = str_replace("{errorpageurl}", $errorURL, $url);
             $url = str_replace("{successurl}", $errorURL, $url);
             $this->debug("getting download link using: $url");
             $response = $this->callPatronUrl(
