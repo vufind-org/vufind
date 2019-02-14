@@ -1652,6 +1652,10 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $result = strcmp($a['location'], $b['location']);
         }
 
+        if (0 === $result && $this->sortItemsByEnumChron) {
+            $result = strnatcmp($a['number'], $b['number']);
+        }
+
         if (0 === $result) {
             $result = $a['sort'] - $b['sort'];
         }

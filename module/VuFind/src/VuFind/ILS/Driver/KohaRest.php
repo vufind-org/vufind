@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016-2018.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -144,6 +144,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $useHomeBranch = false;
 
     /**
+     * Whether to sort items by enumchron. Default is true.
+     *
+     * @var array
+     */
+    protected $sortItemsByEnumChron;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -197,6 +204,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->useHomeBranch = !empty($this->config['Holdings']['use_home_branch']);
+
+        $this->sortItemsByEnumChron
+            = $this->config['Holdings']['sort_by_enum_chron'] ?? true;
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -1901,7 +1911,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function statusSortFunction($a, $b)
     {
         $result = strcmp($a['location'], $b['location']);
-        if ($result == 0) {
+
+        if (0 === $result && $this->sortItemsByEnumChron) {
+            $result = strnatcmp($a['number'], $b['number']);
+        }
+
+        if (0 === $result) {
             $result = $a['sort'] - $b['sort'];
         }
         return $result;

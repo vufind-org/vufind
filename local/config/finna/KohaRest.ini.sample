@@ -114,6 +114,8 @@ indexes = "868az"
 ; as a colon-separated list. This list is independent of the branch. Unlisted
 ; locations will get a default priority of 999.
 ;holdings_location_order = "112:111"
+; Whether to sort items by enumchron. Default is true.
+;sort_by_enum_chron = false
 
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
