@@ -47,6 +47,8 @@ class PrimoBackendFactory
     /**
      * Create the Primo Central connector.
      *
+     * Finna: Add hidden filters
+     *
      * @return Connector
      * @todo   Refactor so that the whole connector doesn't need to be duplicated
      * (instantiate the class separately from initialization or something)
@@ -75,6 +77,13 @@ class PrimoBackendFactory
             $this->primoConfig->General->url, $instCode, $client
         );
         $connector->setLogger($this->logger);
+
+        if ($this->primoConfig->HiddenFilters) {
+            $connector->setHiddenFilters(
+                $this->primoConfig->HiddenFilters->toArray()
+            );
+        }
+
         return $connector;
     }
 }
