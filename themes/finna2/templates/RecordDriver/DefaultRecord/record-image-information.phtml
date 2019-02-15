@@ -1,0 +1,22 @@
+<?php
+  //Don't add start and end tags
+  $localSizes = $sizes ?? ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]];
+?>
+<div class="image-information">
+  <div class="cover-wrapper">
+    <?php /* Display thumbnail if appropriate: */ ?>
+    <?php if ($img): ?>
+      <?=$img->render('record', $localSizes) ?>
+    <?php endif;?>
+    <?php /* Display qrcode if appropriate: */ ?>
+    <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+    <?php if ($QRCode): ?>
+      <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+    <?php endif; ?>
+  </div>
+  <?php // if you have a preview tab but want to move or remove the preview link
+      // from this area of the record view, this can be split into
+      // getPreviewData() (should stay here) and
+      // getPreviewLink() (can go in your desired tab) ?>
+  <?=$this->record($this->driver)->getPreviews()?>
+</div>

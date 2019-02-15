@@ -1,0 +1,15 @@
+<?php //Don't add start and end tags ?>
+<div class="record-rating text-left">
+  <div class="rating-stars">
+    <div onclick="$('a.usercomments').click();">
+        <?=$this->record($this->driver)->getRating()?>
+    </div>
+  </div>
+</div>
+<?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
+  <div>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
+    </div>
+  </div>
+<?php endif; ?>

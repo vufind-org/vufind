@@ -775,18 +775,22 @@ finna.layout = (function finnaLayout() {
   function initIframeEmbed(_container) {
     var container = typeof _container === 'undefined' ? $('body') : _container;
 
-    container.find('a[data-embed-iframe]').click(function onClickEmbedLink(e) {
+    container.find('[data-embed-iframe]').click(function onClickEmbedLink(e) {
       if (typeof $.magnificPopup.instance !== 'undefined' && $.magnificPopup.instance.isOpen) {
         // Close existing popup (such as image-popup) first without delay so that its
         // state doesn't get confused by the immediate reopening.
         $.magnificPopup.instance.st.removalDelay = 0;
         $.magnificPopup.close();
       }
+
+      // Fallback if core has older style of initializing a video button
+      var attr = $(this).is('a') ? $(this).attr('href') : $(this).attr('data-link');
+
       $.magnificPopup.open({
         type: 'iframe',
         tClose: VuFind.translate('close'),
         items: {
-          src: $(this).attr('href')
+          src: attr
         },
         iframe: {
           markup: '<div class="mfp-iframe-scaler">'
@@ -817,7 +821,7 @@ finna.layout = (function finnaLayout() {
   function initVideoPopup(_container) {
     var container = typeof _container === 'undefined' ? $('body') : _container;
 
-    container.find('a[data-embed-video]').click(function onClickVideoLink(e) {
+    container.find('[data-embed-video]').click(function onClickVideoLink(e) {
       var videoSources = $(this).data('videoSources');
       var posterUrl = $(this).data('posterUrl');
       $.magnificPopup.open({

@@ -55,60 +55,17 @@
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?>">
 
-    <div class="image-information">
-      <div class="cover-wrapper">
-        <?php /* Display thumbnail if appropriate: */ ?>
-        <?php if ($img): ?>
-          <?=$img->render('record', ['small' => ['w' => 50, 'h' => 50], 'large' => ['w' => 1200, 'h' => 1200]]) ?>
-        <?php endif;?>
-        <?php /* Display qrcode if appropriate: */ ?>
-        <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-        <?php if ($QRCode): ?>
-          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-        <?php endif; ?>
-      </div>
-      <?php // if you have a preview tab but want to move or remove the preview link
-         // from this area of the record view, this can be split into
-         // getPreviewData() (should stay here) and
-         // getPreviewLink() (can go in your desired tab) ?>
-      <?=$this->record($this->driver)->getPreviews()?>
-    </div>
+    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img]);?>
 
     <?php if (!empty($videoUrls)): ?>
-      <?php foreach ($videoUrls as $url): ?>
-        <?php $description = $url['desc'] ?? $this->truncateUrl($url['url']); ?>
-        <?php $desc = $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe' ? $this->translate('format_Video') : $description; ?>
-        <div class="video-link-container">
-          <a class="videourl fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
-            <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<?php endif; ?>
-            <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-            <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-          >
-            <div class="video-icon"><i class="fa fa-play-circle"></i></div>
-            <div class="video-desc"><?=$this->escapeHtml($desc)?></div>
-          </a>
-        </div>
-      <?php endforeach; ?>
+      <?=$this->record($this->driver)->renderTemplate('record-video-player.phtml', ['videoUrls' => $videoUrls]);?>
     <?php endif; ?>
 
     <?php if (!empty($audioUrls)): ?>
       <?=$this->record($this->driver)->renderTemplate('record-audio-player.phtml', ['audioUrls' => $audioUrls]);?>
     <?php endif; ?>
 
-    <div class="record-rating">
-      <div class="rating-stars">
-        <div onclick="$('a.usercomments').click();">
-          <?=$this->record($this->driver)->getRating()?>
-        </div>
-      </div>
-    </div>
-
-    <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
-    <div class="record-post-toolbar">
-      <?=$this->render($template)?>
-    </div>
-    <?php endif; ?>
-
+    <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
   </div>
   <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>

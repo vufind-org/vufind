@@ -73,31 +73,16 @@
   .video-link-container {
     margin-bottom: 10px;
   }
-  a.videourl {
-    background: @brand-primary;
-    border: 1px solid @brand-primary;
-    line-height: 48px;
-    display: table;
-    width: 100%;
-    border-radius: 4px;
+  button.videourl {
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: @btn-default-color;
+    margin-bottom: 6px;
     i {
-      vertical-align: middle;
-      margin-bottom: 2px;
-    }
-    .video-icon {
-      height: 48px;
-      width: 48px;
-      float: left;
-      color: @btn-default-color;
-      text-align: center;
-    }
-    .video-desc {
-      display: table-cell;
-      vertical-align: middle;
-      text-transform: uppercase;
-      font-weight: bold;
-      color: @btn-default-color;
-      width: 100%;
+      margin-right: 4px;
+      font-size: 24px;
     }
   }
 
@@ -156,8 +141,7 @@
     }
   }
   .video-link-container {
-    width: 50%;
-    float: left;
+    width: 100%;
     padding-right: 10px;
   }
   .smaller-image-sidebar {

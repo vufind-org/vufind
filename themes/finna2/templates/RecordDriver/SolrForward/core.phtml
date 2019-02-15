@@ -17,6 +17,7 @@
       foreach ($urls as $url) {
         if(!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
           array_push($videoUrls, $url);
+          $renderedURLs[] = $url['url'];
         }
         else {
           array_push($otherUrls, $url);
@@ -36,47 +37,11 @@
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?>">
 
-      <?php if (!empty($videoUrls)): ?>
-        <div class="recordURLs local-available-online-record">
-          <div class="truncate-field">
-              <?php foreach ($videoUrls as $url): ?>
-                <?php
-                  $renderedURLs[] = $url['url'];
-                  $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
-                 ?>
-                <div class="video-link-container">
-                  <a class="fulltext videourl" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" title="<?=$this->escapeHtmlAttr($url['url']) ?>"
-                    <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<?php endif; ?>
-                    <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-                    <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-                  >
-                    <div class="video-icon"><i class="fa fa-lg fa-play-circle"></i></div>
-                    <div class="video-desc"><?=$this->transEsc('default::link_' . $desc, null, $desc) ?></div>
-                  </a>
-                </div>
-              <?php endforeach; ?>
-          </div>
-        </div>
-      <?php endif; ?>
+    <?php if (!empty($videoUrls)): ?>
+      <?=$this->record($this->driver)->renderTemplate('record-video-player.phtml', ['videoUrls' => $videoUrls, 'type' => 'SolrForward']);?>
+    <?php endif; ?>
 
-    <div class="image-information">
-      <div class="cover-wrapper">
-        <?php /* Display thumbnail if appropriate: */ ?>
-        <?php if ($img): ?>
-          <?=$img->render('record', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
-        <?php endif; ?>
-        <?php /* Display qrcode if appropriate: */ ?>
-        <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-        <?php if ($QRCode): ?>
-          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-        <?php endif; ?>
-      </div>
-      <?php // if you have a preview tab but want to move or remove the preview link
-         // from this area of the record view, this can be split into
-         // getPreviewData() (should stay here) and
-         // getPreviewLink() (can go in your desired tab) ?>
-      <?=$this->record($this->driver)->getPreviews()?>
-    </div>
+    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img, 'sizes' => ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 1200, 'h' => 1200]]]);?>
 
     <?php if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
       <div class="organisation-menu">
@@ -84,18 +49,7 @@
       </div>
     <?php endif; ?>
 
-    <div class="record-rating text-left">
-      <div class="rating-stars">
-        <div onclick="$('a.usercomments').click();">
-          <?=$this->record($this->driver)->getRating()?>
-        </div>
-      </div>
-    </div>
-    <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
-    <div class="record-post-toolbar">
-      <?=$this->render($template)?>
-    </div>
-    <?php endif; ?>
+    <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
   </div>
   <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
