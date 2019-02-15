@@ -136,7 +136,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   };
 
   //add you own overridden handler here
-  var OdItemStatusHandler=Object.create(ItemStatusHandler);
+  var OdItemStatusHandler = Object.create(ItemStatusHandler);
   OdItemStatusHandler.url = '/Overdrive/getStatus';
   OdItemStatusHandler.itemStatusDelay = 200;
   OdItemStatusHandler.name = "overdrive";

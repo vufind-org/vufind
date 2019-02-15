@@ -76,7 +76,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!$odAccessResult->status) {
-            $this->debug("result:".print_r($odAccessResult,true));
+            $this->debug("result:".print_r($odAccessResult, true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code,
@@ -277,8 +277,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         } elseif ($action == "getTitle") {
             $actionTitleCode = "od_get_title";
             //need to get server name etc.  maybe this: getServerUrl();
-            $this->debug("Get Title action.  Getting downloadlink using" .
-                $this->getServerUrl('overdrive-hold'));
+            $this->debug(
+                "Get Title action.  Getting downloadlink using" .
+                $this->getServerUrl('overdrive-hold')
+            );
             $result = $this->connector->getDownloadLink(
                 $od_id, $format, $this->getServerUrl('overdrive-hold')
             );

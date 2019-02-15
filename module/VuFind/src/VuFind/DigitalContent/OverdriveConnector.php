@@ -125,7 +125,8 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Constructor
      *
      * @param \Zend\Config\Config           $mainConfig   VuFind main conf
-     * @param \Zend\Config\Config           $recordConfig Record-specific conf file
+     * @param \Zend\Config\Config           $recordConfig Record-specific conf
+     *                                                    file
      * @param ContainerInterface            $container    The whole enchilada
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS Authenticator
      */
@@ -134,8 +135,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         $recordConfig,
         $container,
         $ilsAuth
-    )
-    {
+    ) {
         $this->debug("SolrOverdrive Connector");
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
@@ -145,6 +145,8 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
+     * Loads the session container
+     *
      * @return \Zend\Session\Container
      */
     protected function getSessionContainer()
@@ -209,12 +211,12 @@ class OverdriveConnector implements LoggerAwareInterface,
                 //there is some problem with the account
                 $result->code = "od_account_problem";
                 $conf = $this->getConfig();
-                $this->debug("nos: ".$conf->noAccessString."|".$this->getSessionContainer()->odAccessMessage);
+
                 if ($conf->noAccessString) {
                     if (strpos(
-                            $this->getSessionContainer()->odAccessMessage,
-                            $conf->noAccessString
-                        ) !== false
+                        $this->getSessionContainer()->odAccessMessage,
+                        $conf->noAccessString
+                    ) !== false
                     ) {
                         //this user should not have access to OD
                         $result->code = "od_account_noaccess";
@@ -229,7 +231,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         } else {
             $result = $this->getSessionContainer()->odAccess;
         }
-        $this->debug("overdrive access result: ".print_r($result,true));
+
         return $result;
     }
 
@@ -863,7 +865,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $baseUrl = $conf->discURL;
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
-                    ",", $overDriveIds
+                ",", $overDriveIds
                 );
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
@@ -895,8 +897,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
                 if (strtolower($checkout->reserveId) == strtolower(
-                        $overDriveId
-                    )
+                    $overDriveId
+                )
                 ) {
                     return $checkout;
                 }
@@ -1041,8 +1043,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                             $holdExpires = new \DateTime($hold->holdExpires);
                             $result->data[$key]->holdExpires
                                 = $holdExpires->format(
-                                (string)$config->displayDateFormat
-                            );
+                                   (string)$config->displayDateFormat
+                                );
                         }
                         $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
                         $result->data[$key]->holdPlacedDate
@@ -1079,8 +1081,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     protected function callUrl(
         $url, $headers = null, $checkToken = true, $requestType = "GET"
-    )
-    {
+    ) {
         $this->debug("chktoken: $checkToken");
         if (!$checkToken || $this->connectToAPI()) {
             $tokenData = $this->getSessionContainer()->tokenData;
@@ -1244,8 +1245,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     protected function callPatronUrl(
         $patronBarcode, $patronPin, $url, $params = null, $requestType = "GET"
-    )
-    {
+    ) {
         $this->debug("calling patronURL: $url");
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;
@@ -1347,14 +1347,13 @@ class OverdriveConnector implements LoggerAwareInterface,
         $patronBarcode,
         $patronPin = '1234',
         $forceNewConnection = false
-    )
-    {
+    ) {
         $patronTokenData = $this->getSessionContainer()->patronTokenData;
         $config = $this->getConfig();
         if ($forceNewConnection
             || $patronTokenData == null
             || ($patronTokenData->expirationTime
-                && time() >= $patronTokenData->expirationTime)
+            && time() >= $patronTokenData->expirationTime)
         ) {
             $this->debug("connecting to patron API for new token.");
             $url = $config->patronTokenURL;

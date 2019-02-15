@@ -398,7 +398,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             //return new fake marc class
             return new class {
                 /**
-                 * @param $f string Fieldname
+                 * get the field
+                 *
+                 * @param string $f Fieldname
                  *
                  * @return string
                  */
@@ -408,7 +410,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
 
                 /**
-                 * @param $f array Fieldnames
+                 * get the fields
+                 * 
+                 * @param array $f Fieldnames
                  *
                  * @return array
                  */
