@@ -185,7 +185,6 @@ return [
         'vendor/priority-nav.min.js',
         'vendor/leaflet.min.js',
         'vendor/leaflet.draw.min.js',
-        'vendor/jquery.panzoom.min.js',
     ],
     'less' => [
         'active' => false

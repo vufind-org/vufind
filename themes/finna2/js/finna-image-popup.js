@@ -1,4 +1,4 @@
-/*global VuFind, finna, module, videojs */
+/*global VuFind, finna, module, videojs, L */
 finna.imagePopup = (function finnaImagePopup() {
 
   function openPopup(trigger) {
@@ -142,51 +142,24 @@ finna.imagePopup = (function finnaImagePopup() {
             var id = popup.data("id");
             var recordIndex = $.magnificPopup.instance.currItem.data.recordInd;
             VuFind.lightbox.bind('.imagepopup-holder');
-            $('.imagepopup-holder .image img').one('load', function onLoadImg() {
-              $('.imagepopup-holder .image').addClass('loaded');
-              initDimensions();
-              $('.imagepopup-zoom-container').addClass('inactive');
-              $(this).attr('alt', $('#popup-image-title').html());
-              $(this).attr('aria-labelledby', 'popup-image-title');
-              if ($('#popup-image-description').length) {
-                $(this).attr('aria-describedby', 'popup-image-description');
-              }
-              $(".zoom-in").click(function initPanzoom() {
-                $(".zoom-in").unbind();
-                $('.imagepopup-zoom-container').removeClass('inactive');
-                var $panZoomImage = $('.imagepopup-holder .image img');
-                $panZoomImage.attr('src', $('.imagepopup-holder .original-image-url').attr('href'));
-                $panZoomImage.addClass('panzoom-image');
-                $panZoomImage.panzoom({
-                  contain: 'invert',
-                  minScale: 1,
-                  maxScale: 15,
-                  increment: 1,
-                  exponential: false,
-                  $reset: $(".zoom-reset")
-                }).panzoom("zoom");
-                $panZoomImage.parent().on('mousewheel.focal', function mouseWheelZoom( e ) {
-                  e.preventDefault();
-                  var delta = e.delta || e.originalEvent.wheelDelta;
-                  var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-                  $panZoomImage.panzoom('zoom', zoomOut, {
-                    increment: 0.1,
-                    animate: false,
-                    focal: e
-                  });
-                });
-                $(".zoom-in").click(function zoomIn() {
-                  $panZoomImage.panzoom("zoom");
-                });
-                $(".zoom-out").click(function zoomOut() {
-                  $panZoomImage.panzoom("zoom", true);
-                });
+            var zoomable = $('#leaflet-map-image').data('large-image-layout') && $('#leaflet-map-image').data('enable-image-popup-zoom');
+            if (zoomable) {
+              initImageZoom();
+            } else {
+              $('.image img').one('load', function onLoadImg() {
+                $('.imagepopup-holder .image').addClass('loaded');
+                initDimensions();
+                $(this).attr('alt', $('#popup-image-title').html());
+                $(this).attr('aria-labelledby', 'popup-image-title');
+                if ($('#popup-image-description').length) {
+                  $(this).attr('aria-describedby', 'popup-image-description');
+                }
+              }).each(function triggerImageLoad() {
+                if (this.complete) {
+                  $(this).load();
+                }
               });
-            }).each(function triggerImageLoad() {
-              if (this.complete) {
-                $(this).load();
-              }
-            });
+            }
 
             // Prevent navigation button CSS-transitions on touch-devices
             if (finna.layout.isTouchDevice()) {
@@ -339,6 +312,70 @@ finna.imagePopup = (function finnaImagePopup() {
             $('.access-rights > .more-link').hide();
           }
         }
+      });
+    }
+  }
+
+  function initImageZoom() {
+    var img = new Image();
+    img.src = $('.imagepopup-holder .original-image-url').attr('href');
+    img.onload = function onLoadImg() {
+      $('.imagepopup-holder .image').addClass('loaded');
+      initDimensions();
+      $('.mfp-content').removeClass('full-size');
+      $(this).attr('alt', $('#popup-image-title').html());
+      $(this).attr('aria-labelledby', 'popup-image-title');
+      if ($('#popup-image-description').length) {
+        $(this).attr('aria-describedby', 'popup-image-description');
+      }
+      var map = L.map('leaflet-map-image', {
+        minZoom: 1,
+        maxZoom: 6,
+        center: [0, 0],
+        zoomControl: false,
+        zoom: 1,
+        crs: L.CRS.Simple,
+        maxBoundsViscosity: 0.9,
+        dragging: true,
+      });
+      $('.zoom-in').click(function zoomIn() {
+        map.setZoom(map.getZoom() + 1)
+      });
+      $('.zoom-out').click(function zoomOut() {
+        map.setZoom(map.getZoom() - 1)
+      });
+      $('.zoom-reset').click(function zoomReset() {
+        map.setZoom(1)
+      });
+      var h = this.naturalHeight;
+      var w = this.naturalWidth;
+      if (h === 10 && w === 10) {
+        $('#leaflet-map-image').hide();
+        return;
+      }
+      var imageNaturalSizeZoomLevel = 3;
+      if (h < 2000 && w < 2000) {
+        imageNaturalSizeZoomLevel = 2;
+      }
+      if (h < 1000 && w < 1000) {
+        imageNaturalSizeZoomLevel = 1;
+      }
+      var southWest = map.unproject([0, h], imageNaturalSizeZoomLevel);
+      var northEast = map.unproject([w, 0], imageNaturalSizeZoomLevel);
+      var bounds = new L.LatLngBounds(southWest, northEast);
+      var overlay = L.imageOverlay(img.src, bounds);
+      map.flyToBounds(bounds, {animate: false});
+      map.setMaxBounds(bounds);
+      overlay.addTo(map);
+      map.invalidateSize();
+      map.on('zoomend', function adjustPopupSize() {
+        if (map.getZoom() > 1) {
+          $('.mfp-content').addClass('full-size');
+        } else {
+          $('.mfp-content').removeClass('full-size');
+          map.flyToBounds(bounds, {animate: false});
+        }
+        map.invalidateSize();
       });
     }
   }
