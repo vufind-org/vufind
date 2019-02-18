@@ -159,6 +159,7 @@ class QueryBuilder implements QueryBuilderInterface
                     }
                 }
             } elseif ($handler->hasDismax()) {
+                $string = $handler->mungeValues($string);
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
                 $params->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
