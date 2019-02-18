@@ -510,6 +510,9 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     public function hasFulltextMatch() {
         return $this->hasFulltextMatch ?? false;
     }
-        
 
+
+    public function isHybrid() {
+        return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
+    }
 }
