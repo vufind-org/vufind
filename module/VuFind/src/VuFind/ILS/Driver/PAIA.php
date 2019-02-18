@@ -729,23 +729,17 @@ class PAIA extends DAIA
         //todo: read VCard if avaiable in patron info
         //todo: make fields more configurable
         if (is_array($patron)) {
-            $type = null;
-            if (is_array($patron['type'])) {
-                $type = implode(', ', $patron['type']);
-            } elseif (isset($patron['type'])) {
-                $type = $patron['type'];
-            }
             return [
                 'firstname'      => $patron['firstname'],
                 'lastname'       => $patron['lastname'],
-                'address1'       => $patron['address'],
+                'address1'       => null,
                 'address2'       => null,
                 'city'           => null,
                 'country'        => null,
                 'zip'            => null,
                 'phone'          => null,
                 'mobile_phone'   => null,
-                'group'          => $type,
+                'group'          => null,
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
