@@ -6,30 +6,6 @@ use VuFindSearch\Backend\Solr\Connector;
 use TueFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 class SolrDefaultBackendFactory extends AbstractSolrBackendFactory {
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->searchConfig = 'searches';
-        $this->searchYaml = 'searchspecs.yaml';
-        $this->facetConfig = 'facets';
-    }
-
-
-    /**
-     * Get the Solr core.
-     *
-     * @return string
-     */
-    protected function getSolrCore()
-    {
-        $config = $this->config->get($this->mainConfig);
-        return isset($config->Index->default_core)
-            ? $config->Index->default_core : 'biblio';
-    }
-
 
     /**
      * Create the SOLR backend.

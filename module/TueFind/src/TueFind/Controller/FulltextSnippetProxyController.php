@@ -47,7 +47,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected function getFulltextSnippetIni() {
         return self::fulltextsnippetIni;
-
     }
 
 

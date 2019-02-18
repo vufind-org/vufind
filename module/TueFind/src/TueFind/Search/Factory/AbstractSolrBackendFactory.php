@@ -8,7 +8,7 @@ use TueFind\Search\Solr\InjectFulltextMatchIdsListener;
 use Zend\Config\Config;
 
 
-abstract class AbstractSolrBackendFactory extends \VuFind\Search\Factory\AbstractSolrBackendFactory {
+class AbstractSolrBackendFactory extends \VuFind\Search\Factory\SolrDefaultBackendFactory {
    /**
      * Create service
      *
@@ -35,7 +35,6 @@ abstract class AbstractSolrBackendFactory extends \VuFind\Search\Factory\Abstrac
 
 
     protected function createListeners(\VuFindSearch\Backend\Solr\Backend $backend) {
-error_log("ENTERING createListeners: " . get_class($backend));
         parent::createListeners($backend);
         $events = $this->serviceLocator->get('SharedEventManager');
         $search = $this->config->get($this->searchConfig);
