@@ -120,7 +120,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    public function loadAction()
+    public function loadAction() : JsonModel
     {
         $query = $this->getRequest()->getUri()->getQuery();
         $parameters = [];
