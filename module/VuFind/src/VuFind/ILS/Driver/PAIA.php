@@ -682,7 +682,7 @@ class PAIA extends DAIA
         //todo: make fields more configurable
         if (is_array($patron)) {
             $type = null;
-            if(is_array($patron['type'])) {
+            if (is_array($patron['type'])) {
                 $type = implode(', ', $patron['type']);
             } elseif (isset($patron['type'])) {
                 $type = $patron['type'];
