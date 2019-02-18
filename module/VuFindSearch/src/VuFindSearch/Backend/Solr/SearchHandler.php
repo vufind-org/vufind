@@ -342,7 +342,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function mungeValues($search, $tokenize = true)
+    public function mungeValues($search, $tokenize = true)
     {
         if ($tokenize) {
             $tokens = $this->tokenize($search);
@@ -395,6 +395,9 @@ class SearchHandler
                     break;
                 case 'uppercase':
                     $mungeValues[$mungeName] = strtoupper($mungeValues[$mungeName]);
+                    break;
+                case 'ucfirst':
+                    $mungeValues[$mungeName] = ucfirst($mungeValues[$mungeName]);
                     break;
                 default:
                     throw new \InvalidArgumentException(
