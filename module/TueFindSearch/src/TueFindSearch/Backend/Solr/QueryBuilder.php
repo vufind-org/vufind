@@ -13,7 +13,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
     public function setCreateExplainQuery($enable)
     {
-        $this->createExplainQuery = true;
+        $this->createExplainQuery = $enable;
     }
 
     public function build(AbstractQuery $query) {
