@@ -270,7 +270,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/cancel', $post_data
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -359,7 +359,7 @@ class PAIA extends DAIA
                 'success' => false,
                 'status' => 'password_error_auth_old'
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -1070,7 +1070,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/request', $post_data
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
@@ -1168,7 +1168,7 @@ class PAIA extends DAIA
             $array_response = $this->paiaPostAsArray(
                 'core/' . $patron['cat_username'] . '/renew', $post_data
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->debug($e->getMessage());
             return [
                 'success' => false,
