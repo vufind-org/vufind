@@ -122,9 +122,9 @@ return [
             'transEsc' => 'VuFind\View\Helper\Root\TransEsc',
             'translate' => 'VuFind\View\Helper\Root\Translate',
             'truncate' => 'VuFind\View\Helper\Root\Truncate',
-            'url' => 'VuFind\View\Helper\Root\Url',
             'userlist' => 'VuFind\View\Helper\Root\UserList',
             'usertags' => 'VuFind\View\Helper\Root\UserTags',
+            'Zend\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
         ]
     ],
 ];

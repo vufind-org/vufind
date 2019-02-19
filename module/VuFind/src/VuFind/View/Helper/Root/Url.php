@@ -86,12 +86,7 @@ class Url extends \Zend\View\Helper\Url
         if (func_num_args() == 0) {
             return $this;
         }
-        // Adjust params before parent call
-        if (3 == func_num_args() && is_bool($options)) {
-            $reuseMatchedParams = $options;
-            $options = [];
-        }
-        return parent::__invoke($name, $params, $options, $reuseMatchedParams);
+        return parent::__invoke(...func_get_args());
     }
 
     /**
