@@ -67,3 +67,30 @@ $(document).ready(function() {
      $("[name=type]").val(current_search_handler);
   });
 });
+
+
+function tuefindGetFulltextSnippets(url, doc_id, query) {
+  // Try to determine status
+  $.ajax({
+    type: "GET",
+    url: url + "fulltextsnippetproxy/load?search_query="+query + "&doc_id=" + doc_id,
+    dataType: "json",
+    success: function(json) {
+      $(document).ready(function() {
+         var snippets = json['snippets'];
+         $("#snippet_place_holder").each(function() {
+            if (snippets) {
+              $(this).replaceWith(snippets.join('</br>') + '</br>');
+            }
+            else
+              $("#fulltext_snippets").remove();
+         });
+      });
+    }, // end success
+    error: function (xhr, ajaxOptions, thrownError) {
+        $("#snippet_place_holder").each(function() {
+          $(this).replaceWith('Invalid server response!!!!!');
+        })
+    }
+  });
+}

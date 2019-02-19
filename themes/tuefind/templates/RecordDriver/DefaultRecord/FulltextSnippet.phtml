@@ -1,0 +1,9 @@
+<? if ($this->driver->hasFulltextMatch()): ?>
+  <span id="fulltext_snippets">
+      <div style="color:grey" id="snippet_place_holder"><?=$this->transEsc("Loading")?>...</div>
+  <script>
+      <? $query = $this->params->getQuery()->getAllTerms();?>
+      tuefindGetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query);?>");
+  </script>
+  </span>
+<? endif; ?>

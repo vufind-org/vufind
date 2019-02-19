@@ -4,7 +4,7 @@ namespace IxTheo\Search\Backend\Solr;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
-class Backend extends \VuFindSearch\Backend\Solr\Backend
+class Backend extends \TueFindSearch\Backend\Solr\Backend
 {
     /**
      * Obtain information from an alphabetic browse index.

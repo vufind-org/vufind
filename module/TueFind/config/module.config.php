@@ -24,15 +24,25 @@ $config = [
                     ],
                 ],
             ],
-            'static-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+            'fulltextsnippetproxy-load' => [
+                'type' => 'Zend\Router\Http\Literal',
                 'options' => [
-                    'route'    => "/:page",
-                    'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
+                    'route'    => '/FulltextSnippetProxy/Load',
                     'defaults' => [
-                        'controller' => 'StaticPage',
+                        'controller' => 'FulltextSnippetProxy',
+                        'action'     => 'Load',
+                    ],
+                ],
+            ],
+            'static-page' => [
+                 'type'    => 'Zend\Router\Http\Segment',
+                 'options' => [
+                     'route'    => "/:page",
+                     'constraints' => [
+                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                     ],
+                     'defaults' => [
+                         'controller' => 'StaticPage',
                         'action'     => 'staticPage',
                     ],
                 ],
@@ -44,6 +54,7 @@ $config = [
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
@@ -53,6 +64,7 @@ $config = [
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
+            'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
         ],
@@ -64,6 +76,7 @@ $config = [
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFindSearch\Service' => 'TueFind\Service\Factory::getSearchService',
         ],
         'aliases' => [
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
@@ -71,9 +84,16 @@ $config = [
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
+            'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
+            'VuFindSearch\Service' => 'TueFindSearch\Service',
         ],
     ],
+    'view_manager' => [
+        'strategies' => [
+            'ViewJsonStrategy',
+        ],
+    ]
 ];
 
 $recordRoutes = [];
