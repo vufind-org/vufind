@@ -1,16 +1,14 @@
-<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $i = $this->indexStart; ?>
-<? foreach ($this->results->getResults() as $current): ?>
-  <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
+<?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<?php $i = $this->indexStart; ?>
+<?php foreach ($this->results->getResults() as $current): ?>
+  <?php $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?> <?=$i%2==1?' panel-gray ':' panel-body '?>">
-    <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-      <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
-    <? endif; ?>
+    <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+      <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
+    <?php endif; ?>
     <div class="record-number">
       <?=$recordNumber ?>
     </div>
-    <div class="col-xs-9 col-sm-11">
-        <?=$this->record($current)->getSearchResult('list') //see contents in RecordDriver/DefaultRecord/result-list.phtml ?>
+    <?=$this->record($current)->getSearchResult('list')?>
     </div>
-  </div>
-<? endforeach; ?>
+<?php endforeach; ?>
