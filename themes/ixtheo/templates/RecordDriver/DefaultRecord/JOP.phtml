@@ -2,7 +2,7 @@
 if (!empty($formats) && ( in_array("Article", $formats) || in_array("Journal", $formats)) || in_array("Review", $formats) || in_array("Serials", $formats)): ?>
   <?$i = 0?>
   <?$issns = $this->driver->tryMethod('getJOPISSNs')?>
-  <? foreach ($issns as $issn): ?>
+  <? foreach ($issns as $issn => $title): ?>
        <?++$i?>
        <?$jop_place_holder_id = "jop_place_holder_" . $i?>
        <?$jop_icons_id = "jop_icons_" . $i?>
@@ -10,7 +10,7 @@ if (!empty($formats) && ( in_array("Article", $formats) || in_array("Journal", $
        <?$issn = (substr_count($issn, "-") == 0) ? implode("-", str_split($issn, 4)) : $issn?>
          <?if (!empty($issn)): ?>
            <tr>
-             <th>Journals Online &amp; Print:</th>
+             <?if ($i < 2):?><th>Journals Online &amp; Print:</th><?else:?> <th></th><?endif;?>
              <td>
                <?php
                  // prepare URL params
@@ -76,7 +76,7 @@ if (!empty($formats) && ( in_array("Article", $formats) || in_array("Journal", $
            <script>
            tuefindGetJOPInformation('<?=$jop_place_holder_id?>', '<?=$jop_icons_id?>',
                                     '<?=$url_ajax_proxy?>', '<?=$url_html?>', '<?=$part_img?>',
-                                    '<?=$this->transEsc("Available Online")?>', '<?=$this->transEsc("Check Availability")?>');
+                                    '<?=$this->transEsc("Available Online")?>', '<?=$this->transEsc("Check Availability")?>', '<?=$title?>');
           </script>
           <? endif; ?>
      <?endforeach;?>

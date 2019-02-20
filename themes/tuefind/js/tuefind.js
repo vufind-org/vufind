@@ -97,7 +97,7 @@ function tuefindGetFulltextSnippets(url, doc_id, query) {
 
 
 function tuefindGetJOPInformation(jop_place_holder_id, jop_icons_id, url_ajax_proxy, url_html, part_img,
-                           available_online_text, check_availability_text) {
+                           available_online_text, check_availability_text, title) {
 // service documentation, see http://www.zeitschriftendatenbank.de/fileadmin/user_upload/ZDB/pdf/services/JOP_Dokumentation_XML-Dienst.pdf
    $.ajax({
      type: "GET",
@@ -111,6 +111,7 @@ function tuefindGetJOPInformation(jop_place_holder_id, jop_icons_id, url_ajax_pr
          $(xml).find('Result').each(function(index, value) {
            var state = $(this).attr("state");
            if (state >= 0 && state <= 3) {
+             $('#' + jop_icons_id).removeAttr("style").append('<span style="float:right";>'  + title + '</span>');
              var accessURL = $(value).find('AccessURL').first().text();
              if (accessURL) {
                if (filter[accessURL] != 1) {
@@ -128,7 +129,7 @@ function tuefindGetJOPInformation(jop_place_holder_id, jop_icons_id, url_ajax_pr
                  label += " (" + call_number + ")";
                if (filter[label] != 1) {
                  if (replacement)
-                   replacement += '<br />';
+                   replacement += '<br/>';
                  replacement += label;
                  filter[label] = 1;
                }
@@ -137,7 +138,7 @@ function tuefindGetJOPInformation(jop_place_holder_id, jop_icons_id, url_ajax_pr
            else if (state == 4 || state == 10) {
              if (replacement == "") {
                 replacement = '<a href="' + url_html + '" target="_blank">' +
-                                  part_img + check_availability_text + '</a>';
+                                  part_img + check_availability_text + '</a>' + '<span style="float:right";>' + title + '</span>';
                 // We get an 1x1 pixel gif from JOP that can be seen as an empty line
                 // => remove it
                 $("#" + jop_icons_id).remove();

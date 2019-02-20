@@ -252,8 +252,10 @@ class SolrMarc extends SolrDefault
         $_022fields = $this->getMarcRecord()->getFields("022");
         foreach ($_022fields as $_022field) {
              $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
-             if (!empty($subfieldA)) {
-                 array_push($issns, $this->cleanISSN($subfieldA));
+            if (!empty($subfieldA)) {
+                $subfield9 = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
+                $subfield2 = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
+                $issns[$this->cleanISSN($subfieldA)] = $subfield9 . (empty($subfield2) ? '' : ' ('.  $subfield2 . ')');
              }
         }
         $_029fields = $this->getMarcRecord()->getFields("029");
@@ -269,6 +271,6 @@ class SolrMarc extends SolrDefault
                 }
             }
         }
-       return $issns;
+       return array_unique($issns);
     }
 }
