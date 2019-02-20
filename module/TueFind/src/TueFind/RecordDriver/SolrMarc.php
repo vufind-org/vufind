@@ -237,4 +237,38 @@ class SolrMarc extends SolrDefault
                   return $contains_description;
         }
     }
+
+
+    public function cleanISSN($issn) {
+        if ($pos = strpos($issn, ' ')) {
+            $issn = substr($issn, 0, $pos);
+        }
+        return $issn;
+    }
+
+
+    public function getJOPISSNs() {
+        $issns = [];
+        $_022fields = $this->getMarcRecord()->getFields("022");
+        foreach ($_022fields as $_022field) {
+             $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+             if (!empty($subfieldA)) {
+                 array_push($issns, $this->cleanISSN($subfieldA));
+             }
+        }
+        $_029fields = $this->getMarcRecord()->getFields("029");
+        foreach ($_029fields as $_029field) {
+            if ($_029field->getIndicator('1') == 'x') {
+                switch ($_029field->getIndicator('2')) {
+                    case 'c':
+                         $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                         array_push($issns, $this->cleanISSN($subfieldA));
+                         break;
+                    default:
+                         break;
+                }
+            }
+        }
+       return $issns;
+    }
 }
