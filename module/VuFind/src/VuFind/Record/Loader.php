@@ -32,8 +32,8 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
-use VuFindSearch\Service as SearchService;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Record loader
