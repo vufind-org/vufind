@@ -1687,7 +1687,7 @@ class PAIA extends DAIA
      * @param string $file JSON data
      *
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     protected function paiaParseJsonAsArray($file)
     {
