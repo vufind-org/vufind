@@ -8,9 +8,9 @@
                <? $issns[$article_issn] = ''?>
           <? endif;?>
      <? elseif (in_array("Journal", $formats) || in_array("Serials", $formats)):?>
-          <? $issns = $this->driver->tryMethod('getJOPISSNs')?>
+          <? $issns_and_titles = $this->driver->tryMethod('getJOPISSNsAndTitles')?>
      <? endif;?>
-     <? foreach ($issns as $issn => $title):?>
+     <? foreach ($issns_and_titles as $issn => $title):?>
           <?++$i?>
           <?$jop_place_holder_id = "jop_place_holder_" . $i?>
           <?$jop_icons_id = "jop_icons_" . $i?>
@@ -18,7 +18,7 @@
           <?$issn = (substr_count($issn, "-") == 0) ? implode("-", str_split($issn, 4)) : $issn?>
             <?if (!empty($issn)): ?>
               <tr>
-                <?if ($i < 2):?><th>Journals Online &amp; Print:</th><?else:?> <th></th><?endif;?>
+                <?if ($i < 2):?><th>Journals Online &amp; Print:</th><?else:?><th></th><?endif;?>
                 <td>
                   <?php
                     // prepare URL params
@@ -84,7 +84,8 @@
               <script>
               tuefindGetJOPInformation('<?=$jop_place_holder_id?>', '<?=$jop_icons_id?>',
                                        '<?=$url_ajax_proxy?>', '<?=$url_html?>', '<?=$part_img?>',
-                                       '<?=$this->transEsc("Available Online")?>', '<?=$this->transEsc("Check Availability")?>', '<?=$title?>');
+                                       '<?=$this->transEsc("Available online")?>', '<?=$this->transEsc("Check Availability")?>',
+                                       '<?=count($issns_and_titles) > 1 ? $title : ''?>');
              </script>
              <? endif; ?>
         <?endforeach;?>
