@@ -268,7 +268,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // Retrieve the records and put them back in order:
         $retVal = [];
         foreach ($list->getIdsBySource() as $source => $currentIds) {
-            $sourceParams = isset($params[$source]) ? $params[$source] : null;
+            $sourceParams = $params[$source] ?? null;
             $records = $this->loadBatchForSource(
                 $currentIds, $source, $tolerateBackendExceptions, $sourceParams
             );
