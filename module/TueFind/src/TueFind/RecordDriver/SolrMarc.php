@@ -253,9 +253,9 @@ class SolrMarc extends SolrDefault
         foreach ($_022fields as $_022field) {
              $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
             if (!empty($subfieldA)) {
-                $subfield9 = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
-                $subfield2 = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
-                $issns_and_titles[$this->cleanISSN($subfieldA)] = $subfield9 . (empty($subfield2) ? '' : ' ('. $this->translate($subfield2) . ')');
+                $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
+                $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
+                $issns_and_titles[$this->cleanISSN($subfieldA)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
              }
         }
         $_029fields = $this->getMarcRecord()->getFields("029");
