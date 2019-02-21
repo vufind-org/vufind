@@ -253,8 +253,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * @param bool       $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
      * subcscriptions
-     * @param ParamBag[] $params                    Associative array of search backend
-     * parameters keyed with source key
+     * @param ParamBag[] $params                    Associative array of search
+     * backend parameters keyed with source key
      *
      * @throws \Exception
      * @return array     Array of record drivers
