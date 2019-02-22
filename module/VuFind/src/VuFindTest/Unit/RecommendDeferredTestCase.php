@@ -77,7 +77,7 @@ abstract class RecommendDeferredTestCase extends TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -96,7 +96,7 @@ abstract class RecommendDeferredTestCase extends TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
             ->will($this->returnValue($query));

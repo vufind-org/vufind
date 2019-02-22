@@ -50,7 +50,7 @@ class AbstractSolrSearch extends AbstractSearch
 
         // Set up facet information:
         $facets = $this->serviceLocator
-            ->get('VuFind\Search\FacetCache\PluginManager')
+            ->get(\VuFind\Search\FacetCache\PluginManager::class)
             ->get($this->searchClassId)
             ->getList('Advanced');
         $view->hierarchicalFacets
@@ -129,7 +129,7 @@ class AbstractSolrSearch extends AbstractSearch
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
+                ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets

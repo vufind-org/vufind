@@ -50,7 +50,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalog()
     {
-        $flash = $this->createMock('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
+        $flash = $this->createMock(\Zend\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -66,7 +66,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
-        $flash = $this->createMock('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
+        $flash = $this->createMock(\Zend\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
         $config = new Config(['result_pages' => 10]);
@@ -92,7 +92,7 @@ class NewItemsTest extends TestCase
             ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
         $catalog->expects($this->once())->method('getFunds')
             ->will($this->returnValue(['a', 'b', 'c']));
-        $controller = $this->getMockBuilder('VuFind\Controller\SearchController')
+        $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
             ->disableOriginalConstructor()->getMock();
         $controller->expects($this->once())->method('getILS')
             ->will($this->returnValue($catalog));
@@ -235,7 +235,7 @@ class NewItemsTest extends TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->once())->method('getLimit')
             ->will($this->returnValue(20));

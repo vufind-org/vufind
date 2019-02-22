@@ -231,12 +231,11 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if ($('.sidebar').length > 0) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick() {
+  if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
+    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+      e.preventDefault();
       $('body.offcanvas').toggleClass('active');
     });
-  } else {
-    $('[data-toggle="offcanvas"]').addClass('hidden');
   }
 }
 
@@ -246,11 +245,23 @@ function setupAutocomplete() {
   if (searchbox.length < 1) {
     return;
   }
+  // Auto-submit based on config
+  var acCallback = function ac_cb_noop() {};
+  if (searchbox.hasClass("ac-auto-submit")) {
+    acCallback = function autoSubmitAC(item, input) {
+      input.val(item.value);
+      $("#searchForm").submit();
+      return false;
+    };
+  }
   // Search autocomplete
   searchbox.autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
+    // Auto-submit selected item
+    callback: acCallback,
+    // AJAX call for autocomplete results
     handler: function vufindACHandler(input, cb) {
       var query = input.val();
       var searcher = extractClassParams(input);

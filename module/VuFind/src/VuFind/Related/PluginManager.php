@@ -27,6 +27,8 @@
  */
 namespace VuFind\Related;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Related record plugin manager
  *
@@ -44,11 +46,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'channels' => 'VuFind\Related\Channels',
-        'editions' => 'VuFind\Related\Deprecated',
-        'similar' => 'VuFind\Related\Similar',
-        'worldcateditions' => 'VuFind\Related\Deprecated',
-        'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
+        'channels' => Channels::class,
+        'editions' => Deprecated::class,
+        'similar' => Similar::class,
+        'worldcateditions' => Deprecated::class,
+        'worldcatsimilar' => WorldCatSimilar::class,
     ];
 
     /**
@@ -57,11 +59,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Related\Channels' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Related\Deprecated' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Related\Similar' => 'VuFind\Related\SimilarFactory',
-        'VuFind\Related\WorldCatSimilar' => 'VuFind\Related\SimilarFactory',
+        Channels::class => InvokableFactory::class,
+        Deprecated::class => InvokableFactory::class,
+        Similar::class => SimilarFactory::class,
+        WorldCatSimilar::class => SimilarFactory::class,
     ];
 
     /**
@@ -79,7 +80,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
         $this->sharedByDefault = false;
-        $this->addAbstractFactory('VuFind\Related\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -91,6 +92,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Related\RelatedInterface';
+        return RelatedInterface::class;
     }
 }

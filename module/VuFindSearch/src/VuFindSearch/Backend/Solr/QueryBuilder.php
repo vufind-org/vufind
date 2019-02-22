@@ -182,24 +182,6 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Control whether or not the QueryBuilder should create an hl.q parameter
-     * when the main query includes clauses that should not be factored into
-     * highlighting. (Turned off by default).
-     *
-     * @param bool $enable Should highlighting query generation be enabled?
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function setCreateHighlightingQuery($enable)
-    {
-        // This is deprecated, but use it to manipulate the highlighted field
-        // list for backward compatibility.
-        $this->fieldsToHighlight = $enable ? '*' : '';
-    }
-
-    /**
      * Get list of fields to highlight, filtered by array.
      *
      * @param array $filter Field list to use as a filter.

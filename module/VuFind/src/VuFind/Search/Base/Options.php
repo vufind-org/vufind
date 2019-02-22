@@ -227,6 +227,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteEnabled = false;
 
     /**
+     * Autocomplete auto submit setting
+     *
+     * @var bool
+     */
+    protected $autocompleteAutoSubmit = true;
+
+    /**
      * Configuration file to read global settings from
      *
      * @var string
@@ -707,6 +714,16 @@ abstract class Options implements TranslatorAwareInterface
     public function autocompleteEnabled()
     {
         return $this->autocompleteEnabled;
+    }
+
+    /**
+     * Should autocomplete auto submit?
+     *
+     * @return bool
+     */
+    public function autocompleteAutoSubmit()
+    {
+        return $this->autocompleteAutoSubmit;
     }
 
     /**

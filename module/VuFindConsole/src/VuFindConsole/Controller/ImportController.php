@@ -140,7 +140,8 @@ class ImportController extends AbstractBase
         $testMode = $request->getParam('test-only') ? true : false;
         $index = $request->getParam('index', 'SolrWeb');
 
-        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configLoader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $crawlConfig = $configLoader->get('webcrawl');
 
         // Get the time we started indexing -- we'll delete records older than this
@@ -159,7 +160,7 @@ class ImportController extends AbstractBase
 
         // Skip Solr operations if we're in test mode.
         if (!$testMode) {
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             if ($verbose) {
                 Console::writeLine("Deleting old records (prior to $startTime)...");
             }

@@ -62,6 +62,8 @@ class KeepAliveFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('Zend\Session\SessionManager'));
+        return new $requestedName(
+            $container->get(\Zend\Session\SessionManager::class)
+        );
     }
 }

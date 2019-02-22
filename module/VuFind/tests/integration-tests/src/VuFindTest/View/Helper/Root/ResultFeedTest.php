@@ -60,15 +60,15 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
-        $currentPath = $this->createMock('VuFind\View\Helper\Root\CurrentPath');
+        $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+        $recordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        $this->getServiceManager()->get('VuFind\Record\Loader'),
+                        $this->getServiceManager()->get(\VuFind\Record\Loader::class),
                         new \Zend\Config\Config([])
                     )
                 ]
@@ -76,7 +76,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
-        $serverUrl = $this->createMock('Zend\View\Helper\ServerUrl');
+        $serverUrl = $this->createMock(\Zend\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 
@@ -94,7 +94,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getMockTranslator()
     {
-        $mock = $this->getMockBuilder('Zend\I18n\Translator\TranslatorInterface')
+        $mock = $this->getMockBuilder(\Zend\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->at(1))->method('translate')
             ->with($this->equalTo('showing_results_of_html'), $this->equalTo('default'))
@@ -119,7 +119,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('view', 'rss');
 
         $results = $this->getServiceManager()
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();

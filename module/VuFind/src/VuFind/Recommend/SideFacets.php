@@ -248,6 +248,17 @@ class SideFacets extends AbstractFacets
     }
 
     /**
+     * Get checkbox facet information from the search results.
+     *
+     * @return array
+     */
+    public function getCheckboxFacetSet()
+    {
+        return $this->results->getParams()
+            ->getCheckboxFacets(array_keys($this->checkboxFacets));
+    }
+
+    /**
      * Get facet information from the search results.
      *
      * @return array
@@ -268,8 +279,8 @@ class SideFacets extends AbstractFacets
                 $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
                     $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
                 );
-                $facetSet[$hierarchicalFacet]['list']
-                    = $this->hierarchicalFacetHelper
+                $facetSet[$hierarchicalFacet]['list'] = $this
+                    ->hierarchicalFacetHelper
                     ->flattenFacetHierarchy($facetArray);
             }
         }
@@ -353,7 +364,7 @@ class SideFacets extends AbstractFacets
         if (empty($this->collapsedFacets)) {
             return [];
         } elseif ($this->collapsedFacets == '*') {
-            return array_keys($this->getFacetSet());
+            return array_keys($this->mainFacets);
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
     }

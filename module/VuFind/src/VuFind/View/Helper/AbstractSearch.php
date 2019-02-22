@@ -83,10 +83,10 @@ abstract class AbstractSearch extends AbstractHelper
                 if ($i++ > 0) {
                     $html .= ', ';
                 }
-                $html .= '<a href="'
-                    . $results->getUrlQuery()
-                    ->replaceTerm($term, $data['new_term'])->getParams()
-                    . '">' . $view->escapeHtml($word) . '</a>';
+                $href = $results->getUrlQuery()
+                    ->replaceTerm($term, $data['new_term'])->getParams();
+                $html .= '<a href="' . $href . '">' . $view->escapeHtml($word)
+                    . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()
                         ->replaceTerm($term, $data['expand_term'])->getParams();

@@ -263,18 +263,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Get the source value used to identify resources of this type in the database.
-     *
-     * @return string
-     *
-     * @deprecated Obsolete as of VuFind 3.0; use getSourceIdentifier() instead.
-     */
-    public function getResourceSource()
-    {
-        return $this->getSourceIdentifier();
-    }
-
-    /**
      * Set the source backend identifier.
      *
      * @param string $identifier Backend identifier
