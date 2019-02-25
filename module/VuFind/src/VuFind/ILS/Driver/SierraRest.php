@@ -1999,7 +1999,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * and checksum.
      *
      * @param int $id Bib ID that may need to be prefixed.
-     * 
+     *
      * @return string
      */
     protected function formatBibId($id)
