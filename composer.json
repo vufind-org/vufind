@@ -13,10 +13,38 @@
             "php": "7.0.8"
         }
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/locales",
+                "version":"1.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/locales.git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/styles-distribution",
+                "version":"1.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/styles-distribution.git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
     "require": {
         "php": ">=7.0.8",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
+        "citation-style-language/locales":"1.0.0",
+        "citation-style-language/styles-distribution":"1.0.0",
         "endroid/qr-code": "2.5.0",
         "ghislainf/zf2-whoops": "dev-master#2649cf7caf400409942ddc3f8fe15b89381fc74e",
         "jasig/phpcas": "1.3.6",
@@ -29,6 +57,7 @@
         "pear/http_request2": "2.3.0",
         "pear/validate_ispn": "dev-master",
         "phing/phing": "2.16.1",
+        "seboettg/citeproc-php": "2.1.6",
         "serialssolutions/summon": "1.2.0",
         "symfony/yaml": "3.4.21",
         "swagger-api/swagger-ui": "2.2.10",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6114fe9dc154e655c117617164b77565",
+    "content-hash": "d88057d1d0ede13393d3de953ff3857b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -140,6 +140,26 @@
             "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
             "homepage": "https://github.com/cap60552/php-sip2",
             "time": "2015-11-03T04:42:39+00:00"
+        },
+        {
+            "name": "citation-style-language/locales",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citation-style-language/locales.git",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
+            "name": "citation-style-language/styles-distribution",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citation-style-language/styles-distribution.git",
+                "reference": "master"
+            },
+            "type": "library"
         },
         {
             "name": "container-interop/container-interop",
@@ -621,19 +641,20 @@
         },
         {
             "name": "myclabs/php-enum",
-            "version": "1.6.4",
+            "version": "1.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/php-enum.git",
-                "reference": "550d2334d77f91b0816a5cbd6965272fe20146b8"
+                "reference": "32c4202886c51fbe5cc3a7c34ec5c9a4a790345e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/550d2334d77f91b0816a5cbd6965272fe20146b8",
-                "reference": "550d2334d77f91b0816a5cbd6965272fe20146b8",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/32c4202886c51fbe5cc3a7c34ec5c9a4a790345e",
+                "reference": "32c4202886c51fbe5cc3a7c34ec5c9a4a790345e",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": ">=5.4"
             },
             "require-dev": {
@@ -661,7 +682,7 @@
             "keywords": [
                 "enum"
             ],
-            "time": "2018-10-30T14:36:18+00:00"
+            "time": "2019-02-04T21:18:49+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -952,16 +973,16 @@
         },
         {
             "name": "pear/console_getopt",
-            "version": "v1.4.1",
+            "version": "v1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Console_Getopt.git",
-                "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f"
+                "reference": "6c77aeb625b32bd752e89ee17972d103588b90c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Console_Getopt/zipball/82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
-                "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
+                "url": "https://api.github.com/repos/pear/Console_Getopt/zipball/6c77aeb625b32bd752e89ee17972d103588b90c0",
+                "reference": "6c77aeb625b32bd752e89ee17972d103588b90c0",
                 "shasum": ""
             },
             "type": "library",
@@ -995,7 +1016,7 @@
                 }
             ],
             "description": "More info available on: http://pear.php.net/package/Console_Getopt",
-            "time": "2015-07-20T20:28:12+00:00"
+            "time": "2019-02-06T16:52:33+00:00"
         },
         {
             "name": "pear/file_marc",
@@ -1667,6 +1688,89 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
+        },
+        {
+            "name": "seboettg/citeproc-php",
+            "version": "v2.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/seboettg/citeproc-php.git",
+                "reference": "2e47cad09ab245d659fb57d3418ca31b98d57134"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/seboettg/citeproc-php/zipball/2e47cad09ab245d659fb57d3418ca31b98d57134",
+                "reference": "2e47cad09ab245d659fb57d3418ca31b98d57134",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "myclabs/php-enum": "^1.5",
+                "seboettg/collection": "^1.2",
+                "symfony/polyfill-mbstring": "^1.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "6.0.13",
+                "satooshi/php-coveralls": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Böttger",
+                    "email": "seboettg@gmail.com",
+                    "homepage": "http://sebastianboettger.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Full-featured CSL processor (https://citationstyles.org)",
+            "time": "2018-10-13T18:02:57+00:00"
+        },
+        {
+            "name": "seboettg/collection",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/seboettg/Collection.git",
+                "reference": "7f0bbf93dba9b261f6d8c725a4f1583f4402162a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/seboettg/Collection/zipball/7f0bbf93dba9b261f6d8c725a4f1583f4402162a",
+                "reference": "7f0bbf93dba9b261f6d8c725a4f1583f4402162a",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "6.5.*",
+                "satooshi/php-coveralls": "^v2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Seboettg\\Collection\\": "src/Seboettg/Collection"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Böttger",
+                    "email": "seboettg@gmail.com"
+                }
+            ],
+            "description": "Simple PHP ArrayList collection",
+            "time": "2019-02-13T07:13:15+00:00"
         },
         {
             "name": "serialssolutions/summon",
@@ -4160,16 +4264,16 @@
         },
         {
             "name": "zendframework/zend-router",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-router.git",
-                "reference": "a80a7427afb8f736b9aeeb341a78dae855849291"
+                "reference": "e2151a72e9d00b1962c26469bab50db66cf7ef14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-router/zipball/a80a7427afb8f736b9aeeb341a78dae855849291",
-                "reference": "a80a7427afb8f736b9aeeb341a78dae855849291",
+                "url": "https://api.github.com/repos/zendframework/zend-router/zipball/e2151a72e9d00b1962c26469bab50db66cf7ef14",
+                "reference": "e2151a72e9d00b1962c26469bab50db66cf7ef14",
                 "shasum": ""
             },
             "require": {
@@ -4218,7 +4322,7 @@
                 "zend",
                 "zf"
             ],
-            "time": "2018-08-01T22:24:35+00:00"
+            "time": "2019-02-09T15:33:11+00:00"
         },
         {
             "name": "zendframework/zend-serializer",
@@ -4825,7 +4929,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/zendframework/ZendRest/zipball/7427d242b4546e5aef1206d2c97e402109d8843e",
                 "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-                "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
@@ -4839,10 +4943,10 @@
                     "ZendRest": "library/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": " ",
             "homepage": "http://packages.zendframework.com/",
             "keywords": [
                 "rest",
@@ -6656,6 +6760,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-08-09T05:50:03+00:00"
         },
         {

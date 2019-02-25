@@ -27,6 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Seboettg\CiteProc\StyleSheet;
+use Seboettg\CiteProc\CiteProc;
 use VuFind\Date\DateException;
 
 /**
@@ -189,6 +191,91 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Map data about the current record to the CSL JSON schema defined here:
+     * https://github.com/citation-style-language/schema/blob/master/csl-data.json
+     *
+     * @return string
+     */
+    public function getDataCSL()
+    {
+        // id and title
+        $item = [
+            'id' => $this->driver->getUniqueID(),
+            'title' => $this->details['title'],
+        ];
+        // type
+        switch ($this->driver->getFormats()[0]) {
+        case 'Thesis':
+            $item['type'] = 'thesis';
+            break;
+        case 'Video':
+            $item['type'] = 'motion_picture';
+            break;
+        case 'Score':
+            $item['type'] = 'musical_score';
+            break;
+        case 'Map':
+            $item['type'] = 'map';
+            break;
+        case 'Book':
+        default:
+            $item['type'] = 'book';
+        }
+        // subtitle -> shortTile
+        if (!empty($this->details['subtitle'])) {
+            $item['shortTitle'] = $this->details['subtitle'];
+        }
+        // authors
+        if (!empty($this->details['authors'])) {
+            foreach ($this->details['authors'] as $author) {
+                $item['author'][] = ['literal' => $author];
+            }
+        }
+        // pubDate -> issued
+        if (!empty($this->details['pubDate'])) {
+            $item['issued'] = ['raw' => $this->details['pubDate']];
+        }
+        // edition
+        if (!empty($this->details['edition'])) {
+            $item['edition'] = $this->details['edition'][0];
+        }
+        // isbn
+        if (!empty($this->driver->getISBNs())) {
+            $item['ISBN'] = $this->driver->getISBNs()[0];
+        }
+        // issn
+        if (!empty($this->driver->getISSNs())) {
+            $item['ISSN'] = $this->driver->getISSNs()[0];
+        }
+        // call-number
+        if (!empty($this->driver->getCallNumbers())) {
+            $item['call-number'] = $this->driver->getCallNumbers()[0];
+        }
+        // publisher
+        if (!empty($this->driver->getPublishers())) {
+            $item['publisher'] = $this->driver->getPublishers()[0];
+        }
+        // publisher-place
+        if (!empty($this->driver->getPlacesOfPublication())) {
+            $item['publisher-place'] = $this->driver->getPlacesOfPublication()[0];
+        }
+        // URL
+        if (!empty($this->driver->getURLs())) {
+            $item['URL'] = $this->driver->getURLs()[0]['url'];
+        }
+        // TODO: volume
+        // TODO: editor
+        // TODO: director
+        // TODO: journalAbbreviation
+        // language
+        if (!empty($this->driver->getLanguages())) {
+            $item['language'] = $this->driver->getLanguages()[0];
+        }
+
+        return json_encode([$item]);
+    }
+
+    /**
      * Get APA citation.
      *
      * This function assigns all the necessary variables and then returns an APA
@@ -275,6 +362,18 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
             return $partial('Citation/mla-article.phtml', $mla);
         }
+    }
+
+    /**
+     * Get Vancouver citation.
+     *
+     * @return string
+     */
+    public function getCitationVancouver()
+    {
+        $data = $this->getDataCSL();
+        $processor = new CiteProc(StyleSheet::loadStyleSheet('vancouver'), 'en-US');
+        return $processor->render(json_decode($data), 'bibliography');
     }
 
     /**
