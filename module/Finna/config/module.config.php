@@ -357,9 +357,9 @@ $config = [
             ],
             'auth' => [
                 'factories' => [
-                    'Finna\Auth\ILS' => 'Finna\Auth\Factory::getILS',
-                    'Finna\Auth\MultiILS' => 'Finna\Auth\Factory::getMultiILS',
-                    'Finna\Auth\Shibboleth' => 'Finna\Auth\Factory::getShibboleth',
+                    'Finna\Auth\ILS' => 'VuFind\Auth\ILSFactory',
+                    'Finna\Auth\MultiILS' => 'VuFind\Auth\ILSFactory',
+                    'Finna\Auth\Shibboleth' => 'VuFind\Auth\ShibbolethFactory',
                 ],
                 'aliases' => [
                     'VuFind\Auth\ILS' => 'Finna\Auth\ILS',
