@@ -251,11 +251,11 @@ class SolrMarc extends SolrDefault
         $issns_and_titles = [];
         $_022fields = $this->getMarcRecord()->getFields("022");
         foreach ($_022fields as $_022field) {
-             $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
-            if (!empty($subfieldA)) {
+             $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+            if (!empty($subfield_a)) {
                 $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
                 $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
-                $issns_and_titles[$this->cleanISSN($subfieldA)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
+                $issns_and_titles[$this->cleanISSN($subfield_a)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
              }
         }
         $_029fields = $this->getMarcRecord()->getFields("029");
@@ -263,8 +263,8 @@ class SolrMarc extends SolrDefault
             if ($_029field->getIndicator('1') == 'x') {
                 switch ($_029field->getIndicator('2')) {
                     case 'c':
-                         $subfieldA = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
-                         $issn = $this->cleanISSN($subfieldA);
+                         $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                         $issn = $this->cleanISSN($subfield_a);
                          if (!array_key_exists($issn, $issns_and_titles))
                              $issns_and_titles[$issn] = '';
                          break;
