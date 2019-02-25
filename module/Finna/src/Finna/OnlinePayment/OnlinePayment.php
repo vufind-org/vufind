@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,8 +28,6 @@
  */
 namespace Finna\OnlinePayment;
 
-use Zend\I18n\Translator\TranslatorInterface;
-
 /**
  * Online payment service
  *
@@ -40,8 +38,12 @@ use Zend\I18n\Translator\TranslatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OnlinePayment
+class OnlinePayment implements \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Configuration.
      *
@@ -64,38 +66,18 @@ class OnlinePayment
     protected $logger;
 
     /**
-     * HTTP service.
-     *
-     * @var \VuFindHttp\HttpService
-     */
-    protected $http;
-
-    /**
-     * Translator
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Http         $http         HTTP service.
      * @param DbTablePluginManager $tableManager Table manager
      * @param Logger               $logger       Logger
      * @param Config               $config       Configuration
-     * @param TranslatorInterface  $translator   Translator
      */
-    public function __construct(\VuFindHttp\HttpService $http,
-        \VuFind\Db\Table\PluginManager $tableManager,
-        \VuFind\Log\Logger $logger, \Zend\Config\Config $config,
-        TranslatorInterface $translator
+    public function __construct(\VuFind\Db\Table\PluginManager $tableManager,
+        \VuFind\Log\Logger $logger, \Zend\Config\Config $config
     ) {
-        $this->http = $http;
         $this->tableManager = $tableManager;
         $this->logger = $logger;
         $this->config = $config;
-        $this->translator = $translator;
     }
 
     /**
@@ -116,7 +98,7 @@ class OnlinePayment
         }
         $handler = new $class(
             $this->getConfig($source),
-            $this->http,
+            $this->httpService,
             $this->translator
         );
         $handler->setDbTableManager($this->tableManager);

@@ -28,10 +28,11 @@
  */
 namespace Finna\Role\PermissionProvider;
 
-use Finna\Auth\Manager;
+use Finna\Auth\Manager as AuthManager;
+use Finna\Auth\ILSAuthenticator;
+use Finna\ILS\Connection as ILSConnection;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * Authentication strategy permission provider for VuFind.
@@ -46,20 +47,39 @@ use Zend\ServiceManager\ServiceManager;
 class AuthenticationStrategy implements PermissionProviderInterface
 {
     /**
-     * Service manager
+     * Authentication manager
      *
-     * @var ServiceManager
+     * @var AuthManager
      */
-    protected $serviceLocator;
+    protected $authManager;
+
+    /**
+     * ILS authenticator
+     *
+     * @var ILSAuthenticator
+     */
+    protected $ilsAuth;
+
+    /**
+     * ILS connection
+     *
+     * @var ILSConnection
+     */
+    protected $ils;
 
     /**
      * Constructor
      *
-     * @param ServiceManager $sm ServiceManager
+     * @param AuthManager      $am      Authentication manager
+     * @param ILSConnection    $ils     ILS connection
+     * @param ILSAuthenticator $ilsAuth ILS authenticator
      */
-    public function __construct(ServiceManager $sm)
+    public function __construct(AuthManager $am, ILSConnection $ils,
+        ILSAuthenticator $ilsAuth)
     {
-        $this->serviceLocator = $sm;
+        $this->authManager = $am;
+        $this->ils = $ils;
+        $this->ilsAuth = $ilsAuth;
     }
 
     /**
@@ -72,9 +92,7 @@ class AuthenticationStrategy implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        $authManager = $this->serviceLocator->get('VuFind\AuthManager');
-        $auth = $authManager->getActiveAuth();
-        $permissions = [];
+        $auth = $this->authManager->getActiveAuth();
 
         // Check if current authentication strategy is authorizable
         $selected = $auth->getSelectedAuthOption();
@@ -86,17 +104,15 @@ class AuthenticationStrategy implements PermissionProviderInterface
             && in_array('ILS-statCode', $options)
         ) {
             // Check ILS stat group
-            $connection = $this->serviceLocator->get('VuFind\ILSConnection');
-            $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
             try {
-                $patron = $ilsAuth->storedCatalogLogin();
+                $patron = $this->ilsAuth->storedCatalogLogin();
                 if ($patron) {
-                    $functionConfig = $connection->checkFunction(
+                    $functionConfig = $this->ils->checkFunction(
                         'getPatronAuthorizationStatus',
                         $patron
                     );
                     if ($functionConfig
-                        && !$connection->getPatronAuthorizationStatus($patron)
+                        && !$this->ils->getPatronAuthorizationStatus($patron)
                     ) {
                         return ['loggedin'];
                     }
@@ -109,17 +125,15 @@ class AuthenticationStrategy implements PermissionProviderInterface
             && in_array('ILS-staff', $options)
         ) {
             // Check ILS for staff user
-            $connection = $this->serviceLocator->get('VuFind\ILSConnection');
-            $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
             try {
-                $patron = $ilsAuth->storedCatalogLogin();
+                $patron = $this->ilsAuth->storedCatalogLogin();
                 if ($patron) {
-                    $functionConfig = $connection->checkFunction(
+                    $functionConfig = $this->ils->checkFunction(
                         'getPatronStaffAuthorizationStatus',
                         $patron
                     );
                     if ($functionConfig
-                        && $connection->getPatronStaffAuthorizationStatus($patron)
+                        && $this->ils->getPatronStaffAuthorizationStatus($patron)
                     ) {
                         return ['loggedin'];
                     }

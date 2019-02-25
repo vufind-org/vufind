@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2018.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,10 +24,13 @@
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OrganisationInfo;
+
+use Zend\View\Renderer\RendererInterface;
 
 /**
  * Service for querying Kirjastohakemisto database.
@@ -37,11 +40,16 @@ namespace Finna\OrganisationInfo;
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
+class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -61,72 +69,35 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     /**
      * View Renderer
      *
-     * @var VuFind\CacheManager
+     * @var RendererInterface
      */
     protected $viewRenderer;
 
     /**
-     * HTTP service
-     *
-     * @var VuFind\Http
-     */
-    protected $http;
-
-    /**
-     * Translator
-     *
-     * @var VuFind\Tranlator
-     */
-    protected $translator;
-
-    /**
-     * Language version
+     * Language (use getLanguage())
      *
      * @var string
      */
-    protected $language;
+    protected $language = null;
 
     /**
-     * Fallback language version
+     * Fallback language (use getFallbackLanguage())
      *
      * @var string
      */
-    protected $fallbackLanguage;
+    protected $fallbackLanguage = null;
 
     /**
      * Constructor.
      *
-     * @param Zend\Config\Config             $config       Configuration
-     * @param VuFind\CacheManager            $cacheManager Cache manager
-     * @param VuFind\Http                    $http         HTTP service
-     * @param Zend\View\Renderer\PhpRenderer $viewRenderer View renderer
-     * @param VuFind\Translator              $translator   Translator
+     * @param Zend\Config\Config  $config       Configuration
+     * @param VuFind\CacheManager $cacheManager Cache manager
+     * @param RendererInteface    $viewRenderer View renderer
      */
-    public function __construct(
-        $config, $cacheManager, $http, $viewRenderer, $translator
-    ) {
+    public function __construct($config, $cacheManager, $viewRenderer) {
         $this->config = $config;
         $this->cacheManager = $cacheManager;
         $this->viewRenderer = $viewRenderer;
-        $this->http = $http;
-        $this->translator = $translator;
-
-        $allLanguages = isset($config->General->languages)
-            ? $config->General->languages->toArray() : [];
-
-        $language = isset($config->General->language)
-            ? $config->General->language
-            : $this->translator->getLocale();
-
-        $this->language = $this->validateLanguage($language, $allLanguages);
-
-        if (!empty($config->General->fallbackLanguage)) {
-            $fallback = $config->General->fallbackLanguage;
-            $fallback = $this->validateLanguage($fallback, $allLanguages);
-            if ($fallback != $this->language) {
-                $this->fallbackLanguage = $fallback;
-            }
-        }
     }
 
     /**
@@ -149,6 +120,45 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         }
 
         return $language;
+    }
+
+    /**
+     * Get the active language to use in a request
+     *
+     * @return string
+     */
+    protected function getLanguage()
+    {
+        if (null === $this->language) {
+            $allLanguages = isset($this->config->General->languages)
+                ? $this->config->General->languages->toArray() : [];
+
+            $language = isset($this->config->General->language)
+                ? $this->config->General->language
+                : $this->translator->getLocale();
+
+            $this->language = $this->validateLanguage($language, $allLanguages);
+        }
+        return $this->language;
+    }
+
+    /**
+     * Get the fallback language to use if there are no results in active language
+     *
+     * @return string
+     */
+    protected function getFallbackLanguage()
+    {
+        if (null === $this->fallbackLanguage) {
+            $allLanguages = isset($this->config->General->languages)
+                ? $this->config->General->languages->toArray() : [];
+
+            $fallback = $this->config->General->fallbackLanguage ?? '';
+            $fallback = $this->validateLanguage($fallback, $allLanguages);
+            $this->fallbackLanguage = $fallback !== $this->getLanguage() ?
+                $fallback : '';
+        }
+        return $this->fallbackLanguage;
     }
 
     /**
@@ -352,7 +362,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         // Check if consortium is found in Kirjastohakemisto
         $params = [
             'finna:id' => $parent,
-            'lang' => $this->language
+            'lang' => $this->getLanguage()
         ];
         $params['with'] = 'finna';
         $response = $this->fetchData('consortium', $params);
@@ -421,8 +431,9 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             if ($link) {
                 $logo = $json['image'] ?? null;
             }
-            $name = isset($json['name'][$this->language])
-                ? $json['name'][$this->language]
+            $lang = $this->getLanguage();
+            $name = isset($json['name'][$lang])
+                ? $json['name'][$lang]
                     : $this->translator->translate("source_{$parent}");
             $data = $this->viewRenderer->partial(
                 'Helpers/organisation-page-link.phtml', [
@@ -454,8 +465,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             'finna:id' => $parent,
             'with' => 'finna,link_groups'
         ];
-        if (!$this->fallbackLanguage) {
-            $params['lang'] = $this->language;
+        if (!$this->getFallbackLanguage()) {
+            $params['lang'] = $this->getLanguage();
         }
 
         $response = $this->fetchData('consortium', $params);
@@ -552,8 +563,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             'period.end' => $endDate,
             'refs' => 'period'
         ];
-        if (!$this->fallbackLanguage) {
-            $params['lang'] = $this->language;
+        if (!$this->getFallbackLanguage()) {
+            $params['lang'] = $this->getLanguage();
         }
         if (!empty($buildings)) {
             if (($buildings = implode(',', $buildings)) != '') {
@@ -605,8 +616,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             'period.end' => $endDate,
             'refs' => 'period'
         ];
-        if (!$this->fallbackLanguage) {
-            $params['lang'] = $this->language;
+        if (!$this->getFallbackLanguage()) {
+            $params['lang'] = $this->getLanguage();
         }
 
         $response = $this->fetchData('organisation', $params);
@@ -683,7 +694,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
         if (!$response) {
-            $client = $this->http->createClient(
+            $client = $this->httpService->createClient(
                 $url, \Zend\Http\Request::METHOD_GET, 10
             );
             $result = $client->send();
@@ -1174,8 +1185,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
      *
      * @param array  $obj      Object
      * @param string $field    Field
-     * @param string $language Language version. If not defined,
-     * the configured language versions is used.
+     * @param string $language Language to use. If not defined,
+     * the configured language is used.
      *
      * @return mixed
      */
@@ -1185,22 +1196,23 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             return null;
         }
 
+        if (!$language) {
+            $language = $this->getLanguage();
+        }
+
         $data = $obj[$field];
 
         if (!is_array($data)) {
             return $data;
         }
 
-        if ($language && !empty($data[$language])) {
+        if (!empty($data[$language])) {
             return $data[$language];
         }
 
-        if (!empty($data[$this->language])) {
-            return $data[$this->language];
-        }
-
-        if ($this->fallbackLanguage && !empty($data[$this->fallbackLanguage])) {
-            return $data[$this->fallbackLanguage];
+        $fallback = $this->getFallbackLanguage();
+        if ($fallback && !empty($data[$fallback])) {
+            return $data[$fallback];
         }
 
         return null;
@@ -1223,7 +1235,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             );
             return false;
         }
-        $language = $this->language;
+        $language = $this->getLanguage();
         $json = $response['museot'][0];
         $consortium = $finna = [];
         $publish = $json['finna_publish'];

@@ -41,7 +41,6 @@
   ]);
   if ($lastUrl = $this->searchMemory()->getLastSearchUrl()) {
       $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
-      $params->activateAllFacets();
       $filterList = $params->getFilterList(true);
 
       if (!empty($params->getFilterList(false))) {

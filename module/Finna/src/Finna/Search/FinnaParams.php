@@ -62,11 +62,13 @@ trait FinnaParams
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
+     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     *
      * @return array
      */
-    public function getCheckboxFacets()
+    public function getCheckboxFacets(array $whitelist = null)
     {
-        $facets = parent::getCheckboxFacets();
+        $facets = parent::getCheckboxFacets($whitelist);
 
         // Hide checkboxfacets that are
         // configured as SearchTabsFilters
@@ -94,17 +96,18 @@ trait FinnaParams
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         if (strncmp($field, '{!geofilt', 9) == 0) {
             return 'Geographical Area';
         }
-        return parent::getFacetLabel($field, $value);
+        return parent::getFacetLabel($field, $value, $default);
     }
 
     /**
@@ -392,5 +395,15 @@ trait FinnaParams
         $viewOptionsIcons = is_callable([$options, 'getViewOptionListType'])
             ? $options->getViewOptionListType() : false;
         return $viewOptionsIcons;
+    }
+
+    /**
+     * Used to be used for activating all facets, but no longer needed
+     *
+     * @return void
+     */
+    public function activateAllFacets()
+    {
+        // NOOP for backwards-compatibility
     }
 }

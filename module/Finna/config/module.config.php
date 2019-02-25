@@ -231,21 +231,21 @@ $config = [
             'Finna\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'Finna\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
             'Finna\Cover\Loader' => 'VuFind\Cover\LoaderFactory',
-            'Finna\Feed\Feed' => 'Finna\Service\Factory::getFeed',
+            'Finna\Feed\Feed' => 'Finna\Feed\FeedFactory',
             'Finna\Form\Form' => 'Finna\Form\FormFactory',
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
-            'Finna\LocationService\LocationService' => 'Finna\Service\Factory::getLocationService',
+            'Finna\LocationService\LocationService' => 'Finna\LocationService\LocationServiceFactory',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
-            'Finna\OnlinePayment\OnlinePayment' => 'Finna\Service\Factory::getOnlinePaymentManager',
-            'Finna\OnlinePayment\Session' => 'Finna\Service\Factory::getOnlinePaymentSession',
-            'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
+            'Finna\OnlinePayment\OnlinePayment' => 'Finna\OnlinePayment\OnlinePaymentFactory',
+            'Finna\OnlinePayment\Session' => 'Finna\OnlinePayment\OnlinePaymentSessionFactory',
+            'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\OrganisationInfo\OrganisationInfoFactory',
             'Finna\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
 
-            'FinnaSearch\Service' => 'Finna\Service\Factory::getSearchService',
+            'FinnaSearch\Service' => 'VuFind\Service\SearchServiceFactory',
 
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
 
@@ -741,8 +741,8 @@ $config = [
     'zfc_rbac' => [
         'vufind_permission_provider_manager' => [
             'factories' => [
-                'Finna\Role\PermissionProvider\AuthenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
-                'Finna\Role\PermissionProvider\IpRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
+                'Finna\Role\PermissionProvider\AuthenticationStrategy' => 'Finna\Role\PermissionProvider\AuthenticationStrategyFactory',
+                'Finna\Role\PermissionProvider\IpRange' => 'VuFind\Role\PermissionProvider\IpRangeFactory'
             ],
             'aliases' => [
                 'authenticationStrategy' => 'Finna\Role\PermissionProvider\AuthenticationStrategy',

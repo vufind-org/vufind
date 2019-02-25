@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,17 +22,16 @@
  * @category VuFind
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Feed;
 
 use VuFind\Cache\Manager as CacheManager;
-use VuFindHttp\HttpService;
 use VuFindTheme\View\Helper\ImageLink;
 use Zend\Config\Config;
 use Zend\Feed\Reader\Reader;
-use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\Plugin\Url;
 
 /**
@@ -41,11 +40,16 @@ use Zend\Mvc\Controller\Plugin\Url;
  * @category VuFind
  * @package  Content
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Feed implements \Zend\Log\LoggerAwareInterface
+class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -61,20 +65,6 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      * @var Config
      */
     protected $feedConfig;
-
-    /**
-     * Http service
-     *
-     * @var HttpService
-     */
-    protected $http;
-
-    /**
-     * Translator
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator;
 
     /**
      * Cache manager
@@ -102,21 +92,16 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      *
      * @param Config              $config     Main configuration
      * @param Config              $feedConfig Feed configuration
-     * @param HttpService         $http       Http service
-     * @param TranslatorInterface $translator Translator
      * @param CacheManager        $cm         Cache manager
      * @param Url                 $url        URL helper
      * @param ImageLink           $imageLink  Image link helper
      */
     public function __construct(
-        Config $config, Config $feedConfig, HttpService $http,
-        TranslatorInterface $translator, CacheManager $cm,
-        Url $url, ImageLink $imageLink
+        Config $config, Config $feedConfig, CacheManager $cm, Url $url,
+        ImageLink $imageLink
     ) {
         $this->mainConfig = $config;
         $this->feedConfig = $feedConfig;
-        $this->http = $http;
-        $this->translator = $translator;
         $this->cacheManager = $cm;
         $this->urlHelper = $url;
         $this->imageLinkHelper = $imageLink;
@@ -278,7 +263,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
             && '' !== $this->mainConfig->Content->feedcachetime
             ? $this->mainConfig->Content->feedcachetime : 10;
 
-        $httpClient = $this->http->createClient();
+        $httpClient = $this->httpService->createClient();
         $httpClient->setOptions(['timeout' => 30]);
         Reader::setHttpClient($httpClient);
 
