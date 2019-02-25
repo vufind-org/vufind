@@ -237,4 +237,42 @@ class SolrMarc extends SolrDefault
                   return $contains_description;
         }
     }
+
+
+    public function cleanISSN($issn) {
+        if ($pos = strpos($issn, ' ')) {
+            $issn = substr($issn, 0, $pos);
+        }
+        return $issn;
+    }
+
+
+    public function getJOPISSNsAndTitles() {
+        $issns_and_titles = [];
+        $_022fields = $this->getMarcRecord()->getFields("022");
+        foreach ($_022fields as $_022field) {
+             $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+            if (!empty($subfield_a)) {
+                $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
+                $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
+                $issns_and_titles[$this->cleanISSN($subfield_a)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
+             }
+        }
+        $_029fields = $this->getMarcRecord()->getFields("029");
+        foreach ($_029fields as $_029field) {
+            if ($_029field->getIndicator('1') == 'x') {
+                switch ($_029field->getIndicator('2')) {
+                    case 'c':
+                         $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                         $issn = $this->cleanISSN($subfield_a);
+                         if (!array_key_exists($issn, $issns_and_titles))
+                             $issns_and_titles[$issn] = '';
+                         break;
+                    default:
+                         break;
+                }
+            }
+        }
+        return $issns_and_titles;
+    }
 }
