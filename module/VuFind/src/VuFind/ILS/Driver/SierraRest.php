@@ -571,7 +571,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             $transaction['volume'] = $this->extractVolume($item);
             if (!empty($item['bibIds'])) {
-                $transaction['id'] = $item['bibIds'][0];
+                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
 
                 // Fetch bib information
                 $bib = $this->getBibRecord(
@@ -707,7 +707,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             $transaction['volume'] = $this->extractVolume($item);
             if (!empty($item['bibIds'])) {
-                $transaction['id'] = $item['bibIds'][0];
+                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
 
                 // Fetch bib information
                 $bib = $this->getBibRecord(
@@ -803,7 +803,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
             $holds[] = [
-                'id' => $bibId,
+                'id' => $this->formatBibId($bibId),
                 'requestId' => $this->extractId($entry['id']),
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 // note that $entry['pickupLocation']['name'] may contain misleading
@@ -1030,7 +1030,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = $holdDetails['item_id'] ?? false;
         $comment = $holdDetails['comment'] ?? '';
-        $bibId = $holdDetails['id'];
+        $bibId = $this->extractBibId($holdDetails['id']);
 
         // Convert last interest date from Display Format to Sierra's required format
         try {
@@ -1166,7 +1166,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['assessedDate']
                 ),
                 'checkout' => '',
-                'id' => $bibId,
+                'id' => $this->formatBibId($bibId),
                 'title' => $title
             ];
         }
@@ -1623,7 +1623,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $result = $this->makeRequest(
                 ['v3', 'items'],
                 [
-                    'bibIds' => $id,
+                    'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
                     'suppressed' => 'false',
                     'fields' => $fields,
@@ -1973,10 +1973,52 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getBibRecord($id, $fields, $patron = false)
     {
         return $this->makeRequest(
-            ['v3', 'bibs', $id],
+            ['v3', 'bibs', $this->extractBibId($id)],
             ['fields' => $fields],
             'GET',
             $patron
         );
+    }
+
+    /**
+     * Extract a numeric bib ID value from a string that may be prefixed.
+     *
+     * @param string $id Bib record id (with or without .b prefix)
+     *
+     * @return int
+     */
+    protected function extractBibId($id)
+    {
+        // If the .b prefix is found, strip it and the trailing checksum:
+        return substr($id, 0, 2) === '.b'
+            ? substr($id, 2, strlen($id) - 3) : $id;
+    }
+
+    /**
+     * If the system is configured to use full prefixed bib IDs, add the prefix
+     * and checksum.
+     *
+     * @param int $id Bib ID that may need to be prefixed.
+    * 
+     * @return string
+     */
+    protected function formatBibId($id)
+    {
+        // Simple case: prefixing is disabled, so return ID unmodified:
+        if (!($this->config['Catalog']['use_prefixed_ids'] ?? false)) {
+            return $id;
+        }
+
+        // If we got this far, we need to generate a check digit:
+        $multiplier = 2;
+        $sum = 0;
+        for ($x = strlen($id) - 1; $x >= 0; $x--) {
+            $current = substr($id, $x, 1);
+            $sum += $multiplier * intval($current);
+            $multiplier++;
+        }
+        $checksum = $sum % 11;
+        $finalChecksum = $checksum === 10 ? 'x' : $checksum;
+        return '.b' . $id . $finalChecksum;
     }
 }
