@@ -1,15 +1,15 @@
 <?
 $i=0;
 $formats = $this->driver->getFormats();
-$is_hybrid = $this->driver->tryMethod('isHybrid') || (in_array("Electronic", $media_types) && in_array("Non-Electronic", $media_types));
 $media_types = $this->driver->tryMethod('getMediaTypes');
+$is_hybrid = $this->driver->tryMethod('isHybrid') || (in_array("Electronic", $media_types) && in_array("Non-Electronic", $media_types));
 if (isset($media_types)) {
 
   if ($is_hybrid):
     $formats = array_merge(["Electronic/Print"], $formats);
   elseif (in_array("Electronic", $media_types)):
     $formats = array_merge(["Electronic"], $formats);
-  else
+  else:
     $formats = array_merge(["Print"], $formats);
   endif;
   $i = 0;
