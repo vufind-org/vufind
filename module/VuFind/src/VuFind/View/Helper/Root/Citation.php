@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Seboettg\CiteProc\StyleSheet;
 use Seboettg\CiteProc\CiteProc;
+use Seboettg\CiteProc\StyleSheet;
 use VuFind\Date\DateException;
 
 /**
