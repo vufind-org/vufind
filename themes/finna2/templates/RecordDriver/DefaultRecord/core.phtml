@@ -7,33 +7,30 @@
   $onlineURLs = $this->driver->getOnlineURLs();
   $mergedData = $this->driver->tryMethod('getMergedRecordData');
   $renderedURLs = [];
+  $videoUrls = [];
+  $audioUrls = [];
+  $otherUrls = [];
 
   if (!empty($urls)){
-    $videoUrls = [];
-    $audioUrls = [];
-    $otherUrls = [];
     foreach ($urls as $url) {
       $renderedURLs[] = $url['url'];
-      if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
-        array_push($videoUrls, $url);
+      if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe') {
+        $videoUrls[] = $url;
       } elseif (!empty($url['embed']) && $url['embed'] == 'audio') {
-        array_push($audioUrls, $url);
+        $audioUrls[] = $url;
       } else {
-        array_push($otherUrls, $url);
+        $otherUrls[] = $url;
       }
     }
   }
 
   if (!empty($onlineURLs)) {
-    if (empty($audioUrls)) {
-      $audioUrls = [];
-    }
     $tempUrlArray = [];
     foreach ($onlineURLs as $url) {
       if (!empty($url['embed']) && $url['embed'] == 'audio') {
-        array_push($audioUrls, $url);
+        $audioUrls[] = $url;
       } else {
-        array_push($tempUrlArray, $url);
+        $tempUrlArray[] = $url;
       }
     }
     $onlineURLs = $tempUrlArray;

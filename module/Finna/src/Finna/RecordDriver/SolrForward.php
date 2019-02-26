@@ -1021,7 +1021,10 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             if (!isset($settings[2]) || $source !== $settings[0]) {
                 continue;
             }
-            $sourceConfigs[$settings[1]] = $settings[2];
+            $sourceConfigs[] = [
+                'type' => $settings[1],
+                'src' => $settings[2]
+            ];
         }
         if (empty($sourceConfigs)) {
             return [];
@@ -1063,13 +1066,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 }
 
                 $videoSources = [];
-                foreach ($sourceConfigs as $type => $src) {
+                foreach ($sourceConfigs as $config) {
                     $src = str_replace(
-                        '{videoname}', $videoUrl, $src
+                        '{videoname}', $videoUrl, $config['src']
                     );
                     $videoSources[] = [
                         'src' => $src,
-                        'type' => $type
+                        'type' => $config['type']
                     ];
                 }
 
