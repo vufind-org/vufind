@@ -273,12 +273,6 @@ finna.imagePopup = (function finnaImagePopup() {
 
       var player = videojs('video');
 
-      videojs.Html5DashJS.hook(
-        'beforeinitialize',
-        function onBeforeInit(videoJs, mediaPlayer) {
-          mediaPlayer.getDebug().setLogToBrowserConsole(false);
-        }
-      );
       player.ready(function onReady() {
         this.hotkeys({
           enableVolumeScroll: false,
