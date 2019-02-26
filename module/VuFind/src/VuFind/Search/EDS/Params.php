@@ -65,6 +65,14 @@ class Params extends \VuFind\Search\Base\Params
         = ['Advanced_Facets', 'FacetsTop', 'Facets'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Is the request using this parameters objects for setup only?
      *
      * @var bool
