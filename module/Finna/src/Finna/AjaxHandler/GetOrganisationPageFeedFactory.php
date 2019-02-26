@@ -64,14 +64,14 @@ class GetOrganisationPageFeedFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)
                 ->get('rss-organisation-page'),
             $container->get('Finna\Feed\Feed'),
             $container->get('ViewRenderer'),
             $container->get('ControllerPluginManager')->get('url')
         );
-        $result->setLogger($container->get('VuFind\Logger'));
+        $result->setLogger($container->get(\VuFind\Log\Logger::class));
         return $result;
     }
 }

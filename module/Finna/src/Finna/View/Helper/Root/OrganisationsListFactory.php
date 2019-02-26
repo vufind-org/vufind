@@ -63,9 +63,9 @@ class OrganisationsListFactory implements FactoryInterface
         }
 
         return new $requestedName(
-            $container->get('VuFind\Cache\Manager')->getCache('object'),
-            $container->get('VuFind\Search\Solr\HierarchicalFacetHelper'),
-            $container->get('VuFind\Search\Results\PluginManager'),
+            $container->get(\VuFind\Cache\Manager::class)->getCache('object'),
+            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('Finna\OrganisationInfo\OrganisationInfo')
         );
     }

@@ -62,14 +62,14 @@ class GetImagePopupFactory implements \Zend\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $container->get('VuFind\Record\Loader'),
-            $tablePluginManager->get('VuFind\Db\Table\User'),
-            $tablePluginManager->get('VuFind\Db\Table\UserList'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Record\Loader::class),
+            $tablePluginManager->get(\VuFind\Db\Table\User::class),
+            $tablePluginManager->get(\VuFind\Db\Table\UserList::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ViewRenderer')->plugin('record')
         );
         return $result;

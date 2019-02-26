@@ -67,8 +67,8 @@ class RecordController extends \VuFind\Controller\RecordController
 
             $driver = $this->loadRecord();
             $dataSource = $driver->getDataSource();
-            $dataSources = $this->serviceLocator->get('VuFind\Config')
-                ->get('datasources');
+            $dataSources = $this->serviceLocator
+                ->get(\VuFind\Config\PluginManager::class)->get('datasources');
 
             $inst = $dataSources->$dataSource ?? null;
             $recipientEmail = isset($inst->feedbackEmail) ?
@@ -130,7 +130,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $headers->removeHeader('Content-Type');
             $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
 
-            $this->serviceLocator->get('VuFind\Mailer')->getTransport()
+            $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->getTransport()
                 ->send($mail);
 
             $flashMsg->addSuccessMessage('Thank you for your feedback.');
@@ -161,7 +161,7 @@ class RecordController extends \VuFind\Controller\RecordController
             throw new \Exception('Normalization preview URL not configured');
         }
 
-        $httpService = $this->serviceLocator->get('VuFind\Http');
+        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
         $client = $httpService->createClient(
             $config->NormalizationPreview->url,
             \Zend\Http\Request::METHOD_POST
@@ -178,7 +178,7 @@ class RecordController extends \VuFind\Controller\RecordController
         }
         $metadata = json_decode($response->getBody(), true);
         $recordFactory = $this->serviceLocator
-            ->get('VuFind\RecordDriverPluginManager');
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $this->driver = $recordFactory->getSolrRecord($metadata);
         return $this->driver;
     }
@@ -455,7 +455,7 @@ class RecordController extends \VuFind\Controller\RecordController
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -594,7 +594,7 @@ class RecordController extends \VuFind\Controller\RecordController
         // Find and format the default required date:
         $defaultRequired = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -721,7 +721,7 @@ class RecordController extends \VuFind\Controller\RecordController
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries

@@ -416,7 +416,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         // Validate new password
         try {
-            $ilsAuth = $this->serviceLocator->get('VuFind\AuthPluginManager')
+            $ilsAuth = $this->serviceLocator->get(\VuFind\Auth\PluginManager::class)
                 ->get('ILS');
             $ilsAuth->validatePasswordInUpdate(
                 ['password' => $password, 'password2' => $password2]
@@ -517,7 +517,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                     '%%library%%' => $library
                 ]
             );
-            $this->serviceLocator->get('VuFind\Mailer')->send(
+            $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
                 $email,
                 $config->Site->email,
                 $subject,

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -46,7 +46,7 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
     public function homeAction()
     {
         $config = $this->serviceLocator
-            ->get('VuFind\Config')->get('OrganisationInfo');
+            ->get(\VuFind\Config\PluginManager::class)->get('OrganisationInfo');
 
         $id = $this->params()->fromQuery('id');
         $buildings = $this->params()->fromQuery('buildings');
@@ -62,7 +62,6 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
         }
 
         $organisation = "0/{$id}/";
-        $translator = $this->serviceLocator->get('VuFind\Translator');
 
         $consortiumInfo = isset($config->OrganisationPage->consortiumInfo)
             ? $config->OrganisationPage->consortiumInfo : false;
@@ -72,12 +71,12 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
 
         $title = str_replace(
             '%%organisation%%',
-            $translator->translate($organisation),
-            $translator->translate($title)
+            $this->translate($organisation),
+            $this->translate($title)
         );
 
-        $facetConfig = $this->serviceLocator->get('VuFind\Config')
-            ->get('facets');
+        $facetConfig = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)->get('facets');
 
         $buildingOperator = '';
         if (isset($facetConfig->Results_Settings->orFacets)) {

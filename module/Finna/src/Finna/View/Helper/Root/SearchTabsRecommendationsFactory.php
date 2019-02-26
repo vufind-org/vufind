@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -61,7 +61,8 @@ class SearchTabsRecommendationsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config
+            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $recommendationConfig = isset($config->SearchTabsRecommendations)
             ? $config->SearchTabsRecommendations->toArray() : [];
 

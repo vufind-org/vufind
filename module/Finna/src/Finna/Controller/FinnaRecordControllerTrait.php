@@ -63,7 +63,7 @@ trait FinnaRecordControllerTrait
      */
     protected function modifyLastSearchURL()
     {
-        $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
+        $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
 
         if ($last = $memory->retrieveSearch()) {
             $parts = parse_url($last);

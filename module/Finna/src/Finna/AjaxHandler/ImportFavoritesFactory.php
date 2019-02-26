@@ -62,16 +62,16 @@ class ImportFavoritesFactory implements \Zend\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ViewRenderer'),
-            $tablePluginManager->get('VuFind\Db\Table\Search'),
-            $tablePluginManager->get('VuFind\Db\Table\UserList'),
-            $tablePluginManager->get('VuFind\Db\Table\UserResource'),
-            $container->get('VuFind\Search\Results\PluginManager'),
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Favorites\FavoritesService')
+            $tablePluginManager->get(\VuFind\Db\Table\Search::class),
+            $tablePluginManager->get(\VuFind\Db\Table\UserList::class),
+            $tablePluginManager->get(\VuFind\Db\Table\UserResource::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Favorites\FavoritesService::class)
         );
     }
 }

@@ -128,7 +128,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         if (!$formId) {
             $formId = 'FeedbackSite';
         }
-        $form = $this->serviceLocator->get('VuFind\Form\Form');
+        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
         $form->setFormId($formId);
 
         if ($form->useEmailHandler()) {

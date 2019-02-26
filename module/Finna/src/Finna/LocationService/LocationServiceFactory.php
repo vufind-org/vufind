@@ -29,7 +29,6 @@
 namespace Finna\LocationService;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**

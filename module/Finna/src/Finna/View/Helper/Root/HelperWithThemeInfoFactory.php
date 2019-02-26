@@ -62,7 +62,7 @@ class HelperWithThemeInfoFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFindTheme\ThemeInfo')
+            $container->get(\VuFindTheme\ThemeInfo::class)
         );
     }
 }

@@ -62,8 +62,8 @@ class TotalIndexedFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Cache\Manager'),
-            $container->get('VuFind\Search\Results\PluginManager')
+            $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }
 }

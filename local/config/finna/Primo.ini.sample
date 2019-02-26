@@ -93,6 +93,23 @@ lang    = Language
 ; Top facets (not used by default)
 [FacetsTop]
 
+; This section controls where facet labels are retrieved from when facets are not
+; explicitly configured.
+[FacetLabels]
+; This setting lists configuration sections containing facet field => label
+; mappings. Later values will override earlier values. These mappings will be used
+; only when a label is not explicitly configured (i.e. through SideFacets settings).
+; If you customize your facet display, be sure to add any new facet configuration
+; sections to this list to ensure proper display in search history, etc.
+labelSections[] = Advanced_Facets
+labelSections[] = FacetsTop
+labelSections[] = Facets
+
+; This setting lists configuration settings defining checkbox facets. If you use
+; a custom section to configure additional facets, be sure to add it to this list
+; so labels display correctly in history, the advanced search editor, etc.
+checkboxSections[] = CheckboxFacets
+
 ; Facet display settings
 [Results_Settings]
 ; By default, the side facets will only show 6 facets and then the "show more"
@@ -226,20 +243,20 @@ next_prev_navigation = true
 [Autocomplete]
 enabled = 1
 
-; This section allows for adding hidden filters. Each filter will be passed to the 
+; This section allows for adding hidden filters. Each filter will be passed to the
 ; Primo query in format facet_{filter},exact,{value} apart from pcAvailability
-; which is handled separately and overrides the pcAvailability checkbox facet. 
+; which is handled separately and overrides the pcAvailability checkbox facet.
 [HiddenFilters]
 pcAvailability = true
 
 ; Settings for showing or hiding online URLs for records from selected sources.
-; Record source is read from record > search > sourceid. Use '*' as a wild card 
+; Record source is read from record > search > sourceid. Use '*' as a wild card
 ; to indicate all sources. If no filters are defined, URLs are shown for all records.
 ;
-; showFromSourcesWithFulltext/hideFromSourcesWithFulltext -lists are used when the 
+; showFromSourcesWithFulltext/hideFromSourcesWithFulltext -lists are used when the
 ; record contains a fulltext link. Othervise showFromSources/hideFromSources.
 ;
-; Note: filtering only affects local URLs (from record metadata). SFX-resolver links 
+; Note: filtering only affects local URLs (from record metadata). SFX-resolver links
 ; are not filtered.
 [OnlineURLs]
 

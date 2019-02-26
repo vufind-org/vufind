@@ -6,7 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013-2018.
+ * Copyright (C) The National Library of Finland 2013-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -69,7 +69,8 @@ class SolrDefaultBackendFactory
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
-        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $manager
+            = $this->serviceLocator->get(\VuFind\RecordDriver\PluginManager::class);
         $factory = new RecordCollectionFactory(
             [$manager, 'getSolrRecord'],
             'FinnaSearch\Backend\Solr\Response\Json\RecordCollection'
@@ -153,7 +154,7 @@ class SolrDefaultBackendFactory
     /**
      * Create the similar records query builder.
      *
-     * @return VuFindSearch\Backend\Solr\SimilarBuilder
+     * @return \VuFindSearch\Backend\Solr\SimilarBuilder
      */
     protected function createSimilarBuilder()
     {

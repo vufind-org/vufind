@@ -170,28 +170,4 @@ class CoverController extends \VuFind\Controller\CoverController
         $params['invalid_isbn'] =  $this->params()->fromQuery('invisbn');
         return $params;
     }
-
-    /**
-     * Get the cover loader object
-     *
-     * @return Loader
-     */
-    protected function getLoader()
-    {
-        // Construct object for loading cover images if it does not already exist:
-        if (!$this->loader) {
-            $cacheDir = $this->getCacheDir();
-            $this->loader = new Loader(
-                $this->getConfig(),
-                $this->serviceLocator->get('VuFind\ContentCoversPluginManager'),
-                $this->serviceLocator->get('VuFindTheme\ThemeInfo'),
-                $this->serviceLocator->get('VuFindHttp\HttpService'),
-                $cacheDir
-            );
-
-            $initializer = new \VuFind\ServiceManager\ServiceInitializer();
-            $initializer($this->serviceLocator, $this->loader);
-        }
-        return $this->loader;
-    }
 }

@@ -62,7 +62,7 @@ class CookieFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Cookie\CookieManager')
+            $container->get(\VuFind\Cookie\CookieManager::class)
         );
     }
 }

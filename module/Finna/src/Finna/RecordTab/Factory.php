@@ -54,16 +54,16 @@ class Factory
      */
     public static function getMap(ServiceManager $sm)
     {
-        $config = $sm->get('VuFind\Config')->get('config');
+        $config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
         $enabled = isset($config->Content->recordMap);
 
         // get Map Tab config options
-        $mapTabConfig = $sm->get('VuFind\GeoFeatures\MapTabConfig');
+        $mapTabConfig = $sm->get(\VuFind\GeoFeatures\MapTabConfig::class);
         $mapTabOptions = $mapTabConfig->getMapTabOptions();
         $mapTabDisplay = $mapTabOptions['recordMap'];
 
         // add basemap options
-        $basemapConfig = $sm->get('VuFind\GeoFeatures\BasemapConfig');
+        $basemapConfig = $sm->get(\VuFind\GeoFeatures\BasemapConfig::class);
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
         return new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
@@ -78,9 +78,11 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $capabilities = $sm->get('VuFind\AccountCapabilities');
-        $config = $sm->get('VuFind\Config')->get('config');
-        $recaptcha = \Finna\Controller\Plugin\Factory::getRecaptcha($sm);
+        $capabilities = $sm->get(\VuFind\Config\AccountCapabilities::class);
+        $controllerPluginManager
+            = $sm->get(\Zend\Mvc\Controller\PluginManager::class);
+        $recaptcha = $controllerPluginManager
+            ->get(\VuFind\Controller\Plugin\Recaptcha::class);
         $useRecaptcha = $recaptcha->active('userComments');
         return new UserComments(
             'enabled' === $capabilities->getCommentSetting(),

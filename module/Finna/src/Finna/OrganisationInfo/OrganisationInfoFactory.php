@@ -30,7 +30,6 @@
 namespace Finna\OrganisationInfo;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -68,7 +67,7 @@ class OrganisationInfoFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class)
                 ->get('OrganisationInfo'),
-            $container->get('VuFind\Cache\Manager'),
+            $container->get(\VuFind\Cache\Manager::class),
             $container->get('ViewRenderer')
         );
     }

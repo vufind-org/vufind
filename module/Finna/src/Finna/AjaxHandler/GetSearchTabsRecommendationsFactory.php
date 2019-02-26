@@ -63,14 +63,14 @@ class GetSearchTabsRecommendationsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $tablePluginManager->get('VuFind\Db\Table\Search'),
-            $container->get('VuFind\Search\Results\PluginManager'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $tablePluginManager->get(\VuFind\Db\Table\Search::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewRenderer'),
-            $container->get('VuFind\SearchRunner')
+            $container->get(\VuFind\Search\SearchRunner::class)
         );
         return $result;
     }

@@ -52,9 +52,9 @@ class Factory extends \VuFind\Autocomplete\Factory
     public static function getSolr(ServiceManager $sm)
     {
         return new Solr(
-            $sm->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('VuFind\Config')->get('facets'),
-            $sm->get('VuFind\Config')->get('searches')
+            $sm->get(\VuFind\Search\Results\PluginManager::class),
+            $sm->get(\VuFind\Config\PluginManager::class)->get('facets'),
+            $sm->get(\VuFind\Config\PluginManager::class)->get('searches')
         );
     }
 }

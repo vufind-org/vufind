@@ -63,8 +63,8 @@ class VoyagerRestfulFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $ils = $container->get('VuFind\ILS\HoldSettings');
-        $configReader = $container->get('VuFind\Config\PluginManager');
+        $ils = $container->get(\VuFind\ILS\HoldSettings::class);
+        $configReader = $container->get(\VuFind\Config\PluginManager::class);
         $extraParams = [
             $ils->getHoldsMode(), $ils->getTitleHoldsMode(), $configReader
         ];

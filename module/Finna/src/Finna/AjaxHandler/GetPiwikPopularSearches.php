@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,6 @@ namespace Finna\AjaxHandler;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
-use VuFindHttp\HttpService;
 use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
@@ -45,10 +44,12 @@ use Zend\View\Renderer\RendererInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
-    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+    implements TranslatorAwareInterface, \VuFindHttp\HttpServiceAwareInterface,
+    \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Cache manager
@@ -65,13 +66,6 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
     protected $config;
 
     /**
-     * HTTP Service
-     *
-     * @var HttpService
-     */
-    protected $httpService;
-
-    /**
      * View renderer
      *
      * @var RendererInterface
@@ -84,16 +78,14 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
      * @param SessionSettings   $ss       Session settings
      * @param CacheManager      $cm       Cache manager
      * @param Config            $config   Main configuration
-     * @param HttpService       $http     HTTP Service
      * @param RendererInterface $renderer View renderer
      */
     public function __construct(SessionSettings $ss, CacheManager $cm,
-        Config $config, HttpService $http, RendererInterface $renderer
+        Config $config, RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->cacheManager = $cm;
         $this->config = $config;
-        $this->httpService = $http;
         $this->renderer = $renderer;
     }
 

@@ -64,9 +64,9 @@ class GetSimilarRecordsFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Related\PluginManager')->get('Similar'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Related\PluginManager::class)->get('Similar'),
             $container->get('ViewRenderer')
         );
         return $result;

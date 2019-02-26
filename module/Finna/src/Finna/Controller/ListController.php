@@ -64,7 +64,7 @@ class ListController extends \Finna\Controller\MyResearchController
 
         try {
             $results = $this->serviceLocator
-                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+                ->get(\VuFind\Search\Results\PluginManager::class)->get('Favorites');
             $params = $results->getParams();
 
             // We want to merge together GET, POST and route parameters to
@@ -123,7 +123,8 @@ class ListController extends \Finna\Controller\MyResearchController
      */
     protected function createNoAccessView()
     {
-        $config = $this->serviceLocator->get('VuFind\Config')->get('config');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $view = $this->createViewModel();
         $view->setTemplate('list/no_access');
         $view->email = $config->Site->email;

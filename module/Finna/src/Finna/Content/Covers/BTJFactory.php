@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,36 +21,47 @@
  *
  * @category VuFind
  * @package  Service
- * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Content\Covers;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 
 /**
  * Factory for BTJ Cover Images module.
  *
  * @category VuFind
  * @package  Service
- * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class BTJFactory extends \VuFind\Service\Factory
+class BTJFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Construct the BTJ Cover Image Service cover content loader.
+     * Create an object
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return \Finna\Content\Covers\BTJ
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public static function getBTJ(ServiceManager $sm)
-    {
-        return new \Finna\Content\Covers\BTJ(
-            $sm->get('VuFind\RecordLoader')
-        );
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        return new $requestedName($container->get(\VuFind\Record\Loader::class));
     }
 }

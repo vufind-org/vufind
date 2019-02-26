@@ -148,15 +148,15 @@ class ScheduledAlerts extends AbstractService
         $this->serviceManager = $sm;
 
         $this->mainConfig
-            = $sm->get('VuFind\Config')->get('config');
+            = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
 
         $this->datasourceConfig
-            = $sm->get('VuFind\Config')->get('datasources');
+            = $sm->get(\VuFind\Config\PluginManager::class)->get('datasources');
 
-        $facets = $sm->get('VuFind\Config')->get('facets');
+        $facets = $sm->get(\VuFind\Config\PluginManager::class)->get('facets');
         $this->facets = $facets->Results->toArray();
 
-        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         $this->searchTable = $tableManager->get('Search');
         $this->userTable = $tableManager->get('User');
     }
@@ -303,18 +303,11 @@ class ScheduledAlerts extends AbstractService
 
         $iso8601 = 'Y-m-d\TH:i:s\Z';
 
-        $configLoader = $this->serviceManager->get('VuFind\Config');
-
         $this->iniReader = new IniReader();
         $this->iniReader->setNestSeparator(chr(0));
-        $hmac = $this->serviceManager->get('VuFind\HMAC');
+        $hmac = $this->serviceManager->get(\VuFind\Crypt\HMAC::class);
 
-        $backend
-            = $this->serviceManager
-            ->get('VuFind\Search\BackendManager')->get('Solr');
-        $viewManager = $this->serviceManager->get('ViewManager');
         $renderer = $this->serviceManager->get('ViewRenderer');
-        $emailer = $this->serviceManager->get('VuFind\Mailer');
         $translator = $renderer->plugin('translate');
         $urlHelper = $renderer->plugin('url');
         $resultsManager = $this->serviceManager->get(
@@ -323,8 +316,6 @@ class ScheduledAlerts extends AbstractService
 
         $todayTime = new \DateTime();
         $user = false;
-        $institution = false;
-        $institutionConfigs = false;
 
         $scheduled = $this->searchTable->getScheduledSearches(
             $this->scheduleBaseUrl
@@ -401,7 +392,7 @@ class ScheduledAlerts extends AbstractService
                 $language = $user->finna_language;
             }
 
-            $this->serviceManager->get('VuFind\Translator')
+            $this->serviceManager->get(\Zend\Mvc\I18n\Translator::class)
                 ->addTranslationFile(
                     'ExtendedIni', null, $this::DEFAULT_PATH, $language
                 )
@@ -506,7 +497,7 @@ class ScheduledAlerts extends AbstractService
             $to = $user->email;
 
             try {
-                $this->serviceManager->get('VuFind\Mailer')->send(
+                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
                     $to, $from, $subject, $message
                 );
             } catch (\Exception $e) {

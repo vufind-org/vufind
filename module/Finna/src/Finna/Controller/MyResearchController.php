@@ -182,7 +182,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 ]
             ];
 
-            $date = $this->serviceLocator->get('VuFind\DateConverter');
+            $date = $this->serviceLocator->get(\VuFind\Date\Converter::class);
             $sortFunc = function ($a, $b) use ($currentSort, $date) {
                 if ($currentSort == 'title') {
                     $aTitle = $a['title'] ?? '';
@@ -295,7 +295,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         // Set up CSRF:
-        $csrfValidator = $this->serviceLocator->get('VuFind\Validator\Csrf');
+        $csrfValidator = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
 
         if ($this->formWasSubmitted('submit', false)) {
             $csrf = $this->getRequest()->getPost()->get('csrf');
@@ -340,7 +340,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             if ($list) {
                 $this->rememberCurrentSearchUrl();
             } else {
-                $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
+                $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
                 $memory->rememberSearch(
                     $this->url()->fromRoute('myresearch-favorites')
                 );
@@ -406,7 +406,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -916,7 +916,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $user = $this->getTable('User')->getById($search->user_id);
 
                 $secret = $search->getUnsubscribeSecret(
-                    $this->serviceLocator->get('VuFind\HMAC'), $user
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
                 );
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
@@ -929,7 +929,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 }
                 $dueDateTable = $this->getTable('duedatereminder');
                 $secret = $dueDateTable->getUnsubscribeSecret(
-                    $this->serviceLocator->get('VuFind\HMAC'), $user, $user->id
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class),
+                    $user,
+                    $user->id
                 );
                 if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
@@ -1129,7 +1131,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     protected function rememberCurrentSearchUrl()
     {
-        $memory  = $this->serviceLocator->get('VuFind\Search\Memory');
+        $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
         $listUrl = $this->getRequest()->getRequestUri();
         /*$routeName = $publicView ? 'list-page' : 'userList';
         $idParamName = $publicView ? 'lid' : 'id';
@@ -1260,7 +1262,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $subject = $this->getConfig()->Site->title . ": $subject";
         $from = $this->getConfig()->Site->email;
 
-        $this->serviceLocator->get('VuFind\Mailer')->send(
+        $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
             $recipient, $from, $subject, $message
         );
     }
@@ -1291,7 +1293,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     protected function exportUserLists($userId)
     {
         $user = $this->getTable('User')->getById($userId);
-        $runner = $this->serviceLocator->get('VuFind\SearchRunner');
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
 
         $getTag = function ($tag) {
             return $tag['tag'];
@@ -1355,7 +1357,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $id = $current['id'] ?? null;
             $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
             $recordFactory = $this->serviceLocator
-                ->get('VuFind\RecordDriverPluginManager');
+                ->get(\VuFind\RecordDriver\PluginManager::class);
             $record = $recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
             $record->setSourceIdentifier($source);

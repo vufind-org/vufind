@@ -90,11 +90,11 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
     /**
      * Constructor.
      *
-     * @param Config              $config     Main configuration
-     * @param Config              $feedConfig Feed configuration
-     * @param CacheManager        $cm         Cache manager
-     * @param Url                 $url        URL helper
-     * @param ImageLink           $imageLink  Image link helper
+     * @param Config       $config     Main configuration
+     * @param Config       $feedConfig Feed configuration
+     * @param CacheManager $cm         Cache manager
+     * @param Url          $url        URL helper
+     * @param ImageLink    $imageLink  Image link helper
      */
     public function __construct(
         Config $config, Config $feedConfig, CacheManager $cm, Url $url,

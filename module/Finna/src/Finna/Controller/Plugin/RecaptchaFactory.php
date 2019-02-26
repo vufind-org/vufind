@@ -1,10 +1,11 @@
 <?php
 /**
- * Organisation info helper factory.
+ * Factory for Recaptcha controller plugin.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +21,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller_Plugins
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
-namespace Finna\View\Helper\Root;
+namespace Finna\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Organisation info helper factory.
+ * Factory for Recaptcha controller plugin.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Controller_Plugins
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class OrganisationInfoFactory implements FactoryInterface
+class RecaptchaFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -62,8 +65,11 @@ class OrganisationInfoFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('OrganisationInfo')
+            $container->get(\VuFind\Service\ReCaptcha::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Auth\Manager::class),
+            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\Zend\Mvc\I18n\Translator::class)
         );
     }
 }

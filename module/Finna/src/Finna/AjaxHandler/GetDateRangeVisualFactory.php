@@ -64,9 +64,9 @@ class GetDateRangeVisualFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Search\Results\PluginManager')
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
         return $result;
     }

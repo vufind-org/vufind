@@ -64,7 +64,8 @@ class UserCardFactory extends \VuFind\Db\Row\RowGatewayFactory
         $prototype = new $requestedName(
             $adapter, ...($options !== null ? $options : [])
         );
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config
+            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $prototype->setConfig($config);
         return $prototype;
     }

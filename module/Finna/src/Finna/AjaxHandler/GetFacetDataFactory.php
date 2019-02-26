@@ -66,11 +66,11 @@ class GetFacetDataFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Search\Solr\HierarchicalFacetHelper'),
-            $container->get('VuFind\Search\Results\PluginManager'),
-            $container->get('VuFind\Config')->get('browse'),
-            $container->get('VuFind\Config')->get('facet')
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('browse'),
+            $container->get(\VuFind\Config\PluginManager::class)->get('facet')
         );
     }
 }

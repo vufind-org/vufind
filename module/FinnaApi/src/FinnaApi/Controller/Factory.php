@@ -84,7 +84,7 @@ class Factory
     public static function getAuthApiController(ServiceManager $sm)
     {
         $result = new AuthApiController($sm);
-        $result->setLogger($sm->get('VuFind\Logger'));
+        $result->setLogger($sm->get(\VuFind\Log\Logger::class));
         return $result;
     }
 
@@ -100,7 +100,7 @@ class Factory
         $recordFields = $sm->get('VuFind\YamlReader')
             ->get('SearchApiRecordFields.yaml');
         $helperManager = $sm->get('ViewHelperManager');
-        $translator = $sm->get('VuFind\Translator');
+        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
         $rf = new RecordFormatter($recordFields, $helperManager, $translator);
         $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;

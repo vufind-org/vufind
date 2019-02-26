@@ -62,6 +62,6 @@ class CoverArtArchiveFactory implements \Zend\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('VuFind\Record\Loader'));
+        return new $requestedName($container->get(\VuFind\Record\Loader::class));
     }
 }

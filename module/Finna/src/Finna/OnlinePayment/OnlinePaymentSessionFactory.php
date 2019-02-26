@@ -30,7 +30,6 @@
 namespace Finna\OnlinePayment;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -67,7 +66,7 @@ class OnlinePaymentSessionFactory implements FactoryInterface
         }
         return new \Zend\Session\Container(
             'OnlinePayment',
-            $container->get('VuFind\SessionManager')
+            $container->get(\Zend\Session\SessionManager::class)
         );
     }
 }

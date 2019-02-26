@@ -271,7 +271,8 @@ class AccountExpirationReminders extends AbstractService
             }
         );
 
-        $tableManager = $this->serviceManager->get('VuFind\DbTablePluginManager');
+        $tableManager
+            = $this->serviceManager->get(\VuFind\Db\Table\PluginManager::class);
         $searchTable = $tableManager->get('Search');
         $resourceTable = $tableManager->get('Resource');
 
@@ -389,7 +390,7 @@ class AccountExpirationReminders extends AbstractService
 
         $language = isset($this->currentSiteConfig['Site']['language'])
             ? $this->currentSiteConfig['Site']['language'] : 'fi';
-        $validLanguages = array_keys($this->currentSiteConfig['Languages']);
+        $validLanguages = array_keys((array)$this->currentSiteConfig['Languages']);
 
         if (!empty($user->finna_language)
             && in_array($user->finna_language, $validLanguages)
@@ -463,7 +464,7 @@ $message
 
 EOT;
             } else {
-                $this->serviceManager->get('VuFind\Mailer')->send(
+                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
                     $to, $from, $subject, $message
                 );
                 $user->finna_last_expiration_reminder = date('Y-m-d H:i:s');

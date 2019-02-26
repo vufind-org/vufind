@@ -59,7 +59,7 @@ class AdminApiController extends \VuFindApi\Controller\ApiController
             return $result;
         }
 
-        $manager = $this->serviceLocator->get('VuFind\CacheManager');
+        $manager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
 
         foreach ($manager->getCacheList() as $key) {
             if (in_array($key, ['cover', 'description', 'public', 'stylesheet'])) {

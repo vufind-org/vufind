@@ -132,7 +132,7 @@ class DueDateReminders extends AbstractService
     /**
      * HMAC
      *
-     * @var \VuFind\HMAC
+     * @var \VuFind\Crypt\HMAC
      */
     protected $hmac = null;
 
@@ -184,7 +184,7 @@ class DueDateReminders extends AbstractService
      * @param VuFind\Config                  $configReader         Config reader.
      * @param Zend\View\Renderer\PhpRenderer $renderer             View renderer.
      * @param VuFind\RecordLoader            $recordLoader         Record loader.
-     * @param VuFind\HMAC                    $hmac                 HMAC.
+     * @param VuFind\Crypt\HMAC              $hmac                 HMAC.
      * @param VuFind\Translator              $translator           Translator.
      * @param ServiceManager                 $serviceManager       Service manager.
      */
@@ -532,7 +532,7 @@ class DueDateReminders extends AbstractService
             try {
                 $to = $user->email;
                 $from = $this->currentSiteConfig['Site']['email'];
-                $this->serviceManager->get('VuFind\Mailer')->send(
+                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
                     $to,
                     $from,
                     $subject,
@@ -543,8 +543,8 @@ class DueDateReminders extends AbstractService
                     // Reset connection and try again
                     $this->warn('First attempt at sending email failed');
                     try {
-                        $this->serviceManager->get('VuFind\Mailer')->getTransport()
-                            ->disconnect();
+                        $this->serviceManager->get(\VuFind\Mailer\Mailer::class)
+                            ->getTransport()->disconnect();
                     } catch (\Exception $e) {
                         // Do nothing
                     }

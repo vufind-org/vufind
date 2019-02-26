@@ -65,17 +65,19 @@ class CommentRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
-        $controllerPluginManager = $container->get('ControllerPluginManager');
-        $capabilities = $container->get('VuFind\Config\AccountCapabilities');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $controllerPluginManager
+            = $container->get(\Zend\Mvc\Controller\PluginManager::class);
+        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $tablePluginManager->get('VuFind\Db\Table\Resource'),
-            $controllerPluginManager->get('VuFind\Controller\Plugin\Recaptcha'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
+            $controllerPluginManager
+                ->get(\VuFind\Controller\Plugin\Recaptcha::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled',
-            $tablePluginManager->get('VuFind\Db\Table\Comments'),
+            $tablePluginManager->get(\VuFind\Db\Table\Comments::class),
             $tablePluginManager->get('Finna\Db\Table\CommentsRecord'),
-            $container->get('VuFind\Search\SearchRunner')
+            $container->get(\VuFind\Search\SearchRunner::class)
         );
     }
 }

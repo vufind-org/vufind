@@ -36,6 +36,25 @@ category_str_mv     = category_facet_heading
 [ResultsTop]
 ;topic_facet        = "Suggested Topics"
 
+; This section controls where facet labels are retrieved from when facets are not
+; explicitly configured.
+[FacetLabels]
+; This setting lists configuration sections containing facet field => label
+; mappings. Later values will override earlier values. These mappings will be used
+; only when a label is not explicitly configured (i.e. through SideFacets settings).
+; If you customize your facet display, be sure to add any new facet configuration
+; sections to this list to ensure proper display in search history, etc.
+labelSections[] = Advanced
+labelSections[] = HomePage
+labelSections[] = ResultsTop
+labelSections[] = Results
+labelSections[] = ExtraFacetLabels
+
+; This setting lists configuration settings defining checkbox facets. If you use
+; a custom section to configure additional facets, be sure to add it to this list
+; so labels display correctly in history, the advanced search editor, etc.
+checkboxSections[] = CheckboxFacets
+
 ; This section is used to identify facets for special treatment by the SideFacets
 ; recommendations module.
 [SpecialFacets]

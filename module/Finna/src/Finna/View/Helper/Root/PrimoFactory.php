@@ -62,7 +62,7 @@ class PrimoFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('Primo')
+            $container->get(\VuFind\Config\PluginManager::class)->get('Primo')
         );
     }
 }

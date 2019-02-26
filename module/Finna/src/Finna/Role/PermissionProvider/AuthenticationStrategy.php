@@ -28,8 +28,8 @@
  */
 namespace Finna\Role\PermissionProvider;
 
-use Finna\Auth\Manager as AuthManager;
 use Finna\Auth\ILSAuthenticator;
+use Finna\Auth\Manager as AuthManager;
 use Finna\ILS\Connection as ILSConnection;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
@@ -75,8 +75,8 @@ class AuthenticationStrategy implements PermissionProviderInterface
      * @param ILSAuthenticator $ilsAuth ILS authenticator
      */
     public function __construct(AuthManager $am, ILSConnection $ils,
-        ILSAuthenticator $ilsAuth)
-    {
+        ILSAuthenticator $ilsAuth
+    ) {
         $this->authManager = $am;
         $this->ils = $ils;
         $this->ilsAuth = $ilsAuth;

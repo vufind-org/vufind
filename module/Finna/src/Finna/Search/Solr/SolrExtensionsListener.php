@@ -166,7 +166,7 @@ class SolrExtensionsListener
      */
     protected function addDataSourceFilter(EventInterface $event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         if (isset($searchConfig->Records->sources)
             && $searchConfig->Records->sources
@@ -252,7 +252,7 @@ class SolrExtensionsListener
      */
     protected function addHiddenComponentPartFilter(EventInterface $event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         if (isset($searchConfig->General->hide_component_parts)
             && $searchConfig->General->hide_component_parts
@@ -359,7 +359,7 @@ class SolrExtensionsListener
      */
     protected function handleAvailabilityFilters(EventInterface $event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         if (isset($searchConfig->Records->deduplication)
             && $searchConfig->Records->deduplication

@@ -64,9 +64,9 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config\PluginManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class);
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager'),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
             $config->get('facets'),
             $config->get('searches')
         );

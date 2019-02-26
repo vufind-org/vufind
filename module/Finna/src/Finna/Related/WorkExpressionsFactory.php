@@ -64,8 +64,8 @@ class WorkExpressionsFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFindSearch\Service'),
-            $container->get('VuFind\Config\PluginManager')->get('searches')
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('searches')
         );
     }
 }

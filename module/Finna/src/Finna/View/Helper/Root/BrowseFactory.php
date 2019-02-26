@@ -62,7 +62,7 @@ class BrowseFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('browse')
+            $container->get(\VuFind\Config\PluginManager::class)->get('browse')
         );
     }
 }

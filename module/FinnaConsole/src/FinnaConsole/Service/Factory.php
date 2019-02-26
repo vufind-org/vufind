@@ -52,10 +52,10 @@ class Factory
      */
     public static function getAccountExpirationReminders(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
+        $table = $sm->get(\VuFind\Db\Table\PluginManager::class)->get('User');
         $renderer = $sm->get('ViewRenderer');
-        $configReader = $sm->get('VuFind\Config');
-        $translator = $sm->get('VuFind\Translator');
+        $configReader = $sm->get(\VuFind\Config\PluginManager::class);
+        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
 
         return new AccountExpirationReminders(
             $table, $renderer, $configReader, $translator, $sm
@@ -71,16 +71,16 @@ class Factory
      */
     public static function getDueDateReminders(ServiceManager $sm)
     {
-        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         $userTable = $tableManager->get('user');
         $dueDateReminderTable = $tableManager->get('duedatereminder');
 
-        $catalog = $sm->get('VuFind\ILS\Connection');
-        $configReader = $sm->get('VuFind\Config');
+        $catalog = $sm->get(\VuFind\ILS\Connection::class);
+        $configReader = $sm->get(\VuFind\Config\PluginManager::class);
         $renderer = $sm->get('ViewRenderer');
-        $loader = $sm->get('VuFind\RecordLoader');
-        $hmac = $sm->get('VuFind\HMAC');
-        $translator = $sm->get('VuFind\Translator');
+        $loader = $sm->get(\VuFind\Record\Loader::class);
+        $hmac = $sm->get(\VuFind\Crypt\HMAC::class);
+        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
 
         return new DueDateReminders(
             $userTable, $dueDateReminderTable, $catalog,
@@ -97,8 +97,8 @@ class Factory
      */
     public static function getEncryptCatalogPasswords(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
-        $config = $sm->get('VuFind\Config')->get('config');
+        $table = $sm->get(\VuFind\Db\Table\PluginManager::class)->get('User');
+        $config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
 
         return new EncryptCatalogPasswords($table, $config);
     }
@@ -112,8 +112,8 @@ class Factory
      */
     public static function getExpireUsers(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
-        $config = $sm->get('VuFind\Config')->get('config');
+        $table = $sm->get(\VuFind\Db\Table\PluginManager::class)->get('User');
+        $config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
         $removeComments = $config->Authentication->delete_comments_with_user ?? true;
         return new ExpireUsers($table, $removeComments);
     }
@@ -127,7 +127,7 @@ class Factory
      */
     public static function getImportComments(ServiceManager $sm)
     {
-        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         return new ImportComments(
             $tableManager->get('Comments'),
             $tableManager->get('CommentsRecord'),
@@ -144,12 +144,12 @@ class Factory
      */
     public static function getOnlinePaymentMonitor(ServiceManager $sm)
     {
-        $catalog = $sm->get('VuFind\ILS\Connection');
-        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $catalog = $sm->get(\VuFind\ILS\Connection::class);
+        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         $transactionTable = $tableManager->get('transaction');
         $userTable = $tableManager->get('user');
-        $configReader = $sm->get('VuFind\Config');
-        $mailer = $sm->get('VuFind\Mailer');
+        $configReader = $sm->get(\VuFind\Config\PluginManager::class);
+        $mailer = $sm->get(\VuFind\Mailer\Mailer::class);
         $viewManager = $sm->get('ViewManager');
         $viewRenderer = $sm->get('ViewRenderer');
 
@@ -180,8 +180,8 @@ class Factory
      */
     public static function getUpdateSearchHashes(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')->get('Search');
-        $manager = $sm->get('VuFind\SearchResultsPluginManager');
+        $table = $sm->get(\VuFind\Db\Table\PluginManager::class)->get('Search');
+        $manager = $sm->get(\VuFind\Search\Results\PluginManager::class);
         return new UpdateSearchHashes($table, $manager);
     }
 
@@ -194,12 +194,12 @@ class Factory
      */
     public static function getVerifyRecordLinks(ServiceManager $sm)
     {
-        $commentsTable = $sm->get('VuFind\DbTablePluginManager')
+        $commentsTable = $sm->get(\VuFind\Db\Table\PluginManager::class)
             ->get('Comments');
-        $commentsRecordTable = $sm->get('VuFind\DbTablePluginManager')
+        $commentsRecordTable = $sm->get(\VuFind\Db\Table\PluginManager::class)
             ->get('CommentsRecord');
 
-        $searchRunner = $sm->get('VuFind\SearchRunner');
+        $searchRunner = $sm->get(\VuFind\Search\SearchRunner::class);
 
         return new VerifyRecordLinks(
             $commentsTable, $commentsRecordTable, $searchRunner
@@ -215,10 +215,10 @@ class Factory
      */
     public static function getVerifyResourceMetadata(ServiceManager $sm)
     {
-        $resourceTable = $sm->get('VuFind\DbTablePluginManager')
+        $resourceTable = $sm->get(\VuFind\Db\Table\PluginManager::class)
             ->get('Resource');
-        $dateConverter = $sm->get('VuFind\DateConverter');
-        $recordLoader = $sm->get('VuFind\RecordLoader');
+        $dateConverter = $sm->get(\VuFind\Date\Converter::class);
+        $recordLoader = $sm->get(\VuFind\Record\Loader::class);
 
         return new VerifyResourceMetadata(
             $resourceTable, $dateConverter, $recordLoader

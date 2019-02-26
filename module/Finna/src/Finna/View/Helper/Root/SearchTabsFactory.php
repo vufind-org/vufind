@@ -65,11 +65,11 @@ class SearchTabsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager'),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewHelperManager')->get('url'),
-            $container->get('VuFind\Search\SearchTabsHelper'),
-            $container->get('Zend\Session\SessionManager'),
-            $container->get('VuFind\Db\Table\PluginManager')
+            $container->get(\VuFind\Search\SearchTabsHelper::class),
+            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\VuFind\Db\Table\PluginManager::class)
         );
     }
 }

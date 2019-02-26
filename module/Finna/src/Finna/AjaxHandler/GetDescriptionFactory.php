@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -64,11 +64,10 @@ class GetDescriptionFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Cache\Manager'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $container->get('VuFindHttp\HttpService'),
-            $container->get('VuFind\Record\Loader'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Record\Loader::class),
             $container->get('ViewRenderer')
         );
         return $result;

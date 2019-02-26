@@ -63,8 +63,8 @@ class GetFeedFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')->get('rss'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('rss'),
             $container->get('Finna\Feed\Feed'),
             $container->get('ViewRenderer'),
             $container->get('ControllerPluginManager')->get('url')

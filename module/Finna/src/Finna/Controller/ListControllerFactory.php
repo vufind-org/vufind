@@ -62,7 +62,7 @@ class ListControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container, $container->get('VuFind\SessionManager')
+            $container, $container->get(\Zend\Session\SessionManager::class)
         );
     }
 }

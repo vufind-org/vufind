@@ -94,7 +94,8 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * @param VuFind\CacheManager $cacheManager Cache manager
      * @param RendererInteface    $viewRenderer View renderer
      */
-    public function __construct($config, $cacheManager, $viewRenderer) {
+    public function __construct($config, $cacheManager, $viewRenderer)
+    {
         $this->config = $config;
         $this->cacheManager = $cacheManager;
         $this->viewRenderer = $viewRenderer;
@@ -432,9 +433,8 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $logo = $json['image'] ?? null;
             }
             $lang = $this->getLanguage();
-            $name = isset($json['name'][$lang])
-                ? $json['name'][$lang]
-                    : $this->translator->translate("source_{$parent}");
+            $name = $json['name'][$lang]
+                    ?? $this->translator->translate("source_{$parent}");
             $data = $this->viewRenderer->partial(
                 'Helpers/organisation-page-link.phtml', [
                    'url' => $data, 'label' => 'organisation_info_link',

@@ -62,7 +62,7 @@ class CheckboxFacetCountsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')
+            $container->get(\VuFind\Config\PluginManager::class)
         );
     }
 }

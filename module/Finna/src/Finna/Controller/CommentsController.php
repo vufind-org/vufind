@@ -82,7 +82,7 @@ class CommentsController extends \VuFind\Controller\AbstractBase
         if (!$user) {
             $session = new SessionContainer(
                 'inappropriateComments',
-                $this->serviceLocator->get('VuFind\SessionManager')
+                $this->serviceLocator->get(\Zend\Session\SessionManager::class)
             );
             if (!isset($session->comments)) {
                 $session->comments = [];

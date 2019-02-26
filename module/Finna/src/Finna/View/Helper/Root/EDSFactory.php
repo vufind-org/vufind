@@ -62,7 +62,7 @@ class EDSFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('EDS')
+            $container->get(\VuFind\Config\PluginManager::class)->get('EDS')
         );
     }
 }

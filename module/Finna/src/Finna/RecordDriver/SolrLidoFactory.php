@@ -61,7 +61,7 @@ class SolrLidoFactory extends \VuFind\RecordDriver\SolrDefaultFactory
         array $options = null
     ) {
         $driver = parent::__invoke($container, $requestedName, $options);
-        $driver->attachDateConverter($container->get('VuFind\Date\Converter'));
+        $driver->attachDateConverter($container->get(\VuFind\Date\Converter::class));
         return $driver;
     }
 }

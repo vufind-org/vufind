@@ -63,12 +63,12 @@ class MultiBackendFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $driver = new $requestedName(
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\ILS\Driver\PluginManager')
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\ILS\Driver\PluginManager::class)
         );
         $driver->setCacheStorage(
-            $container->get('VuFind\Cache\Manager')->getCache('object')
+            $container->get(\VuFind\Cache\Manager::class)->getCache('object')
         );
         return $driver;
     }

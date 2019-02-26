@@ -313,7 +313,7 @@ trait FinnaOnlinePaymentControllerTrait
      */
     protected function handleError($msg)
     {
-        $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
+        $this->setLogger($this->serviceLocator->get(\VuFind\Log\Logger::class));
         $this->logError($msg);
     }
 
@@ -326,7 +326,7 @@ trait FinnaOnlinePaymentControllerTrait
      */
     protected function handleException($e)
     {
-        $this->setLogger($this->serviceLocator->get('VuFind\Logger'));
+        $this->setLogger($this->serviceLocator->get(\VuFind\Log\Logger::class));
         if (!Console::isConsole()) {
             $this->logger->logException($e, new \Zend\Stdlib\Parameters());
         } else {

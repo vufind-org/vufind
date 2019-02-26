@@ -67,7 +67,7 @@ class PrimoBackendFactory
             : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;

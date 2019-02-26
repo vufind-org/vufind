@@ -63,16 +63,16 @@ class AbstractOnlinePaymentActionFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
             $tablePluginManager->get('Finna\Db\Table\Transaction'),
-            $tablePluginManager->get('VuFind\Db\Table\UserCard'),
+            $tablePluginManager->get(\VuFind\Db\Table\UserCard::class),
             $container->get('Finna\OnlinePayment\OnlinePayment'),
             $container->get('Finna\OnlinePayment\Session')
         );
-        $result->setLogger($container->get('VuFind\Logger'));
+        $result->setLogger($container->get(\VuFind\Log\Logger::class));
         return $result;
     }
 }

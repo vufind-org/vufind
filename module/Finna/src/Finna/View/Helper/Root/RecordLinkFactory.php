@@ -65,8 +65,8 @@ class RecordLinkFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Router'),
-            $container->get('VuFind\Config\PluginManager')->get('datasources')
+            $container->get(\VuFind\Record\Router::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('datasources')
         );
     }
 }

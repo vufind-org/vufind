@@ -215,10 +215,10 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'Finna\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Factory::getRecaptcha',
+            'Finna\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\RecaptchaFactory',
         ],
         'aliases' => [
-            'VuFind\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Recaptcha',
+            'VuFind\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Recaptcha'
         ],
     ],
     'service_manager' => [
@@ -548,7 +548,7 @@ $config = [
             ],
             'content_covers' => [
                 'factories' => [
-                    'btj' => 'Finna\Content\Covers\BTJFactory::getBTJ',
+                    'Finna\Content\Covers\BTJ' => 'Finna\Content\Covers\BTJFactory',
                     'Finna\Content\Covers\CoverArtArchive' => 'Finna\Content\Covers\CoverArtArchiveFactory',
                 ],
                 'invokables' => [
@@ -556,6 +556,7 @@ $config = [
                     'natlibfi' => 'Finna\Content\Covers\NatLibFi',
                 ],
                 'aliases' => [
+                    'btj' => 'Finna\Content\Covers\BTJ',
                     'coverartarchive' => 'Finna\Content\Covers\CoverArtArchive',
                 ]
             ],

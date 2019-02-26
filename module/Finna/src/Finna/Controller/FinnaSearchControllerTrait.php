@@ -84,7 +84,7 @@ trait FinnaSearchControllerTrait
 
         $minSO = $search->getSearchObject();
         $savedSearch = $minSO->deminify(
-            $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
+            $this->serviceLocator->get(\VuFind\Search\Results\PluginManager::class)
         );
         $params = $savedSearch->getUrlQuery()->getParamArray();
         foreach ($params as $key => $value) {

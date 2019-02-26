@@ -30,7 +30,6 @@
 namespace Finna\OnlinePayment;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -66,8 +65,8 @@ class OnlinePaymentFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\DbTablePluginManager'),
-            $container->get('VuFind\Logger'),
+            $container->get(\VuFind\Db\Table\PluginManager::class),
+            $container->get(\VuFind\Log\Logger::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('datasources')
         );
     }

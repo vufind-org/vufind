@@ -61,7 +61,7 @@ class SystemMessagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class);
         return new $requestedName(
             $config->get('config'),
             $config->get('system')

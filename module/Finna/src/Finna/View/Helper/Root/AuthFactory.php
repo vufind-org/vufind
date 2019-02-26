@@ -65,8 +65,8 @@ class AuthFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Auth\Manager'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
+            $container->get(\VuFind\Auth\Manager::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
             $container->get('Request')
         );
     }

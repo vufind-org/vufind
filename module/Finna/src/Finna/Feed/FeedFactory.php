@@ -30,7 +30,6 @@
 namespace Finna\Feed;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -69,7 +68,7 @@ class FeedFactory implements FactoryInterface
         return new $requestedName(
             $config->get('config'),
             $config->get('rss'),
-            $container->get('VuFind\CacheManager'),
+            $container->get(\VuFind\Cache\Manager::class),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get('ViewRenderer')->plugin('imageLink')
         );

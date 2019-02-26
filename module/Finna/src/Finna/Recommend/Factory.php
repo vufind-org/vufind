@@ -55,8 +55,8 @@ class Factory
     public static function getCollectionSideFacets(ServiceManager $sm)
     {
         return new CollectionSideFacets(
-            $sm->get('VuFind\Config'),
-            $sm->get('VuFind\HierarchicalFacetHelper')
+            $sm->get(\VuFind\Config\PluginManager::class),
+            $sm->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class)
         );
     }
 
@@ -70,8 +70,8 @@ class Factory
     public static function getSideFacets(ServiceManager $sm)
     {
         return new SideFacets(
-            $sm->get('VuFind\Config'),
-            $sm->get('VuFind\HierarchicalFacetHelper')
+            $sm->get(\VuFind\Config\PluginManager::class),
+            $sm->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class)
         );
     }
 
@@ -84,6 +84,6 @@ class Factory
      */
     public static function getSideFacetsDeferred(ServiceManager $sm)
     {
-        return new SideFacetsDeferred($sm->get('VuFind\Config'));
+        return new SideFacetsDeferred($sm->get(\VuFind\Config\PluginManager::class));
     }
 }
