@@ -1049,8 +1049,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                         $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
                         $result->data[$key]->holdPlacedDate
                             = $holdPlacedDate->format(
-                            (string)$config->displayDateFormat
-                        );
+                                (string)$config->displayDateFormat
+                            );
                     }
                     $this->getSessionContainer()->holds = $response->holds;
                 } else {
@@ -1312,8 +1312,8 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if ($returnVal != null) {
                 if (!isset($returnVal->message)
-                    || $returnVal->message
-                    != 'An unexpected error has occurred.'
+                    || $returnVal->message !=
+                       'An unexpected error has occurred.'
                 ) {
                     return $returnVal;
                 } else {
