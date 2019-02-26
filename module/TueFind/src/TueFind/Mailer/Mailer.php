@@ -3,6 +3,8 @@ namespace TueFind\Mailer;
 
 use VuFind\Exception\Mail as MailException;
 use Interop\Container\ContainerInterface;
+use Zend\Mail\Address;
+use Zend\Mail\AddressList;
 
 class Mailer extends \VuFind\Mailer\Mailer {
 
