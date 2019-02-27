@@ -1,6 +1,7 @@
 <? $formats = $this->driver->getFormats();?>
 <? if (!empty($formats)):?>
      <? $i = 0?>
+     <? $issns_and_titles = []?>
      <? $issns = [];?>
      <? if (in_array("Article", $formats) || in_array("Review", $formats)):?>
           <? $article_issn = $this->driver->tryMethod('getCleanISSN')?>
