@@ -1232,8 +1232,13 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ; in searches.ini).
 ;sort_sources = true
 
-; Video source configuration. First element is data source ID, second is media type
-; and third is the URL. {videoname} in the URL is replaced with the video ID.
+; Video source configuration. Elements separated by a pipe:
+; 1. Data source ID the configuration applies to
+; 2. Media type the configuration provides
+; 3. URL template, where {videoname} is replaced with the video ID
+; 4. Optional comma-separated list of video types the configuration applies to
+; (defaults to 'mp4')
+;video_sources[] = "kavi|application/x-mpegURL|https://elo.salama.tv.funet.fi/vod/live/smil:{videoname}/playlist.m3u8|smil"
 ;video_sources[] = "kavi|application/dash+xml|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/manifest.mpd"
 ;video_sources[] = "kavi|application/x-mpegURL|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/playlist.m3u8"
 

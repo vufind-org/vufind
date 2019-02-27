@@ -1017,13 +1017,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         }
         $sourceConfigs = [];
         foreach ($this->recordConfig->Record->video_sources as $current) {
-            $settings = explode('|', $current, 3);
+            $settings = explode('|', $current, 4);
             if (!isset($settings[2]) || $source !== $settings[0]) {
                 continue;
             }
             $sourceConfigs[] = [
-                'type' => $settings[1],
-                'src' => $settings[2]
+                'mediaType' => $settings[1],
+                'src' => $settings[2],
+                'sourceTypes' => explode(',', $settings[3] ?? 'mp4')
             ];
         }
         if (empty($sourceConfigs)) {
@@ -1040,7 +1041,21 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 }
 
                 $videoUrl = (string)$title->TitleText;
-                if (strtolower(substr($videoUrl, -4)) !== '.mp4') {
+                $videoSources = [];
+                $sourceType = strtolower(pathinfo($videoUrl, PATHINFO_EXTENSION));
+                foreach ($sourceConfigs as $config) {
+                    if (!in_array($sourceType, $config['sourceTypes'])) {
+                        continue;
+                    }
+                    $src = str_replace(
+                        '{videoname}', $videoUrl, $config['src']
+                    );
+                    $videoSources[] = [
+                        'src' => $src,
+                        'type' => $config['mediaType']
+                    ];
+                }
+                if (empty($videoSources)) {
                     continue;
                 }
 
@@ -1063,17 +1078,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                             '{filename}', $posterFilename, $posterSource
                         );
                     }
-                }
-
-                $videoSources = [];
-                foreach ($sourceConfigs as $config) {
-                    $src = str_replace(
-                        '{videoname}', $videoUrl, $config['src']
-                    );
-                    $videoSources[] = [
-                        'src' => $src,
-                        'type' => $config['type']
-                    ];
                 }
 
                 $eventAttrs = $xml->ProductionEvent->ProductionEventType
