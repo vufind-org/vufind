@@ -735,6 +735,9 @@ finna.layout = (function finnaLayout() {
         },
         callbacks: {
           open: function onOpen() {
+            // Use a fairly small buffer for faster quality changes
+            videojs.Hls.GOAL_BUFFER_LENGTH = 10;
+            videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
             var player = videojs('video-player');
 
             player.ready(function onReady() {

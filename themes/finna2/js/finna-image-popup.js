@@ -271,6 +271,9 @@ finna.imagePopup = (function finnaImagePopup() {
       $(".mfp-arrow-right, .mfp-arrow-left").addClass("hidden");
       mfp.updateItemHTML();
 
+      // Use a fairly small buffer for faster quality changes
+      videojs.Hls.GOAL_BUFFER_LENGTH = 10;
+      videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
       var player = videojs('video');
 
       player.ready(function onReady() {
