@@ -10,7 +10,7 @@ if (isset($media_types)) {
   elseif (in_array("Electronic", $media_types)):
     $formats = array_merge(["Electronic"], $formats);
   else:
-    $formats = array_merge(["Print"], $formats);
+    $formats = array_merge(["print"], $formats);
   endif;
   $i = 0;
   foreach ($formats as $format) { ?>
