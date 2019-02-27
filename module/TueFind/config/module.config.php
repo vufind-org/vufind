@@ -34,15 +34,28 @@ $config = [
                     ],
                 ],
             ],
+            'quicklink' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/r/[:id]',
+                    'constraints' => [
+                        'id'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'QuickLink',
+                        'action'     => 'redirect',
+                    ]
+                ],
+            ],
             'static-page' => [
-                 'type'    => 'Zend\Router\Http\Segment',
-                 'options' => [
-                     'route'    => "/:page",
-                     'constraints' => [
-                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                     ],
-                     'defaults' => [
-                         'controller' => 'StaticPage',
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/:page",
+                    'constraints' => [
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'StaticPage',
                         'action'     => 'staticPage',
                     ],
                 ],
@@ -56,6 +69,7 @@ $config = [
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\QuickLinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -66,6 +80,7 @@ $config = [
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
+            'QuickLink' => 'TueFind\Controller\QuickLinkController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
         ],
     ],
