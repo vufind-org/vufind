@@ -37,7 +37,7 @@ $config = [
             'quicklink' => [
                 'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/quicklink/[:id]',
+                    'route'    => '/r/[:id]',
                     'constraints' => [
                         'id'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
