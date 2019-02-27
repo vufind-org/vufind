@@ -26,7 +26,6 @@ class HelpText extends \VuFind\View\Helper\Root\HelpText
                 return [false, $tplFallback];
             } else {
                 // no translation available at all!
-                die($tplFallback);
                 return false;
             }
         }
