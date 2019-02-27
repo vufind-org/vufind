@@ -62,12 +62,18 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
                 $fq = $params->get('fq');
                 if ($fq) {
                     $key = array_search('finna.deduplication:"1"', $fq);
+                    if (false === $key) {
+                        $key = array_search('(finna.deduplication:"1")', $fq);
+                    }
                     if (false !== $key) {
                         $this->enabled = true;
                         $params->set('finna.deduplication', '1');
                         unset($fq[$key]);
                     } else {
                         $key = array_search('finna.deduplication:"0"', $fq);
+                        if (false === $key) {
+                            $key = array_search('(finna.deduplication:"0")', $fq);
+                        }
                         if (false !== $key) {
                             $this->enabled = false;
                             $params->set('finna.deduplication', '0');
