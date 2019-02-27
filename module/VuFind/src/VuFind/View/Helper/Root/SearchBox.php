@@ -283,12 +283,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 throw new \Exception('CombinedHandlers configuration incomplete.');
             }
 
+            // Fill in missing group settings, if necessary:
+            if (count($settings['group'] ?? []) < $typeCount) {
+                $settings['group'] = array_fill(0, $typeCount, false);
+            }
+
             // Add configuration for the current search class if it is not already
             // present:
             if (!in_array($activeSearchClass, $settings['target'])) {
                 $settings['type'][] = 'VuFind';
                 $settings['target'][] = $activeSearchClass;
                 $settings['label'][] = $activeSearchClass;
+                $settings['group'][]
+                    = $this->config['General']['defaultGroupLabel'] ?? false;
             }
 
             $this->cachedConfigs[$activeSearchClass] = $settings;
@@ -318,7 +325,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 'value' => 'External:' . $alphaBrowseUrl,
                 'label' => $labelPrefix . $this->getView()->translate($label),
                 'indent' => $indent,
-                'selected' => $activeHandler == 'AlphaBrowse:' . $source
+                'selected' => $activeHandler == 'AlphaBrowse:' . $source,
+                'group' => $this->config['General']['alphaBrowseGroup'] ?? false,
             ];
         }
         return $handlers;
@@ -368,7 +376,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                         'value' => $type . ':' . $target . '|' . $searchVal,
                         'label' => $j == 1 ? $label : $searchDesc,
                         'indent' => $j == 1 ? false : true,
-                        'selected' => $selected
+                        'selected' => $selected,
+                        'group' => $settings['group'][$i],
                     ];
                 }
 
@@ -382,7 +391,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             } elseif ($type == 'External') {
                 $handlers[] = [
                     'value' => $type . ':' . $target, 'label' => $label,
-                    'indent' => false, 'selected' => false
+                    'indent' => false, 'selected' => false,
+                    'group' => $settings['group'][$i],
                 ];
             }
         }
