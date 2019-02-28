@@ -6,7 +6,7 @@
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
-      $this->headTitle($this->overrideTitle);
+      $this->headTitle($this->translate($this->overrideTitle));
   } else {
       $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
@@ -35,7 +35,7 @@
 
   // Set up breadcrumbs:
   if (isset($this->overrideTitle)) {
-    $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($this->overrideTitle) . '</li>';
   } else {
     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
   }

@@ -85,7 +85,7 @@ if ($this->fromStreetSearch) {
       $isCollapsed = in_array($title, $collapsedFacets);
       $dataTarget = 'side-collapse-' . $escTitle;
     ?>
-    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escTitle?>">
+    <div class="list-group facets<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escTitle?>">
       <button class="list-group-item title<?= $isCollapsed ? ' collapsed': '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" onclick="return false;"><?=$this->transEsc($cluster['label'])?></button>
       <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' in' : '' ?>" data-facet="<?=$escTitle?>">
         <?=$this->context($this)->renderInContext(
