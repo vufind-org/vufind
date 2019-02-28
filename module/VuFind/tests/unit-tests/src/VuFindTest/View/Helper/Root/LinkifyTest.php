@@ -72,8 +72,9 @@ class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function linkify($text, $expected)
     {
         $escaper = new EscapeHtml();
-        // The linkify helper expects HTML-escaped input, because we can't
-        // escape unlinked text after the fact without messing up the links:
+        // The linkify helper expects HTML-escaped input, because after linkify
+        // has been applied, we can no longer escape unlinked portions of the text
+        // without messing up the link HTML:
         $html = $escaper->__invoke($text);
         $this->assertEquals($expected, $this->getHelper()->__invoke($html));
     }
