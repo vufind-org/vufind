@@ -77,6 +77,7 @@ class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
         $html = $escaper->__invoke($text);
         $this->assertEquals($expected, $this->getHelper()->__invoke($html));
     }
+
     /**
      * Test linkification of HTTP URL.
      *
