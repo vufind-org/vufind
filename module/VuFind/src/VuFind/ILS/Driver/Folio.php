@@ -149,9 +149,9 @@ class Folio extends AbstractAPI implements
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
-        if ($this->logger) {
-            $this->debug('Token renewed. Tenant: ' . $this->token . ' Token: ' . $this->token);
-        }
+        $this->debug(
+            'Token renewed. Tenant: ' . $auth['username'] . ' Token: ' . $this->token
+        );
     }
 
     /**
@@ -183,9 +183,7 @@ class Folio extends AbstractAPI implements
         $this->sessionCache = $factory($this->tenant);
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
-            if ($this->logger) {
-                $this->debug('Token taken from cache: ' . $this->token);
-            }
+            $this->debug('Token taken from cache: ' . $this->token);
         }
         if ($this->token == null) {
             $this->renewTenantToken();
@@ -385,11 +383,9 @@ class Folio extends AbstractAPI implements
             // Replace admin with user as tenant
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
                 ->getFieldValue();
-            if ($this->logger) {
-                $this->debug(
-                    'User logged in. User: ' . $username . '. Token: ' . $this->token
-                );
-            }
+            $this->debug(
+                'User logged in. User: ' . $username . '. Token: ' . $this->token
+            );
             return [
                 'id' => $profile->id,
                 'username' => $username,
