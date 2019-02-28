@@ -728,6 +728,14 @@ finna.layout = (function finnaLayout() {
     container.find('[data-embed-video]').click(function onClickVideoLink(e) {
       var videoSources = $(this).data('videoSources');
       var posterUrl = $(this).data('posterUrl');
+
+      var resizeVideo = function resizeVideo() {
+        var width = $('.mfp-content').width();
+        var height = $('.mfp-container').height();
+        $('.video-popup').css('width', width);
+        $('.video-popup').css('height', height);
+      }
+
       $.magnificPopup.open({
         type: 'inline',
         items: {
@@ -747,13 +755,16 @@ finna.layout = (function finnaLayout() {
               });
             });
 
+            resizeVideo();
+
             player.src(videoSources);
             player.poster(posterUrl);
             player.load();
           },
           close: function onClose() {
             videojs('video-player').dispose();
-          }
+          },
+          resize: resizeVideo
         }
       });
       e.preventDefault();
