@@ -122,6 +122,7 @@ class Bootstrapper
                 || ($controller == 'Record' && $action == 'UserComments')
                 || ($controller == 'Record' && $action == 'Similar')
                 || ($controller == 'QRCode')
+                || ($controller == 'OAI')
             ) {
                 $response = $event->getResponse();
                 $response->setStatusCode(403);
