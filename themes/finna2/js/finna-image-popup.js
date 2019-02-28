@@ -56,6 +56,7 @@ finna.imagePopup = (function finnaImagePopup() {
       img.css('opacity', 0.5);
       img.one('load', function onLoadImage() {
         img.css('opacity', '');
+        $('.image-dimensions').text('(' + (this.naturalWidth + ' X ' + this.naturalHeight + ')'));
       });
       img.attr('src', $(this).attr('href'));
       var textContainers = $(this).closest('.record-image-container').find('.image-details-container');
