@@ -416,7 +416,6 @@ class OverdriveConnector implements LoggerAwareInterface,
             if ($res) {
                 $collectionToken = $res->collectionToken;
                 $this->putCachedData("collectionToken", $collectionToken);
-            //$this->getSessionContainer()->collectionToken = $collectionToken;
             } else {
                 return false;
             }
