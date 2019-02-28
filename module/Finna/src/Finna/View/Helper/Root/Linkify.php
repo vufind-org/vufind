@@ -51,18 +51,18 @@ class Linkify extends AbstractHelper
     {
         $linkify = new \Misd\Linkify\Linkify();
         $proxyUrl = $this->getView()->plugin('proxyUrl');
-        $escapeHtml = $this->getView()->plugin('escapeHtml');
         $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
         $truncateUrl = $this->getView()->plugin('truncateUrl');
-        $callback = function ($url, $caption, $isEmail) use ($proxyUrl, $escapeHtml,
+        $callback = function ($url, $caption, $isEmail) use ($proxyUrl,
             $escapeHtmlAttr, $truncateUrl
         ) {
             if ($caption === $url) {
                 $caption = $truncateUrl($caption);
             }
+            $url = html_entity_decode($url);
             return '<i class="fa fa-external-link"></i> <a href="'
                 . $escapeHtmlAttr($proxyUrl($url)) . '" target="_blank">'
-                . $escapeHtml($caption) . '</a>';
+                . $caption . '</a>';
         };
         return $linkify->process($str, ['callback' => $callback]);
     }
