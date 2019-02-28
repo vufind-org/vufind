@@ -400,11 +400,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             ? $this->config['messaging'] : null;
 
         $messagingSettings = [];
-        $messageTypes = [
-            'Item_Checkout' => 'checkoutNotice',
-            'Item_Due' => 'dueDateNotice',
-            'Notifications' => 'notifications'
-        ];
 
         $type = 'dueDateNotice';
         $dueDateNoticeActive = !$result['RefuseReminderMessages'];
@@ -469,7 +464,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $profile = [
-            'firstname' => trim($name[1]),
+            'firstname' => trim($name[1] ?? ''),
             'lastname' => ucfirst(trim($name[0])),
             'phone' => !empty($result['MainPhone'])
                 ? $result['MainPhone'] : $result['Mobile'],
@@ -611,7 +606,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     public function getMyHolds($patron)
     {
         $request = [
-            '$filter' => 'BorrowerId eq' . ' ' . $patron['id'],
+            '$filter' => 'BorrowerId eq ' . $patron['id'],
             '$orderby' => 'DeliverAtLocalUnitId'
         ];
         $result = $this->makeRequest(
@@ -639,7 +634,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                     || $entry['ServiceCode'] === 'ReservationNoticeSent')
                         ? true : false,
                 'requestId' => $entry['Id'],
-                'frozen' => $entry['ResPausedTo'] ?? false
+                'frozen' => !$entry['ResActiveToday']
             ];
             if (!empty($entry['MarcRecordTitle'])) {
                 $hold['title'] = $entry['MarcRecordTitle'];
