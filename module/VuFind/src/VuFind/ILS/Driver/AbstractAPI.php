@@ -98,6 +98,23 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
             } else {
                 $client->setParameterPost($params);
             }
+            if ($this->logger) {
+                $logParams = $params;
+                delete $logParams['password']; // remove passwords
+                $logHeaders = $req_headers->toArray();
+                for ($logHeaders as $key=>$val) {
+                    if (len($val) > 30) {
+                        $logHeaders[$key] = substr($val, 0, 30) . '...';
+                    }
+                }
+                // truncate headers for token obscuring
+                $this->debug(
+                    $method . ' request.' .
+                    ' URL: ' . $path . '.' .
+                    ' Params: ' . print_r($logParams, true) . '.' .
+                    ' Headers: ' . print_r($logHeaders, true)
+                );
+            }
         }
         $response = $client->send();
         switch ($response->getStatusCode()) {
