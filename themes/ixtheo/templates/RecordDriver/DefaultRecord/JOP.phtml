@@ -2,13 +2,12 @@
 <? if (!empty($formats)):?>
      <? $i = 0?>
      <? $issns_and_titles = []?>
-     <? $issns = [];?>
      <? if (in_array("Article", $formats) || in_array("Review", $formats)):?>
           <? $article_issn = $this->driver->tryMethod('getCleanISSN')?>
           <? if (!empty($article_issn)): ?>
-               <? $issns[$article_issn] = ''?>
+               <? $issns_and_titles[$article_issn] = ''?>
           <? endif;?>
-     <? elseif (in_array("Journal", $formats) || in_array("Serials", $formats)):?>
+     <? elseif (in_array("Journal", $formats) || in_array("Serial", $formats)):?>
           <? $issns_and_titles = $this->driver->tryMethod('getJOPISSNsAndTitles')?>
      <? endif;?>
      <? foreach ($issns_and_titles as $issn => $title):?>
