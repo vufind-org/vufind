@@ -760,6 +760,17 @@ finna.layout = (function finnaLayout() {
             player.src(videoSources);
             player.poster(posterUrl);
             player.load();
+
+            var handleCloseButton = function handleCloseButton() {
+              if (player.userActive()) {
+                $('.mfp-close').show();
+              } else {
+                $('.mfp-close').hide();
+              }
+            }
+
+            player.on('useractive', handleCloseButton);
+            player.on('userinactive', handleCloseButton);
           },
           close: function onClose() {
             videojs('video-player').dispose();
