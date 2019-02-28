@@ -1,10 +1,10 @@
 <?php
 /**
- * Current path view helper
+ * Url view helper (extending core Zend helper with additional functionality)
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFind\View\Helper\Root;
 use Zend\Http\PhpEnvironment\Request;
 
 /**
- * Current path view helper
+ * Url view helper (extending core Zend helper with additional functionality)
  *
  * @category VuFind
  * @package  View_Helpers
