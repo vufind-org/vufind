@@ -726,8 +726,6 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        //todo: read VCard if avaiable in patron info
-        //todo: make fields more configurable
         if (is_array($patron)) {
             $type = null;
             if (is_array($patron['type'])) {
@@ -745,7 +743,7 @@ class PAIA extends DAIA
                 'zip'        => null,
                 'phone'      => null,
                 'mobile_phone' => null,
-                'group'      => $type,
+                'group'      => $this->getReadableGroupType($type),
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
@@ -754,6 +752,22 @@ class PAIA extends DAIA
             ];
         }
         return [];
+    }
+
+    /**
+     * Get Readable Group Type
+     *
+     * Due to PAIA specifications type returns an URI. This method offers a
+     * possibility to translate the URI in a readable value by inheritance
+     * and implementing a personal proceeding.
+     *
+     * @param string $type  URI of usertype
+     *
+     * @return string URI of usertype
+     */
+    protected function getReadableGroupType($type)
+    {
+        return $type;
     }
 
     /**
