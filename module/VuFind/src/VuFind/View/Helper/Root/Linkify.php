@@ -43,7 +43,7 @@ class Linkify extends AbstractHelper
     /**
      * Linkify a string
      *
-     * @param string $str String to linkify
+     * @param string $str String to linkify (must be HTML-escaped)
      *
      * @return string
      */
