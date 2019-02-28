@@ -26,7 +26,6 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\DigitalContent;
 
 use Exception;
@@ -141,7 +140,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         $this->recordConfig = $recordConfig;
         $this->container = $container;
         $this->ilsAuth = $ilsAuth;
-
     }
 
     /**
@@ -227,7 +225,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $result->msg = $this->getSessionContainer()->odAccessMessage;
                 $this->getSessionContainer()->odAccess = $result;
             }
-
         } else {
             $result = $this->getSessionContainer()->odAccess;
         }
@@ -419,7 +416,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             if ($res) {
                 $collectionToken = $res->collectionToken;
                 $this->putCachedData("collectionToken", $collectionToken);
-                //$this->getSessionContainer()->collectionToken = $collectionToken;
+            //$this->getSessionContainer()->collectionToken = $collectionToken;
             } else {
                 return false;
             }
@@ -866,7 +863,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
                 ",", $overDriveIds
-                );
+            );
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
             foreach ($md as $item) {
@@ -1043,7 +1040,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                             $holdExpires = new \DateTime($hold->holdExpires);
                             $result->data[$key]->holdExpires
                                 = $holdExpires->format(
-                                   (string)$config->displayDateFormat
+                                    (string)$config->displayDateFormat
                                 );
                         }
                         $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
@@ -1312,8 +1309,7 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if ($returnVal != null) {
                 if (!isset($returnVal->message)
-                    || $returnVal->message !=
-                       'An unexpected error has occurred.'
+                    || $returnVal->message != 'An unexpected error has occurred.'
                 ) {
                     return $returnVal;
                 } else {
