@@ -1,10 +1,10 @@
 <?php
 /**
- * ContentLoader helper factory.
+ * Url helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ use Zend\Router\RouteMatch;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * ContentLoader helper factory.
+ * Url helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
