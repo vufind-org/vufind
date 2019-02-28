@@ -761,7 +761,7 @@ class PAIA extends DAIA
      * possibility to translate the URI in a readable value by inheritance
      * and implementing a personal proceeding.
      *
-     * @param string $type  URI of usertype
+     * @param string $type URI of usertype
      *
      * @return string URI of usertype
      */
