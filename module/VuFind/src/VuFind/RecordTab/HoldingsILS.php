@@ -53,7 +53,10 @@ class HoldingsILS extends AbstractBase
      * @param string
      */
     protected $template;
-
+    
+    protected $hideHoldingsTabWhenEmpty;
+    
+    
     /**
      * Constructor
      *
@@ -61,10 +64,11 @@ class HoldingsILS extends AbstractBase
      * for holdings before displaying the tab; set to null if no check is needed
      * @param string                      $template Holdings template to use
      */
-    public function __construct(Connection $catalog = null, $template = null)
+    public function __construct(Connection $catalog = null, $template = null, $hideHoldingsTabWhenEmpty = false)
     {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
+        $this->hideHoldingsTabWhenEmpty = $hideHoldingsTabWhenEmpty;
     }
 
     /**
@@ -104,7 +108,7 @@ class HoldingsILS extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->catalog) {
+        if ($this->hideHoldingsTabWhenEmpty) {
             return $this->catalog->hasHoldings($this->driver->getUniqueID());
         }
         return true;
@@ -119,4 +123,50 @@ class HoldingsILS extends AbstractBase
     {
         return $this->template;
     }
+    
+    
+    /**
+     * Getting a paginator for the items list
+     * @return \Zend\Paginator\Paginator
+     */
+    public function getPaginator()
+    {
+        // The total number of items from the API call
+        $totalItemCount = $this->catalog->getTotalItemCount();
+        
+        // The number of items that should be called with one single API call.
+        $itemLimit = $this->catalog->getItemLimit();
+        
+        // Return if a paginator is not needed
+        if ($totalItemCount < $itemLimit) {
+            return;
+        }
+        
+        // The currently selected page in the paginator
+        $page = $this->getCurrentPage();
+        
+        // Create the paginator
+        $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
+        $paginator = new \Zend\Paginator\Paginator($nullAdapter);
+        
+        // Some settings for the paginator
+        $paginator
+            ->setCurrentPageNumber($page)
+            ->setItemCountPerPage($itemLimit)
+            ->setPageRange(10);
+        
+        return $paginator;
+    }
+    
+    
+    /**
+     * Get the currently selected page in the paginator 
+     * @return \Zend\Stdlib\ParametersInterface|mixed
+     */
+    public function getCurrentPage()
+    {
+        $page = $this->getRequest()->getQuery('page') ?? null;
+        return $page;
+    }
+
 }

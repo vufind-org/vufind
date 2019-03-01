@@ -104,10 +104,10 @@ trait IlsAwareTrait
      *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings($page = null)
     {
         return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->tryMethod('getConsortialIDs')
+            $this->getUniqueID(), $this->tryMethod('getConsortialIDs'), $page
         ) : [];
     }
 

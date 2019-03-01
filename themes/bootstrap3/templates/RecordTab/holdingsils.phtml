@@ -10,13 +10,14 @@
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
     try {
-        $holdings = $this->driver->getRealTimeHoldings();
+        $page = $this->tab->getCurrentPage();
+        $holdings = $this->driver->getRealTimeHoldings($page);
     } catch (\VuFind\Exception\ILS $e) {
         $holdings = ['holdings' => []];
         $offlineMode = 'ils-offline';
     }
     // Set page title.
-    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());   
 ?>
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
@@ -118,6 +119,12 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
+
+
+<?php if ($paginator = $this->tab->getPaginator()): ?>
+	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $page])?>
+<?php endif; ?>
+
 
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>

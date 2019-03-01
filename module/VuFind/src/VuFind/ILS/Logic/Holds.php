@@ -178,7 +178,7 @@ class Holds
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null)
+    public function getHoldings($id, $ids = null, $page = null)
     {
         $holdings = [];
 
@@ -204,7 +204,7 @@ class Holds
                     $id, $patron ? $patron : null, $ids
                 );
             } else {
-                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+                $result = $this->catalog->getHolding($id, $patron ? $patron : null, $page);
             }
 
             $grb = 'getRequestBlocks'; // use variable to shorten line below:

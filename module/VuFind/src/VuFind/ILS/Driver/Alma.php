@@ -30,6 +30,8 @@ namespace VuFind\ILS\Driver;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Http\Headers;
+use Zend\Paginator\Paginator;
+
 
 /**
  * Alma ILS Driver
@@ -44,6 +46,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use CacheTrait;
+    
 
     /**
      * Alma API base URL.
@@ -72,7 +75,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var \VuFind\Config\PluginManager
      */
     protected $configLoader;
+    
+    
+    // TEST PAGING
+    protected $totalItemCount = 0;
 
+    
     /**
      * Constructor
      *
@@ -102,7 +110,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('Configuration needs to be set.');
         }
         $this->baseUrl = $this->config['Catalog']['apiBaseUrl'];
-        $this->apiKey = $this->config['Catalog']['apiKey'];
+        $this->apiKey = $this->config['Catalog']['apiKey'];       
     }
 
     /**
@@ -225,8 +233,123 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return (string)$item->item_data->base_status === '1';
     }
 
+        
+    public function getTotalItemCount()
+    {
+        return $this->totalItemCount;
+    }
+    
+    
+    public function getItemLimit()
+    {
+        $itemLimit = $this->config['Holds']['itemLimit'] ?? 10;
+        return (is_numeric($itemLimit)) ? $itemLimit : 10;
+    }
+    
+    
+    public function getHolding($id, array $patron = null, $page = null) {
+        
+        $itemLimit = $this->getItemLimit();
+        $page = $page ?? 1;
+        $offset = ($page*$itemLimit)-$itemLimit;
+        $results = [];
+        $copyCount = 0;
+        $username = $patron['cat_username'] ?? null;
+
+        // TODO:
+        // - DONE: implement flexible limit with paging - 100 is maximum at Alma API
+        // - Sometimes not getting "requested" information with "ALL". Getting it e. g. with MMS-ID 990003181380203343 ?!?!
+        // - Not getting due-date (an extra API call must be made)
+        // - Not getting possible request types from request-options API (see https://developers.exlibrisgroup.com/alma/apis/xsd/rest_request_options.xsd?tags=GET)
+        
+        // The path for the API call. We call "ALL" available items, but not at once.
+        // The "limit" tells the API how many items should be called at once (e. g.
+        // 10). The "offset" defines the range (e. g. get items 30 to 40). With these
+        // parameters we are able to use a paginator for paging through many items.
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='.$itemLimit.'&offset='.$offset.'&order_by=library,location,enum_a,enum_b&direction=desc';
+        
+        if ($items = $this->makeRequest($itemsPath)) {
+            // Get the number of items returned from the API call and set it to a
+            // class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+            // the items paginator.
+            $this->totalItemCount = (string)$items->attributes()->total_record_count;
+            
+            foreach ($items->item as $item) {
+                $number = ++$copyCount;
+                $holdingId = (string)$item->holding_data->holding_id;
+                $itemId = (string)$item->item_data->pid;
+                $addLink = false;
+                
+                // Calculate request options if a user is logged-in
+                if ($username) {
+                    $requestOptionsPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/request-options?user_id=' . urlencode($username);
+                    $requestOptions = $this->makeRequest($requestOptionsPath);
+                    
+                    if ((string)$requestOptions->request_option->type === 'HOLD') {
+                        $addLink = true;
+                    }
+                }
+                
+                $processType = (string)$item->item_data->process_type;
+                
+                // For some data we need to do additional API calls
+                // due to the Alma API architecture
+                $duedate = null;
+                if ($processType === 'LOAN') {
+                    $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
+                        . urlencode($holdingId) . '/items/'
+                            . urlencode($itemId) . '/loans';
+                            $loanData = $this->makeRequest($loanDataPath);
+                            $loan = $loanData->item_loan;
+                            $duedate = $this->parseDate((string)$loan->due_date);
+                }
+                
+                $barcode = (string)$item->item_data->barcode;
+                $itemNotes = null;
+                if ($item->item_data->public_note != null
+                && !empty($item->item_data->public_note)
+                ) {
+                    $itemNotes = [(string)$item->item_data->public_note];
+                }
+                    
+                $description = null;
+                if ($item->item_data->description != null
+                && !empty($item->item_data->description)
+                ) {
+                    $number = (string)$item->item_data->description;
+                    $description = (string)$item->item_data->description;
+                }
+
+                $results[] = [
+                    'id' => $id,
+                    'source' => 'Solr',
+                    'availability' => $this->getAvailabilityFromItem($item),
+                    'status' => (string)$item->item_data->base_status[0]->attributes()['desc'],
+                    'location' => (string)$item->item_data->location,
+                    'reserve' => 'N',   // TODO: support reserve status
+                    'callnumber' => (string)$item->holding_data->call_number,
+                    'duedate' => $duedate,
+                    'returnDate' => false, // TODO: support recent returns
+                    'number' => $number,//++$copyCount,
+                    'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                    'item_notes' => $itemNotes,
+                    'item_id' => $itemId,
+                    'holding_id' => $holdingId,
+                    'addLink' => $addLink,
+                    // For Alma title-level hold requests
+                    'description' => $description
+                ];
+                
+            }
+        }
+        
+        return $results;
+        
+    }
+    
+    
     /**
-     * Get Holding
+     * Get Holding - OLD
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -239,16 +362,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *                       reserve, callnumber, duedate, returnDate, number,
      *                       barcode, item_notes, item_id, holding_id, addLink.
      */
-    public function getHolding($id, array $patron = null)
-    {
+    public function getHoldingOLD($id, array $patron = null)
+    {        
         // Get config data:
         $fulfillementUnits = $this->config['FulfillmentUnits'] ?? null;
         $requestableConfig = $this->config['Requestable'] ?? null;
 
         $results = [];
         $copyCount = 0;
+        $apiCallCounter = 0;
         $bibPath = '/bibs/' . urlencode($id) . '/holdings';
         if ($holdings = $this->makeRequest($bibPath)) {
+            $apiCallCounter++;
             foreach ($holdings->holding as $holding) {
                 $holdingId = (string)$holding->holding_id;
                 $locationCode = (string)$holding->location;
@@ -264,7 +389,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
+                    $apiCallCounter++;
                     foreach ($currentItems->item as $item) {
+
                         $itemId = (string)$item->item_data->pid;
                         $barcode = (string)$item->item_data->barcode;
                         $processType = (string)$item->item_data->process_type;
@@ -295,6 +422,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                                 . urlencode($holdingId) . '/items/'
                                 . urlencode($itemId) . '/loans';
                             $loanData = $this->makeRequest($loanDataPath);
+                            $apiCallCounter++;
                             $loan = $loanData->item_loan;
                             $duedate = $this->parseDate((string)$loan->due_date);
                         }
