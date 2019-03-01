@@ -763,9 +763,9 @@ finna.layout = (function finnaLayout() {
 
             var handleCloseButton = function handleCloseButton() {
               if (player.userActive()) {
-                $('.mfp-close').show();
+                $('.mfp-close').css('opacity', '1');
               } else {
-                $('.mfp-close').hide();
+                $('.mfp-close').css('opacity', '0');
               }
             }
 
