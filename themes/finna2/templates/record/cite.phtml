@@ -1,0 +1,28 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Record Citations'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('Record Citations') . '</li>';
+
+  // Collect citation data:
+  $helper = $this->citation($this->driver);
+  $citations = [];
+  foreach ($this->driver->getCitationFormats() as $format) {
+    $citations[$format . ' Citation'] = $helper->getCitation($format);
+  }
+?>
+<h1><?=$this->transEsc('Record Citations')?></h1>
+<?php if (count($citations) == 0): ?>
+  <?=$this->transEsc('No citations are available for this record')?>
+<?php else: ?>
+  <?php foreach ($citations as $caption => $citation): ?>
+    <strong><?=$this->transEsc($caption)?></strong>
+    <p class="text-left">
+      <?=$citation?>
+    </p>
+  <?php endforeach; ?>
+  <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
+<?php endif; ?>
