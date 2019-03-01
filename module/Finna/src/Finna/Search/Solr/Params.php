@@ -298,6 +298,15 @@ class Params extends \VuFind\Search\Solr\Params
                 $facetSet["f.{$field}.facet.limit"] = $this->hierarchicalFacetLimit;
             }
         }
+
+        // For checkbox counts
+        if (!empty($this->checkboxFacets)) {
+            foreach (array_keys($this->checkboxFacets) as $facetField) {
+                $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                $facetSet['field'][] = $facetField;
+            }
+        }
+
         return $facetSet;
     }
 

@@ -133,23 +133,6 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     }
 
     /**
-     * Remove unlisted facets from main facets
-     *
-     * @param array $facets Facets to keep
-     *
-     * @return void
-     */
-    public function filterMainFacets($facets)
-    {
-        $this->mainFacets = array_filter(
-            $this->mainFacets,
-            function ($value, $key) {
-                return in_array($key, $facets);
-            }
-        );
-    }
-
-    /**
      * Returns the geographic map facet array.
      *
      * @return array
