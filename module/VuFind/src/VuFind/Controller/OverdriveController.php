@@ -60,9 +60,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     public function mycontentAction()
     {
         $this->debug("ODC mycontent action");
-
-        //TODO get hold and checkoutlimit using the Patron Info API
-
         //force login
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -125,7 +122,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 }
             }
         }
-        //todo: get reading history
+        //Future: get reading history will be here
+        //Future: get hold and checkoutlimit using the Patron Info API
 
         $view = $this->createViewModel(
             compact(
@@ -177,8 +175,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             return $patron;
         }
         $this->debug("patron: " . print_r($patron, true));
-        //TODO Check patron eligibility
-        //$driver->checkPatronAccess();
 
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');

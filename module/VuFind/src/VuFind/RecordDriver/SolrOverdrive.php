@@ -243,7 +243,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        //TODO add this as an overdrive configuration to turn it off
+        //Future: add this as an overdrive configuration to turn it off
         return true;
     }
 

@@ -77,8 +77,6 @@ class OverdriveController extends AbstractAdmin
         $view->productsKey = $connector->getCollectionToken();
         $view->overdriveConfig = $connector->getConfig();
         $view->hasAccess = $connector->getAccess();
-        //$view->token = $connector->connectToAPI();
-        //$view->statistics = $this->getTable('resourcetags')->getStatistics(true);
         return $view;
     }
 }

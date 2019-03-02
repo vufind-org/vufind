@@ -136,7 +136,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         $container,
         $ilsAuth
     ) {
-        $this->debug("SolrOverdrive Connector");
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
         $this->container = $container;
@@ -469,7 +468,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                     //add the checkout to the session cache
                     $this->getSessionContainer()->checkouts[] = $response;
                 } else {
-                    //todo: translate
                     $result->msg = $response->message;
                 }
             } else {
@@ -497,7 +495,6 @@ class OverdriveConnector implements LoggerAwareInterface,
         }
 
         if ($config = $this->getConfig()) {
-            //TODO: Make this a configuration option
             $autoCheckout = true;
             $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds';
@@ -673,7 +670,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                         . "[$overDriveId]: " . $response->message;
                 }
             } else {
-                //todo: translate
                 $result->code = 'od_code_connection_failed';
             }
         } else {
@@ -765,7 +761,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                         . $response->message;
                 }
             } else {
-                //todo: translate
                 $result->code = 'od_code_connection_failed';
             }
         }
@@ -857,7 +852,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     {
         $metadata = [];
         if (!$overDriveIds || count($overDriveIds) < 1) {
-            $this->logWarning("no overdrive content IDs waere passed in.");
+            $this->logWarning("no overdrive content IDs were passed in.");
             return [];
         }
         if ($conf = $this->getConfig()) {
@@ -866,7 +861,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
                 ",", $overDriveIds
-                );
+                       );
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
             foreach ($md as $item) {
@@ -1246,6 +1241,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected function callPatronUrl(
         $patronBarcode, $patronPin, $url, $params = null, $requestType = "GET"
     ) {
+        $UNEXP_ERR = 'An unexpected error has occurred.';
         $this->debug("calling patronURL: $url");
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;
@@ -1312,8 +1308,7 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if ($returnVal != null) {
                 if (!isset($returnVal->message)
-                    || $returnVal->message !=
-                       'An unexpected error has occurred.'
+                    || $returnVal->message != $UNEXP_ERR
                 ) {
                     return $returnVal;
                 } else {
