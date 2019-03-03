@@ -5,7 +5,7 @@
 <table class="table table-striped">
   <?php foreach ($this->driver->getFormattedDigitalFormats() as $formatkey => $format): ?>
     <tr>
-      <th colspan="2"><?=$formatkey?></th>
+      <th colspan="2"><?=  $this->translate($formatkey)?></th>
     </tr>
         <?php foreach ((array)$format as $key => $value): ?>
         <tr>

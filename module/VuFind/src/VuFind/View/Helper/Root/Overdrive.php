@@ -34,7 +34,7 @@ use VuFind\DigitalContent\OverdriveConnector;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Josiah Knoll <jk1135@ship.edu>
+ * @author   Brent Palmer <brent-palmer@icpl.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -64,6 +64,10 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
      */
     public function showMyContentLink()
     {
+        //if not configured at all, connector is null
+        if(is_null($this->connector)){
+            return false;
+        }
         $config = $this->connector->getConfig();
         if ($config->showMyContent == "always") {
             return true;
@@ -77,6 +81,25 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
                 return false;
             }
             return true;
+        }
+    }
+
+    /**
+     * Show the Overdrive API Admin Menu Item?
+     *
+     * @return bool
+     */
+    public function showOverdriveAdminLink()
+    {
+        //if not configured at all, connector is null
+        if(is_null($this->connector)){
+            return false;
+        }
+        $config = $this->connector->getConfig();
+        if ($config->showOverdriveAdminMenu) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -26,16 +26,18 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\DigitalContent;
 
 use Exception;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-
+use Zend\Session\Container;
+use Zend\Config\Config;
 use Zend\Cache\Storage\StorageInterface;
 use Zend\Log\LoggerAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use Zend\Http\Client;
 
 /**
  * OverdriveConnector
@@ -69,7 +71,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Session Container
      *
-     * @var \Zend\Session\Container
+     * @var Container
      */
     protected $sessionContainer;
 
@@ -78,7 +80,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * Main configurations
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $recordConfig;
 
@@ -87,14 +89,14 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * Overdrive configurations
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $mainConfig;
 
     /**
      * ILS Authorization
      *
-     * @var \VuFind\Auth\ILSAuthenticator
+     * @var ILSAuthenticator
      */
     protected $ilsAuth;
 
@@ -103,7 +105,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * Client for making calls to the API
      *
-     * @var \Zend\Http\Client
+     * @var Client
      */
     protected $client;
 
@@ -118,29 +120,29 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Container
      *
      * @var ContainerInterface
-     */
+
     protected $container;
+     */
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config           $mainConfig   VuFind main conf
-     * @param \Zend\Config\Config           $recordConfig Record-specific conf
-     *                                                    file
-     * @param ContainerInterface            $container    The whole enchilada
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS Authenticator
+     * @param Config             $mainConfig       VuFind main conf
+     * @param Config             $recordConfig     Record-specific conf file
+     * @param ILSAuthenticator   $ilsAuth          ILS Authenticator
+     * @param Container          $sessionContainer container
+     *
      */
     public function __construct(
-        $mainConfig,
-        $recordConfig,
-        $container,
-        $ilsAuth
+        Config $mainConfig,
+        Config $recordConfig,
+        ILSAuthenticator $ilsAuth,
+        Container $sessionContainer = null
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
-        $this->container = $container;
         $this->ilsAuth = $ilsAuth;
-
+        $this->sessionContainer = $sessionContainer;
     }
 
     /**
@@ -150,11 +152,8 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     protected function getSessionContainer()
     {
-        if (!$this->sessionConainer) {
-            $this->sessionContainer = new \Zend\Session\Container(
-                'DigitalContent\OverdriveController',
-                $this->container->get('Zend\Session\SessionManager')
-            );
+        if(is_null($this->sessionContainer) || !$this->sessionContainer){
+            error_log("NO SESSION CONTAINER");
         }
         return $this->sessionContainer;
     }
@@ -163,8 +162,6 @@ class OverdriveConnector implements LoggerAwareInterface,
      * Get (Logged-in) User
      *
      * Returns the currently logged in user or false if the user is not
-     *
-     * @since 5.0
      *
      * @return array|boolean  an array of user info from the ILSAuthenticator
      *                        or false if user is not logged in.
@@ -226,7 +223,6 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $result->msg = $this->getSessionContainer()->odAccessMessage;
                 $this->getSessionContainer()->odAccess = $result;
             }
-
         } else {
             $result = $this->getSessionContainer()->odAccess;
         }
@@ -334,8 +330,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             } else {
                 if ($res->errorCode == "NotFound" || $res->totalItems == 0) {
                     if ($loginRequired) {
-                        //consortium support is turned on but user is no
-                        //t logged in
+                        //consortium support is turned on but user is
+                        //not logged in
                         //if the title is not found it could mean that it's only
                         //available to some users.
                         $result->status = true;
@@ -418,7 +414,6 @@ class OverdriveConnector implements LoggerAwareInterface,
             if ($res) {
                 $collectionToken = $res->collectionToken;
                 $this->putCachedData("collectionToken", $collectionToken);
-                //$this->getSessionContainer()->collectionToken = $collectionToken;
             } else {
                 return false;
             }
@@ -819,23 +814,23 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
-     * Returns an array of Overdrive Formats
+     * Returns an array of Overdrive Formats and translation tokens
      *
      * @return array
      */
     public function getFormatNames()
     {
         return [
-            'ebook-kindle' => "Kindle Book",
-            'ebook-overdrive' => "OverDrive Read eBook",
-            'ebook-epub-adobe' => "Adobe EPUB eBook",
-            'ebook-epub-open' => "Open EPUB eBook",
-            'ebook-pdf-adobe' => "Adobe PDF eBook",
-            'ebook-pdf-open' => "Open PDF eBook",
-            'ebook-mediado' => "MediaDo Reader eBook",
-            'audiobook-overdrive' => "OverDrive Listen audiobook",
-            'audiobook-mp3' => "MP3 audiobook",
-            'video-streaming' => "streaming video file",
+            'ebook-kindle' => "od_ebook-kindle",
+            'ebook-overdrive' => "od_ebook-overdrive",
+            'ebook-epub-adobe' => "od_ebook-epub-adobe",
+            'ebook-epub-open' => "od_ebook-epub-open",
+            'ebook-pdf-adobe' => "od_ebook-pdf-adobe",
+            'ebook-pdf-open' => "od_ebook-pdf-open",
+            'ebook-mediado' => "od_ebook-mediado",
+            'audiobook-overdrive' => "od_audiobook-overdrive",
+            'audiobook-mp3' => "od_audiobook-mp3",
+            'video-streaming' => "od_video-streaming",
         ];
     }
 
@@ -1038,7 +1033,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                             $holdExpires = new \DateTime($hold->holdExpires);
                             $result->data[$key]->holdExpires
                                 = $holdExpires->format(
-                                   (string)$config->displayDateFormat
+                                    (string)$config->displayDateFormat
                                 );
                         }
                         $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
@@ -1241,7 +1236,6 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected function callPatronUrl(
         $patronBarcode, $patronPin, $url, $params = null, $requestType = "GET"
     ) {
-        $UNEXP_ERR = 'An unexpected error has occurred.';
         $this->debug("calling patronURL: $url");
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;
@@ -1308,7 +1302,7 @@ class OverdriveConnector implements LoggerAwareInterface,
 
             if ($returnVal != null) {
                 if (!isset($returnVal->message)
-                    || $returnVal->message != $UNEXP_ERR
+                    || $returnVal->message != 'An unexpected error has occurred.'
                 ) {
                     return $returnVal;
                 } else {

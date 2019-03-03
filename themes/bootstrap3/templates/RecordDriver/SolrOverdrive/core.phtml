@@ -27,14 +27,14 @@ elseif($avail->data):
     //probably means that there was a connection failure
     if(!$checkedOutResult->status && $user):
         if($checkedOutResult->code == 'od_account_noaccess'):
-            $odaction .= '<div class="hold pull-right"><div class="alert alert-warning">'.
-                          $this->translate("od_code_contentnotavail").
+            $odaction .= '<div class="hold pull-right"><div class="alert alert-warning">' .
+                          $this->translate("od_code_contentnotavail") .
                           '</div></div>';
         elseif($checkedOutResult->code == 'od_account_problem'):
-            $message =  "<a href=\"".$this->url('overdrive-mycontent', [], ['query' => ['redirect' => 0]])."\">
-                        ".$this->transEsc("Your Account")."</a>";
-            $odaction .= '<div class="hold pull-right"><div class="alert alert-warning">'.
-                          $this->translate("od_account_problem",["%%message%%" => $message]).
+            $message = "<a href=\"" . $this->url('overdrive-mycontent', [], ['query' => ['redirect' => 0]]) . "\">
+                        " . $this->transEsc("Your Account") . "</a>";
+            $odaction .= '<div class="hold pull-right"><div class="alert alert-warning">' .
+                          $this->translate("od_account_problem", ["%%message%%" => $message]) .
                           '</div></div>';
         else:
 

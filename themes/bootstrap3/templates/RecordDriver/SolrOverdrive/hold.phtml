@@ -34,7 +34,7 @@
             <div class="odformats">
                 <h3><?= $this->transEsc("od_dl_formats"); ?></h3>
                 <?php foreach($formats as $key => $format):?>
-                <ul><li><?= $key?></li></ul>
+                <ul><li><?= $this->translate($format->name) ?></li></ul>
                 <?php endforeach;?>
             </div>
             <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
@@ -134,14 +134,10 @@
                 <input name="doAction" value="getTitle" type="hidden">
                 <div class="odformats">
                     <h3><?= $this->transEsc("od_dl_formats"); ?></h3>
-                    <?php foreach($formats as $key => $format):
-                        //$od_id = $this->driver->getOverdriveID();
-                        //$rec_id = $this->driver->getUniqueID();
-                        ?>
-                        <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?= $key ?>" type="submit"> -->
+                    <?php foreach($formats as $key => $format):?>
                         <a data-lightbox-ignore class="btn btn-primary" target="_blank"
                            href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
-                            <?= $format ?></a>
+                            <?= $this->translate($format) ?></a>
                     <?php endforeach;?>
                 </div>
             </div>
@@ -185,25 +181,13 @@
       <div class="alert alert-success"><i class='fa fa-check'></i>
         <?= $this->transEsc("od_docheckout_success", ['%%expireDate%%' => $result->data->expires]); ?>
       </div>
-        <!--
-            <div class="odformats">
-                <h3><?= $this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key => $format):?>
-                    <button type="button" class="btn btn-primary" aria-hidden="true"><?= $key?></button>
 
-                <?php endforeach;?>
-            </div>
-            -->
             <div class="odformats">
                 <h3><?= $this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key => $format):
-                    //$od_id = $this->driver->getOverdriveID();
-                    //$rec_id = $this->driver->getUniqueID();
-                    ?>
-                    <!--<input class="btn btn-primary" name="getTitleFormat" target="_blank" value="<?= $key ?>" type="submit"> -->
+                <?php foreach($formats as $key => $format): ?>
                     <a data-lightbox-ignore class="btn btn-primary" target="_blank"
                        href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
-                        <?= $format->name ?></a>
+                        <?= $this->translate($format) ?></a>
                 <?php endforeach;?>
             </div>
 

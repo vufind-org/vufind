@@ -17,14 +17,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
@@ -36,7 +39,8 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
+ *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class OverdriveFactory implements FactoryInterface
@@ -44,9 +48,9 @@ class OverdriveFactory implements FactoryInterface
     /**
      * Create an object
      *
-     * @param ContainerInterface $container     Service manager
+     * @param ContainerInterface $container Service manager
      * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param null|array         $options Extra options (optional)
      *
      * @return object
      *
@@ -55,17 +59,25 @@ class OverdriveFactory implements FactoryInterface
      * creating a service.
      * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        // Only load the connector if Overdrive is turned on:
-        $config = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
-        $connector = ($config->Overdrive->showMyContent ?? false)
-            ? $container->get('VuFind\DigitalContent\OverdriveConnector')
-            : null;
+        // Only load the connector if we need to show
+        $config = $container->get('VuFind\Config\PluginManager')->get(
+            'Overdrive'
+        );
+        $connector = null;
+        $showMyContent = $config->Overdrive->showMyContent;
+        $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
+        if ($showAdmin || $showMyContent != "never") {
+            $connector = $container->get(
+                'VuFind\DigitalContent\OverdriveConnector'
+            );
+        }
         return new $requestedName($connector);
     }
 }

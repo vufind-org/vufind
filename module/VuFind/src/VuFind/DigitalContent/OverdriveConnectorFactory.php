@@ -28,6 +28,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Interop\Container\ContainerInterface;
@@ -49,9 +50,9 @@ class OverdriveConnectorFactory implements
     /**
      * Create an object
      *
-     * @param ContainerInterface $container     Service manager
+     * @param ContainerInterface $container Service manager
      * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param null|array         $options Extra options (optional)
      *
      * @return object
      *
@@ -67,12 +68,21 @@ class OverdriveConnectorFactory implements
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
+
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $odConfig = $container->get('VuFind\Config\PluginManager')->get(
-            'Overdrive'
-        );
+        $odConfig = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
         $auth = $container->get('VuFind\Auth\ILSAuthenticator');
-        $connector = new $requestedName($config, $odConfig, $container, $auth);
+        $sessionContainer = null;
+
+        if (PHP_SAPI !== 'cli') {
+            $sessionContainer = new \Zend\Session\Container(
+                'DigitalContent\OverdriveController',
+                $container->get('Zend\Session\SessionManager')
+            );
+        }
+        $connector = new $requestedName(
+            $config, $odConfig, $auth, $sessionContainer
+        );
 
         // Populate cache storage
         $connector->setCacheStorage(

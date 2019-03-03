@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'collectionlist' => CollectionList::class,
         'description' => Description::class,
         'excerpt' => Excerpt::class,
+        'formats' => Formats::class,
         'hierarchytree' => HierarchyTree::class,
         'holdingsils' => HoldingsILS::class,
         'holdingsworldcat' => HoldingsWorldCat::class,

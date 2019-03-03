@@ -32,6 +32,8 @@
 namespace VuFind\RecordDriver;
 
 use Zend\Log\LoggerAwareInterface;
+use VuFind\DigitalContent\OverdriveConnector;
+use Zend\Config\Config;
 
 /**
  * VuFind Record Driver for SolrOverdrive Records
@@ -53,7 +55,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Overdrive Connector
      *
-     * @var \VuFind\DigitalContent\OverdriveConnector
+     * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
@@ -72,8 +74,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @param OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        $mainConfig = null, $recordConfig = null,
-        $connector = null
+        Config $mainConfig = null, $recordConfig = null,
+        OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
         $this->config = $connector->getConfig();
@@ -113,7 +115,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getAvailableDigitalFormats()
     {
         $formats = [];
-        //$allFormats = $this->getDigitalFormats();
         $formatNames = $this->connector->getFormatNames();
         $od_id = $this->getOverdriveID();
 
@@ -127,7 +128,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 //if we aren't locked in, we can show all formats
             } else {
                 foreach ($this->getDigitalFormats() as $format) {
-                    $formats[$format->id] = $format->name;
+                    $formats[$format->id] = $formatNames[$format->id];
                 }
             }
         }
@@ -145,6 +146,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getDigitalFormats()
     {
         $formats = [];
+        $formatNames = $this->connector->getFormatNames();
         if ($this->config->isMarc) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
@@ -155,6 +157,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         }
 
         foreach ($data->formats as $format) {
+            $format->name = $formatNames[$format->id];
             $formats[$format->id] = $format;
         }
 
@@ -162,8 +165,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get an array of all the formats associated with the record. This array
-     * is designed to be used in a template.
+     * Get an array of all the formats associated with the record with metadata
+     * associated with it. This array is designed to be used in a template.
+     * The key for each entry is the translatable token for the format name
      *
      * @return array
      * @throws \Exception
@@ -171,7 +175,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $format) {
+        foreach ($this->getDigitalFormats() as $key=>$format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {

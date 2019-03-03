@@ -102,7 +102,7 @@
       <?php /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          
+          */
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
@@ -120,7 +120,7 @@
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; 
-      */?>
+      ?>
 
 
 

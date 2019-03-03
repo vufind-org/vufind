@@ -14,6 +14,7 @@ namespace VuFind\Controller;
 
 use Zend\Log\LoggerAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use \VuFind\DigitalContent\OverdriveConnector;
 
 /**
  * Overdrive Controller supports actions for Overdrive Integration
@@ -33,7 +34,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     /**
      * Overdrive Connector
      *
-     * @var \VuFind\DigitalContent\OverdriveConnector $connector Overdrive Connector
+     * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
@@ -45,7 +46,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->setLogger($sm->get('VuFind\Logger'));
-
         $this->connector = $sm->get('VuFind\DigitalContent\OverdriveConnector');
         parent::__construct($sm);
         $this->debug("ODRC constructed");
@@ -253,7 +253,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         } elseif ($action == "returnTitleConfirm") {
             $actionTitleCode = "od_early_return";
         } elseif ($action == "getTitleConfirm") {
-            //$checkout = $this->connector->getCheckout($od_id, false);
             //get only formats that are available...
             $formats = $driver->getAvailableDigitalFormats();
             $actionTitleCode = "od_get_title";
@@ -284,8 +283,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 //Redirect to resource
                 $url = $result->data->downloadLink;
                 $this->debug("redirecting to: $url");
-                //$this->redirect()
-                //$this->redirect()->toUrl($url);
                 header("Location: $url");
                 exit();
             }
