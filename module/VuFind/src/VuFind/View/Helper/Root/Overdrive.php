@@ -65,7 +65,7 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
     public function showMyContentLink()
     {
         //if not configured at all, connector is null
-        if(is_null($this->connector)){
+        if (is_null($this->connector)) {
             return false;
         }
         $config = $this->connector->getConfig();
@@ -92,7 +92,7 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
     public function showOverdriveAdminLink()
     {
         //if not configured at all, connector is null
-        if(is_null($this->connector)){
+        if (is_null($this->connector)) {
             return false;
         }
         $config = $this->connector->getConfig();

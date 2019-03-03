@@ -50,9 +50,9 @@ class OverdriveConnectorFactory implements
     /**
      * Create an object
      *
-     * @param ContainerInterface $container Service manager
+     * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
-     * @param null|array         $options Extra options (optional)
+     * @param null|array         $options       Extra options (optional)
      *
      * @return object
      *
@@ -70,7 +70,9 @@ class OverdriveConnectorFactory implements
         }
 
         $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $odConfig = $container->get('VuFind\Config\PluginManager')->get('Overdrive');
+        $odConfig = $container->get('VuFind\Config\PluginManager')->get(
+            'Overdrive'
+        );
         $auth = $container->get('VuFind\Auth\ILSAuthenticator');
         $sessionContainer = null;
 

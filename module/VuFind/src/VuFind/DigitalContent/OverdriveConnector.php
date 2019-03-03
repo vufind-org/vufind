@@ -117,21 +117,12 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected $cache = null;
 
     /**
-     * Container
-     *
-     * @var ContainerInterface
-
-    protected $container;
-     */
-
-    /**
      * Constructor
      *
-     * @param Config             $mainConfig       VuFind main conf
-     * @param Config             $recordConfig     Record-specific conf file
-     * @param ILSAuthenticator   $ilsAuth          ILS Authenticator
-     * @param Container          $sessionContainer container
-     *
+     * @param Config           $mainConfig       VuFind main conf
+     * @param Config           $recordConfig     Record-specific conf file
+     * @param ILSAuthenticator $ilsAuth          ILS Authenticator
+     * @param Container        $sessionContainer container
      */
     public function __construct(
         Config $mainConfig,
@@ -152,7 +143,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     protected function getSessionContainer()
     {
-        if(is_null($this->sessionContainer) || !$this->sessionContainer){
+        if (is_null($this->sessionContainer) || !$this->sessionContainer) {
             error_log("NO SESSION CONTAINER");
         }
         return $this->sessionContainer;
@@ -856,7 +847,7 @@ class OverdriveConnector implements LoggerAwareInterface,
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
             $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
                 ",", $overDriveIds
-                       );
+            );
             $res = $this->callUrl($metadataUrl);
             $md = $res->metadata;
             foreach ($md as $item) {
