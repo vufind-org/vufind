@@ -139,6 +139,14 @@ class Params
     protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = [];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -219,7 +227,8 @@ class Params
         }
 
         // Activate all relevant checkboxes, also important for labeling:
-        $checkboxSections = $config->FacetLabels->checkboxSections ?? [];
+        $checkboxSections = $config->FacetLabels->checkboxSections
+            ?? $this->defaultFacetLabelCheckboxSections;
         foreach ($checkboxSections as $checkboxSection) {
             $this->initCheckboxFacets($checkboxSection);
         }
@@ -830,10 +839,11 @@ class Params
 
     /**
      * Detects if a filter is advanced (true) or simple (false). An advanced
-     * filter is currently defined as one surrounded by parentheses, while a
-     * simple filter is of the form field:value. Advanced filters are used to
-     * express more complex queries, such as combining multiple values from
-     * multiple fields using boolean operators.
+     * filter is currently defined as one surrounded by parentheses (possibly
+     * with a leading exclusion operator), while a simple filter is of the form
+     * field:value. Advanced filters are used to express more complex queries,
+     * such as combining multiple values from multiple fields using boolean
+     * operators.
      *
      * @param string $filter A filter string
      *
@@ -841,7 +851,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '(') {
+        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
             return true;
         }
         return false;

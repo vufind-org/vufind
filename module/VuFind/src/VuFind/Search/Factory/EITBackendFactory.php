@@ -52,7 +52,7 @@ class EITBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Zend\Log\LoggerInterface
      */
     protected $logger;
 
