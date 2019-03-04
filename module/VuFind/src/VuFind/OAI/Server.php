@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -195,6 +195,14 @@ class Server
      * @var array
      */
     protected $vufindApiFields = [];
+
+    /**
+     * Mappings from OAI metadataPrefix to record_format field in Solr. No defaults
+     * since record_format is only available from biblio index schema for VuFind 6.0.
+     *
+     * @var array
+     */
+    protected $recordFormatMappings = [];
 
     /**
      * Constructor
@@ -643,6 +651,12 @@ class Server
                 ',', $config->OAI->vufind_api_format_fields ?? ''
             )
         );
+
+        // Mappings from metadataPrefix to record_format field, if configured:
+        if (isset($config->OAI->record_format_mappings)) {
+            $this->recordFormatMappings
+                = $config->OAI->record_format_mappings->toArray();
+        }
     }
 
     /**
@@ -741,6 +755,7 @@ class Server
         // Figure out how many non-deleted records we need to display:
         $recordLimit = ($params['cursor'] + $this->pageSize) - $currentCursor;
         $cursorMark = $params['cursorMark'] ?? '';
+        $format = $params['metadataPrefix'];
 
         // Get non-deleted records from the Solr index:
         $set = $params['set'] ?? '';
@@ -749,10 +764,10 @@ class Server
             $until,
             $cursorMark,
             $recordLimit,
+            $format,
             $set
         );
         $nonDeletedCount = $result->getResultTotal();
-        $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
             $this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set);
             $currentCursor++;
@@ -884,12 +899,13 @@ class Server
      * @param int    $until      End date.
      * @param string $cursorMark cursorMark for the position in the full result list.
      * @param int    $limit      Max number of full records to return.
+     * @param string $format     Requested record format
      * @param string $set        Set to limit to (empty string for none).
      *
      * @return \VuFind\Search\Base\Results Search result object.
      */
     protected function listRecordsGetNonDeleted($from, $until, $cursorMark, $limit,
-        $set = ''
+        $format, $set = ''
     ) {
         // Set up search parameters:
         $results = $this->resultsManager->get($this->searchClassId);
@@ -920,6 +936,13 @@ class Server
             // Put parentheses around the query so that it does not get
             // parsed as a simple field:value filter.
             $params->addFilter('(' . $this->defaultQuery . ')');
+        }
+
+        if (!empty($this->recordFormatMappings[$format])) {
+            $params->addFilter(
+                'record_format:"'
+                . addcslashes($this->recordFormatMappings[$format], '"') . '"'
+            );
         }
 
         // Perform a Solr search:
