@@ -31,6 +31,7 @@ namespace VuFindTest\Record;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
 use VuFindTest\Unit\TestCase as TestCase;
@@ -105,6 +106,30 @@ class LoaderTest extends TestCase
     }
 
     /**
+     * Test single record with backend parameters.
+     *
+     * @return void
+     */
+    public function testSingleRecordWithBackendParameters()
+    {
+        $params = new ParamBag();
+        $params->set('fq', 'id:test');
+
+        $driver = $this->getDriver();
+        $collection = $this->getCollection([$driver]);
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $service->expects($this->once())->method('retrieve')
+            ->with(
+                $this->equalTo('Solr'),
+                $this->equalTo('test'),
+                $this->equalTo($params)
+            )
+            ->will($this->returnValue($collection));
+        $loader = $this->getLoader($service);
+        $this->assertEquals($driver, $loader->load('test', 'Solr', false, $params));
+    }
+
+    /**
      * Test batch load.
      *
      * @return void
@@ -120,6 +145,12 @@ class LoaderTest extends TestCase
         $collection2 = $this->getCollection([$driver3]);
         $collection3 = $this->getCollection([]);
 
+        $solrParams = new ParamBag();
+        $solrParams->set('fq', 'id:test1');
+
+        $worldCatParams = new ParamBag();
+        $worldCatParams->set('fq', 'id:test4');
+
         $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $factory->expects($this->once())->method('get')
             ->with($this->equalTo('Missing'))
@@ -127,13 +158,22 @@ class LoaderTest extends TestCase
 
         $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->at(0))->method('retrieveBatch')
-            ->with($this->equalTo('Solr'), $this->equalTo(['test1', 'test2']))
+            ->with(
+                $this->equalTo('Solr'), $this->equalTo(['test1', 'test2']),
+                $this->equalTo($solrParams)
+            )
             ->will($this->returnValue($collection1));
         $service->expects($this->at(1))->method('retrieveBatch')
-            ->with($this->equalTo('Summon'), $this->equalTo(['test3']))
+            ->with(
+                $this->equalTo('Summon'), $this->equalTo(['test3']),
+                $this->equalTo(null)
+            )
             ->will($this->returnValue($collection2));
         $service->expects($this->at(2))->method('retrieveBatch')
-            ->with($this->equalTo('WorldCat'), $this->equalTo(['test4']))
+            ->with(
+                $this->equalTo('WorldCat'), $this->equalTo(['test4']),
+                $this->equalTo($worldCatParams)
+            )
             ->will($this->returnValue($collection3));
 
         $loader = $this->getLoader($service, $factory);
@@ -141,7 +181,12 @@ class LoaderTest extends TestCase
             ['source' => 'Solr', 'id' => 'test1'],
             'Solr|test2', 'Summon|test3', 'WorldCat|test4'
         ];
-        $this->assertEquals([$driver1, $driver2, $driver3, $missing], $loader->loadBatch($input));
+        $this->assertEquals(
+            [$driver1, $driver2, $driver3, $missing],
+            $loader->loadBatch(
+                $input, false, ['Solr' => $solrParams, 'WorldCat' => $worldCatParams]
+            )
+        );
     }
 
     /**

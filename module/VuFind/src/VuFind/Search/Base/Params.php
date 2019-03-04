@@ -139,6 +139,14 @@ class Params
     protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = [];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -219,7 +227,8 @@ class Params
         }
 
         // Activate all relevant checkboxes, also important for labeling:
-        $checkboxSections = $config->FacetLabels->checkboxSections ?? [];
+        $checkboxSections = $config->FacetLabels->checkboxSections
+            ?? $this->defaultFacetLabelCheckboxSections;
         foreach ($checkboxSections as $checkboxSection) {
             $this->initCheckboxFacets($checkboxSection);
         }
