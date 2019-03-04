@@ -65,6 +65,30 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     }
 
     /**
+     * Function that obscures and logs debug data
+     *
+     * @param string             $path        Request URL
+     * @param array              $params      POST parameters
+     * @param \Zend\Http\Headers $req_headers Headers object
+     */
+    protected function debugRequest($path, $params, $req_headers)
+    {
+        // remove passwords
+        $logParams = $params;
+        if (isset($logParams['password'])) {
+            unset($logParams['password']);
+        }
+        // truncate headers for token obscuring
+        $logHeaders = $req_headers->toArray();
+        $this->debug(
+            $method . ' request.' .
+            ' URL: ' . $path . '.' .
+            ' Params: ' . print_r($logParams, true) . '.' .
+            ' Headers: ' . print_r($logHeaders, true)
+        );
+    }
+
+    /**
      * Make requests
      *
      * @param string $method  GET/POST/PUT/DELETE/etc
@@ -82,12 +106,15 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
             $method,
             120
         );
-        // error_log($method . ' ' . $this->config['API']['base_url'] . $path);
 
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
         $req_headers->addHeaders($headers);
         list($req_headers, $params) = $this->preRequest($req_headers, $params);
+
+        if ($this->logger) {
+            $this->debugRequest($method, $path, $params, $req_headers);
+        }
 
         // Add params
         if ($method == 'GET') {
@@ -97,26 +124,6 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 $client->getRequest()->setContent($params);
             } else {
                 $client->setParameterPost($params);
-            }
-            if ($this->logger) {
-                // remove passwords
-                $logParams = $params;
-                if (isset($logParams['password'])) {
-                    unset($logParams['password']);
-                }
-                // truncate headers for token obscuring
-                $logHeaders = $req_headers->toArray();
-                foreach ($logHeaders as $key=>$val) {
-                    if (strlen($val) > 30) {
-                        $logHeaders[$key] = substr($val, 0, 30) . '...';
-                    }
-                }
-                $this->debug(
-                    $method . ' request.' .
-                    ' URL: ' . $path . '.' .
-                    ' Params: ' . print_r($logParams, true) . '.' .
-                    ' Headers: ' . print_r($logHeaders, true)
-                );
             }
         }
         $response = $client->send();

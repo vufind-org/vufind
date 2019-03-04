@@ -108,6 +108,38 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Function that obscures and logs debug data
+     *
+     * @param string             $path        Request URL
+     * @param array              $params      POST parameters
+     * @param \Zend\Http\Headers $req_headers Headers object
+     */
+    protected function debugRequest($path, $params, $req_headers)
+    {
+        // Only log non-GET requests
+        if ($method == 'GET') {
+            return;
+        }
+        // remove passwords
+        $logParams = $params;
+        if (isset($logParams['password'])) {
+            unset($logParams['password']);
+        }
+        // truncate headers for token obscuring
+        $logHeaders = $req_headers->toArray();
+        if (isset($logHeaders['X-Okapi-Token'])) {
+            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+        }
+
+        $this->debug(
+            $method . ' request.' .
+            ' URL: ' . $path . '.' .
+            ' Params: ' . print_r($logParams, true) . '.' .
+            ' Headers: ' . print_r($logHeaders, true)
+        );
+    }
+
+    /**
      * (From AbstractAPI) Allow default corrections to all requests
      *
      * Add X-Okapi headers and Content-Type to every request
