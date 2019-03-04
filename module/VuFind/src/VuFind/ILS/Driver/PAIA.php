@@ -730,7 +730,9 @@ class PAIA extends DAIA
             $type = null;
             $type = isset($patron['type'])
                 ? implode(', ', array_map(
-                [$this, 'getReadableGroupType'], (array)$patron['type']))
+                        [$this, 'getReadableGroupType'], (array)$patron['type']
+                    )
+                )
                 : null;
             return [
                 'firstname'  => $patron['firstname'],
