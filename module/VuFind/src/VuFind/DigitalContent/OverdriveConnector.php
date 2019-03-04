@@ -31,13 +31,13 @@ namespace VuFind\DigitalContent;
 use Exception;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-use Zend\Session\Container;
-use Zend\Config\Config;
 use Zend\Cache\Storage\StorageInterface;
+use Zend\Config\Config;
+use Zend\Http\Client;
 use Zend\Log\LoggerAwareInterface;
+use Zend\Session\Container;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
-use Zend\Http\Client;
 
 /**
  * OverdriveConnector
@@ -143,7 +143,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     protected function getSessionContainer()
     {
-        if (is_null($this->sessionContainer) || !$this->sessionContainer) {
+        if (null === $this->sessionContainer || !$this->sessionContainer) {
             error_log("NO SESSION CONTAINER");
         }
         return $this->sessionContainer;
