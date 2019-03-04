@@ -67,19 +67,19 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Function that obscures and logs debug data
      *
+     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
      * @param string             $path        Request URL
-     * @param array              $params      POST parameters
+     * @param array              $params      Request parameters
      * @param \Zend\Http\Headers $req_headers Headers object
      */
-    protected function debugRequest($path, $params, $req_headers)
+    protected function debugRequest($method, $path, $params, $req_headers)
     {
-        // remove passwords
-        $logParams = $params;
-        if (isset($logParams['password'])) {
-            unset($logParams['password']);
+        $logParams = [];
+        $logHeaders = [];
+        if ($method == 'GET') {
+            $logParams = $params;
+            $logHeaders = $req_headers->toArray();
         }
-        // truncate headers for token obscuring
-        $logHeaders = $req_headers->toArray();
         $this->debug(
             $method . ' request.' .
             ' URL: ' . $path . '.' .
