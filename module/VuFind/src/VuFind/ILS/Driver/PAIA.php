@@ -728,11 +728,9 @@ class PAIA extends DAIA
     {
         if (is_array($patron)) {
             $type = null;
-            if (is_array($patron['type'])) {
-                $type = implode(', ', $patron['type']);
-            } elseif (isset($patron['type'])) {
-                $type = $patron['type'];
-            }
+            $type = isset($patron['type'])
+                ? implode(', ', array_map([$this, 'getReadableGroupType'], (array)$patron['type']))
+                : null;
             return [
                 'firstname'  => $patron['firstname'],
                 'lastname'   => $patron['lastname'],
@@ -743,7 +741,7 @@ class PAIA extends DAIA
                 'zip'        => null,
                 'phone'      => null,
                 'mobile_phone' => null,
-                'group'      => $this->getReadableGroupType($type),
+                'group'      => $type,
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
