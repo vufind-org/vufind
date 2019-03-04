@@ -399,4 +399,28 @@ body.rtl {
       display: inline-block;
     }
   }
+  .dropdown {
+    display: inline-block;
+    .btn {
+      vertical-align: baseline;
+    }
+
+    .dropdown-menu {
+      .filters-term {
+        display: block;
+        text-align: center;
+      }
+      .filter-value {
+        display: flex;
+
+        .text {
+          flex-grow: 1;
+        }
+        a {
+          flex-shrink: 0;
+          margin: 0;
+        }
+      }
+    }
+  }
 }

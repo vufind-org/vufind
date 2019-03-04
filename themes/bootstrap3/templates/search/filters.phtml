@@ -36,7 +36,21 @@
   <?php foreach ($filterList as $field => $data): ?>
     <div class="title-value-pair">
       <span class="filters-title"><?=$this->transEsc($field)?>:</span>
+      <?php if (count($data) > 3): ?>
+        <div class="dropdown">
+          <?php $dropdown = true; ?>
+          <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
+          <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-toggle-<?=$safeId?>">
+      <?php else: ?>
+        <?php $dropdown = false; ?>
+      <?php endif; ?>
       <?php foreach ($data as $index => $value): ?>
+        <?php if ($dropdown): ?>
+          <li>
+        <?php endif; ?>
         <?php
           switch ($value['operator'])
           {
@@ -58,14 +72,23 @@
           <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
         </span>
         <span class="filter-value filters-<?=$operatorClass?>">
-          <?=$this->escapeHtml($value['displayText'])?>
+          <span class="text">
+            <?=$this->escapeHtml($value['displayText'])?>
+          </span>
           <?php if (isset($this->urlQuery)): ?>
             <?php $removeLink = $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])?>
             <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
           <?php endif; ?>
         </span>
-        <?php if ($index == 0): ?></div><?php endif; ?>
+        <?php if ($dropdown): ?>
+          </li>
+        <?php endif; ?>
       <?php endforeach; ?>
+      <?php if ($dropdown): ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+    </div>
   <?php endforeach; ?>
 <?php $filters = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
