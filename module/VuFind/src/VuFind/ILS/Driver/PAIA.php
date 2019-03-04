@@ -727,7 +727,6 @@ class PAIA extends DAIA
     public function getMyProfile($patron)
     {
         if (is_array($patron)) {
-            $type = null;
             $type = isset($patron['type'])
                 ? implode(
                     ', ', array_map(
