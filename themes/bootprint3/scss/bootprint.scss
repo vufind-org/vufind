@@ -1,9 +1,16 @@
-@import "variables", "bootstrap";
+/* #LESS>
+@import "../../bootstrap3/less/bootstrap";
+@import "variables";
+<#LESS */
+/* #SCSS> */
+@import "variables", "../../bootstrap3/scss/bootstrap";
+/* <#SCSS */
+
 @import "icons";
 @import "search";
 @import "forms";
 
-$brand-primary: #619144; /* a11y overrides $brand-primary in sass */
+$brand-primary: #619144 !default; /* a11y overrides $brand-primary in sass */
 $active-orange: #E70 !default;
 
 /* --- Bootstrap MODS ---*/
