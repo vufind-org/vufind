@@ -21,7 +21,8 @@ class PiwikFactory extends \VuFind\View\Helper\Root\PiwikFactory
                 $array[$values[0]] = $values[1];
                 return $array;
             }, []);
-            $siteId = array_key_exists($_SERVER['HTTP_HOST'], $siteIds) ? $siteIds[$_SERVER['HTTP_HOST']] : $siteId;
+            $http_host_without_port = preg_replace('":[^:]+$"', '', $_SERVER['HTTP_HOST']);
+            $siteId = array_key_exists($http_host_without_port, $siteIds) ? $siteIds[$http_host_without_port] : $siteId;
         } else {
             $siteId = $config->Piwik->site_id ?: $siteId;
         }
