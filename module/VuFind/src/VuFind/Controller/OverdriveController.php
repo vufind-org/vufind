@@ -12,9 +12,9 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\DigitalContent\OverdriveConnector;
 use Zend\Log\LoggerAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use \VuFind\DigitalContent\OverdriveConnector;
 
 /**
  * Overdrive Controller supports actions for Overdrive Integration
@@ -73,7 +73,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!$odAccessResult->status) {
-            $this->debug("result:".print_r($odAccessResult, true));
+            $this->debug("result:" . print_r($odAccessResult, true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code,
@@ -98,7 +98,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     $mycheckout['checkout'] = $checkout;
                     $mycheckout['record']
                         = $this->serviceLocator->get('VuFind\Record\Loader')
-                            ->load(strtolower($checkout->reserveId));
+                        ->load(strtolower($checkout->reserveId));
                     $checkouts[] = $mycheckout;
                 }
             }
@@ -117,7 +117,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     $myhold['hold'] = $hold;
                     $myhold['record']
                         = $this->serviceLocator->get('VuFind\Record\Loader')
-                            ->load(strtolower($hold->reserveId));
+                        ->load(strtolower($hold->reserveId));
                     $holds[] = $myhold;
                 }
             }
