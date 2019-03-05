@@ -114,6 +114,8 @@ class Folio extends AbstractAPI implements
      * @param string             $path        Request URL
      * @param array              $params      Request parameters
      * @param \Zend\Http\Headers $req_headers Headers object
+     *
+     * @return void
      */
     protected function debugRequest($method, $path, $params, $req_headers)
     {
