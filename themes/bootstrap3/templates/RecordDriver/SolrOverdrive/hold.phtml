@@ -187,7 +187,7 @@
                 <?php foreach($formats as $key => $format): ?>
                     <a data-lightbox-ignore class="btn btn-primary" target="_blank"
                        href="<?= $this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
-                        <?= $this->translate($format) ?></a>
+                        <?= $this->translate($format->name) ?></a>
                 <?php endforeach;?>
             </div>
 
