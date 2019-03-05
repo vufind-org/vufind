@@ -3,10 +3,15 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
-            'helptext' => 'TueFind\View\Helper\Root\HelpTextFactory',
-            'HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
-            'piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
-            'tuefind' => 'TueFind\View\Helper\TueFind\Factory',
+            'VuFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
+            'TueFind\View\Helper\Root\HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'TueFind\View\Helper\TueFind\TueFind' => 'TueFind\View\Helper\TueFind\Factory',
+        ],
+        'aliases' => [
+            'helptext' => 'TueFind\View\Helper\Root\HelpText',
+            'helpText' => 'TueFind\View\Helper\Root\HelpText',
+            'HelpText' => 'TueFind\View\Helper\Root\HelpText',
+            'tuefind' => 'TueFind\View\Helper\TueFind\TueFind',
         ],
     ],
     'css' => [

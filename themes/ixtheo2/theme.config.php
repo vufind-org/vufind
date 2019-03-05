@@ -7,12 +7,16 @@ return [
     ],
     'helpers' => [
         'factories' => [
-            'citation' => 'IxTheo\View\Helper\Root\Factory::getCitation',
-            'record' => 'IxTheo\View\Helper\Root\Factory::getRecord',
-            'ixtheo' => 'IxTheo\View\Helper\Root\Factory::getIxTheo',
+            'IxTheo\View\Helper\Root\Browse' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\View\Helper\Root\Citation' => 'IxTheo\View\Helper\Root\CitationFactory',
+            'IxTheo\View\Helper\Root\Record' => 'IxTheo\View\Helper\Root\RecordFactory',
+            'IxTheo\View\Helper\IxTheo\IxTheo' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ],
-        'invokables' => [
+        'aliases' => [
             'browse' => 'IxTheo\View\Helper\Root\Browse',
+            'citation' => 'IxTheo\View\Helper\Root\Citation',
+            'record' => 'IxTheo\View\Helper\Root\Record',
+            'ixtheo' => 'IxTheo\View\Helper\IxTheo\IxTheo',
         ],
     ],
 ];

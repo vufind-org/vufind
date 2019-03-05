@@ -1,6 +1,6 @@
 <?php
 
-namespace IxTheo\View\Helper\Root;
+namespace IxTheo\View\Helper\IxTheo;
 
 use Zend\ServiceManager\ServiceManager;
 use VuFindSearch\Query\Query;
@@ -75,7 +75,7 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         $request = new \Zend\Stdlib\Parameters([ 'lookfor' => 'format:"Subscription Bundle"' ]);
         $subscription_bundles = $runner->run($request)->getResults();
         $html = $this->getView()->render('myresearch/subscription_bundles.phtml',
-                                               array('subscription_bundles' =>  $subscription_bundles));
+                                        ['subscription_bundles' =>  $subscription_bundles]);
         return $html;
     }
 
