@@ -29,17 +29,15 @@ class PiwikFactory extends \VuFind\View\Helper\Root\PiwikFactory
         if ($siteId == -1) {
             return new $requestedName("", null, false, null, null);
         }
-        $customVars = isset($config->Piwik->custom_variables)
-            ? $config->Piwik->custom_variables
-            : false;
 
         $settings = [
             'siteId' => $siteId,
-            'searchPrefix' => $config->Piwik->searchPrefix ?? null
+            'searchPrefix' => $config->Piwik->searchPrefix ?? null,
+            'disableCookies' => $config->Piwik->disableCookies ?? false
         ];
+        $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');
         $router = $container->get('Router');
-
         return new $requestedName($url, $settings, $customVars, $router, $request);
     }
 }
