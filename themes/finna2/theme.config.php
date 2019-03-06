@@ -170,6 +170,7 @@ return [
         'vendor/slick.min.js',
         'vendor/video.min.js',
         'vendor/videojs.hotkeys.min.js',
+        'vendor/videojs-contrib-quality-levels.js',
         'vendor/jquery.touchSwipe.min.js',
         'vendor/bootstrap-multiselect.min.js',
         'vendor/bootstrap-slider.min.js',

@@ -771,6 +771,93 @@ finna.layout = (function finnaLayout() {
 
             player.on('useractive', handleCloseButton);
             player.on('userinactive', handleCloseButton);
+
+            var selectedBitrate = 'auto';
+
+            player.qualityLevels().on('addqualitylevel', function onAddQualityLevel(event) {
+              event.qualityLevel.enabled = selectedBitrate === "auto" || event.qualityLevel.height.toString() === selectedBitrate;
+            });
+
+            player.on('loadedmetadata', function onMetadataLoaded() {
+              var qualityLevels = player.qualityLevels();
+              var addLevel = function addLevel(i, val) {
+                var $item = $('<li/>')
+                  .addClass('vjs-menu-item')
+                  .attr('tabindex', i)
+                  .attr('role', 'menuitemcheckbox')
+                  .attr('aria-live', 'polite')
+                  .attr('aria-checked', 'false')
+                  .data('bitrate', String(val).toLowerCase());
+                $('<span/>')
+                  .addClass('vjs-menu-item-text')
+                  .text(val)
+                  .appendTo($item);
+                $item.appendTo($('.video-popup .quality-selection'));
+                return $item;
+              };
+              var qLevels = [];
+              for (var i = 0; i < qualityLevels.length; i++) {
+                var quality = qualityLevels[i];
+
+                if (quality.height !== undefined) {
+                  qLevels.push(quality.height);
+
+                  if (!$('.quality-selection').length) {
+                    var $qs = $('<div/>').addClass('vjs-menu-button vjs-menu-button-popup vjs-control vjs-button');
+                    var $button = $('<button/>')
+                      .addClass('vjs-menu-button vjs-menu-button-popup vjs-button')
+                      .attr('type', 'button')
+                      .attr('aria-live', 'polite')
+                      .attr('aria-haspopup', 'true')
+                      .attr('title', VuFind.translate('Quality'))
+                      .appendTo($qs);
+                    $('<span/>')
+                      .addClass('vjs-icon-cog')
+                      .attr('aria-hidden', 'true')
+                      .appendTo($button);
+                    $('<span/>')
+                      .addClass('vjs-control-text')
+                      .text(VuFind.translate('Quality'))
+                      .appendTo($button);
+                    var $menu = $('<div/>')
+                      .addClass('vjs-menu')
+                      .appendTo($qs);
+                    $('<ul/>')
+                      .addClass('quality-selection vjs-menu-content')
+                      .attr('role', 'menu')
+                      .appendTo($menu);
+
+                    $('.vjs-fullscreen-control').before($qs);
+                  } else {
+                    $('.quality-selection').empty();
+                  }
+
+                  qLevels.sort(function compareFunc(a, b) {
+                    return a - b;
+                  });
+
+                  $.each(qLevels, addLevel);
+
+                  addLevel(qLevels.length, 'auto')
+                    .addClass('vjs-selected')
+                    .attr('aria-checked', 'true');
+                }
+              }
+            });
+
+            $('body').on('click', '.video-popup .quality-selection li', function onClickQuality() {
+              $('.video-popup .quality-selection li').removeClass('vjs-selected');
+              $('.video-popup .quality-selection li').prop('aria-checked', 'false');
+
+              $(this).addClass('vjs-selected');
+              $(this).prop('aria-checked', 'true');
+
+              selectedBitrate = String($(this).data('bitrate'));
+              var levels = player.qualityLevels();
+              for (var i = 0; i < levels.length; i++) {
+                levels[i].enabled = 'auto' === selectedBitrate || String(levels[i].height) === selectedBitrate;
+              }
+            });
           },
           close: function onClose() {
             videojs('video-player').dispose();
