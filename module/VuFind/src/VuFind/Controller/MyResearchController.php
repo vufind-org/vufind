@@ -443,7 +443,9 @@ class MyResearchController extends AbstractBase
             $catalog = $this->getILS();
             $this->addAccountBlocksToFlashMessenger($catalog, $patron);
             $profile = $catalog->getMyProfile($patron);
-            $profile['home_library'] = $user->home_library;
+            if (!empty($user->home_library)) {
+                $profile['home_library'] = $user->home_library;
+            }
             $view->profile = $profile;
             try {
                 $view->pickup = $catalog->getPickUpLocations($patron);
