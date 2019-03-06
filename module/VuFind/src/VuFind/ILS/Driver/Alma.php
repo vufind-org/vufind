@@ -280,7 +280,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // The "limit" tells the API how many items should be called at once (e. g.
         // 10). The "offset" defines the range (e. g. get items 30 to 40). With these
         // parameters we are able to use a paginator for paging through many items.
-        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit=' . $itemLimit . '&offset=' . $offset . '&order_by=library,location,enum_a,enum_b&direction=desc';
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='
+                . $itemLimit . '&offset=' . $offset
+                . '&order_by=library,location,enum_a,enum_b&direction=desc';
 
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the number of items returned from the API call and set it to a
@@ -297,11 +299,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 // Calculate request options if a user is logged-in
                 if ($username) {
                     // Call the request-options API for the logged-in user
-                    $requestOptionsPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/request-options?user_id=' . urlencode($username);
+                    $requestOptionsPath = '/bibs/' . urlencode($id) . '/holdings/'
+                            . urlencode($holdingId) . '/items/' . urlencode($itemId)
+                            . '/request-options?user_id=' . urlencode($username);
                     $requestOptions = $this->makeRequest($requestOptionsPath);
 
                     // Get all possible request types from the API answer
-                    $requestTypes = $requestOptions->xpath('/request_options/request_option//type');
+                    $requestTypes = $requestOptions
+                                    ->xpath('/request_options/request_option//type');
 
                     // Add all allowed request types to an array
                     $requestTypesArr = [];
@@ -309,7 +314,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $requestTypesArr[] = (string)$requestType;
                     }
 
-                    // If HOLD is an allowed request type, add the link for placing a hold
+                    // If HOLD is an allowed request type, add the link for placing a
+                    // hold
                     $addLink = in_array('HOLD', $requestTypesArr);
                 }
 
@@ -333,14 +339,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $barcode = (string)$item->item_data->barcode;
                 $itemNotes = null;
                 if ($item->item_data->public_note != null
-                && !empty($item->item_data->public_note)
+                    && !empty($item->item_data->public_note)
                 ) {
                     $itemNotes = [(string)$item->item_data->public_note];
                 }
 
                 $description = null;
                 if ($item->item_data->description != null
-                && !empty($item->item_data->description)
+                    && !empty($item->item_data->description)
                 ) {
                     $number = (string)$item->item_data->description;
                     $description = (string)$item->item_data->description;
@@ -350,7 +356,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'id' => $id,
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
-                    'status' => (string)$item->item_data->base_status[0]->attributes()['desc'],
+                    'status' => (string)$item->item_data->base_status[0]
+                        ->attributes()['desc'],
                     'location' => (string)$item->item_data->location,
                     'reserve' => 'N',   // TODO: support reserve status
                     'callnumber' => (string)$item->holding_data->call_number,

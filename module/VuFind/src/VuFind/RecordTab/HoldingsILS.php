@@ -56,6 +56,7 @@ class HoldingsILS extends AbstractBase
 
     /**
      * Whether the holdings tab should be hidden when empty or not.
+     *
      * @var boolean
      */
     protected $hideHoldingsTabWhenEmpty;
@@ -63,15 +64,23 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog  ILS connection to use to check
-     * for holdings before displaying the tab; set to null if no check is needed
-     * @param string                      $template Holdings template to use
+     * @param \VuFind\ILS\Connection|bool $catalog                  ILS connection to
+     *                                                              use to check for
+     *                                                              holdings before
+     *                                                              displaying the
+     *                                                              tab; set to null
+     *                                                              if no check is
+     *                                                              needed
+     * @param string                      $template                 Holdings template
+     *                                                              to use
      * @param boolean                     $hideHoldingsTabWhenEmpty Whether the
-     * holdings tab should be hidden when empty or not
+     *                                                              holdings tab
+     *                                                              should be hidden
+     *                                                              when empty or not
      */
     public function __construct(Connection $catalog = null, $template = null,
-            $hideHoldingsTabWhenEmpty = false)
-    {
+        $hideHoldingsTabWhenEmpty = false
+    ) {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
         $this->hideHoldingsTabWhenEmpty = $hideHoldingsTabWhenEmpty;

@@ -205,7 +205,9 @@ class Holds
                     $id, $patron ? $patron : null, $ids
                 );
             } else {
-                $result = $this->catalog->getHolding($id, $patron ? $patron : null, $page);
+                $result = $this->catalog->getHolding(
+                    $id, $patron ? $patron : null, $page
+                );
             }
 
             $grb = 'getRequestBlocks'; // use variable to shorten line below:
@@ -303,7 +305,7 @@ class Holds
      *
      * @param array  $result     A result set returned from a driver
      * @param string $type       The holds mode to be applied from:
-     * (all, holds, recalls, availability)
+     *                           (all, holds, recalls, availability)
      * @param array  $holdConfig Hold configuration from driver
      *
      * @return array A sorted results set
