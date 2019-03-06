@@ -84,7 +84,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $writer = new \Zend\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -202,7 +202,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($configData, $val);
 
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -2220,7 +2220,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $dummyILS = new DummyILS();
 
-        $sm = $this->getMockBuilder('VuFind\ILS\Driver\PluginManager')
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $sm->expects($this->any())
             ->method('get')
@@ -2282,7 +2282,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockILSAuthenticator($userSource = '')
     {
-        $mockAuth = $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
             ->getMock();
         if ($userSource) {
@@ -2309,7 +2309,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $configData = ['config' => 'values'];
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will($this->returnValue($config));
@@ -2352,7 +2352,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockSM($times = null, $driver = 'Voyager', $return = null)
     {
-        $sm = $this->getMockBuilder('VuFind\ILS\Driver\PluginManager')
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $sm->expects($times === null ? $this->any() : $times)
             ->method('get')
@@ -2368,14 +2368,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockDemoDriver($methods)
     {
-        $session = $this->getMockBuilder('Zend\Session\Container')
+        $session = $this->getMockBuilder(\Zend\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setMethods($methods)
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
-                    $this->createMock('VuFindSearch\Service'),
+                    $this->createMock(\VuFindSearch\Service::class),
                     function () use ($session) {
                         return $session;
                     }

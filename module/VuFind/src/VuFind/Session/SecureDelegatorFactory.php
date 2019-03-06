@@ -67,7 +67,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          * @var HandlerInterface $handler
          */
         $handler = call_user_func($callback);
-        $config = $container->get('VuFind\Config\PluginManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class);
         $secure = $config->get('config')->Session->secure ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
     }
@@ -83,8 +83,8 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
     protected function delegate(
         ContainerInterface $container, HandlerInterface $handler
     ): HandlerInterface {
-        $cookieManager = $container->get('VuFind\Cookie\CookieManager');
-        $config = $container->get('ProxyManager\Configuration');
+        $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
+        $config = $container->get(\ProxyManager\Configuration::class);
         $factory = new LazyLoadingValueHolderFactory($config);
         $delegator = new SecureDelegator($cookieManager, $handler);
         /**

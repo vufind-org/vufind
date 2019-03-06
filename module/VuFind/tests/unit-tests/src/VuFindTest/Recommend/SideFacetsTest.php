@@ -276,10 +276,6 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             ],
         ];
         $results = $this->getMockResults();
-        $response = ['format' => ['dummy']];
-        $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue($response));
         $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
         $this->assertEquals(['format'], $sf->getCollapsedFacets());
     }
@@ -326,7 +322,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigLoader($config = [], $key = 'facets')
     {
-        $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
+        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
             ->will($this->returnValue(new \Zend\Config\Config($config)));
@@ -345,7 +341,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -364,7 +360,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
             ->will($this->returnValue($query));

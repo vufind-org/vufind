@@ -62,12 +62,12 @@ class SystemStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $container->get('Zend\Session\SessionManager'),
-            $container->get('VuFind\Search\Results\PluginManager'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $tablePluginManager->get('VuFind\Db\Table\Session')
+            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $tablePluginManager->get(\VuFind\Db\Table\Session::class)
         );
     }
 }

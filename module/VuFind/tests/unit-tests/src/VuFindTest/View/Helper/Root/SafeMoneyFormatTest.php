@@ -81,7 +81,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
     public function testFormatting()
     {
         $escaper = new \Zend\View\Helper\EscapeHtml();
-        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock(\Zend\View\Renderer\PhpRenderer::class);
         $view->expects($this->any())->method('plugin')
             ->with($this->equalTo('escapeHtml'))
             ->will($this->returnValue($escaper));

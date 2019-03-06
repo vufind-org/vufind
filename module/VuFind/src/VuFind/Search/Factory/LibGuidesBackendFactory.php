@@ -51,7 +51,7 @@ class LibGuidesBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Zend\Log\LoggerInterface
      */
     protected $logger;
 
@@ -83,10 +83,11 @@ class LibGuidesBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configReader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $this->libGuidesConfig = $configReader->get('LibGuides');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -128,7 +129,7 @@ class LibGuidesBackendFactory implements FactoryInterface
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient($baseUrl);
         $timeout = $this->libGuidesConfig->General->timeout ?? 30;
         $client->setOptions(['timeout' => $timeout]);
@@ -155,7 +156,8 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('LibGuides');
             $driver->setRawData($data);

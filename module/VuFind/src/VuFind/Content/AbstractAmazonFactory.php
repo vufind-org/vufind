@@ -60,12 +60,13 @@ class AbstractAmazonFactory implements \Zend\ServiceManager\Factory\FactoryInter
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $associate = isset($config->Content->amazonassociate)
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        $label = $container->get('Zend\Mvc\I18n\Translator')->translate(
+        $label = $container->get(\Zend\Mvc\I18n\Translator::class)->translate(
             'Supplied by Amazon'
         );
         return new $requestedName($associate, $secret, $label);

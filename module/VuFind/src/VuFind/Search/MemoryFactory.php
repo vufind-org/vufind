@@ -63,7 +63,7 @@ class MemoryFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new Container(
-            'Search', $container->get('Zend\Session\SessionManager')
+            'Search', $container->get(\Zend\Session\SessionManager::class)
         );
         return new $requestedName($session);
     }

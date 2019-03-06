@@ -52,7 +52,7 @@ class EITBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Zend\Log\LoggerInterface
      */
     protected $logger;
 
@@ -84,10 +84,11 @@ class EITBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $this->config = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)
             ->get('EIT');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -123,11 +124,9 @@ class EITBackendFactory implements FactoryInterface
         $base = "http://eit.ebscohost.com/Services/SearchService.asmx/Search";
         $dbs =  isset($this->config->General->dbs)
             ? $this->config->General->dbs : null;
-        $connector = new Connector(
-            $base,
-            $this->serviceLocator->get('VuFindHttp\HttpService')->createClient(),
-            $prof, $pwd, $dbs
-        );
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
+            ->createClient();
+        $connector = new Connector($base, $client, $prof, $pwd, $dbs);
         $connector->setLogger($this->logger);
         return $connector;
     }
@@ -149,7 +148,8 @@ class EITBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('EIT');
             $driver->setRawData($data);

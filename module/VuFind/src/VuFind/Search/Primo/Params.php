@@ -41,6 +41,23 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
@@ -98,23 +115,5 @@ class Params extends \VuFind\Search\Base\Params
             return 'Reference Entries';
         }
         return ucwords(str_replace('_', ' ', $str));
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        $this->initFacetList('Facets', 'Results_Settings');
-        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings');
-        $this->initCheckboxFacets();
     }
 }

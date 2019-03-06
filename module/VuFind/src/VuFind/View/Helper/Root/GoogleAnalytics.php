@@ -65,6 +65,49 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Returns GA Javascript code.
+     *
+     * @param string $customUrl override URL to send to Google Analytics
+     *
+     * @return string
+     */
+    protected function getRawJavascript($customUrl = false)
+    {
+        // Simple case: Universal
+        if ($this->universal) {
+            return '(function(i,s,o,g,r,a,m){'
+                . "i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
+                . '(i[r].q=i[r].q||[]).push(arguments)},'
+                . 'i[r].l=1*new Date();a=s.createElement(o),'
+                . 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;'
+                . 'm.parentNode.insertBefore(a,m)'
+                . "})(window,document,'script',"
+                . "'//www.google-analytics.com/analytics.js','ga');"
+                . "ga('create', '{$this->key}', 'auto');"
+                . "ga('send', 'pageview');";
+        }
+
+        // Alternate (legacy) case:
+        $code = 'var key = "' . $this->key . '";' . "\n"
+            . "var _gaq = _gaq || [];\n"
+            . "_gaq.push(['_setAccount', key]);\n";
+        if ($customUrl) {
+            $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
+        } else {
+            $code .= "_gaq.push(['_trackPageview']);\n";
+        }
+        $code .= "(function() {\n"
+            . "var ga = document.createElement('script'); "
+            . "ga.type = 'text/javascript'; ga.async = true;\n"
+            . "ga.src = ('https:' == document.location.protocol ? "
+            . "'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n"
+            . "var s = document.getElementsByTagName('script')[0]; "
+            . "s.parentNode.insertBefore(ga, s);\n"
+            . "})();";
+        return $code;
+    }
+
+    /**
      * Returns GA code (if active) or empty string if not.
      *
      * @param string $customUrl override URL to send to Google Analytics
@@ -76,35 +119,7 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
         if (!$this->key) {
             return '';
         }
-        if (!$this->universal) {
-            $code = 'var key = "' . $this->key . '";' . "\n"
-                . "var _gaq = _gaq || [];\n"
-                . "_gaq.push(['_setAccount', key]);\n";
-            if ($customUrl) {
-                $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
-            } else {
-                $code .= "_gaq.push(['_trackPageview']);\n";
-            }
-            $code .= "(function() {\n"
-                . "var ga = document.createElement('script'); "
-                . "ga.type = 'text/javascript'; ga.async = true;\n"
-                . "ga.src = ('https:' == document.location.protocol ? "
-                . "'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n"
-                . "var s = document.getElementsByTagName('script')[0]; "
-                . "s.parentNode.insertBefore(ga, s);\n"
-                . "})();";
-        } else {
-            $code = '(function(i,s,o,g,r,a,m){'
-                . "i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
-                . '(i[r].q=i[r].q||[]).push(arguments)},'
-                . 'i[r].l=1*new Date();a=s.createElement(o),'
-                . 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;'
-                . 'm.parentNode.insertBefore(a,m)'
-                . "})(window,document,'script',"
-                . "'//www.google-analytics.com/analytics.js','ga');"
-                . "ga('create', '{$this->key}', 'auto');"
-                . "ga('send', 'pageview');";
-        }
+        $code = $this->getRawJavascript($customUrl);
         $inlineScript = $this->getView()->plugin('inlinescript');
         return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
     }

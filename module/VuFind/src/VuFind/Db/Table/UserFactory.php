@@ -57,12 +57,13 @@ class UserFactory extends GatewayFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $session = null;
         if (isset($config->Authentication->privacy)
             && $config->Authentication->privacy
         ) {
-            $sessionManager = $container->get('Zend\Session\SessionManager');
+            $sessionManager = $container->get(\Zend\Session\SessionManager::class);
             $session = new \Zend\Session\Container('Account', $sessionManager);
         }
         return parent::__invoke($container, $requestedName, [$config, $session]);

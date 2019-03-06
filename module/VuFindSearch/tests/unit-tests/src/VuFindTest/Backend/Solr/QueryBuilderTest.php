@@ -345,38 +345,6 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with highlighting, using the setCreateHighlightingQuery()
-     * method.
-     *
-     * @return void
-     */
-    public function testSetCreateHighlightingQuery()
-    {
-        $qb = new QueryBuilder(
-            [
-                'test' => [
-                    'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']],
-                ]
-            ]
-        );
-
-        $q = new Query('*:*', 'test');
-
-        // No hl.q if highlighting query disabled:
-        $qb->setCreateHighlightingQuery(false);
-        $response1 = $qb->build($q);
-        $hlQ1 = $response1->get('hl.q');
-        $this->assertEquals(null, $hlQ1[0]);
-
-        // hl.q if highlighting query enabled:
-        $qb->setCreateHighlightingQuery(true);
-        $response2 = $qb->build($q);
-        $hlQ2 = $response2->get('hl.q');
-        $this->assertEquals('*:*', $hlQ2[0]);
-    }
-
-    /**
      * Test hl.q edge case: when we are in dismax (not edismax) mode, and a boost
      * is set, and a query contains advanced syntax, VuFind manipulates the query
      * to trigger the boost and sets hl.q to prevent the highlighter from matching

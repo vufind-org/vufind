@@ -1,6 +1,12 @@
-@import "bootstrap";
+/* #LESS> */
+@import "../../bootstrap3/less/bootstrap";
 @import "colors";
 @import "variables";
+/* <#LESS */
+/* #SCSS>
+@import "colors", "variables", "../../bootstrap3/scss/bootstrap";
+<#SCSS */
+
 @import "common";
 @import "search";
 @import "rtl";
@@ -224,7 +230,10 @@ header {
   padding-right: 0;
 }
 .sidebar .checkbox-filter,
-.sidebar > h4 { margin-left: 1rem; }
+.sidebar > h4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
 
 .jstree-facet {
   .main .fa-check { margin-top: 3px; }
