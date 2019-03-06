@@ -76,14 +76,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Request object
      *
-     * @var Zend\Http\PhpEnvironment\Request
+     * @var \Zend\Http\PhpEnvironment\Request
      */
     protected $request;
 
     /**
      * Router object
      *
-     * @var Zend\Router\Http\RouteMatch
+     * @var \Zend\Router\Http\RouteMatch
      */
     protected $router;
 

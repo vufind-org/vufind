@@ -1650,7 +1650,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 // OPAC message
                 if (isset($item['fixedFields']['108'])) {
                     $opacMsg = $item['fixedFields']['108'];
-                    if (trim($opacMsg['value']) != '-') {
+                    $trimmedMsg = trim($opacMsg['value']);
+                    if (strlen($trimmedMsg) && $trimmedMsg != '-') {
                         $notes[] = $this->translateOpacMessage(
                             trim($opacMsg['value'])
                         );
