@@ -1,10 +1,10 @@
 <?php
 /**
- * ILS driver test
+ * SierraRest ILS driver test
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\SierraRest;
 
 /**
- * ILS driver test
+ * SierraRest ILS driver test
  *
  * @category VuFind
  * @package  Tests
