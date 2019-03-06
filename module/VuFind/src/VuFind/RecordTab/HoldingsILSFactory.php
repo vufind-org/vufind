@@ -68,7 +68,7 @@ class HoldingsILSFactory implements \Zend\ServiceManager\Factory\FactoryInterfac
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
-        
+
         return new $requestedName(
             $catalog,
             (string)($config->Site->holdingsTemplate ?? 'standard'),

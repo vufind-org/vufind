@@ -32,7 +32,6 @@ use VuFind\Exception\ILS as ILSException;
 use Zend\Http\Headers;
 use Zend\Paginator\Paginator;
 
-
 /**
  * Alma ILS Driver
  *
@@ -46,7 +45,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use CacheTrait;
-    
 
     /**
      * Alma API base URL.
@@ -75,12 +73,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var \VuFind\Config\PluginManager
      */
     protected $configLoader;
-    
-    
+
     // TEST PAGING
     protected $totalItemCount = 0;
 
-    
     /**
      * Constructor
      *
@@ -243,7 +239,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         return $this->totalItemCount;
     }
-    
+
     /**
      * Get the item limit from the config file.
      *
@@ -254,7 +250,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $itemLimit = $this->config['Holds']['itemLimit'] ?? 10;
         return (is_numeric($itemLimit)) ? $itemLimit : 10;
     }
-    
+
     /**
      * Get Holding
      *
@@ -271,11 +267,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *                       reserve, callnumber, duedate, returnDate, number,
      *                       barcode, item_notes, item_id, holding_id, addLink.
      */
-    public function getHolding($id, array $patron = null, $page = null) {
-        
+    public function getHolding($id, array $patron = null, $page = null)
+    {
         $itemLimit = $this->getItemLimit();
         $page = $page ?? 1;
-        $offset = ($page*$itemLimit)-$itemLimit;
+        $offset = ($page * $itemLimit) - $itemLimit;
         $results = [];
         $copyCount = 0;
         $username = $patron['cat_username'] ?? null;
@@ -284,44 +280,44 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // The "limit" tells the API how many items should be called at once (e. g.
         // 10). The "offset" defines the range (e. g. get items 30 to 40). With these
         // parameters we are able to use a paginator for paging through many items.
-        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='.$itemLimit.'&offset='.$offset.'&order_by=library,location,enum_a,enum_b&direction=desc';
-        
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit=' . $itemLimit . '&offset=' . $offset . '&order_by=library,location,enum_a,enum_b&direction=desc';
+
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the number of items returned from the API call and set it to a
             // class variable. It is then used in VuFind\RecordTab\HoldingsILS for
             // the items paginator.
             $this->totalItemCount = (string)$items->attributes()->total_record_count;
-            
+
             foreach ($items->item as $item) {
                 $number = ++$copyCount;
                 $holdingId = (string)$item->holding_data->holding_id;
                 $itemId = (string)$item->item_data->pid;
                 $addLink = false;
-                
+
                 // Calculate request options if a user is logged-in
                 if ($username) {
-                	// Call the request-options API for the logged-in user
+                    // Call the request-options API for the logged-in user
                     $requestOptionsPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/request-options?user_id=' . urlencode($username);
                     $requestOptions = $this->makeRequest($requestOptionsPath);
-                    
+
                     // Get all possible request types from the API answer
                     $requestTypes = $requestOptions->xpath('/request_options/request_option//type');
-                    
+
                     // Add all allowed request types to an array
                     $requestTypesArr = [];
                     foreach ($requestTypes as $requestType) {
-                    	$requestTypesArr[] = (string)$requestType;
+                        $requestTypesArr[] = (string)$requestType;
                     }
-                    
+
                     // If HOLD is an allowed request type, add the link for placing a hold
                     $addLink = in_array('HOLD', $requestTypesArr);
                 }
-                
+
                 $processType = (string)$item->item_data->process_type;
                 $requested = ((string)$item->item_data->requested == 'false')
                             ? false
                             : true;
-                
+
                 // For some data we need to do additional API calls due to the Alma
                 // API architecture
                 $duedate = ($requested) ? 'requested' : null;
@@ -333,7 +329,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $loan = $loanData->item_loan;
                     $duedate = $this->parseDate((string)$loan->due_date);
                 }
-                
+
                 $barcode = (string)$item->item_data->barcode;
                 $itemNotes = null;
                 if ($item->item_data->public_note != null
@@ -341,7 +337,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 ) {
                     $itemNotes = [(string)$item->item_data->public_note];
                 }
-                    
+
                 $description = null;
                 if ($item->item_data->description != null
                 && !empty($item->item_data->description)
@@ -369,13 +365,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     // For Alma title-level hold requests
                     'description' => $description
                 ];
-                
             }
         }
-        
+
         return $results;
     }
-    
+
     /**
      * Check for request blocks.
      *
@@ -1440,7 +1435,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new \Exception("Invalid date: $date");
         }
     }
-    
 
     // @codingStandardsIgnoreStart
 

@@ -53,7 +53,7 @@ class HoldingsILS extends AbstractBase
      * @param string
      */
     protected $template;
-    
+
     /**
      * Whether the holdings tab should be hidden when empty or not.
      * @var boolean
@@ -70,7 +70,7 @@ class HoldingsILS extends AbstractBase
      * holdings tab should be hidden when empty or not
      */
     public function __construct(Connection $catalog = null, $template = null,
-    		$hideHoldingsTabWhenEmpty = false)
+            $hideHoldingsTabWhenEmpty = false)
     {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
@@ -129,8 +129,7 @@ class HoldingsILS extends AbstractBase
     {
         return $this->template;
     }
-    
-    
+
     /**
      * Getting a paginator for the items list.
      *
@@ -140,32 +139,31 @@ class HoldingsILS extends AbstractBase
     {
         // The total number of items from the API call
         $totalItemCount = $this->catalog->getTotalItemCount();
-        
+
         // The number of items that should be called with one single API call.
         $itemLimit = $this->catalog->getItemLimit();
-        
+
         // Return if a paginator is not needed
         if ($totalItemCount < $itemLimit) {
             return;
         }
-        
+
         // The currently selected page in the paginator
         $page = $this->getCurrentPage();
-        
+
         // Create the paginator
         $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
         $paginator = new \Zend\Paginator\Paginator($nullAdapter);
-        
+
         // Some settings for the paginator
         $paginator
             ->setCurrentPageNumber($page)
             ->setItemCountPerPage($itemLimit)
             ->setPageRange(10);
-        
+
         return $paginator;
     }
-    
-    
+
     /**
      * Get the currently selected page in the items paginator.
      *
@@ -176,5 +174,4 @@ class HoldingsILS extends AbstractBase
         $page = $this->getRequest()->getQuery('page') ?? null;
         return $page;
     }
-
 }
