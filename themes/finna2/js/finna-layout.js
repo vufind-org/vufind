@@ -722,19 +722,188 @@ finna.layout = (function finnaLayout() {
     });
   }
 
+  function resizeVideoPopup($container) {
+    var mfp = $container.closest('.mfp-content');
+    if (mfp.length === 0) {
+      return;
+    }
+    var width = $('.mfp-content').width();
+    var height = $('.mfp-container').height();
+    $container.css('width', width).css('height', height);
+  }
+
+  function initVideoJs(_container, videoSources, posterUrl) {
+    var $container = $(_container);
+    var $videoElem = $(_container).find('video');
+
+    // Use a fairly small buffer for faster quality changes
+    videojs.Hls.GOAL_BUFFER_LENGTH = 10;
+    videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
+    var player = videojs($videoElem.get(0));
+
+    player.ready(function onReady() {
+      this.hotkeys({
+        enableVolumeScroll: false,
+        enableModifiersForNumbers: false
+      });
+    });
+
+    resizeVideoPopup($container);
+
+    player.src(videoSources);
+    player.poster(posterUrl);
+
+    var handleCloseButton = function handleCloseButton() {
+      if (player.userActive()) {
+        $('.mfp-close').css('opacity', '1');
+      } else {
+        $('.mfp-close').css('opacity', '0');
+      }
+    }
+
+    player.on('useractive', handleCloseButton);
+    player.on('userinactive', handleCloseButton);
+
+    var selectedBitrate = 'auto';
+
+    player.qualityLevels().on('addqualitylevel', function onAddQualityLevel(event) {
+      event.qualityLevel.enabled = selectedBitrate === "auto" || event.qualityLevel.height.toString() === selectedBitrate;
+    });
+
+    player.on('loadedmetadata', function onMetadataLoaded() {
+      var qualityLevels = player.qualityLevels();
+      var addLevel = function addLevel(i, val) {
+        var $item = $('<li/>')
+          .addClass('vjs-menu-item')
+          .attr('tabindex', i)
+          .attr('role', 'menuitemcheckbox')
+          .attr('aria-live', 'polite')
+          .attr('aria-checked', 'false')
+          .data('bitrate', String(val).toLowerCase());
+        $('<span/>')
+          .addClass('vjs-menu-item-text')
+          .text(val)
+          .appendTo($item);
+        $item.appendTo($container.find('.quality-selection'));
+        return $item;
+      };
+      var qLevels = [];
+      for (var i = 0; i < qualityLevels.length; i++) {
+        var quality = qualityLevels[i];
+
+        if (quality.height !== undefined) {
+          qLevels.push(quality.height);
+
+          if (!$container.find('.quality-selection').length) {
+            var $qs = $('<div/>').addClass('vjs-menu-button vjs-menu-button-popup vjs-control vjs-button');
+            var $button = $('<button/>')
+              .addClass('vjs-menu-button vjs-menu-button-popup vjs-button')
+              .attr('type', 'button')
+              .attr('aria-live', 'polite')
+              .attr('aria-haspopup', 'true')
+              .attr('title', VuFind.translate('Quality'))
+              .appendTo($qs);
+            $('<span/>')
+              .addClass('vjs-icon-cog')
+              .attr('aria-hidden', 'true')
+              .appendTo($button);
+            $('<span/>')
+              .addClass('vjs-control-text')
+              .text(VuFind.translate('Quality'))
+              .appendTo($button);
+            var $menu = $('<div/>')
+              .addClass('vjs-menu')
+              .appendTo($qs);
+            $('<ul/>')
+              .addClass('quality-selection vjs-menu-content')
+              .attr('role', 'menu')
+              .appendTo($menu);
+
+            $container.find('.vjs-fullscreen-control').before($qs);
+          } else {
+            $container.find('.quality-selection').empty();
+          }
+
+          qLevels.sort(function compareFunc(a, b) {
+            return a - b;
+          });
+
+          $.each(qLevels, addLevel);
+
+          addLevel(qLevels.length, 'auto')
+            .addClass('vjs-selected')
+            .attr('aria-checked', 'true');
+        }
+      }
+    });
+
+    player.load();
+
+    $('body')
+      .unbind('click.videoQuality')
+      .on('click.videoQuality', '.quality-selection li', function onClickQuality() {
+        if ($container.find($(this)).length === 0) {
+          return;
+        }
+        $container.find('.quality-selection li')
+          .removeClass('vjs-selected')
+          .prop('aria-checked', 'false');
+
+        $(this)
+          .addClass('vjs-selected')
+          .attr('aria-checked', 'true');
+
+        selectedBitrate = String($(this).data('bitrate'));
+        var levels = player.qualityLevels();
+        for (var i = 0; i < levels.length; i++) {
+          levels[i].enabled = 'auto' === selectedBitrate || String(levels[i].height) === selectedBitrate;
+        }
+      });
+  }
+
+  function loadScripts(scripts, callback) {
+    var needed = {};
+    // Check for required scripts that are not yet loaded
+    if (scripts) {
+      for (var item in scripts) {
+        if (scripts.hasOwnProperty(item) && $('#' + item).length === 0) {
+          needed[item] = scripts[item];
+        }
+      }
+    }
+    var loadCount = Object.keys(needed).length;
+    if (loadCount) {
+      // Load scripts and initialize player when all are loaded
+      var scriptLoaded = function scriptLoaded() {
+        if (--loadCount === 0) {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      };
+      for (var itemNeeded in needed) {
+        if (needed.hasOwnProperty(itemNeeded)) {
+          $(needed[itemNeeded])
+            .load(scriptLoaded)
+            .attr('async', 'true')
+            .appendTo($('head'))
+            .load();
+        }
+      }
+    } else {
+      if (typeof callback === 'function') {
+        callback();
+      }
+    }
+  }
+
   function initVideoPopup(_container) {
-    var container = typeof _container === 'undefined' ? $('body') : _container;
+    var container = typeof _container === 'undefined' ? $('body') : $(_container);
 
     container.find('[data-embed-video]').click(function onClickVideoLink(e) {
       var videoSources = $(this).data('videoSources');
+      var scripts = $(this).data('scripts');
       var posterUrl = $(this).data('posterUrl');
-
-      var resizeVideo = function resizeVideo() {
-        var width = $('.mfp-content').width();
-        var height = $('.mfp-container').height();
-        $('.video-popup').css('width', width);
-        $('.video-popup').css('height', height);
-      }
 
       $.magnificPopup.open({
         type: 'inline',
@@ -743,126 +912,16 @@ finna.layout = (function finnaLayout() {
         },
         callbacks: {
           open: function onOpen() {
-            // Use a fairly small buffer for faster quality changes
-            videojs.Hls.GOAL_BUFFER_LENGTH = 10;
-            videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
-            var player = videojs('video-player');
-
-            player.ready(function onReady() {
-              this.hotkeys({
-                enableVolumeScroll: false,
-                enableModifiersForNumbers: false
-              });
-            });
-
-            resizeVideo();
-
-            player.src(videoSources);
-            player.poster(posterUrl);
-            player.load();
-
-            var handleCloseButton = function handleCloseButton() {
-              if (player.userActive()) {
-                $('.mfp-close').css('opacity', '1');
-              } else {
-                $('.mfp-close').css('opacity', '0');
-              }
-            }
-
-            player.on('useractive', handleCloseButton);
-            player.on('userinactive', handleCloseButton);
-
-            var selectedBitrate = 'auto';
-
-            player.qualityLevels().on('addqualitylevel', function onAddQualityLevel(event) {
-              event.qualityLevel.enabled = selectedBitrate === "auto" || event.qualityLevel.height.toString() === selectedBitrate;
-            });
-
-            player.on('loadedmetadata', function onMetadataLoaded() {
-              var qualityLevels = player.qualityLevels();
-              var addLevel = function addLevel(i, val) {
-                var $item = $('<li/>')
-                  .addClass('vjs-menu-item')
-                  .attr('tabindex', i)
-                  .attr('role', 'menuitemcheckbox')
-                  .attr('aria-live', 'polite')
-                  .attr('aria-checked', 'false')
-                  .data('bitrate', String(val).toLowerCase());
-                $('<span/>')
-                  .addClass('vjs-menu-item-text')
-                  .text(val)
-                  .appendTo($item);
-                $item.appendTo($('.video-popup .quality-selection'));
-                return $item;
-              };
-              var qLevels = [];
-              for (var i = 0; i < qualityLevels.length; i++) {
-                var quality = qualityLevels[i];
-
-                if (quality.height !== undefined) {
-                  qLevels.push(quality.height);
-
-                  if (!$('.quality-selection').length) {
-                    var $qs = $('<div/>').addClass('vjs-menu-button vjs-menu-button-popup vjs-control vjs-button');
-                    var $button = $('<button/>')
-                      .addClass('vjs-menu-button vjs-menu-button-popup vjs-button')
-                      .attr('type', 'button')
-                      .attr('aria-live', 'polite')
-                      .attr('aria-haspopup', 'true')
-                      .attr('title', VuFind.translate('Quality'))
-                      .appendTo($qs);
-                    $('<span/>')
-                      .addClass('vjs-icon-cog')
-                      .attr('aria-hidden', 'true')
-                      .appendTo($button);
-                    $('<span/>')
-                      .addClass('vjs-control-text')
-                      .text(VuFind.translate('Quality'))
-                      .appendTo($button);
-                    var $menu = $('<div/>')
-                      .addClass('vjs-menu')
-                      .appendTo($qs);
-                    $('<ul/>')
-                      .addClass('quality-selection vjs-menu-content')
-                      .attr('role', 'menu')
-                      .appendTo($menu);
-
-                    $('.vjs-fullscreen-control').before($qs);
-                  } else {
-                    $('.quality-selection').empty();
-                  }
-
-                  qLevels.sort(function compareFunc(a, b) {
-                    return a - b;
-                  });
-
-                  $.each(qLevels, addLevel);
-
-                  addLevel(qLevels.length, 'auto')
-                    .addClass('vjs-selected')
-                    .attr('aria-checked', 'true');
-                }
-              }
-            });
-
-            $('body').on('click', '.video-popup .quality-selection li', function onClickQuality() {
-              $('.video-popup .quality-selection li').removeClass('vjs-selected');
-              $('.video-popup .quality-selection li').prop('aria-checked', 'false');
-
-              $(this).addClass('vjs-selected');
-              $(this).prop('aria-checked', 'true');
-
-              selectedBitrate = String($(this).data('bitrate'));
-              var levels = player.qualityLevels();
-              for (var i = 0; i < levels.length; i++) {
-                levels[i].enabled = 'auto' === selectedBitrate || String(levels[i].height) === selectedBitrate;
-              }
+            loadScripts(scripts, function onScriptsLoaded() {
+              initVideoJs('.video-popup', videoSources, posterUrl);
             });
           },
           close: function onClose() {
             videojs('video-player').dispose();
           },
-          resize: resizeVideo
+          resize: function resizeVideo() {
+            resizeVideoPopup($('.video-popup'));
+          }
         }
       });
       e.preventDefault();
@@ -1000,8 +1059,9 @@ finna.layout = (function finnaLayout() {
     initSecondaryLoginField: initSecondaryLoginField,
     initILSPasswordRecoveryLink: initILSPasswordRecoveryLink,
     initIframeEmbed: initIframeEmbed,
-    initVideoPopup: initVideoPopup,
     initLoginTabs: initLoginTabs,
+    loadScripts: loadScripts,
+    initVideoJs: initVideoJs,
     init: function init() {
       initScrollRecord();
       initJumpMenus();

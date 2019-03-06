@@ -237,8 +237,8 @@ finna.imagePopup = (function finnaImagePopup() {
             initVideoPopup(popup);
           },
           close: function closePopup() {
-            if ($("#video").length){
-              videojs('video').dispose();
+            if ($('#video-player').length) {
+              videojs('video-player').dispose();
             }
           }
         },
@@ -261,32 +261,21 @@ finna.imagePopup = (function finnaImagePopup() {
     container.find('a[data-embed-video]').click(function openVideoPopup(e) {
       var videoSources = $(this).data('videoSources');
       var posterUrl = $(this).data('posterUrl');
+      var scripts = $(this).data('scripts');
 
       var mfp = $.magnificPopup.instance;
-      mfp.index = 0;
+      mfp.index = -1;
       mfp.gallery = {enabled: false};
-      mfp.items[0] = {
-        src: "<div class='video-popup'><video id='video' class='video-js vjs-big-play-centered' controls></video></div>",
+      mfp.items[-1] = {
+        src: '<div class="video-popup"><video id="video-player" class="video-js vjs-big-play-centered" controls></video></div>',
         type: 'inline'
       };
-      $(".mfp-arrow-right, .mfp-arrow-left").addClass("hidden");
+      $('.mfp-arrow-right, .mfp-arrow-left').addClass('hidden');
       mfp.updateItemHTML();
 
-      // Use a fairly small buffer for faster quality changes
-      videojs.Hls.GOAL_BUFFER_LENGTH = 10;
-      videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
-      var player = videojs('video');
-
-      player.ready(function onReady() {
-        this.hotkeys({
-          enableVolumeScroll: false,
-          enableModifiersForNumbers: false
-        });
+      finna.layout.loadScripts(scripts, function onScriptsLoaded() {
+        finna.layout.initVideoJs('.video-popup', videoSources, posterUrl);
       });
-
-      player.src(videoSources);
-      player.poster(posterUrl);
-      player.load();
 
       e.preventDefault();
     });

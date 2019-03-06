@@ -32,6 +32,20 @@
 
     if (!empty($url['videoSources'])) {
       $currentVideo['data-video-sources'] = json_encode($url['videoSources']);
+      $currentVideo['data-scripts'] = json_encode([
+        'js-videojs' => $this->headScript()->itemToString(
+          $this->headScript()->createData('text/javascript', ['src' => 'vendor/video.min.js', 'id' => 'js-videojs']),
+          '', '', ''
+        ),
+        'js-videojs-hotkeys' => $this->headScript()->itemToString(
+          $this->headScript()->createData('text/javascript', ['src' => 'vendor/videojs.hotkeys.min.js', 'id' => 'js-videojs-hotkeys']),
+          '', '', ''
+        ),
+        'js-videojs-quality' => $this->headScript()->itemToString(
+          $this->headScript()->createData('text/javascript', ['src' => 'vendor/videojs-contrib-quality-levels.js', 'id' => 'js-videojs-quality']),
+          '', '', ''
+        )
+      ]);
     }
 
     if (!empty($url['embed']) && $url['embed'] === 'video') {
