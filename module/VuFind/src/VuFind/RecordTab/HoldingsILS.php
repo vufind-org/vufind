@@ -53,10 +53,7 @@ class HoldingsILS extends AbstractBase
      * @param string
      */
     protected $template;
-    
-    protected $hideHoldingsTabWhenEmpty;
-    
-    
+
     /**
      * Constructor
      *
@@ -64,11 +61,10 @@ class HoldingsILS extends AbstractBase
      * for holdings before displaying the tab; set to null if no check is needed
      * @param string                      $template Holdings template to use
      */
-    public function __construct(Connection $catalog = null, $template = null, $hideHoldingsTabWhenEmpty = false)
+    public function __construct(Connection $catalog = null, $template = null)
     {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
-        $this->hideHoldingsTabWhenEmpty = $hideHoldingsTabWhenEmpty;
     }
 
     /**
@@ -108,7 +104,7 @@ class HoldingsILS extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->hideHoldingsTabWhenEmpty) {
+        if ($this->catalog) {
             return $this->catalog->hasHoldings($this->driver->getUniqueID());
         }
         return true;
@@ -126,7 +122,8 @@ class HoldingsILS extends AbstractBase
     
     
     /**
-     * Getting a paginator for the items list
+     * Getting a paginator for the items list.
+     *
      * @return \Zend\Paginator\Paginator
      */
     public function getPaginator()
@@ -160,7 +157,8 @@ class HoldingsILS extends AbstractBase
     
     
     /**
-     * Get the currently selected page in the paginator 
+     * Get the currently selected page in the items paginator.
+     *
      * @return \Zend\Stdlib\ParametersInterface|mixed
      */
     public function getCurrentPage()

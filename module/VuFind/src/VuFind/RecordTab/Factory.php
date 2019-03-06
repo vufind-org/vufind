@@ -145,13 +145,11 @@ class Factory
         // ILS driver specifies no holdings, we need to pass in a connection
         // object:
         $config = $sm->get('VuFind\Config\PluginManager')->get('config');
-        /*$catalog = ($config->Site->hideHoldingsTabWhenEmpty ?? false)
-            ? $sm->get('VuFind\ILS\Connection') : null;*/
-        $catalog = $sm->get('VuFind\ILS\Connection');
+        $catalog = ($config->Site->hideHoldingsTabWhenEmpty ?? false)
+            ? $sm->get('VuFind\ILS\Connection') : null;
         return new HoldingsILS(
             $catalog,
-            (string)($config->Site->holdingsTemplate ?? 'standard'),
-            (string)($config->Site->hideHoldingsTabWhenEmpty ?? false)
+            (string)($config->Site->holdingsTemplate ?? 'standard')
         );
     }
 

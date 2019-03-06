@@ -17,7 +17,7 @@
         $offlineMode = 'ils-offline';
     }
     // Set page title.
-    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());   
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
@@ -120,11 +120,9 @@
 </table>
 <?php endforeach; ?>
 
-
 <?php if ($paginator = $this->tab->getPaginator()): ?>
 	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $page])?>
 <?php endif; ?>
-
 
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>

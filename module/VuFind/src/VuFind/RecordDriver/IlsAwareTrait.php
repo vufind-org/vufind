@@ -102,6 +102,8 @@ trait IlsAwareTrait
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
+     * @param number $page The number of the current page of the item paginator
+     *
      * @return array
      */
     public function getRealTimeHoldings($page = null)

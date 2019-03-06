@@ -110,7 +110,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('Configuration needs to be set.');
         }
         $this->baseUrl = $this->config['Catalog']['apiBaseUrl'];
-        $this->apiKey = $this->config['Catalog']['apiKey'];       
+        $this->apiKey = $this->config['Catalog']['apiKey'];
     }
 
     /**
@@ -233,20 +233,44 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return (string)$item->item_data->base_status === '1';
     }
 
-        
+    /**
+     * Returns the total number of items for a bibliographic record. The number
+     * is set in the getHolding function.
+     *
+     * @return number
+     */
     public function getTotalItemCount()
     {
         return $this->totalItemCount;
     }
     
-    
+    /**
+     * Get the item limit from the config file.
+     *
+     * @return number
+     */
     public function getItemLimit()
     {
         $itemLimit = $this->config['Holds']['itemLimit'] ?? 10;
         return (is_numeric($itemLimit)) ? $itemLimit : 10;
     }
     
-    
+    /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
+     * @param number $page   The selected page number of the item paginator (if
+     *                       available)
+     *
+     * @return array         On success an associative array with the following keys:
+     *                       id, source, availability (boolean), status, location,
+     *                       reserve, callnumber, duedate, returnDate, number,
+     *                       barcode, item_notes, item_id, holding_id, addLink.
+     */
     public function getHolding($id, array $patron = null, $page = null) {
         
         $itemLimit = $this->getItemLimit();
@@ -256,12 +280,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $copyCount = 0;
         $username = $patron['cat_username'] ?? null;
 
-        // TODO:
-        // - DONE: implement flexible limit with paging - 100 is maximum at Alma API
-        // - Sometimes not getting "requested" information with "ALL". Getting it e. g. with MMS-ID 990003181380203343 ?!?!
-        // - Not getting due-date (an extra API call must be made)
-        // - Not getting possible request types from request-options API (see https://developers.exlibrisgroup.com/alma/apis/xsd/rest_request_options.xsd?tags=GET)
-        
         // The path for the API call. We call "ALL" available items, but not at once.
         // The "limit" tells the API how many items should be called at once (e. g.
         // 10). The "offset" defines the range (e. g. get items 30 to 40). With these
@@ -282,26 +300,38 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 
                 // Calculate request options if a user is logged-in
                 if ($username) {
+                	// Call the request-options API for the logged-in user
                     $requestOptionsPath = '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId) . '/items/' . urlencode($itemId) . '/request-options?user_id=' . urlencode($username);
                     $requestOptions = $this->makeRequest($requestOptionsPath);
                     
-                    if ((string)$requestOptions->request_option->type === 'HOLD') {
-                        $addLink = true;
+                    // Get all possible request types from the API answer
+                    $requestTypes = $requestOptions->xpath('/request_options/request_option//type');
+                    
+                    // Add all allowed request types to an array
+                    $requestTypesArr = [];
+                    foreach ($requestTypes as $requestType) {
+                    	$requestTypesArr[] = (string)$requestType;
                     }
+                    
+                    // If HOLD is an allowed request type, add the link for placing a hold
+                    $addLink = in_array('HOLD', $requestTypesArr);
                 }
                 
                 $processType = (string)$item->item_data->process_type;
+                $requested = ((string)$item->item_data->requested == 'false')
+                            ? false
+                            : true;
                 
-                // For some data we need to do additional API calls
-                // due to the Alma API architecture
-                $duedate = null;
-                if ($processType === 'LOAN') {
+                // For some data we need to do additional API calls due to the Alma
+                // API architecture
+                $duedate = ($requested) ? 'requested' : null;
+                if ($processType === 'LOAN' && !$requested) {
                     $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
                         . urlencode($holdingId) . '/items/'
-                            . urlencode($itemId) . '/loans';
-                            $loanData = $this->makeRequest($loanDataPath);
-                            $loan = $loanData->item_loan;
-                            $duedate = $this->parseDate((string)$loan->due_date);
+                        . urlencode($itemId) . '/loans';
+                    $loanData = $this->makeRequest($loanDataPath);
+                    $loan = $loanData->item_loan;
+                    $duedate = $this->parseDate((string)$loan->due_date);
                 }
                 
                 $barcode = (string)$item->item_data->barcode;
@@ -330,7 +360,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'callnumber' => (string)$item->holding_data->call_number,
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
-                    'number' => $number,//++$copyCount,
+                    'number' => $number,
                     'barcode' => empty($barcode) ? 'n/a' : $barcode,
                     'item_notes' => $itemNotes,
                     'item_id' => $itemId,
@@ -344,177 +374,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         
         return $results;
-        
     }
     
-    
-    /**
-     * Get Holding - OLD
-     *
-     * This is responsible for retrieving the holding information of a certain
-     * record.
-     *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     *
-     * @return array         On success an associative array with the following keys:
-     *                       id, source, availability (boolean), status, location,
-     *                       reserve, callnumber, duedate, returnDate, number,
-     *                       barcode, item_notes, item_id, holding_id, addLink.
-     */
-    public function getHoldingOLD($id, array $patron = null)
-    {        
-        // Get config data:
-        $fulfillementUnits = $this->config['FulfillmentUnits'] ?? null;
-        $requestableConfig = $this->config['Requestable'] ?? null;
-
-        $results = [];
-        $copyCount = 0;
-        $apiCallCounter = 0;
-        $bibPath = '/bibs/' . urlencode($id) . '/holdings';
-        if ($holdings = $this->makeRequest($bibPath)) {
-            $apiCallCounter++;
-            foreach ($holdings->holding as $holding) {
-                $holdingId = (string)$holding->holding_id;
-                $locationCode = (string)$holding->location;
-                $addLink = false;
-                if ($fulfillementUnits != null && $requestableConfig != null) {
-                    $addLink = $this->requestsAllowed(
-                        $fulfillementUnits,
-                        $locationCode,
-                        $requestableConfig,
-                        $patron
-                    );
-                }
-
-                $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
-                if ($currentItems = $this->makeRequest($itemPath)) {
-                    $apiCallCounter++;
-                    foreach ($currentItems->item as $item) {
-
-                        $itemId = (string)$item->item_data->pid;
-                        $barcode = (string)$item->item_data->barcode;
-                        $processType = (string)$item->item_data->process_type;
-                        $itemNotes = null;
-                        if ($item->item_data->public_note != null
-                            && !empty($item->item_data->public_note)
-                        ) {
-                            $itemNotes = [(string)$item->item_data->public_note];
-                        }
-                        $requested = ((string)$item->item_data->requested == 'false')
-                            ? false
-                            : true;
-
-                        $number = ++$copyCount;
-                        $description = null;
-                        if ($item->item_data->description != null
-                            && !empty($item->item_data->description)
-                        ) {
-                            $number = (string)$item->item_data->description;
-                            $description = (string)$item->item_data->description;
-                        }
-
-                        // For some data we need to do additional API calls
-                        // due to the Alma API architecture
-                        $duedate = ($requested) ? 'requested' : null;
-                        if ($processType == 'LOAN' && !$requested) {
-                            $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
-                                . urlencode($holdingId) . '/items/'
-                                . urlencode($itemId) . '/loans';
-                            $loanData = $this->makeRequest($loanDataPath);
-                            $apiCallCounter++;
-                            $loan = $loanData->item_loan;
-                            $duedate = $this->parseDate((string)$loan->due_date);
-                        }
-
-                        $results[] = [
-                            'id' => $id,
-                            'source' => 'Solr',
-                            'availability' => $this->getAvailabilityFromItem($item),
-                            'status' => (string)$item
-                                ->item_data
-                                ->base_status[0]
-                                ->attributes()['desc'],
-                            'location' => $locationCode,
-                            'reserve' => 'N',   // TODO: support reserve status
-                            'callnumber' => (string)$item->holding_data->call_number,
-                            'duedate' => $duedate,
-                            'returnDate' => false, // TODO: support recent returns
-                            'number' => $number,//++$copyCount,
-                            'barcode' => empty($barcode) ? 'n/a' : $barcode,
-                            'item_notes' => $itemNotes,
-                            'item_id' => $itemId,
-                            'holding_id' => $holdingId,
-                            'addLink' => $addLink,
-                               // For Alma title-level hold requests
-                            'description' => $description
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $results;
-    }
-
-    /**
-     * Check if the user is allowed to place requests for an Alma fulfillment
-     * unit in general. We check for blocks on the patron account that could
-     * block a request in getRequestBlocks().
-     *
-     * @param array  $fulfillementUnits An array of fulfillment units and associated
-     *                                  locations from Alma.ini (see section
-     *                                  [FulfillmentUnits])
-     * @param string $locationCode      The location code of the holding to be
-     *                                  checked
-     * @param array  $requestableConfig An array of fulfillment units and associated
-     *                                  patron groups and their request policy from
-     *                                  Alma.ini (see section [Requestable])
-     * @param array  $patron            An array with the patron details (username
-     *                                  and password)
-     *
-     * @return boolean                  true if the the patron is allowed to place
-     *                                  requests on holdings of this fulfillment
-     *                                  unit, false otherwise.
-     * @author Michael Birkner
-     */
-    protected function requestsAllowed(
-        $fulfillementUnits,
-        $locationCode,
-        $requestableConfig,
-        $patron
-    ) {
-        $requestsAllowed = false;
-
-        // Get user group code
-        $cacheId = 'alma|user|' . $patron['cat_username'] . '|group_code';
-        $userGroupCode = $this->getCachedData($cacheId);
-        if ($userGroupCode === null) {
-            $profile = $this->getMyProfile($patron);
-            $userGroupCode = (string)$profile['group_code'];
-        }
-
-        // Get the fulfillment unit of the location.
-        $locationFulfillmentUnit = $this->getFulfillmentUnitByLocation(
-            $locationCode,
-            $fulfillementUnits
-        );
-
-        // Check if the group of the currently logged in user is allowed to place
-        // requests on items belonging to current fulfillment unit
-        if (($locationFulfillmentUnit != null && !empty($locationFulfillmentUnit))
-            && ($userGroupCode != null && !empty($userGroupCode))
-        ) {
-            $requestsAllowed = false;
-            if ($requestableConfig[$locationFulfillmentUnit][$userGroupCode] == 'Y'
-            ) {
-                $requestsAllowed = true;
-            }
-        }
-
-        return $requestsAllowed;
-    }
-
     /**
      * Check for request blocks.
      *
@@ -579,28 +440,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $this->putCachedData($cacheId, false);
             return false;
         }
-    }
-
-    /**
-     * Get an Alma fulfillment unit by an Alma location.
-     *
-     * @param string $locationCode     A location code, e. g. "SCI"
-     * @param array  $fulfillmentUnits An array of fulfillment units with all its
-     *                                 locations.
-     *
-     * @return string|NULL              Null if the location was not found or a
-     *                                  string specifying the fulfillment unit of
-     *                                  the location that was found.
-     * @author Michael Birkner
-     */
-    protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
-    {
-        foreach ($fulfillmentUnits as $key => $val) {
-            if (array_search($locationCode, $val) !== false) {
-                return $key;
-            }
-        }
-        return null;
     }
 
     /**
@@ -1601,6 +1440,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new \Exception("Invalid date: $date");
         }
     }
+    
 
     // @codingStandardsIgnoreStart
 
