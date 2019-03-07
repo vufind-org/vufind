@@ -11,6 +11,7 @@
   $translatedFormat = $this->transEsc(end($formats));
   $recordType = $this->driver->tryMethod('getRecordType');
   $largeImageLayout = in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead', 'qdc']);
+  $videoScripts = $this->partial('Helpers/videojs-urls.phtml');
 ?>
 <div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
@@ -109,25 +110,11 @@
                 <?php
                   $renderedURLs[] = $url['url'];
                   $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
-                  $scripts = json_encode([
-                    'js-videojs' => $this->headScript()->itemToString(
-                      $this->headScript()->createData('text/javascript', ['src' => 'vendor/video.min.js', 'id' => 'js-videojs']),
-                      '', '', ''
-                    ),
-                    'js-videojs-hotkeys' => $this->headScript()->itemToString(
-                      $this->headScript()->createData('text/javascript', ['src' => 'vendor/videojs.hotkeys.min.js', 'id' => 'js-videojs-hotkeys']),
-                      '', '', ''
-                    ),
-                    'js-videojs-quality' => $this->headScript()->itemToString(
-                      $this->headScript()->createData('text/javascript', ['src' => 'vendor/videojs-contrib-quality-levels.js', 'id' => 'js-videojs-quality']),
-                      '', '', ''
-                    )
-                  ]);
                 ?>
 
                 <div class="record-online-link">
                   <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"
-                      <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?=$this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>" data-scripts="<?=$this->escapeHtmlAttr($scripts)?>"<?php endif; ?>
+                      <?php if (!empty($url['videoSources'])): ?> data-video-sources="<?=$this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>" data-scripts="<?=$this->escapeHtmlAttr($videoScripts)?>"<?php endif; ?>
                       <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
                       <?=$this->recordLink()->getEmbeddedVideo($url['url']) ?>
                       target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>">

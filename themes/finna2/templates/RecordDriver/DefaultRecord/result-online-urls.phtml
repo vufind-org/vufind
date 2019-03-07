@@ -17,6 +17,7 @@
        // All online URLs are record images that are handled by image-popup
        return;
     }
+    $videoScripts = $this->partial('Helpers/videojs-urls.phtml');
   ?>
   <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
     <div class="available-online-links">
@@ -36,7 +37,7 @@
           <a
             class="fulltext"
             href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?php if (!empty($url['videoSources'])): ?>
-            data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>"<?php endif; ?><?php if (!empty($url['posterUrl'])): ?>
+            data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>" data-scripts="<?=$this->escapeHtmlAttr($videoScripts)?>"<?php endif; ?><?php if (!empty($url['posterUrl'])): ?>
             data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
             <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
             <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>

@@ -890,10 +890,8 @@ finna.layout = (function finnaLayout() {
             .load();
         }
       }
-    } else {
-      if (typeof callback === 'function') {
-        callback();
-      }
+    } else if (typeof callback === 'function') {
+      callback();
     }
   }
 
