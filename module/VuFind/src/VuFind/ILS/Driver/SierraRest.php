@@ -1457,9 +1457,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $this->error('Could not parse the III CAS login form');
                 throw new ILSException('Problem with Sierra login.');
             }
+            $usernameField = $this->config['Authentication']['username_field']
+                ?? 'code';
+            $passwordField = $this->config['Authentication']['password_field']
+                ?? 'pin';
             $postParams = [
-                'code' => $patron['cat_username'],
-                'pin' => $patron['cat_password'],
+                $usernameField => $patron['cat_username'],
+                $passwordField => $patron['cat_password'],
             ];
             foreach ($doc->getElementsByTagName('input') as $input) {
                 if ($input->getAttribute('type') == 'hidden') {
