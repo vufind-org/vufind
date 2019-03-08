@@ -138,7 +138,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         'p' => '',
         'z' => 'Claims Returned',
         's' => 'On Search',
-        'd' => 'In Process'
+        'd' => 'In Process',
+        '-' => 'On Shelf',
+        'Charged' => 'Charged',
     ];
 
     /**
@@ -571,7 +573,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             $transaction['volume'] = $this->extractVolume($item);
             if (!empty($item['bibIds'])) {
-                $transaction['id'] = $item['bibIds'][0];
+                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
 
                 // Fetch bib information
                 $bib = $this->getBibRecord(
@@ -707,7 +709,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             $transaction['volume'] = $this->extractVolume($item);
             if (!empty($item['bibIds'])) {
-                $transaction['id'] = $item['bibIds'][0];
+                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
 
                 // Fetch bib information
                 $bib = $this->getBibRecord(
@@ -803,7 +805,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
             $holds[] = [
-                'id' => $bibId,
+                'id' => $this->formatBibId($bibId),
                 'requestId' => $this->extractId($entry['id']),
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 // note that $entry['pickupLocation']['name'] may contain misleading
@@ -1030,7 +1032,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = $holdDetails['item_id'] ?? false;
         $comment = $holdDetails['comment'] ?? '';
-        $bibId = $holdDetails['id'];
+        $bibId = $this->extractBibId($holdDetails['id']);
 
         // Convert last interest date from Display Format to Sierra's required format
         try {
@@ -1166,7 +1168,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['assessedDate']
                 ),
                 'checkout' => '',
-                'id' => $bibId,
+                'id' => $this->formatBibId($bibId),
                 'title' => $title
             ];
         }
@@ -1457,9 +1459,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $this->error('Could not parse the III CAS login form');
                 throw new ILSException('Problem with Sierra login.');
             }
+            $usernameField = $this->config['Authentication']['username_field']
+                ?? 'code';
+            $passwordField = $this->config['Authentication']['password_field']
+                ?? 'pin';
             $postParams = [
-                'code' => $patron['cat_username'],
-                'pin' => $patron['cat_password'],
+                $usernameField => $patron['cat_username'],
+                $passwordField => $patron['cat_password'],
             ];
             foreach ($doc->getElementsByTagName('input') as $input) {
                 if ($input->getAttribute('type') == 'hidden') {
@@ -1623,7 +1629,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $result = $this->makeRequest(
                 ['v3', 'items'],
                 [
-                    'bibIds' => $id,
+                    'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
                     'suppressed' => 'false',
                     'fields' => $fields,
@@ -1646,11 +1652,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             foreach ($result['entries'] as $i => $item) {
                 $location = $this->translateLocation($item['location']);
                 list($status, $duedate, $notes) = $this->getItemStatus($item);
-                $available = $status == 'On Shelf';
+                $available = $status == $this->mapStatusCode('-');
                 // OPAC message
                 if (isset($item['fixedFields']['108'])) {
                     $opacMsg = $item['fixedFields']['108'];
-                    if (trim($opacMsg['value']) != '-') {
+                    $trimmedMsg = trim($opacMsg['value']);
+                    if (strlen($trimmedMsg) && $trimmedMsg != '-') {
                         $notes[] = $this->translateOpacMessage(
                             trim($opacMsg['value'])
                         );
@@ -1732,6 +1739,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Get the human-readable equivalent of a status code.
+     *
+     * @param string $code    Code to map
+     * @param string $default Default value if no mapping found
+     *
+     * @return string
+     */
+    protected function mapStatusCode($code, $default = null)
+    {
+        return trim($this->itemStatusMappings[$code] ?? $default ?? $code);
+    }
+
+    /**
      * Get status for an item
      *
      * @param array $item Item from Sierra
@@ -1742,15 +1762,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $duedate = '';
         $notes = [];
-        $statusCode = trim($item['status']['code']);
-        if (isset($this->itemStatusMappings[$statusCode])) {
-            $status = $this->itemStatusMappings[$statusCode];
-        } else {
-            $status = isset($item['status']['display'])
+        $status = $this->mapStatusCode(
+            trim($item['status']['code']),
+            isset($item['status']['display'])
                 ? ucwords(strtolower($item['status']['display']))
-                : '-';
-        }
-        $status = trim($status);
+                : '-'
+        );
         // For some reason at least API v2.0 returns "ON SHELF" even when the
         // item is out. Use duedate to check if it's actually checked out.
         if (isset($item['status']['duedate'])) {
@@ -1758,18 +1775,18 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 \DateTime::ISO8601,
                 $item['status']['duedate']
             );
-            $status = 'Charged';
+            $status = $this->mapStatusCode('Charged');
         } else {
             switch ($status) {
             case '-':
-                $status = 'On Shelf';
+                $status = $this->mapStatusCode('-');
                 break;
             case 'Lib Use Only':
-                $status = 'On Reference Desk';
+                $status = $this->mapStatusCode('o');
                 break;
             }
         }
-        if ($status == 'On Shelf') {
+        if ($status == $this->mapStatusCode('-')) {
             // Check for checkin date
             $today = $this->dateConverter->convertToDisplayDate('U', time());
             if (isset($item['fixedFields']['68'])) {
@@ -1973,10 +1990,52 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getBibRecord($id, $fields, $patron = false)
     {
         return $this->makeRequest(
-            ['v3', 'bibs', $id],
+            ['v3', 'bibs', $this->extractBibId($id)],
             ['fields' => $fields],
             'GET',
             $patron
         );
+    }
+
+    /**
+     * Extract a numeric bib ID value from a string that may be prefixed.
+     *
+     * @param string $id Bib record id (with or without .b prefix)
+     *
+     * @return int
+     */
+    protected function extractBibId($id)
+    {
+        // If the .b prefix is found, strip it and the trailing checksum:
+        return substr($id, 0, 2) === '.b'
+            ? substr($id, 2, strlen($id) - 3) : $id;
+    }
+
+    /**
+     * If the system is configured to use full prefixed bib IDs, add the prefix
+     * and checksum.
+     *
+     * @param int $id Bib ID that may need to be prefixed.
+     *
+     * @return string
+     */
+    protected function formatBibId($id)
+    {
+        // Simple case: prefixing is disabled, so return ID unmodified:
+        if (!($this->config['Catalog']['use_prefixed_ids'] ?? false)) {
+            return $id;
+        }
+
+        // If we got this far, we need to generate a check digit:
+        $multiplier = 2;
+        $sum = 0;
+        for ($x = strlen($id) - 1; $x >= 0; $x--) {
+            $current = substr($id, $x, 1);
+            $sum += $multiplier * intval($current);
+            $multiplier++;
+        }
+        $checksum = $sum % 11;
+        $finalChecksum = $checksum === 10 ? 'x' : $checksum;
+        return '.b' . $id . $finalChecksum;
     }
 }
