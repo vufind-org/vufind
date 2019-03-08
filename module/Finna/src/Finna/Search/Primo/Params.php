@@ -41,28 +41,6 @@ class Params extends \VuFind\Search\Primo\Params
     use \Finna\Search\FinnaParams;
 
     /**
-     * Add a checkbox facet.  When the checkbox is checked, the specified filter
-     * will be applied to the search.  When the checkbox is not checked, no filter
-     * will be applied.
-     *
-     * @param string $filter [field]:[value] pair to associate with checkbox
-     * @param string $desc   Description to associate with the checkbox
-     *
-     * @return void
-     */
-    public function addCheckboxFacet($filter, $desc)
-    {
-        // Extract the facet field name from the filter, then add the
-        // relevant information to the array.
-        list($fieldName) = explode(':', $filter);
-        if (!isset($this->checkboxFacets[$fieldName])) {
-            $this->checkboxFacets[$fieldName] = [];
-        }
-        $this->checkboxFacets[$fieldName][]
-            = ['desc' => $desc, 'filter' => $filter];
-    }
-
-    /**
      * Get a formatted list of checkbox filter values ($field => array of values).
      *
      * @return array
