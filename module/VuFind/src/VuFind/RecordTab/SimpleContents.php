@@ -46,6 +46,13 @@ class SimpleContents extends AbstractBase
     protected $results;
 
     /**
+     * Maximum results to display
+     *
+     * @var int
+     */
+    protected $maxResults = 100;
+
+    /**
      * Search service
      *
      * @var \VuFindSearch\Service
@@ -84,6 +91,16 @@ class SimpleContents extends AbstractBase
     }
 
     /**
+     * Get the maximum result count.
+     *
+     * @return int
+     */
+    public function getMaxResults()
+    {
+        return $this->maxResults;
+    }
+
+    /**
      * Get the contents for display.
      *
      * @return array
@@ -95,9 +112,22 @@ class SimpleContents extends AbstractBase
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );
-        // Disable highlighting for efficiency; not needed here:
-        $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
-        return $this->searchService
-            ->search($this->sourceIdentifier, $query, 0, 10, $params);
+        $params = new \VuFindSearch\ParamBag(
+            [
+                // Disable highlighting for efficiency; not needed here:
+                'hl' => ['false'],
+                // Sort appropriately:
+                'sort' => 'hierarchy_sequence ASC,title ASC',
+            ]
+        );
+        return $this->searchService->search(
+            $record->getSourceIdentifier(),
+            $query,
+            0,
+            // retrieve 1 more than max results, so we know when to
+            // display a "more" link:
+            $this->maxResults + 1,
+            $params
+        );
     }
 }
