@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use VuFind\Search\Base\Results;
+use VuFind\Search\RecommendListener;
 
 /**
  * "Get Side Facets" AJAX handler
@@ -80,5 +81,51 @@ class GetSideFacets extends \VuFind\AjaxHandler\GetSideFacets
             return $count;
         }
         return 0;
+    }
+
+    /**
+     * Perform search and return the results
+     *
+     * Finna: Request checkbox facet counts too
+     *
+     * @param array  $request Request params
+     * @param string $index   Index of SideFacetsDeferred in configuration
+     * @param string $loc     Location where SideFacetsDeferred is configured
+     *
+     * @return Results
+     */
+    protected function getFacetResults(array $request, $index, $loc)
+    {
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+            $listener = new RecommendListener(
+                $this->recommendPluginManager, $searchId
+            );
+            $config = [];
+            $rawConfig = $params->getOptions()
+                ->getRecommendationSettings($params->getSearchHandler());
+            $settings = explode(':', $rawConfig[$loc][$index] ?? '');
+            if ($settings[0] === 'SideFacetsDeferred') {
+                $settings[0] = 'SideFacets';
+                $config[$loc][] = implode(':', $settings);
+            }
+            $listener->setConfig($config);
+            $listener->attach($runner->getEventManager()->getSharedManager());
+
+            $params->setLimit(0);
+            $params->setCheckboxFacetCounts(true);
+            if (is_callable([$params, 'setHierarchicalFacetLimit'])) {
+                $params->setHierarchicalFacetLimit(-1);
+            }
+            $options = $params->getOptions();
+            $options->disableHighlighting();
+            $options->spellcheckEnabled(false);
+        };
+
+        $runner = $this->searchRunner;
+        return $runner->run(
+            $request,
+            $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
+            $setupCallback
+        );
     }
 }

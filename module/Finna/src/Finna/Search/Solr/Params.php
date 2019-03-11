@@ -72,6 +72,13 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected $debugQuery = false;
 
+    /**
+     * Whether to request checkbox facet counts
+     *
+     * @var bool
+     */
+    protected $checkboxFacetCounts = false;
+
     // Date range index field (VuFind1)
     const SPATIAL_DATERANGE_FIELD_VF1 = 'search_sdaterange_mv';
     const SPATIAL_DATERANGE_FIELD_TYPE_VF1 = 'search_sdaterange_mvtype';
@@ -283,12 +290,6 @@ class Params extends \VuFind\Search\Solr\Params
     public function getFacetSettings()
     {
         $facetSet = parent::getFacetSettings();
-        if (!empty($this->checkboxFacets)) {
-            foreach (array_keys($this->checkboxFacets) as $facetField) {
-                $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
-                $facetSet['field'][] = $facetField;
-            }
-        }
         if (!empty($facetSet)
             && null !== $this->hierarchicalFacetLimit
             && $this->facetLimit !== $this->hierarchicalFacetLimit
@@ -300,7 +301,7 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // For checkbox counts
-        if (!empty($this->checkboxFacets)) {
+        if ($this->checkboxFacetCounts && !empty($this->checkboxFacets)) {
             foreach (array_keys($this->checkboxFacets) as $facetField) {
                 $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                 $facetSet['field'][] = $facetField;
@@ -470,6 +471,28 @@ class Params extends \VuFind\Search\Solr\Params
     public function setDebugQuery($value)
     {
         $this->debugQuery = $value;
+    }
+
+    /**
+     * Whether to request checkbox facet counts
+     *
+     * @return bool
+     */
+    public function getCheckboxFacetCounts()
+    {
+        return $this->checkboxFacetCounts;
+    }
+
+    /**
+     * Whether to request checkbox facet counts
+     *
+     * @param bool $value Enable or disable
+     *
+     * @return void
+     */
+    public function setCheckboxFacetCounts($value)
+    {
+        $this->checkboxFacetCounts = $value;
     }
 
     /**
