@@ -7,6 +7,7 @@
     <field name="author_synonyms" type="text" indexed="true" stored="true" termVectors="true" multiValued="true"/>
     <field name="author2_and_role" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="bible_ranges" type="string" indexed="true" stored="true" />
+    <field name="canon_law_ranges" type="string" indexed="true" stored="true" />
     <field name="corporation" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_el" type="textFacet" indexed="true" stored="true" multiValued="true"/>
