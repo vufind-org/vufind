@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2018.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -118,7 +118,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Item statuses that allow placing a hold
      *
-     * @var unknown
+     * @var array
      */
     protected $validHoldStatuses;
 
@@ -146,9 +146,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Available API version
      *
+     * Functionality requiring a specific minimum version:
+     *
+     * v5:
+     *   - last pickup date for holds
+     * v5.1 (technically still v5 but added in a later revision):
+     *   - holdings information (especially for serials)
+     *
      * @var int
      */
-    protected $apiVersion = 5;
+    protected $apiVersion = 5.1;
 
     /**
      * Constructor
@@ -1617,6 +1624,35 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getItemStatusesForBib($id)
     {
         $bib = $this->getBibRecord($id, 'bibLevel');
+        $holdingsData = [];
+        if ($this->apiVersion >= 5.1) {
+            $holdingsResult = $this->makeRequest(
+                ['v5', 'holdings'],
+                [
+                    'bibIds' => $this->extractBibId($id),
+                    //'deleted' => 'false',
+                    //'suppressed' => 'false',
+                    'fields' => 'fixedFields,varFields'
+                ],
+                'GET'
+            );
+            if (!empty($holdingsResult['entries'])) {
+                foreach ($holdingsResult['entries'] as $entry) {
+                    $location = '';
+                    foreach ($entry['fixedFields'] as $field) {
+                        if ('LOCATION' === $field['label']) {
+                            $location = $field['value'];
+                            break;
+                        }
+                    }
+                    if ('' === $location) {
+                        continue;
+                    }
+                    $holdingsData[$location][] = $entry;
+                }
+            }
+        }
+
         $offset = 0;
         $limit = 50;
         $fields = 'location,status,barcode,callNumber,fixedFields';
@@ -1625,6 +1661,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $fields .= ',varFields';
         }
         $statuses = [];
+        $sort = 0;
         while (!isset($result) || $limit === $result['total']) {
             $result = $this->makeRequest(
                 ['v3', 'items'],
@@ -1678,7 +1715,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
-                    'sort' => $i
+                    'sort' => $sort--
                 ];
                 if ($notes) {
                     $entry['item_notes'] = $notes;
@@ -1693,13 +1730,200 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $entry['is_holdable'] = false;
                 }
 
+                $locationCode = $item['location']['code'] ?? '';
+                if (!empty($holdingsData[$locationCode])) {
+                    $entry += $this->getHoldingsData($holdingsData[$locationCode]);
+                    $holdingsData[$locationCode]['_hasItems'] = true;
+                }
+
                 $statuses[] = $entry;
             }
             $offset += $limit;
         }
 
+        // Add holdings that don't have items
+        foreach ($holdingsData as $locationCode => $holdings) {
+            if (!empty($holdings['_hasItems'])) {
+                continue;
+            }
+
+            $location = $this->translateLocation(
+                ['code' => $locationCode, 'name' => '']
+            );
+            $code = $locationCode;
+            while ('' === $location && $code) {
+                $location = $this->getLocationName($code);
+                $code = substr($code, 0, -1);
+            }
+            $entry = [
+                'id' => $id,
+                'item_id' => 'HLD_' . $holdings[0]['id'],
+                'location' => $location,
+                'requests_placed' => 0,
+                'status' => '',
+                'use_unknown_message' => true,
+                'availability' => false,
+                'duedate' => '',
+                'barcode' => '',
+                'sort' => $sort--
+            ];
+            $entry += $this->getHoldingsData($holdings);
+
+            $statuses[] = $entry;
+        }
+
         usort($statuses, [$this, 'statusSortFunction']);
         return $statuses;
+    }
+
+    /**
+     * Get holdings fields according to configuration
+     *
+     * @param array $holdings Holdings records
+     *
+     * @return array
+     */
+    protected function getHoldingsData($holdings)
+    {
+        $result = [];
+        // Get Notes
+        if (isset($this->config['Holdings']['notes'])) {
+            $data = $this->getHoldingFields(
+                $holdings,
+                $this->config['Holdings']['notes']
+            );
+            if ($data) {
+                $result['notes'] = $data;
+            }
+        }
+
+        // Get Summary (may be multiple lines)
+        $data = $this->getHoldingFields(
+            $holdings,
+            isset($this->config['Holdings']['summary'])
+            ? $this->config['Holdings']['summary']
+            : 'h'
+        );
+        if ($data) {
+            $result['summary'] = $data;
+        }
+
+        // Get Supplements
+        if (isset($this->config['Holdings']['supplements'])) {
+            $data = $this->getHoldingFields(
+                $holdings,
+                $this->config['Holdings']['supplements']
+            );
+            if ($data) {
+                $result['supplements'] = $data;
+            }
+        }
+
+        // Get Indexes
+        if (isset($this->config['Holdings']['indexes'])) {
+            $data = $this->getHoldingFields(
+                $holdings,
+                $this->config['Holdings']['indexes']
+            );
+            if ($data) {
+                $result['indexes'] = $data;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get fields from holdings according to the field spec.
+     *
+     * @param array        $holdings   Holdings records
+     * @param array|string $fieldSpecs Array or colon-separated list of
+     * field/subfield specifications (3 chars for field code and then subfields,
+     * e.g. 866az)
+     *
+     * @return string|string[] Results as a string if single, array if multiple
+     */
+    protected function getHoldingFields($holdings, $fieldSpecs)
+    {
+        if (!is_array($fieldSpecs)) {
+            $fieldSpecs = explode(':', $fieldSpecs);
+        }
+        $result = [];
+        foreach ($holdings as $holding) {
+            foreach ($fieldSpecs as $fieldSpec) {
+                $fieldCode = substr($fieldSpec, 0, 3);
+                $subfieldCodes = substr($fieldSpec, 3);
+                $fields = $holding['varFields'] ?? [];
+                foreach ($fields as $field) {
+                    if (($field['marcTag'] ?? '') !== $fieldCode
+                        && ($field['fieldTag'] ?? '') !== $fieldCode
+                    ) {
+                        continue;
+                    }
+                    $subfields = $field['subfields'] ?? [
+                        [
+                            'tag' => '',
+                            'content' => $field['content'] ?? ''
+                        ]
+                    ];
+                    $line = [];
+                    foreach ($subfields as $subfield) {
+                        if ($subfieldCodes
+                            && !strstr($subfieldCodes, $subfield['tag'])
+                        ) {
+                            continue;
+                        }
+                        $line[] = $subfield['content'];
+                    }
+                    if ($line) {
+                        $result[] = implode(' ', $line);
+                    }
+                }
+            }
+        }
+        if (!$result) {
+            return '';
+        }
+        return isset($result[1]) ? $result : $result[0];
+    }
+
+    /**
+     * Get name for a location code
+     *
+     * @param string $locationCode Location code
+     *
+     * @return string
+     */
+    protected function getLocationName($locationCode)
+    {
+        $locations = $this->getCachedData('locations');
+        if (null === $locations) {
+            $locations = [];
+            $result = $this->makeRequest(
+                ['v4', 'branches'],
+                [
+                    'limit' => 10000,
+                    'fields' => 'locations'
+                ],
+                'GET'
+            );
+            if (!empty($result['code'])) {
+                // An error was returned
+                $this->error(
+                    "Request for branches returned error code: {$result['code']}, "
+                    . "HTTP status: {$result['httpStatus']}, name: {$result['name']}"
+                );
+                throw new ILSException('Problem with Sierra REST API.');
+            }
+            foreach (($result['entries'] ?? []) as $branch) {
+                foreach (($branch['locations'] ?? []) as $location) {
+                    $locations[$location['code']] = $this->translateLocation(
+                        $location
+                    );
+                }
+            }
+            $this->putCachedData('locations', $locations);
+        }
+        return $locations[$locationCode] ?? '';
     }
 
     /**
@@ -1720,6 +1944,23 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             null,
             $location['name']
         );
+    }
+
+    /**
+     * Status item sort function
+     *
+     * @param array $a First status record to compare
+     * @param array $b Second status record to compare
+     *
+     * @return int
+     */
+    protected function statusSortFunction($a, $b)
+    {
+        $result = strcmp($a['location'], $b['location']);
+        if ($result == 0) {
+            $result = $a['sort'] - $b['sort'];
+        }
+        return $result;
     }
 
     /**
@@ -1878,23 +2119,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $this->putCachedData($cacheId, $blockReason);
         }
         return empty($blockReason) ? false : $blockReason;
-    }
-
-    /**
-     * Status item sort function
-     *
-     * @param array $a First status record to compare
-     * @param array $b Second status record to compare
-     *
-     * @return int
-     */
-    protected function statusSortFunction($a, $b)
-    {
-        $result = strcmp($a['location'], $b['location']);
-        if ($result == 0) {
-            $result = $a['sort'] - $b['sort'];
-        }
-        return $result;
     }
 
     /**
