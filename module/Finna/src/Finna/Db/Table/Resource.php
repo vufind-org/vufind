@@ -69,9 +69,26 @@ class Resource extends \VuFind\Db\Table\Resource
                         ), '*'
                     ]
                 );
+                $urColumns = $list === null ?
+                    [
+                    'id' => new Expression(
+                        'MAX(?)', ['ur.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                    ]
+                    : [
+                    'id' => new Expression(
+                        'MAX(?)', ['ur.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'finna_custom_order_index' => new Expression(
+                        'MAX(?)', ['ur.finna_custom_order_index'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                    ];
                 $s->join(
                     ['ur' => 'user_resource'], 'resource.id = ur.resource_id',
-                    ['id', 'finna_custom_order_index']
+                    $urColumns
                 );
                 $s->where->equalTo('ur.user_id', $user);
 
@@ -99,7 +116,7 @@ class Resource extends \VuFind\Db\Table\Resource
                         $s->where->in('resource.id', array_map($getId, $matches));
                     }
                 }
-
+                $s->group('resource.id');
                 if (!empty($sort)) {
                     Resource::applySort($s, $sort);
                 }
@@ -152,7 +169,11 @@ class Resource extends \VuFind\Db\Table\Resource
 
             // Apply the user-specified sort:
             if ('id' === $rawField || 'finna_custom_order_index' === $rawField) {
-                $order[] = "ur.$sort";
+                $desc = $parts[1] ?? '';
+                $order[] = new Expression(
+                    'MAX(?)' . $desc, ['ur.' . $rawField],
+                    [Expression::TYPE_IDENTIFIER]
+                );
             } else {
                 $order[] = $alias . '.' . $sort;
             }
