@@ -27,7 +27,7 @@
   }
 ?>
 <?php if ($hasSubLinks): ?>
-  <li class="<?=implode(' ', $classList) ?>">
+  <div class="<?=implode(' ', $classList) ?>">
 <?php else: ?>
   <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
 <?php endif; ?>
@@ -53,4 +53,4 @@
     <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
   <?php endif; ?>
 
-<?=$hasSubLinks ? '</li>' : '</a>'; ?>
+<?=$hasSubLinks ? '</div>' : '</a>'; ?>
