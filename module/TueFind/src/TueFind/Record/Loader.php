@@ -28,21 +28,20 @@ class Loader extends \VuFind\Record\Loader {
             if (count($results) == 1) {
                 return $results[0];
             }
-        }
 
-        // TueFind: use fallback like in parent's "loadBatchForSource" function
-        // (this change might also be sent to vufind.org for future versions)
-        if ($this->fallbackLoader
-            && $this->fallbackLoader->has($source)
-        ) {
-            $fallbackRecords = $this->fallbackLoader->get($source)
-                ->load([$id]);
+            // TueFind: use fallback like in parent's "loadBatchForSource" function
+            // (this change might also be sent to vufind.org for future versions)
+            if ($this->fallbackLoader
+                && $this->fallbackLoader->has($source)
+            ) {
+                $fallbackRecords = $this->fallbackLoader->get($source)
+                    ->load([$id]);
 
-            if (count($fallbackRecords) == 1) {
-                return $fallbackRecords[0];
+                if (count($fallbackRecords) == 1) {
+                    return $fallbackRecords[0];
+                }
             }
         }
-
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
