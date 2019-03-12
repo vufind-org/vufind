@@ -26,6 +26,7 @@ class QuickLinkController extends \VuFind\Controller\AbstractBase {
      * @return string|false
      */
     private function resolveQuickLink($id) {
+        $id = mb_strtolower($id);
         $map = $this->getQuickLinkMap();
         return $map[$id] ?? false;
     }
@@ -42,7 +43,7 @@ class QuickLinkController extends \VuFind\Controller\AbstractBase {
             $handle = fopen($path, 'r');
             while ($row = fgetcsv($handle, 0, ';', '"')) {
                 if (isset($row[0]) && isset($row[1]))
-                    $quicklinks[$row[0]] = $row[1];
+                    $quicklinks[mb_strtolower($row[0])] = mb_strtolower($row[1]);
             }
             fclose($handle);
         }
