@@ -321,6 +321,7 @@ class AbstractBase extends AbstractActionController
 
         // Now check if the user has provided credentials with which to log in:
         $ilsAuth = $this->getILSAuthenticator();
+        $patron = null;
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {

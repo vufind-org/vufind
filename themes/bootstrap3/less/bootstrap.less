@@ -1,5 +1,13 @@
+/* #LESS> */
 @import "vendor/bootstrap/bootstrap";
 @import "vendor/font-awesome/font-awesome";
+/* <#LESS */
+/* #SCSS>
+$fa-font-path: "../../bootstrap3/css/fonts";
+@import "vendor/bootstrap";
+@import "vendor/font-awesome/font-awesome";
+<#SCSS */
+
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
 
@@ -24,8 +32,10 @@
  * Notes
  * = As of 4.0, code styles aren't enforced, but
  *   preferred styles are outlined here: http://codeguide.co/#css
+ *
  * = The preferred method for writing code is to put generic and mobile styles first
  *   and surround desktop styling with media min-width queries.
+ *
  * = Bootstrap 3 breakpoints: <768px, >=768px, >=992px, >=1200px
  *                                xs,      sm,      md,       lg
  * = Breakpoint of <=530px also used to target phones specifically
