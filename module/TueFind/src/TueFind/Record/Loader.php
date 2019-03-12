@@ -38,7 +38,7 @@ class Loader extends \VuFind\Record\Loader {
             $fallbackRecords = $this->fallbackLoader->get($source)
                 ->load([$id]);
 
-            if (!empty($fallbackRecords)) {
+            if (count($fallbackRecords) == 1) {
                 return $fallbackRecords[0];
             }
         }
