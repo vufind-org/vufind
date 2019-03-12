@@ -197,12 +197,11 @@ class Server
     protected $vufindApiFields = [];
 
     /**
-     * Mappings from OAI metadataPrefix to record_format field in Solr. No defaults
-     * since record_format is only available from biblio index schema for VuFind 6.0.
+     * Filter queries specific to the requested record format
      *
      * @var array
      */
-    protected $recordFormatMappings = [];
+    protected $recordFormatFilters = [];
 
     /**
      * Constructor
@@ -652,10 +651,10 @@ class Server
             )
         );
 
-        // Mappings from metadataPrefix to record_format field, if configured:
-        if (isset($config->OAI->record_format_mappings)) {
-            $this->recordFormatMappings
-                = $config->OAI->record_format_mappings->toArray();
+        // Initialize filters specific to requested metadataPrefix:
+        if (isset($config->OAI->record_format_filters)) {
+            $this->recordFormatFilters
+                = $config->OAI->record_format_filters->toArray();
         }
     }
 
@@ -938,11 +937,8 @@ class Server
             $params->addFilter('(' . $this->defaultQuery . ')');
         }
 
-        if (!empty($this->recordFormatMappings[$format])) {
-            $params->addFilter(
-                'record_format:"'
-                . addcslashes($this->recordFormatMappings[$format], '"') . '"'
-            );
+        if (!empty($this->recordFormatFilters[$format])) {
+            $params->addFilter($this->recordFormatFilters[$format]);
         }
 
         // Perform a Solr search:
