@@ -158,6 +158,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected $apiVersion = 5.1;
 
     /**
+     * Whether to sort items by enumchron. Default is true.
+     *
+     * @var array
+     */
+    protected $sortItemsByEnumChron;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -241,6 +248,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
         }
+
+        $this->sortItemsByEnumChron
+            = $this->config['Holdings']['sort_by_enum_chron'] ?? true;
 
         // Init session cache for session-specific data
         $namespace = md5(
@@ -1957,7 +1967,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function statusSortFunction($a, $b)
     {
         $result = strcmp($a['location'], $b['location']);
-        if ($result === 0) {
+        if ($result === 0 && $this->sortItemsByEnumChron) {
             $result = strnatcmp($b['number'] ?? '', $a['number'] ?? '');
         }
         if ($result === 0) {
