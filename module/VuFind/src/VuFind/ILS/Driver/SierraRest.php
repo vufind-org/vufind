@@ -1957,7 +1957,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function statusSortFunction($a, $b)
     {
         $result = strcmp($a['location'], $b['location']);
-        if ($result == 0) {
+        if ($result === 0) {
+            $result = strnatcmp($b['number'] ?? '', $a['number'] ?? '');
+        }
+        if ($result === 0) {
             $result = $a['sort'] - $b['sort'];
         }
         return $result;
