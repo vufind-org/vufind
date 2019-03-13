@@ -3,7 +3,7 @@
 namespace IxTheo\Controller;
 use Zend\Mail\Address;
 
-class RecordController extends \VuFind\Controller\RecordController
+class RecordController extends \TueFind\Controller\RecordController
 {
     function processSubscribe()
     {

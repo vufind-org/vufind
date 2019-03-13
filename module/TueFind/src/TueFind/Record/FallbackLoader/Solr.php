@@ -37,6 +37,7 @@ class Solr implements \VuFind\Record\FallbackLoader\FallbackLoaderInterface {
         $retVal = [];
         foreach ($ids as $id) {
             foreach ($this->fetchRecordCandidates($id) as $record) {
+                $record->isFallback = true;
                 $retVal[] = $record;
             }
         }

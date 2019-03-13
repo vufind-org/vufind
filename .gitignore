@@ -29,7 +29,7 @@ solrconfig.xml
 MultiLanguageDocTransformerFactory.jar
 MultiLanguageQueryParser.jar
 KeywordChainParser.jar
-BibleRangeParser.jar
+RangedSearches.jar
 TuelibSolrmarcMixin.jar
 FacetPrefixSortComponent.jar
 

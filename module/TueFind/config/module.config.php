@@ -70,6 +70,7 @@ $config = [
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\QuickLinkController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -81,6 +82,8 @@ $config = [
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
             'QuickLink' => 'TueFind\Controller\QuickLinkController',
+            'Record' => 'TueFind\Controller\RecordController',
+            'record' => 'TueFind\Controller\RecordController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
         ],
     ],
