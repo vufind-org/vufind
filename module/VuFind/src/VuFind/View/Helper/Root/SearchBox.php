@@ -372,10 +372,21 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                     ) {
                         $backupSelectedIndex = count($handlers);
                     }
+                    // Depending on whether or not the current section has a label,
+                    // we'll either want to override the first label and indent
+                    // subsequent ones, or else use all default labels without
+                    // any indentation.
+                    if (empty($label)) {
+                        $finalLabel = $searchDesc;
+                        $indent = false;
+                    } else {
+                        $finalLabel = $j == 1 ? $label : $searchDesc;
+                        $indent = $j == 1 ? false : true;
+                    }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,
-                        'label' => $j == 1 ? $label : $searchDesc,
-                        'indent' => $j == 1 ? false : true,
+                        'label' => $finalLabel,
+                        'indent' => $indent,
                         'selected' => $selected,
                         'group' => $settings['group'][$i],
                     ];
@@ -385,7 +396,9 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 if ($target === 'Solr' && $this->alphaBrowseOptionsEnabled()) {
                     $addedBrowseHandlers = true;
                     $handlers = array_merge(
-                        $handlers, $this->getAlphaBrowseHandlers($activeHandler)
+                        $handlers,
+                        // Only indent alphabrowse handlers if label is non-empty:
+                        $this->getAlphaBrowseHandlers($activeHandler, !empty($label))
                     );
                 }
             } elseif ($type == 'External') {
