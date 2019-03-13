@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Record;
 
+use VuFind\Record\Cache;
+use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
@@ -64,6 +66,41 @@ class LoaderTest extends TestCase
             ->will($this->returnValue($collection));
         $loader = $this->getLoader($service);
         $loader->load('test');
+    }
+
+    /**
+     * Test that the fallback loader gets called successfully for a missing record.
+     *
+     * @return void
+     */
+    public function testMissingRecordWithFallback()
+    {
+        $collection = $this->getCollection([]);
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $service->expects($this->once())->method('retrieve')
+            ->with($this->equalTo('Summon'), $this->equalTo('test'))
+            ->will($this->returnValue($collection));
+        $driver = $this->getDriver();
+        $fallbackPlugin = $this
+            ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['load'])
+            ->getMock();
+        $fallbackPlugin->expects($this->once())->method('load')
+            ->with($this->equalTo(['test']))
+            ->will($this->returnValue([$driver]));
+        $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['get', 'has'])
+            ->getMock();
+        $fallbackLoader->expects($this->once())->method('has')
+            ->with($this->equalTo('Summon'))
+            ->will($this->returnValue(true));
+        $fallbackLoader->expects($this->once())->method('get')
+            ->with($this->equalTo('Summon'))
+            ->will($this->returnValue($fallbackPlugin));
+        $loader = $this->getLoader($service, null, null, $fallbackLoader);
+        $this->assertEquals($driver, $loader->load('test', 'Summon'));
     }
 
     /**
@@ -210,17 +247,21 @@ class LoaderTest extends TestCase
     /**
      * Build a loader to test.
      *
-     * @param SearchService $service Search service
-     * @param RecordFactory $factory Record factory (optional)
+     * @param SearchService  $service Search service
+     * @param RecordFactory  $factory Record factory (optional)
+     * @param Cache          $recordCache    Record Cache
+     * @param FallbackLoader $fallbackLoader Fallback record loader
      *
      * @return Loader
      */
-    protected function getLoader(SearchService $service, RecordFactory $factory = null)
-    {
+    protected function getLoader(SearchService $service,
+        RecordFactory $factory = null, Cache $recordCache = null,
+        FallbackLoader $fallbackLoader = null
+    ) {
         if (null === $factory) {
             $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         }
-        return new Loader($service, $factory);
+        return new Loader($service, $factory, $recordCache, $fallbackLoader);
     }
 
     /**
