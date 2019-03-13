@@ -39,7 +39,6 @@
     <field name="geographic_facet_it" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_pt" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet_ru" type="textFacet" indexed="true" stored="true" multiValued="true"/>
-    <field name="ids" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_biblical_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_hybrid" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_potentially_pda" type="boolean" indexed="true" stored="true" multiValued="false"/>
