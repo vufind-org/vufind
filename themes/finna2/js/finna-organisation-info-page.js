@@ -69,10 +69,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
   }
 
   function err() {
-    var msg = $('<div/>')
-      .addClass('alert alert-danger')
-      .text(VuFind.translate('error_occurred'));
-    holder.find('.organisation-info-page').first().replaceWith(msg);
+    holder.find('.no-information').removeClass('hidden');
+    holder.find('.organisation-info-page').html('');
   }
 
   function initMap() {

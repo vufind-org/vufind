@@ -1,4 +1,4 @@
-<!-- START of: finna - organisationInfo/home.phtml -->
+<!-- START of: finna - organisationinfo/home.phtml -->
 <?php
   $this->headTitle($this->title);
   $this->layout()->finnaMainHeader = '<div><h3>' . $this->title . '</h3></div>';
@@ -46,9 +46,10 @@ JS;
    <?=$this->render($template);?>
 <?php endif; ?>
 
-<?php
+<div class="no-information hidden">
+  <?=$this->transEsc('organisation_info_no_schedule')?>
+</div>
 
-?>
 <div class="organisation-info-page loading organisation-page-information-wrapper <?= !($this->consortiumInfo) ? 'last-section' : '';?>">
   <div class="loader">
     <i class="fa fa-spinner fa-spin" style="text-align: center;"></i>
@@ -266,4 +267,4 @@ JS;
 <?php if ($template = $this->content()->findTemplateForLng('content/Additions/organisation-page-end')): ?>
    <?=$this->render('content/Additions/organisation-page-end.phtml')?>
 <?php endif; ?>
-<!-- END of: finna - organisationInfo/home.phtml -->
+<!-- END of: finna - organisationinfo/home.phtml -->

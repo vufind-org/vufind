@@ -61,7 +61,20 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
             }
         }
 
-        $organisation = "0/{$id}/";
+        // Try to find a translation for the organisation id
+        $organisation = $this->translate(
+            "0/$id/",
+            [],
+            $this->translate(
+                "source_$id",
+                [],
+                $this->translate(
+                    'source_' . strtolower($id),
+                    [],
+                    $id
+                )
+            )
+        );
 
         $consortiumInfo = isset($config->OrganisationPage->consortiumInfo)
             ? $config->OrganisationPage->consortiumInfo : false;
@@ -71,7 +84,7 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
 
         $title = str_replace(
             '%%organisation%%',
-            $this->translate($organisation),
+            $organisation,
             $this->translate($title)
         );
 

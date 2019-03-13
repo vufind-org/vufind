@@ -335,13 +335,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         } else {
             $params['id'] = !empty($parent) ? $parent
                 : $this->config->General->defaultOrganisation;
-            $response = $this->museumAction($params);
-            if ($response == null) {
-                return false;
-            } else {
-                $response['id'] = $id;
-                return $response;
-            }
+            return $this->museumAction($params);
         }
         //TODO Consortium/Group handling, we need to get data for that first from
         //TODO Museoliitto and organisations
@@ -1223,153 +1217,148 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      *
      * @param array $params Query parameters
      *
-     * @return mixed array of results or false on error.
+     * @return mixed array of results or false if no data available
      */
     protected function museumAction($params)
     {
         $response = $this->fetchData('consortium', $params, true);
-        if ($response['museot'] == null) {
-            $this->logError(
-                'Error reading museum info: ' .
-                var_export($params, true)
-            );
+        if (empty($response['museot'])) {
             return false;
         }
         $language = $this->getLanguage();
         $json = $response['museot'][0];
-        $consortium = $finna = [];
+        $consortium = [];
         $publish = $json['finna_publish'];
-        if ($publish == 1) {
-            //Consortium info
-            $consortium = [
-                'museum' => true,
-                'name' =>  $json['name'][$language],
-                'description' => $json['description'][$language],
-                'finna' => [
-                    'service_point' => $id,
-                    'finna_coverage' => $json['coverage'],
-                    'usage_perc' => $json['coverage'],
-                    'usage_info' => $json['usage_rights'][$language]
-                ],
-            ];
-            foreach ($json['links'] as $field => $key) {
-                $consortium['finna']['finnaLink'][$field]['name']
-                    = $key['link_info']['link_text_' . $language . ''];
-                $consortium['finna']['finnaLink'][$field]['value']
-                    = $key['link_info']['link_url_' . $language . ''];
-            }
-            if (!empty($json['image'])) {
-                $consortium['logo']['small'] = $json['image'];
-            }
-            //Details info
-            $details = [
-                'name' => $json['name'][$language],
-                'openNow' => false,
-                'openTimes' => [
-                    'museum' => true,
-                    'currentWeek' => true,
-                ],
-                'address' => [
-                    'coordinates' => [
-                        'lat' => !empty($json['latitude']) ? $json['latitude'] : '',
-                        'lon' => !empty($json['longitude']) ? $json['longitude'] : ''
-                    ],
-                    'street' => !empty($json['address']) ? $json['address'] : ''
-                ],
-                'id' => $params['id'],
-                'email' => $json['email'] ?? '',
-                'type' => 'museum',
-            ];
-            //Date handling
-            $today = date('d.m');
-            $currentHour = date('H:i');
-            $days = [
-                0 => 'monday', 1 => 'tuesday', 2 => 'wednesday',
-                3 => 'thursday', 4 => 'friday', 5 => 'saturday', 6 => 'sunday'
-            ];
-            foreach ($days as $day => $key) {
-                $details['openTimes']['schedules'][$day]
-                    = $this->getMuseumDaySchedule($key, $json, $today, $currentHour);
-                if ($details['openTimes']['schedules'][$day]['openNow'] == true) {
-                    $details['openNow'] = true;
-                    $details['openTimes']['openNow'] = true;
-                }
-            }
-            //Address handling
-            if (!empty($details['address'])) {
-                $mapUrl = $this->config->General->mapUrl;
-                $routeUrl = $this->config->General->routeUrl;
-                $replace['street'] = $details['address']['street'];
-                $replace['city'] = preg_replace(
-                    '/[0-9,]+/', '', $json['post_office']
-                );
-                foreach ($replace as $param => $val) {
-                    $mapUrl = str_replace(
-                        '{' . $param . '}', rawurlencode($val), $mapUrl
-                    );
-                    $routeUrl = str_replace(
-                        '{' . $param . '}', rawurlencode($val), $routeUrl
-                    );
-                }
-                $details['mapUrl'] = $mapUrl;
-                $details['routeUrl'] = $routeUrl;
-                $details['address']['zipcode']
-                    = preg_replace('/\D/', '', $json['post_office']);
-                $details['address']['city'] = $replace['city'];
-            }
-            //Contactinfo handling
-            $contactInfo = [];
-            foreach ($json['contact_infos'] as $field => $key) {
-                $contactInfo[]
-                    = [
-                        'name' =>
-                            $key['contact_info']['place_' . $language . ''],
-                        'contact' =>
-                            $key['contact_info']['phone_email_' . $language . '']
-                    ];
-            }
-            try {
-                $contactInfoToResult = $this->viewRenderer->partial(
-                    "Helpers/organisation-info-museum-page.phtml",
-                    ['contactInfo' => $contactInfo]
-                );
-            } catch (\Exception $e) {
-                $this->logError($e->getmessage());
-            }
-            //All data to view
-            $result = [
-                'museum' => true,
-                'list' => [
-                    0 => $details
-                ],
-                'weekNum' => date('W'),
-                'consortium' => $consortium,
-                'pictures' => [
-                    0 => [
-                        'url' =>
-                        isset($json['image2']) && strlen($json['image2']) > 30
-                         ? $json['image2'] : ''
-                    ],
-                    1 => [
-                        'url' =>
-                        isset($json['image3']) && strlen($json['image3']) > 30
-                         ? $json['image3'] : ''
-                    ],
-                    2 => [
-                        'url' =>
-                        isset($json['image4']) && strlen($json['image4']) > 30
-                         ? $json['image4'] : ''
-                    ]
-                ],
-                'scheduleDescriptions' => [
-                    0 => !empty($json['opening_info'][$language])
-                        ? $json['opening_info'][$language] : ''
-                ],
-                'contactInfo' => $contactInfoToResult ?? ''
-            ];
-        } else {
-            $result = false;
+        if (!$publish) {
+            return false;
         }
+        // Consortium info
+        $consortium = [
+            'museum' => true,
+            'name' =>  $json['name'][$language],
+            'description' => $json['description'][$language],
+            'finna' => [
+                'service_point' => $id,
+                'finna_coverage' => $json['coverage'],
+                'usage_perc' => $json['coverage'],
+                'usage_info' => $json['usage_rights'][$language]
+            ],
+        ];
+        foreach ($json['links'] as $field => $key) {
+            $consortium['finna']['finnaLink'][$field]['name']
+                = $key['link_info']['link_text_' . $language . ''];
+            $consortium['finna']['finnaLink'][$field]['value']
+                = $key['link_info']['link_url_' . $language . ''];
+        }
+        if (!empty($json['image'])) {
+            $consortium['logo']['small'] = $json['image'];
+        }
+        // Details info
+        $details = [
+            'name' => $json['name'][$language],
+            'openNow' => false,
+            'openTimes' => [
+                'museum' => true,
+                'currentWeek' => true,
+            ],
+            'address' => [
+                'coordinates' => [
+                    'lat' => !empty($json['latitude']) ? $json['latitude'] : '',
+                    'lon' => !empty($json['longitude']) ? $json['longitude'] : ''
+                ],
+                'street' => !empty($json['address']) ? $json['address'] : ''
+            ],
+            'id' => $params['id'],
+            'email' => $json['email'] ?? '',
+            'type' => 'museum',
+        ];
+        // Date handling
+        $today = date('d.m');
+        $currentHour = date('H:i');
+        $days = [
+            0 => 'monday', 1 => 'tuesday', 2 => 'wednesday',
+            3 => 'thursday', 4 => 'friday', 5 => 'saturday', 6 => 'sunday'
+        ];
+        foreach ($days as $day => $key) {
+            $details['openTimes']['schedules'][$day]
+                = $this->getMuseumDaySchedule($key, $json, $today, $currentHour);
+            if ($details['openTimes']['schedules'][$day]['openNow'] == true) {
+                $details['openNow'] = true;
+                $details['openTimes']['openNow'] = true;
+            }
+        }
+        // Address handling
+        if (!empty($details['address'])) {
+            $mapUrl = $this->config->General->mapUrl;
+            $routeUrl = $this->config->General->routeUrl;
+            $replace['street'] = $details['address']['street'];
+            $replace['city'] = preg_replace(
+                '/[0-9,]+/', '', $json['post_office']
+            );
+            foreach ($replace as $param => $val) {
+                $mapUrl = str_replace(
+                    '{' . $param . '}', rawurlencode($val), $mapUrl
+                );
+                $routeUrl = str_replace(
+                    '{' . $param . '}', rawurlencode($val), $routeUrl
+                );
+            }
+            $details['mapUrl'] = $mapUrl;
+            $details['routeUrl'] = $routeUrl;
+            $details['address']['zipcode']
+                = preg_replace('/\D/', '', $json['post_office']);
+            $details['address']['city'] = $replace['city'];
+        }
+        // Contact info handling
+        $contactInfo = [];
+        foreach ($json['contact_infos'] as $field => $key) {
+            $contactInfo[]
+                = [
+                    'name' =>
+                        $key['contact_info']['place_' . $language . ''],
+                    'contact' =>
+                        $key['contact_info']['phone_email_' . $language . '']
+                ];
+        }
+        try {
+            $contactInfoToResult = $this->viewRenderer->partial(
+                "Helpers/organisation-info-museum-page.phtml",
+                ['contactInfo' => $contactInfo]
+            );
+        } catch (\Exception $e) {
+            $this->logError($e->getmessage());
+        }
+        // All data to view
+        $result = [
+            'id' => $params['id'] ?? '',
+            'list' => [
+                0 => $details
+            ],
+            'weekNum' => date('W'),
+            'consortium' => $consortium,
+            'pictures' => [
+                0 => [
+                    'url' =>
+                    isset($json['image2']) && strlen($json['image2']) > 30
+                        ? $json['image2'] : ''
+                ],
+                1 => [
+                    'url' =>
+                    isset($json['image3']) && strlen($json['image3']) > 30
+                        ? $json['image3'] : ''
+                ],
+                2 => [
+                    'url' =>
+                    isset($json['image4']) && strlen($json['image4']) > 30
+                        ? $json['image4'] : ''
+                ]
+            ],
+            'scheduleDescriptions' => [
+                0 => !empty($json['opening_info'][$language])
+                    ? $json['opening_info'][$language] : ''
+            ],
+            'contactInfo' => $contactInfoToResult ?? ''
+        ];
         return $result;
     }
 
