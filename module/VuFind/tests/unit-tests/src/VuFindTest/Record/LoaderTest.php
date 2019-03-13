@@ -81,24 +81,7 @@ class LoaderTest extends TestCase
             ->with($this->equalTo('Summon'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
         $driver = $this->getDriver();
-        $fallbackPlugin = $this
-            ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['load'])
-            ->getMock();
-        $fallbackPlugin->expects($this->once())->method('load')
-            ->with($this->equalTo(['test']))
-            ->will($this->returnValue([$driver]));
-        $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['get', 'has'])
-            ->getMock();
-        $fallbackLoader->expects($this->once())->method('has')
-            ->with($this->equalTo('Summon'))
-            ->will($this->returnValue(true));
-        $fallbackLoader->expects($this->once())->method('get')
-            ->with($this->equalTo('Summon'))
-            ->will($this->returnValue($fallbackPlugin));
+        $fallbackLoader = $this->getFallbackLoader([$driver]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);
         $this->assertEquals($driver, $loader->load('test', 'Summon'));
     }
@@ -227,6 +210,51 @@ class LoaderTest extends TestCase
     }
 
     /**
+     * Test batch load with fallback loader.
+     *
+     * @return void
+     */
+    public function testBatchLoadWithFallback()
+    {
+        $driver1 = $this->getDriver('test1', 'Solr');
+        $driver2 = $this->getDriver('test2', 'Solr');
+        $driver3 = $this->getDriver('test3', 'Summon');
+
+        $collection1 = $this->getCollection([$driver1, $driver2]);
+        $collection2 = $this->getCollection([]);
+
+        $solrParams = new ParamBag();
+        $solrParams->set('fq', 'id:test1');
+
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $service->expects($this->at(0))->method('retrieveBatch')
+            ->with(
+                $this->equalTo('Solr'), $this->equalTo(['test1', 'test2']),
+                $this->equalTo($solrParams)
+            )
+            ->will($this->returnValue($collection1));
+        $service->expects($this->at(1))->method('retrieveBatch')
+            ->with(
+                $this->equalTo('Summon'), $this->equalTo(['test3']),
+                $this->equalTo(null)
+            )
+            ->will($this->returnValue($collection2));
+
+        $fallbackLoader = $this->getFallbackLoader([$driver3]);
+        $loader = $this->getLoader($service, null, null, $fallbackLoader);
+        $input = [
+            ['source' => 'Solr', 'id' => 'test1'],
+            'Solr|test2', 'Summon|test3'
+        ];
+        $this->assertEquals(
+            [$driver1, $driver2, $driver3],
+            $loader->loadBatch(
+                $input, false, ['Solr' => $solrParams]
+            )
+        );
+    }
+
+    /**
      * Get test record driver object
      *
      * @param string $id     Record ID
@@ -262,6 +290,40 @@ class LoaderTest extends TestCase
             $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         }
         return new Loader($service, $factory, $recordCache, $fallbackLoader);
+    }
+
+    /**
+     * Get a fallback loader (currently assumes Summon plugin will be used).
+     *
+     * @param array $records Records to return from the fallback plugin
+     *
+     * @return FallbackLoader
+     */
+    protected function getFallbackLoader($records)
+    {
+        $fallbackPlugin = $this
+            ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['load'])
+            ->getMock();
+        $callback = function ($r) {
+            return $r->getUniqueId();
+        };
+        $expectedIds = array_map($callback, $records);
+        $fallbackPlugin->expects($this->once())->method('load')
+            ->with($this->equalTo($expectedIds))
+            ->will($this->returnValue($records));
+        $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['get', 'has'])
+            ->getMock();
+        $fallbackLoader->expects($this->once())->method('has')
+            ->with($this->equalTo('Summon'))
+            ->will($this->returnValue(true));
+        $fallbackLoader->expects($this->once())->method('get')
+            ->with($this->equalTo('Summon'))
+            ->will($this->returnValue($fallbackPlugin));
+        return $fallbackLoader;
     }
 
     /**
