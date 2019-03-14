@@ -736,9 +736,6 @@ finna.layout = (function finnaLayout() {
     var $container = $(_container);
     var $videoElem = $(_container).find('video');
 
-    // Use a fairly small buffer for faster quality changes
-    videojs.Hls.GOAL_BUFFER_LENGTH = 10;
-    videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
     var player = videojs($videoElem.get(0));
 
     player.ready(function onReady() {
