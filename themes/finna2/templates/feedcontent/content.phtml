@@ -20,8 +20,6 @@ JS;
     $this->headScript()->appendScript($setupJS);
   }
 ?>
-
-<?=$this->headScript()?>
 <div>
   <div class="<?= $this->modal ? '' : 'page-content'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
 
