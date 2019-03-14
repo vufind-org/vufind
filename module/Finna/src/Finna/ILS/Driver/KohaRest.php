@@ -919,11 +919,10 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $itemId = $entry['itemnumber'] ?? null;
             $title = '';
             $volume = '';
-            $publicationYear = '';
             if ($itemId) {
                 $item = $this->getItem($itemId);
-                $bibId = $item['biblionumber'];
-                $volume = $item['enumchron'];
+                $bibId = $item['biblionumber'] ?? null;
+                $volume = $item['enumchron'] ?? '';
             }
             if (!empty($bibId)) {
                 $bib = $this->getBibRecord($bibId);
