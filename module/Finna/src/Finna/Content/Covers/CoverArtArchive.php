@@ -80,7 +80,10 @@ class CoverArtArchive extends \VuFind\Content\AbstractCover
             $size = 'small';
         }
         try {
-            $driver = $this->recordLoader->load($ids['recordid'], $ids['source']);
+            $driver = $this->recordLoader->load(
+                $ids['recordid'],
+                $ids['source'] ?? DEFAULT_SEARCH_BACKEND
+            );
             $mbids = $driver->tryMethod('getMusicBrainzIdentifiers') ?? [];
             foreach ($mbids as $mbid) {
                 $url = 'https://coverartarchive.org/release/' . urlencode($mbid);
