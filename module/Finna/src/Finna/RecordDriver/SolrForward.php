@@ -1016,6 +1016,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             return [];
         }
         $sourceConfigs = [];
+        $sourcePriority = 0;
         foreach ($this->recordConfig->Record->video_sources as $current) {
             $settings = explode('|', $current, 4);
             if (!isset($settings[2]) || $source !== $settings[0]) {
@@ -1024,7 +1025,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             $sourceConfigs[] = [
                 'mediaType' => $settings[1],
                 'src' => $settings[2],
-                'sourceTypes' => explode(',', $settings[3] ?? 'mp4')
+                'sourceTypes' => explode(',', $settings[3] ?? 'mp4'),
+                'priority' => $sourcePriority++
             ];
         }
         if (empty($sourceConfigs)) {
@@ -1052,12 +1054,20 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     );
                     $videoSources[] = [
                         'src' => $src,
-                        'type' => $config['mediaType']
+                        'type' => $config['mediaType'],
+                        'priority' => $config['priority']
                     ];
                 }
                 if (empty($videoSources)) {
                     continue;
                 }
+
+                usort(
+                    $videoSources,
+                    function ($a, $b) {
+                        return $a['priority'] - $b['priority'];
+                    }
+                );
 
                 $poster = '';
                 $videoType = 'elokuva';
