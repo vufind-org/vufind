@@ -904,6 +904,24 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Calculate the due status for a due date.
+     *
+     * @param int $due Due date as Unix timestamp
+     *
+     * @return string
+     */
+    protected function calculateDueStatus($due)
+    {
+        $dueRelative = $due - time();
+        if ($dueRelative < 0) {
+            return 'overdue';
+        } elseif ($dueRelative < 24 * 60 * 60) {
+            return 'due';
+        }
+        return false;
+    }
+
+    /**
      * Construct a random set of transactions for getMyTransactions().
      *
      * @return array
@@ -919,16 +937,9 @@ class Demo extends AbstractBase
             // When is it due? +/- up to 15 days
             $due_relative = rand() % 30 - 15;
             // Due date
-            $dueStatus = false;
-            if ($due_relative >= 0) {
-                $rawDueDate = strtotime("now +$due_relative days");
-                if ($due_relative == 0) {
-                    $dueStatus = 'due';
-                }
-            } else {
-                $rawDueDate = strtotime("now $due_relative days");
-                $dueStatus = 'overdue';
-            }
+            $rawDueDate = strtotime(
+                'now ' . ($due_relative >= 0 ? '+' : '') . $due_relative . ' days'
+            );
 
             // Times renewed    : 0,0,0,0,0,1,2,3,4,5
             $renew = rand() % 10 - 5;
@@ -954,7 +965,7 @@ class Demo extends AbstractBase
                     'U', $rawDueDate
                 ),
                 'rawduedate' => $rawDueDate,
-                'dueStatus' => $dueStatus,
+                'dueStatus' => $this->calculateDueStatus($rawDueDate),
                 'barcode' => sprintf("%08d", rand() % 50000),
                 'renew'   => $renew,
                 'renewLimit' => $renewLimit,
@@ -1607,7 +1618,9 @@ class Demo extends AbstractBase
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
                 if (!$this->isFailing(__METHOD__, 50)) {
-                    $transactions[$i]['rawduedate'] += 7 * 24 * 60 * 60;
+                    $transactions[$i]['rawduedate'] += 21 * 24 * 60 * 60;
+                    $transactions[$i]['dueStatus']
+                        = $this->calculateDueStatus($transactions[$i]['rawduedate']);
                     $transactions[$i]['duedate']
                         = $this->dateConverter->convertToDisplayDate(
                             'U', $transactions[$i]['rawduedate']
