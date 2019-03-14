@@ -69,9 +69,9 @@ class Demo extends AbstractBase
     /**
      * Container for storing persistent simulated ILS data.
      *
-     * @var SessionContainer
+     * @var SessionContainer[]
      */
-    protected $session = null;
+    protected $session = [];
 
     /**
      * Factory function for constructing the SessionContainer.
@@ -528,16 +528,25 @@ class Demo extends AbstractBase
     /**
      * Get the session container (constructing it on demand if not already present)
      *
+     * @param string $patron ID of current patron
+     *
      * @return SessionContainer
      */
-    protected function getSession()
+    protected function getSession($patron = null)
     {
+        // We have a separate session for each user ID; if none is specified,
+        // try to pick the first one arbitrarily; the difference only matters
+        // when testing multiple accounts.
+        $selectedPatron = empty($patron)
+            ? (current(array_keys($this->session)) ?: 'default')
+            : $patron;
+
         // SessionContainer not defined yet? Build it now:
-        if (null === $this->session) {
+        if (!isset($this->session[$selectedPatron])) {
             $factory = $this->sessionFactory;
-            $this->session = $factory();
+            $this->session[$selectedPatron] = $factory($selectedPatron);
         }
-        return $this->session;
+        return $this->session[$selectedPatron];
     }
 
     /**
@@ -557,7 +566,7 @@ class Demo extends AbstractBase
         $id = (string)$id;
 
         // Do we have a fake status persisted in the session?
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (isset($session->statuses[$id])) {
             return $session->statuses[$id];
         }
@@ -769,7 +778,7 @@ class Demo extends AbstractBase
     public function getMyFines($patron)
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->fines)) {
             // How many items are there? %20 - 2 = 10% chance of none,
             // 90% of 1-18 (give or take some odd maths)
@@ -828,7 +837,7 @@ class Demo extends AbstractBase
     public function getMyHolds($patron)
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->holds)) {
             $session->holds = $this->createRequestList('Holds');
         }
@@ -849,7 +858,7 @@ class Demo extends AbstractBase
     public function getMyStorageRetrievalRequests($patron)
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->storageRetrievalRequests)) {
             $session->storageRetrievalRequests
                 = $this->createRequestList('StorageRetrievalRequests');
@@ -871,7 +880,7 @@ class Demo extends AbstractBase
     public function getMyILLRequests($patron)
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->ILLRequests)) {
             $session->ILLRequests = $this->createRequestList('ILLRequests');
         }
@@ -993,7 +1002,7 @@ class Demo extends AbstractBase
     public function getMyTransactions($patron, $params = [])
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->transactions)) {
             $session->transactions = $this->getTransactionList();
         }
@@ -1115,7 +1124,7 @@ class Demo extends AbstractBase
     public function getMyTransactionHistory($patron, $params)
     {
         $this->checkIntermittentFailure();
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->historicLoans)) {
             $session->historicLoans = $this->getHistoricTransactionList();
         }
@@ -1455,7 +1464,7 @@ class Demo extends AbstractBase
         // cancel.
         $newHolds = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        $session = $this->getSession();
+        $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->holds as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newHolds->append($current);
@@ -1519,7 +1528,7 @@ class Demo extends AbstractBase
         // cancel.
         $newRequests = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        $session = $this->getSession();
+        $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->storageRetrievalRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
@@ -1592,7 +1601,7 @@ class Demo extends AbstractBase
         $finalResult = ['blocks' => false, 'details' => []];
 
         // Grab transactions from session so we can modify them:
-        $session = $this->getSession();
+        $session = $this->getSession($renewDetails['patron']['id'] ?? null);
         $transactions = $session->transactions;
         foreach ($transactions as $i => $current) {
             // Only renew requested items:
@@ -1706,7 +1715,7 @@ class Demo extends AbstractBase
             ];
         }
 
-        $session = $this->getSession();
+        $session = $this->getSession($holdDetails['patron']['id'] ?? null);
         if (!isset($session->holds)) {
             $session->holds = new ArrayObject();
         }
@@ -1828,7 +1837,7 @@ class Demo extends AbstractBase
             ];
         }
 
-        $session = $this->getSession();
+        $session = $this->getSession($details['patron']['id'] ?? null);
         if (!isset($session->storageRetrievalRequests)) {
             $session->storageRetrievalRequests = new ArrayObject();
         }
@@ -1942,7 +1951,7 @@ class Demo extends AbstractBase
             ];
         }
 
-        $session = $this->getSession();
+        $session = $this->getSession($details['patron']['id'] ?? null);
         if (!isset($session->ILLRequests)) {
             $session->ILLRequests = new ArrayObject();
         }
@@ -2118,7 +2127,7 @@ class Demo extends AbstractBase
         // cancel.
         $newRequests = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        $session = $this->getSession();
+        $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->ILLRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
