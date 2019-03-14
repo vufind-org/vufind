@@ -122,7 +122,21 @@ VuFind.register('account', function Account() {
 
   var init = function init() {
     // Update information when certain actions are performed
-    $('#cancelHold, #renewals').submit(clearCache);
+    $("#renewals").submit(function clearCheckedOut() {
+      clearCache("checkedOut");
+    });
+    $('#cancelHold, [name="placeHold"]').submit(function clearHolds() {
+      clearCache("holds");
+    });
+    $('#ILLRequestForm').submit(function clearHolds() {
+      clearCache("illRequests");
+    });
+    $('[name="placeStorageRetrievalRequest"]').submit(function clearStorageRetrievals() {
+      clearCache("storageRetrievalRequests");
+    });
+    $("#library_card").change(function clearChangeLibraryCard() {
+      clearCache(/* all */);
+    });
   };
 
   var register = function register(name, module) {
