@@ -57,14 +57,14 @@
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
       <div class="useraccount-header">
-        <?=$this->transEsc('Your Fines') . " (" . count($this->fines) . ")"?>
+        <?=$this->transEsc('Your Fines') . " (" . count($this->fines ?? []) . ")"?>
       </div>
     </div>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
     <div class="fines-info-area">
       <div>
-        <p><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></span></p>
+        <p><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines ?? []);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></span></p>
       </div>
       <?php if ($this->onlinePayment): ?>
         <div>
