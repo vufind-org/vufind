@@ -1268,6 +1268,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'biblionumber' => (int)$bibId,
             'borrowernumber' => (int)$patron['id'],
             'branchcode' => $pickUpLocation,
+            'patron_notes' => $comment,
         ];
         if ($level == 'copy') {
             $request['itemnumber'] = (int)$itemId;
