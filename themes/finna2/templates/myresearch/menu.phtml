@@ -15,8 +15,6 @@
       $isDefaultList = !isset($list);
       $lists = $user ? $user->getLists() : null;
     }
-
-    echo $this->inlineScript()->appendFile('finna-menu.js');
 ?>
 <?php ob_start(); ?>
 <?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>

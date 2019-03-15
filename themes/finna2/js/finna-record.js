@@ -248,6 +248,9 @@ finna.record = (function finnaRecord() {
 
   function loadSimilarRecords()
   {
+    if ($('.similar-records').length === 0) {
+      return;
+    }
     $.getJSON(
       VuFind.path + '/AJAX/JSON',
       {

@@ -6,5 +6,6 @@ return [
         'settings.css'
     ],
     'js' => [
+        'custom.js',
     ]
 ];

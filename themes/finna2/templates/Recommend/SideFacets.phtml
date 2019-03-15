@@ -7,15 +7,10 @@
   $this->options = $options = $results->getOptions();
 
   $language = $this->layout()->userLang;
-
-  $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
-
   $datepickerLanguages = ['en-gb' => 'en-GB', 'fi' => 'fi', 'sv' => 'sv'];
-
-  if (array_key_exists($language, $datepickerLanguages)) {
+  if (isset($datepickerLanguages[$language])) {
     $datePickerLang = $datepickerLanguages[$language];
-    $this->headScript()->appendFile('vendor/bootstrap-datepicker.' . $datePickerLang . '.min.js');
   }
 
   $resultsTotal = $results->getResultTotal();

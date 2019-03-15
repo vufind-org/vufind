@@ -1,10 +1,5 @@
 <!-- START of: finna - collection/view.phtml -->
 <?php
-  // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js");
-  $this->headScript()->appendFile("finna-record.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
-  $this->headScript()->appendFile("finna-comments.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());

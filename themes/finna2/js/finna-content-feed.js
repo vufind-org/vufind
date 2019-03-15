@@ -6,6 +6,11 @@ finna.contentFeed = (function finnaContentFeed() {
     var feedUrl = container.data('feed-url');
 
     var contentHolder = container.find('.holder');
+
+    if (!id || !element || !feedUrl || contentHolder.length === 0) {
+      return;
+    }
+
     // Append spinner
     contentHolder.append('<i class="fa fa-spin fa-spinner"></i>');
     contentHolder.find('.fa-spin').fadeOut(0).delay(1000).fadeIn(100);
@@ -66,7 +71,9 @@ finna.contentFeed = (function finnaContentFeed() {
   var my = {
     loadFeed: loadFeed,
     init: function init() {
-      loadFeed($('.feed-content'), false);
+      if ($('.feed-content').length > 0) {
+        loadFeed($('.feed-content'), false);
+      }
     }
   };
 
