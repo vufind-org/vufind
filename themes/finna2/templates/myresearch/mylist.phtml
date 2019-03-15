@@ -3,11 +3,6 @@
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
-  $activeId = $list['id'];
-  $activeUrl = $this->serverUrl() . $this->url('home') . 'List/' . $activeId;
-  $activePublic = $list['public'];
-  $isDefaultList = !isset($list);
-
   // Set up page title:
   $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
@@ -17,14 +12,6 @@
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("finna-mylist.js");
-  $this->headScript()->appendFile("vendor/jquery.editable.min.js");
-  $this->headScript()->appendFile("finna-item-status.js");
-  $this->headScript()->appendFile('vendor/jquery-ui-custom.min.js');
-  $this->headScript()->appendFile('vendor/jquery.ui.touch-punch.min.js');
-
-  $this->headScript()->appendFile("vendor/simplemde.min.js");
-  $this->headLink()->appendStylesheet('vendor/simplemde.min.css');
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != "full") {
@@ -32,14 +19,15 @@
     $this->headScript()->appendFile("embedded_record.js");
   }
 
-  $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'add_list_description' => 'Add list description', 'loading' => 'Loading', 'preview' => 'Preview']);
-
   $recordTotal = $this->results->getResultTotal();
 
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->isLoggedIn();
+
   $lists = $user ? $user->getLists() : null;
+
+  $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'add_list_description' => 'Add list description', 'loading' => 'Loading', 'preview' => 'Preview']);
 ?>
 
 <!-- Leftside navigationbar -->
@@ -60,11 +48,13 @@
       <?=$this->flashmessages()?>
     </div>
     <div>
-      <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><?php if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><?php endif; ?><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span></h2>
       <?php if ($list): ?>
-        <div class="list-description<?= $list ? ' markdown' : ''?>">
+        <h2 class="list-title"><i class="list-title-edit fa fa-pen"></i><span><?=$this->escapeHtml($list->title)?></span></h2>
+        <div class="list-description markdown">
           <i class="list-description-edit fa fa-pen" aria-hidden="true"></i><div class="editable" data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
         </div>
+      <?php else: ?>
+        <h2 class="list-title no-edit"><span><?=$this->transEsc("All Favourites")?></span></h2>
       <?php endif; ?>
     </div>
   </div>
