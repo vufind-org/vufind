@@ -151,11 +151,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * v5:
      *   - last pickup date for holds
      * v5.1 (technically still v5 but added in a later revision):
-     *   - holdings information (especially for serials)
+     *   - summary holdings information (especially for serials)
      *
      * @var int
      */
-    protected $apiVersion = 5.1;
+    protected $apiVersion = 5;
 
     /**
      * Whether to sort items by enumchron. Default is true.
