@@ -1,7 +1,7 @@
-<?
+<?php
 $i=0;
 $formats = $this->driver->getFormats();
-$media_types = $this->driver->tryMethod('getMediaTypes');
+$media_types = $this->driver->tryMethod('getMediaTypes', [], []);
 $is_hybrid = $this->driver->tryMethod('isHybrid') || (in_array("Electronic", $media_types) && in_array("Non-Electronic", $media_types));
 if (isset($media_types)) {
 
