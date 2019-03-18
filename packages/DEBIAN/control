@@ -5,8 +5,7 @@ Priority: Optional
 Architecture: all
 Depends: apache2,
          default-jdk,
-         libapache2-mod-php5 | libapache2-mod-php,
-         libapache2-mod-php5 | php-mbstring,
+         libapache2-mod-php,
          mysql-server | virtual-mysql-server-core,
          php-pear,
          php,
@@ -16,6 +15,7 @@ Depends: apache2,
          php-intl,
          php-json,
          php-ldap,
+         php-mbstring,
          php-mysql,
          php-soap,
          php-xml
