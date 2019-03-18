@@ -429,11 +429,14 @@ class MyResearchController extends AbstractBase
         // Begin building view object:
         $view = $this->createViewModel(['user' => $user]);
 
+        $config = $this->getConfig();
+        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+
         $patron = $this->catalogLogin();
         if (is_array($patron)) {
-            // Process home library parameter (if present):
+            // Process home library parameter (if present and allowed):
             $homeLibrary = $this->params()->fromPost('home_library', false);
-            if (!empty($homeLibrary)) {
+            if ($allowHomeLibrary && !empty($homeLibrary)) {
                 $user->changeHomeLibrary($homeLibrary);
                 $this->getAuthManager()->updateSession($user);
                 $this->flashMessenger()->addMessage('profile_update', 'success');
@@ -443,21 +446,34 @@ class MyResearchController extends AbstractBase
             $catalog = $this->getILS();
             $this->addAccountBlocksToFlashMessenger($catalog, $patron);
             $profile = $catalog->getMyProfile($patron);
-            $profile['home_library'] = $user->home_library;
+            $profile['home_library'] = $allowHomeLibrary ? $user->home_library : '';
             $view->profile = $profile;
+            $pickup = $defaultPickupLocation = null;
             try {
-                $view->pickup = $catalog->getPickUpLocations($patron);
-                $view->defaultPickupLocation
-                    = $catalog->getDefaultPickUpLocation($patron);
+                $pickup = $catalog->getPickUpLocations($patron);
+                $defaultPickupLocation = $catalog->getDefaultPickUpLocation($patron);
             } catch (\Exception $e) {
                 // Do nothing; if we're unable to load information about pickup
                 // locations, they are not supported and we should ignore them.
+            }
+
+            // Set things up differently depending on whether or not the user is
+            // allowed to set a home library.
+            if ($allowHomeLibrary) {
+                $view->pickup = $pickup;
+                $view->defaultPickupLocation = $defaultPickupLocation;
+            } elseif (!empty($pickup)) {
+                foreach ($pickup as $lib) {
+                    if ($defaultPickupLocation == $lib['locationID']) {
+                        $view->preferredLibraryDisplay = $lib['locationDisplay'];
+                        break;
+                    }
+                }
             }
         } else {
             $view->patronLoginView = $patron;
         }
 
-        $config = $this->getConfig();
         $view->accountDeletion
             = !empty($config->Authentication->account_deletion);
 
