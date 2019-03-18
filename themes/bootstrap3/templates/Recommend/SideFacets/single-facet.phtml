@@ -12,6 +12,12 @@
   if ($this->facet['isApplied']) {
     $classList[] = 'active';
   }
+  if ($this->facet['operator'] == 'OR') {
+    $classList[] = 'facetOR';
+  }
+  if ($this->facet['operator'] == 'AND') {
+    $classList[] = 'facetAND';
+  }
 
   $displayText = '-';
   if (!empty($this->facet['displayText'])) {
