@@ -1878,7 +1878,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $line = [];
                     foreach ($subfields as $subfield) {
                         if ($subfieldCodes
-                            && !strstr($subfieldCodes, $subfield['tag'])
+                            && false === strpos($subfieldCodes, $subfield['tag'])
                         ) {
                             continue;
                         }
