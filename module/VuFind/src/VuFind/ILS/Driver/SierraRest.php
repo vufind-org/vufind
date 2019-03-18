@@ -1621,6 +1621,21 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Extract a bib call number from a bib record (if configured to do so).
+     *
+     * @param array $bib Bib record
+     *
+     * @return string
+     */
+    protected function getBibCallNumber($bib)
+    {
+        return empty($this->config['CallNumber']['bib_fields'])
+            ? '' : $this->getHoldingFields(
+                [$bib], $this->config['CallNumber']['bib_fields']
+            );
+    }
+
+    /**
      * Get Item Statuses
      *
      * This is responsible for retrieving the status information of a certain
@@ -1633,7 +1648,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getItemStatusesForBib($id)
     {
-        $bib = $this->getBibRecord($id, 'bibLevel');
+        // If we need to look at bib call numbers, retrieve varFields:
+        $bibFields = empty($this->config['CallNumber']['bib_fields'])
+            ? 'bibLevel' : 'bibLevel,varFields';
+        $bib = $this->getBibRecord($id, $bibFields);
         $holdingsData = [];
         if ($this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
@@ -1721,7 +1739,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'status' => $status,
                     'reserve' => 'N',
                     'callnumber' => isset($item['callNumber'])
-                        ? preg_replace('/^\|a/', '', $item['callNumber']) : '',
+                        ? preg_replace('/^\|a/', '', $item['callNumber'])
+                        : $this->getBibCallNumber($bib),
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
