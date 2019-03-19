@@ -2,18 +2,18 @@
 
 namespace IxTheo\View\Helper\IxTheo;
 
-use Zend\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 use VuFindSearch\Query\Query;
 
 /**
- * Some IxTheo specific struff
+ * Some IxTheo specific stuff
  */
 class IxTheo extends \Zend\View\Helper\AbstractHelper
 {
-    protected $sm;
+    protected $container;
 
-    public function __construct(ServiceManager $sm) {
-        $this->sm = $sm;
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
     }
 
 
