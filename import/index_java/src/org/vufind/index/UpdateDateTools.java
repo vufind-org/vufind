@@ -79,9 +79,7 @@ public class UpdateDateTools
         LocalDateTime retVal;
         try {
             retVal = LocalDateTime.parse(input.substring(0, 6), marc008date);
-        } catch(java.lang.StringIndexOutOfBoundsException e) {
-            retVal = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
-        } catch(java.time.format.DateTimeParseException e) {
+        } catch(java.lang.StringIndexOutOfBoundsException | java.time.format.DateTimeParseException e) {
             retVal = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         }
         return retVal;
