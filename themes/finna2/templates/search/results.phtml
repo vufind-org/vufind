@@ -222,6 +222,7 @@
     <?php endif; ?>
 
     <?php /* End Listing Options */ ?>
+    <h1 class="sr-only"><?= $this->transEsc('Search Results'); ?></h1>
     <?php if ($recordTotal < 1): ?>
       <?php foreach ($topRecommendations as $current): ?>
         <?=$this->recommend($current)?>
