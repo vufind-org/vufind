@@ -7,9 +7,8 @@ Die Herausgeber des Index Theologicus (IxTheo) stellen die IxTheo-Klassifikation
 
 Die <a href="/classification" target="_blank">IxTheo-Klassifikation</a> ist eine Facettenklassifikation bestehend aus 13 Hauptgruppen und 139 Klassen, die seit 1995 als klassifikatorische Basiserschließung im IxTheo angewandt wird (siehe <a href=/docs/ixtheo-erschliessungskonzept.pdf target="_blank">Erschließungskonzept</a>):</p>
 
-<? $helper = $this->getHelperPluginManager()->get('IxTheo');
-   $translator = $this->plugin('translate')->getTranslator();
-   $list = $helper->getNestedIxtheoClassificationArray($translator);
+<? $translator = $this->plugin('translate')->getTranslator();
+   $list = $this->ixtheo()->getNestedIxtheoClassificationArray($translator);
    echo $this->htmlList($list, false, false, false);
 ?>
 
