@@ -17,6 +17,7 @@ return [
             'citation' => 'IxTheo\View\Helper\Root\Citation',
             'record' => 'IxTheo\View\Helper\Root\Record',
             'ixtheo' => 'IxTheo\View\Helper\IxTheo\IxTheo',
+            'IxTheo' => 'IxTheo\View\Helper\IxTheo\IxTheo',
         ],
     ],
 ];

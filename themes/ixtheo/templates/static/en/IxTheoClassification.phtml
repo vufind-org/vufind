@@ -7,9 +7,8 @@ The editors of the Index Theologicus (IxTheo) provide the IxTheo Classification 
 
 <a href="/classification" target="_blank">IxTheo Classification</a> is a facet classification system consisting of 13 main groups and 139 classes, that are used for the classification in IxTheo since 1995 (c.f. <a href=/docs/ixtheo-erschliessungskonzept.pdf target="_blank">Erschließungskonzept</a> [in German]):</p>
 
-<? $helper = $this->getHelperPluginManager()->get('IxTheo');
-   $translator = $this->plugin('translate')->getTranslator();
-   $list = $helper->getNestedIxtheoClassificationArray($translator);
+<? $translator = $this->plugin('translate')->getTranslator();
+   $list = $this->ixtheo()->getNestedIxtheoClassificationArray($translator);
    echo $this->htmlList($list, false, false, false);
 ?>
 
