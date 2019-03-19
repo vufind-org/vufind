@@ -271,6 +271,19 @@ class Server
     }
 
     /**
+     * Get the current UTC date/time in ISO 8601 format.
+     *
+     * @return string
+     */
+    protected function getUTCDateTime($time = 'now')
+    {
+        // All times must be in UTC, so translate the current time to the
+        // appropriate time zone:
+        $now = new \DateTime($time, new \DateTimeZone('UTC'));
+        return date_format($now, $this->iso8601);
+    }
+
+    /**
      * Respond to the OAI-PMH request.
      *
      * @return string
@@ -444,7 +457,7 @@ class Server
         // Get modification date:
         $date = $record->getLastIndexed();
         if (empty($date)) {
-            $date = date($this->iso8601);
+            $date = $this->getUTCDateTime('now');
         }
 
         // Set up header (inside or outside a <record> container depending on
@@ -987,7 +1000,7 @@ class Server
                 }
             }
             if (empty($params['until'])) {
-                $params['until'] = date($this->iso8601);
+                $params['until'] = $this->getUTCDateTime('now +1 day');
                 if (strlen($params['until']) > strlen($params['from'])) {
                     $params['until'] = substr($params['until'], 0, 10);
                 }
@@ -1252,7 +1265,7 @@ class Server
             . 'http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd',
             'http://www.w3.org/2001/XMLSchema-instance'
         );
-        $xml->responseDate = date($this->iso8601);
+        $xml->responseDate = $this->getUTCDateTime('now');
         $xml->request = $this->baseURL;
         if ($echoParams) {
             foreach ($this->params as $key => $value) {
