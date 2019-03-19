@@ -355,13 +355,13 @@ body.rtl {
   }
   .filters {
     flex: 10 1 auto;
+    padding: 5px 0 5px 10px;
     .collapse {
       display: none;
       .in {
         display: inline-block;
       }
     }
-    padding: 5px 0 5px 10px;
 
     .checkbox label {
       display: inline-block;
@@ -397,6 +397,33 @@ body.rtl {
     }
     .title-value-pair {
       display: inline-block;
+    }
+  }
+  .dropdown {
+    display: inline-block;
+    .btn {
+      color: #fff;
+      background: $list-group-active-bg;
+      vertical-align: baseline;
+    }
+
+    .dropdown-menu {
+      .filters-term {
+        display: block;
+        text-align: center;
+      }
+      .filter-value {
+        display: flex;
+
+        .text {
+          flex-grow: 1;
+          margin-right: 0.5em;
+        }
+        a {
+          flex-shrink: 0;
+          margin: 0;
+        }
+      }
     }
   }
 }

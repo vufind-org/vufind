@@ -266,3 +266,18 @@
         width: 100%;
     }
 }
+
+/* ------ CURRENT FILTERS ------ */
+.active-filters {
+  button {
+    background: $list-group-active-bg;
+  }
+  .dropdown {
+    .filters-term {
+      color: #000;
+    }
+    a:hover {
+      background-color: transparent;
+    }
+  }
+}
