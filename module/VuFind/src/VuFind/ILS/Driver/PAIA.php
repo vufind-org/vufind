@@ -726,20 +726,25 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        //todo: read VCard if avaiable in patron info
-        //todo: make fields more configurable
         if (is_array($patron)) {
+            $type = isset($patron['type'])
+                ? implode(
+                    ', ', array_map(
+                        [$this, 'getReadableGroupType'], (array)$patron['type']
+                    )
+                )
+                : null;
             return [
-                'firstname'      => $patron['firstname'],
-                'lastname'       => $patron['lastname'],
-                'address1'       => null,
-                'address2'       => null,
-                'city'           => null,
-                'country'        => null,
-                'zip'            => null,
-                'phone'          => null,
-                'mobile_phone'   => null,
-                'group'          => null,
+                'firstname'  => $patron['firstname'],
+                'lastname'   => $patron['lastname'],
+                'address1'   => $patron['address'],
+                'address2'   => null,
+                'city'       => null,
+                'country'    => null,
+                'zip'        => null,
+                'phone'      => null,
+                'mobile_phone' => null,
+                'group'      => $type,
                 // PAIA specific custom values
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
@@ -748,6 +753,22 @@ class PAIA extends DAIA
             ];
         }
         return [];
+    }
+
+    /**
+     * Get Readable Group Type
+     *
+     * Due to PAIA specifications type returns an URI. This method offers a
+     * possibility to translate the URI in a readable value by inheritance
+     * and implementing a personal proceeding.
+     *
+     * @param string $type URI of usertype
+     *
+     * @return string URI of usertype
+     */
+    protected function getReadableGroupType($type)
+    {
+        return $type;
     }
 
     /**
