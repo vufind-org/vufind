@@ -65,8 +65,7 @@ public class UpdateDateTracker
     private void createRow(Timestamp newRecordChange) throws SQLException
     {
         // Save new values to the object:
-        LocalDateTime rightNow = LocalDateTime.now();
-        firstIndexed = lastIndexed = Timestamp.valueOf(rightNow);
+        firstIndexed = lastIndexed = Timestamp.valueOf(LocalDateTime.now());
         lastRecordChange = newRecordChange;
         
         // Save new values to the database:
@@ -108,8 +107,7 @@ public class UpdateDateTracker
     private void updateRow(Timestamp newRecordChange) throws SQLException
     {
         // Save new values to the object:
-        LocalDateTime rightNow = LocalDateTime.now();
-        lastIndexed = Timestamp.valueOf(rightNow);
+        lastIndexed = Timestamp.valueOf(LocalDateTime.now());
         // If first indexed is null, we're restoring a deleted record, so
         // we need to treat it as new -- we'll use the current time.
         if (firstIndexed == null) {
