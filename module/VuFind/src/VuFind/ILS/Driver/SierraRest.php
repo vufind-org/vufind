@@ -1629,11 +1629,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getBibCallNumber($bib)
     {
-        return empty($this->config['CallNumber']['bib_fields'])
+        $result = empty($this->config['CallNumber']['bib_fields'])
             ? '' : $this->extractFieldsFromApiData(
                 [$bib], // wrap $bib in array to conform to expected format
                 $this->config['CallNumber']['bib_fields']
             );
+        return is_array($result) ? reset($result) : $result;
     }
 
     /**
