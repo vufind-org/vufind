@@ -1630,8 +1630,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getBibCallNumber($bib)
     {
         return empty($this->config['CallNumber']['bib_fields'])
-            ? '' : $this->getHoldingFields(
-                [$bib], $this->config['CallNumber']['bib_fields']
+            ? '' : $this->extractFieldsFromApiData(
+                [$bib], // wrap $bib in array to conform to expected format
+                $this->config['CallNumber']['bib_fields']
             );
     }
 
@@ -1817,7 +1818,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = [];
         // Get Notes
         if (isset($this->config['Holdings']['notes'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['notes']
             );
@@ -1827,7 +1828,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         // Get Summary (may be multiple lines)
-        $data = $this->getHoldingFields(
+        $data = $this->extractFieldsFromApiData(
             $holdings,
             isset($this->config['Holdings']['summary'])
             ? $this->config['Holdings']['summary']
@@ -1839,7 +1840,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Get Supplements
         if (isset($this->config['Holdings']['supplements'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['supplements']
             );
@@ -1850,7 +1851,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Get Indexes
         if (isset($this->config['Holdings']['indexes'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['indexes']
             );
@@ -1862,26 +1863,26 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
-     * Get fields from holdings according to the field spec.
+     * Get fields from holdings or bib API response according to the field spec.
      *
-     * @param array        $holdings   Holdings records
+     * @param array        $response   API response data
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
      * @return string|string[] Results as a string if single, array if multiple
      */
-    protected function getHoldingFields($holdings, $fieldSpecs)
+    protected function extractFieldsFromApiData($response, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
         }
         $result = [];
-        foreach ($holdings as $holding) {
+        foreach ($response as $row) {
             foreach ($fieldSpecs as $fieldSpec) {
                 $fieldCode = substr($fieldSpec, 0, 3);
                 $subfieldCodes = substr($fieldSpec, 3);
-                $fields = $holding['varFields'] ?? [];
+                $fields = $row['varFields'] ?? [];
                 foreach ($fields as $field) {
                     if (($field['marcTag'] ?? '') !== $fieldCode
                         && ($field['fieldTag'] ?? '') !== $fieldCode
