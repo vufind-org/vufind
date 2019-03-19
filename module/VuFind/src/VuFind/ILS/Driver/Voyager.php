@@ -873,7 +873,7 @@ EOT;
                     if ($subfields = $field->getSubfields()) {
                         $line = '';
                         foreach ($subfields as $code => $subfield) {
-                            if (!strstr($subfieldCodes, $code)) {
+                            if (false === strpos($subfieldCodes, $code)) {
                                 continue;
                             }
                             if ($line) {

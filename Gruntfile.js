@@ -74,6 +74,7 @@ module.exports = function(grunt) {
         }
       }
     },
+
     // Convert LESS to SASS, mostly for development team use
     lessToSass: {
       convert: {
@@ -102,65 +103,64 @@ module.exports = function(grunt) {
         ],
         options: {
           replacements: [
-            { // Replace ; in include with ,
-              pattern: /(\s+)@include ([^\(]+)\(([^\)]+)\);/gi,
-              replacement: function mixinCommas(match, space, $1, $2) {
-                return space + '@include ' + $1 + '(' + $2.replace(/;/g, ',') + ');';
+            // Activate SCSS
+            {
+              pattern: /\/\* #SCSS>/gi,
+              replacement: "/* #SCSS> */",
+              order: -1 // Do before anything else
+            },
+            {
+              pattern: /<#SCSS \*\//gi,
+              replacement: "/* <#SCSS */",
+              order: -1
+            },
+            // Deactivate LESS
+            {
+              pattern: /\/\* #LESS> \*\//gi,
+              replacement: "/* #LESS>",
+              order: -1
+            },
+            {
+              pattern: /\/\* <#LESS \*\//gi,
+              replacement: "<#LESS */",
+              order: -1
+            },
+            { // Change separator in @include statements
+              pattern: /@include ([^\(]+)\(([^\)]+)\);/gi,
+              replacement: function mixinCommas(match, $1, $2) {
+                return '@include ' + $1 + '(' + $2.replace(/;/g, ',') + ');';
               },
-              order: 3
+              order: 4 // after defaults included in less-to-sass
             },
             { // Remove unquote
-              pattern: /(\s+)unquote\("([^"]+)"\)/gi,
-              replacement: function mixinCommas(match, space, $1) {
-                return space + $1;
+              pattern: /unquote\("([^"]+)"\)/gi,
+              replacement: function ununquote(match, $1) {
+                return $1;
               },
-              order: 3
+              order: 4
             },
             { // Inline &:extends converted
               pattern: /&:extend\(([^\)]+)\)/gi,
               replacement: '@extend $1',
-              order: 3
-            },
-            { // Inline variables not default
-              pattern: / !default; }/gi,
-              replacement: '; }',
-              order: 3
-            },
-            {  // VuFind: Correct paths
-              pattern: 'vendor/bootstrap/bootstrap',
-              replacement: 'vendor/bootstrap',
               order: 4
             },
-            {
-              pattern: '$fa-font-path: "../../../fonts" !default;\n',
-              replacement: '',
+            { // Wrap variables in calcs with #{}
+              pattern: /calc\([^;]+/gi,
+              replacement: function calcVariables(match) {
+                return match.replace(/(\$[^ ]+)/gi, '#{$1}');
+              },
               order: 4
             },
-            {
-              pattern: '@import "vendor/font-awesome/font-awesome";',
-              replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/font-awesome";',
-              order: 4
-            },
-            { // VuFind: Bootprint fixes
-              pattern: '@import "bootstrap";\n@import "variables";',
-              replacement: '@import "variables", "bootstrap";',
-              order: 4
-            },
-            {
-              pattern: '$brand-primary: #619144 !default;',
-              replacement: '$brand-primary: #619144;',
-              order: 4
-            },
-			// Wrap calcs in {}
-            {
-              pattern: /calc\((\$[^ ]+)/g,
-              replacement: 'calc(#{$1}',
+            { // Remove !default from extends (icons.scss)
+              pattern: /@extend ([^;}]+) !default;/gi,
+              replacement: '@extend $1;',
               order: 5
-            },
+            }
           ]
         }
       }
     },
+
     watch: {
       options: {
         atBegin: true

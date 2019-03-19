@@ -1485,23 +1485,5 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * }
      */
 
-    /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ================== */
-
-    /**
-     * @param array $cancelDetails An associative array with two keys:
-     *                  patron  (array returned by the driver's patronLogin method)
-     *                  details (array returned by the driver's getCancelHoldDetails)
-     *
-     * @return array count – The number of items successfully cancelled
-     *               items – Associative array where keyed by item_id (getMyHolds)
-     *                    success – Boolean true or false
-     *                    status – A status message from the language file (required)
-     *                    sysMessage - A system supplied failure message (optional)
-     * /
-     * public function cancelHolds($cancelDetails) {
-     * // https://developers.exlibrisgroup.com/alma/apis/users
-     * // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
-     * }
-     */
     // @codingStandardsIgnoreEnd
 }

@@ -2662,7 +2662,7 @@ EOT;
             return $data;
         }
 
-        if (strstr($patron['id'], '.') === false) {
+        if (strpos($patron['id'], '.') === false) {
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
