@@ -116,22 +116,8 @@ class Database extends \VuFind\Auth\Database
 
 
     public function authenticate($request)
-
     {
-        // Make sure the credentials are non-blank:
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
-        if ($this->username == '' || $this->password == '') {
-            throw new AuthException('authentication_error_blank');
-        }
-
-        // Validate the credentials:
-        $user = $this->getUserTable()->getByUsername($this->username, false);
-        if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
-            throw new AuthException('authentication_error_invalid');
-        }
-
-        // If we got this far, the login was successful:
+        $user = parent::authenticate($request);
         $this->updateUserType($user->id);
         return $user;
     }
