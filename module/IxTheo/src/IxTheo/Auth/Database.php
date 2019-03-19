@@ -10,15 +10,13 @@ class Database extends \VuFind\Auth\Database
     public static $titles = ["B.A.", "M.A.", "M.Div.", "Dipl. Theol.", "Dr.", "Ph.D.", "Th.D.", "Prof.", "Lic. theol.", "Lic. iur. can.", "Student", "Other", ""];
 
     /**
-     * Create a new user account from the request.
+     * Collect parameters from request and populate them.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
-     * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return string[]
      */
-    public function create($request, $user = null, $ixTheoUser = null)
+    protected function collectParamsFromRequest($request)
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -32,50 +30,27 @@ class Database extends \VuFind\Auth\Database
             $params[$param] = $request->getPost()->get($param, $default);
         }
 
-        // Validate Input
-        $this->validateUsernameAndPassword($params);
+        return $params;
+    }
 
-        // Invalid Email Check
-        $validator = new \Zend\Validator\EmailAddress();
-        if (!$validator->isValid($params['email'])) {
-            throw new AuthException('Email address is invalid');
-        }
-        if (!$this->emailAllowed($params['email'])) {
-            throw new AuthException('authentication_error_creation_blocked');
-        }
-
-        // Make sure we have a unique username
-        $table = $this->getUserTable();
-        if ($table->getByUsername($params['username'], false)) {
-            throw new AuthException('That username is already taken');
-        }
-        // Make sure we have a unique email
-        if ($table->getByEmail($params['email'])) {
-            throw new AuthException('That email address is already used');
-        }
-
-        // If we got this far, we're ready to create the account:
-        if (is_null($user)) {
-            $user = $table->createRowForUsername($params['username']);
-        }
-        $user->firstname = $params['firstname'];
-        $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
+    /**
+     * Create a user row object from given parametes.
+     *
+     * @param string[]  $params Parameters returned from collectParamsFromRequest()
+     * @param UserTable $table  The VuFind user table
+     *
+     * @return \VuFind\Db\Row\User A user row object
+     */
+    protected function createUserFromParams($params, $table)
+    {
+        $user = parent::createUserFromParams($params, $table);
         $user->save();
 
-        if (!isset($ixTheoUser)) {
-            $ixTheoUser = $this->getDbTableManager()->get('IxTheoUser')->getNew($user->id);
-        }
+        $ixTheoUser = $this->getDbTableManager()->get('IxTheoUser')->getNew($user->id);
         $this->updateIxTheoUser($params, $user, $ixTheoUser);
 
-	// Update the TAD access flag:
-	exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
+        // Update the TAD access flag:
+        exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
 
         return $user;
     }
