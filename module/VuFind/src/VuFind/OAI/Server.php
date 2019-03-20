@@ -273,6 +273,8 @@ class Server
     /**
      * Get the current UTC date/time in ISO 8601 format.
      *
+     * @param string $time Time string to represent as UTC (default = 'now')
+     *
      * @return string
      */
     protected function getUTCDateTime($time = 'now')
