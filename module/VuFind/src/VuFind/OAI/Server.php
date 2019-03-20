@@ -279,8 +279,8 @@ class Server
     {
         // All times must be in UTC, so translate the current time to the
         // appropriate time zone:
-        $now = new \DateTime($time, new \DateTimeZone('UTC'));
-        return date_format($now, $this->iso8601);
+        $utc = new \DateTime($time, new \DateTimeZone('UTC'));
+        return date_format($utc, $this->iso8601);
     }
 
     /**
