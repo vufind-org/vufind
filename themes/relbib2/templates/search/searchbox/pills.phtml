@@ -1,1 +1,71 @@
-../../../../tuefind2/templates/search/searchbox/pills.phtml
+<?
+// Set default value if necessary:
+if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+}
+
+// Load search actions and settings (if any):
+$options = $this->searchOptions($this->searchClassId);
+$handlers = $this->searchbox()->getHandlers(
+    $this->searchClassId,
+    isset($this->searchIndex) ? $this->searchIndex : null
+);
+$handlerCount = count($handlers);
+$basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+$searchHome = $options->getSearchHomeAction();
+$advSearch = $options->getAdvancedSearchAction();
+$lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+$lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+$ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+$ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+$hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
+if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+    $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+    if (empty($hiddenFilters)) {
+        $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
+    }
+}
+$hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+?>
+<ul class="nav nav-pills">
+    <li>
+        <a href="<?= $this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>"
+           class="btn btn-link" role="button"
+           rel="nofollow"><?= $this->transEsc("Advanced Search") ?></a>
+    </li>
+
+    <li class="dropdown">
+        <a class="btn btn-light dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <?= $this->transEsc('Browse') ?>
+            <span class="caret"></span>
+        </a>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <!-- IxTheo-specific keywordchainsearch is skipped here -->
+            <li><a class="dropdown-item" href="<?= $this->url('browse-home') ?>"><?= $this->transEsc('Browse the Catalog') ?></a></li>
+            <li><a class="dropdown-item" href="<?= $this->url('alphabrowse-home') ?>"><?= $this->transEsc('Browse Alphabetically') ?></a></li>
+        </ul>
+    </li>
+
+    <li>
+        <a href="<?=$this->url('search-history')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('Search History')?></a>
+    </li>
+
+    <li>
+        <a href="<?=$this->url('search-newitem')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('New Items')?></a>
+    </li>
+    <li>
+        <a href="<?=$this->url('help-home')?>?topic=search"
+           class="btn btn-light" role="button" data-lightbox=""
+           rel="nofollow"><?= $this->transEsc('Search Tips') ?></a>
+    </li>
+</ul>
