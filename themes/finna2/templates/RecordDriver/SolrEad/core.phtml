@@ -97,9 +97,11 @@
       <?/* Display Main Details */?>
       <?php
         $formatter = $this->recordDataFormatter();
-        $coreFields = $formatter->getData(
-            $driver, $formatter->filterEADFields($formatter->getDefaults('core'))
-        );
+        $coreFields = $formatter->getDefaults('core');
+        $coreFields = $driver->getRecordType() === 'ead3'
+            ? $formatter->filterEAD3Fields($coreFields)
+            : $formatter->filterEADFields($coreFields);
+        $coreFields = $formatter->getData($driver, $coreFields);
       ?>
       <?php if (!empty($coreFields)): ?>
         <table class="table table-finna-record record-details">

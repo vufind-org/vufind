@@ -136,6 +136,20 @@ finna.record = (function finnaRecord() {
     VuFind.lightbox.bind($('.holdings-tab'));
   }
 
+  function setupLocationsEad3Tab() {
+    $('.holdings-container-heading').click(function onClickHeading() {
+      $(this).nextUntil('.holdings-container-heading').toggleClass('collapsed');
+      if ($('.location .fa', this).hasClass('fa-arrow-down')) {
+        $('.location .fa', this).removeClass('fa-arrow-down');
+        $('.location .fa', this).addClass('fa-arrow-right');
+      }
+      else {
+        $('.location .fa', this).removeClass('fa-arrow-right');
+        $('.location .fa', this).addClass('fa-arrow-down');
+      }
+    });
+  }
+
   function initRecordNaviHashUpdate() {
     $(window).on('hashchange', function onHashChange() {
       $('.pager a').each(function updateHash(i, a) {
@@ -269,12 +283,48 @@ finna.record = (function finnaRecord() {
       });
   }
 
+  function initAuthorityInfo()
+  {
+    $('div.authority').each(function initAuthority() {
+      var $authority = $(this);
+      $authority.find('a.show-info').click(function onClickShowInfo() {
+        var $authorityInfo = $authority.find('.authority-info .content');
+        if (!$authority.hasClass('loaded')) {
+          $authority.addClass('loaded');
+          $.getJSON(
+            VuFind.path + '/AJAX/JSON',
+            {
+              method: 'getAuthorityInfo',
+              id: $authority.data('authority'),
+              type: $authority.data('type'),
+              source: $authority.data('source')
+            }
+          )
+            .done(function onGetAuthorityInfoDone(response) {
+              $authorityInfo.html(typeof response.data.html !== 'undefined' ? response.data.html : '--');
+            })
+            .fail(function onGetAuthorityInfoFail() {
+              $authorityInfo.text(VuFind.translate('error_occurred'));
+            });
+        }
+        $authority.addClass('open');
+        return false;
+      });
+
+      $authority.find('a.hide-info').click(function onClickHideInfo() {
+        $authority.removeClass('open');
+        return false;
+      });
+    });
+  }
+
   function init() {
     initHideDetails();
     initDescription();
     initRecordNaviHashUpdate();
     initRecordAccordion();
     initAudioAccordion();
+    initAuthorityInfo();
     applyRecordAccordionHash(initialToggle);
     $(window).on('hashchange', applyRecordAccordionHash);
     loadSimilarRecords();
@@ -283,7 +333,8 @@ finna.record = (function finnaRecord() {
   var my = {
     checkRequestsAreValid: checkRequestsAreValid,
     init: init,
-    setupHoldingsTab: setupHoldingsTab
+    setupHoldingsTab: setupHoldingsTab,
+    setupLocationsEad3Tab: setupLocationsEad3Tab
   };
 
   return my;

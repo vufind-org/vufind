@@ -1,8 +1,20 @@
 <?php //Don't add START and END comments ?>
-<?php if(!empty($data)): ?>
+<?php if (!empty($data)): ?>
 <div class="truncate-field">
-  <?php foreach ($data as $index => $author): ?>
-    <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
+  
+  <?php
+    foreach ($data as $index => $author): ?>
+    <?php
+      $url = $this->record($this->driver)->getLink('author', $author['name']);
+      $label = $this->escapeHtml($author['name']);
+      $authorityLink = null;
+      if (!empty($author['id'])) {
+        $authorityLink = $this->authority()->link(
+          $url, $label, $author['id'], $author['type'], $this->driver
+        );
+      }
+    ?>
+    <?php if (!empty($authorityLink)): ?><?=$authorityLink?><?php else: ?><?=($index > 0 ? '<br/> ' : '')?><?=$this->record($this->driver)->renderTemplate('data-contributors-single.phtml', ['author' => $author])?><?php endif; ?>
   <?php endforeach; ?>
 </div>
 <?php endif; ?>

@@ -74,7 +74,7 @@
     <?php
       $formatter = $this->recordDataFormatter();
       $coreFields = $formatter->getData(
-          $driver, $formatter->filterCollectionFields($formatter->getDefaults('core'))
+          $driver, $formatter->filterCollectionFields($formatter->getDefaults('core'), $driver->getRecordType())
       );
     ?>
     <?php if (!empty($coreFields)): ?>

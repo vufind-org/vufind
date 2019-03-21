@@ -3,19 +3,14 @@
   <div class="truncate-field">
     <?php if (!empty($data['credited'])): ?>
       <?php foreach ($data['credited'] as $index => $author): ?>
-        <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?>
-        <?php if (!empty($author['description'])): ?>
-          <span class="author-description"> (<?=$this->escapeHtml($author['description'])?>)</span>
-        <?php endif; ?>
+        <?=($index > 0 ? '<br/> ' : '')?><?=$this->record($this->driver)->renderTemplate('data-contributors-single.phtml', ['author' => $author])?>
       <?php endforeach; ?>
     <?php endif; ?>
     <?php if (!empty($data['uncredited'])): ?>
       <div class="subheading"><?=$this->translate("Uncredited")?></div>
-      <?php foreach ($data['uncredited'] as $index => $author): ?>
-        <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?>
-        <?php if (!empty($author['description'])): ?>
-          <span class="author-description"> (<?=$this->escapeHtml($author['description'])?>)</span>
-        <?php endif; ?>
+      <?php
+      foreach ($data['uncredited'] as $index => $author): ?>
+        <?=($index++ > 0 ? '<br/> ' : '')?><?=$this->record($this->driver)->renderTemplate('data-contributors-single.phtml', ['author' => $author])?>
       <?php endforeach; ?>
     <?php endif; ?>
   </div>

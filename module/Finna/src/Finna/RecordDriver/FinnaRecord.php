@@ -39,6 +39,13 @@ namespace Finna\RecordDriver;
 trait FinnaRecord
 {
     /**
+     * Preferred language for display strings
+     *
+     * @var string
+     */
+    protected $preferredLanguage = null;
+
+    /**
      * Get inappropriate comments for this record reported by the given user.
      *
      * @param object $userId Reporter ID
@@ -103,5 +110,17 @@ trait FinnaRecord
             return $current->saved;
         }
         return null;
+    }
+
+    /**
+     * Set preferred language for display strings.
+     *
+     * @param string $language Language
+     *
+     * @return void
+     */
+    public function setPreferredLanguage($language)
+    {
+        $this->preferredLanguage = $language;
     }
 }

@@ -1131,6 +1131,7 @@ hide_holdings[] = "World Wide Web"
 ;
 ; Available options:
 ;    Editions - Alternate editions (in the Solr index) based on WorldCat lookup
+;    RecordDriverRelated - Related records based on RecordDriver metadata
 ;    Similar - Similarity based on Solr lookup
 ;    SimilarDeferred - Like Similar but asynchronous
 ;    WorldCatEditions - Alternate editions (in the WorldCat index) based on WorldCat
@@ -1488,3 +1489,9 @@ en-gb['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.ht
 [FinnaSurvey]
 enabled = false
 url = "https://my.surveypal.com/Finnasurvey"
+
+; Authority info
+[Authority]
+; Authority support is disabled by default. Uncomment the following line to enable
+; it.
+;enabled = true

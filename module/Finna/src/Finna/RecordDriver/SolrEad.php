@@ -48,13 +48,7 @@ namespace Finna\RecordDriver;
 class SolrEad extends \VuFind\RecordDriver\SolrDefault
 {
     use SolrFinna;
-
-    /**
-     * Record metadata
-     *
-     * @var \SimpleXMLElement
-     */
-    protected $simpleXML;
+    use XmlReaderTrait;
 
     /**
      * Constructor
@@ -80,7 +74,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     public function getAccessRestrictions()
     {
         $origination = $this->getOrigination();
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         if ($origination == 'Kotimaisten kielten keskus') {
             return isset($record->userestrict->p)
                 ? $record->userestrict->p : [];
@@ -102,7 +96,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAccessRestrictionsType($language)
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         if (!isset($record->accessrestrict)) {
             return false;
         }
@@ -139,7 +133,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
         $result = [];
         // All images have same rights..
         $rights = $this->getImageRights($language, true);
-        foreach ($this->getSimpleXML()->xpath('did/daogrp') as $daogrp) {
+        foreach ($this->getXmlRecord()->xpath('did/daogrp') as $daogrp) {
             $urls = [];
             foreach ($daogrp->daoloc as $daoloc) {
                 $attributes = $daoloc->attributes();
@@ -198,7 +192,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getBibliographyNotes()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         $bibliography = [];
         foreach ($record->xpath('//bibliography') as $node) {
             // Filter out Portti links since they're displayed in links
@@ -219,7 +213,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getFindingAids()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         $findingAids = [];
         if (isset($this->record->otherfindaid->p)) {
             foreach ($this->record->otherfindaid->p as $p) {
@@ -236,7 +230,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getIdentifier()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         $id = isset($record->did->unitid->attributes()->{'identifier'})
             ? (string)$record->did->unitid->attributes()->{'identifier'}
             : (string)$record->did->unitid;
@@ -314,7 +308,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getOrigination()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         return isset($record->did->origination)
             ? (string)$record->did->origination->corpname : '';
     }
@@ -326,7 +320,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getOriginationId()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         return isset($record->did->origination->corpname)
             ? (string)$record->did->origination->corpname
                 ->attributes()->authfilenumber
@@ -340,7 +334,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getPhysicalLocations()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         $locations = [];
         if (isset($record->did->physloc)) {
             foreach ($record->did->physloc as $physloc) {
@@ -437,7 +431,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getUnitID()
     {
-        $unitId = $this->getSimpleXML()->xpath('did/unitid');
+        $unitId = $this->getXmlRecord()->xpath('did/unitid');
         if (count($unitId)) {
             return (string)$unitId[0];
         }
@@ -462,7 +456,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     {
         $urls = [];
         $url = '';
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         foreach ($record->xpath('//daoloc') as $node) {
             $url = (string)$node->attributes()->href;
             $image = isset($node->attributes()->role) && in_array(
@@ -518,7 +512,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function isDigitized()
     {
-        $record = $this->getSimpleXML();
+        $record = $this->getXmlRecord();
         return $record->did->daogrp ? true : false;
     }
 
@@ -553,20 +547,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     public function setRawData($data)
     {
         parent::setRawData($data);
-        $this->simpleXML = null;
-    }
-
-    /**
-     * Get the original record as a SimpleXML object
-     *
-     * @return SimpleXMLElement The record as SimpleXML
-     */
-    protected function getSimpleXML()
-    {
-        if ($this->simpleXML === null) {
-            $this->simpleXML = simplexml_load_string($this->fields['fullrecord']);
-        }
-        return $this->simpleXML;
+        $this->lazyXmlRecord = null;
     }
 
     /**
@@ -604,7 +585,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     public function getUnitDate()
     {
-        $unitdate = $this->getSimpleXML()->xpath('did/unitdate');
+        $unitdate = $this->getXmlRecord()->xpath('did/unitdate');
         if (isset($unitdate[0])) {
             return (string)$unitdate[0];
         }

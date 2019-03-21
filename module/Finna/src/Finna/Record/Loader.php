@@ -46,6 +46,25 @@ use VuFindSearch\ParamBag;
 class Loader extends \VuFind\Record\Loader
 {
     /**
+     * Preferred language for display strings from RecordDriver
+     *
+     * @var string
+     */
+    protected $preferredLanguage;
+
+    /**
+     * Set preferred language for display strings from RecordDriver.
+     *
+     * @param string $language Language
+     *
+     * @return void
+     */
+    public function setPreferredLanguage($language)
+    {
+        $this->preferredLanguage = $language;
+    }
+
+    /**
      * Given an ID and record source, load the requested record object.
      *
      * @param string   $id              Record ID
@@ -90,6 +109,11 @@ class Loader extends \VuFind\Record\Loader
         if ($missingException) {
             throw $missingException;
         }
+
+        if ($this->preferredLanguage) {
+            $result->setPreferredLanguage($this->preferredLanguage);
+        }
+
         return $result;
     }
 

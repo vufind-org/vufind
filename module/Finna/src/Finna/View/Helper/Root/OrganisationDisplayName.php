@@ -51,11 +51,12 @@ class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
     {
         $translate = $this->getView()->plugin('translate');
 
-        $institutions = (array)$record->tryMethod('getInstitutions');
+        $locale = $translate->getTranslatorLocale();
+        $institutions = (array)$record->tryMethod('getInstitutions', [$locale]);
         $institution = reset($institutions);
 
         // Case 1: only one building level
-        $buildings = $record->tryMethod('getBuilding');
+        $buildings = $record->tryMethod('getBuilding', [$locale]);
         $building = $buildings[0] ?? '';
         $displayName = $translate($building);
 

@@ -46,6 +46,18 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for LocationsEad3 tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LocationsEad3
+     */
+    public static function getLocationsEad3(ServiceManager $sm)
+    {
+        return new LocationsEad3();
+    }
+
+    /**
      * Factory for Map tab plugin.
      *
      * @param ServiceManager $sm Service manager.

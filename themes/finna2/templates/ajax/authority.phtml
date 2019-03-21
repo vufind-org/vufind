@@ -1,0 +1,46 @@
+<!-- START of: finna - ajax/authority.phtml -->
+<?php
+  $formatter = $this->recordDataFormatter();
+  $coreFields = $formatter->getData($driver, $formatter->getDefaults('authority'));
+?>
+
+<?php $description = $driver->tryMethod('getDescription'); ?>
+<?php if (!empty($description)): ?>
+<div class="description"><?=$description?></div>
+<?php endif; ?>
+
+<?php if (!empty($coreFields)): ?>
+<table class="table table-finna-record record-details">
+  <?php foreach ($coreFields as $current): ?>
+    <tr class="<?=$current['context']['class'];?>"><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+  <?php endforeach; ?>
+</table>
+<?php endif; ?>
+
+<?php // NOTE: fullrecord outputted for debugging purposes. ?>
+<?php $rawFieldData = $this->driver->getRawData(); ?>
+<?php if (!empty($rawFieldData['fullrecord']) && strncmp($rawFieldData['fullrecord'], '<', 1) == 0): ?>
+<pre id="record-data" style="display: none;">
+<?php
+  $dom = new DOMDocument('1.0');
+  $dom->preserveWhiteSpace = false;
+  $dom->formatOutput = true;
+  if ($dom->loadXML($rawFieldData['fullrecord'])) {
+    echo $this->escapeHtml($dom->saveXML());
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
+    echo $this->inlineScript();
+    $script = <<<JS
+$(document).ready(function() {
+  $('#record-data').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+});
+JS;
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  } else {
+    echo $this->escapeHtml($rawFieldData['fullrecord']);
+  }
+?>
+<?php endif ?>
+</pre>
+<!-- END of: finna - ajax/authority.phtml -->
