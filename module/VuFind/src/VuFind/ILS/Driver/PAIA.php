@@ -1899,7 +1899,6 @@ class PAIA extends DAIA
         return false;
     }
 
-
     /**
      * PAIA support method for PAIA core method 'notifications'
      *
@@ -1917,24 +1916,29 @@ class PAIA extends DAIA
         }
 
         if ($this->paiaCacheEnabled) {
-            $cacheKey = $this->getCacheKey('notifications_'.$patron['cat_username']);
+            $cacheKey = $this->getCacheKey(
+                'notifications_' . $patron['cat_username']
+            );
             $response = $this->getCachedData($cacheKey);
-            if (!empty($response)) return $response;
+            if (!empty($response)) {
+                return $response;
+            }
         }
 
         try {
             $response = $this->paiaGetAsArray(
-                'core/'.$patron['cat_username'].'/notifications'
+                'core/' . $patron['cat_username'] . '/notifications'
             );
         } catch (\Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the excpetion
+            // all error handling is done in paiaHandleErrors
+            // so pass on the exception
             throw $e;
         }
 
         $response = $this->enrichNotifications($response);
 
         if ($this->paiaCacheEnabled) {
-            $this->putCachedData($cacheKey,$response);
+            $this->putCachedData($cacheKey, $response);
         }
 
         return $response;
@@ -1942,28 +1946,35 @@ class PAIA extends DAIA
 
     /**
      * Enriches PAIA notifications response with additional mappings
-     * @param array $notifications
+     *
+     * @param array $notifications list of PAIA notifications
+     *
+     * @return array list of enriched PAIA notifications
      */
-    protected function enrichNotifications(array $notifications) {
+    protected function enrichNotifications(array $notifications)
+    {
         // not yet implemented
         return $notifications;
     }
 
-
     /**
      * PAIA support method for PAIA core method DELETE 'notifications'
      *
-     * @param array $patron Array with patron information
-     * @param $messageId the PAIA service specific ID of the notification to remove
-     * @param $keepCache if set to TRUE the notification cache will survive the remote operation, this is used by
-     *  \VuFind\ILS\Driver\PAIA::paiaRemoveSystemMessages to avoid unnecessary cache operations
+     * @param array  $patron    Array with patron information
+     * @param string $messageId PAIA service specific ID
+     * of the notification to remove
+     * @param bool   $keepCache if set to TRUE the notification cache will survive
+     * the remote operation, this is used by
+     * \VuFind\ILS\Driver\PAIA::paiaRemoveSystemMessages
+     * to avoid unnecessary cache operations
      *
      * @return array|mixed Array of system notifications for the patron
      * @throws \Exception
      * @throws ILSException You are not entitled to read notifications
      */
-    protected function paiaRemoveSystemMessage($patron, $messageId, $keepCache = FALSE)
-    {
+    protected function paiaRemoveSystemMessage(
+        $patron, $messageId, $keepCache = false
+    ) {
         // check if user has appropriate scope
         if (!$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)) {
             throw new ILSException('You are not entitled to delete notifications.');
@@ -1971,42 +1982,53 @@ class PAIA extends DAIA
 
         try {
             $response = $this->paiaDeleteRequest(
-                'core/'.$patron['cat_username'].'/notifications/'.$this->getPaiaNotificationsId($messageId)
+                'core/'
+                . $patron['cat_username']
+                . '/notifications/'
+                . $this->getPaiaNotificationsId($messageId)
             );
         } catch (\Exception $e) {
-            // all error handling is done in paiaHandleErrors so pass on the excpetion
+            // all error handling is done in paiaHandleErrors
+            // so pass on the exception
             throw $e;
         }
 
         if (!$keepCache && $this->paiaCacheEnabled) {
-            $this->removeCachedData($this->getCacheKey('notifications_'.$patron['cat_username']));
+            $this->removeCachedData(
+                $this->getCacheKey('notifications_' . $patron['cat_username'])
+            );
         }
 
         return $response;
     }
 
     /**
-     * Removes multiple System Messages. Bulk deletion is not implemented in PAIA, so this method
-     * iterates over the set of IDs and removes them separately
-     * @param array $patron Array with patron information
-     * @param array $messageIds
-     * @return bool
+     * Removes multiple System Messages. Bulk deletion is not implemented in PAIA,
+     * so this method iterates over the set of IDs and removes them separately
+     *
+     * @param array $patron     Array with patron information
+     * @param array $messageIds list of PAIA service specific IDs
+     * of the notifications to remove
+     *
+     * @return bool TRUE if all messages have been successfully removed,
+     * otherwise FALSE
      * @throws ILSException
      */
-    protected function paiaRemoveSystemMessages($patron,array $messageIds) {
-
+    protected function paiaRemoveSystemMessages($patron, array $messageIds)
+    {
         foreach ($messageIds as $messageId) {
-            if (!$this->paiaRemoveSystemMessage($patron,$messageId,TRUE))
-            {
-                return FALSE;
+            if (!$this->paiaRemoveSystemMessage($patron, $messageId, true)) {
+                return false;
             }
         }
 
         if ($this->paiaCacheEnabled) {
-            $this->removeCachedData($this->getCacheKey('notifications_'.$patron['cat_username']));
+            $this->removeCachedData(
+                $this->getCacheKey('notifications_' . $patron['cat_username'])
+            );
         }
 
-        return TRUE;
+        return true;
     }
 
     /**
@@ -2020,7 +2042,7 @@ class PAIA extends DAIA
      */
     protected function paiaDeleteRequest($file, $access_token = null)
     {
-        if (is_null($access_token)) {
+        if (null === $access_token) {
             $access_token = $this->getSession()->access_token;
         }
 
@@ -2047,9 +2069,9 @@ class PAIA extends DAIA
                 'HTTP status ' . $result->getStatusCode() .
                 ' received'
             );
-            return FALSE;
+            return false;
         }
         // return TRUE on success
-        return TRUE;
+        return true;
     }
 }
