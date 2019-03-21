@@ -17,7 +17,7 @@
   <div class="imagepopup-container">
     <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>">
       <div id="leaflet-map-image" class="image-wrapper" data-large-image-layout="<?=$largeImageLayout?>" data-enable-image-popup-zoom="<?=$enableImagePopupZoom?>" >
-      <?php if (! $enableImagePopupZoom): ?>
+      <?php if (! $enableImagePopupZoom || ! $largeImageLayout): ?>
         <img src="<?=$largeImage?>" />
       <?php endif; ?>
       <?php if ($largeImageLayout && $enableImagePopupZoom): ?>
