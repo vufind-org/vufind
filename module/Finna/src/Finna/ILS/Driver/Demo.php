@@ -95,7 +95,8 @@ class Demo extends \VuFind\ILS\Driver\Demo
             $fines[0]['fine'] = 'Accrued Fine';
         }
         $fines = $this->markOnlinePayableFines($fines);
-        $this->session->fines = $fines;
+        $session = $this->getSession($patron['id'] ?? null);
+        $session->fines = $fines;
         return $fines;
     }
 
@@ -193,10 +194,11 @@ class Demo extends \VuFind\ILS\Driver\Demo
             throw new ILSException('online_payment_registration_failed');
         }
 
-        if (isset($this->session->fines)) {
-            foreach ($this->session->fines as $key => $fine) {
+        $session = $this->getSession($patron['id'] ?? null);
+        if (isset($session->fines)) {
+            foreach ($session->fines as $key => $fine) {
                 if ($fine['payableOnline']) {
-                    unset($this->session->fines[$key]);
+                    unset($session->fines[$key]);
                 }
             }
         }
