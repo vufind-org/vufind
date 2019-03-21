@@ -360,21 +360,6 @@ class Transaction extends \VuFind\Db\Table\Gateway
     }
 
     /**
-     * Update transaction status to unkwnown payment response.
-     *
-     * @param string $transactionId Transaction ID.
-     * @param string $msg           Message
-     *
-     * @return boolean success
-     */
-    public function setTransactionUnknownPaymentResponse($transactionId, $msg)
-    {
-        return $this->updateTransactionStatus(
-            $transactionId, false, 'unknown_response', $msg
-        );
-    }
-
-    /**
      * Updates transaction status.
      *
      * @param string   $transactionId Transaction ID.

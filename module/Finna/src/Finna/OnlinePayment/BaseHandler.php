@@ -263,20 +263,6 @@ abstract class BaseHandler implements OnlinePaymentHandlerInterface,
     }
 
     /**
-     * Set transaction unknown response.
-     *
-     * @param string $orderNum Transaction ID.
-     * @param string $status   Message.
-     *
-     * @return void
-     */
-    protected function setTransactionUnknownResponse($orderNum, $status)
-    {
-        $table = $this->getTable('transaction');
-        $table->setTransactionUnknownPaymentResponse($orderNum, $status);
-    }
-
-    /**
      * Get product code mappings from configuration
      *
      * @return array
