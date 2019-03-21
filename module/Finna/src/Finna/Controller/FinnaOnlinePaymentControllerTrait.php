@@ -113,8 +113,8 @@ trait FinnaOnlinePaymentControllerTrait
     /**
      * Support for handling online payments.
      *
-     * @param object    $patron Patron.
-     * @param array     $fines  Listing of fines.
+     * @param array     $patron Patron
+     * @param array     $fines  Listing of fines
      * @param ViewModel $view   View
      *
      * @return void
