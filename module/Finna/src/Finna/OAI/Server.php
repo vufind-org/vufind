@@ -41,6 +41,22 @@ namespace Finna\OAI;
 class Server extends \VuFind\OAI\Server
 {
     /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Search manager for
+     * retrieving records
+     * @param \VuFind\Record\Loader                $loader  Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results,
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables
+    ) {
+        parent::__construct($results, $loader, $tables);
+
+        $this->pageSize = 1000;
+    }
+
+    /**
      * Initialize data about metadata formats. (This is called on demand and is
      * defined as a separate method to allow easy override by child classes).
      *
