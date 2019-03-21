@@ -8,6 +8,12 @@ host = "https://sandbox.iii.com/iii/sierra-api"
 client_key = ""
 ; Sierra API client secret
 client_secret = ""
+; Sierra API version available. Functionality requiring a specific minimum version:
+;   5 (default):
+;     - last pickup date for holds
+;   5.1 (technically still v5 but added in a later revision):
+;     - summary holdings information (especially for serials)
+api_version = 5.1
 ; Timeout for HTTP requests
 http_timeout = 30
 ; Redirect URL entered in Sierra for the patron-specific authentication (does not
