@@ -136,12 +136,15 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
         if (!$handler) {
             $this->logError(
                 'Error processing payment: could not initialize payment'
-                . " handler $handlerName"
+                . " handler $driver"
             );
             return ['success' => false];
         }
 
         $params = $handler->getPaymentResponseParams($request);
+        if (false === $params) {
+            return ['success' => false];
+        }
         $transactionId = $params['transaction'];
 
         if (!$t = $this->transactionTable->getTransaction($transactionId)) {
@@ -180,9 +183,11 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 $userCard['cat_username'], $userCard->getCatPassword()
             );
         } catch (\Exception $e) {
-            $this->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
         }
 
+        // Process the payment request regardless of whether patron login succeeds to
+        // update the status properly
         $res = $handler->processResponse($request);
 
         if (!$patron) {
@@ -207,7 +212,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
             $fines = $this->ils->getMyFines($patron);
             $finesAmount = $this->ils->getOnlinePayableAmount($patron, $fines);
         } catch (\Exception $e) {
-            $this->logException($e);
+            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
             return ['success' => false];
         }
 
@@ -243,7 +248,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 'Payment registration error (patron ' . $patron['id'] . '): '
                 . $e->getMessage()
             );
-            $this->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
 
             $result = $this->transactionTable->setTransactionRegistrationFailed(
                 $tId, $e->getMessage()
