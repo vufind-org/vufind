@@ -236,6 +236,10 @@ Title:
     DismaxFields:
       - title_full_unstemmed^450
 
+TitleStart:
+  DismaxFields:
+    - title_txtP_l^1000
+
 Series:
   DismaxFields:
     - series^100
