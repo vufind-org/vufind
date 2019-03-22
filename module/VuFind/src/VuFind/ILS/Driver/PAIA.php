@@ -121,7 +121,7 @@ class PAIA extends DAIA
     const SCOPE_READ_ITEMS = 'read_items';
     const SCOPE_WRITE_ITEMS = 'write_items';
     const SCOPE_CHANGE_PASSWORD = 'change_password';
-    const SCOPE_READ_NOTIFICATIOS = 'read_notifications';
+    const SCOPE_READ_NOTIFICATIONS = 'read_notifications';
     const SCOPE_DELETE_NOTIFICATIONS = 'delete_notifications';
 
     /**
@@ -1911,7 +1911,7 @@ class PAIA extends DAIA
     protected function paiaGetSystemMessages($patron)
     {
         // check if user has appropriate scope
-        if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIOS)) {
+        if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)) {
             throw new ILSException('You are not entitled to read notifications.');
         }
 
