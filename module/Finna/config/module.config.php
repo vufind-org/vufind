@@ -331,6 +331,8 @@ $config = [
                         'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
                     'Finna\AjaxHandler\RegisterOnlinePayment' =>
                         'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
+                    'Finna\AjaxHandler\SystemStatus' =>
+                        'VuFind\AjaxHandler\SystemStatusFactory'
                 ],
                 'aliases' => [
                     'addToList' => 'Finna\AjaxHandler\AddToList',
@@ -361,6 +363,7 @@ $config = [
                     'VuFind\AjaxHandler\GetACSuggestions' => 'Finna\AjaxHandler\GetACSuggestions',
                     'VuFind\AjaxHandler\GetFacetData' => 'Finna\AjaxHandler\GetFacetData',
                     'VuFind\AjaxHandler\GetSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
+                    'VuFind\AjaxHandler\SystemStatus' => 'Finna\AjaxHandler\SystemStatus',
                 ]
             ],
             'auth' => [
