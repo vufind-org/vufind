@@ -87,7 +87,7 @@ function registerAjaxCommentRecord(context) {
     context = document;
   }
   // Form submission
-  $(document).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
