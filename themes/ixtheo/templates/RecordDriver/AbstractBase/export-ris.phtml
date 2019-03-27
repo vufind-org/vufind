@@ -13,7 +13,12 @@ if ($marcProceedingsField) {
 } else if ($marcPhdField) {
     $format = 'THES';
 } else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
-    $format = 'JOUR';
+    // Possibly the superior work is a book although all the above criteria match
+    $superior_formats = $this->driver->tryMethod('getSuperiorFormats');
+    if (!empty($superior_formats) && in_array('Book', $superior_formats))
+        $format = 'BOOK';
+    else
+        $format = 'JOUR';
 } else if (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'JFULL';
 } else {

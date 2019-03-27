@@ -147,6 +147,31 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $recordLoader->load($ppn, 'Solr', false);
     }
 
+
+    public function getSuperiorPPN() {
+        return isset($this->fields['superior_ppn']) ?
+            $this->fields['superior_ppn'][0] : '';
+    }
+
+
+    public function getSuperiorRecord() {
+       $superior_ppn = $this->getSuperiorPPN();
+       if (empty($superior_ppn))
+           return NULL;
+       return $this->getRecordDriverByPPN($superior_ppn);
+    }
+
+
+    public function getSuperiorFormats()
+    {
+        $superior_record = $this->getSuperiorRecord();
+        if ($superior_record == NULL) {
+            return '';
+        }
+        return $superior_record->getFormats();
+    }
+
+
     /**
      * Get the record ID of the current record.
      *
