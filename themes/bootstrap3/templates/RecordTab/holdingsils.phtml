@@ -10,7 +10,8 @@
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
     try {
-        $holdings = $this->driver->getRealTimeHoldings();
+        $page = $this->tab->getCurrentPage();
+        $holdings = $this->driver->getRealTimeHoldings($page);
     } catch (\VuFind\Exception\ILS $e) {
         $holdings = ['holdings' => []];
         $offlineMode = 'ils-offline';
@@ -118,7 +119,9 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-
+<?php if ($paginator = $this->tab->getPaginator()): ?>
+	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $page])?>
+<?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>
   <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>

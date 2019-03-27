@@ -102,12 +102,14 @@ trait IlsAwareTrait
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
+     * @param int $page The number of the current page of the item paginator
+     *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings($page = null)
     {
         return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->tryMethod('getConsortialIDs')
+            $this->getUniqueID(), $this->tryMethod('getConsortialIDs'), $page
         ) : [];
     }
 

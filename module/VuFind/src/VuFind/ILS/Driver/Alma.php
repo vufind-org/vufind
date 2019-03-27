@@ -67,6 +67,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected $dateConverter;
 
     /**
+     * Total number of items returned by the API in getHolding
+     *
+     * @var int
+     */
+    protected $totalItemCount = 0;
+
+    /**
      * Configuration loader
      *
      * @var \VuFind\Config\PluginManager
@@ -238,6 +245,17 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * Get the total number of items for a bibliographic record. The number is set in
+     * the getHolding function.
+     *
+     * @return int
+     */
+    public function getTotalItemCount()
+    {
+        return $this->totalItemCount;
+    }
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -245,6 +263,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
+     * @param int    $page   The selected page number of the item paginator (if
+     *                       available)
      *
      * @return array         On success an associative array with the following keys:
      *                       id, source, availability (boolean), status, location,
@@ -252,19 +272,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *                       barcode, item_notes, item_id, holding_id, addLink,
      *                       description.
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, $page = null)
     {
         $results = [];
         $copyCount = 0;
         $username = $patron['cat_username'] ?? null;
         $itemLimit = $this->getItemLimit();
+        $page = $page ?? 1;
+        $offset = ($page * $itemLimit) - $itemLimit;
 
-        // The path for the API call. We call "ALL" available items. The "limit"
-        // tells the API how many items should be returned by the call.
+        // The path for the API call. We call "ALL" available items, but not at once.
+        // The "limit" tells the API how many items should be returned by the call
+        // at once (e. g. 10). The "offset" defines the range (e. g. get items 30 to
+        // 40). With these parameters we are able to use a paginator for paging
+        // through many items.
         $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='
-            . $itemLimit . '&order_by=library,location,enum_a,enum_b&direction=desc';
+            . $itemLimit . '&offset=' . $offset
+            . '&order_by=library,location,enum_a,enum_b&direction=desc';
 
         if ($items = $this->makeRequest($itemsPath)) {
+            // Get the total number of items returned from the API call and set it to
+            // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+            // the items paginator.
+            $this->totalItemCount = (int)$items->attributes()->total_record_count;
+
             foreach ($items->item as $item) {
                 $number = ++$copyCount;
                 $holdingId = (string)$item->holding_data->holding_id;
