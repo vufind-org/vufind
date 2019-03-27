@@ -83,18 +83,6 @@ class SolrMarc extends SolrDefault
         return array_unique($fields_array);
     }
 
-    public function getSuperiorRecord() {
-        $_773_field = $this->getMarcRecord()->getField("773");
-        if (!$_773_field)
-            return NULL;
-        $subfields = $this->getSubfieldArray($_773_field, ['w'], /* $concat = */false);
-        if (!$subfields)
-            return NULL;
-        $ppn = substr($subfields[0], 8);
-        if (!$ppn || strlen($ppn) != 9)
-            return NULL;
-        return $this->getRecordDriverByPPN($ppn);
-    }
 
     public function isAvailableInTubingenUniversityLibrary() {
         $ita_fields = $this->getMarcRecord()->getFields("ITA");
