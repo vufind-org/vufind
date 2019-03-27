@@ -150,7 +150,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getSuperiorPPN() {
         return isset($this->fields['superior_ppn']) ?
-            $this->fields['superior_ppn'] : '';
+            $this->fields['superior_ppn'][0] : '';
     }
 
 
@@ -158,15 +158,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
        $superior_ppn = $this->getSuperiorPPN();
        if (empty($superior_ppn))
            return NULL;
-       $superior_record = $this->getRecordDriverByPPN($superior_ppn);
+       return $this->getRecordDriverByPPN($superior_ppn);
     }
 
 
     public function getSuperiorFormats()
     {
         $superior_record = $this->getSuperiorRecord();
-        if ($superior_record == NULL)
-            return NULL;
+        if ($superior_record == NULL) {
+            return '';
+        }
         return $superior_record->getFormats();
     }
 
