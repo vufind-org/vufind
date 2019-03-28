@@ -88,12 +88,12 @@
 <?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
   <?php if ($showLibraryTabs): ?>
     <li class="menu-header hidden-xs hidden-sm">
-      <h4>
+      <h1>
         <?= $this->transEsc('Your Account') ?>
         <?php if (!$this->translationEmpty('tooltip_myaccount_html')): ?>
           <span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?= $this->transEsc("tooltip_myaccount_html") ?>"><i class="fa fa-info-big"></i></span>
         <?php endif; ?>
-      </h4>
+      </h1>
     </li>
     <?php $loansActive = $this->active == 'checkedout' || $this->active == 'historicLoans' || $this->active == 'holds' || $this->active == 'storageRetrievalRequests' || $this->active == 'ILLRequests'; ?>
     <li role="menuitem" class="dropdown hidden-xs hidden-sm <?= $loansActive ? ' active' : ''?>">

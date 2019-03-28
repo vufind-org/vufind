@@ -5,13 +5,13 @@
    $recordType = $this->driver->tryMethod('getRecordType');
 ?>
 <div class="recordProvidedBy">
-  <h4 class="record-organisation-header">
+  <h1 class="record-organisation-header">
     <?php if ($mergedData && count($mergedData['records']) > 1): ?>
       <?=$this->transEsc('material_provided_by_multiple', ['%%count%%' => count($mergedData['records'])])?>
     <?php else: ?>
       <?=$this->transEsc('material_provided_by_single')?>
     <?php endif; ?>
-  </h4>
+  </h1>
   <div class="record-organisation-box">
      <ul class="<?=(!in_array($recordType, ['ead', 'lido', 'qdc', 'forward'])) ? 'list-group organisations' : 'record-type organisations'?>">
         <?php if ($currentSource == "narc" && $recordType == 'ead'): ?>
