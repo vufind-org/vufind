@@ -705,7 +705,7 @@ finna.layout = (function finnaLayout() {
             youtube_short: {
               index: 'youtu.be/',
               id: 'youtu.be/',
-              src: '//www.youtube.com/embed/%id%?autoplay=1'
+              src: '//www.youtube-nocookie.com/embed/%id%?autoplay=0'
             }
           }
         },
