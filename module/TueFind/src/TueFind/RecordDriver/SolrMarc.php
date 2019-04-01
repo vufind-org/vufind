@@ -4,14 +4,14 @@ namespace TueFind\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
-    const SCHEME_PREFIX_GND = '(DE-588)';
-    const SCHEME_PREFIX_K10PLUS = '(DE-627)';
+    const ISIL_PREFIX_GND = '(DE-588)';
+    const ISIL_PREFIX_K10PLUS = '(DE-627)';
 
     /**
      * Search for author and return its id (e.g. GND number or PPN)
      *
      * @param string $author_heading    name of the author and birth/death years if exist, e.g. "Strecker, Christian 1960-"
-     * @param string $scheme_prefix     see class constants (SCHEME_PREFIX_*)
+     * @param string $scheme_prefix     see class constants (ISIL_PREFIX_*)
      * @return string
      */
     protected function getAuthorIdByHeading($author_heading, $scheme_prefix) {
@@ -35,11 +35,11 @@ class SolrMarc extends SolrDefault
     }
 
     public function getAuthorGNDNumber($author_heading) {
-        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_GND);
+        return $this->getAuthorIdByHeading($author_heading, self::ISIL_PREFIX_GND);
     }
 
     public function getAuthorPPN($author_heading) {
-        return $this->getAuthorIdByHeading($author_heading, self::SCHEME_PREFIX_K10PLUS);
+        return $this->getAuthorIdByHeading($author_heading, self::ISIL_PREFIX_K10PLUS);
     }
 
     /**
@@ -139,7 +139,7 @@ class SolrMarc extends SolrDefault
              foreach ($fields as $field) {
                  $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
                  foreach($subfields_w as $subfield_w) {
-                     if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $ppn)) {
+                     if (preg_match("/^" . preg_quote(self::ISIL_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $ppn)) {
                          $subfield_k = $field->getSubfield('k');
                          if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
                              array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
@@ -183,7 +183,7 @@ class SolrMarc extends SolrDefault
         $ppn = [];
         $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
         foreach($subfields_w as $subfield_w) {
-             if (preg_match("/^" . preg_quote(self::SCHEME_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $match_ppn)) {
+             if (preg_match("/^" . preg_quote(self::ISIL_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $match_ppn)) {
                  $ppn[0] = $match_ppn[1];
                  return;
              }
