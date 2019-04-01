@@ -494,7 +494,8 @@ class Server
         }
 
         // Start building response
-        $xml = new SimpleXMLElement('<GetRecord />');
+        $response = $this->createResponse();
+        $xml = $response->addChild('GetRecord');
 
         // Retrieve the record from the index
         if ($record = $this->loadRecord($this->params['identifier'])) {
@@ -519,7 +520,7 @@ class Server
         }
 
         // Display the record:
-        return $this->showResponse($xml);
+        return $response->asXML();
     }
 
     /**
@@ -541,7 +542,8 @@ class Server
      */
     protected function identify()
     {
-        $xml = new SimpleXMLElement('<Identify />');
+        $response = $this->createResponse();
+        $xml = $response->addChild('Identify');
         $xml->repositoryName = $this->repositoryName;
         $xml->baseURL = $this->baseURL;
         $xml->protocolVersion = '2.0';
@@ -550,8 +552,7 @@ class Server
         $xml->deletedRecord = 'transient';
         $xml->granularity = 'YYYY-MM-DDThh:mm:ssZ';
         if (!empty($this->idNamespace)) {
-            $xml->addChild('description');
-            $id = $xml->description->addChild(
+            $id = $xml->addChild('description')->addChild(
                 'oai-identifier', null,
                 'http://www.openarchives.org/OAI/2.0/oai-identifier'
             );
@@ -567,7 +568,7 @@ class Server
             $id->sampleIdentifier = 'oai:' . $this->idNamespace . ':123456';
         }
 
-        return $this->showResponse($xml);
+        return $response->asXML();
     }
 
     /**
@@ -699,7 +700,8 @@ class Server
         // the current context (all apply if $record is false, since that
         // means that no specific record ID was requested; otherwise, they only
         // apply if the current record driver supports them):
-        $xml = new SimpleXMLElement('<ListMetadataFormats />');
+        $response = $this->createResponse();
+        $xml = $response->addChild('ListMetadataFormats');
         foreach ($this->getMetadataFormats() as $prefix => $details) {
             if ($record === false
                 || $record->getXML($prefix) !== false
@@ -717,7 +719,7 @@ class Server
         }
 
         // Display the response:
-        return $this->showResponse($xml);
+        return $response->asXML();
     }
 
     /**
@@ -755,8 +757,8 @@ class Server
         // separately from our initial position!
         $currentCursor = $params['cursor'];
 
-        // The template for displaying a single record varies based on the verb:
-        $xml = new SimpleXMLElement("<{$verb} />");
+        $response = $this->createResponse();
+        $xml = $response->addChild($verb);
 
         // The verb determines whether we're returning headers only or full records:
         $headersOnly = ($verb != 'ListRecords');
@@ -809,7 +811,7 @@ class Server
             $token->addAttribute('cursor', $params['cursor']);
         }
 
-        return $this->showResponse($xml);
+        return $response->asXML();
     }
 
     /**
@@ -832,7 +834,8 @@ class Server
         }
 
         // Begin building XML:
-        $xml = new SimpleXMLElement('<ListSets />');
+        $response = $this->createResponse();
+        $xml = $response->addChild('ListSets');
 
         // Load set field if applicable:
         if (null !== $this->setField) {
@@ -868,7 +871,7 @@ class Server
         }
 
         // Display the list:
-        return $this->showResponse($xml);
+        return $response->asXML();
     }
 
     /**
@@ -1239,28 +1242,27 @@ class Server
      */
     protected function showError($code, $message)
     {
-        $xml = new SimpleXMLElement(
-            '<error>' . htmlspecialchars($message) . '</error>'
-        );
+        // Certain errors should not echo parameters:
+        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
+        $response = $this->createResponse($echoParams);
+
+        $xml = $response->addChild('error', htmlspecialchars($message));
         if (!empty($code)) {
             $xml['code'] = $code;
         }
 
-        // Certain errors should not echo parameters:
-        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
-        return $this->showResponse($xml, $echoParams);
+        return $response->asXML();
     }
 
     /**
-     * Display an OAI-PMH response (shared support method used by various
+     * Create an OAI-PMH response (shared support method used by various
      * response-specific methods).
      *
-     * @param SimpleXMLElement $body       Main body of response.
-     * @param bool             $echoParams Include params in <request> tag?
+     * @param bool $echoParams Include params in <request> tag?
      *
-     * @return string
+     * @return SimpleXMLElement
      */
-    protected function showResponse($body, $echoParams = true)
+    protected function createResponse($echoParams = true)
     {
         // Set up standard response wrapper:
         $xml = simplexml_load_string(
@@ -1280,10 +1282,7 @@ class Server
             }
         }
 
-        // Attach main body:
-        SimpleXML::appendElement($xml, $body);
-
-        return $xml->asXml();
+        return $xml;
     }
 
     /**
