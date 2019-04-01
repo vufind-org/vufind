@@ -640,6 +640,11 @@ class Server
             $this->idNamespace = $config->OAI->identifier;
         }
 
+        // Override page size if configured:
+        if (isset($config->OAI->page_size)) {
+            $this->pageSize = $config->OAI->page_size;
+        }
+
         // Use either OAI-specific or general email address; we must have SOMETHING.
         $this->adminEmail = isset($config->OAI->admin_email) ?
             $config->OAI->admin_email : $config->Site->email;
