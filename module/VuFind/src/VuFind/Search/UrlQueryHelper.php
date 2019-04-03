@@ -149,7 +149,7 @@ class UrlQueryHelper
                         ) {
                             $this->urlParams['op' . $i][] = '';
                         } else if (isset($op)) {
-                            $this->urlParams['op' . $i] = $op;
+                            $this->urlParams['op' . $i][] = $op;
                         }
                     }
                 }
