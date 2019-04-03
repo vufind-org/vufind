@@ -144,6 +144,7 @@ class UrlQueryHelper
                         $this->urlParams['lookfor' . $i][] = $inner->getString();
                         $this->urlParams['type' . $i][] = $inner->getHandler();
                         $op = $inner->getOperator();
+                        $this->urlParams['op' . $i] = [];
                         if (!isset($op) 
                             && !in_array('', $this->urlParams['op' . $i])
                         ) {
