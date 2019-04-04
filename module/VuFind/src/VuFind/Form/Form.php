@@ -592,7 +592,7 @@ class Form extends \Zend\Form\Form implements
 
             if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
-            } else if ($type === 'checkbox') {
+            } elseif ($type === 'checkbox') {
                 $translated = [];
                 foreach ($value as $val) {
                     $translated[] = $this->translate($val);
