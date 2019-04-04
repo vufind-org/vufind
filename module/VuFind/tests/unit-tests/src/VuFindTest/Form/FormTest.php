@@ -150,9 +150,9 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 [
-                    'Comments' => ['type' => 'textarea', 'value' => 'x'],
-                    'feedback_name' => ['type' => 'text', 'value' => 'y'],
-                    'feedback_email' => ['type' => 'email', 'value' => 'z@foo.com'],
+                    ['type' => 'textarea', 'value' => 'x', 'label' => 'Comments'],
+                    ['type' => 'text', 'value' => 'y', 'label' => 'feedback_name'],
+                    ['type' => 'email', 'value' => 'z@foo.com', 'label' => 'feedback_email'],
                 ],
                 'Email/form.phtml'
             ],
