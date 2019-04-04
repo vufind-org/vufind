@@ -381,8 +381,8 @@ class Form extends \Zend\Form\Form implements
             $first = true;
             foreach ($options as $key => $val) {
                 $optionElements[] = [
-                    'label' => $key,
-                    'value' => $val,
+                    'label' => $val,
+                    'value' => $key,
                     'label_attributes' => ['for' => $val],
                     'attributes' => ['id' => $val],
                     'selected' => $first
