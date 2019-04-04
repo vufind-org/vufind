@@ -230,14 +230,16 @@ class Form extends \Zend\Form\Form implements
                 $element[$field] = $value;
             }
 
-            if ($element['type'] === 'radio' && ! isset($element['group'])) {
+            if (in_array($element['type'], ['checkbox', 'radio'])
+                && ! isset($element['group'])
+            ) {
                 $element['group'] = $element['name'];
             }
 
-            $element['label'] = $this->translate($el['label']);
+            $element['label'] = $this->translate($el['label'] ?? null);
 
             $elementType = $element['type'];
-            if (in_array($elementType, ['radio', 'select'])) {
+            if (in_array($elementType, ['checkbox', 'radio', 'select'])) {
                 if (empty($el['options']) && empty($el['optionGroups'])) {
                     continue;
                 }
@@ -372,6 +374,21 @@ class Form extends \Zend\Form\Form implements
         }
 
         switch ($type) {
+        case 'checkbox':
+            $options = [];
+            if (isset($el['options'])) {
+                $options = $el['options'];
+            }
+            $optionElements = [];
+            foreach ($options as $key => $val) {
+                $optionElements[] = [
+                    'label' => $val,
+                    'value' => $key,
+                    'attributes' => ['id' => $val]
+                ];
+            }
+            $conf['options'] = ['value_options' => $optionElements];
+            break;
         case 'radio':
             $options = [];
             if (isset($el['options'])) {
@@ -421,6 +438,7 @@ class Form extends \Zend\Form\Form implements
     protected function getFormElementClass($type)
     {
         $map = [
+            'checkbox' => '\Zend\Form\Element\MultiCheckbox',
             'text' => '\Zend\Form\Element\Text',
             'url' => '\Zend\Form\Element\Url',
             'email' => '\Zend\Form\Element\Email',
@@ -574,11 +592,16 @@ class Form extends \Zend\Form\Form implements
 
             if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
+            } else if ($type === 'checkbox') {
+                $translated = [];
+                foreach ($value as $val) {
+                    $translated[] = $this->translate($val);
+                }
+                $value = implode(', ', $translated);
             }
 
-            $label = $this->translate($el['label']);
-
-            $params[$label] = ['type' => $type, 'value' => $value];
+            $label = isset($el['label']) ? $this->translate($el['label']) : null;
+            $params[] = ['type' => $type, 'value' => $value, 'label' => $label];
         }
 
         return [$params, 'Email/form.phtml'];
