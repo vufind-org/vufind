@@ -8,7 +8,6 @@ class RecordCollectionFactory extends \VuFindSearch\Backend\Solr\Response\Json\R
     public function __construct($recordFactory = null,
         $collectionClass = 'TueFindSearch\Backend\Solr\Response\Json\RecordCollection'
     ) {
-error_log("ENTERING TueFind RecordCollectionFactory");
         parent::__construct($recordFactory, $collectionClass);
     }
 }
