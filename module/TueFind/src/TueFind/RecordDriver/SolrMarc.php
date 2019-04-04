@@ -92,7 +92,7 @@ class SolrMarc extends SolrDefault
     public function isArticle() {
         $leader = $this->getMarcRecord()->getLeader();
 
-        if ($leader[7] == 'a')
+        if ($leader[7] == 'a' || $leader[7] == 'b')
             return true;
         $_935_fields = $this->getMarcRecord()->getFields('935');
         foreach ($_935_fields as $_935_field) {

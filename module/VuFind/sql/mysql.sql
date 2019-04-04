@@ -23,7 +23,8 @@ CREATE TABLE `change_tracker` (
   `last_record_change` datetime DEFAULT NULL, -- last time original record was edited
   `deleted` datetime DEFAULT NULL,            -- time record was removed from index
   PRIMARY KEY (`core`,`id`),
-  KEY `deleted_index` (`deleted`)
+  KEY `deleted_index` (`deleted`),
+  KEY `id_index` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
