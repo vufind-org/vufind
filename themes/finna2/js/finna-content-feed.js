@@ -7,7 +7,7 @@ finna.contentFeed = (function finnaContentFeed() {
 
     var contentHolder = container.find('.holder');
 
-    if (!id || !element || !feedUrl || contentHolder.length === 0) {
+    if (!id || !element || contentHolder.length === 0) {
       return;
     }
 
