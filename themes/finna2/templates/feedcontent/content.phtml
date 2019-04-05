@@ -17,7 +17,7 @@ $(document).ready(function() {
    finna.contentFeed.loadFeed($('#modal .feed-content'), true);
 });
 JS;
-    $this->headScript()->appendScript($setupJS);
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET');
   }
 ?>
 <div>
