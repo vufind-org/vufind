@@ -82,10 +82,9 @@ function refreshCommentList($target, recordId, recordSource) {
     });
 }
 
-function registerAjaxCommentRecord(_context) {
-  var context = typeof _context === "undefined" ? document : _context;
+function registerAjaxCommentRecord() {
   // Form submission
-  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
