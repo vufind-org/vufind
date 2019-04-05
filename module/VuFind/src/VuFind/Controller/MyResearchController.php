@@ -1624,7 +1624,7 @@ class MyResearchController extends AbstractBase
             } else {
                 $table = $this->getTable('User');
                 $user = $table->getByVerifyHash($hash);
-                // If the hash is valid, store validation in DB an forward to login
+                // If the hash is valid, store validation in DB and forward to login
                 if (null != $user) {
                     $user->saveEmailVerified();
                     $this->setUpAuthenticationFromRequest();
