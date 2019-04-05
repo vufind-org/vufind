@@ -121,6 +121,8 @@ class PAIA extends DAIA
     const SCOPE_READ_ITEMS = 'read_items';
     const SCOPE_WRITE_ITEMS = 'write_items';
     const SCOPE_CHANGE_PASSWORD = 'change_password';
+    const SCOPE_READ_NOTIFICATIONS = 'read_notifications';
+    const SCOPE_DELETE_NOTIFICATIONS = 'delete_notifications';
 
     /**
      * Constructor
@@ -1895,5 +1897,181 @@ class PAIA extends DAIA
             return true;
         }
         return false;
+    }
+
+    /**
+     * PAIA support method for PAIA core method 'notifications'
+     *
+     * @param array $patron Array with patron information
+     *
+     * @return array|mixed Array of system notifications for the patron
+     * @throws \Exception
+     * @throws ILSException You are not entitled to read notifications
+     */
+    protected function paiaGetSystemMessages($patron)
+    {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)) {
+            throw new ILSException('You are not entitled to read notifications.');
+        }
+
+        if ($this->paiaCacheEnabled) {
+            $cacheKey = $this->getCacheKey(
+                'notifications_' . $patron['cat_username']
+            );
+            $response = $this->getCachedData($cacheKey);
+            if (!empty($response)) {
+                return $response;
+            }
+        }
+
+        try {
+            $response = $this->paiaGetAsArray(
+                'core/' . $patron['cat_username'] . '/notifications'
+            );
+        } catch (\Exception $e) {
+            // all error handling is done in paiaHandleErrors
+            // so pass on the exception
+            throw $e;
+        }
+
+        $response = $this->enrichNotifications($response);
+
+        if ($this->paiaCacheEnabled) {
+            $this->putCachedData($cacheKey, $response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Enriches PAIA notifications response with additional mappings
+     *
+     * @param array $notifications list of PAIA notifications
+     *
+     * @return array list of enriched PAIA notifications
+     */
+    protected function enrichNotifications(array $notifications)
+    {
+        // not yet implemented
+        return $notifications;
+    }
+
+    /**
+     * PAIA support method for PAIA core method DELETE 'notifications'
+     *
+     * @param array  $patron    Array with patron information
+     * @param string $messageId PAIA service specific ID
+     * of the notification to remove
+     * @param bool   $keepCache if set to TRUE the notification cache will survive
+     * the remote operation, this is used by
+     * \VuFind\ILS\Driver\PAIA::paiaRemoveSystemMessages
+     * to avoid unnecessary cache operations
+     *
+     * @return array|mixed Array of system notifications for the patron
+     * @throws \Exception
+     * @throws ILSException You are not entitled to read notifications
+     */
+    protected function paiaRemoveSystemMessage(
+        $patron, $messageId, $keepCache = false
+    ) {
+        // check if user has appropriate scope
+        if (!$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)) {
+            throw new ILSException('You are not entitled to delete notifications.');
+        }
+
+        try {
+            $response = $this->paiaDeleteRequest(
+                'core/'
+                . $patron['cat_username']
+                . '/notifications/'
+                . $this->getPaiaNotificationsId($messageId)
+            );
+        } catch (\Exception $e) {
+            // all error handling is done in paiaHandleErrors
+            // so pass on the exception
+            throw $e;
+        }
+
+        if (!$keepCache && $this->paiaCacheEnabled) {
+            $this->removeCachedData(
+                $this->getCacheKey('notifications_' . $patron['cat_username'])
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Removes multiple System Messages. Bulk deletion is not implemented in PAIA,
+     * so this method iterates over the set of IDs and removes them separately
+     *
+     * @param array $patron     Array with patron information
+     * @param array $messageIds list of PAIA service specific IDs
+     * of the notifications to remove
+     *
+     * @return bool TRUE if all messages have been successfully removed,
+     * otherwise FALSE
+     * @throws ILSException
+     */
+    protected function paiaRemoveSystemMessages($patron, array $messageIds)
+    {
+        foreach ($messageIds as $messageId) {
+            if (!$this->paiaRemoveSystemMessage($patron, $messageId, true)) {
+                return false;
+            }
+        }
+
+        if ($this->paiaCacheEnabled) {
+            $this->removeCachedData(
+                $this->getCacheKey('notifications_' . $patron['cat_username'])
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * DELETE data on foreign host
+     *
+     * @param string $file         DELETE target URL
+     * @param string $access_token PAIA access token for current session
+     *
+     * @return bool|string
+     * @throws ILSException
+     */
+    protected function paiaDeleteRequest($file, $access_token = null)
+    {
+        if (null === $access_token) {
+            $access_token = $this->getSession()->access_token;
+        }
+
+        $http_headers = [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-type' => 'application/json; charset=UTF-8',
+        ];
+
+        try {
+            $client = $this->httpService->createClient(
+                $this->paiaURL . $file,
+                \Zend\Http\Request::METHOD_DELETE,
+                $this->paiaTimeout
+            );
+            $client->setHeaders($http_headers);
+            $result = $client->send();
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        if (!$result->isSuccess()) {
+            // log error for debugging
+            $this->debug(
+                'HTTP status ' . $result->getStatusCode() .
+                ' received'
+            );
+            return false;
+        }
+        // return TRUE on success
+        return true;
     }
 }
