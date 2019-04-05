@@ -198,9 +198,12 @@ class Database extends AbstractBase
     }
 
     /**
-     * Check if the user's email address has been verified (if necessary) and throws exception if not.
+     * Check if the user's email address has been verified (if necessary) and
+     * throws exception if not.
      *
-     * @param \VuFind\Db\Row\User $user
+     * @param \VuFind\Db\Row\User $user User to check
+     *
+     * @return void
      * @throws AuthMailNotVerifiedException
      */
     protected function checkEmailVerified($user)
@@ -208,7 +211,9 @@ class Database extends AbstractBase
         $config = $this->getConfig();
         $verify_email = $config->Authentication->verify_email ?? false;
         if ($verify_email && !$user->checkEmailVerified()) {
-            $exception = new AuthMailNotVerifiedException('authentication_error_email_not_verified');
+            $exception = new AuthMailNotVerifiedException(
+                'authentication_error_email_not_verified'
+            );
             $exception->user = $user;
             throw $exception;
         }

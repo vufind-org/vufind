@@ -930,7 +930,8 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Creates a message that the verification email has been sent to the user's mail address.
+     * Creates a message that the verification email has been sent to the user's
+     * mail address.
      *
      * @return mixed
      */
@@ -1517,7 +1518,8 @@ class MyResearchController extends AbstractBase
     {
         // If we can't find a user
         if (null == $user) {
-            $this->flashMessenger()->addMessage('verification_user_not_found', 'error');
+            $this->flashMessenger()
+                ->addMessage('verification_user_not_found', 'error');
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->verify_hash);
@@ -1525,7 +1527,8 @@ class MyResearchController extends AbstractBase
                 ? $config->Authentication->recover_interval
                 : 60;
             if (time() - $hashtime < $recoveryInterval) {
-                $this->flashMessenger()->addMessage('verification_too_soon', 'error');
+                $this->flashMessenger()
+                    ->addMessage('verification_too_soon', 'error');
             } else {
                 // Attempt to send the email
                 try {
