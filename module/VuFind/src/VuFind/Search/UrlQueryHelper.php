@@ -129,6 +129,7 @@ class UrlQueryHelper
         }
         if ($this->queryObject instanceof QueryGroup) {
             $this->urlParams['join'] = $this->queryObject->getOperator();
+            $innerOperatorTmp = [];
             foreach ($this->queryObject->getQueries() as $i => $current) {
                 if ($current instanceof QueryGroup) {
                     $operator = $current->isNegated()
@@ -145,17 +146,20 @@ class UrlQueryHelper
                         $this->urlParams['type' . $i][] = $inner->getHandler();
                         $op = $inner->getOperator();
                         $key = 'op' . $i;
-                        if (!isset($this->urlParams[$key])) {
-                            $this->urlParams[$key] = [];
+                        if (!isset($innerOperatorTmp[$key])) {
+                            $innerOperatorTmp[$key] = [];
                         }
-                        if (!isset($op) 
-                            && !in_array('', $this->urlParams[$key])
-                        ) {
-                            $this->urlParams[$key][] = '';
+                        if (empty($op) && !in_array('', $innerOperatorTmp[$key])) {
+                            $innerOperatorTmp[$key][] = '';
                         } else if (isset($op)) {
-                            $this->urlParams[$key][] = $op;
+                            $innerOperatorTmp[$key][] = $op;
                         }
                     }
+                }
+            }
+            foreach ($innerOperatorTmp as $key => $value) {
+                if (!empty($value) && count($value) > 1 && in_array('', $value)) {
+                    $this->urlParams[$key] = $value;
                 }
             }
         } elseif ($this->queryObject instanceof Query) {
