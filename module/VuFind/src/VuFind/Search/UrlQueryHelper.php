@@ -158,7 +158,10 @@ class UrlQueryHelper
                 }
             }
             foreach ($innerOperatorTmp as $key => $value) {
-                if (!empty($value) && count($value) > 1 && in_array('', $value)) {
+                if (!empty($value)) {
+                    if (in_array('', $value) && count($value) === 1) {
+                        continue;
+                    }
                     $this->urlParams[$key] = $value;
                 }
             }
