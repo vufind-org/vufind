@@ -501,6 +501,27 @@ source:
   type: array
   items:
     $ref: '#/definitions/TranslatedField'
+subjectActors:
+  vufind.method: getSubjectActors
+  description: Subject actors
+  items:
+    type: array
+    items:
+      type: string
+subjectDetails:
+  vufind.method: getSubjectDetails
+  description: Detailed subject descriptions
+  items:
+    type: array
+    items:
+      type: string
+subjectPlaces:
+  vufind.method: getSubjectPlaces
+  description: Subject places
+  items:
+    type: array
+    items:
+      type: string
 subjects:
   vufind.method: getAllSubjectHeadings
   vufind.default: true
