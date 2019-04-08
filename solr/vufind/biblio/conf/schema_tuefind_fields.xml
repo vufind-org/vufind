@@ -21,6 +21,7 @@
     <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="volume_sort" type="long" indexed="true" stored="true" multiValued="false"/>
+     <field name="local_notes_1" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- COMMON copyFields -->
     <copyField source="record_selector" dest="rs"/>
