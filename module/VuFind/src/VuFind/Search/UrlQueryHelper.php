@@ -151,7 +151,7 @@ class UrlQueryHelper
                         }
                         if (empty($op) && !in_array('', $innerOperatorTmp[$key])) {
                             $innerOperatorTmp[$key][] = '';
-                        } else if (isset($op)) {
+                        } elseif (isset($op)) {
                             $innerOperatorTmp[$key][] = $op;
                         }
                     }
