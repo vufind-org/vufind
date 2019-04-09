@@ -8,6 +8,6 @@
       $target = '';
     }
   ?>
-  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url))?>" class="fulltext<?=!empty($current['citation']) ? ' citation' : ''?>"<?=$target?>><i class="fa fa-external-link"></i> <?=$this->transEsc($current['desc'])?></a>
+  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url))?>" class="fulltext<?=!empty($current['citation']) ? ' citation' : ''?>"<?=$target?> aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=$this->transEsc($current['desc'])?></a>
 <?php endforeach; ?>
 <!-- END of: finna - RecordDriver/EDS/online-url-list.phtml -->
