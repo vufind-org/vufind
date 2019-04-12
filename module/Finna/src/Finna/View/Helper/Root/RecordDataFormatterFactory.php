@@ -332,7 +332,7 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
-            'Inscriptions', 'getInscriptions', 'data-escapeHtml.phtml',
+            'Inscriptions', 'getInscriptions', 'data-inscriptions.phtml',
             [
                 'context' => ['class' => 'recordInscriptions']
             ]
