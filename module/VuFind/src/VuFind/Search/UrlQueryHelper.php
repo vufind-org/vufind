@@ -129,7 +129,6 @@ class UrlQueryHelper
         }
         if ($this->queryObject instanceof QueryGroup) {
             $this->urlParams['join'] = $this->queryObject->getOperator();
-            $innerOperatorTmp = [];
             foreach ($this->queryObject->getQueries() as $i => $current) {
                 if ($current instanceof QueryGroup) {
                     $operator = $current->isNegated()
@@ -144,25 +143,22 @@ class UrlQueryHelper
                         }
                         $this->urlParams['lookfor' . $i][] = $inner->getString();
                         $this->urlParams['type' . $i][] = $inner->getHandler();
-                        $op = $inner->getOperator();
-                        $key = 'op' . $i;
-                        if (!isset($innerOperatorTmp[$key])) {
-                            $innerOperatorTmp[$key] = [];
-                        }
-                        if (empty($op) && !in_array('', $innerOperatorTmp[$key])) {
-                            $innerOperatorTmp[$key][] = '';
-                        } elseif (isset($op)) {
-                            $innerOperatorTmp[$key][] = $op;
+                        if (null !== ($op = $inner->getOperator())) {
+                            // We want the op and lookfor parameters to align
+                            // with each other; let's backfill
+                            // empty op values if there 
+                            // aren't enough in place already.
+                            $expectedOps 
+                                = count($this->urlParams['lookfor' . $i]) - 1;
+                            while (
+                                count($this->urlParams['op' . $i] ?? []) 
+                                < $expectedOps
+                            ) {
+                                $this->urlParams['op' . $i][] = '';
+                            }
+                            $this->urlParams['op' . $i][] = $op;
                         }
                     }
-                }
-            }
-            foreach ($innerOperatorTmp as $key => $value) {
-                if (!empty($value)) {
-                    if (in_array('', $value) && count($value) === 1) {
-                        continue;
-                    }
-                    $this->urlParams[$key] = $value;
                 }
             }
         } elseif ($this->queryObject instanceof Query) {
