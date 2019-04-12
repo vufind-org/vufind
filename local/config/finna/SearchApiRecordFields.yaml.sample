@@ -201,7 +201,7 @@ geoCenter:
     - lon
     - lat
 geoLocations:
-  vufind.method: getGeoLocation
+  vufind.method: getGeoLocations
   description: Geographic locations (e.g. points, bounding boxes) in WKT format
   type: array
   items:
