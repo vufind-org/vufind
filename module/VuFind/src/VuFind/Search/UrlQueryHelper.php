@@ -146,12 +146,12 @@ class UrlQueryHelper
                         if (null !== ($op = $inner->getOperator())) {
                             // We want the op and lookfor parameters to align
                             // with each other; let's backfill
-                            // empty op values if there 
+                            // empty op values if there
                             // aren't enough in place already.
-                            $expectedOps 
+                            $expectedOps
                                 = count($this->urlParams['lookfor' . $i]) - 1;
                             while (
-                                count($this->urlParams['op' . $i] ?? []) 
+                                count($this->urlParams['op' . $i] ?? [])
                                 < $expectedOps
                             ) {
                                 $this->urlParams['op' . $i][] = '';
