@@ -21,4 +21,3 @@ class ClassificationController extends \VuFind\Controller\AbstractBase
                  return $this->redirect()->toUrl('/Search/Results?filter[]=ixtheo_notation_facet:' . $notation);
 	}
 }
-?>

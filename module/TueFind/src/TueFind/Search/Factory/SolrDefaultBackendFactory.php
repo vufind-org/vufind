@@ -1,4 +1,5 @@
 <?php
+
 namespace TueFind\Search\Factory;
 
 use VuFindSearch\Backend\Solr\Backend;
@@ -23,4 +24,3 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory {
         return $backend;
     }
 }
-?>

@@ -128,4 +128,3 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
         $this->forwardTo('KeywordChainSearch', 'Results');
     }
 }
-?>
