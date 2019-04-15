@@ -64,4 +64,3 @@ class Export extends \VuFind\Export
 
 
 }
-?>

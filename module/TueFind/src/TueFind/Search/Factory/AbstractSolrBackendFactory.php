@@ -50,4 +50,3 @@ class AbstractSolrBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacke
         return new InjectFulltextMatchIdsListener($backend);
     }
 }
-?>
