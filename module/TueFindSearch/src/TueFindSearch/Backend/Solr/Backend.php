@@ -8,4 +8,3 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend {
         parent::__construct($connector);
     }
 }
-?>

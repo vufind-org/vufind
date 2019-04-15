@@ -11,5 +11,3 @@ class RecordCollectionFactory extends \VuFindSearch\Backend\Solr\Response\Json\R
         parent::__construct($recordFactory, $collectionClass);
     }
 }
-?>
-
