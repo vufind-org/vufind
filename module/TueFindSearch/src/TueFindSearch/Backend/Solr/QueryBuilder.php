@@ -31,4 +31,3 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
          
 
 }
-?>

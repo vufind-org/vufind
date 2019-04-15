@@ -17,4 +17,3 @@ class Service extends \VuFindSearch\Service {
         parent::__construct($events);
     }
 }
-?>

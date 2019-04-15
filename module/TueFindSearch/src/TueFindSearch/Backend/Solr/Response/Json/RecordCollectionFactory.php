@@ -12,5 +12,3 @@ error_log("ENTERING TueFind RecordCollectionFactory");
         parent::__construct($recordFactory, $collectionClass);
     }
 }
-?>
-
