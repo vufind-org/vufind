@@ -226,7 +226,7 @@
       <? if(!empty($enclosedTitles)): ?>
         <tr><th><?=$this->transEsc('Enclosed titles')?>:</th><td>
         <? foreach($enclosedTitles as $title): ?>
-          <?=$this->escapeHTML($title)?><br/>
+          <?=$this->escapeHtml($title)?><br/>
         <? endforeach; ?>
         </td></tr>
       <? endif; ?>
