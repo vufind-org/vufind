@@ -60,8 +60,10 @@
           <? $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
           <? if (!empty($journal_issue)): ?>
             <? $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
-            <? $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
-            <? unset($journal_issue[$superior_ppn_index]); ?>
+            <? if (isset($journal_issue[$superior_ppn_index])): ?>
+                <? $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
+                <? unset($journal_issue[$superior_ppn_index]); ?>
+            <? endif; ?>
             <div>
               <? if(!empty($superior_ppn)): ?>
                 <?=$this->transEsc('in')?>:
