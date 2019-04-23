@@ -4,14 +4,25 @@
   $openUrlActive = $openUrl->isActive();
   // Account for replace_other_urls setting
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+  $renderedURLs = $this->record($this->driver)->getRenderedUrls();
 ?>
 <?php if (!empty($urls) || $openUrlActive): ?>
+  <?php ob_start(); ?>
+  <?php $i = 0; ?>
   <div class="truncate-field" data-rows="3">
     <?php foreach ($urls as $current): ?>
-      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+      <?php if (!in_array($current['url'], $renderedURLs)): ?>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+        <?php $i++ ?>  
+      <?php endif; ?>
     <?php endforeach; ?>
     <?php if ($openUrlActive): ?>
       <?=$openUrl->renderTemplate()?>
     <?php endif; ?>
   </div>
+  <?php $links = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+  <?php if ($i > 0 || $openUrlActive): ?>
+    <?= $links; ?>
+  <?php endif; ?>
 <?php endif; ?>

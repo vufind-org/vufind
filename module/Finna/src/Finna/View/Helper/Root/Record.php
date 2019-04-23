@@ -51,6 +51,13 @@ class Record extends \VuFind\View\Helper\Root\Record
     protected $loader;
 
     /**
+     * Rendered URLs
+     *
+     * @var array
+     */
+    protected $renderedUrls = [];
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config   $config VuFind configuration
@@ -403,5 +410,27 @@ class Record extends \VuFind\View\Helper\Root\Record
     {
         return $this->commentingEnabled()
             && $this->driver->tryMethod('ratingAllowed');
+    }
+
+    /**
+     * Set rendered URLs
+     *
+     * @param array $urls Array of rendered URLs
+     *
+     * @return array
+     */
+    public function setRenderedUrls($urls)
+    {
+        $this->renderedUrls = $urls;
+    }
+
+    /**
+     * Get rendered URLs
+     *
+     * @return array
+     */
+    public function getRenderedUrls()
+    {
+        return $this->renderedUrls;
     }
 }

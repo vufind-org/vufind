@@ -8,9 +8,8 @@
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   $onlineURLs = $this->driver->getOnlineURLs();
   $mergedData = $this->driver->tryMethod('getMergedRecordData');
-
+  $renderedURLs = [];
   if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])){
-    $renderedURLs = [];
     if (!empty($urls)){
       $videoUrls = [];
       $otherUrls = [];
@@ -200,6 +199,7 @@
 
       <?/* Display Main Details */?>
       <?php
+        $this->record($this->driver)->setRenderedUrls($renderedURLs);
         $formatter = $this->recordDataFormatter();
         $coreFields = $formatter->getData(
             $driver, $formatter->filterForwardFields($formatter->getDefaults('core'))
