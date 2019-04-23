@@ -5,7 +5,7 @@ Disallow: /
 User-agent: SemrushBot
 User-agent: SemrushBot/2~bl
 User-agent: SemrushBot-SA
-Disallow: / 
+Disallow: /
 
 User-agent: BLEXBot
 Disallow: /
@@ -30,5 +30,11 @@ User-agent: adscanner/
 Disallow: /
 
 User-agent: *
-Disallow: /Record/
-
+Disallow: /AJAX
+Disallow: /Alphabrowse
+Disallow: /Author
+Disallow: /Browse
+Disallow: /Combined
+Disallow: /Search/Results
+Disallow: /Summon
+Disallow: /SummonRecord
