@@ -5,7 +5,7 @@
    $recordType = $this->driver->tryMethod('getRecordType');
 ?>
 <div class="recordProvidedBy">
-  <h1 class="record-organisation-header">
+  <h2 class="record-organisation-header">
     <?php if ($mergedData && count($mergedData['records']) > 1): ?>
       <?=$this->transEsc('material_provided_by_multiple', ['%%count%%' => count($mergedData['records'])])?>
     <?php else: ?>
