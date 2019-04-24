@@ -4,7 +4,7 @@
   $capabilityParams = $patron ? ['patron' => $patron] : [];
 ?>
 <h4><?=$this->transEsc('Your Account')?></h4>
-<div class="myresearch-menu account-menu">
+<div class="myresearch-menu account-menu" id="account-menu">
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Favorites')?>

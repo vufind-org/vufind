@@ -25,10 +25,15 @@
   $user = $this->auth()->isLoggedIn();
 ?>
 
-<?=$this->flashmessages()?>
+<a class="search-filter-toggle visible-xs" href="#account-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+
+  <?=$this->flashmessages()?>
+
   <nav class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>

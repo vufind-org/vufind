@@ -9,6 +9,10 @@
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
 
+<a class="search-filter-toggle visible-xs" href="#account-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->flashmessages()?>
   <?php if ($saveSupported && !empty($this->saved)): ?>

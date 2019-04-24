@@ -6,6 +6,10 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('My Holds') . '</li>';
 ?>
 
+<a class="search-filter-toggle visible-xs" href="#account-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Holds and Recalls') ?></h2>
 

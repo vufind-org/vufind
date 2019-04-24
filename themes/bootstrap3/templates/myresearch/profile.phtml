@@ -8,6 +8,11 @@
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
+
+<a class="search-filter-toggle visible-xs" href="#account-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Profile')?></h2>
   <?=$this->flashmessages();?>
