@@ -109,6 +109,25 @@ header {
   }
 }
 
+#account-icon.text-success,
+#account-icon.text-warning,
+#account-icon.text-danger {
+  margin-left: -.25rem;
+  margin-top: -0.5rem;
+  margin-bottom: -.5rem;
+  padding: 0.5rem;
+  background-color: $header-light;
+  border-radius: 100%;
+}
+#login-dropdown .login-dropdown-caret:hover,
+a:hover .login-dropdown-caret {
+  color: #222;
+}
+#login-dropdown .login-dropdown-caret[aria-expanded="true"] {
+  color: #fff;
+  background-color: $header-bg;
+}
+
 .breadcrumbs {
   border-bottom: 1px solid $header-light;
   background-color: $header-light;
@@ -141,6 +160,10 @@ header {
 
 /* --- MyResearch --- */
 .myresearch-menu a:hover { background-color: $white; }
+.myresearch-menu a.active:hover {
+  color: $white;
+  background-color: $brand-primary;
+}
 
 /* --- Record --- */
 .record-nav {
