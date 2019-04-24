@@ -128,7 +128,7 @@ VuFind.register('account', function Account() {
     $('#cancelHold, [name="placeHold"]').submit(function clearHolds() {
       clearCache("holds");
     });
-    $('#ILLRequestForm').submit(function clearHolds() {
+    $('#ILLRequestForm, #cancelILLRequest').submit(function clearHolds() {
       clearCache("illRequests");
     });
     $('[name="placeStorageRetrievalRequest"], #cancelStorageRetrievalRequest').submit(function clearStorageRetrievals() {
