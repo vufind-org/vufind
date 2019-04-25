@@ -14,7 +14,7 @@
         <?php foreach ($this->navibar()->getMenuItems($this->layout()->userLang) as $key => $val): ?>
           <?php if (count($val['items']) > 1): ?>
             <li class="dropdown" id="<?= $val['label'] ?>">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-has-popup="true" aria-expanded="false"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret" aria-hidden="true"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret" aria-hidden="true"></b></a>
               <ul role="group" class="dropdown-menu" aria-labelledby="<?= $val['label'] ?>">
                 <?php foreach ($val['items'] as $itemKey => $itemVal): ?>
                 <?php
