@@ -275,6 +275,10 @@ footer {
 .myresearch-menu .badge.ok { background-color: $state-success-bg; }
 .myresearch-menu .badge.warn { background-color: $state-warning-bg; }
 .myresearch-menu .badge.overdue { background-color: $state-danger-bg; }
+.myresearch-menu .status .fa {
+  height: 1rem;
+  margin-top: 3px;
+}
 
 .checkedout-status .badge {
   border-radius: 2px;

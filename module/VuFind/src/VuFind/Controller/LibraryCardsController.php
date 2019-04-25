@@ -179,6 +179,21 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
+     * When redirecting after selecting a library card, adjust the URL to make
+     * sure it will work correctly.
+     *
+     * @param string $url URL to adjust
+     *
+     * @return string
+     */
+    protected function adjustCardRedirectUrl($url)
+    {
+        // If there is pagination in the URL, reset it to page 1, since the
+        // new card may have a different number of pages of data:
+        return preg_replace('/([&?]page)=[0-9]+/', '$1=1', $url);
+    }
+
+    /**
      * Activates a library card
      *
      * @return \Zend\Http\Response
@@ -215,7 +230,7 @@ class LibraryCardsController extends AbstractBase
         $this->setFollowupUrlToReferer();
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
-            return $this->redirect()->toUrl($url);
+            return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));
         }
         return $this->redirect()->toRoute('myresearch-home');
     }
