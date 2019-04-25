@@ -1,41 +1,34 @@
 <?=$this->doctype('HTML5')?>
-<html lang="<?=$this->layout()->userLang?>">
-
-<? $backgroundSmallClass = ''; ?>
-<? if ($this->layout()->searchbox === false): ?>
-  <? $backgroundSmallClass = ' background-small'; ?>
-<? endif; ?>
-
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <?$this->headThemeResources()?>
+    <?php $this->headThemeResources(); ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
-    <?
+    <?php
       // Set up OpenSearch link:
       $this->headLink(
-        array(
+        [
           'href' => $this->url('search-opensearch') . '?method=describe',
           'type' => 'application/opensearchdescription+xml',
           'title' => $this->transEsc('Library Catalog Search'),
           'rel' => 'search'
-        )
+        ]
       );
     ?>
-
     <!-- RTL styling -->
-    <? if ($this->layout()->rtl) {
+    <?php if ($this->layout()->rtl) {
       $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
     } ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
-    <?
+    <?php
       if (!isset($this->renderingError)) {
         // Add translation strings
         $this->jsTranslations()->addStrings(
-          array(
+          [
             'add_tag_success' => 'add_tag_success',
             'bulk_email_success' => 'bulk_email_success',
             'bulk_noitems_advice' => 'bulk_noitems_advice',
@@ -44,6 +37,7 @@
             'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
+            'hold_available' => 'hold_available',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
             'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
@@ -57,11 +51,11 @@
                 'number_thousands_separator', null, ','
             ],
             'sms_success' => 'sms_success'
-          )
+          ]
         );
         // Add libphonenumber.js strings
         $this->jsTranslations()->addStrings(
-          array(
+          [
             "Phone number invalid" => 'libphonenumber_invalid',
             "Invalid country calling code" => 'libphonenumber_invalidcountry',
             "Invalid region code" => 'libphonenumber_invalidregion',
@@ -69,7 +63,7 @@
             "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
             "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
             "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
-          )
+          ]
         );
         // Deal with cart stuff:
         $cart = $this->cart();
@@ -89,7 +83,7 @@
             );
           }
           $this->jsTranslations()->addStrings(
-            array(
+            [
               'addBookBag' => 'Add to Book Bag',
               'bookbagFull' => 'bookbag_full_msg',
               'bookbagMax' => $cart->getMaxSize(),
@@ -100,10 +94,10 @@
               'itemsInBag' => 'items_already_in_bookbag',
               'removeBookBag' => 'Remove from Book Bag',
               'viewBookBag' => 'View Book Bag'
-            )
+            ]
           );
         }
-        $this->headScript()->appendScript(
+        $this->headScript()->prependScript(
           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
@@ -114,8 +108,24 @@
             . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
-    ?>
-    <?
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'account_has_alerts' => 'account_has_alerts',
+            'Checked Out Items' => 'Checked Out Items',
+            'ill_request_available' => 'ill_request_available',
+            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
+            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
+            'request_in_transit' => 'request_in_transit',
+            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
+          ]
+        );
+      }
+
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
@@ -126,18 +136,13 @@ VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
     ?>
-    <?//=$this->headScript()?>
-
       <!-- include Google Fonts -->
       <link href="https://fonts.googleapis.com/css?family=Open+Sans%7CLato%7CRoboto" rel="stylesheet">
 
       <?=$this->headScript(); ?>
   </head>
-
-<!-- Begin Body -->
-  <body class="<?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
-
-    <? // Set up the search box -- there are three possible cases:
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
       // 3. It is set to a custom string; we should display the provided version
@@ -146,41 +151,40 @@ JS;
       if (!isset($this->layout()->searchbox)) {
         $this->layout()->searchbox = $this->render('search/searchbox.phtml');
       }
-
     ?>
-
     <header class="hidden-print">
       <div class="container-fluid px-0">
-        <? //<a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') </a>
-            //necessary?
-        ?>
+        <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+        <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+      <?php endif; ?>
+      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
 
-        <?=$this->render('header.phtml') //include header ?>
+        <?=$this->render('header.phtml')?>
       </div>
 
-        <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+        <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
           <div class="container breadcrumb-wrapper hidden-print">
-            <? if(is_array($this->layout()->breadcrumbs)): ?>
-              <? if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', array(
+            <?php if(is_array($this->layout()->breadcrumbs)): ?>
+              <?php if(count($this->layout()->breadcrumbs) > 1): ?>
+                <?=$this->render('breadcrumbs/multi.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title,
-                    'from'    => $this->layout()->from
-                  )) ?>
-              <? else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', array(
+                    'title' => $this->layout()->title,
+                    'from' => $this->layout()->from
+                  ]) ?>
+              <?php else: ?>
+                <?=$this->render('breadcrumbs/default.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title
-                  )) ?>
-              <? endif; ?>
-            <? else: ?>
+                    'title' => $this->layout()->title
+                  ]) ?>
+              <?php endif; ?>
+            <?php else: ?>
               <?=$this->render('breadcrumbs/simple.phtml'); ?>
-            <? endif; ?>
+            <?php endif; ?>
           </div>
-        <? endif; ?>
+        <?php endif; ?>
     </header>
     <div class="container-fluid">
         <div class="row">
@@ -223,5 +227,8 @@ JS;
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
+    <?php if ($this->recaptcha()->active()): ?>
+      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
+    <?php endif; ?>
   </body>
 </html>
