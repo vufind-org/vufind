@@ -150,7 +150,7 @@
             <?php $hasLink = isset($rights['link']); ?>
             <span><?=$this->transEsc('Image Rights') ?>:</span>
             <?php if (!empty($rights['copyright'])): ?>
-              <?php if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><?php endif; ?><?php if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$this->transEsc($rights['copyright']) ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
+              <?php if ($hasLink): ?><a target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php endif; ?><?php if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$this->transEsc($rights['copyright']) ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
             <?php else: ?>
               <?php if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
                 <?=$this->transEsc('usage_F') ?><br>
