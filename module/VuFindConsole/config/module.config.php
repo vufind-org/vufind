@@ -77,6 +77,7 @@ $routes = [
     'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
+    'util/lint_marc' => 'util lint_marc [<filename>]',
     'util/optimize' => 'util optimize [<core>]',
     'util/sitemap' => 'util sitemap [--verbose]',
     'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',

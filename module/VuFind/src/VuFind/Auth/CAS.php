@@ -283,8 +283,9 @@ class CAS extends AbstractBase
             ) {
                 $casauth->setDebug($cas->log);
             }
+            $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
             $casauth->client(
-                SAML_VERSION_1_1, $cas->server, (int)$cas->port, $cas->context, false
+                $protocol, $cas->server, (int)$cas->port, $cas->context, false
             );
             if (isset($cas->CACert) && !empty($cas->CACert)) {
                 $casauth->setCasServerCACert($cas->CACert);
