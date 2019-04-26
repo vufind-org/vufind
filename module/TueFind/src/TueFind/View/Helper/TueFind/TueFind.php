@@ -168,7 +168,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         if (count($rss_items) == 0)
             $html .= $this->getView()->translate('rss_news_missing');
         else {
-            $html .= '<ul id="rss_preview">';
+            $html .= '<ul id="tf-rss-preview">';
             foreach ($rss_items as $rss_item) {
                 $img_src = $this->getView()->imageLink('rss/' . $rss_item['tuefind:rss_title'] . '.png');
                 if ($img_src == null)
