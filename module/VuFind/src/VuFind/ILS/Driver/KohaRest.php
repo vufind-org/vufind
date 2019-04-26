@@ -2166,8 +2166,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $branchId = (!$this->useHomeBranch && null !== $item['holdingbranch'])
             ? $item['holdingbranch'] : $item['homebranch'];
-        $name = $this->translate("location_$branchId");
-        if ($name === "location_$branchId") {
+        $name = $this->translateLocation($branchId);
+        if ($name === $branchId) {
             $branches = $this->getCachedData('branches');
             if (null === $branches) {
                 $result = $this->makeRequest(
@@ -2182,6 +2182,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $name = $branches[$branchId] ?? $branchId;
         }
         return $name;
+    }
+
+    /**
+     * Translate location name
+     *
+     * @param string $location Location code
+     * @param string $default  Default value if translation is not available
+     *
+     * @return string
+     */
+    protected function translateLocation($location, $default = null)
+    {
+        if (empty($location)) {
+            return null !== $default ? $default : '';
+        }
+        $prefix = 'location_';
+        return $this->translate(
+            "$prefix$location",
+            null,
+            null !== $default ? $default : $location
+        );
     }
 
     /**

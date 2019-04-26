@@ -1152,7 +1152,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     ? $item['location_description'] : $item['location']
             );
             if ($location) {
-                if ($result) {
+                // Empty translation will result in &#x200C
+                $emptyChar = html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
+                if ($result && $result !== $emptyChar) {
                     $result .= ', ';
                 }
                 $result .= $location;
@@ -1592,14 +1594,18 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if (empty($location)) {
             return null !== $default ? $default : '';
         }
-        $prefix = 'location_';
+        $prefix = $catPrefix = 'location_';
         if (!empty($this->config['Catalog']['id'])) {
-            $prefix .= $this->config['Catalog']['id'] . '_';
+            $catPrefix .= $this->config['Catalog']['id'] . '_';
         }
         return $this->translate(
-            "$prefix$location",
+            "$catPrefix$location",
             null,
-            null !== $default ? $default : $location
+            $this->translate(
+                "$prefix$location",
+                null,
+                null !== $default ? $default : $location
+            )
         );
     }
 
