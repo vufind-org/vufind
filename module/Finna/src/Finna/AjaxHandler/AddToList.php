@@ -148,7 +148,7 @@ class AddToList extends \VuFind\AjaxHandler\AbstractBase
             $source = $id[0];
             $recId = $id[1];
             try {
-                $driver = $this->recordLoader->load($recId, $source);
+                $driver = $this->recordLoader->load($recId, $source, true);
                 $this->favorites->save(['list' => $listId], $this->user, $driver);
             } catch (\Exception $e) {
                 return $this->formatResponse(
