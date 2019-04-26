@@ -249,7 +249,7 @@ finna.myList = (function finnaMyList() {
     finna.layout.initMobileNarrowSearch();
 
     // Checkbox select all
-    $('.checkbox-select-all').unbind('change').change(function onChangeSelectAll() {
+    $('.mylist-controls-bar .checkbox-select-all').unbind('change').change(function onChangeSelectAll() {
       $('.myresearch-row .checkbox-select-item').prop('checked', $(this).is(':checked'));
     });
 
@@ -313,8 +313,8 @@ finna.myList = (function finnaMyList() {
         newListInput.off('keyup');
         $(this).off('click');
         updateList({'id': 'NEW', 'title': newListName, 'desc': null, 'public': 0}, newListAdded, 'add-list');
-      }  
-    }); 
+      }
+    });
 
     //Add new list, listen for keyup enter
     $(".new-list-input").on('keyup', function invokeCreateNewList(e) {
