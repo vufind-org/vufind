@@ -6,7 +6,7 @@ use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\SharedEventManagerInterface;
 
-class InjectFulltextMatchIdsListener 
+class InjectFulltextMatchIdsListener
 {
 
     /**
@@ -55,7 +55,9 @@ class InjectFulltextMatchIdsListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             if ($params) {
-                $explain = true; // Currently unconditional
+		$searchHandler = $event->getParam('query')->getHandler();
+                // Do not use explain on BibleRangeSearch for performance reasons
+                $explain = $searchHandler == 'BibleRangeSearch' ? false : true;
                 if ($explain == 'true') {
                     $this->active = true;
                     $params->set('debug', 'results');
@@ -66,7 +68,7 @@ class InjectFulltextMatchIdsListener
                 }
             }
         }
-        return $event;                
+        return $event;
     }
 
 
@@ -83,7 +85,7 @@ class InjectFulltextMatchIdsListener
         if (!$this->active || $event->getParam('context') != 'search') {
             return $event;
         }
-        
+
         // Inject highlighting details into record objects:
         $backend = $event->getParam('backend');
         if ($backend == $this->backend->getIdentifier()) {
