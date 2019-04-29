@@ -294,6 +294,18 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Return DOI (false if none)
+     *
+     * @return mixed
+     */
+    public function getCleanDOI()
+    {
+        $rec = $this->getSimpleXML();
+        return isset($rec->addata->doi)
+            ? (string)$rec->addata->doi : false;
+    }
+
+    /**
      * Get a highlighted title string, if available.
      *
      * @return string

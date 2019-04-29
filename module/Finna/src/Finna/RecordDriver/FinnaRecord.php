@@ -93,6 +93,20 @@ trait FinnaRecord
     }
 
     /**
+     * Get OpenURL parameters for an article.
+     *
+     * @return array
+     */
+    protected function getArticleOpenUrlParams()
+    {
+        $params = parent::getArticleOpenUrlParams();
+        if ($doi = $this->tryMethod('getCleanDOI')) {
+            $params['rft.doi'] = $doi;
+        }
+        return $params;
+    }
+
+    /**
      * Get saved time associated with this record in a user list.
      *
      * @param int $list_id List id
