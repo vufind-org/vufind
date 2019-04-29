@@ -297,8 +297,20 @@ ul .dropdown-menu {
 }
 
 /* Home Information */
-.background-lightblue {
+.tf-background-body {
   background: @gray-200;
+}
+
+#tf-rss-preview {
+  list-style-type: none; /* will be rendered as html img with hyperlink */
+  padding-left: 10px;
+
+  li {
+    /* Use css to cut off text and end with..., for good view on high and low resolution */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* Panels */
@@ -617,7 +629,7 @@ hr {
     padding-top: 26px;
 }
 
-.row-home {
+.tf-row-home {
     background: transparent url(/themes/tuefind2/images/searchbar.jpg) no-repeat;
     background-position: center center;
 }
@@ -629,4 +641,26 @@ input[type="checkbox"] {
 
 .browse-item.active:hover {
     background-color: @brand-primary;
+}
+
+.tf-panel-collapse {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-color: #ddd;
+    border-radius: 4px;
+
+    .tf-panel-collapse-heading {
+        background-color: #f5f5f5;
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    .tf-panel-collapse-body {
+        padding: 15px;
+    }
 }

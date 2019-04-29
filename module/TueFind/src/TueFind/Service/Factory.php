@@ -20,4 +20,3 @@ class Factory extends \VuFind\Service\Factory {
     }
 
 }
-?>

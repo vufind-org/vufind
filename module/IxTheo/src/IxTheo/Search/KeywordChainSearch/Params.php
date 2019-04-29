@@ -42,4 +42,3 @@ class Params extends \VuFind\Search\Solr\Params {
         return $backendParams;
     }
 }
-?>

@@ -29,4 +29,3 @@ class Options extends \VuFind\Search\Solr\Options {
         return -1;
     }
 }
-?>

@@ -28,5 +28,3 @@ class Utility {
         return preg_match('/^(["\']).*\1/m', $string);
     }
 }
-
-?>
