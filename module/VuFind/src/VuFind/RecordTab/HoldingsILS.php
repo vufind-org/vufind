@@ -140,17 +140,34 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
+     * Get item paginator options that will be passed to the ILS driver.
+     *
+     * @return array Options for an item paginator with keys: page, itemLimit, offset
+     */
+    public function getPaginatorOptions()
+    {
+        $options = [];
+        $page = $this->getCurrentPage();
+        $itemLimit = $this->getHoldsItemLimit();
+        $offset = ($itemLimit && is_numeric($itemLimit))
+            ? ($page * $itemLimit) - $itemLimit
+            : null;
+        $options = ['page' => $page, 'itemLimit' => $itemLimit, 'offset' => $offset];
+        return $options;
+    }
+
+    /**
      * Getting a paginator for the items list.
      *
      * @return \Zend\Paginator\Paginator
      */
     public function getPaginator()
     {
-        // The total number of items from the API call
+        // The total number of items of the bib record
         $totalItemCount = $this->catalog->getTotalItemCount();
 
-        // The number of items that should be called with one single API call.
-        $itemLimit = $this->catalog->getItemLimit();
+        // The number of items that should be called with one single API call
+        $itemLimit = $this->getHoldsItemLimit();
 
         // Return if a paginator is not needed
         if ($totalItemCount < $itemLimit) {
@@ -180,7 +197,21 @@ class HoldingsILS extends AbstractBase
      */
     public function getCurrentPage()
     {
-        $page = $this->getRequest()->getQuery('page') ?? null;
+        $page = $this->getRequest()->getQuery('page') ?? 1;
         return $page;
+    }
+
+    /**
+     * Get the max. number of items that should be displayed on the holdings ILS tab.
+     * The value is defined in the ILS config file.
+     *
+     * @return mixed Max. no. of items to be displayed on the holdings ILS tab or
+     *               null if not set
+     */
+    public function getHoldsItemLimit()
+    {
+        return !empty($this->catalog->getConfig('Holds')['itemLimit'])
+            ? $this->catalog->getConfig('Holds')['itemLimit']
+            : null;
     }
 }

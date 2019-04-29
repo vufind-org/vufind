@@ -10,8 +10,8 @@
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
     try {
-        $page = $this->tab->getCurrentPage();
-        $holdings = $this->driver->getRealTimeHoldings($page);
+        $options = $this->tab->getPaginatorOptions();
+        $holdings = $this->driver->getRealTimeHoldings($options);
     } catch (\VuFind\Exception\ILS $e) {
         $holdings = ['holdings' => []];
         $offlineMode = 'ils-offline';
@@ -119,8 +119,8 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-<?php if ($paginator = $this->tab->getPaginator()): ?>
-	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $page])?>
+<?php if ($options['itemLimit'] && $paginator = $this->tab->getPaginator()): ?>
+	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $options['page']])?>
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>

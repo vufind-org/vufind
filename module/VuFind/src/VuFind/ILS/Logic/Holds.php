@@ -173,13 +173,14 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id   A Bib ID
-     * @param array  $ids  A list of Source Records (if catalog is for a consortium)
-     * @param int    $page The number of the current page of the item paginator
+     * @param string $id      A Bib ID
+     * @param array  $ids     A list of Source Records (if catalog is for a
+     *                        consortium)
+     * @param array  $options Possible additional options
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $page = null)
+    public function getHoldings($id, $ids = null, $options = null)
     {
         $holdings = [];
 
@@ -206,7 +207,7 @@ class Holds
                 );
             } else {
                 $result = $this->catalog->getHolding(
-                    $id, $patron ? $patron : null, $page
+                    $id, $patron ? $patron : null, $options
                 );
             }
 

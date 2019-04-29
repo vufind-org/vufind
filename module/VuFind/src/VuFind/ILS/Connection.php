@@ -90,6 +90,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $titleHoldsMode = 'disabled';
 
     /**
+     * Total number of items for a given bib id
+     *
+     * @var int
+     */
+    protected $totalItemCount = 0;
+
+    /**
      * Driver plugin manager
      *
      * @var \VuFind\ILS\Driver\PluginManager
@@ -114,7 +121,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Constructor
      *
      * @param \Zend\Config\Config              $config        Configuration
-     * representing the [Catalog] section of config.ini
+     *                                                        representing the
+     *                                                        [Catalog] section of
+     *                                                        config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
      */
@@ -208,7 +217,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Get access to the driver object.
      *
      * @param bool $init Should we initialize the driver (if necessary), or load it
-     * "as-is"?
+     *                   "as-is"?
      *
      * @throws \Exception
      * @return object
@@ -425,7 +434,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * retrieval requests.
      *
      * @param array $functionConfig The storage retrieval request configuration
-     * values
+     *                              values
      * @param array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
@@ -789,7 +798,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * This is responsible for returning the offline mode
      *
      * @param bool $healthCheck Perform a health check in addition to consulting
-     * the ILS status?
+     *                          the ILS status?
      *
      * @return string|bool "ils-offline" for systems where the main ILS is offline,
      * "ils-none" for systems which do not use an ILS, false for online systems.
@@ -971,6 +980,42 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Get holdings
+     *
+     * Retrieve holdings from ILS driver class and normalize result array if needed.
+     *
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Possible additional options
+     *
+     * @return array           Array with holding data
+     */
+    public function getHolding($id, $patron = null, $options = null)
+    {
+        $result = $this->__call('getHolding', [$id, $patron, $options]);
+
+        // Return only "holdings" if the result contains a top level array with
+        // a "total" key
+        if (isset($result['total'])) {
+            $this->totalItemCount = $result['total'];
+            return $result['holdings'];
+        }
+
+        $this->totalItemCount = count($result);
+        return $result;
+    }
+
+    /**
+     * Get the total number of items for a given bib id, returned from ILS
+     *
+     * @return int Total number of items returned from ILS
+     */
+    public function getTotalItemCount()
+    {
+        return $this->totalItemCount;
     }
 
     /**
