@@ -24,5 +24,6 @@
      <field name="local_notes_1" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- COMMON copyFields -->
+    <copyField source="id" dest="ids"/>
     <copyField source="record_selector" dest="rs"/>
 </fields>
