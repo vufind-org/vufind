@@ -35,6 +35,9 @@ Disallow: /Alphabrowse
 Disallow: /Author
 Disallow: /Browse
 Disallow: /Combined
+Disallow: /fulltextsnippetproxy
+Disallow: /pdaproxy
+Disallow: /proxy
 Disallow: /Search/Results
 Disallow: /Summon
 Disallow: /SummonRecord
