@@ -16,7 +16,7 @@
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+    $ignoreHiddenFilterMemory = true;
     $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
     $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
