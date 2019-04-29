@@ -552,6 +552,61 @@ email = SHIB_mail
 ;college = HTTP_COLLEGE
 ;major = HTTP_MAJOR
 ;home_library = HTTP_HOME_LIBRARY
+
+
+; Shibboleth Suomi.fi is optional.
+; This section is only needed if Suomi.fi is to be used as an authentication method.
+[Shibboleth_suomifi]
+
+; Provider_id parameter to pass along to Shibboleth login.
+
+; Production
+; provider_ id = ""
+
+; Development
+; provider_id = "https://testi.apro.tunnistus.fi/idp1"
+
+userattribute_1 = "Shib-Identity-Provider"
+userattribute_value_1  = "https:\\/\\/testi.apro.tunnistus.fi\\/idp1"
+
+userattribute_2 = "SHIB_vtjverified"
+userattribute_value_2 = "true"
+
+; Attribute required to be set for Shibboleth login to be attempted
+required_attribute = Shib-Application-ID
+
+; Required: the attribute Shibboleth uses to uniquely identify users.
+username              = SHIB_eppn
+
+; Should the username be hashed before saving to User profile
+hash_username = true
+
+; Secret key for hashing usernames
+hash_secret = ""
+
+; Required: Shibboleth login URL.
+login = "https://www.finna.fi/Shibboleth.sso/Login"
+
+; Optional: Shibboleth logout URL.
+logout = "https://www.finna.fi/Shibboleth.sso/Logout"
+
+; Optional: Dynamic Shibboleth logout url attribute id (alternative to the static url above)
+logout_attribute       = SHIB_logouturl
+
+; Optional: URL to forward to after Shibboleth login (if omitted,
+; defaultLoggedInModule from [Site] section will be used).
+;target                = http://shib.myuniversity.edu/vufind/MyResearch/Home
+
+; Some or all of the following entries may be uncommented to map Shibboleth
+; attributes to user database columns:
+;cat_username = HTTP_ALEPH_ID
+;cat_password = HTTP_CAT_PASSWORD
+email = SHIB_mail
+firstname = SHIB_givenName
+lastname = SHIB_sn
+;college = HTTP_COLLEGE
+;major = HTTP_MAJOR
+;home_library = HTTP_HOME_LIBRARY
 ;
 ; CAS is optional.  This section only needs to exist if the
 ; Authentication Method is set to CAS.
@@ -597,6 +652,7 @@ email = SHIB_mail
 ;college = college
 ;major = major1
 ;home_library = library
+
 
 ; External Content is Optional.
 ; To use multiple, separate with a comma.  Priority will be given by the order listed

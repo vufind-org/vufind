@@ -1,0 +1,31 @@
+<!-- START of: finna - Auth/Suomifi/login.phtml -->
+<?php $account = $this->auth()->getManager(); ?>
+<?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<div>
+  <div class="login-col shibboleth-login suomifi-login">
+    <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore>
+      <img src="<?=$this->imageLink('login_suomifi.png') ?>" alt="<?=$this->escapeHtmlAttr($this->translate("Suomi.fi Login")) ?>">
+      <span class="sr-only"><?=$this->transEsc('Suomi.fi Login')?></span>
+    </a>
+  </div>
+  <div class="login-col">
+    <i class="fa fa-info3" aria-hidden="true"></i>
+    <div class="login-description">
+      <p class="login-info">
+       <?=$this->translate('login_desc_connect_card_html') ?>
+      </p>
+    </div>
+    <div class="login-description shibboleth suomifi">
+      <?=$this->translate('login_desc_suomifi_html')?>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<?php
+  $language = $this->layout()->userLang;
+  if (!in_array($language, ['fi', 'sv', 'en-gb'])) {
+    $language = 'en-gb';
+  }
+?>
+<?=$this->partial("Auth/Suomifi/terms_$language.phtml") ?>
+<!-- END of: finna - Auth/Suomifi/login.phtml -->

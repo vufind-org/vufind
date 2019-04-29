@@ -371,11 +371,13 @@ $config = [
                     'Finna\Auth\ILS' => 'VuFind\Auth\ILSFactory',
                     'Finna\Auth\MultiILS' => 'VuFind\Auth\ILSFactory',
                     'Finna\Auth\Shibboleth' => 'VuFind\Auth\ShibbolethFactory',
+                    'Finna\Auth\Suomifi' => 'VuFind\Auth\ShibbolethFactory',
                 ],
                 'aliases' => [
                     'VuFind\Auth\ILS' => 'Finna\Auth\ILS',
                     'VuFind\Auth\MultiILS' => 'Finna\Auth\MultiILS',
                     'VuFind\Auth\Shibboleth' => 'Finna\Auth\Shibboleth',
+                    'Suomifi' => 'Finna\Auth\Suomifi'
                 ]
             ],
             'autocomplete' => [
