@@ -694,14 +694,51 @@ input[type="checkbox"] {
 }
 
 
-.tf-panel-3 {
-    @media(min-width: @screen-xs-min) {
-        &:extend(.col-xs-12);
+/*
+    To save a lot of HTML copy/paste, we define some more classes with bootstrap-like widths.
+    (inheriting directly from bootstrap doesn't work)
+    (using LESS &:extend inside media queries doesn't work either...)
+*/
+.tf-col { float: left; }
+.tf-col-12 { width: 100%; &:extend(.tf-col); }
+.tf-col-11 { width: 91.66666667%; &:extend(.tf-col);  }
+.tf-col-10 { width: 83.33333333%; &:extend(.tf-col);  }
+.tf-col-9 { width: 75%; &:extend(.tf-col);  }
+.tf-col-8 { width: 66.66666667%; &:extend(.tf-col);  }
+.tf-col-7 { width: 58.33333333%; &:extend(.tf-col);  }
+.tf-col-6 { width: 50%; &:extend(.tf-col);  }
+.tf-col-5 { width: 41.66666667%; &:extend(.tf-col);  }
+.tf-col-4 { width: 33.33333333%; &:extend(.tf-col);  }
+.tf-col-3 { width: 25%; &:extend(.tf-col);  }
+.tf-col-2 { width: 16.66666667%; &:extend(.tf-col);  }
+.tf-col-1 { width: 8.33333333%; &:extend(.tf-col);  }
+
+/* .tf-panel-home-3 => 3 panels in a row */
+.tf-panel-home-3 {
+    float: left;
+    position: relative;
+    width: 100%; /* col-12 */
+
+    @media (min-width: @screen-sm-min) {
+        width: 50%; /* col-6 */
     }
-    @media(min-width: @screen-sm-min) {
-        &:extend(.col-sm-6);
+
+    @media (min-width: @screen-md-min) {
+        width: 33.33333333%; /* col-4 */
     }
-    @media(min-width: @screen-md-min) {
-        &:extend(.col-md-4);
+}
+
+/* .tf-panel-home-4 => 4 panels in a row */
+.tf-panel-home-4 {
+    float: left;
+    position: relative;
+    width: 100%; /* col-12 */
+
+    @media (min-width: @screen-sm-min) {
+        width: 50%; /* col-6 */
+    }
+
+    @media (min-width: @screen-md-min) {
+        width: 25%; /* col-3 */
     }
 }
