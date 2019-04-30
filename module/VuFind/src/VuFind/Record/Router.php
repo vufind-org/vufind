@@ -97,16 +97,25 @@ class Router
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
-        if ('record' == $route['route']) {
-            if (isset($this->config->Collections->collections)
-                && $this->config->Collections->collections
-            ) {
+        if ($this->config->Collections->collections ?? false) {
+            $routeConfig = isset($this->config->Collections->route)
+                ? $this->config->Collections->route->toArray() : [];
+            $collectionRoutes
+                = array_merge(['record' => 'collection'], $routeConfig);
+            $routeName = $route['route'];
+            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
                     list($source, $id) = $this->extractSourceAndId($driver);
-                    $driver = $this->loader->load($id, $source);
+                    try {
+                        $driver = $this->loader->load($id, $source);
+                    } catch (\Exception $e) {
+                        // Ignore exceptions here so that we don't crash when
+                        // creating a link to record that does not exist
+                    }
                 }
-                if (true === $driver->tryMethod('isCollection')) {
-                    $route['route'] = 'collection';
+                if (is_object($driver) && true === $driver->tryMethod('isCollection')
+                ) {
+                    $route['route'] = $collectionRoute;
                 }
             }
         }

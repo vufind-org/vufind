@@ -1,6 +1,12 @@
-@import "bootstrap";
+/* #LESS>
+@import "../../bootstrap3/less/bootstrap";
 @import "colors";
 @import "variables";
+<#LESS */
+/* #SCSS> */
+@import "colors", "variables", "../../bootstrap3/scss/bootstrap";
+/* <#SCSS */
+
 @import "common";
 @import "search";
 @import "rtl";
@@ -27,13 +33,13 @@ body {
 
   a { color: #fff; }
 }
-.banner .navbar-right { margin-top: calc(($banner-height-sm - 50px) / 2); } // Put right nav in the middle
+.banner .navbar-right { margin-top: calc((#{$banner-height-sm} - 50px) / 2); } // Put right nav in the middle
 .banner .navbar-brand {
   width: (170 / 65) * $banner-height-sm;
   height: $banner-height-sm;
 }
 @media (min-width: 768px) {
-  .banner .navbar-right { margin-top: calc(($banner-height - 50px) / 2); }
+  .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
     width: (170 / 65) * $banner-height;
     height: $banner-height;
@@ -103,6 +109,25 @@ header {
   }
 }
 
+#account-icon.text-success,
+#account-icon.text-warning,
+#account-icon.text-danger {
+  margin-left: -.25rem;
+  margin-top: -0.5rem;
+  margin-bottom: -.5rem;
+  padding: 0.5rem;
+  background-color: $header-light;
+  border-radius: 100%;
+}
+#login-dropdown .login-dropdown-caret:hover,
+a:hover .login-dropdown-caret {
+  color: #222;
+}
+#login-dropdown .login-dropdown-caret[aria-expanded="true"] {
+  color: #fff;
+  background-color: $header-bg;
+}
+
 .breadcrumbs {
   border-bottom: 1px solid $header-light;
   background-color: $header-light;
@@ -135,6 +160,10 @@ header {
 
 /* --- MyResearch --- */
 .myresearch-menu a:hover { background-color: $white; }
+.myresearch-menu a.active:hover {
+  color: $white;
+  background-color: $brand-primary;
+}
 
 /* --- Record --- */
 .record-nav {
