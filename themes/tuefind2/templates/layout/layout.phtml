@@ -136,10 +136,7 @@ VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
     ?>
-      <!-- include Google Fonts -->
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans%7CLato%7CRoboto" rel="stylesheet">
-
-      <?=$this->headScript(); ?>
+    <?=$this->headScript()?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
