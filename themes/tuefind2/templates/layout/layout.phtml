@@ -136,10 +136,7 @@ VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
     ?>
-      <!-- include Google Fonts -->
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans%7CLato%7CRoboto" rel="stylesheet">
-
-      <?=$this->headScript(); ?>
+    <?=$this->headScript()?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
@@ -198,23 +195,7 @@ JS;
             </div>
         </div>
     </div>
-
-    <footer class="hidden-print">
-      <div class="bg-light">
-        <div class="container">
-          <?=$this->HelpText()->render('footer', null, 'static')?>
-        </div>
-      </div>
-      <a href="<?=$this->url('feedback-home')?>" data-lightbox="">
-        <button id="tf-button-footer-feedback" class="btn float-left btn-outline-primary mx-1">
-          <?=$this->transEsc('Feedback')?>
-        </button>
-      </a>
-      <button id="tf-button-footer-back-to-top" class="btn float-right btn-outline-primary mx-5"
-              data-toggle="tooltip" data-placement="left" title="Go to top">
-        <i class="fa fa-chevron-up"> </i>
-      </button>
-    </footer>
+    <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">
