@@ -198,21 +198,7 @@ JS;
             </div>
         </div>
     </div>
-
-    <footer class="hidden-print">
-      <div class="container">
-        <?=$this->HelpText()->render('footer', null, 'static')?>
-      </div>
-      <a href="<?=$this->url('feedback-home')?>" data-lightbox="">
-        <button id="tf-button-footer-feedback" class="btn float-left btn-outline-primary mx-1">
-          <?=$this->transEsc('Feedback')?>
-        </button>
-      </a>
-      <button id="tf-button-footer-back-to-top" class="btn float-right btn-outline-primary mx-5"
-              data-toggle="tooltip" data-placement="left" title="Go to top">
-        <i class="fa fa-chevron-up"> </i>
-      </button>
-    </footer>
+    <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">
