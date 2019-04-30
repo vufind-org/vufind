@@ -75,7 +75,7 @@ public class MultiFormatCalculator
         String formatString;
         char formatCode = ' ';
         char formatCode2 = ' ';
-        char formatCode4 = ' ';
+        char formatCode5 = ' ';
 
         // This record could be a book... until we prove otherwise!
         boolean couldBeBook = true;
@@ -127,7 +127,7 @@ public class MultiFormatCalculator
                 formatString = formatField.getData().toUpperCase();
                 formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
                 formatCode2 = formatString.length() > 1 ? formatString.charAt(1) : ' ';
-                formatCode4 = formatString.length() > 4 ? formatString.charAt(4) : ' ';
+                formatCode5 = formatString.length() > 4 ? formatString.charAt(4) : ' ';
                 switch (formatCode) {
                     case 'A':
                         switch(formatCode2) {
@@ -279,7 +279,7 @@ public class MultiFormatCalculator
                                 result.add("VideoCartridge");
                                 break;
                             case 'D':
-                                switch(formatCode4) {
+                                switch(formatCode5) {
                                     case 'S':
                                         result.add("BRDisc");
                                         break;
