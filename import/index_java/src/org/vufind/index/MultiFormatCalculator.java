@@ -222,7 +222,7 @@ public class MultiFormatCalculator
                     case 'P':
                         return "Journal";
                     default:
-                        if (isConferenceProceeding(record)) {
+                        if (!isConferenceProceeding(record)) {
                             return "Serial";
                         }
                 }
