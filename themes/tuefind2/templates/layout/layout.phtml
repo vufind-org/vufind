@@ -200,10 +200,8 @@ JS;
     </div>
 
     <footer class="hidden-print">
-      <div class="bg-light">
-        <div class="container">
-          <?=$this->HelpText()->render('footer', null, 'static')?>
-        </div>
+      <div class="container">
+        <?=$this->HelpText()->render('footer', null, 'static')?>
       </div>
       <a href="<?=$this->url('feedback-home')?>" data-lightbox="">
         <button id="tf-button-footer-feedback" class="btn float-left btn-outline-primary mx-1">
