@@ -1,13 +1,13 @@
 // show/hide back-to-top button
 $(document).scroll(function(){
     if ($(this).scrollTop() > 50) {
-        $('#back-to-top').fadeIn();
+        $('#tf-button-footer-back-to-top').fadeIn();
     } else {
-        $('#back-to-top').fadeOut();
+        $('#tf-button-footer-back-to-top').fadeOut();
     }
 });
 
-$('#back-to-top').tooltip();
+$('#tf-back-to-top').tooltip();
 
 // onclick-events
 $(function() {
@@ -19,7 +19,7 @@ $(function() {
     });
 
     // back-to-top button
-    $('#back-to-top').click(function() {
+    $('#tf-button-footer-back-to-top').click(function() {
         $('body,html').animate({
             scrollTop: 0
         }, 800);
