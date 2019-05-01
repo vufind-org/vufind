@@ -77,14 +77,14 @@
       </div>
 
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link" target="_blank">
+        <a href="<?= $this->recordLink()->getUrl($this->driver) ?>#html" class="icon html fulltext _record_link" target="_blank">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
       <?php endif; ?>
 
       <?php if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver) . '/PDF'; ?>" class="icon pdf fulltext" target="_blank">
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'PDF'); ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <?php endif; ?>
