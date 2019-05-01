@@ -252,6 +252,30 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
+        // If collections are active, we may need to check if the driver is actually
+        // a collection; if so, we should redirect to the collection controller.
+        $checkRoute = $this->params()->fromPost('checkRoute')
+            ?? $this->params()->fromQuery('checkRoute')
+            ?? false;
+        $config = $this->getConfig();
+        if ($checkRoute && $config->Collections->collections ?? false) {
+            $routeConfig = isset($config->Collections->route)
+                ? $config->Collections->route->toArray() : [];
+            $collectionRoutes
+                = array_merge(['record' => 'collection'], $routeConfig);
+            $routeName = $this->event->getRouteMatch()->getMatchedRouteName() ?? '';
+            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
+                $driver = $this->loadRecord();
+                if (true === $driver->tryMethod('isCollection')) {
+                    $params = $this->params()->fromQuery()
+                        + $this->params()->fromRoute();
+                    $collectionUrl = $this->url()
+                        ->fromRoute($collectionRoute, $params);
+                    return $this->redirect()->toUrl($collectionUrl);
+                }
+            }
+        }
+
         return $this->showTab(
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );

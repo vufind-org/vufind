@@ -95,10 +95,10 @@ class RouterTest extends TestCase
     public function testCollectionSpecialCaseWithString()
     {
         $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $driver->expects($this->never())->method('tryMethod')->with($this->equalTo('isCollection'));
         $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
         $this->assertEquals(
-            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
+            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'record', 'options' => ['query' => ['checkRoute' => 1]]],
             $router->getTabRouteDetails('Solr|test', 'foo')
         );
     }
@@ -111,10 +111,10 @@ class RouterTest extends TestCase
     public function testCollectionSpecialCaseWithStringMissingSource()
     {
         $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $driver->expects($this->never())->method('tryMethod')->with($this->equalTo('isCollection'));
         $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
         $this->assertEquals(
-            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
+            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'record', 'options' => ['query' => ['checkRoute' => 1]]],
             $router->getTabRouteDetails('test', 'foo')
         );
     }
