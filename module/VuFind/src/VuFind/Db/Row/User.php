@@ -654,6 +654,19 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Updated saved language
+     *
+     * @param string $language New language
+     *
+     * @return void
+     */
+    public function updateLastLanguage($language)
+    {
+        $this->last_language = $language;
+        $this->save();
+    }
+
+    /**
      * Get the list of roles of this identity
      *
      * @return string[]|\Rbac\Role\RoleInterface[]
