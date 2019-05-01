@@ -210,9 +210,10 @@ public class MultiFormatCalculator
                 return "BookComponentPart";
             case 'B':
                 return "SerialComponentPart";
-            // Integrating resources (e.g. loose-leaf binders)
+            // Integrating resources (e.g. loose-leaf binders, databases)
             case 'I':
-                return "IntegratingResource";
+                return (formatCode == 'C')
+                    ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
             // Serial
             case 'S':
                 // Look in 008 to determine what type of Continuing Resource
