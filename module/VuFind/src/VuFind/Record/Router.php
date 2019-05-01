@@ -85,14 +85,20 @@ class Router
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
      * @param string                                   $tab    Action to access
+     * @param array                                    $query  Optional query params
      *
      * @return array
      */
-    public function getTabRouteDetails($driver, $tab = null)
+    public function getTabRouteDetails($driver, $tab = null, $query = [])
     {
         $route = $this->getRouteDetails(
             $driver, '', empty($tab) ? [] : ['tab' => $tab]
         );
+        // Add the options and query elements only if we need a query to avoid
+        // an empty element in the route definition:
+        if ($query) {
+            $route['options']['query'] = $query;
+        }
 
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
