@@ -52,17 +52,17 @@ public class MultiFormatCalculator
 
     /**
      * Determine whether a record cannot be a book due to findings in leader
-     * and fixed fields.
+     * and fixed fields (008).
      *
      * @param char formatCode
-     * @param ControlField fixedField
+     * @param ControlField marc008
      * @return boolean
      */
-    protected boolean definitelyNotBookBasedOnRecordType(char recordType, ControlField fixedField) {
+    protected boolean definitelyNotBookBasedOnRecordType(char recordType, ControlField marc008) {
         switch (recordType) {
             case 'M':
                 // If this is a computer file containing numeric data, it is not a book:
-                if (getTypeOfComputerFile(fixedField) == 'A') {
+                if (getTypeOfComputerFile(marc008) == 'A') {
                     return true;
                 }
                 break;
@@ -193,11 +193,11 @@ public class MultiFormatCalculator
      * @param Record record
      * @param char bibLevel
      * @param char formatCode
-     * @param ControlField fixedField
+     * @param ControlField marc008
      * @param boolean couldBeBook
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char bibLevel, char formatCode, ControlField fixedField, boolean couldBeBook) {
+    protected String getFormatFromBibLevel(Record record, char bibLevel, char formatCode, ControlField marc008, boolean couldBeBook) {
         switch (bibLevel) {
             // Monograph
             case 'M':
@@ -217,7 +217,7 @@ public class MultiFormatCalculator
             // Serial
             case 'S':
                 // Look in 008 to determine what type of Continuing Resource
-                switch (fixedField.getData().toUpperCase().charAt(21)) {
+                switch (marc008.getData().toUpperCase().charAt(21)) {
                     case 'N':
                         return "Newspaper";
                     case 'P':
@@ -272,10 +272,10 @@ public class MultiFormatCalculator
         return "";
     }
 
-    protected char getTypeOfComputerFile(ControlField fixedField) {
+    protected char getTypeOfComputerFile(ControlField marc008) {
         // Check the 008 for the type of computer file:
         try {
-            return fixedField.getData().toUpperCase().charAt(26);
+            return marc008.getData().toUpperCase().charAt(26);
         } catch (java.lang.StringIndexOutOfBoundsException e) {
             // ignore errors (leave the string blank if out of bounds)
             return ' ';
@@ -365,7 +365,7 @@ public class MultiFormatCalculator
     public Set<String> getFormats(Record record) {
         Set<String> result = new LinkedHashSet<String>();
         String leader = record.getLeader().toString();
-        ControlField fixedField = (ControlField) record.getVariableField("008");
+        ControlField marc008 = (ControlField) record.getVariableField("008");
         String formatString;
         char formatCode = ' ';
         char formatCode2 = ' ';
@@ -419,7 +419,7 @@ public class MultiFormatCalculator
 
         // check the Leader at position 6
         char recordType = Character.toUpperCase(leader.charAt(6));
-        if (definitelyNotBookBasedOnRecordType(recordType, fixedField)) {
+        if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
         String formatFromRecordType = getFormatFromRecordType(record, recordType);
@@ -430,7 +430,7 @@ public class MultiFormatCalculator
         // check the Leader at position 7
         char bibLevel = Character.toUpperCase(leader.charAt(7));
         String formatFromBibLevel = getFormatFromBibLevel(
-            record, bibLevel, formatCode, fixedField, couldBeBook
+            record, bibLevel, formatCode, marc008, couldBeBook
         );
         if (formatFromBibLevel.length() > 0) {
             result.add(formatFromBibLevel);
