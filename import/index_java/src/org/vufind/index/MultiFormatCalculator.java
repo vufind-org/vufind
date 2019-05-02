@@ -324,7 +324,7 @@ public class MultiFormatCalculator
          */
         DataField title = (DataField) record.getVariableField("245");
         if (title != null) {
-            if (title.getSubfield('h') != null){
+            if (title.getSubfield('h') != null) {
                 if (title.getSubfield('h').getData().toLowerCase().contains("[electronic resource]")) {
                     return true;
                 }
@@ -362,7 +362,7 @@ public class MultiFormatCalculator
      * @param  Record record
      * @return Set format(s) of record
      */
-    public Set<String> getFormats(Record record){
+    public Set<String> getFormats(Record record) {
         Set<String> result = new LinkedHashSet<String>();
         String leader = record.getLeader().toString();
         ControlField fixedField = (ControlField) record.getVariableField("008");
