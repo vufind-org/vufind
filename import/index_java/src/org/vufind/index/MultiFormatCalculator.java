@@ -39,12 +39,12 @@ public class MultiFormatCalculator
      */
     protected boolean definitelyNotBookBasedOn007(char formatCode) {
         switch (formatCode) {
-            // Things that are not books: filmstrips/transparencies (G),
-            // pictures (K) and videos/films (M, V):
-            case 'G':
-            case 'K':
-            case 'M':
-            case 'V':
+            // Things that are not books: filmstrips/transparencies (g),
+            // pictures (k) and videos/films (m, v):
+            case 'g':
+            case 'k':
+            case 'm':
+            case 'v':
                 return true;
         }
         return false;
@@ -60,15 +60,15 @@ public class MultiFormatCalculator
      */
     protected boolean definitelyNotBookBasedOnRecordType(char recordType, ControlField marc008) {
         switch (recordType) {
-            case 'M':
+            case 'm':
                 // If this is a computer file containing numeric data, it is not a book:
-                if (getTypeOfComputerFile(marc008) == 'A') {
+                if (getTypeOfComputerFile(marc008) == 'a') {
                     return true;
                 }
                 break;
-            case 'J':
-            case 'R':
-                // Music recordings (J) and Physical objects (R) are not books.
+            case 'j':
+            case 'r':
+                // Music recordings (j) and Physical objects (r) are not books.
                 return true;
         }
         return false;
@@ -79,105 +79,107 @@ public class MultiFormatCalculator
      * blank string for ambiguous/irrelevant results.
      *
      * @param char formatCode
-     * @param char formatCode2
-     * @param char formatCode5
+     * @param String formatString
      * @return String
      */
-    protected String getFormatFrom007(char formatCode, char formatCode2, char formatCode5) {
+    protected String getFormatFrom007(char formatCode, String formatString) {
+        char formatCode2 = formatString.length() > 1 ? formatString.charAt(1) : ' ';
         switch (formatCode) {
-            case 'A':
-                return formatCode2 == 'D' ? "Atlas" : "Map";
-            case 'C':
+            case 'a':
+                return formatCode2 == 'd' ? "Atlas" : "Map";
+            case 'c':
                 switch(formatCode2) {
-                    case 'A':
+                    case 'a':
                         return "TapeCartridge";
-                    case 'B':
+                    case 'b':
                         return "ChipCartridge";
-                    case 'C':
+                    case 'c':
                         return "DiscCartridge";
-                    case 'F':
+                    case 'f':
                         return "TapeCassette";
-                    case 'H':
+                    case 'h':
                         return "TapeReel";
-                    case 'J':
+                    case 'j':
                         return "FloppyDisk";
-                    case 'M':
-                    case 'O':
+                    case 'm':
+                    case 'o':
                         return "CDROM";
-                    case 'R':
+                    case 'r':
                         // Do not return anything - otherwise anything with an
                         // 856 field would be labeled as "Electronic"
                         return "";
                 }
                 return "Software";
-            case 'D':
+            case 'd':
                 return "Globe";
-            case 'F':
+            case 'f':
                 return "Braille";
-            case 'G':
+            case 'g':
                 switch(formatCode2) {
-                    case 'C':
-                    case 'D':
+                    case 'c':
+                    case 'd':
                         return "Filmstrip";
-                    case 'T':
+                    case 't':
                         return "Transparency";
                 }
                 return "Slide";
-            case 'H':
+            case 'h':
                 return "Microfilm";
-            case 'K':
+            case 'k':
                 switch(formatCode2) {
-                    case 'C':
+                    case 'c':
                         return "Collage";
-                    case 'D':
+                    case 'd':
                         return "Drawing";
-                    case 'E':
+                    case 'e':
                         return "Painting";
-                    case 'F':
+                    case 'f':
                         return "Print";
-                    case 'G':
+                    case 'g':
                         return "Photonegative";
-                    case 'J':
+                    case 'j':
                         return "Print";
-                    case 'L':
+                    case 'l':
                         return "Drawing";
-                    case 'O':
+                    case 'o':
                         return "FlashCard";
-                    case 'N':
+                    case 'n':
                         return "Chart";
                 }
                 return "Photo";
-            case 'M':
+            case 'm':
                 switch(formatCode2) {
-                    case 'F':
+                    case 'f':
                         return "VideoCassette";
-                    case 'R':
+                    case 'r':
                         return "Filmstrip";
                 }
                 return "MotionPicture";
-            case 'O':
+            case 'o':
                 return "Kit";
-            case 'Q':
+            case 'q':
                 return "MusicalScore";
-            case 'R':
+            case 'r':
                 return "SensorImage";
-            case 'S':
+            case 's':
                 switch(formatCode2) {
-                    case 'D':
+                    case 'd':
                         return "SoundDisc";
-                    case 'S':
+                    case 's':
                         return "SoundCassette";
                 }
                 return "SoundRecording";
-            case 'V':
+            case 'v':
                 switch(formatCode2) {
-                    case 'C':
+                    case 'c':
                         return "VideoCartridge";
-                    case 'D':
-                        return formatCode5 == 'S' ? "BRDisc" : "VideoDisc";
-                    case 'F':
+                    case 'd':
+                        char formatCode5 = formatString.length() > 4
+                            ? formatString.charAt(4) : ' ';
+                        return formatCode5 == 's' ? "BRDisc" : "VideoDisc";
+                    case 'f':
                         return "VideoCassette";
-                    case 'R':
+                    case 'r':
                         return "VideoReel";
                 }
                 // assume other video is online:
@@ -200,27 +202,27 @@ public class MultiFormatCalculator
     protected String getFormatFromBibLevel(Record record, char bibLevel, char formatCode, ControlField marc008, boolean couldBeBook) {
         switch (bibLevel) {
             // Monograph
-            case 'M':
+            case 'm':
                 if (couldBeBook) {
-                    return (formatCode == 'C') ? "eBook" : "Book";
+                    return (formatCode == 'c') ? "eBook" : "Book";
                 }
                 break;
             // Component parts
-            case 'A':
+            case 'a':
                 return "BookComponentPart";
-            case 'B':
+            case 'b':
                 return "SerialComponentPart";
             // Integrating resources (e.g. loose-leaf binders, databases)
-            case 'I':
-                return (formatCode == 'C')
+            case 'i':
+                return (formatCode == 'c')
                     ? "OnlineIntegratingResource" : "PhysicalIntegratingResource";
             // Serial
-            case 'S':
+            case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                switch (marc008.getData().toUpperCase().charAt(21)) {
-                    case 'N':
+                switch (marc008.getData().toLowerCase().charAt(21)) {
+                    case 'n':
                         return "Newspaper";
-                    case 'P':
+                    case 'p':
                         return "Journal";
                     default:
                         if (!isConferenceProceeding(record)) {
@@ -242,28 +244,28 @@ public class MultiFormatCalculator
      */
     protected String getFormatFromRecordType(Record record, char recordType) {
         switch (recordType) {
-            case 'C':
-            case 'D':
+            case 'c':
+            case 'd':
                 return "MusicalScore";
-            case 'E':
-            case 'F':
+            case 'e':
+            case 'f':
                 return "Map";
-            case 'G':
+            case 'g':
                 // We're going to rely on the 007 instead for Projected Media
                 //return "Slide";
                 return "";
-            case 'I':
+            case 'i':
                 return "SoundRecording";
-            case 'J':
+            case 'j':
                 return "MusicRecording";
-            case 'K':
+            case 'k':
                 return "Photo";
-            case 'O':
-            case 'P':
+            case 'o':
+            case 'p':
                 return "Kit";
-            case 'R':
+            case 'r':
                 return "PhysicalObject";
-            case 'T':
+            case 't':
                 if (!isThesis(record)) {
                     return "Manuscript";
                 }
@@ -275,7 +277,7 @@ public class MultiFormatCalculator
     protected char getTypeOfComputerFile(ControlField marc008) {
         // Check the 008 for the type of computer file:
         try {
-            return marc008.getData().toUpperCase().charAt(26);
+            return marc008.getData().toLowerCase().charAt(26);
         } catch (java.lang.StringIndexOutOfBoundsException e) {
             // ignore errors (leave the string blank if out of bounds)
             return ' ';
@@ -368,8 +370,6 @@ public class MultiFormatCalculator
         ControlField marc008 = (ControlField) record.getVariableField("008");
         String formatString;
         char formatCode = ' ';
-        char formatCode2 = ' ';
-        char formatCode5 = ' ';
 
         // This record could be a book... until we prove otherwise!
         boolean couldBeBook = true;
@@ -395,22 +395,18 @@ public class MultiFormatCalculator
             ControlField formatField;
             while(fieldsIter.hasNext()) {
                 formatField = (ControlField) fieldsIter.next();
-                formatString = formatField.getData().toUpperCase();
+                formatString = formatField.getData().toLowerCase();
                 formatCode = formatString.length() > 0 ? formatString.charAt(0) : ' ';
-                formatCode2 = formatString.length() > 1 ? formatString.charAt(1) : ' ';
-                formatCode5 = formatString.length() > 4 ? formatString.charAt(4) : ' ';
                 if (definitelyNotBookBasedOn007(formatCode)) {
                     couldBeBook = false;
                 }
-                if (formatCode == 'V') {
+                if (formatCode == 'v') {
                     // All video content should get flagged as video; we will also
                     // add a more detailed value in getFormatFrom007 to distinguish
                     // different types of video.
                     result.add("Video");
                 }
-                String formatFrom007 = getFormatFrom007(
-                    formatCode, formatCode2, formatCode5
-                );
+                String formatFrom007 = getFormatFrom007(formatCode, formatString);
                 if (formatFrom007.length() > 0) {
                     result.add(formatFrom007);
                 }
@@ -418,7 +414,7 @@ public class MultiFormatCalculator
         }
 
         // check the Leader at position 6
-        char recordType = Character.toUpperCase(leader.charAt(6));
+        char recordType = Character.toLowerCase(leader.charAt(6));
         if (definitelyNotBookBasedOnRecordType(recordType, marc008)) {
             couldBeBook = false;
         }
@@ -428,7 +424,7 @@ public class MultiFormatCalculator
         }
 
         // check the Leader at position 7
-        char bibLevel = Character.toUpperCase(leader.charAt(7));
+        char bibLevel = Character.toLowerCase(leader.charAt(7));
         String formatFromBibLevel = getFormatFromBibLevel(
             record, bibLevel, formatCode, marc008, couldBeBook
         );
@@ -440,7 +436,7 @@ public class MultiFormatCalculator
         if (result.isEmpty()) {
             // If the leader bit indicates a "Collection," treat it as a kit for now;
             // this is a rare case but helps cut down on the number of unknowns.
-            result.add(bibLevel == 'C' ? "Kit" : "Unknown");
+            result.add(bibLevel == 'c' ? "Kit" : "Unknown");
         }
 
         return result;
