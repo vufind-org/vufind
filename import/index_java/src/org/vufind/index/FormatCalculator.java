@@ -275,6 +275,12 @@ public class FormatCalculator
         return "";
     }
 
+    /**
+     * Extract the computer file type from the 008 field
+     *
+     * @param ControlField marc008
+     * @return char
+     */
     protected char getTypeOfComputerFile(ControlField marc008) {
         // Check the 008 for the type of computer file:
         try {
