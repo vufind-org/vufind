@@ -31,7 +31,7 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Exception\AuthMailNotVerified as AuthMailNotVerifiedException;
+use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\PhpEnvironment\Request;
 
@@ -204,14 +204,14 @@ class Database extends AbstractBase
      * @param \VuFind\Db\Row\User $user User to check
      *
      * @return void
-     * @throws AuthMailNotVerifiedException
+     * @throws AuthEmailNotVerifiedException
      */
     protected function checkEmailVerified($user)
     {
         $config = $this->getConfig();
         $verify_email = $config->Authentication->verify_email ?? false;
         if ($verify_email && !$user->checkEmailVerified()) {
-            $exception = new AuthMailNotVerifiedException(
+            $exception = new AuthEmailNotVerifiedException(
                 'authentication_error_email_not_verified'
             );
             $exception->user = $user;

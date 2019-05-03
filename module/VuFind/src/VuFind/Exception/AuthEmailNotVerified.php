@@ -36,7 +36,7 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AuthMailNotVerified extends \VuFind\Exception\Auth
+class AuthEmailNotVerified extends \VuFind\Exception\Auth
 {
     /**
      * User object with unverified email.

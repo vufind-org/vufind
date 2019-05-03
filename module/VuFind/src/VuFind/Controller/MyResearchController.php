@@ -28,7 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Exception\AuthMailNotVerified as AuthMailNotVerifiedException;
+use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -90,7 +90,7 @@ class MyResearchController extends AbstractBase
     protected function processAuthenticationException(AuthException $e)
     {
         $msg = $e->getMessage();
-        if ($e instanceof AuthMailNotVerifiedException) {
+        if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendVerificationEmail($e->user, $this->getConfig());
         }
         // If a Shibboleth-style login has failed and the user just logged
@@ -246,7 +246,7 @@ class MyResearchController extends AbstractBase
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
-            } catch (AuthMailNotVerifiedException $e) {
+            } catch (AuthEmailNotVerifiedException $e) {
                 $this->sendVerificationEmail($e->user, $this->getConfig());
                 return $this->forwardTo('MyResearch', 'EmailNotVerified');
             } catch (AuthException $e) {
