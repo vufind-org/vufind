@@ -18,8 +18,6 @@ class PluginManager extends \TueFind\RecordDriver\PluginManager {
         $this->addOverride('aliases', 'solrdefault', 'IxTheo\RecordDriver\SolrDefault');
         $this->addOverride('aliases', 'solrmarc', 'IxTheo\RecordDriver\SolrMarc');
 
-        $this->addOverride('delegators', 'IxTheo\RecordDriver\SolrMarc', 'VuFind\RecordDriver\IlsAwareDelegatorFactory');
-
         $this->addOverride('factories', 'IxTheo\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
         $this->addOverride('factories', 'IxTheo\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
 

@@ -18,8 +18,6 @@ class PluginManager extends \TueFind\RecordDriver\PluginManager {
         $this->addOverride('aliases', 'solrdefault', 'KrimDok\RecordDriver\SolrDefault');
         $this->addOverride('aliases', 'solrmarc', 'KrimDok\RecordDriver\SolrMarc');
 
-        $this->addOverride('delegators', 'KrimDok\RecordDriver\SolrMarc', 'VuFind\RecordDriver\IlsAwareDelegatorFactory');
-
         $this->addOverride('factories', 'KrimDok\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
         $this->addOverride('factories', 'KrimDok\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
 
