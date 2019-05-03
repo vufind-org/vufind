@@ -67,13 +67,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected $dateConverter;
 
     /**
-     * Total number of items returned by the API in getHolding
-     *
-     * @var int
-     */
-    protected $totalItemCount = 0;
-
-    /**
      * Configuration loader
      *
      * @var \VuFind\Config\PluginManager
@@ -233,53 +226,28 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * Get the item limit from Alma.ini config file. It the config is not set the
-     * default value is 10.
-     *
-     * @return int
-     */
-    public function getItemLimit()
-    {
-        $itemLimit = $this->config['Holds']['itemLimit'] ?? 10;
-        return (is_numeric($itemLimit)) ? $itemLimit : 10;
-    }
-
-    /**
-     * Get the total number of items for a bibliographic record. The number is set in
-     * the getHolding function.
-     *
-     * @return int
-     */
-    public function getTotalItemCount()
-    {
-        return $this->totalItemCount;
-    }
-
-    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     * @param int    $page   The selected page number of the item paginator (if
-     *                       available)
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
      *
-     * @return array         On success an associative array with the following keys:
-     *                       id, source, availability (boolean), status, location,
-     *                       reserve, callnumber, duedate, returnDate, number,
-     *                       barcode, item_notes, item_id, holding_id, addLink,
-     *                       description.
+     * @return array          On success an array with the key "total" containing the
+     *                        total number of items for the given bib id, and the key
+     *                        "holdings" containing an array of holding information
+     *                        each one with these keys: id, source, availability,
+     *                        status, location, reserve, callnumber, duedate,
+     *                        returnDate, number, barcode, item_notes, item_id,
+     *                        holding_id, addLink, description
      */
-    public function getHolding($id, array $patron = null, $page = null)
+    public function getHolding($id, $patron = null, $options = null)
     {
         $results = [];
         $copyCount = 0;
         $username = $patron['cat_username'] ?? null;
-        $itemLimit = $this->getItemLimit();
-        $page = $page ?? 1;
-        $offset = ($page * $itemLimit) - $itemLimit;
 
         // The path for the API call. We call "ALL" available items, but not at once.
         // The "limit" tells the API how many items should be returned by the call
@@ -287,14 +255,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // 40). With these parameters we are able to use a paginator for paging
         // through many items.
         $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='
-            . $itemLimit . '&offset=' . $offset
+            . $options['itemLimit'] . '&offset=' . $options['offset']
             . '&order_by=library,location,enum_a,enum_b&direction=desc';
 
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the total number of items returned from the API call and set it to
             // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
             // the items paginator.
-            $this->totalItemCount = (int)$items->attributes()->total_record_count;
+            $results['total'] = (int)$items->attributes()->total_record_count;
 
             foreach ($items->item as $item) {
                 $number = ++$copyCount;
@@ -358,26 +326,26 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $description = (string)$item->item_data->description;
                 }
 
-                $results[] = [
-                     'id' => $id,
-                     'source' => 'Solr',
-                     'availability' => $this->getAvailabilityFromItem($item),
-                     'status' => (string)$item->item_data->base_status[0]
-                         ->attributes()['desc'],
-                     'location' => (string)$item->item_data->location,
-                     'reserve' => 'N',   // TODO: support reserve status
-                     'callnumber' => (string)$item->holding_data->call_number,
-                     'duedate' => $duedate,
-                     'returnDate' => false, // TODO: support recent returns
-                     'number' => $number,
-                     'barcode' => empty($barcode) ? 'n/a' : $barcode,
-                     'item_notes' => $itemNotes ?? null,
-                     'item_id' => $itemId,
-                     'holding_id' => $holdingId,
-                     'addLink' => $addLink ?? false,
-                     // For Alma title-level hold requests
-                     'description' => $description ?? null
-                 ];
+                $results['holdings'][] = [
+                    'id' => $id,
+                    'source' => 'Solr',
+                    'availability' => $this->getAvailabilityFromItem($item),
+                    'status' => (string)$item->item_data->base_status[0]
+                        ->attributes()['desc'],
+                    'location' => (string)$item->item_data->location,
+                    'reserve' => 'N',   // TODO: support reserve status
+                    'callnumber' => (string)$item->holding_data->call_number,
+                    'duedate' => $duedate,
+                    'returnDate' => false, // TODO: support recent returns
+                    'number' => $number,
+                    'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                    'item_notes' => $itemNotes ?? null,
+                    'item_id' => $itemId,
+                    'holding_id' => $holdingId,
+                    'addLink' => $addLink ?? false,
+                    // For Alma title-level hold requests
+                    'description' => $description ?? null
+                ];
             }
         }
 
@@ -1231,6 +1199,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
+
+            // Set default value for "itemLimit" in Alma driver
+            if ($function === 'Holds') {
+                $functionConfig['itemLimit'] = $functionConfig['itemLimit']
+                    ?? 10
+                    ?: 10;
+            }
         } else {
             $functionConfig = false;
         }
