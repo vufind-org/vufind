@@ -2,7 +2,7 @@
 
 namespace KrimDok\RecordDriver;
 
-class PluginManager extends \VuFind\RecordDriver\PluginManager {
+class PluginManager extends \TueFind\RecordDriver\PluginManager {
     /**
      * Constructor
      *
@@ -15,13 +15,13 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['solrdefault'] = 'KrimDok\RecordDriver\SolrDefault';
-        $this->aliases['solrmarc'] = 'KrimDok\RecordDriver\SolrMarc';
+        $this->addOverride('aliases', 'solrdefault', 'KrimDok\RecordDriver\SolrDefault');
+        $this->addOverride('aliases', 'solrmarc', 'KrimDok\RecordDriver\SolrMarc');
 
-        $this->delegators['KrimDok\RecordDriver\SolrMarc'] = ['VuFind\RecordDriver\IlsAwareDelegatorFactory'];
+        $this->addOverride('delegators', 'KrimDok\RecordDriver\SolrMarc', 'VuFind\RecordDriver\IlsAwareDelegatorFactory');
 
-        $this->factories['KrimDok\RecordDriver\SolrDefault'] = 'TueFind\RecordDriver\SolrDefaultFactory';
-        $this->factories['KrimDok\RecordDriver\SolrMarc'] = 'TueFind\RecordDriver\SolrMarcFactory';
+        $this->addOverride('factories', 'KrimDok\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
+        $this->addOverride('factories', 'KrimDok\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
 
         parent::__construct($configOrContainerInstance, $v3config);
     }

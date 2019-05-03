@@ -2,7 +2,7 @@
 
 namespace IxTheo\RecordDriver;
 
-class PluginManager extends \VuFind\RecordDriver\PluginManager {
+class PluginManager extends \TueFind\RecordDriver\PluginManager {
     /**
      * Constructor
      *
@@ -15,13 +15,13 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['solrdefault'] = 'IxTheo\RecordDriver\SolrDefault';
-        $this->aliases['solrmarc'] = 'IxTheo\RecordDriver\SolrMarc';
+        $this->addOverride('aliases', 'solrdefault', 'IxTheo\RecordDriver\SolrDefault');
+        $this->addOverride('aliases', 'solrmarc', 'IxTheo\RecordDriver\SolrMarc');
 
-        $this->delegators['IxTheo\RecordDriver\SolrMarc'] = ['VuFind\RecordDriver\IlsAwareDelegatorFactory'];
+        $this->addOverride('delegators', 'IxTheo\RecordDriver\SolrMarc', 'VuFind\RecordDriver\IlsAwareDelegatorFactory');
 
-        $this->factories['IxTheo\RecordDriver\SolrDefault'] = 'TueFind\RecordDriver\SolrDefaultFactory';
-        $this->factories['IxTheo\RecordDriver\SolrMarc'] = 'TueFind\RecordDriver\SolrMarcFactory';
+        $this->addOverride('factories', 'IxTheo\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
+        $this->addOverride('factories', 'IxTheo\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
 
         parent::__construct($configOrContainerInstance, $v3config);
     }
