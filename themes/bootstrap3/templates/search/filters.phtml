@@ -52,8 +52,7 @@
           <li>
         <?php endif; ?>
         <?php
-          switch ($value['operator'])
-          {
+          switch ($value['operator']) {
           case 'NOT':
             $operatorChar = '-';
             $join = $this->transEsc('NOT');
@@ -62,9 +61,12 @@
             $operatorChar = '~';
             $join = $this->transEsc('OR');
             break;
-          default:
+          case 'AND':
             $operatorChar = '';
-            $join = '';
+            $join = $this->transEsc('AND');
+            break;
+          default:
+            $operatorChar = $join = '';
           }
           $operatorClass = $this->escapeHtmlAttr(strtolower($value['operator']));
         ?>
