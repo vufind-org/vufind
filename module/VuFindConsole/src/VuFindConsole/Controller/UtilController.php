@@ -855,4 +855,30 @@ class UtilController extends AbstractBase
         Console::writeLine("\tFinished.");
         return $this->getSuccessResponse();
     }
+
+    /**
+     * Lint a file of MARC records.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function lintmarcAction()
+    {
+        $request = $this->getRequest();
+        $filename = $request->getParam('filename');
+        $marc = substr($filename, -3) !== 'xml'
+            ? new File_MARC($filename) : new File_MARCXML($filename);
+        $linter = new \File_MARC_Lint();
+        $i = 0;
+        while ($record = $marc->next()) {
+            $i++;
+            $field001 = $record->getField('001');
+            $field001 = $field001 ? (string)$field001->getData() : 'undefined';
+            Console::writeLine("Checking record $i (001 = $field001)...");
+            $warnings = $linter->checkRecord($record);
+            if (count($warnings) > 0) {
+                Console::writeLine('Warnings: ' . implode("\n", $warnings));
+            }
+        }
+        return $this->getSuccessResponse();
+    }
 }

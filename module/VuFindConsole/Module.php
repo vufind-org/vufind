@@ -127,6 +127,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util expire_searches' => 'Database search table cleanup',
             'util expire_sessions' => 'Database session table cleanup',
             'util index_reserves' => 'Solr reserves indexer',
+            'util lint_marc' => 'MARC validator',
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
