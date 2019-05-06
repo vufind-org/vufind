@@ -263,4 +263,12 @@ class SolrMarc extends SolrDefault
         }
         return $issns_and_titles;
     }
+
+    public function getSuperiorFrom773a() {
+        $_773_fields = $this->getMarcRecord()->getFields("773");
+        foreach ($_773_fields as $_773_field)
+            $subfield_a = $_773_field->getSubfield('a') ? $_773_field->getSubfield('a')->getData() : '';
+        return $subfield_a;
+    }
+
 }
