@@ -183,10 +183,15 @@
         <tr>
           <th><?=$this->transEsc('In')?>: </th>
           <td>
-            <? foreach ($ids_and_titles as $id => $titleAndVolume): ?>
-              <a href="<?=$id?>"><?=$this->escapeHtml(implode(" ", $titleAndVolume))?></a>
-              <br/>
-            <? endforeach; ?>
+            <? if (sizeof($ids_and_titles)): ?>
+               <? foreach ($ids_and_titles as $id => $title): ?>
+                 <a href="<?=$this->url("record", array("id" => $id));?>"><?=$this->escapeHtml($title[0])?></a>
+                 <br/>
+               <? endforeach; ?>
+            <? elseif (!empty($this->driver->getSuperiorFrom773a())): ?>
+               <?=$this->driver->getSuperiorFrom773a();?>
+               <br/>
+            <? endif; ?>
             <?=implode(', ', $infos);?>
           </td>
         </tr>
