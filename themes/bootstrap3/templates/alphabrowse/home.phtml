@@ -108,7 +108,7 @@
               </div>
             <?php endif; ?>
 
-            <?php if ($item['note']): ?>
+            <?php if ($item['note'] ?? false): ?>
               <div>
                 <?=$this->transEsc('Note') ?>:
                 <ul>
