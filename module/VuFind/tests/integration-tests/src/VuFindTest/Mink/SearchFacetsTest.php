@@ -43,7 +43,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @var string
      */
-    protected $activeFilterSelector = '.filters .filter-value';
+    protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
 
     /**
      * Standard setup method.
