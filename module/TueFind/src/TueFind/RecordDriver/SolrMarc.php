@@ -266,9 +266,11 @@ class SolrMarc extends SolrDefault
 
     public function getSuperiorFrom773a() {
         $_773_fields = $this->getMarcRecord()->getFields("773");
-        foreach ($_773_fields as $_773_field)
+        foreach ($_773_fields as $_773_field) {
             $subfield_a = $_773_field->getSubfield('a') ? $_773_field->getSubfield('a')->getData() : '';
-        return $subfield_a;
+            if (!empty($subfield_a))
+                return $subfield_a;
+        }
     }
 
 }
