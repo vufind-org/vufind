@@ -40,6 +40,21 @@ class InjectFulltextMatchIdsListener
         $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
+
+    /**
+     * GetSearchHandlerName
+     * @return string
+     */
+    protected function getSearchHandlerName(EventInterface $event) {
+        $query = $event->getParam('query');
+        if ($query instanceof \VuFindSearch\Query\Query)
+            return $query->getHandler();
+        if ($query instanceof \VuFindSearch\Query\QueryGroup)
+            return $query->getReducedHandler();
+        return "";
+    }
+
+
     /**
      * Set up highlighting parameters.
      *
@@ -55,7 +70,7 @@ class InjectFulltextMatchIdsListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             if ($params) {
-		$searchHandler = $event->getParam('query')->getHandler();
+                $searchHandler = $this->getSearchHandlerName($event);
                 // Do not use explain on BibleRangeSearch for performance reasons
                 $explain = $searchHandler == 'BibleRangeSearch' ? false : true;
                 if ($explain == 'true') {
