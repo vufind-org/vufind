@@ -71,6 +71,36 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Helper function for simple facet application test
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function facetApplyProcedure($page)
+    {
+        // Confirm that we have 9 results and no filters to begin with:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(0, count($items));
+
+        // Facet to Fiction (after making sure we picked the right link):
+        $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
+        $this->assertEquals('Fiction 7', $facetList->getText());
+        $facetList->click();
+        $this->snooze();
+
+        // Check that when the page reloads, we have fewer results and a filter:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(1, count($items));
+    }
+
+    /**
      * Helper function for facets lists
      *
      * @param \Behat\Mink\Element\Element $page            Mink page object
@@ -149,25 +179,38 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     {
         $page = $this->performSearch('building:weird_ids.mrc');
 
-        // Confirm that we have 9 results and no filters to begin with:
-        $time = $this->findCss($page, '.search-query-time');
-        $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals("Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertEquals(0, count($items));
+        // Confirm that we are NOT using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(0, count($ajaxContainer));
 
-        // Facet to Fiction (after making sure we picked the right link):
-        $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
-        $this->assertEquals('Fiction 7', $facetList->getText());
-        $facetList->click();
-        $this->snooze();
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
+    }
 
-        // Check that when the page reloads, we have fewer results and a filter:
-        $time = $this->findCss($page, '.search-query-time');
-        $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertEquals(1, count($items));
+    /**
+     * Test applying a facet to filter results (deferred facet sidebar)
+     *
+     * @return void
+     */
+    public function testApplyFacetDeferred()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+
+        // Confirm that we ARE using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(1, count($ajaxContainer));
+
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
     }
 
     /**
