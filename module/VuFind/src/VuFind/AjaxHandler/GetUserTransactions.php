@@ -52,10 +52,10 @@ class GetUserTransactions extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
         }
         if (!$this->ils->checkCapability('getMyTransactions')) {
-            return $this->formatResponse('', self::STATUS_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
         }
         $items = $this->ils->getMyTransactions($patron);
         $counts = [
