@@ -1446,7 +1446,7 @@ class MyResearchController extends AbstractBase
         if (null == $user) {
             $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
         } else {
-            // Make sure we've waiting long enough
+            // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->verify_hash);
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval

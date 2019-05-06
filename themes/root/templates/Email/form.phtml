@@ -1,12 +1,13 @@
-<?php foreach($this->fields as $key => $data): ?>
+<?php foreach($this->fields as $data): ?>
+<?php $label = $data['label'] ?? null ?>
 <?php $isTextarea = $data['type'] === 'textarea'; ?>
 <?php if ($isTextarea): ?>
 -----
-<?=$key?>:
+<?=$label ? "$label: " : ''?>
 <?=$data['value']?>
 
 -----
 <?php else: ?>
-<?= "$key: " . $data['value'] . PHP_EOL ?>
+<?= ($label ? "$label: " : '') . $data['value'] . PHP_EOL ?>
 <?php endif ?>
 <?php endforeach ?>
