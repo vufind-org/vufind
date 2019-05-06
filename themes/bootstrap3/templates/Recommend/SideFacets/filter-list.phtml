@@ -20,6 +20,7 @@
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
         <span class="text">
             <?php if ($filter['operator'] == 'NOT'): ?><?=$this->transEsc('NOT') ?><?php endif; ?>
+            <?php if ($filter['operator'] == 'AND' && $i > 0): ?><?=$this->transEsc('AND') ?><?php endif; ?>
             <?php if ($filter['operator'] == 'OR' && $i > 0): ?><?=$this->transEsc('OR') ?><?php endif; ?>
             <?=$this->transEsc($field) ?>: <?=$this->escapeHtml($filter['displayText']) ?>
         </span>
