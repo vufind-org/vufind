@@ -80,7 +80,7 @@ function tuefindGetFulltextSnippets(url, doc_id, query) {
          var snippets = json['snippets'];
          $("#snippet_place_holder").each(function() {
             if (snippets) {
-              $(this).replaceWith(snippets.join('</br>') + '</br>');
+              $(this).replaceWith(snippets.join('<br/>') + '<br/>');
             }
             else
               $("#fulltext_snippets").remove();
@@ -116,7 +116,7 @@ function tuefindGetJOPInformation(jop_place_holder_id, jop_icons_id, url_ajax_pr
              if (accessURL) {
                if (filter[accessURL] != 1) {
                  if (replacement)
-                   replacement += '<br />';
+                   replacement += '<br/>';
                  replacement += '<a href="' + accessURL + '">'
                                 + available_online_text + '.</a>';
                  filter[accessURL] = 1;

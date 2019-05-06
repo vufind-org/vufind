@@ -13,7 +13,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <? if ((isset($this->showCartControls) && $this->showCartControls)
       || (isset($this->showBulkOptions) && $this->showBulkOptions)): ?>
-    <?=$this->record($this->driver)->getCheckbox() ?></br>
+    <?=$this->record($this->driver)->getCheckbox() ?><br/>
   <? endif; ?>
   <div class="text-center">
     <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
