@@ -43,6 +43,7 @@
             'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
+            'hold_available' => 'hold_available',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
             'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
@@ -61,13 +62,13 @@
         // Add libphonenumber.js strings
         $this->jsTranslations()->addStrings(
           [
-                "Phone number invalid" => 'libphonenumber_invalid',
-                "Invalid country calling code" => 'libphonenumber_invalidcountry',
-                "Invalid region code" => 'libphonenumber_invalidregion',
-                "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
-                "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
-                "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
-                "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
+            "Phone number invalid" => 'libphonenumber_invalid',
+            "Invalid country calling code" => 'libphonenumber_invalidcountry',
+            "Invalid region code" => 'libphonenumber_invalidregion',
+            "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
+            "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
+            "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
+            "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
           ]
         );
         // Deal with cart stuff:
@@ -78,7 +79,7 @@
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
             $this->headScript()->appendScript(
-                'VuFind.cart.setDomain("' . $domain . '");'
+              'VuFind.cart.setDomain("' . $domain . '");'
             );
           }
           $cookiePath = $cart->getCookiePath();
@@ -102,8 +103,8 @@
             ]
           );
         }
-        $this->headScript()->appendScript(
-            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+        $this->headScript()->prependScript(
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
 
@@ -113,17 +114,33 @@
             . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
-    ?>
-    <?php
-    $root = rtrim($this->url('home'), '/');
-    $translations = $this->jsTranslations()->getJSON();
-    $dsb = DEFAULT_SEARCH_BACKEND;
-    $setupJS = <<<JS
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'account_has_alerts' => 'account_has_alerts',
+            'Checked Out Items' => 'Checked Out Items',
+            'ill_request_available' => 'ill_request_available',
+            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
+            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
+            'request_in_transit' => 'request_in_transit',
+            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
+          ]
+        );
+      }
+
+      $root = rtrim($this->url('home'), '/');
+      $translations = $this->jsTranslations()->getJSON();
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $setupJS = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-    $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>
   </head>
@@ -148,8 +165,8 @@ JS;
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
-        <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-        <?=$this->render('header.phtml')?>
+      <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <?=$this->render('header.phtml')?>
     </header>
     <nav class="breadcrumbs">
       <div class="container">
@@ -162,13 +179,13 @@ JS;
               <?php if(count($this->layout()->breadcrumbs) > 1): ?>
                 <?=$this->render('breadcrumbs/multi.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title,
-                    'from'    => $this->layout()->from
+                    'title' => $this->layout()->title,
+                    'from' => $this->layout()->from
                   ]) ?>
               <?php else: ?>
                 <?=$this->render('breadcrumbs/default.phtml', [
                     'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title
+                    'title' => $this->layout()->title
                   ]) ?>
               <?php endif; ?>
             <?php else: ?>
@@ -196,7 +213,7 @@ JS;
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
         </div>
       </div>

@@ -5,7 +5,8 @@ namespace IxTheo;
 class Utility {
 
     const USER_TYPE_MAP = [ 'bibstudies' => 'ixtheo',
-                            'ixtheo2'    => 'ixtheo'];
+                            'ixtheo2'    => 'ixtheo',
+                            'relbib2'    => 'relbib'];
 
     public static function getUserTypeFromUsedEnvironment() {
         $vufind_local_dir = getenv('VUFIND_LOCAL_DIR');
