@@ -11,7 +11,7 @@ class Home implements \VuFind\ContentBlock\ContentBlockInterface, RequestAwareIn
         $this->target = empty($settings) ? $this->target : $settings;
     }
 
-    public function setRequest($request)
+    public function setRequest(\Zend\Http\Request $request)
     {
         $this->request = $request;
     }
