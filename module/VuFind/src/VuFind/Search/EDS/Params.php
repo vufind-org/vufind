@@ -80,6 +80,19 @@ class Params extends \VuFind\Search\Base\Params
     public $isSetupOnly = false;
 
     /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($options, $configLoader);
+        $this->addLimitersAsCheckboxFacets($options);
+        $this->addExpandersAsCheckboxFacets($options);
+    }
+
+    /**
      * Pull the search parameters
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
@@ -167,8 +180,6 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
     }
 
     /**
