@@ -12,7 +12,7 @@
 <p class="helptext"><?=$this->helpText?></p>
 <?php endif; ?>
 
-<form class="form-record-hold" method="post" name="placeHold">
+<form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
   <?=$this->flashmessages()?>
   <label class="control-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
