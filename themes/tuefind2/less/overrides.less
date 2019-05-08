@@ -713,6 +713,17 @@ input[type="checkbox"] {
 .tf-col-2 { width: 16.66666667%; &:extend(.tf-col);  }
 .tf-col-1 { width: 8.33333333%; &:extend(.tf-col);  }
 
+/* .tf-panel-home-2 => 2 panels in a row */
+.tf-panel-home-2 {
+    float: left;
+    position: relative;
+    width: 100%; /* col-12 */
+
+    @media (min-width: @screen-sm-min) {
+        width: 50%; /* col-6 */
+    }
+}
+
 /* .tf-panel-home-3 => 3 panels in a row */
 .tf-panel-home-3 {
     float: left;
