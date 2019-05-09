@@ -46,11 +46,6 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?php if (!empty($this->extraSideFacetFilters)): ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
-    'filterList' => $this->extraSideFacetFilters
-  ]); ?>
-<?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>

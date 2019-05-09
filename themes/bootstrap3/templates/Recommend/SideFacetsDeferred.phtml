@@ -48,7 +48,6 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
