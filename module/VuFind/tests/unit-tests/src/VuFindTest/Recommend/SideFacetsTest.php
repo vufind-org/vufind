@@ -173,32 +173,6 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test getVisibleFilters
-     *
-     * @return void
-     */
-    public function testGetVisibleFilters()
-    {
-        $filters = [
-            'format' => [
-                ['value' => 'foo'],
-                ['value' => 'bar', 'suppressDisplay' => true],
-            ],
-        ];
-        $results = $this->getMockResults();
-        $results->getParams()->expects($this->once())->method('getFilterList')
-            ->with($this->equalTo(true))->will($this->returnValue($filters));
-        $sf = $this->getSideFacets(null, $results);
-        $this->assertEquals(
-            [
-                'format' => [['value' => 'foo']],
-                'extra' => [['value' => 'baz']],
-            ],
-            $sf->getVisibleFilters(['extra' => [['value' => 'baz']]])
-        );
-    }
-
-    /**
      * Test getAllRangeFacets()
      *
      * @return void
@@ -272,7 +246,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         $filters = [
             'format' => [
                 ['value' => 'foo'],
-                ['value' => 'bar', 'suppressDisplay' => true],
+                ['value' => 'bar'],
             ],
         ];
         $results = $this->getMockResults();
