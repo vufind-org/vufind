@@ -75,9 +75,6 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         ]);
     }
 
-    /**
-     *
-     */
     protected function setJSStorage($states)
     {
         $session = $this->getMinkSession();
@@ -89,9 +86,6 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $session->evaluateScript($js);
     }
 
-    /**
-     *
-     */
     protected function getJSStorage()
     {
         $session = $this->getMinkSession();

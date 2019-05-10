@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\Unit;
 
-use Behat\Mink\Element\Element;
-
 /**
  * Trait with utility methods for configuring the demo driver in a test
  *
