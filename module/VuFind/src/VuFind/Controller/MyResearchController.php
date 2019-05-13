@@ -91,7 +91,17 @@ class MyResearchController extends AbstractBase
     {
         $msg = $e->getMessage();
         if ($e instanceof AuthEmailNotVerifiedException) {
-            $this->sendVerificationEmail($e->user, $this->getConfig());
+            $this->sendFirstVerificationEmail($e->user);
+            if ($msg == 'authentication_error_email_not_verified_html') {
+                $this->getUserVerificationContainer()->user = $e->user->username;
+                $url = $this->url()->fromRoute('myresearch-emailnotverified')
+                    . '?reverify=true';
+                $msg = [
+                    'html' => true,
+                    'msg' => $msg,
+                    'tokens' => ['%%url%%' => $url],
+                ];
+            }
         }
         // If a Shibboleth-style login has failed and the user just logged
         // out, we need to override the error message with a more relevant
@@ -247,7 +257,7 @@ class MyResearchController extends AbstractBase
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
             } catch (AuthEmailNotVerifiedException $e) {
-                $this->sendVerificationEmail($e->user, $this->getConfig());
+                $this->sendFirstVerificationEmail($e->user);
                 return $this->redirect()->toRoute('myresearch-emailnotverified');
             } catch (AuthException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -379,6 +389,19 @@ class MyResearchController extends AbstractBase
         $row->saved = $saved ? 1 : 0;
         $row->user_id = $userId;
         $row->save();
+    }
+
+    /**
+     * Return a session container for use in user email verification.
+     *
+     * @return \Zend\Session\Container
+     */
+    protected function getUserVerificationContainer()
+    {
+        return new \Zend\Session\Container(
+            'user_verification',
+            $this->serviceLocator->get(\Zend\Session\SessionManager::class)
+        );
     }
 
     /**
@@ -937,7 +960,14 @@ class MyResearchController extends AbstractBase
      */
     public function emailNotVerifiedAction()
     {
-        $this->flashMessenger()->addMessage('verification_email_sent', 'error');
+        if ($this->params()->fromQuery('reverify')) {
+            $table = $this->getTable('User');
+            $user = $table
+                ->getByUsername($this->getUserVerificationContainer()->user, false);
+            $this->sendVerificationEmail($user);
+        } else {
+            $this->flashMessenger()->addMessage('verification_email_sent', 'error');
+        }
         return $this->createViewModel();
     }
 
@@ -1506,15 +1536,28 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Helper function for verifyEmailAction
-     * (similar to sendRecoveryEmail()
+     * Send a verify email message for the first time (only if the user does not
+     * already have a hash).
      *
-     * @param \VuFind\Db\Row\User $user   User object we're recovering
-     * @param \VuFind\Config      $config Configuration object
+     * @param \VuFind\Db\Row\User $user User object we're recovering
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendVerificationEmail($user, $config)
+    protected function sendFirstVerificationEmail($user)
+    {
+        if (empty($user->verify_hash)) {
+            return $this->sendVerificationEmail($user);
+        }
+}
+
+    /**
+     * Send a verify email message.
+     *
+     * @param \VuFind\Db\Row\User $user User object we're recovering
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendVerificationEmail($user)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1523,9 +1566,8 @@ class MyResearchController extends AbstractBase
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->verify_hash);
-            $recoveryInterval = isset($config->Authentication->recover_interval)
-                ? $config->Authentication->recover_interval
-                : 60;
+            $recoveryInterval = $this->getConfig()->Authentication->recover_interval
+                ?? 60;
             if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()
                     ->addMessage('verification_too_soon', 'error');
