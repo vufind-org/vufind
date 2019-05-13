@@ -1548,7 +1548,7 @@ class MyResearchController extends AbstractBase
         if (empty($user->verify_hash)) {
             return $this->sendVerificationEmail($user);
         }
-}
+    }
 
     /**
      * Send a verify email message.
