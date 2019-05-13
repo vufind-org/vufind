@@ -9,6 +9,10 @@
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
 
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
   <?=$this->flashmessages()?>
@@ -38,7 +42,7 @@
       <?php endif; ?>
     </nav>
     <?php if ($this->renewForm): ?>
-    <form name="renewals" method="post" id="renewals">
+    <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut">
       <div class="toolbar">
         <div class="checkbox">
           <label>
@@ -205,6 +209,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
 </div>

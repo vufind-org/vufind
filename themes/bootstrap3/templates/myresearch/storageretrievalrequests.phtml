@@ -6,6 +6,10 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 ?>
 
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
 
@@ -15,7 +19,7 @@
 
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm): ?>
-      <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest">
+      <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest" data-clear-account-cache="storageRetrievalRequests">
         <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
         <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
         <div class="btn-group">
@@ -169,6 +173,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'storageRetrievalRequests'])?>
 </div>

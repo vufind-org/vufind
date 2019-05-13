@@ -39,6 +39,13 @@ namespace VuFindTest\Mink;
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
     /**
+     * CSS selector for finding active filters
+     *
+     * @var string
+     */
+    protected $activeFilterSelector = '.active-filters';
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -61,6 +68,36 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"weird_ids.mrc"');
         return $session->getPage();
+    }
+
+    /**
+     * Helper function for simple facet application test
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function facetApplyProcedure($page)
+    {
+        // Confirm that we have 9 results and no filters to begin with:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(0, count($items));
+
+        // Facet to Fiction (after making sure we picked the right link):
+        $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
+        $this->assertEquals('Fiction 7', $facetList->getText());
+        $facetList->click();
+        $this->snooze();
+
+        // Check that when the page reloads, we have fewer results and a filter:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(1, count($items));
     }
 
     /**
@@ -134,6 +171,49 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test applying a facet to filter results (standard facet sidebar)
+     *
+     * @return void
+     */
+    public function testApplyFacet()
+    {
+        $page = $this->performSearch('building:weird_ids.mrc');
+
+        // Confirm that we are NOT using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(0, count($ajaxContainer));
+
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
+    }
+
+    /**
+     * Test applying a facet to filter results (deferred facet sidebar)
+     *
+     * @return void
+     */
+    public function testApplyFacetDeferred()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+
+        // Confirm that we ARE using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(1, count($ajaxContainer));
+
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
+    }
+
+    /**
      * Test expanding facets into the lightbox
      *
      * @return void
@@ -160,7 +240,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -192,7 +272,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -219,7 +299,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->find('css', '.active-filters')));
+        $this->assertEquals(1, count($page->find('css', $this->activeFilterSelector)));
     }
 
     /**
@@ -237,7 +317,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
-        $filter = $this->findCss($page, '.active-filters .facet');
+        $filter = $this->findCss($page, $this->activeFilterSelector . ' .facet');
         $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
@@ -311,21 +391,21 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     public function testRetainFilters()
     {
         $page = $this->getFilteredSearch();
-        $this->findCss($page, '.active-filters'); // Make sure we're filtered
+        $this->findCss($page, $this->activeFilterSelector); // Make sure we're filtered
         // Perform search with retain
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
-        $this->findCss($page, '.active-filters');
+        $this->findCss($page, $this->activeFilterSelector);
         // Perform search double click retain
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
-        $this->findCss($page, '.active-filters');
+        $this->findCss($page, $this->activeFilterSelector);
         // Perform search without retain
         $this->findCss($page, '.searchFormKeepFilters')->click();
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
-        $items = $page->findAll('css', '.active-filters');
+        $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertEquals(0, count($items));
     }
 }

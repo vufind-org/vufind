@@ -12,7 +12,7 @@
   <p class="help-block"><?=$this->helpText?></p>
 <?php endif; ?>
 
-<form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post">
+<form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post" data-clear-account-cache="illRequests">
   <?=$this->flashmessages()?>
   <?php if (in_array("itemId", $this->extraFields)): ?>
     <div class="form-group">

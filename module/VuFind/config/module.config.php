@@ -673,9 +673,6 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
-
-    // For legacy (1.x/2.x) compatibility:
-    'vufindrecord' => 'Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
