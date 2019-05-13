@@ -1554,7 +1554,7 @@ class MyResearchController extends AbstractBase
                         $message
                     );
                     $this->flashMessenger()
-                        ->addMessage('verification_email_sent', 'success');
+                        ->addMessage('verification_email_sent', 'error');
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
