@@ -51,8 +51,12 @@ class Solr extends \VuFind\Autocomplete\Solr
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', '–' /* a hyphen, not a minus sign */, '='];
         $query = str_replace($forbidden, " ", $query);
-        if (substr($query, -1) != " " && !preg_match('/[.\-0-9]$/', $query)) { // regex condition necessary for proper handling
-                                                                               // of author suggestions
+        // Explanation for conditions:
+        // first regex condition necessary for proper handling of author suggestions
+        // second regex needed to avoid ?* combinations that do not yield results
+        if (substr($query, -1) != " " && !preg_match('/[.\-0-9]$/', $query) && !preg_match('/[?]$/', $query)) { // iregex condition necessary for proper handling
+                                                                                   // of author suggestions
+
             $query .= "*";
         }
         return $query;
