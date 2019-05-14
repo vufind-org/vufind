@@ -54,8 +54,8 @@ class Solr extends \VuFind\Autocomplete\Solr
         // Explanation for conditions:
         // first regex condition necessary for proper handling of author suggestions
         // second regex needed to avoid ?* combinations that do not yield results
-        if (substr($query, -1) != " " && !preg_match('/[.\-0-9]$/', $query) && !preg_match('/[?]$/', $query)) { // iregex condition necessary for proper handling
-                                                                                   // of author suggestions
+        // thirs reges needed to avoid wildcarding of titles containing '-' since these would interfere
+        if (substr($query, -1) != " " && !preg_match('/[.\-0-9]$/', $query) && !preg_match('/[?]$/', $query) && !preg_match('/-/', $query)) {
 
             $query .= "*";
         }
