@@ -27,6 +27,7 @@
  */
 namespace VuFind\RecordTab;
 
+use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
@@ -64,6 +65,13 @@ class TabManager
     protected $config = [];
 
     /**
+     * Configuration plugin manager
+     *
+     * @var ConfigManager
+     */
+    protected $configManager;
+
+    /**
      * RecordTab plugin manager
      *
      * @var PluginManager
@@ -88,11 +96,14 @@ class TabManager
      * Constructor
      *
      * @param PluginManager $pm         RecordTab plugin manager
+     * @param ConfigManager $cm         Configuration plugin manager
      * @param array         $zendConfig Zend Framework configuration
      */
-    public function __construct(PluginManager $pm, $zendConfig = [])
-    {
+    public function __construct(PluginManager $pm, ConfigManager $cm,
+        $zendConfig = []
+    ) {
         $this->pluginManager = $pm;
+        $this->configManager = $cm;
         $this->zendConfig = $zendConfig;
 
         // Initialize default context.
@@ -126,7 +137,11 @@ class TabManager
         if (!isset($this->config[$this->context])) {
             $key = $this->contextSettings[$this->context]['legacyConfigSection']
                 ?? 'recorddriver_tabs';
-            $this->config[$this->context] = $this->zendConfig['vufind'][$key] ?? [];
+            $legacyConfig = $this->zendConfig['vufind'][$key] ?? [];
+            $iniConfig = $this->configManager->get(
+                $this->contextSettings[$this->context]['configFile']
+            )->toArray();
+            $this->config[$this->context] = array_merge($legacyConfig, $iniConfig);
         }
     }
 

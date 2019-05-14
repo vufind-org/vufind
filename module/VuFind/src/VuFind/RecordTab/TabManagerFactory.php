@@ -64,6 +64,7 @@ class TabManagerFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         }
         return new $requestedName(
             $container->get(PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
             $container->get('config')
         );
     }
