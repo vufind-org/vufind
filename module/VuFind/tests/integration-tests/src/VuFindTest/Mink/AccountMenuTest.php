@@ -75,6 +75,14 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         ]);
     }
 
+    /**
+     * Create a specific state in the account ajax storage.
+     *
+     * Cleared when browser closes.
+     * If run multiple times in one test function, manually clear cache.
+     *
+     * @return void
+     */
     protected function setJSStorage($states)
     {
         $session = $this->getMinkSession();
@@ -82,10 +90,14 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         foreach ($states as $key => $state) {
             $js .= 'sessionStorage.setItem(\'vf-account-status-' . $key . '\', \'' . json_encode($state) . '\');';
         }
-        // error_log($js);
         $session->evaluateScript($js);
     }
 
+    /**
+     * Get associative array of cookie state
+     *
+     * @return array
+     */
     protected function getJSStorage()
     {
         $session = $this->getMinkSession();
@@ -190,6 +202,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(0, count($stati));
     }
 
+    /**
+     * Set some cookies and delete them to test VuFind.account.clearCache
+     *
+     * @return void
+     */
     public function testCacheClearing()
     {
         $session = $this->getMinkSession();
@@ -206,7 +223,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $cookies = $this->getJSStorage();
         $this->assertEquals(true, $cookies['fines'] == null);
 
-        /* TODO: Not working in tests, but working in browser
+        // TODO: Not working in tests, but working in browser
+        /*
         // Seed some fines
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
         // Clear all cache
@@ -216,6 +234,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         */
     }
 
+    /**
+     * Utility class to login
+     *
+     * @return void
+     */
     protected function login()
     {
         $session = $this->getMinkSession();
@@ -228,6 +251,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
     }
 
+    /**
+     * Abstracted test to set cookies and check if the icon is correct
+     *
+     * @return void
+     */
     protected function checkIcon($cookies, $checkClass)
     {
         $session = $this->getMinkSession();
@@ -237,7 +265,6 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             $this->setJSStorage($cookie);
             $session->reload();
             $page = $session->getPage();
-            // error_log(print_r($this->getJSStorage(), true));
             $this->findCss($page, '#account-icon' . $checkClass);
             foreach ($cookie as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
@@ -245,6 +272,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
+    /**
+     * Check cases that don't change the account icon
+     *
+     * @return void
+     */
     public function testIconNone()
     {
         $this->login();
@@ -261,6 +293,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkIcon($cookies, '.fa-user-circle');
     }
 
+    /**
+     * Check cases that change the account icon to a happy bell
+     *
+     * @return void
+     */
     public function testIconGood()
     {
         $this->login();
@@ -275,6 +312,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkIcon($cookies, '.fa-bell.text-success');
     }
 
+    /**
+     * Check cases that change the account icon to a concerned bell
+     *
+     * @return void
+     */
     public function testIconWarning()
     {
         $this->login();
@@ -285,6 +327,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkIcon($cookies, '.fa-bell.text-warning');
     }
 
+    /**
+     * Check cases that change the account icon to an alarming triangle
+     *
+     * @return void
+     */
     public function testIconDanger()
     {
         $this->login();
@@ -297,6 +344,13 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkIcon($cookies, '.fa-exclamation-triangle');
     }
 
+    /**
+     * More urgent cases should override lower cases
+     *
+     * Danger > Warning > Good > None
+     *
+     * @return void
+     */
     public function testIconClashes()
     {
         $this->login();
