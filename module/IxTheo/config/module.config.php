@@ -33,6 +33,7 @@ $config = [
             'alphabrowse' => 'IxTheo\Controller\AlphabrowseController',
             'Browse' => 'IxTheo\Controller\BrowseController',
             'browse' => 'IxTheo\Controller\BrowseController',
+            'Classification' => 'IxTheo\Controller\ClassificationController',
             'classification' => 'IxTheo\Controller\ClassificationController',
             'KeywordChainSearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
             'Keywordchainsearch' => 'IxTheo\Controller\Search\KeywordChainSearchController',
