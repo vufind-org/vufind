@@ -62,6 +62,9 @@ class TabManagerFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('config'));
+        return new $requestedName(
+            $container->get(PluginManager::class),
+            $container->get('config')
+        );
     }
 }

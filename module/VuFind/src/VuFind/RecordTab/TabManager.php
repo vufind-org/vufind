@@ -64,6 +64,13 @@ class TabManager
     protected $config = [];
 
     /**
+     * RecordTab plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $pluginManager;
+
+    /**
      * Overall framework configuration
      *
      * @var array
@@ -80,10 +87,12 @@ class TabManager
     /**
      * Constructor
      *
-     * @param array $zendConfig Zend Framework configuration
+     * @param PluginManager $pm         RecordTab plugin manager
+     * @param array         $zendConfig Zend Framework configuration
      */
-    public function __construct($zendConfig = [])
+    public function __construct(PluginManager $pm, $zendConfig = [])
     {
+        $this->pluginManager = $pm;
         $this->zendConfig = $zendConfig;
 
         // Initialize default context.
@@ -98,7 +107,7 @@ class TabManager
      * @return void
      * @throws \Exception
      */
-    protected function setContext($context)
+    public function setContext($context)
     {
         if (!in_array($context, array_keys($this->contextSettings))) {
             throw new \Exception("Unsupported context: $context");
@@ -238,10 +247,10 @@ class TabManager
     ) {
         $tabs = [];
         foreach ($this->getTabServiceNames($driver) as $tabKey => $svc) {
-            if (!$this->has($svc)) {
+            if (!$this->pluginManager->has($svc)) {
                 continue;
             }
-            $newTab = $this->get($svc);
+            $newTab = $this->pluginManager->get($svc);
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
