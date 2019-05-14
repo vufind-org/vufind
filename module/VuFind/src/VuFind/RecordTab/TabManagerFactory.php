@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for GetRecordDetails AJAX handler.
+ * Factory for building the TabManager.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\AjaxHandler;
+namespace VuFind\RecordTab;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for GetRecordDetails AJAX handler.
+ * Factory for building the TabManager.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetRecordDetailsFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+class TabManagerFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,12 +62,6 @@ class GetRecordDetailsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get('Config'),
-            $container->get('Request'),
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\RecordTab\TabManager::class),
-            $container->get('ViewRenderer')
-        );
+        return new $requestedName($container->get('config'));
     }
 }

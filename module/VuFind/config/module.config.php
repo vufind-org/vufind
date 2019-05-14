@@ -371,6 +371,7 @@ $config = [
             'VuFind\Record\Router' => 'VuFind\Record\RouterFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'VuFind\Related\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Resolver\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',

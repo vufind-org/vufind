@@ -647,16 +647,12 @@ class AbstractRecord extends AbstractBase
     {
         $driver = $this->loadRecord();
         $request = $this->getRequest();
-        $rtpm = $this->serviceLocator->get(\VuFind\RecordTab\PluginManager::class);
-        $details = $rtpm->getTabDetailsForRecord(
-            $driver, $this->getRecordTabConfig(), $request,
-            $this->fallbackDefaultTab
-        );
+        $manager = $this->getRecordTabManager();
+        $details = $manager
+            ->getTabDetailsForRecord($driver, $request, $this->fallbackDefaultTab);
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
-        $this->backgroundTabs = $rtpm->getBackgroundTabNames(
-            $driver, $this->getRecordTabConfig()
-        );
+        $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
     }
 
     /**
