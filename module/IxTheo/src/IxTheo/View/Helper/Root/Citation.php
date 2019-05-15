@@ -38,8 +38,9 @@ namespace IxTheo\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \VuFind\View\Helper\Root\Citation
+class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Store a record driver object and return this object so that the appropriate
@@ -282,7 +283,7 @@ class Citation extends \VuFind\View\Helper\Root\Citation
                     $mla['url'] = $url;
             }
 
-            $formatter = new \IntlDateFormatter($this->driver->getServiceLocator()->get('VuFind\Translator')->getLocale(),
+            $formatter = new \IntlDateFormatter($this->getTranslatorLocale(),
                              \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
             if ($formatter === null)
                  throw new InvalidConfigException(intl_get_error_message());
