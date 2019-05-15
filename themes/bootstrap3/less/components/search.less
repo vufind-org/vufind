@@ -382,10 +382,6 @@ body.rtl {
       background: @list-group-active-bg;
       white-space: nowrap;
       display: inline-block;
-      a {
-        color: #fff;
-        margin: 4px 1px 4px 4px;
-      }
     }
     .checkbox {
       display: inline;
@@ -399,30 +395,46 @@ body.rtl {
       display: inline-block;
     }
   }
-  .dropdown {
-    display: inline-block;
-    .btn {
-      color: #fff;
-      background: @list-group-active-bg;
-      vertical-align: baseline;
+}
+.search-filter-remove {
+  margin: 4px 1px 4px 4px;
+  font-weight: normal;
+  color: #fff;
+}
+.active-filters .search-filter-remove:hover {
+  color: red;
+}
+.search-filter-remove::after {
+  content: "\f2d3"; /* fa-window-close */
+  font-family: "FontAwesome";
+}
+.search-filter-dropdown {
+  display: inline-block;
+  .btn {
+    color: #fff;
+    background: @list-group-active-bg;
+    vertical-align: baseline;
+  }
+  .btn::after {
+    content: "\f107";
+    font-family: "FontAwesome";
+  }
+
+  .dropdown-menu {
+    .filters-term {
+      display: block;
+      text-align: center;
     }
+    .filter-value {
+      display: flex;
 
-    .dropdown-menu {
-      .filters-term {
-        display: block;
-        text-align: center;
+      .text {
+        flex-grow: 1;
+        margin-right: 0.5em;
       }
-      .filter-value {
-        display: flex;
-
-        .text {
-          flex-grow: 1;
-          margin-right: 0.5em;
-        }
-        a {
-          flex-shrink: 0;
-          margin: 0;
-        }
+      a {
+        flex-shrink: 0;
+        margin: 0;
       }
     }
   }

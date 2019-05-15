@@ -282,31 +282,28 @@
   }
 }
 .active-filters .filters .filter-value,
-.active-filters .dropdown .btn,
-.active-filters .dropdown .btn:focus {
+.search-filter-dropdown .btn,
+.search-filter-dropdown .btn:focus {
   color: @dark-gray;
   background-color: @header-light;
 }
 .active-filters .filters .filter-value {
   border-radius: 2px;
 }
-.active-filters .filter-value .fa {
+.active-filters .search-filter-remove::after {
+  content: "\f00d"; /* fa-close */
   color: @mid-gray;
 }
-.active-filters .dropdown .btn {
+.search-filter-dropdown .btn {
   box-shadow: 0 3px 3px rgba(0,0,0,.3);
 
   &::after {
-    content: "\f107";
     display: inline-block;
     width: 1rem;
     margin-right: -0.5rem;
-    font-family: "FontAwesome";
-    text-align: center;
-    color: @mid-gray;
   }
 }
-.active-filters .dropdown .btn:active {
+.search-filter-dropdown .btn:active {
   box-shadow: none;
   background-color: @light-silver;
 }

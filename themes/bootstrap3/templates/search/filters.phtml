@@ -27,7 +27,7 @@
         ?>
         <?=$desc?>
         <?php if($removeLink): ?>
-          <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
         <?php endif; ?>
       </span>
     <?php endif ?>
@@ -37,7 +37,7 @@
     <div class="title-value-pair">
       <span class="filters-title"><?=$this->transEsc($field)?>:</span>
       <?php if (count($data) > 3): ?>
-        <div class="dropdown">
+        <div class="search-filter-dropdown dropdown">
           <?php $dropdown = true; ?>
           <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
           <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -79,7 +79,7 @@
           </span>
           <?php if (isset($this->urlQuery)): ?>
             <?php $removeLink = $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])?>
-            <a aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
           <?php endif; ?>
         </span>
         <?php if ($dropdown): ?>
