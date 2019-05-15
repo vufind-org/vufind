@@ -57,7 +57,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -77,8 +78,9 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
         $address = new Address('from@example.com', 'Sender TextName');
-        $mailer = new Mailer($transport);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('to@example.com', $address, 'subject', 'body');
     }
 
@@ -98,8 +100,9 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
         $address = new Address('to@example.com', 'Recipient TextName');
-        $mailer = new Mailer($transport);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send($address, 'from@example.com', 'subject', 'body');
     }
 
@@ -119,9 +122,10 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
         $list = new AddressList();
         $list->add(new Address('to@example.com', 'Recipient TextName'));
-        $mailer = new Mailer($transport);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send($list, 'from@example.com', 'subject', 'body');
     }
 
@@ -142,8 +146,9 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
         $address = new Address('me@example.com');
-        $mailer = new Mailer($transport);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->setFromAddressOverride('no-reply@example.com');
         $mailer->send('to@example.com', $address, 'subject', 'body');
     }
@@ -159,7 +164,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testBadTo()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
     }
 
@@ -174,7 +180,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testBadReplyTo()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send(
             'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
         );
@@ -191,7 +198,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testEmptyTo()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('', 'from@example.com', 'subject', 'body');
     }
 
@@ -206,7 +214,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testTooManyRecipients()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -221,7 +230,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testBadFrom()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
     }
 
@@ -236,7 +246,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     public function testBadFromInAddressObject()
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
     }
 
@@ -252,7 +263,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     {
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -287,7 +299,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
             'to@example.com;to2@example.com', 'from@example.com', 'message', 'http://foo', $view, null,
@@ -325,7 +338,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         };
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
+        $urlShortener = $this->createMock(\VuFind\UrlShortener\UrlShortenerInterface::class);
+        $mailer = new Mailer($transport, $urlShortener);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
     }
 }
