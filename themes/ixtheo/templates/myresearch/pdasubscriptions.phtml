@@ -32,7 +32,7 @@ $user = $this->auth()->isLoggedIn();
             </form>
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
         <? else: ?>
-            <p><?=$this->transEsc('You do not have any saved resources')?></p>
+            <p><?=$this->transEsc('You do not have any saved PDA resources')?></p>
         <? endif; ?>
     </div>
 
