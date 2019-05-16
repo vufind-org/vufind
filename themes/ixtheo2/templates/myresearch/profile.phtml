@@ -1,10 +1,12 @@
-<?
-// Set up page title:
-$this->headTitle($this->translate('My Profile'));
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
 
-// Set up breadcrumbs:
-$this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 
+    // Template for use by the renderArray helper:
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
 
 <div class="container">
@@ -15,7 +17,7 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
             <div class="form-group">
                 <div class="col-sm-4 control-label"></div>
                 <div class="col-md-4">
-                    <input class="btn btn-primary" name="submit" value="Abschicken" type="submit">
+                    <input class="btn btn-primary" name="submit" value="<?=$this->transEsc('Save')?>" type="submit">
                 </div>
             </div>
         </form>
