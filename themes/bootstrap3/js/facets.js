@@ -26,8 +26,11 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       $i.appendTo($item);
       $item.append(' ');
     }
+    var $description = $('<span/>')
+      .addClass('description')
+      .append(this.displayText);
+    $item.append($description);
 
-    $item.append(this.displayText);
     $item.appendTo($html);
 
     if (!this.isApplied && counts) {
