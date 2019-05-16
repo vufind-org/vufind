@@ -32,6 +32,15 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get TueFind configuration from tuefind.ini.
+     *
+     * @return \Zend\Config\Config
+     */
+    function getConfig() {
+        return $this->container->get('VuFind\Config\PluginManager')->get('tuefind');
+    }
+
+    /**
      * Get name of the current controller
      * (If no Controller is found in URL, returns default value 'index')
      *
