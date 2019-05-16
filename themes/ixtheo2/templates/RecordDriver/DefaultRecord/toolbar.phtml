@@ -44,3 +44,8 @@
     <li><a class="subscribe-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><i class="fa fa-bell"></i> <?=$this->transEsc('Subscribe')?></a></li>
   <?php endif; ?>
 </ul>
+
+<!-- IxTheo: Social Media buttons -->
+<?php if ($this->tuefind()->getConfig()->General->display_social_media_buttons): ?>
+    <?=$this->render('share/record.phtml')?>
+<?php endif; ?>
