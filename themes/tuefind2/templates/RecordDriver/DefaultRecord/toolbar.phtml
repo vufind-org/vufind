@@ -38,11 +38,6 @@
     <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark" aria-hidden="true"></i> <?=$this->transEsc('Bookmark')?></a></li>
   <?php endif; ?>
   <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
-
-  <!-- IxTheo: Subscribe button -->
-  <?php if ($this->driver->isSubscribable()):?>
-    <li><a class="subscribe-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><i class="fa fa-bell"></i> <?=$this->transEsc('Subscribe')?></a></li>
-  <?php endif; ?>
 </ul>
 
 <!-- TueFind: Social Media buttons -->

@@ -27,4 +27,7 @@
       <?php endif; ?>
     </div>
   </div>
+
+  <!-- TueFind: Social Media buttons -->
+  <?=$this->render('share/buttons.phtml', ['text' => $this->transEsc('Results for') . ' "' . $this->params->getDisplayQuery() . '"'])?>
 <?php endif; ?>
