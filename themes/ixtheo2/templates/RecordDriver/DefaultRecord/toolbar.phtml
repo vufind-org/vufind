@@ -45,7 +45,5 @@
   <?php endif; ?>
 </ul>
 
-<!-- IxTheo: Social Media buttons -->
-<?php if ($this->tuefind()->getConfig()->General->display_social_media_buttons): ?>
-    <?=$this->render('share/record.phtml')?>
-<?php endif; ?>
+<!-- TueFind: Social Media buttons -->
+<?=$this->render('share/buttons.phtml', ['text' => $this->driver->getShortTitle()])?>

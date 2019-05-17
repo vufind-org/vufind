@@ -32,12 +32,15 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get TueFind configuration from tuefind.ini.
+     * Get TueFind configuration from INI file.
+     *
+     * @param string $id Config file id, default 'tuefind'
+     *                   use e.g. 'config' for vufind's config.ini instead
      *
      * @return \Zend\Config\Config
      */
-    function getConfig() {
-        return $this->container->get('VuFind\Config\PluginManager')->get('tuefind');
+    function getConfig($id = 'tuefind') {
+        return $this->container->get('VuFind\Config\PluginManager')->get($id);
     }
 
     /**
