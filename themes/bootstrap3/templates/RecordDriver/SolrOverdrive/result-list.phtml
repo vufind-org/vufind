@@ -91,12 +91,12 @@
             </div>
            
        <?php endif; ?>
-    </div>
-           
-           <div class="result-formats">
-             <span class="format book"><?=$this->driver->getFormats()[0]?></span>
-            </div>
-          
+        </div>
+
+      <div class="result-formats">
+          <?=$this->record($this->driver)->getFormatList() ?>
+      </div>
+
 
 
       <?php /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
