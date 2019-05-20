@@ -40,29 +40,35 @@
         background-color: rgba(255, 255, 255, 0.8);
         margin-top: 40px;
         padding: 0px 20px 20px 20px;
-    }
 
-    #title_table {
-        display: table;
-
-        #title_row {
-            display: table-row;
-
-            #title_left {
-                display: table-cell;
-                vertical-align: middle;
-                border-right: 2px solid black;
-                padding: 15px;
-                font-size: 130%;
-            }
-
-            #title_right {
-                display: table-cell;
-                text-align: left;
-                padding: 15px;
-            }
+        .title {
+            padding-bottom: 20px;
         }
     }
+}
+
+
+#rb-title-table {
+    display: flex;
+
+    div {
+        padding: 20px;
+    }
+}
+
+#rb-title-table-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 2px solid black;
+    font-size: 400%;
+}
+
+#rb-title-table-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 280%;
 }
 
 .tf-background-body {
