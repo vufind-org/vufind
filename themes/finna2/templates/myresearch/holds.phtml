@@ -40,7 +40,7 @@
         <?php if (!empty($this->recordList)): ?>
           <?php if ($this->cancelForm): ?>
           <form name="cancelForm" class="inline" method="post" id="cancelHold">
-            <table class="myresearch-table">
+            <table class="myresearch-table" role="presentation">
               <tr class="toolbar">
                 <th>
                   <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
@@ -66,7 +66,7 @@
                 </th>
               </tr>
             <?php else: ?>
-            <table class="myresearch-table">
+            <table class="myresearch-table" role="presentation">
               <tr class="toolbar">
                 <th colspan="4" class="myresearch-notification"><?=$this->transEsc('cannot cancel any reservations')?></th>
               </tr>
