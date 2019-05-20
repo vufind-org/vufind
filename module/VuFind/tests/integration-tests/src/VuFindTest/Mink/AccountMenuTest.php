@@ -94,7 +94,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Get associative array of cookie state
+     * Get associative array of storage state
      *
      * @return array
      */
@@ -156,8 +156,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             ]
         );
         $session->reload();
-        $this->snooze();
         $page = $session->getPage();
+        $this->snooze();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
@@ -203,11 +203,12 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Set some cookies and delete them to test VuFind.account.clearCache
+     * Set some values and delete them to test VuFind.account.clearCache
+     * with parameters.
      *
      * @return void
      */
-    public function testCacheClearing()
+    public function testIndividualCacheClearing()
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -216,28 +217,37 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
         // Clear different cache
         $session->evaluateScript('VuFind.account.clearCache("holds");');
-        $cookies = $this->getJSStorage();
-        $this->assertEquals(true, $cookies['fines'] != null);
+        $storage = $this->getJSStorage();
+        $this->assertNotNull($storage['fines']);
         // Clear correct cache
         $session->evaluateScript('VuFind.account.clearCache("fines");');
-        $cookies = $this->getJSStorage();
-        $this->assertEquals(true, $cookies['fines'] == null);
+        $storage = $this->getJSStorage();
+        $this->assertNull($storage['fines']);
+    }
 
-        // TODO: Not working in tests, but working in browser
-        /*
+    /**
+     * Set some values and delete them to test VuFind.account.clearCache
+     * without parameters.
+     *
+     * @return void
+     */
+    public function testGlobalCacheClearing()
+    {
+        $session = $this->login();
         // Seed some fines
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
+        $storage = $this->getJSStorage();
+        $this->assertNotNull($storage['fines']);
         // Clear all cache
         $session->evaluateScript('VuFind.account.clearCache();');
-        $cookies = $this->getJSStorage();
-        $this->assertEquals(true, $cookies['fines'] == null);
-        */
+        $storage = $this->getJSStorage();
+        $this->assertNull($storage['fines']);
     }
 
     /**
      * Utility class to login
      *
-     * @return void
+     * @return \Behat\Mink\Session
      */
     protected function login()
     {
@@ -249,24 +259,25 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
+        return $session;
     }
 
     /**
-     * Abstracted test to set cookies and check if the icon is correct
+     * Abstracted test to set storage and check if the icon is correct
      *
      * @return void
      */
-    protected function checkIcon($cookies, $checkClass)
+    protected function checkIcon($storage, $checkClass)
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
-        foreach ($cookies as $cookie) {
+        foreach ($storage as $item) {
             $this->snooze();
-            $this->setJSStorage($cookie);
+            $this->setJSStorage($item);
             $session->reload();
             $page = $session->getPage();
             $this->findCss($page, '#account-icon' . $checkClass);
-            foreach ($cookie as $key => $value) {
+            foreach ($item as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }
         }
@@ -280,7 +291,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     public function testIconNone()
     {
         $this->login();
-        $cookies = [
+        $storage = [
             // No fines
             ['fines' => ['value' => 0, 'display' => 'ZILTCH']],
             // Holds in transit only
@@ -290,7 +301,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             // Storage Retrievals in transit only
             ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0]]
         ];
-        $this->checkIcon($cookies, '.fa-user-circle');
+        $this->checkIcon($storage, '.fa-user-circle');
     }
 
     /**
@@ -301,7 +312,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     public function testIconGood()
     {
         $this->login();
-        $cookies = [
+        $storage = [
             // Holds available
             ['holds' => ['in_transit' => 0, 'available' => 1]],
             // ILL Requests available
@@ -309,7 +320,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             // Storage Retrievals available
             ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]]
         ];
-        $this->checkIcon($cookies, '.fa-bell.text-success');
+        $this->checkIcon($storage, '.fa-bell.text-success');
     }
 
     /**
@@ -320,11 +331,11 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     public function testIconWarning()
     {
         $this->login();
-        $cookies = [
+        $storage = [
             // Checked out due soon
             ['checkedOut' => ['warn' => 1]]
         ];
-        $this->checkIcon($cookies, '.fa-bell.text-warning');
+        $this->checkIcon($storage, '.fa-bell.text-warning');
     }
 
     /**
@@ -335,13 +346,13 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     public function testIconDanger()
     {
         $this->login();
-        $cookies = [
+        $storage = [
             // User has fines
             ['fines' => ['value' => 1000000, 'display' => '$...yikes']],
             // Checkedout overdue
             ['checkedOut' => ['overdue' => 1]],
         ];
-        $this->checkIcon($cookies, '.fa-exclamation-triangle');
+        $this->checkIcon($storage, '.fa-exclamation-triangle');
     }
 
     /**
