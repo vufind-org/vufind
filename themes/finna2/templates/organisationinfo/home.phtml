@@ -147,7 +147,7 @@ JS;
         <div class="autocomplete-container"></div>
       </div>
       <div class="flex-item text-right">
-        <div class="map-ui map-control-buttons">
+        <div class="map-ui map-control-buttons" aria-hidden="true">
           <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
           <i class="fa fa-map-marker marker open"></i><?=$this->transEsc('organisation_info_is_open')?>
           <i class="fa fa-map-marker marker closed"></i><?=$this->transEsc('organisation_info_is_closed')?>
@@ -166,7 +166,7 @@ JS;
     </div>
   </div>
 
-  <div class="office map-ui map <?=$this->escapeHtmlAttr($this->mapWidget)?>">
+  <div class="office map-ui map <?=$this->escapeHtmlAttr($this->mapWidget)?>" aria-hidden="true">
     <div>
       <div id="openlayers-canvas" class="map-widget"></div>
       <div id="marker-tooltip" class="hide"></div>
