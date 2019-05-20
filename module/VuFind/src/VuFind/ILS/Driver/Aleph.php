@@ -567,7 +567,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->debug("url: $url response: $answer");
         }
         $answer = str_replace('xmlns=', 'ns=', $answer);
-        $result = simplexml_load_string($answer);
+        $result = @simplexml_load_string($answer);
         if (!$result) {
             if ($this->debug_enabled) {
                 $this->debug("XML is not valid, URL: $url");
