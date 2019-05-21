@@ -27,7 +27,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       $item.append(' ');
     }
     var $description = $('<span/>')
-      .addClass('description')
+      .addClass('facet-label')
       .append(this.displayText);
     $item.append($description);
 
