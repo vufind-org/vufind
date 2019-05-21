@@ -303,7 +303,7 @@ function recordDocReady() {
   });
 
   $('[data-background]').each(function setupBackgroundTabs(index, el) {
-    backgroundLoadTab($(el).closest('li').data('tab'));
+    backgroundLoadTab(el.dataset.tab);
   });
 
   registerTabEvents();
