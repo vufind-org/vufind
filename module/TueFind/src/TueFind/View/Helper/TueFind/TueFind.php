@@ -12,8 +12,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
-    const RSS_DEFAULT_MAX_ITEM_COUNT = 5;
-
     protected $container;
 
     public function __construct(ContainerInterface $container) {
@@ -137,12 +135,29 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Search for specific RSS feed icon, return generic RSS icon if not found
+     *
+     * @param string $rssFeedId
+     *
+     * @return string
+     */
+    function getRssFeedIcon($rssFeedId) {
+        $imgSrc = $this->getView()->imageLink('rss/' . $rssFeedId . '.png');
+        if ($imgSrc == null)
+            $imgSrc = $this->getView()->imageLink('rss/rss.png');
+
+        return $imgSrc;
+    }
+
+    /**
      * Parse the RSS feed and return a short overview of the first few entries
      *
-     * @param string $rss_feed_path         Path to RSS Feed file
      * @param int $max_item_count           Max items to read from file
+     *
+     * @return array
      */
-    function getRssNewsEntries($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
+    function getRssNewsEntries($max_item_count=null) {
+        $rss_feed_path = $this->getConfig()->General->rss_feed_path;
         $rss_items = [];
 
         $dom = new \DOMDocument();
@@ -168,39 +183,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
 
         return $rss_items;
-    }
-
-    /**
-     * Same as getRssNewsEntries, but returns a HTML snippet instead of the list.
-     */
-    function getRssNewsEntriesHtml($rss_feed_path, $max_item_count=self::RSS_DEFAULT_MAX_ITEM_COUNT) {
-        $html = '';
-
-        $rss_items = $this->getRssNewsEntries($rss_feed_path, $max_item_count);
-        if (count($rss_items) == 0)
-            $html .= $this->getView()->translate('rss_news_missing');
-        else {
-            $html .= '<ul id="tf-rss-preview">';
-            foreach ($rss_items as $rss_item) {
-                $img_src = $this->getView()->imageLink('rss/' . $rss_item['tuefind:rss_title'] . '.png');
-                if ($img_src == null)
-                    $img_src = $this->getView()->imageLink('rss/rss.png');
-
-                $html .= '<li>';
-                $html .= '<a target="_blank" href="' . $rss_item['tuefind:rss_url'] . '" title="' . $rss_item['tuefind:rss_title'] . '">';
-                $html .= '<img src="' . $img_src . '" height="16" title="' . $rss_item['title'] .'" />';
-                $html .= '</a>';
-                $html .= '&nbsp;';
-                $description = str_replace('"', '&quot;', strip_tags($rss_item['description']));
-                $html .= '<a target="_blank" href="'.$rss_item['link'].'" title="' . $description . '" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">';
-                $html .= $rss_item['title'];
-                $html .= '</a>';
-                $html .= '</li>';
-            }
-            $html .= '</ul>';
-        }
-
-        return $html;
     }
 
     /**

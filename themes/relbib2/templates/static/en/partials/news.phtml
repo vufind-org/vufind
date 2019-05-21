@@ -3,10 +3,10 @@
     <div class="panel-content">
         <h4>Current topics in Religious Studies</h4>
         <p>
-            <?=$this->tuefind()->getRssNewsEntriesHtml('/usr/local/vufind/public/relbib_docs/news.rss')?>
+            <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
         </p>
-        <a target="_blank" href="relbib_docs/news.rss" class="btn btn-inverse" role="button">
-            <img src="<?=$this->imageLink('rss/rss.png')?>">&nbsp;Read more
+        <a href="<?=$this->url('rssfeed-full')?>" class="btn btn-inverse" role="button">
+            Read more
         </a>
     </div>
 </div>

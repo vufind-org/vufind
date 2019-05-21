@@ -71,6 +71,7 @@ $config = [
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\QuickLinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -84,6 +85,8 @@ $config = [
             'QuickLink' => 'TueFind\Controller\QuickLinkController',
             'Record' => 'TueFind\Controller\RecordController',
             'record' => 'TueFind\Controller\RecordController',
+            'RssFeed' => 'TueFind\Controller\RssFeedController',
+            'rssfeed' => 'TueFind\Controller\RssFeedController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
         ],
     ],
@@ -123,13 +126,11 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = [];
+$staticRoutes = ['RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
-
-
 
 return $config;
