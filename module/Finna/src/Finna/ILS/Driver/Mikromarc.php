@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2017-2018.
+ * Copyright (C) The National Library of Finland 2017-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +25,7 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -42,6 +43,7 @@ use VuFind\Exception\ILS as ILSException;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -1478,8 +1480,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $statuses = [];
         $organisationTotal = [];
         foreach ($result as $i => $item) {
-            $status = $item['ItemStatus'];
-            if ($status == 'Discarded') {
+            $statusCode = $this->getItemStatusCode($item);
+            if ($statusCode === 'Withdrawn') {
                 continue;
             }
 
@@ -1494,7 +1496,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             );
 
             $available = $item['ItemStatus'] === 'AvailableForLoan';
-            $statusCode = $this->getItemStatusCode($item);
             $organisationTotal[$unit['branch']] = [
                'reservations' => $item['ReservationQueueLength']
             ];
