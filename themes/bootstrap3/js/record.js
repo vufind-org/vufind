@@ -241,7 +241,6 @@ function backgroundLoadTab(tabid) {
   if ($('.' + tabid + '-tab').length > 0) {
     return;
   }
-  console.log(tabid);
   var newTab = getNewRecordTab(tabid);
   $('[data-tab="' + tabid + '"]').closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
