@@ -281,3 +281,29 @@
     }
   }
 }
+.active-filters .filters .filter-value,
+.search-filter-dropdown .btn,
+.search-filter-dropdown .btn:focus {
+  color: $dark-gray;
+  background-color: $header-light;
+}
+.active-filters .filters .filter-value {
+  border-radius: 2px;
+}
+.active-filters .search-filter-remove::after {
+  content: "\f00d"; /* fa-close */
+  color: $mid-gray;
+}
+.search-filter-dropdown .btn {
+  box-shadow: 0 3px 3px rgba(0,0,0,.3);
+
+  &::after {
+    display: inline-block;
+    width: 1rem;
+    margin-right: -0.5rem;
+  }
+}
+.search-filter-dropdown .btn:active {
+  box-shadow: none;
+  background-color: $light-silver;
+}
