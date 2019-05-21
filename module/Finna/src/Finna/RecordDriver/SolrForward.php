@@ -353,13 +353,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      */
     public function getType()
     {
-        $type = [];
-        if ($laji = $this->getProductionEventAttribute('elokuva-laji1fin')) {
-            $type[] = $laji;
-        }
-        $type = array_merge(
-            $type, $this->getProductionEventElement('elokuva_laji2fin')
-        );
+        $type = $this->getProductionEventElement('elokuva_laji2fin');
         return trim(implode(', ', $type));
     }
 
