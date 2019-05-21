@@ -1,0 +1,16 @@
+<?php
+    $rssEntries = $this->tuefind()->getRssNewsEntries();
+    foreach($rssEntries as $rssEntry) {
+        ?>
+        <h1>
+            <a href="<?=$rssEntry['link']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssEntry['tuefind:rss_title'])?>">&nbsp;<?=$rssEntry['title']?></a>
+        </h1>
+        <p>
+            <a href="<?=$rssEntry['tuefind:rss_url']?>" target="_blank"><?=$rssEntry['tuefind:rss_title']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssEntry['pubDate']))?>
+        </p>
+        <p>
+            <?=$rssEntry['description']?>
+        </p>
+        <?php
+    }
+?>
