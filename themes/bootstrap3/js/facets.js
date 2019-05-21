@@ -266,6 +266,16 @@ VuFind.register('sideFacets', function SideFacets() {
         loadAjaxSideFacets();
       });
     loadAjaxSideFacets();
+
+    // Keep filter dropdowns on screen
+    $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
+      var $dropdown = $(e.target).find(".dropdown-menu");
+      if ($(e.target).position().left + $dropdown.width() >= window.innerWidth) {
+        $dropdown.addClass("dropdown-menu-right");
+      } else {
+        $dropdown.removeClass("dropdown-menu-right");
+      }
+    });
   }
 
   return { init: init, showLoadingOverlay: showLoadingOverlay };
