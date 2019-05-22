@@ -1,3 +1,16 @@
+#rb-navbar-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.rb-navbar-part {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 .tf-row-home {
     /* stoneroad */
     background: transparent url(/themes/relbib2/images/background.jpg) no-repeat;
@@ -54,6 +67,10 @@
     div {
         padding: 5px 20px 5px 20px;
     }
+
+    a:hover {
+        text-decoration: none;
+    }
 }
 
 #rb-title-table-left {
@@ -70,6 +87,14 @@
     justify-content: center;
     font-size: 3vw;
     line-height: 1.2;
+}
+
+#rb-logo-left {
+    color: @brand-primary;
+}
+
+#rb-logo-right {
+    color: black;
 }
 
 .tf-background-body {
