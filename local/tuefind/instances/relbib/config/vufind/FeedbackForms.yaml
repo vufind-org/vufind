@@ -95,9 +95,9 @@ forms:
     response: Thank you for your feedback.
     senderInfoRequired: true
 
-    recipient:
-      name: Your Library
-      email: feedback@myuniversity.edu
+    #recipient:
+    #  name: Your Library
+    #  email: feedback@myuniversity.edu
 
     help:
       pre: acquisition_request_description
