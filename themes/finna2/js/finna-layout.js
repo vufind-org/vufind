@@ -285,7 +285,7 @@ finna.layout = (function finnaLayout() {
   }
 
   function initMobileNarrowSearch() {
-    $('.mobile-navigation .sidebar-navigation, .sidebar h4').unbind('click').click(function onClickMobileNav(e) {
+    $('.mobile-navigation .sidebar-navigation, .sidebar h1').unbind('click').click(function onClickMobileNav(e) {
       if ($(e.target).attr('class') !== 'fa fa-info-big') {
         $('.sidebar').toggleClass('open');
       }
