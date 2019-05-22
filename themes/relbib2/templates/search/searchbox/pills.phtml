@@ -46,10 +46,17 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
         </a>
 
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <!-- IxTheo-specific keywordchainsearch is skipped here -->
+            <!-- added IxTheo/RelBib-specific keywordchainsearch -->
+            <li><a class="dropdown-item" href="<?= $this->url('keywordchainsearch-home') ?>"><?= $this->transEsc('Browse Keywordchains') ?></a></li>
             <li><a class="dropdown-item" href="<?= $this->url('browse-home') ?>"><?= $this->transEsc('Browse the Catalog') ?></a></li>
             <li><a class="dropdown-item" href="<?= $this->url('alphabrowse-home') ?>"><?= $this->transEsc('Browse Alphabetically') ?></a></li>
         </ul>
+    </li>
+
+    <li>
+        <a href="<?=$this->url('search-newitem')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('New Items')?></a>
     </li>
 
     <li>
@@ -58,11 +65,7 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
            rel="nofollow"><?=$this->transEsc('Search History')?></a>
     </li>
 
-    <li>
-        <a href="<?=$this->url('search-newitem')?>"
-           class="btn btn-light" role="button"
-           rel="nofollow"><?=$this->transEsc('New Items')?></a>
-    </li>
+    <!-- RelBib-specific: show help button instead of IxTheo-specific virtual keyboard -->
     <li>
         <a href="<?=$this->url('help-home')?>?topic=search"
            class="btn btn-light" role="button" data-lightbox=""
