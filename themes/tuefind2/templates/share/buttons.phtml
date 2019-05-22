@@ -1,4 +1,4 @@
-<?php if ($this->tuefind()->getConfig()->General->display_social_media_buttons): ?>
+<?php if ($this->tuefind()->getConfig()->General->display_social_media_buttons ?? false): ?>
 
     <?php
         $encodedUrl = urlencode($this->serverUrl(true));
@@ -24,3 +24,4 @@
     </a>
 
 <?php endif; ?>
+
