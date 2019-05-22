@@ -22,7 +22,7 @@
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
       <div class="useraccount-header">
-        <?=$this->transEsc('Storage Retrieval Requests') ?> (<?=count($this->recordList ?? []);?>)
+        <h2><?=$this->transEsc('Storage Retrieval Requests') ?> (<?=count($this->recordList ?? []);?>)</h2>
       </div>
       <?php if (isset($this->noSupport)): ?>
         <?php if ($user->getLibraryCards()->count() > 1): ?>
@@ -194,8 +194,8 @@
             <div class="storageretrievalrequests-post-list"><?=$this->render($template)?></div>
           <?php endif; ?>
         <?php else: ?>
-          <div class="useraccount-row">
-            <h4><?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.</h4>
+          <div class="useraccount-header">
+            <h3><?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.</h3>
           </div>
         <?php endif; ?>
       <?php endif; ?>

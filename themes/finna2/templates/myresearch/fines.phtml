@@ -57,7 +57,7 @@
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
       <div class="useraccount-header">
-        <?=$this->transEsc('Your Fines') . " (" . count($this->fines ?? []) . ")"?>
+        <h2><?=$this->transEsc('Your Fines') . " (" . count($this->fines ?? []) . ")"?></h2>
       </div>
     </div>
     <?=$this->flashmessages()?>
@@ -100,7 +100,7 @@
         <div class="fines-pre-list"><?=$this->render($template)?></div>
       <?php endif; ?>
       <?php if (empty($this->fines)): ?>
-        <h4><?=$this->transEsc('You do not have any fines')?></h4>
+        <h3><?=$this->transEsc('You do not have any fines')?></h3>
       <?php else: ?>
         <div class="table-responsive">
           <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">

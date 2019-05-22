@@ -309,16 +309,19 @@
   }
 }
 
-.useraccount-row {
-  line-height: 1.5;
-  font-weight: 600;
+.useraccount-header {
   margin-top: 5px;
   margin-bottom: 5px;
-}
-
-.useraccount-header {
-  .useraccount-row();
-  font-size:@font-size-h2;
+  h2, h3 {
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  h2 {
+    font-size:@font-size-h2;
+  }
+  h3 {
+    font-size: @font-size-h4;
+  }
 }
 
 .payment-row {

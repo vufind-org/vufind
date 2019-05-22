@@ -47,7 +47,7 @@
     <div>
       <?=$this->flashmessages()?>
     </div>
-    <div>
+    <div class="useraccount-header">
       <?php if ($list): ?>
         <h2 class="list-title"><i class="list-title-edit fa fa-pen"></i><span><?=$this->escapeHtml($list->title)?></span></h2>
         <div class="list-description markdown">
@@ -63,7 +63,7 @@
       <?=$this->render($template)?>
     </div>
   <?php endif; ?>
-  <div class="mylist-header">
+  <div class="mylist-header useraccount-header">
     <?php if ($recordTotal > 0): ?>
       <div class="mylist-controls-bar">
         <div class="pagination-container">
@@ -86,7 +86,7 @@
         </form>
       </div>
     <?php else: ?>
-      <p><?=$this->transEsc('You do not have any saved resources')?></p>
+      <h3><?=$this->transEsc('You do not have any saved resources')?></h3>
     <?php endif; ?>
   </div>
   <?php if ($recordTotal > 0): ?>
