@@ -48,7 +48,8 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <!-- added IxTheo/RelBib-specific keywordchainsearch -->
             <li><a class="dropdown-item" href="<?= $this->url('keywordchainsearch-home') ?>"><?= $this->transEsc('Browse Keywordchains') ?></a></li>
-            <li><a class="dropdown-item" href="<?= $this->url('browse-home') ?>"><?= $this->transEsc('Browse the Catalog') ?></a></li>
+            <!-- RelBib: special display text -->
+            <li><a class="dropdown-item" href="<?= $this->url('browse-home') ?>"><?= $this->transEsc('Browse by Category') ?></a></li>
             <li><a class="dropdown-item" href="<?= $this->url('alphabrowse-home') ?>"><?= $this->transEsc('Browse Alphabetically') ?></a></li>
         </ul>
     </li>
