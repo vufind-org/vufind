@@ -100,7 +100,7 @@ forms:
     #  email: feedback@myuniversity.edu
 
     help:
-      pre: acquisition_request_description
+      pre: acquisition_request_description_relbib
       #post: acquisition_request_info_post
 
     fields:
