@@ -5,8 +5,10 @@
         <p>
             <?=$this->context()->renderInContext('rssfeed/short.phtml', ['rssMaxItems' => 5]);?>
         </p>
-        <a href="<?=$this->url('rssfeed-full')?>" class="btn btn-inverse" role="button">
-            Read more
-        </a>
+        <?php if(count($this->tuefind()->getRssNewsEntries(1)) > 0):?>
+            <a href="<?=$this->url('rssfeed-full')?>" class="btn btn-inverse" role="button">
+                Read more
+            </a>
+        <?php endif;?>
     </div>
 </div>
