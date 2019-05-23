@@ -147,6 +147,14 @@ class Options extends \VuFind\Search\Base\Options
                 = $searchSettings->General->empty_search_relevance_override;
         }
 
+        // Set up autocomplete:
+        if (isset($searchSettings->Autocomplete->enabled)) {
+            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        }
+        if (isset($searchSettings->Autocomplete->auto_submit)) {
+            $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit;
+        }
+
         // Set up views
         $this->initViewOptions($searchSettings);
 
