@@ -1,17 +1,17 @@
-<? $list = $this->params->getSortList(); if (!empty($list)): ?>
+<?php $list = $this->params->getSortList(); if (!empty($list)): ?>
   <form class="form-inline" action="<?=$this->currentPath()?>" method="get" name="sort" style="display: inline;">
-    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
+    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/']);?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu form-control"
-      <? $default_sort = $this->params->getOptions()->getDefaultSortByHandler();?>
-      <? if ($default_sort != null): ?>
-      data-default_sort="<?=$default_sort?>"
-      <? endif; ?>
+      <?php $default_sort = $this->params->getOptions()->getDefaultSortByHandler();?>
+      <?php if ($default_sort != null): ?>
+        data-default_sort="<?=$default_sort?>"
+      <?php endif; ?>
       <?= $this->params->getOptions() instanceof \IxTheo\Search\Solr\Options && $this->params->getQuery() instanceof \VuFindSearch\Query\Query && in_array($this->params->getQuery()->getHandler(), $this->params->getOptions()->getForceDefaultSortSearches()) ? 'disabled' : '' ?>>
-      <? foreach ($list as $sortType => $sortData): ?>
+      <?php foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
-      <? endforeach; ?>
+      <?php endforeach; ?>
     </select>
     <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEsc("Set")?>" /></noscript>
   </form>
-<? endif; ?>
+<?php endif; ?>
