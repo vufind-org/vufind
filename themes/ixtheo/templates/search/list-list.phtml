@@ -1,17 +1,18 @@
-<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
+<?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<?php $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
   || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
-<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
-  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
-  <div id="result<?=$i++ ?>" class="row result clearfix <?=$i%2==1?' panel-gray ':' panel-body '?>">
+<?php $i = $this->indexStart; ?>
+<?php foreach ($this->results->getResults() as $current): ?>
+  <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+  <div id="result<?=$i++ ?>" class="row result<?=$current->supportsAjaxStatus()?' ajaxItem':''?> clearfix <?=$i%2==1?' panel-gray ':' panel-body '?>">
     <div class="col-xs-1 hidden-print">
-        <? if ($showCheckboxes): ?>
-          <?=$this->record($current)->getCheckbox()?>
-        <? endif; ?>
+        <?php if ($showCheckboxes): ?>
+          <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
+        <?php endif; ?>
         <div class="record-number">
           <?=$recordNumber?>
         </div>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
-<? endforeach; ?>
+<?php endforeach; ?>
