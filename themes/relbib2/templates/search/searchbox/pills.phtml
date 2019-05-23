@@ -55,12 +55,6 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
     </li>
 
     <li>
-        <a href="<?=$this->url('search-newitem')?>"
-           class="btn btn-light" role="button"
-           rel="nofollow"><?=$this->transEsc('New Items')?></a>
-    </li>
-
-    <li>
         <a href="<?=$this->url('search-history')?>"
            class="btn btn-light" role="button"
            rel="nofollow"><?=$this->transEsc('Search History')?></a>
@@ -71,5 +65,17 @@ $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->s
         <a href="<?=$this->url('help-home')?>?topic=search"
            class="btn btn-light" role="button" data-lightbox=""
            rel="nofollow"><?= $this->transEsc('Search Tips') ?></a>
+    </li>
+
+    <!-- RelBib-specific: put New Items at back, add Acquisition Request behind it -->
+    <li>
+        <a href="<?=$this->url('search-newitem')?>"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('New Items')?></a>
+    </li>
+    <li>
+        <a href="/Feedback/Form/AcquisitionRequest"
+           class="btn btn-light" role="button"
+           rel="nofollow"><?=$this->transEsc('Acquisition Request')?></a>
     </li>
 </ul>
