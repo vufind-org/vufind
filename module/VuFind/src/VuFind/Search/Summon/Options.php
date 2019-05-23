@@ -152,7 +152,8 @@ class Options extends \VuFind\Search\Base\Options
             $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
         }
         if (isset($searchSettings->Autocomplete->auto_submit)) {
-            $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit;
+            $this->autocompleteAutoSubmit
+                = $searchSettings->Autocomplete->auto_submit;
         }
 
         // Set up views
