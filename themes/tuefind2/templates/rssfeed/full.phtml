@@ -1,18 +1,18 @@
-<div id="tf-rss-full">
-<?php
-    $rssEntries = $this->tuefind()->getRssNewsEntries();
-    foreach($rssEntries as $rssEntry) {
-        ?>
-        <h1>
-            <a href="<?=$rssEntry['link']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssEntry['tuefind:rss_title'])?>">&nbsp;<?=$rssEntry['title']?></a>
-        </h1>
-        <p>
-            <a href="<?=$rssEntry['tuefind:rss_url']?>" target="_blank"><?=$rssEntry['tuefind:rss_title']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssEntry['pubDate']))?>
-        </p>
-        <p>
-            <?=$rssEntry['description']?>
-        </p>
-        <?php
-    }
-?>
-</div>
+<?php $rssItems = $this->tuefind()->getRssNewsEntries();?>
+<?php if (count($rssItems) == 0):?>
+<h1><?=$this->translate('rss_news_missing')?></h1>
+<?php else:?>
+    <div id="tf-rss-full">
+        <?php foreach ($rssItems as $rssItem):?>
+            <h1>
+                <a href="<?=$rssItem['link']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['tuefind:rss_title'])?>">&nbsp;<?=$rssItem['title']?></a>
+            </h1>
+            <p>
+                <a href="<?=$rssItem['tuefind:rss_url']?>" target="_blank"><?=$rssItem['tuefind:rss_title']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pubDate']))?>
+            </p>
+            <p>
+                <?=$rssItem['description']?>
+            </p>
+        <?php endforeach;?>
+    </div>
+<?php endif;?>

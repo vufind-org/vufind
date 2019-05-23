@@ -1,6 +1,6 @@
 <?php $rssItems = $this->tuefind()->getRssNewsEntries($this->rssMaxItems);?>
 <?php if (count($rssItems) == 0):?>
-    <?=$this->getView()->translate('rss_news_missing')?>
+    <?=$this->translate('rss_news_missing')?>
 <?php else:?>
     <ul id="tf-rss-short">
         <?php foreach ($rssItems as $rssItem):?>
