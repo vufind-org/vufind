@@ -94,6 +94,7 @@ $config = [
         'factories' => [
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -103,9 +104,14 @@ $config = [
             'TueFindSearch\Service' => 'TueFind\Service\Factory::getSearchService',
             'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
         ],
+        'initializers' => [
+            'TueFind\ServiceManager\ServiceInitializer',
+        ],
         'aliases' => [
             'VuFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoader',
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
+            'VuFind\Cookie\CookieManager' => 'TueFind\Cookie\CookieManager',
+            'VuFind\CookieManager' => 'TueFind\Cookie\CookieManager',
             'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\Record\FallbackLoader\PluginManager' => 'TueFind\Record\FallbackLoader\PluginManager',
@@ -116,6 +122,11 @@ $config = [
             'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
+        ],
+    ],
+    'view_helpers' => [
+        'initializers' => [
+            'TueFind\ServiceManager\ServiceInitializer',
         ],
     ],
     'view_manager' => [

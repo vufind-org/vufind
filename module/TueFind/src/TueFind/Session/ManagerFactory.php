@@ -5,12 +5,12 @@ namespace TueFind\Session;
 use Interop\Container\ContainerInterface;
 
 class ManagerFactory extends \VuFind\Session\ManagerFactory {
+
     /**
-     * Build the options array.
+     * This is only for VuFind session cookie.
+     * For all other cookies (like ui and language), see Cookie/CookieManager.
      *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return array
+     * @see parent
      */
     protected function getOptions(ContainerInterface $container)
     {
@@ -19,11 +19,10 @@ class ManagerFactory extends \VuFind\Session\ManagerFactory {
         // Make cookies persistent.
         // Normal session lifetime only refers to session, but not to cookie.
         // So this way we will keep the session cookie even after browser is closed.
-        $tuefindConfig = $container->get('VuFind\Config\PluginManager')->get('tuefind');
-        $persistentCookies = $tuefindConfig->General->persistent_cookies ?? false;
+        $configManager = $container->get('VuFind\Config\PluginManager');
+        $persistentCookies = $configManager->get('tuefind')->General->persistent_cookies ?? false;
         if ($persistentCookies) {
-            $vufindConfig = $container->get('VuFind\Config\PluginManager')->get('config');
-            $lifetime = $vufindConfig->Session->lifetime ?? false;
+            $lifetime = $configManager->get('config')->Session->lifetime ?? false;
             if ($lifetime != false) {
                 $options['cookie_lifetime'] = $lifetime;
             }
