@@ -101,6 +101,7 @@ $config = [
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFindSearch\Service' => 'TueFind\Service\Factory::getSearchService',
+            'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
         ],
         'aliases' => [
             'VuFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoader',
