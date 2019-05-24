@@ -106,7 +106,7 @@ forms:
     fields:
       - name: title
         type: text
-        label: Book Request
+        label: Title Request
         required: true
 
       - name: message
