@@ -149,12 +149,11 @@ class Factory
         $transactionTable = $tableManager->get('transaction');
         $userTable = $tableManager->get('user');
         $configReader = $sm->get(\VuFind\Config\PluginManager::class);
-        $mailer = $sm->get(\VuFind\Mailer\Mailer::class);
         $viewManager = $sm->get('ViewManager');
         $viewRenderer = $sm->get('ViewRenderer');
 
         return new OnlinePaymentMonitor(
-            $catalog, $transactionTable, $userTable, $configReader, $mailer,
+            $catalog, $transactionTable, $userTable, $configReader, $sm,
             $viewManager, $viewRenderer
         );
     }

@@ -31,6 +31,7 @@ namespace FinnaConsole\Service;
 use Finna\Db\Row\User;
 use Finna\Db\Table\Transaction;
 
+use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\RequestInterface as Request;
 
 /**
@@ -88,11 +89,14 @@ class OnlinePaymentMonitor extends AbstractService
     protected $userTable = null;
 
     /**
-     * Mailer
+     * ServiceManager
      *
-     * @var \VuFind\Mailer
+     * ServiceManager is used for creating VuFind\Mailer objects as needed
+     * (mailer is not shared as its connection might time out otherwise).
+     *
+     * @var ServiceManager
      */
-    protected $mailer = null;
+    protected $serviceManager = null;
 
     /**
      * View manager
@@ -139,23 +143,24 @@ class OnlinePaymentMonitor extends AbstractService
     /**
      * Constructor
      *
-     * @param \Finna\ILS\Connection             $catalog          Catalog connection
-     * @param \Finna\Db\Table\Transaction       $transactionTable Transaction table
-     * @param \Finna\Db\Table\User              $userTable        User table
-     * @param \VuFind\Config                    $configReader     Config reader
-     * @param \VuFind\Mailer                    $mailer           Mailer
-     * @param \Zend\Mvc\View\Console\ViewManage $viewManager      View manager
-     * @param Zend\View\Renderer\PhpRenderer    $viewRenderer     View renderer
+     * @param \Finna\ILS\Connection               $catalog          Catalog
+     *                                                              connection
+     * @param \Finna\Db\Table\Transaction         $transactionTable Transaction table
+     * @param \Finna\Db\Table\User                $userTable        User table
+     * @param \VuFind\Config                      $configReader     Config reader
+     * @param \Zend\ServiceManager\ServiceManager $serviceManager   Service manager.
+     * @param \Zend\Mvc\View\Console\ViewManage   $viewManager      View manager
+     * @param Zend\View\Renderer\PhpRenderer      $viewRenderer     View renderer
      */
     public function __construct($catalog, $transactionTable, $userTable,
-        $configReader, $mailer, $viewManager, $viewRenderer
+        $configReader, $serviceManager, $viewManager, $viewRenderer
     ) {
         $this->catalog = $catalog;
         $this->datasourceConfig = $configReader->get('datasources');
         $this->configReader = $configReader;
         $this->transactionTable = $transactionTable;
         $this->userTable = $userTable;
-        $this->mailer = $mailer;
+        $this->serviceManager = $serviceManager;
         $this->viewManager = $viewManager;
         $this->viewRenderer = $viewRenderer;
     }
@@ -437,7 +442,7 @@ class OnlinePaymentMonitor extends AbstractService
                     ->render('Email/online-payment-alert.phtml', $params);
 
                 try {
-                    $this->mailer->send(
+                    $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
                         $email, $this->fromEmail, $messageSubject, $message
                     );
                 } catch (\Exception $e) {

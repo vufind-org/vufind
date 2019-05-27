@@ -464,7 +464,7 @@ $message
 
 EOT;
             } else {
-                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
+                $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
                     $to, $from, $subject, $message
                 );
                 $user->finna_last_expiration_reminder = date('Y-m-d H:i:s');

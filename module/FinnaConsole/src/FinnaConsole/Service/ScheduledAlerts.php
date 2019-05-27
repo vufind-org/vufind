@@ -497,7 +497,7 @@ class ScheduledAlerts extends AbstractService
             $to = $user->email;
 
             try {
-                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
+                $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
                     $to, $from, $subject, $message
                 );
             } catch (\Exception $e) {

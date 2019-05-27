@@ -532,7 +532,7 @@ class DueDateReminders extends AbstractService
             try {
                 $to = $user->email;
                 $from = $this->currentSiteConfig['Site']['email'];
-                $this->serviceManager->get(\VuFind\Mailer\Mailer::class)->send(
+                $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
                     $to,
                     $from,
                     $subject,
