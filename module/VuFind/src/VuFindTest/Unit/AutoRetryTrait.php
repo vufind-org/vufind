@@ -73,6 +73,10 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
+                // Perform teardown for interrupted test.
+                if (is_callable([$this, 'tearDown'])) {
+                    $this->tearDown();
+                }
             }
         }
 
