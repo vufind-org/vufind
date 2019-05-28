@@ -25,6 +25,16 @@
         }
     }
     $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+
+    if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
+        $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+        $filterList = $params->getFilterList(true);
+        $checkboxFilters = $params->getCheckboxFacets();
+    } else {
+        $filterList = is_array($this->filterList) ? $this->filterList : [];
+        $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
+    }
+    $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -37,6 +47,13 @@
         <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
         <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
       </p>
+      <?=$this->context($this)->renderInContext(
+        'search/filters.phtml',
+        [
+          'params' => $params ?? null,
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+        ]
+      );?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
@@ -90,20 +107,8 @@
           <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtmlAttr($shard)?>' /> <?=$this->transEsc($shard)?>
       <?php endforeach; ?>
     <?php endif; ?>
-    <?php
-      $filterDetails = $this->searchbox()->getFilterDetails(
-          is_array($this->filterList ?? null) ? $this->filterList : [],
-          is_array($this->checkboxFilters ?? null) ? $this->checkboxFilters : []
-      );
-    ?>
     <?php if (($hasDefaultsApplied ?? false) || !empty($filterDetails)): ?>
       <?php $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-          <?=$this->transEsc("basic_search_keep_filters")?>
-        </label>
-      </div>
       <div class="hidden">
         <?php foreach ($filterDetails as $current): ?>
           <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>" />
@@ -134,5 +139,13 @@
         echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
       }
     ?>
+    <?=$this->context($this)->renderInContext(
+      'search/filters.phtml',
+      [
+        'params' => $params ?? null,
+        'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+      ]
+    );?>
   </form>
 <?php endif; ?>
+
