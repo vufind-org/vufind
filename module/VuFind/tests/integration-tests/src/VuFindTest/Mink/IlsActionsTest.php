@@ -179,6 +179,14 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Support method to place a storage retrieval request and end up on the SRR
+     * screen.
+     *
+     * @param Element $page Page element.
+     *
+     * @return void
+     */
     protected function placeStorageRetrievalRequestAndGoToSRRScreen($page)
     {
         // Open the "place hold" dialog
@@ -204,6 +212,11 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Test placing a hold
+     *
+     * @return void
+     */
     public function testPlaceHold()
     {
         $this->changeConfigs(
