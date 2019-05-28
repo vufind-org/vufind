@@ -213,7 +213,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     private function isOpenAccess(): bool
     {
-        return isset($this->fields['is_open_access']) && $this->fields['is_open_access'];
+        return isset($this->fields['is_open_access']) && ($this->fields['is_open_access'] == 'open-access');
     }
 
     public function getSubitoURL($broker_id) {
