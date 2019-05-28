@@ -38,6 +38,11 @@ namespace VuFindTest\Mink;
  */
 class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
 {
+    /**
+     * Record ID to use in testing.
+     *
+     * @var string
+     */
     protected $id = 'testdeweybrowse';
 
     /**

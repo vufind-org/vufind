@@ -5,6 +5,20 @@
   $results = $this->recommend->getResults();
   $activeFacets = $this->recommend->getActiveFacets();
   $rangeFacets = $this->recommend->getAllRangeFacets();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $forceUncollapsedFacets = [];
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+        $forceUncollapsedFacets[] = $filter['field'];
+      }
+    }
+  }
 
   foreach ($activeFacets as $field => $facetName) {
     if (isset($rangeFacets[$field]) && 'date' === $rangeFacets[$field]['type']) {
@@ -22,7 +36,7 @@
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
-      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
@@ -33,16 +47,6 @@
       <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
     </div>
   <?php endif; ?>
-<?php endif; ?>
-<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
-<?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<?php if (!empty($filterList)): ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
-    'collapsedFacets' => $collapsedFacets,
-    'extraFilters' => $extraFilters,
-    'filterList' => $filterList,
-  ]); ?>
 <?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
@@ -55,7 +59,7 @@
       <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>">
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-indicator hidden">
           <span class="text">
             <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
