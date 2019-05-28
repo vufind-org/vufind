@@ -47,10 +47,12 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
-    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Cookie manager
@@ -67,18 +69,27 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
     protected $organisationInfo;
 
     /**
+     * Cache manager
+     *
+     * @var VuFind\CacheManager
+     */
+    protected $cacheManager;
+
+    /**
      * Constructor
      *
-     * @param SessionSettings  $ss               Session settings
-     * @param CookieManager    $cookieManager    ILS connection
-     * @param OrganisationInfo $organisationInfo Organisation info
+     * @param SessionSettings     $ss               Session settings
+     * @param CookieManager       $cookieManager    ILS connection
+     * @param OrganisationInfo    $organisationInfo Organisation info
+     * @param VuFind\CacheManager $cacheManager     Cache manager
      */
     public function __construct(SessionSettings $ss, CookieManager $cookieManager,
-        OrganisationInfo $organisationInfo
+        OrganisationInfo $organisationInfo, $cacheManager
     ) {
         $this->sessionSettings = $ss;
         $this->cookieManager = $cookieManager;
         $this->organisationInfo = $organisationInfo;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
@@ -92,37 +103,21 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        $parent = $params->fromPost('parent', $params->fromQuery('parent'));
-        if (empty($parent)) {
+        $parents = $params->fromPost('parent', $params->fromQuery('parent'));
+        if (empty($parents)) {
             return $this->handleError('getOrganisationInfo: missing parent');
         }
-        $parent = is_array($parent) ? implode(',', $parent) : $parent;
-
         $reqParams = $params->fromPost('params', $params->fromQuery('params'));
-
         if (empty($reqParams['action'])) {
             return $this->handleError('getOrganisationInfo: missing action');
         }
-
         $cookieName = 'organisationInfoId';
         $cookie = $this->cookieManager->get($cookieName);
-        $reqParams['orgType'] = 'library';
-        $museumSource = [
-            'museo', 'museum', 'kansallisgalleria', 'ateneum', 'musee',
-            'nationalgalleri', 'gallery'
-        ];
-        foreach ($museumSource as $source) {
-            $checkName = $this->translate("source_" . strtolower($parent));
-            if (stripos($checkName, $source)) {
-                $reqParams['orgType'] = 'museum';
-                break;
-            }
-        }
         $action = $reqParams['action'];
+
         $buildings = isset($reqParams['buildings'])
             ? explode(',', $reqParams['buildings']) : null;
 
-        $key = $parent;
         if ('details' === $action) {
             if (!isset($reqParams['id'])) {
                 return $this->handleError('getOrganisationInfo: missing id');
@@ -137,16 +132,6 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
         if (!isset($reqParams['id']) && $cookie) {
             $reqParams['id'] = $cookie;
         }
-
-        if ('lookup' === $action) {
-            $reqParams['link'] = $params->fromPost(
-                'link', $params->fromQuery('link', false)
-            );
-            $reqParams['parentName'] = $params->fromPost(
-                'parentName', $params->fromQuery('parentName', null)
-            );
-        }
-
         $lang = $this->translator->getLocale();
         $map = ['en-gb' => 'en'];
 
@@ -157,19 +142,97 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
             $lang = 'fi';
         }
 
-        try {
-            $response = $this->organisationInfo->query(
-                $parent, $reqParams, $buildings, $action
+        if ('lookup' === $action) {
+            $reqParams['link'] = $params->fromPost(
+                'link', $params->fromQuery('link', false)
             );
-        } catch (\Exception $e) {
-            return $this->handleError(
-                'getOrganisationInfo: '
-                    . "error reading organisation info (parent $parent)",
-                $e->getMessage()
+            $reqParams['parentName'] = $params->fromPost(
+                'parentName', $params->fromQuery('parentName', null)
             );
         }
 
-        return $this->formatResponse($response);
+        $result = [];
+        $parents = isset($parents['id']) ? [$parents] : $parents;
+        $libraries = [];
+        $museums = [];
+        $response = [];
+        foreach ($parents as $parent) {
+            if (empty($parent['sector'])) {
+                $cache = $this->cacheManager->getCache('organisation-info');
+                $cacheKey = 'sectors';
+                $sectors = $cache->getItem($cacheKey);
+                $sector = $sectors[$parent['id']] ?? null;
+                if (!$sector) {
+                    $params = [
+                        'filter[]' => 'building:0/' . $parent['id'] . '/',
+                        'limit' => 1,
+                        'field[]' => 'sectors'
+                    ];
+                    $url = 'https://api.finna.fi/v1/search?';
+                    $client = $this->httpService->createClient($url);
+                    $client->setParameterGet($params);
+                    $result = $client->send();
+                    if (!$result->isSuccess()) {
+                        return $this->handleError(
+                            'API request failed, url: ' . $url
+                        );
+                    }
+
+                    $response = json_decode($result->getBody(), true);
+                    if (isset($response['result'])
+                        && $response['result'] == 'error'
+                    ) {
+                        return $this->handleError(
+                            'API request failed, message: ' . $response['message']
+                        );
+                    }
+                    $sector = $response['records'][0]['sectors'][0]['value'];
+                    $sectors[$parent['id']] = $sector;
+                    $cache->setItem($cacheKey, $sectors);
+                }
+                $parent['sector'] = strstr($sector, 'mus') ? 'mus' : 'lib';
+            }
+            if ($parent['sector'] !== 'mus') {
+                $libraries[] = $parent['id'];
+                continue;
+            }
+            $reqParams['orgType'] = 'museum';
+
+            try {
+                $response = $this->organisationInfo->query(
+                    $parent['id'], $reqParams, $buildings, $action
+                );
+            } catch (\Exception $e) {
+                $response = $this->handleError(
+                    'getOrganisationInfo: '
+                    . "error reading organisation info (parent $parent)",
+                    $e->getMessage()
+                );
+            }
+            if ($response) {
+                if ('lookup' === $action) {
+                    $museums = array_merge($museums, $response['items']);
+                } else {
+                    $museums = array_merge($museums, $response);
+                }
+            }
+        }
+        if (!empty($libraries)) {
+            $libraries = implode(',', $libraries);
+            $reqParams['orgType'] = 'library';
+            $libraries = $this->organisationInfo->query(
+                $libraries, $reqParams, $buildings, $action
+            );
+            if (isset($libraries['items'])) {
+                $libraries = $libraries['items'];
+            }
+        }
+
+        $result = array_merge($museums, $libraries);
+        if (empty($result)) {
+            $result = false;
+        }
+        return $this->formatResponse($result);
     }
 
     /**

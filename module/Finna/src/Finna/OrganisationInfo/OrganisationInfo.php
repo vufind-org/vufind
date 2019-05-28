@@ -425,16 +425,16 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $data = "{$url}?" . http_build_query(['id' => $id]);
             if ($link) {
                 $logo = $json['image'] ?? null;
+                $lang = $this->getLanguage();
+                $name = $json['name'][$lang]
+                        ?? $this->translator->translate("source_{$parent}");
+                $data = $this->viewRenderer->partial(
+                    'Helpers/organisation-page-link.phtml', [
+                    'url' => $data, 'label' => 'organisation_info_link',
+                    'logo' => $logo, 'name' => $name
+                    ]
+                );
             }
-            $lang = $this->getLanguage();
-            $name = $json['name'][$lang]
-                    ?? $this->translator->translate("source_{$parent}");
-            $data = $this->viewRenderer->partial(
-                'Helpers/organisation-page-link.phtml', [
-                   'url' => $data, 'label' => 'organisation_info_link',
-                   'logo' => $logo, 'name' => $name
-                ]
-            );
             $items[$id] = $data;
         }
         return ['success' => true, 'items' => $items];

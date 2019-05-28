@@ -4,8 +4,8 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
 
   function query(parentId, queryParams, callback) {
     var url = VuFind.path + '/AJAX/JSON';
-    var params = {method: 'getOrganisationInfo', parent: parentId, params: queryParams};
-
+    var org = {'id': parentId, 'sector': ''};
+    var params = {method: 'getOrganisationInfo', parent: org, params: queryParams};
     $.getJSON(url, params)
       .done(function onGetOrganisationInfoDone(response) {
         if (response.data) {

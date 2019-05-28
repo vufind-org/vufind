@@ -66,7 +66,8 @@ class GetOrganisationInfoFactory
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get('Finna\OrganisationInfo\OrganisationInfo')
+            $container->get('Finna\OrganisationInfo\OrganisationInfo'),
+            $container->get(\VuFind\Cache\Manager::class)
         );
         $result->setLogger($container->get(\VuFind\Log\Logger::class));
         return $result;

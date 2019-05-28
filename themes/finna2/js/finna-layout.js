@@ -630,13 +630,16 @@ finna.layout = (function finnaLayout() {
     $('.organisation-page-link').not('.done').map(function setupOrganisationPageLinks() {
       $(this).one('inview', function onInViewLink() {
         var holder = $(this);
-        var organisation = $(this).data('organisation');
+        var organisationId = $(this).data('organisation');
         var organisationName = $(this).data('organisationName');
+        var organisationSector = $(this).data('organisationSector')
+        var organisation = {'id': organisationId, 'sector': organisationSector}
         getOrganisationPageLink(organisation, organisationName, true, function organisationPageCallback(response) {
           holder.toggleClass('done', true);
           if (response) {
-            var data = response[organisation];
-            holder.html(data).closest('li.record-organisation').toggleClass('organisation-page-link-visible', true);
+            $.each(response, function handleLinks(id, item) {
+              holder.html(item).closest('li.record-organisation').toggleClass('organisation-page-link-visible', true);
+            });
           }
         });
       });
@@ -660,7 +663,7 @@ finna.layout = (function finnaLayout() {
     }
     $.ajax(params)
       .done(function onGetOrganisationInfoDone(response) {
-        callback(response.data.items);
+        callback(response.data);
       })
       .fail(function onGetOrganisationInfoFail() {
         callback(false);

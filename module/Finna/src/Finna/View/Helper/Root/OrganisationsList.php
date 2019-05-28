@@ -142,7 +142,8 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
                         $list[$sector][] = [
                             'name' => $displayText,
                             'link' => $link,
-                            'organisation' => $organisationInfoId
+                            'organisation' => $organisationInfoId,
+                            'sector' => $sector
                         ];
                     }
                     usort(
