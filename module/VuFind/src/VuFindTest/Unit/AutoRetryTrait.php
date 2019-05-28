@@ -60,8 +60,6 @@ trait AutoRetryTrait
             ?? $annotations['class']['retry'][0] ?? 0;
         $retryCount = $retryCountAnnotation > 0 ? $retryCountAnnotation : 0;
 
-        echo "Retry count = $retryCount\n";
-
         // Run through all of the attempts... Note that even if retryCount is 0,
         // we still need to run the test once (single attempt, no retries)...
         // hence the $retryCount + 1 below.
@@ -75,7 +73,6 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
-                echo "Failed attempt " . ($i + 1) . "...\n";
             }
         }
 
