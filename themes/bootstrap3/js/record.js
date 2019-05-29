@@ -242,7 +242,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('[data-tab="' + tabid + '"]').closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 
@@ -303,7 +303,7 @@ function recordDocReady() {
   });
 
   $('[data-background]').each(function setupBackgroundTabs(index, el) {
-    backgroundLoadTab(el.className);
+    backgroundLoadTab(el.dataset.tab);
   });
 
   registerTabEvents();
