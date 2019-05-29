@@ -25,4 +25,17 @@ $(function() {
         }, 800);
         return false;
     });
+
+    // expand panel if url parameter is set
+    let urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('expand')) {
+        let url = window.location.href;
+        let index = url.indexOf("#");
+        if (index !== -1) {
+            let anchor = url.substring(index+1);
+            let element = $('[href=#' + anchor + ']');
+            if (element.attr('data-toggle') == 'collapse')
+                element.click();
+        }
+    }
 });
