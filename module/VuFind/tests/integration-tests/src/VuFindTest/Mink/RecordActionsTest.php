@@ -96,6 +96,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding comments on records.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testAddComment()
@@ -140,6 +142,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test adding tags on records.
+     *
+     * @retryCallback removeUsername2
      *
      * @return void
      */
@@ -286,6 +290,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test record view email.
      *
+     * @retryCallback removeEmailManiac
+     *
      * @return void
      */
     public function testEmail()
@@ -410,6 +416,26 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testAddTag.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testEmail.
+     *
+     * @return void
+     */
+    protected function removeEmailManiac()
+    {
+        static::removeUsers(['emailmaniac']);
     }
 
     /**

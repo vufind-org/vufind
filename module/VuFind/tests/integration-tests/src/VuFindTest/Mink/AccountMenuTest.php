@@ -117,6 +117,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test changing a password.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testMenuOff()

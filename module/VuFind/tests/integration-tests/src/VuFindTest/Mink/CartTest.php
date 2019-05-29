@@ -533,6 +533,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the email control works.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testCartEmail()

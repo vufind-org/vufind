@@ -112,6 +112,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Test adding a record to favorites (from the record page) while creating a
      * new account.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testAddRecordToFavoritesNewAccount()
@@ -238,6 +240,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
+     *
+     * @retryCallback removeUsername2
      *
      * @return void
      */
@@ -605,6 +609,17 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         $this->snooze();
         $this->assertFalse(is_object($page->find('css', '.result')));
+    }
+
+    /**
+     * Retry cleanup method in case of failure during
+     * testAddSearchItemToFavoritesNewAccount.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
     }
 
     /**

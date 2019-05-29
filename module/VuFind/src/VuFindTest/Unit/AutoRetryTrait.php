@@ -60,6 +60,11 @@ trait AutoRetryTrait
             ?? $annotations['class']['retry'][0] ?? 0;
         $retryCount = $retryCountAnnotation > 0 ? $retryCountAnnotation : 0;
 
+        // Also fetch retry callbacks, if any, from annotations; always include
+        // standard 'tearDown' method:
+        $retryCallbacks = $annotations['method']['retryCallback'] ?? [];
+        $retryCallbacks[] = 'tearDown';
+
         // Run through all of the attempts... Note that even if retryCount is 0,
         // we still need to run the test once (single attempt, no retries)...
         // hence the $retryCount + 1 below.
@@ -73,9 +78,11 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
-                // Perform teardown for interrupted test.
-                if (is_callable([$this, 'tearDown'])) {
-                    $this->tearDown();
+                // Execute callbacks for interrupted test.
+                foreach ($retryCallbacks as $callback) {
+                    if (is_callable([$this, $callback])) {
+                        $this->{$callback}();
+                    }
                 }
             }
         }

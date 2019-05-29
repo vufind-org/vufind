@@ -101,6 +101,10 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test creating a DB user....
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
      */
     public function testCreateDatabaseUser()
     {
