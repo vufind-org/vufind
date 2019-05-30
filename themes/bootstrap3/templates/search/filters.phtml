@@ -13,7 +13,6 @@
   $options = $this->searchOptions($params->getSearchClassId());
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
-  $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : '';
   $advancedSearch = $params->getSearchType() === 'advanced';
 ?>
 <?php ob_start(); ?>
@@ -95,19 +94,14 @@
 <?php $filters = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
-<?php if ($filterCount > 0): ?>
+<?php if ($hasDefaultsApplied || $filterCount > 0): ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
-    <?php if (empty($disableRetainFilterControls)): ?>
-      <?php if ($advancedSearch): ?>
-        <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
-      <?php else: ?>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-            <?=$this->transEsc("basic_search_keep_filters")?>
-          </label>
-        </div>
+    <?php if ($advancedSearch): ?>
+      <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
+    <?php else: ?>
+      <?php if ($options->getRetainFilterSetting()): ?>
+        TODO: RESET BUTTON
       <?php endif; ?>
     <?php endif; ?>
     <div class="filters">
@@ -121,15 +115,8 @@
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
         <?=$this->transEsc('show_filters_html', ['%%count%%' => $filterCount])?>
       </div>
-      <?php if (empty($disableRetainFilterControls)): ?>
-        <div class="retain-filters">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-              <?=$this->transEsc("basic_search_keep_filters")?>
-            </label>
-          </div>
-        </div>
+      <?php if ($options->getRetainFilterSetting()): ?>
+        TODO: RESET BUTTON
       <?php endif; ?>
       <div class="clearfix"></div>
     </div>
