@@ -95,7 +95,7 @@
 <?php ob_end_clean(); ?>
 
 <?php if ($hasDefaultsApplied || $filterCount > 0): ?>
-  <?php $resetLink = isset($urlQuery) ? $urlQuery->resetAllFilters() : false; ?>
+  <?php $resetLink = isset($urlQuery) ? $urlQuery->removeAllFilters() : false; ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
     <?php if ($advancedSearch): ?>
