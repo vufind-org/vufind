@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library 2015-2016.
+ * Copyright (C) The National Library 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +22,13 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Finna\RecordDriver;
+
+use Finna\Db\Row\User;
 
 /**
  * Additional functionality for Finna records.
@@ -33,6 +36,7 @@ namespace Finna\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -136,5 +140,17 @@ trait FinnaRecord
     public function setPreferredLanguage($language)
     {
         $this->preferredLanguage = $language;
+    }
+
+    /**
+     * Get user id from db
+     *
+     * @param int $user_id user user_id
+     *
+     * @return User
+     */
+    public function getUserById($user_id): User
+    {
+        return $this->getDbTable('User')->getById($user_id);
     }
 }

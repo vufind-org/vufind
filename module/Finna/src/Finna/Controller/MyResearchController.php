@@ -25,6 +25,7 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -450,16 +451,45 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('profile_update');
         }
+
         if ($this->formWasSubmitted('saveUserProfile')) {
             $validator = new \Zend\Validator\EmailAddress();
+            $showSuccess = $showError = false;
             if ('' === $values->email || $validator->isValid($values->email)) {
                 $user->email = $values->email;
                 $user->save();
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('profile_update');
+                $showSuccess = true;
             } else {
+                $showError = true;
+            }
+
+            $nicknameAvailable = $this->checkIfAvailableNickname(
+                $values->finna_nickname
+            );
+            $nicknameValid = $this->checkIfValidNickname($values->finna_nickname);
+            if (empty($values->finna_nickname)) {
+                $user->finna_nickname = null;
+                $user->save();
+                $showSuccess = true;
+            } elseif (!$nicknameValid) {
+                $showError = true;
+            } elseif ($nicknameAvailable) {
+                $user->finna_nickname = $values->finna_nickname;
+                $user->save();
+                $showSuccess = true;
+            } elseif ($user->finna_nickname === $values->finna_nickname) {
+                $showSuccess = true;
+            } else {
+                $showSuccess = $showError = false;
+                $this->flashMessenger()->setNamespace('error')
+                    ->addErrorMessage('profile_update_nickname_taken');
+            }
+            if ($showError) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('profile_update_failed');
+            } elseif ($showSuccess) {
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage('profile_update');
             }
         }
 
@@ -1382,5 +1412,32 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $blocks;
         }
         return [];
+    }
+
+    /**
+     * Check if nickname is avaliable
+     *
+     * @param string $nickname User nickname
+     *
+     * @return bool Return username or false if not valid
+     */
+    protected function checkIfAvailableNickname($nickname): bool
+    {
+        return ! $this->getTable('User')->nicknameIsTaken($nickname);
+    }
+
+    /**
+     * Validate user's nickname.
+     *
+     * @param string $nickname User nickname
+     *
+     * @return bool Return username or false if not valid
+     */
+    protected function checkIfValidNickname($nickname): bool
+    {
+        return preg_match(
+            '/^(?!.*[._\-\s]{2})[A-ZÅÄÖa-zåäö0-9._\-\s]{3,50}$/',
+            $nickname
+        );
     }
 }

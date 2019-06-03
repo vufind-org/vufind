@@ -87,7 +87,7 @@
       </div>
       <?php if ($listNotes): ?>
         <div class="list-notes">
-          <strong><?=$this->transEsc('Description') ?></strong><?php if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><?php endif; ?>:
+          <strong><?=$this->transEsc('Description') ?>:</strong>
           <ul>
           <?php foreach ($listNotes as $note): ?>
             <li><?=$this->markdown()->toHtml($note) ?></li>

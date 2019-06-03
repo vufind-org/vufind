@@ -29,6 +29,13 @@
             </div>
           </div>
           <?php endif; ?>
+          <?php if ($nickname = $this->escapeHtml(trim($this->userPublicName($user)))): ?>
+          <div class="nickname-holder">
+            <div>
+              <b><?= $nickname ?>:</b>
+            </div>
+          </div>
+          <?php endif; ?>
           <textarea name="comment" class="form-control" rows="4" cols="37" maxlength="8000" required></textarea><br/>
           </div>
           <?=$this->recaptcha()->html($this->tab->isRecaptchaActive()) ?>

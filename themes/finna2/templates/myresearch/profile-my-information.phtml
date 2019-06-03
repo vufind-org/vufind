@@ -15,6 +15,18 @@
         </div>
       </div>
       <div class="my-profile-row">
+        <div class="my-profile-col">
+          <label for="finna_nickname"><?=$this->transEsc("finna_nickname") ?>:</label>
+        </div>
+        <div class="my-profile-col">
+          <input id="finna_nickname" type="text" class="form-control profileinfo-fields" name="finna_nickname" value="<?=$this->escapeHtml(trim($user->finna_nickname))?>" pattern="^(?!.*[._\-\s]{2})[A-ZÅÄÖa-zåäö0-9._\-\s]{3,50}$" title="<?=$this->transEsc('finna_nickname_restrictions')?>"/>
+        </div>
+        <div class="clearfix visible-xs"></div>
+        <div class="my-profile-col">
+          <i class="fa fa-info-circle-hollow"></i> <?=$this->transEsc("finna_nickname_info")?>
+        </div>
+      </div>
+      <div class="my-profile-row">
           <input id="save-user-profile" name="saveUserProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
       </div>
     <?php endif; ?>

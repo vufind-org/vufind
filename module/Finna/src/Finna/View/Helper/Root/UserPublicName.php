@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,8 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,11 +35,17 @@ namespace Finna\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class UserPublicName extends \Zend\View\Helper\AbstractHelper
+class UserPublicName
+extends \Zend\View\Helper\AbstractHelper
+implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Create publicly shown user name
      *
@@ -49,7 +57,11 @@ class UserPublicName extends \Zend\View\Helper\AbstractHelper
     {
         $username = '';
         if ($user) {
-            if ($user->email
+            if (!empty($user->finna_nickname)) {
+                $nicknameTranslation
+                    = strtolower($this->translate('finna_nickname'));
+                $username = $user->finna_nickname . " ($nicknameTranslation)";
+            } elseif ($user->email
                 && ($pos = strpos($user->email, '@')) !== false
             ) {
                 $username = substr($user->email, 0, $pos);

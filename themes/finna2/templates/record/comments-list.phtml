@@ -27,7 +27,6 @@
       $reported = $inappropriateComments && in_array($comment->id, $inappropriateComments);
       $own = $user && $comment->user_id === $user->id;
   ?>
-
   <div class="comment-wrapper comment" data-id="<?=$comment->id?>">
     <div class="name text-right">
       <?php if ($comment->finna_rating !== null): ?>
@@ -37,7 +36,8 @@
       <?php endif; ?>
       <div class="comment-info">
         <small>
-          <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($this->userPublicName($comment)))?></strong>
+          <?php $commenter = $this->driver->tryMethod('getUserById', [$comment->user_id]); ?>
+          <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($this->userPublicName($commenter)))?></strong>
           <?=$this->escapeHtml($comment->created)?>
           <?php if ($own): ?>
             <a href="#" class="edit"><?=$this->transEsc('Edit')?></a>
@@ -75,4 +75,3 @@
   );
 ?>
 <!-- END of: finna - record/comments-list.phtml -->
-
