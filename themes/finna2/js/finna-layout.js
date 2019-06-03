@@ -165,7 +165,7 @@ finna.layout = (function finnaLayout() {
     if ($('.content-navigation-menu')[0]) {
       $('.content-section').each(function initContentSection(index) {
         var link = '#' + $(this).attr('id');
-        $('.content-navigation-menu').append('<h2 class="nav-' + index + '">' + $('h2', this).text() + '</h2>');
+        $('.content-navigation-menu').append('<h2 class="nav-' + index + '"> <a href="' + link + '">' + $('h2', this).text() + '</a></h2>');
         $('.content-navigation-menu h2.nav-' + index).click(function onMenuClick() {
           $('body, html').animate({
             scrollTop: $(link).offset().top - 5
@@ -188,6 +188,25 @@ finna.layout = (function finnaLayout() {
         else {
           $('.content-navigation-menu').removeClass('attached');
         }
+      });
+    }
+  }
+
+  function initHelpTabs() {
+    if ($('.help-tabs')[0]) {
+      $('.help-tab').each(function initHelpTab() {
+        if ($(this).hasClass('active')) {
+          $(this).focus();
+        }
+        var url = $(this).data('url');
+        $(this).keydown(function onTabEnter(event) {
+          if (event.which === 13) {
+            window.location.href = url;
+          }
+        });
+        $(this).click(function onTabClick() {
+          window.location.href = url;
+        });
       });
     }
   }
@@ -829,6 +848,7 @@ finna.layout = (function finnaLayout() {
       initFixFooter();
       initTruncate();
       initContentNavigation();
+      initHelpTabs();
       initRecordSwipe();
       initMultiSelect();
       initMobileNarrowSearch();

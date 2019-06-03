@@ -1,17 +1,17 @@
 <!-- START of: finna - Content/help-tabs.phtml -->
 <div class="finna-main-tabs">
-    <ul class="nav nav-tabs help-tabs hidden-xs">
-        <li <?php if($activeTab == "help"): ?> class="active"<?php endif; ?> >
-            <a href="<?=$this->url('content-page', ['page' => 'help'])?>"><?=$this->translate('tabs_help');?></a>
+    <ul class="nav nav-tabs help-tabs hidden-xs" role="tablist">
+        <li class="help-tab <?= $activeTab == "help" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help'])?>">
+            <?=$this->translate('tabs_help');?>
         </li>
-        <li <?php if($activeTab == "help-basic"): ?> class="active" <?php endif; ?>>
-            <a href="<?=$this->url('content-page', ['page' => 'help-basic'])?>"><?=$this->translate('tabs_help-basic');?></a>
+        <li class="help-tab <?= $activeTab == "help-basic" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-basic'])?>">
+            <?=$this->translate('tabs_help-basic');?>
         </li>
-        <li<?php if($activeTab == "help-advanced"): ?> class="active" <?php endif; ?>>
-            <a href="<?=$this->url('content-page', ['page' => 'help-advanced'])?>"><?=$this->translate('tabs_help-advanced');?></a>
+        <li class="help-tab <?= $activeTab == "help-advanced" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-advanced'])?>">
+            <?=$this->translate('tabs_help-advanced');?>
         </li>
-        <li<?php if($activeTab == "help-syntax"): ?> class="active" <?php endif; ?>>
-            <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>"><?=$this->translate('tabs_help-syntax');?></a>
+        <li class="help-tab <?= $activeTab == "help-syntax" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">
+           <?=$this->translate('tabs_help-syntax');?>
         </li>
     </ul>
     <div class="mobile-main-tabs visible-xs">
