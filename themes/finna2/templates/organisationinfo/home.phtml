@@ -60,8 +60,8 @@ JS;
     <div class="consortium-navigation hide">
       <ul class="consortium-navigation-list" data-spy="affix" data-offset-top="310">
         <li class="scroll building hide"></li>
-        <li class="scroll usage hide"><?=$this->transEsc('organisation_info_navi_usage')?></li>
-        <li class="scroll service hide"><?=$this->transEsc('organisation_info_navi_service')?></li>
+        <li class="scroll usage hide"><a href="#consortium-usage-rights-section" class="sr-only"><?=$this->transEsc('organisation_info_navi_usage')?></a><span aria-hidden="true"><?=$this->transEsc('organisation_info_navi_usage')?></span></li>
+        <li class="scroll service hide"><a href="#consortium-service-point-section" class="sr-only"><?=$this->transEsc('organisation_info_navi_service')?></a><span aria-hidden="true"><?=$this->transEsc('organisation_info_navi_service')?></span></li>
       </ul>
     </div>
   <?php endif; ?>
@@ -162,7 +162,7 @@ JS;
   <div class="map-bubble-template hide">
     <div class="map-bubble">
       <h5 class="name">Template name</h5>
-      <p><span class="office-links address"></p>
+      <p><span class="office-links address"></span></p>
     </div>
   </div>
 

@@ -34,7 +34,7 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
       if (consortiumName) {
         infoField.removeClass('hide').find('.name').text(consortiumName);
         enableConsortiumNaviItem('building');
-        holder.find('.consortium-navigation-list .scroll.building').text(consortiumName);
+        holder.find('.consortium-navigation-list .scroll.building').html('<a href="#consortium-info-section" class="sr-only">' + consortiumName + '</a>' + '<span aria-hidden="true">' + consortiumName + '</span>');
       }
 
       var usageRights = null;
