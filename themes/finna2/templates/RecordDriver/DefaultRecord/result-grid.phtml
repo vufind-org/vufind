@@ -18,7 +18,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   <div class="grid-body">
     <div class="text-center grid-image">
       <?php $img = $this->recordImage($this->record($this->driver))?>
-      <?=$img->render('list grid', ['medium' => ['w' => 600, 'h' => 600]]) ?>
+      <?=$img->render('list grid', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 600, 'h' => 600]]) ?>
     </div>
     <?php if (!$openUrlActive && empty($urls)): ?>
       <?php if ($this->driver->supportsAjaxStatus()): ?>

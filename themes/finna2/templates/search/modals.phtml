@@ -1,0 +1,50 @@
+<!-- START of: finna - search/modals.phtml -->
+<!-- BASIC MODAL IN CASE WE NEED ONE -->
+<div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <button type="button" class="close" data-dismiss="modal" aria-label="<?= $this->transEsc('close') ?>"></button>
+      <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGEPOPUP MODAL -->
+<div id="imagepopup-modal" hidden>
+  <div class="imagepopup-holder" aria-hidden="true">
+    <div class="imagepopup-container">
+      <div class="popup-canvas paginator-canvas">
+        <div class="popup-nonzoom non-zoomable">
+          <div class="iconlabel"></div>
+          <img alt="" />
+        </div>
+        <div class="leaflet-map-image image-wrapper">
+          <img />
+          <div class="imagepopup-zoom-container">
+            <div class="zoom-in zoom-button"><i class="fa fa-zoom-in" aria-hidden="true"></i></div>
+            <div class="zoom-out zoom-button"><i class="fa fa-zoom-out" aria-hidden="true"></i></div>
+            <div class="zoom-reset zoom-button"><i class="fa fa-zoom-100" aria-hidden="true"></i></div>
+          </div>
+          <div class="leaflet-image-loading">
+          </div>
+        </div>
+        <div class="popup-video video-popup"><video class="video-js vjs-big-play-centered" controls></video></div>
+      </div>
+      <div class="finna-image-pagination">
+      </div>
+    </div>
+    <div class="image-information-holder">
+      <div class="collapse-content-holder">
+      </div>  
+      <div class="record-informations">
+        <div class="record-index">
+          <span class="total"></span>
+        </div>
+        <div class="paginator-info">
+          <span class="image-index"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - search/modals.phtml -->

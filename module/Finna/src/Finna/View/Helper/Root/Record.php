@@ -247,6 +247,17 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Return if image popup zoom has been enabled in config
+     *
+     * @return boolean
+     */
+    public function getImagePopupZoom()
+    {
+        return isset($this->config->Content->enableImagePopupZoom)
+            && $this->config->Content->enableImagePopupZoom === '1';
+    }
+
+    /**
      * Return record image URL.
      *
      * @param string $size Size of requested image

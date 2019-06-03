@@ -64,7 +64,6 @@ table .iconlabel {
     & img {
         box-shadow: 0 0 0 2px @gray-lighter inset;
         position: relative;
-        width: auto;
     }
     & .iconlabel {
         width: 100%;
@@ -76,7 +75,7 @@ table .iconlabel {
             position: absolute;
             font-size: 39px;
             color: @gray-lighter;
-            z-index: 0;
+            z-index: 1;
             top: 50%;
             left: 50%;
             margin-left: -18px;
@@ -88,12 +87,6 @@ table .iconlabel {
                 margin-left: -12.5px;
                 margin-top: -18.5px;
             }
-        }
-    }
-    @media (max-width:@screen-xs-max) {
-        & img {
-            box-shadow: none;
-            width: auto;
         }
     }
 }
@@ -117,6 +110,7 @@ table .iconlabel {
 .image-popup-trigger.no-image {
     img {
         width: 100%;
+        min-width: 100px;
     }
     @media (max-width:@screen-xs-max) {
         display: none;
@@ -785,20 +779,9 @@ table .iconlabel {
         .opacity(0.3);
     }
 }
-.template-dir-record .recordcover-holder {
-    @media (max-width: @screen-xs-max) {
-        & .fa-magnify {
-            right: auto;
-            margin-left: -26px;
-        }
-    }
-}
 .grid .fa-magnify {
     right: 14px;
     top: 7px;
-}
-.recordcover-holder:hover .fa-magnify {
-    opacity: 1;
 }
 
 /* HIDING ICONS and custom styles for some occurences */

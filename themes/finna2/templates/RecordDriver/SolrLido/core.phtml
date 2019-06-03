@@ -27,7 +27,7 @@
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?>">
 
-    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img]);?>
+    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img, 'sizes' => ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 1200, 'h' => 1200]]]);?>
 
     <?php if (!empty($videoUrls)): ?>
       <?=$this->record($this->driver)->renderTemplate('record-video-player.phtml', ['videoUrls' => $videoUrls, 'type' => 'SolrLido']);?>

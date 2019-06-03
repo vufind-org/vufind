@@ -1,0 +1,211 @@
+<?php
+  $recordImage = $this->recordImage($this->record($this->driver));
+  $originalImage = $recordImage->getMasterImage($this->index);
+  $imageDescription = $this->driver->tryMethod('getImageDescription', [$this->index]);
+  $rights = $recordImage->getImageRights($this->index);
+  $formats = $this->driver->tryMethod('getFormats');
+  $translatedFormat = $this->transEsc(end($formats));
+  $recordType = $this->driver->tryMethod('getRecordType');
+  $videoScripts = $this->partial('Helpers/videojs-urls.phtml');
+?>
+<div id="popup-content-collapse" class="content">
+  <h3 id="popup-image-title" class="title"><?=$this->escapeHtml($this->driver->getTitle()) ?></h3>
+  <div class="author-and-dates">
+    <?php if ($recordType != 'lido'): ?>
+      <p>
+      <?php if ($author = $this->driver->getPrimaryAuthor()): ?>
+        <?=$this->escapeHtml($author) ?>
+        <?php endif; ?>
+        <?php if ($dates = $this->driver->trymethod('getResultDateRange')): ?>
+          <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
+      <?php else: ?>
+        <?php foreach ($this->driver->getPublicationDates() as $date): ?>
+        <?=$this->escapeHtml($date) ?>
+        <?php endforeach ?>
+      <?php endif; ?>
+      </p>
+    <?php else: ?>
+      <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
+        <div class="truncate-field">
+        <?php foreach($results as $index => $author): ?>
+          <?=($index > 0 ? '; ' : '')?><?=$this->escapeHtml($author['name'])?><?php if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><?php endif; ?>
+        <?php endforeach; ?>
+        <?php if ($dates = $this->driver->getResultDateRange()): ?>
+          <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
+        <?php endif; ?>
+        <?php if ($results = $this->driver->getSubjectDates() && !isset($dates[0])): ?>
+          <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
+        <?php endif; ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($photo = $this->driver->getPhotoInfo()): ?>
+        <?=$this->transEsc('Photo Info') ?>: <?=$this->escapeHtml($photo) ?>
+      <?php endif; ?>
+    <?php endif; ?>
+  </div>
+  <div class="building">
+    <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
+  </div>
+  <div class="summary loading">
+    <div data-rows="6" class="truncate-field">
+    <?php if ($recordType == 'marc'): ?>
+      <p></p>
+    <?php else: ?>
+      <?php if ($imageDescription): ?>
+        <div id="popup-image-description" class="image-description">
+          <p><strong><?=$this->transEsc('Image') ?>:</strong> <?=$this->escapeHtml($imageDescription) ?></p>
+        </div>
+      <?php endif; ?>
+      <?php if ($summary = $this->driver->getSummary()): ?>
+        <?php foreach ($this->driver->getSummary() as $item): ?>
+          <p><?=$recordType == 'forward' ? $item : preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($item)) /* Allow <br> tag */ ?></p>
+        <?php endforeach ?>
+      <?php endif ?>
+    <?php endif ?>
+    </div>
+  </div>
+  <?php if (isset($listNotes) && $listNotes): ?>
+    <div class="list-notes">
+      <strong><?=$this->transEsc('Description') ?>:</strong>
+      <ul>
+      <?php foreach ($listNotes as $note): ?>
+        <li><?=$this->markdown()->toHtml($note) ?></li>
+      <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+  <div class="popup-link-buttons">
+    <?php
+      $urls = $this->driver->getURLs();
+      $onlineURLs = $this->driver->getOnlineURLs();
+      $mergedData = $this->driver->tryMethod('getMergedRecordData');
+      $images = $this->record($this->driver)->getAllRecordImageUrls();
+      $videoUrlElement = [
+        'class' => 'videourl fulltext btn btn-primary',
+        'data-scripts' => $videoScripts
+      ];
+      $this->htmlElement()->addAttributeTemplate('video-base', $videoUrlElement);
+    ?>
+    <?php if (!empty($urls) || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+      <?php $index = 0; ?>
+      <?php $renderedURLs = []; ?>
+      <?php if (!empty($urls)): ?>
+        <?php foreach ($urls as $url): ?>
+          <?php
+            $renderedURLs[] = $url['url'];
+            $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
+            $current = [
+              'title' => $url['url']
+            ];
+            $isVideo = !empty($url['videoSources']);
+            $embed = $this->recordLink()->getEmbeddedVideo($url['url']);
+            if ($embed !== '') {
+              $current[$embed] = '';
+              $isVideo = true;
+            }
+            if ($isVideo) {
+              if (isset($type) && $type === 'SolrEad') {
+                $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $this->translate('link_' . $url['desc'], null, $url['desc']);
+              } elseif (isset($type) && $type === 'SolrForward') {
+                $desc = $this->translate('default::link_' . $desc, null, $desc);
+              } else {
+                $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $desc;
+              }
+              $desc = $this->escapeHtml($desc);
+              $current['data-link'] = $this->proxyUrl($url['url']);
+              $current['data-video-sources'] = json_encode($url['videoSources']);
+            } else {
+              $link = [
+                'href' => $this->proxyUrl($url['url']),
+                'target' => '_blank'
+              ];
+              $current = array_merge($current, $link);
+            }
+            if (!empty($url['embed']) && $url['embed'] === 'video') {
+              $current['data-embed-video'] = '';
+            }
+          ?>
+          <div class="record-online-link">
+            <?php if ($isVideo): ?>
+              <button <?= $this->htmlElement()->getAttributes($current, 'video-base') ?>>
+                <i class="fa fa-external-link"></i> <?= $desc ?>
+              </button>
+            <?php else: ?>
+              <a <?= $this->htmlElement()->getAttributes($current); ?>>
+                <i class="fa fa-external-link"></i><?php if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=$this->transEsc('default::link_' . $desc, null, $desc) ?><?php endif; ?>
+              </a>
+            <?php endif; ?>
+          </div>
+          <?php $index++; ?>
+          <?php if ($index > 4): ?>
+          <div>...</div>
+          <?php break; endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
+      <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+        <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+          <?php if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+          <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><?php if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><?php else: ?><?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><?php endif; ?></a>
+          <?php if ($url['source']): ?>
+            <span class="online-source"><?=is_array($url['source']) ? '(' . $this->transEsc('Multiple Organisations') . ')' : '';?></span>
+          <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    <?php endif; ?>
+    <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i><span><?=$this->transEsc('To the record') ?></span></a></div>
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?><div class="save-record-link"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span><?=$this->transEsc('Add to favorites')?></span></a></div><?php endif; ?>
+    <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
+      <div class="open-link"><a target="_blank" class="original-image-url" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>"><i class="fa fa-download"></i><span><?=$this->transEsc('Download the image') ?></span></a> <span class="image-dimensions"></span></div>
+    <?php else: ?>
+      <a class="original-image-url hidden" href="<?=$originalImage ?>">Hidden</a>
+    <?php endif ?>
+  </div>
+  <div class="image-rights">
+    <div class="rights">
+      <?php $hasLink = isset($rights['link']); ?>
+      <span><?=$this->transEsc('Image Rights') ?>:</span>
+      <?php if (!empty($rights['copyright'])): ?>
+        <?php if ($hasLink): ?><a target="_blank" href="<?=$rights['link'] ?>"><?php endif; ?><?php if ($this->transEsc($rights['copyright']) === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$this->transEsc($rights['copyright']) ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
+      <?php else: ?>
+        <?php if (in_array('usage_F', $this->driver->tryMethod('getUsageRights', [], []))): ?>
+          <?=$this->transEsc('usage_F') ?><br>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+    <?php if (!empty($rights['copyright']) && (isset($rights['description']))): ?>
+      <div class="more-link copyright-link"><a data-mode="1" href=""><?=$this->transEsc('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
+      <div class="copyright">
+    <?php endif; ?>
+    <?php if (isset($rights['description'])): ?>
+      <?php foreach ($rights['description'] as $item): ?>
+        <p><?=$this->transEsc($item) ?></p>
+      <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+      <p><?=$this->transEsc('Image Rights Default') ?>
+      <p><a href="<?=$this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?=$this->transEsc('See terms and conditions') ?></a>
+    <?php endif; ?>
+    <?php if (!empty($rights['copyright']) && (isset($rights['description']))): ?>
+      </div>
+      <div class="less-link copyright-link"><a data-mode="0" href=""><?=$this->transEsc('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
+    <?php endif; ?>
+    <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>
+      <?=$this->render('record/record-organisation-menu.phtml') ?>
+    <?php endif; ?>
+  </div>
+  <div style="clear: both;"></div>
+</div>
+<?php
+  // NOTE: Piwik js-script must be inserted inside an element (not at the template root).
+  // Otherwise Magnific popup close button gets appended to the script tag which causes a js-error...
+?>
+<?=
+$this->piwik([
+  'lightbox' => true, 'record' => $this->driver, 'action' => 'imagePopup',
+  'recordUrl' => $this->recordLink()->getUrl($this->driver)
+]);
+?>
+<script>
+    finna.layout.initOrganisationPageLinks();
+</script>

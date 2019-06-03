@@ -23,7 +23,7 @@
   <div class="media">
     <div class="media-left text-center">
       <?php $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', ['medium' => ['w' => 250]]) ?>
+      <?= $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250]]) ?>
     </div>
     <div class="media-body">
       <div class="result-body">

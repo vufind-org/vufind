@@ -7,7 +7,7 @@
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
 if ($img):
     ob_start(); ?>
-    <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
+    <?=$img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]) ?>
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif;?>

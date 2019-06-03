@@ -77,7 +77,8 @@
             'request_change_done' => 'request_change_done',
             'other_records' => 'other_records',
             'records' => 'records',
-            'search_placeholder' => 'search_placeholder'
+            'search_placeholder' => 'search_placeholder',
+            'Image' => 'Image'
           ]
         );
         // Add translation strings
@@ -229,6 +230,7 @@ JS;
     <?php endif; ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?=$this->render('search/modals.phtml') ?>
     <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -430,15 +432,6 @@ JS;
         <?=$this->layout()->poweredBy ?>
       </div>
     </footer>
-    <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <button type="button" class="close" data-dismiss="modal" aria-label="<?=$this->transEsc('close') ?>"></button>
-          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
-        </div>
-      </div>
-    </div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
     <?php if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>

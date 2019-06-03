@@ -9,7 +9,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
-    <?=$img->render('list', ['medium' => ['w' => 250]]) ?>
+    <?=$img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250]]) ?>
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif;?>
@@ -98,7 +98,7 @@
       <div class="media condensed-collapse-data">
         <?php if (!$database && !$ejournal): ?>
           <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-            <div class="media-<?=$thumbnailAlignment ?> resultThumb hidden-xs">
+            <div class="media-left resultThumb">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
               <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
                   <?=$thumbnail ?>
@@ -230,8 +230,8 @@
                 <?php endif; ?>
             </div>
         </div>
-        <?php if ($thumbnail): ?>
-          <div class="media-right resultThumb <?= $thumbnailAlignment == 'right' ? '' : 'hidden-sm hidden-md hidden-lg'?>">
+        <?php if ($thumbnail && $thumbnailAlignment === 'right'): ?>
+          <div class="media-right resultThumb">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
             <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
             <?=$thumbnail ?>

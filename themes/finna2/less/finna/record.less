@@ -22,6 +22,8 @@
     }
     .recordcover-container {
       position: relative;
+      margin-bottom: 10px;
+      text-align: center;
     }
   }
   @media(min-width: @screen-xs){
@@ -145,12 +147,6 @@ a.authority {
   clear: left;
 }
 
-@media(max-width: @screen-xs-max){
-  .truncate-field.recordcovers {
-    display: inline-block;
-  }
-}
-
 .record .record-title {
   margin: 0;
   margin-bottom: 3px;
@@ -173,9 +169,27 @@ a.authority {
     .record-image-container {
       text-align: center;
       .image-popup-trigger {
+        position: relative;
+        display: inline-block;
+        height: 100%;
         img {
           max-height: 600px;
-          width: auto;
+        }
+        .paginator-info {
+          position: absolute;
+          right: 10px;
+          bottom: 0px;
+          color: black;
+          .image-index {
+            background-color: #d6d6d6;
+            background-color: #efefefcc;
+            padding: 2px;
+          }
+        }
+      }
+      .image-popup-trigger.no-image {
+        img {
+          max-width: 200px;
         }
       }
       .open-link {
@@ -205,45 +219,159 @@ a.authority {
   }
 }
 
+.recordcover-image-detail {
+  .image-description {
+    text-align: left;
+    color: @gray-light;
+  }
+}
+
 .recordcovers {
-  &.list {
-    position: absolute;
-    left: auto;
-    padding: 0;
-    width: auto;
-    z-index: 3;
-    min-height: 20px;
-    text-align: center;
-    top: 0;
-    & a {
-      background: @body-bg;
-      text-decoration: none;
-      .opacity(.5);
-      font-size: 1em;
+  &.paginated {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    .paginator-info {
+      position: absolute;
+      right: 40px;
+      font-size: 0.9em;
+      bottom: -22px;
+    }
+    > button {
+      appearance: none;
+      -webkit-appearance: none;
+      height: 44px;
+      border: none;
+      background-color: transparent;
+      padding: 0 2px;
+      i {
+        cursor: pointer;
+        font-size: 24px;
+      }
+      .mfp-content &:not(:disabled){
+        color: white;
+      }
+      &:disabled {
+        background-color: #d6d6d600;
+        color: lighten(@gray-light, 30%);
+        color: #00000000;
+        i {
+          cursor: not-allowed;
+        }
+      }
+    }
+  
+    .track-holder {
+      max-width: 85%;
       display: inline-block;
-      width: auto;
-      padding: 1px 5px;
-      margin: 0 4px 4px 0;
-      text-align: center;
-      transition: .2s linear;
-      &:hover {
-        .opacity(1);
+      .finna-element-track {
+        max-height: 100%;
+        touch-action: none;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        width: 100%;
+        min-width: 100%;
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          max-width: 100%;
+          a {
+            background-color: #efefefcc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 64px;
+            overflow: hidden;
+            margin: 2px 4px;
+            padding: 2px;
+            max-width: 64px;
+            width: 64px;
+            flex: 1 1 auto;
+            cursor: pointer;
+        
+            &.current {
+              border: 0.2em solid @brand-primary;
+            }
+        
+            &.truncate-change {
+              opacity: 0;
+            }
+          }
+        }
       }
     }
   }
 
-  &.record a {
-    margin: 0 5px 5px 0;
-    background-position: 50% 50%;
-    background-size: cover;
-    display: inline-block;
-    height: 42px;
-    margin: 0 5px 5px 0;
-    overflow: hidden;
-    width: 42px;
-    &.truncate-change {
-      opacity: 0;
+  &.mini-paginator.paginated {
+    position: absolute;
+    left: auto;
+    padding: 0;
+    z-index: 3;
+    min-height: 20px;
+    top: 0;
+    align-items: center;
+    justify-content: start;
+    button {
+      background-color: #efefef;
+      background-color: #efefefcc;
+      margin: 0 1px;
+      box-shadow: 1px 1px #c6c6c6;
+      height: 24px;
+      i {
+        font-size: 14px;
+      }
+      &:disabled {
+        color: lighten(@gray-light, 30%);
+      }
     }
+
+    .paginator-info {
+      text-align: left;
+      width: initial;
+      position: initial;
+      margin: 0 2px;
+      .image-index {
+        background-color: #efefef;
+        background-color: #efefefcc;
+      }
+    }
+    
+    .track-holder {
+      margin: 0 1px;
+      display: none;
+    }
+  }
+}
+
+.recordcovers-more {
+  display: flex;
+  align-items: center;
+    
+  .show-more-images, .show-less-images {
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: .9em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+  }
+  button {
+    flex: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    i {
+      cursor: pointer;
+    }
+  }
+  button:disabled i {
+    cursor: initial;
   }
 }
 
@@ -398,8 +526,11 @@ a.authority {
   }
 }
 
-.record .recordcover-holder .more-link {
-  width: 100%;
+.record .recordcover-holder {
+  margin-bottom: 12px;
+  .more-link {
+    width: 100%;
+  }
 }
 
 @media(max-width: @screen-sm-max) {

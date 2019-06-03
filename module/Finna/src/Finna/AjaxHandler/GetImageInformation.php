@@ -1,10 +1,10 @@
 <?php
 /**
- * GetImagePopup AJAX handler
+ * GetImageInformation AJAX handler
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2018.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,8 +21,7 @@
  *
  * @category VuFind
  * @package  AJAX
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,15 +37,15 @@ use Zend\Config\Config;
 use Zend\Mvc\Controller\Plugin\Params;
 
 /**
- * GetImagePopup AJAX handler
+ * GetImageInformation AJAX handler
  *
  * @category VuFind
  * @package  AJAX
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetImagePopup extends \VuFind\AjaxHandler\AbstractBase
+class GetImageInformation extends \VuFind\AjaxHandler\AbstractBase
 {
     /**
      * Config
@@ -142,7 +141,6 @@ class GetImagePopup extends \VuFind\AjaxHandler\AbstractBase
             'driver' => $driver,
             'index' => $index
         ];
-
         $user = null;
         if ($publicList) {
             // Public list view: fetch list owner
@@ -167,12 +165,9 @@ class GetImagePopup extends \VuFind\AjaxHandler\AbstractBase
                 $context['listUser'] = $user;
             }
         }
-        $context['enableImagePopupZoom']
-            = isset($this->config->Content->enableImagePopupZoom)
-            ? $this->config->Content->enableImagePopupZoom : false;
 
         $html = ($this->recordPlugin)($driver)
-            ->renderTemplate('record-image-popup.phtml', $context);
+            ->renderTemplate('record-image-popup-information.phtml', $context);
 
         return $this->formatResponse(['html' => $html]);
     }

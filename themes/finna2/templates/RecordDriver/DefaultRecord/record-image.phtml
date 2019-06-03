@@ -1,35 +1,12 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-image.phtml -->
-<?php $formats = $this->driver->tryMethod('getFormats'); ?>
-<?php $largeImageLayout = $this->driver->getSourceIdentifier() == 'Solr' && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward']); ?>
+<?php
+  $formats = $this->driver->tryMethod('getFormats');
+  $largeImageLayout = $this->driver->getSourceIdentifier() == 'Solr' && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward']);
+  $enableImagePopupZoom = $this->record($this->driver)->getImagePopupZoom();
+?>
 <div class="record-image-container <?= empty($images[0]['urls']['large']) && empty($images[0]['urls']['medium']) ? 'hide-image' : ''?>">
-  <div class="recordcover-holder" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>" aria-hidden="true">
-
-    <?= $this->record($this->driver)->renderTemplate('record-image-navi.phtml', ['images' => $images, 'type' => $type]); ?>
-
-    <?php if (!$this->userAgent()->isBot()): ?>
-      <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
-        <div class="recordcover-container">
-          <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
-            <?php if (count($images) <= 1): ?>
-              <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-            <?php endif; ?>
-            <?php if (!empty($images[0]['urls']['large']) && $this->layout()->templateDir == 'record' && $largeImageLayout): ?>
-              <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['large']);?>"/>
-            <?php else: ?>
-              <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($images[0]['urls']['medium']);?>"/>
-            <?php endif; ?>
-            <?php if (isset($images[0]['large'])): ?>
-            <i class="fa fa-magnify hidden-print"></i>
-            <?php endif; ?>
-          </a>
-        </div>
-      <?php else: ?>
-        <a class="image-popup-trigger no-image" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
-          <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-          <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        </a>
-      <?php endif; ?>
-    <?php endif; ?>
+  <div class="recordcover-holder paginate" aria-hidden="true" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>" aria-hidden="true">
+    <?= $this->record($this->driver)->renderTemplate('record-image-paginator.phtml', ['images' => $images, 'type' => $type, 'largeImageLayout' => $largeImageLayout, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom]); ?>
   </div>
   <?php if ($type != 'list' && $type != 'list grid'): ?>
     <?php $ind = -1; ?>
@@ -54,11 +31,6 @@
           </div>
           <?php endif ?>
         </div>
-        <?php if (!empty($image['description'])): ?>
-          <div class="image-description">
-            <?=$this->escapeHtml($image['description']) ?>
-          </div>
-        <?php endif; ?>
         <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
           <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
         <?php endif; ?>

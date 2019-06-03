@@ -1,0 +1,79 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/record-image-paginator.phtml -->
+<?php
+  $isList = ($type === 'list' || $type === 'list grid');
+  $enableImageZoom = (isset($enableImagePopupZoom) && $enableImagePopupZoom) && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead', 'qdc']);
+?>
+<?php if ($type === 'record' || !$this->userAgent()->isBot()): ?>
+  <?php
+    $ind = 0;
+    $paginatedLinks = [];
+  ?>
+  <?php foreach ($images as $img): ?>
+    <?php
+      $desc = isset($img['description']) && !empty($img['description']) ? $img['description'] : $this->transEsc('Cover Image');
+      $obj = [
+        'small' => $img['urls']['small'],
+        'medium' => $img['urls']['medium'] ?? $img['urls']['small'],
+        'largest' => $img['urls']['large'] ?? $img['urls']['medium'] ?? $img['urls']['small'],
+        'index' => $ind++,
+        'alt' => $desc,
+        'description' => $img['description'],
+        'title' => $this->transEsc('Image') . ' ' . $ind
+      ];
+      $paginatedLinks[] = $obj;
+    ?>
+  <?php endforeach; ?>
+  <?php if (!$this->userAgent()->isBot()): ?>
+    <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
+      <div class="recordcover-container">
+        <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
+          <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+          <img data-src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <div class="paginator-info"></span> <span class="image-index"></span></div>
+        </a>
+        <a class="hidden-trigger" href="#" style="display: none;">
+          <?= $this->transEsc('hidden_description') ?>
+        </a>
+      </div>
+    <?php endif; ?>
+  <?php else: ?>
+    <a href="<?=$this->escapeHtmlAttr($img['urls']['large'] ?? $img['urls']['medium']) ?>"><?=($ind + 1) ?></a>
+  <?php endif; ?>
+  <div class="recordcover-image-detail">
+    <p class="image-description">
+    </p>
+  </div>
+  <div class="recordcovers <?=$type?>">
+    <button class="left-button" type="button" aria-label="<?= $this->transEsc("browse_to_left") ?>"><i class="fa fa-handle-left"></i></button>
+    <div class="track-holder paginator-mask">
+      <div class="finna-element-track"></div>
+    </div>
+    <button class="right-button" type="button" aria-label="<?= $this->transEsc("browse_to_right") ?>"><i class="fa fa-handle-right"></i></button>
+    <div class="paginator-info"></span> <span class="image-index"></span></div>
+  </div>
+  <div class="recordcovers-more more-area">
+    <button type="button" class="show-more-images"><?= $this->transEsc('more') ?> <i class="fa fa-arrow-down"></i></button>
+    <button type="button" class="show-less-images"><?= $this->transEsc('less') ?> <i class="fa fa-arrow-up"></i></button>
+  </div>
+  <?php if (count($paginatedLinks) > 0): ?>
+    <script>
+      <?php $settings = [
+        'recordId' => $this->driver->getUniqueId(),
+        'recordType' => $this->driver->tryMethod('getRecordType'),
+        'imagesPerPage' => 8,
+        'imagesOnMobile' => 6,
+        'imagesOnNormal' => 8,
+        'imagesOnPopup' => 8,
+        'enableImageZoom' => $enableImageZoom,
+        'maxRows' => 3,
+        'iconlabelClass' => "format-" . $this->record($this->driver)->getFormatClass(end($formats)),
+        'isList' => $type === 'list' || $type === 'list grid'
+      ]?>
+      finna.imagePaginator.initPaginator(
+        <?= json_encode($paginatedLinks) ?>,
+        <?= json_encode($settings) ?>
+      );
+    </script>
+  <?php endif; ?>
+<?php endif;?>
+<!-- END of: finna - RecordDriver/DefaultRecord/record-image-paginator.phtml -->
