@@ -235,6 +235,7 @@ class Holds
         }
         return [
             'blocks' => $blocks,
+            'total' => $result['total'],
             'holdings' => $this->formatHoldings($holdings)
         ];
     }
@@ -249,8 +250,8 @@ class Holds
     protected function standardHoldings($result)
     {
         $holdings = [];
-        if (count($result)) {
-            foreach ($result as $copy) {
+        if ($result['total']) {
+            foreach ($result['holdings'] as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
@@ -274,8 +275,8 @@ class Holds
     {
         $holdings = [];
 
-        if (count($result)) {
-            foreach ($result as $copy) {
+        if ($result['total']) {
+            foreach ($result['holdings'] as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     if ($holdConfig) {
@@ -319,8 +320,8 @@ class Holds
         $holds_override = isset($this->config->Catalog->allow_holds_override)
             ? $this->config->Catalog->allow_holds_override : false;
 
-        if (count($result)) {
-            foreach ($result as $copy) {
+        if ($result['total']) {
+            foreach ($result['holdings'] as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);

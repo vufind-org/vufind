@@ -90,13 +90,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $titleHoldsMode = 'disabled';
 
     /**
-     * Total number of items for a given bib id
-     *
-     * @var int
-     */
-    protected $totalItemCount = 0;
-
-    /**
      * Driver plugin manager
      *
      * @var \VuFind\ILS\Driver\PluginManager
@@ -997,25 +990,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         $result = $this->__call('getHolding', [$id, $patron, $options]);
 
-        // Return only "holdings" if the result contains a top level array with
-        // a "total" key
-        if (isset($result['total'])) {
-            $this->totalItemCount = $result['total'];
-            return $result['holdings'];
-        }
-
-        $this->totalItemCount = count($result);
-        return $result;
-    }
-
-    /**
-     * Get the total number of items for a given bib id, returned from ILS
-     *
-     * @return int Total number of items returned from ILS
-     */
-    public function getTotalItemCount()
-    {
-        return $this->totalItemCount;
+        return isset($result['total'])
+            ? $result
+            : ['total' => count($result), 'holdings' => $result];
     }
 
     /**

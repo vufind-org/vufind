@@ -42,7 +42,7 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
-<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', [$options]); if (!empty($holdingTitleHold)): ?>
   <a class="placehold" data-lightbox title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <?php endif; ?>
 <?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
@@ -119,8 +119,8 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-<?php if ($options['itemLimit'] && $paginator = $this->tab->getPaginator()): ?>
-	<?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $options['page']])?>
+<?php if ($options['itemLimit'] && $paginator = $this->tab->getPaginator($holdings['total'])): ?>
+  <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $options['page']])?>
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>

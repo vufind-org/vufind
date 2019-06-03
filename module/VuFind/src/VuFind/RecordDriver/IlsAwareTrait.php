@@ -135,15 +135,20 @@ trait IlsAwareTrait
     /**
      * Get a link for placing a title level hold.
      *
+     * @param array $options Possible additional options
+     *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold()
+    public function getRealTimeTitleHold($options = null)
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
             if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
+                    return $this->titleHoldLogic->getHold(
+                        $this->getUniqueID(),
+                        $options
+                    );
                 }
             }
         }

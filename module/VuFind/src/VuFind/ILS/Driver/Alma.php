@@ -245,7 +245,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getHolding($id, $patron = null, $options = null)
     {
-        $results = [];
+        // Prepare result array with default values. If no API result can be received
+        // these will be returned.
+        $results['total'] = 0;
+        $results['holdings'] = [];
+
         $copyCount = 0;
         $username = $patron['cat_username'] ?? null;
 

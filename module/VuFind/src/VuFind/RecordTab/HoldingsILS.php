@@ -65,18 +65,12 @@ class HoldingsILS extends AbstractBase
      * Constructor
      *
      * @param \VuFind\ILS\Connection|bool $catalog                  ILS connection to
-     *                                                              use to check for
-     *                                                              holdings before
-     *                                                              displaying the
-     *                                                              tab; set to null
-     *                                                              if no check is
-     *                                                              needed
+     * use to check for holdings before displaying the tab; set to null if no check
+     * is needed.
      * @param string                      $template                 Holdings template
-     *                                                              to use
+     * to use
      * @param boolean                     $hideHoldingsTabWhenEmpty Whether the
-     *                                                              holdings tab
-     *                                                              should be hidden
-     *                                                              when empty or not
+     * holdings tab should be hidden when empty or not
      */
     public function __construct(Connection $catalog = null, $template = null,
         $hideHoldingsTabWhenEmpty = false
@@ -159,13 +153,12 @@ class HoldingsILS extends AbstractBase
     /**
      * Getting a paginator for the items list.
      *
+     * @param int $totalItemCount Total count of items for a bib record
+     *
      * @return \Zend\Paginator\Paginator
      */
-    public function getPaginator()
+    public function getPaginator($totalItemCount)
     {
-        // The total number of items of the bib record
-        $totalItemCount = $this->catalog->getTotalItemCount();
-
         // The number of items that should be called with one single API call
         $itemLimit = $this->getHoldsItemLimit();
 
