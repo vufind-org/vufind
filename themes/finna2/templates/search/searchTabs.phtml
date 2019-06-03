@@ -21,6 +21,7 @@
         <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
           <?php
             $tooltip = [
+              'aria-label' => $this->translate('Help') . ' - ' . $this->translate($tab['label']),
               'data-original-title' => $this->translate('tooltip_' . $tab['label'] . '_html'),
               'class' => $this->translate('tooltip-' . $tab['label']),
             ];
