@@ -393,14 +393,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             ) {
                 $this->flashMessenger()->addErrorMessage('An error has occurred');
             } else {
-                // inLightbox (only instance)
-                if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
-                    || 'layout/lightbox' == $this->layout()->getTemplate()
-                ) {
-                    $response = $this->getResponse();
-                    $response->setStatusCode(205);
-                    return $response;
-                }
                 return $this->redirect()->toRoute('userList', ['id' => $listID]);
             }
         }
