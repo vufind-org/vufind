@@ -567,7 +567,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->debug("url: $url response: $answer");
         }
         $answer = str_replace('xmlns=', 'ns=', $answer);
-        $result = simplexml_load_string($answer);
+        $result = @simplexml_load_string($answer);
         if (!$result) {
             if ($this->debug_enabled) {
                 $this->debug("XML is not valid, URL: $url");
@@ -994,7 +994,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
-            //$renew = $item->xpath('@renew');
+            $renew = $item->xpath('@renew');
             //$docno = (string) $z36->{'z36-doc-number'};
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
@@ -1025,7 +1025,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'duedate' => $this->parseDate($due),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
-                'renewable' => true,
+                'renewable' => $renew[0] == "Y",
                 //'create' => $this->parseDate($create)
             ];
         }
@@ -1067,13 +1067,16 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $result = [];
         foreach ($details['details'] as $id) {
             try {
-                $this->doRestDLFRequest(
+                $xml = $this->doRestDLFRequest(
                     [
                         'patron', $patron['id'], 'circulationActions', 'loans', $id
                     ],
                     null, 'POST', null
                 );
-                $result[$id] = ['success' => true];
+                $due = (string)$xml->xpath('//new-due-date');
+                $result[$id] = [
+                    'success' => true, 'new_date' => $this->parseDate($due)
+                ];
             } catch (AlephRestfulException $ex) {
                 $result[$id] = [
                     'success' => false, 'sysMessage' => $ex->getMessage()

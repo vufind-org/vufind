@@ -82,9 +82,10 @@ function refreshCommentList($target, recordId, recordSource) {
     });
 }
 
-function registerAjaxCommentRecord() {
+function registerAjaxCommentRecord(_context) {
+  var context = typeof _context === "undefined" ? document : _context;
   // Form submission
-  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -241,7 +242,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('[data-tab="' + tabid + '"]').closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 
@@ -302,7 +303,7 @@ function recordDocReady() {
   });
 
   $('[data-background]').each(function setupBackgroundTabs(index, el) {
-    backgroundLoadTab(el.className);
+    backgroundLoadTab(el.dataset.tab);
   });
 
   registerTabEvents();

@@ -130,6 +130,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             if (!empty($results)) {
                 return $results[0];
             }
+
+            if ($this->fallbackLoader
+                && $this->fallbackLoader->has($source)
+            ) {
+                $fallbackRecords = $this->fallbackLoader->get($source)
+                    ->load([$id]);
+
+                if (count($fallbackRecords) == 1) {
+                    return $fallbackRecords[0];
+                }
+            }
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');

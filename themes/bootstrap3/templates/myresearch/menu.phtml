@@ -3,6 +3,7 @@
   $patron = $user ? $this->auth()->getILSPatron() : false;
   $capabilityParams = $patron ? ['patron' => $patron] : [];
 ?>
+<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <h4><?=$this->transEsc('Your Account')?></h4>
 <div class="myresearch-menu account-menu">
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
