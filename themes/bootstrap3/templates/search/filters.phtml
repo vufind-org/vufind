@@ -13,6 +13,18 @@
   $options = $this->searchOptions($params->getSearchClassId());
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
+
+  // Determine whether the only filters applied are the default ones; this controls
+  // when we display or hide the reset button:
+  $defaultFilters = $options->getDefaultFilters();
+  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  foreach ($defaultFilters as $currentDefault) {
+    if (!$params->hasFilter($currentDefault)) {
+      $onlyDefaultsApplied = false;
+      break;
+    }
+  }
+
   $advancedSearch = $params->getSearchType() === 'advanced';
 ?>
 <?php ob_start(); ?>
@@ -95,7 +107,10 @@
 <?php ob_end_clean(); ?>
 
 <?php if ($hasDefaultsApplied || $filterCount > 0): ?>
-  <?php $resetLink = isset($urlQuery) ? $urlQuery->removeAllFilters() : false; ?>
+  <?php
+    $resetLink = !$onlyDefaultsApplied && isset($urlQuery)
+      ? $urlQuery->removeAllFilters()->resetDefaultFilters() : false;
+  ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
     <?php if ($advancedSearch): ?>
