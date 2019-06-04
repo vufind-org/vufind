@@ -34,16 +34,17 @@
             height: initial;
         }
         &.nonzoomable {
-            @media (min-width: @screen-sm-min + 1) {
-                .imagepopup-container {
-                    max-width: 320px;
-                }
+            width: 625px;
+            height: 900px;
+            .imagepopup-container {
+                max-width: 320px;
             }
-            width: 100%;
-            height: initial;
-            @media (min-width: @screen-sm-min + 1) {
-                width: 625px;
-                height: 900px;
+            @media (max-width: @screen-sm) {
+                width: 100%;
+                height: initial;
+                .imagepopup-container {
+                    max-width: 100%;
+                }
             }
             .finna-image-pagination {
                 background-color: transparent;

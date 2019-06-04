@@ -649,13 +649,15 @@ finna.imagePaginator = (function imagePaginator() {
   FinnaPaginator.prototype.createImagePopup = function createImagePopup(image) {
     var _ = this;
     var holder = $(_.imagePopup).clone(true);
-    var img = new Image();
-    holder.append(img, $('<i class="fa fa-spinner fa-spin"/>'));
-    img.src = image.small;
-    img.alt = image.alt;
-    img.title = image.title;
-    img.onload = function onLoad() {
-      $(this).siblings('i').remove();
+    if (_.images.length > 1) {
+      var img = new Image();
+      holder.append(img, $('<i class="fa fa-spinner fa-spin"/>'));
+      img.src = image.small;
+      img.alt = image.alt;
+      img.title = image.title;
+      img.onload = function onLoad() {
+        $(this).siblings('i').remove();
+      }
     }
     holder.attr({'index': image.index, 'data-largest': image.largest, 'data-description': image.description});
     if (!_.isList && _.settings.enableImageZoom) {

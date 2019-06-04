@@ -7,14 +7,16 @@
   <?php
     $ind = 0;
     $paginatedLinks = [];
+    $recordImage = $this->recordImage($this->record($this->driver));
   ?>
   <?php foreach ($images as $img): ?>
     <?php
+      $originalImage = $recordImage->getMasterImage($ind);
       $desc = isset($img['description']) && !empty($img['description']) ? $img['description'] : $this->transEsc('Cover Image');
       $obj = [
         'small' => $img['urls']['small'],
-        'medium' => $img['urls']['medium'] ?? $img['urls']['small'],
-        'largest' => $img['urls']['large'] ?? $img['urls']['medium'] ?? $img['urls']['small'],
+        'medium' => $img['urls']['medium'],
+        'largest' => $enableImageZoom && $originalImage !== false ? $originalImage : $img['urls']['large'],
         'index' => $ind++,
         'alt' => $desc,
         'description' => $img['description'],
