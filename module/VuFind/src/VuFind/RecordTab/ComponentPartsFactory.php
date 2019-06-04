@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for building the SimpleContents tab.
+ * Factory for building the ComponentParts tab.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\RecordTab;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for building the SimpleContents tab.
+ * Factory for building the ComponentParts tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimpleContentsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ComponentPartsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

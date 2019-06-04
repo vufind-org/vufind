@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
+        'componentparts' => ComponentParts::class,
         'description' => Description::class,
         'excerpt' => Excerpt::class,
         'hierarchytree' => HierarchyTree::class,
@@ -57,7 +58,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'preview' => Preview::class,
         'reviews' => Reviews::class,
         'similaritemscarousel' => SimilarItemsCarousel::class,
-        'simplecontents' => SimpleContents::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
         'toc' => TOC::class,
@@ -72,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
         CollectionList::class => CollectionListFactory::class,
+        ComponentParts::class => ComponentPartsFactory::class,
         Description::class => InvokableFactory::class,
         Excerpt::class => ExcerptFactory::class,
         HierarchyTree::class => HierarchyTreeFactory::class,
@@ -81,7 +82,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Preview::class => PreviewFactory::class,
         Reviews::class => ReviewsFactory::class,
         SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
-        SimpleContents::class => SimpleContentsFactory::class,
         StaffViewArray::class => InvokableFactory::class,
         StaffViewMARC::class => InvokableFactory::class,
         TOC::class => TOCFactory::class,
