@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple container contents display tab
+ * Component parts display tab
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Simple container contents display tab
+ * Component parts display tab
  *
  * @category VuFind
  * @package  RecordTabs
@@ -36,7 +36,7 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class SimpleContents extends AbstractBase
+class ComponentParts extends AbstractBase
 {
     /**
      * Similar records
