@@ -117,7 +117,7 @@
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
     <?php else: ?>
       <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
-        <a href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+        <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <?php endif; ?>
     <?php endif; ?>
     <div class="filters">
@@ -128,11 +128,11 @@
   <?php // Narrow view ?>
   <div class="active-filters visible-xs">
     <div class="filters-toggle-bar">
+      <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
         <?=$this->transEsc('show_filters_html', ['%%count%%' => $filterCount])?>
       </div>
       <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
-      <a href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <?php endif; ?>
       <div class="clearfix"></div>
     </div>

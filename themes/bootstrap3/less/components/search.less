@@ -343,7 +343,7 @@ body.rtl {
   }
   .filters-toggle {
     flex: 1;
-    float: left;
+    display: inline-block;
     margin-top: 10px;
     cursor: pointer;
     &::after {
@@ -351,6 +351,9 @@ body.rtl {
     }
     &.collapsed::after {
       content: '\25BC';
+    }
+    @media (min-width: @screen-sm-min) {
+      float: left;
     }
   }
   .filters {
@@ -394,6 +397,15 @@ body.rtl {
     .title-value-pair {
       display: inline-block;
     }
+  }
+}
+.reset-filters-btn {
+  display: inline-block;
+  padding: .5rem 1rem;
+  color: #555;
+
+  &:hover {
+    background-color: #eee;
   }
 }
 .search-filter-remove {
