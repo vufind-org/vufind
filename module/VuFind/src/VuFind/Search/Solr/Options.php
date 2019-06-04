@@ -209,13 +209,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load autocomplete preferences:
-        if (isset($searchSettings->Autocomplete->enabled)) {
-            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
-        }
-        if (isset($searchSettings->Autocomplete->auto_submit)) {
-            $this->autocompleteAutoSubmit
-                = $searchSettings->Autocomplete->auto_submit;
-        }
+        $this->configureAutocomplete($searchSettings);
 
         // Load shard settings
         if (isset($searchSettings->IndexShards)
