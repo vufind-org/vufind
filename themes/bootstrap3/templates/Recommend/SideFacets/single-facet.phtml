@@ -25,6 +25,7 @@
   } elseif (!empty($this->facet['value'])) {
     $displayText = $this->escapeHtml($this->facet['value']);
   }
+  $displayText = '<span class="facet-value">' . $displayText . '</span>';
 
   if ($this->facet['operator'] == 'OR') {
     $displayText =

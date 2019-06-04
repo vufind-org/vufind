@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -65,6 +67,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test saving and clearing a search.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -137,6 +141,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
+     * @retryCallback removeUsername2
+     *
      * @return void
      */
     public function testSavedSearchSecurity()
@@ -180,6 +186,16 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(
             'test', $this->findAndAssertLink($page, 'test')->getText()
         );
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testSavedSearchSecurity.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
     }
 
     /**
