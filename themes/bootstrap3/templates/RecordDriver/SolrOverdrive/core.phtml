@@ -114,8 +114,8 @@ elseif ($avail->data):
                 //Place a request button
                 $button = new stdClass();
                 $button->class = "placehold";
-                $button->url="$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm";
-                $button->icon="flag";
+                $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm";
+                $button->icon = "flag";
                 $button->text = $this->transEsc('od_but_hold');
             endif;
         endif;  //end if checked out
@@ -142,7 +142,6 @@ BTN1MARKUP;
                 {$button2->text}</a>
 BTN2MARKUP;
     endif;
-
 
     $extraControls['actionControls'] = <<<ACTIONMARKUP
         <div class="pull-right">
