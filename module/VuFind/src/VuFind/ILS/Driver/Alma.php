@@ -241,26 +241,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getHolding($id, array $patron = null)
     {
-        // Get config data:
-        $fulfillementUnits = $this->config['FulfillmentUnits'] ?? null;
-        $requestableConfig = $this->config['Requestable'] ?? null;
-
         $results = [];
         $copyCount = 0;
+        $username = $patron['cat_username'] ?? null;
         $bibPath = '/bibs/' . urlencode($id) . '/holdings';
         if ($holdings = $this->makeRequest($bibPath)) {
             foreach ($holdings->holding as $holding) {
                 $holdingId = (string)$holding->holding_id;
                 $locationCode = (string)$holding->location;
-                $addLink = false;
-                if ($fulfillementUnits != null && $requestableConfig != null) {
-                    $addLink = $this->requestsAllowed(
-                        $fulfillementUnits,
-                        $locationCode,
-                        $requestableConfig,
-                        $patron
-                    );
-                }
 
                 $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
                 if ($currentItems = $this->makeRequest($itemPath)) {
@@ -299,6 +287,36 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             $duedate = $this->parseDate((string)$loan->due_date);
                         }
 
+                        // Calculate request options if a user is logged-in
+                        if ($username) {
+
+                            // Call the request-options API for the logged-in user
+                            $requestOptionsPath = '/bibs/' . urlencode($id)
+                                . '/holdings/' . urlencode($holdingId) . '/items/'
+                                . urlencode($itemId) . '/request-options?user_id='
+                                . urlencode($username);
+
+                            // Make the API request
+                            $requestOptions = $this->makeRequest(
+                                $requestOptionsPath
+                            );
+
+                            // Get all possible request types from the API answer
+                            $requestTypes = $requestOptions->xpath(
+                                '/request_options/request_option//type'
+                            );
+
+                            // Add all allowed request types to an array
+                            $requestTypesArr = [];
+                            foreach ($requestTypes as $requestType) {
+                                $requestTypesArr[] = (string)$requestType;
+                            }
+
+                            // If HOLD is an allowed request type, add the link for
+                            // placing a hold
+                            $addLink = in_array('HOLD', $requestTypesArr);
+                        }
+
                         $results[] = [
                             'id' => $id,
                             'source' => 'Solr',
@@ -317,7 +335,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'item_notes' => $itemNotes,
                             'item_id' => $itemId,
                             'holding_id' => $holdingId,
-                            'addLink' => $addLink,
+                            'addLink' => $addLink ?? false,
                                // For Alma title-level hold requests
                             'description' => $description
                         ];
@@ -327,64 +345,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
 
         return $results;
-    }
-
-    /**
-     * Check if the user is allowed to place requests for an Alma fulfillment
-     * unit in general. We check for blocks on the patron account that could
-     * block a request in getRequestBlocks().
-     *
-     * @param array  $fulfillementUnits An array of fulfillment units and associated
-     *                                  locations from Alma.ini (see section
-     *                                  [FulfillmentUnits])
-     * @param string $locationCode      The location code of the holding to be
-     *                                  checked
-     * @param array  $requestableConfig An array of fulfillment units and associated
-     *                                  patron groups and their request policy from
-     *                                  Alma.ini (see section [Requestable])
-     * @param array  $patron            An array with the patron details (username
-     *                                  and password)
-     *
-     * @return boolean                  true if the the patron is allowed to place
-     *                                  requests on holdings of this fulfillment
-     *                                  unit, false otherwise.
-     * @author Michael Birkner
-     */
-    protected function requestsAllowed(
-        $fulfillementUnits,
-        $locationCode,
-        $requestableConfig,
-        $patron
-    ) {
-        $requestsAllowed = false;
-
-        // Get user group code
-        $cacheId = 'alma|user|' . $patron['cat_username'] . '|group_code';
-        $userGroupCode = $this->getCachedData($cacheId);
-        if ($userGroupCode === null) {
-            $profile = $this->getMyProfile($patron);
-            $userGroupCode = (string)$profile['group_code'];
-        }
-
-        // Get the fulfillment unit of the location.
-        $locationFulfillmentUnit = $this->getFulfillmentUnitByLocation(
-            $locationCode,
-            $fulfillementUnits
-        );
-
-        // Check if the group of the currently logged in user is allowed to place
-        // requests on items belonging to current fulfillment unit
-        if (($locationFulfillmentUnit != null && !empty($locationFulfillmentUnit))
-            && ($userGroupCode != null && !empty($userGroupCode))
-        ) {
-            $requestsAllowed = false;
-            if ($requestableConfig[$locationFulfillmentUnit][$userGroupCode] == 'Y'
-            ) {
-                $requestsAllowed = true;
-            }
-        }
-
-        return $requestsAllowed;
     }
 
     /**
@@ -1485,23 +1445,5 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * }
      */
 
-    /* ================= METHODS INACCESSIBLE OUTSIDE OF GET ================== */
-
-    /**
-     * @param array $cancelDetails An associative array with two keys:
-     *                  patron  (array returned by the driver's patronLogin method)
-     *                  details (array returned by the driver's getCancelHoldDetails)
-     *
-     * @return array count – The number of items successfully cancelled
-     *               items – Associative array where keyed by item_id (getMyHolds)
-     *                    success – Boolean true or false
-     *                    status – A status message from the language file (required)
-     *                    sysMessage - A system supplied failure message (optional)
-     * /
-     * public function cancelHolds($cancelDetails) {
-     * // https://developers.exlibrisgroup.com/alma/apis/users
-     * // DELETE /almaws/v1/users/{user_id}/requests/{request_id}
-     * }
-     */
     // @codingStandardsIgnoreEnd
 }

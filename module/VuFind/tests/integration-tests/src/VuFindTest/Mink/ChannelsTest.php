@@ -37,9 +37,12 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Get a reference to a standard search results page.
      *
@@ -109,8 +112,12 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Check facet
         $this->assertEquals(
-            'Clear Filter Suggested Topics: Adult children of aging parents',
-            $this->findCss($page, '.active-filters .facet')->getText()
+            'Suggested Topics:',
+            $this->findCss($page, '.filters .filters-title')->getText()
+        );
+        $this->assertEquals(
+            'Adult children of aging parents',
+            $this->findCss($page, '.filters .filter-value')->getText()
         );
     }
 }

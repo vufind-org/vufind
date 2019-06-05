@@ -38,4 +38,11 @@ namespace VuFind\Search\SolrWeb;
  */
 class Params extends \VuFind\Search\Solr\Params
 {
+    /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = ['Facets'];
 }

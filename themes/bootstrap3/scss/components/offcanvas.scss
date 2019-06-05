@@ -23,17 +23,12 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
   }
 
   .offcanvas .close-offcanvas { display: block; }
-  .search-filter-toggle {
-    @extend .btn;
-    @extend .btn-default;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
 
   body.offcanvas {
     overflow-x: hidden; /* Prevent scroll on narrow devices */
     transition: margin .5s;
   }
+
   .offcanvas-overlay {
     display: none;
     position: fixed;

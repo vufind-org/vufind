@@ -1,5 +1,11 @@
-@import "bootstrap";
+/* #LESS> */
+@import "../../bootstrap3/less/bootstrap";
 @import "variables";
+/* <#LESS */
+/* #SCSS>
+@import "variables", "../../bootstrap3/scss/bootstrap";
+<#SCSS */
+
 @import "icons";
 @import "search";
 @import "forms";
@@ -139,8 +145,6 @@ ul.random.image li img { margin: 0 auto; }
   .jstree-node.active .badge,
   .jstree-node.active .badge .fa { color: @active-orange; }
   .facet .badge a { color: #fff; }
-
-  .facet.facetOR { padding-left: 1rem; }
 }
 .checkboxFilter .facet { padding-left: 1px; }
 

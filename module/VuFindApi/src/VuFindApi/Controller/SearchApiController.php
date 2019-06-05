@@ -114,7 +114,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
-        $params->activateAllFacets();
 
         $viewParams = [
             'config' => $config,

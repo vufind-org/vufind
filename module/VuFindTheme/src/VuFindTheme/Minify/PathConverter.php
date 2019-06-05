@@ -53,4 +53,38 @@ class PathConverter extends \MatthiasMullie\PathConverter\Converter
 
         return $path;
     }
+
+    /**
+     * Convert paths relative to the themes directory.
+     *
+     * Takes advantage of the fact that we know the themes directory will be
+     * '../themes' relative to the cache directory. This allows path resolution to
+     * work regardless of whether there are symlinked directories or other
+     * differences between the actual file system path and the path used to access
+     * the theme files.
+     *
+     * @param string $path The relative path that needs to be converted
+     *
+     * @return string The new relative path
+     */
+    public function convert($path)
+    {
+        $path = $this->from . '/' . $path;
+        $path = preg_replace('/.*?\/themes\//', '../themes/', $path);
+
+        // Remove .. parts in the middle of the resulting path:
+        $parts = explode('/', $path);
+        $result = [];
+        $last = '';
+        foreach ($parts as $part) {
+            if ('' !== $last && '..' !== $last && '..' === $part) {
+                array_pop($result);
+                continue;
+            }
+            $last = $part;
+            $result[] = $part;
+        }
+
+        return implode('/', $result);
+    }
 }

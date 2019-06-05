@@ -10,7 +10,7 @@
     <div class="btn-group">
       <?php if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
         <input id="ribbon-email" class="btn btn-default" type="submit" name="email" title="<?=$this->transEsc('bookbag_email_selected')?>" value="<?=$this->transEsc('Email')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>/>
-        <?php $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
+        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
           <input id="ribbon-export" class="btn btn-default" type="submit" name="export" title="<?=$this->transEsc('bookbag_export_selected')?>" value="<?=$this->transEsc('Export')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>/>
         <?php endif; ?>
         <input id="ribbon-print" class="btn btn-default" type="submit" name="print" title="<?=$this->transEsc('bookbag_print_selected')?>" value="<?=$this->transEsc('Print')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>/>

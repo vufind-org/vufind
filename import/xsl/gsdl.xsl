@@ -18,8 +18,8 @@
                 <field name="id">
                     <xsl:value-of select="//identifier"/>
                 </field>
-                <!-- RECORDTYPE -->
-                <field name="recordtype">gsdl</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">gsdl</field>
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!
                 <field name="fullrecord">

@@ -4,6 +4,7 @@ php:
   - 7.0
   - 7.1
   - 7.2
+  - 7.3
 
 env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
