@@ -83,7 +83,8 @@
                                 <!-- Begin search input field -->
                                 <div class="col-xs-12 col-sm-7 col-lg-8">
                                     <div class="input-group searchbar">
-                                        <input class="form-control form-control-lg searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>"
+                                        <input id="searchForm_lookfor"
+                                               class="form-control form-control-lg searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>"
                                                type="text" name="lookfor"
                                                value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"
                                                placeholder="<?=$this->translate('Search for keywords, title or author')?>"/>
