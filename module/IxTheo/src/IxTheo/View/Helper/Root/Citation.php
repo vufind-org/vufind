@@ -171,6 +171,20 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         return $this->getCitationMLA(9, ', no. ', true, ': ', ' ', false);
     }
 
+    /**
+     * Get MLA citation.
+     *
+     * This function assigns all the necessary variables and then returns an MLA
+     * citation. By adjusting the parameters below, it can also render a Chicago
+     * Style citation.
+     *
+     * @param int    $etAlThreshold   The number of authors to abbreviate with 'et
+     * al.'
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation.
+     *
+     * @return string
+     */
     public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.', $useYearBrackets = false,
                                    $yearPageSeparator = ', ', $volPrefix = ', vol. ', $usePagePrefix = true)
     {
@@ -225,6 +239,14 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
          return $this->driver->getPages();
     }
 
+    /**
+     * Construct volume/issue/date portion of MLA or Chicago Style citation.
+     *
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation (only difference between MLA/Chicago Style).
+     *
+     * @return string
+     */
     protected function getMLANumberAndDate($volNumSeparator = '.', $useYearBrackets = false, $volPrefix = ', vol.')
     {
         $vol = $this->driver->tryMethod('getVolume');
@@ -264,7 +286,14 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         }
     }
 
-
+    /**
+     * Construct volume/issue/date portion of APA citation.  Returns an array with
+     * three elements: volume, issue and date (since these end up in different areas
+     * of the final citation, we don't return a single string, but since their
+     * determination is related, we need to do the work in a single function).
+     *
+     * @return array
+     */
     protected function getAPANumbersAndDate()
     {
         $vol = $this->driver->tryMethod('getVolume');
