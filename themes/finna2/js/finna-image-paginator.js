@@ -196,6 +196,22 @@ finna.imagePaginator = (function imagePaginator() {
     }
   }
 
+  FinnaPaginator.prototype.unVeilNextAndPrev = function unVeilNextAndPrev(limit) {
+    var _ = this;
+    var i = 0 - limit;
+
+    for (;i <= limit; i++) {
+      var current = +_.paginatorIndex + i;
+      if (current === _.paginatorIndex) {
+        continue;
+      }
+      var found = $('.image-popup-trigger[paginator-index="' + current + '"]');
+      if (found.length) {
+        found.find('img').trigger('unveil');
+      }
+    }
+  }
+
   /**
    * Function which is executed after nonzoomable image has been opened to a popup
    * 
@@ -766,6 +782,11 @@ finna.imagePaginator = (function imagePaginator() {
       fixedContentPos: true,
       tClose: VuFind.translate('close'),
       callbacks: {
+        beforeOpen: function unveilClosest() {
+          if (_.isList) {
+            _.unVeilNextAndPrev(2);
+          }
+        },
         open: function onPopupOpen() {
           var mfpContainer = $(this)[0].container;
           mfpContainer.find('.leaflet-map-image').attr('id', 'leaflet-map-image');
@@ -786,10 +807,12 @@ finna.imagePaginator = (function imagePaginator() {
 
           previousRecord.off('click').click(function loadNextPaginator(e){
             e.preventDefault();
+            e.stopPropagation();
             _.getNextPaginator(-1);
           });
           nextRecord.off('click').click(function loadNextPaginator(e){
             e.preventDefault();
+            e.stopPropagation();
             _.getNextPaginator(1);
           });
           
