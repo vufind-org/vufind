@@ -129,41 +129,6 @@ var TueFind = {
         }); // end ajax
     },
 
-    // onload handler for tuefind
-    OnLoad: function() {
-        // advanced search: set focus on first input field of first search group
-        if (window.location.href.match(/\/Search\/Advanced/i)) {
-            TueFind.SetFocus('#search_lookfor0_0');
-        // keywordchainsearch: set focus on 2nd input field
-        } else if (window.location.href.match(/\/Keywordchainsearch\//i)) {
-            TueFind.SetFocus('#kwc_input');
-        // alphabrowse: set focus on "starting from" edit field
-        } else if (window.location.href.match(/\/Alphabrowse\//i)) {
-            TueFind.SetFocus('#alphaBrowseForm_from');
-        }
-        TueFind.AddContentAnchors();
-        TueFind.AdjustSearchHandlers();
-    },
-
-    // function to register onload handler function
-    // multiple handlers can be chained, if necessary
-    RegisterOnLoad: function(functionOnLoad) {
-        if(window.attachEvent) {
-            window.attachEvent('onload', functionOnLoad);
-        } else {
-            if(window.onload) {
-                var currentOnLoad = window.onload;
-                var newOnLoad = function(evt) {
-                    currentOnLoad(evt);
-                    functionOnLoad(evt);
-                };
-                window.onload = newOnLoad;
-            } else {
-                window.onload = functionOnLoad;
-            }
-        }
-    },
-
     // helper function to set focus on a specified input field, also sets cursor position to end of field content
     SetFocus: function(input_selector) {
         $(input_selector).focus();
@@ -177,7 +142,17 @@ var TueFind = {
 };
 
 
-// DO NOT USE $(document).ready(function())!
-// E.g. if we define one here and one in sub-themes, sub-themes will override this!
-// So use RegisterOnLoad instead to append additional functions.
-TueFind.RegisterOnLoad(TueFind.OnLoad);
+$(document).ready(function () {
+    // advanced search: set focus on first input field of first search group
+    if (window.location.href.match(/\/Search\/Advanced/i)) {
+        TueFind.SetFocus('#search_lookfor0_0');
+    // keywordchainsearch: set focus on 2nd input field
+    } else if (window.location.href.match(/\/Keywordchainsearch\//i)) {
+        TueFind.SetFocus('#kwc_input');
+    // alphabrowse: set focus on "starting from" edit field
+    } else if (window.location.href.match(/\/Alphabrowse\//i)) {
+        TueFind.SetFocus('#alphaBrowseForm_from');
+    }
+    TueFind.AddContentAnchors();
+    TueFind.AdjustSearchHandlers();
+});
