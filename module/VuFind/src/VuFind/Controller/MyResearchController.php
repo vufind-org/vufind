@@ -966,7 +966,7 @@ class MyResearchController extends AbstractBase
                 ->getByUsername($this->getUserVerificationContainer()->user, false);
             $this->sendVerificationEmail($user);
         } else {
-            $this->flashMessenger()->addMessage('verification_email_sent', 'error');
+            $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
         return $this->createViewModel();
     }
@@ -1596,7 +1596,7 @@ class MyResearchController extends AbstractBase
                         $message
                     );
                     $this->flashMessenger()
-                        ->addMessage('verification_email_sent', 'error');
+                        ->addMessage('verification_email_sent', 'info');
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
