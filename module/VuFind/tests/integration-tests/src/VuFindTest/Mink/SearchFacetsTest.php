@@ -35,15 +35,18 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * CSS selector for finding active filters
      *
      * @var string
      */
-    protected $activeFilterSelector = '.active-filters';
+    protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
 
     /**
      * Standard setup method.
@@ -317,8 +320,10 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->findCss($page, '#j1_2 a')->click();
         $this->snooze();
-        $filter = $this->findCss($page, $this->activeFilterSelector . ' .facet');
-        $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $label = $this->findCss($page, '.filters .filters-title');
+        $this->assertEquals('hierarchy:', $label->getText());
+        $this->assertEquals('1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 

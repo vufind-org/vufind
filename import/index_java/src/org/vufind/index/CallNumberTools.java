@@ -29,10 +29,10 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Subfield;
+import org.solrmarc.callnum.CallNumUtils;
 import org.solrmarc.callnum.DeweyCallNumber;
 import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.index.SolrIndexer;
-import org.solrmarc.tools.CallNumUtils;
 
 /**
  * Call number indexing routines.
