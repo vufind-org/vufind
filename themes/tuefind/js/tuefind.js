@@ -11,6 +11,29 @@ var TueFind = {
         });
     },
 
+    AdjustSearchHandlers: function() {
+        // Make sure that a selection of the search handler is transparently adjusted for a potential reload
+        // i.e. when changing the sort order
+        var saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler");
+        if (saved_search_handler != null) {
+            $("#searchForm_type option:selected").removeAttr('selected');
+            $("#searchForm_type").val(saved_search_handler);
+            // We also have to set the handler explicitly adjusting the selection
+            $("#searchForm_type [value=" + saved_search_handler + "]").attr('selected', 'selected');
+            // Make sure the type is adjusted for the next form submission
+            $("[name=type]").val(saved_search_handler);
+        }
+        $("#searchForm_type").on('focus', function () {
+            previous_search_handler = this.value;
+        }).change(function adjustSearchHandler(e) {
+            current_search_handler = $("#searchForm_type").val();
+            sessionStorage.setItem("tuefind_saved_search_handler", current_search_handler);
+            $("#searchForm_type [value=" + previous_search_handler + "]").removeAttr('selected');
+            $("#searchForm_type [value=" + current_search_handler + "]").attr('selected', 'selected');
+            $("[name=type]").val(current_search_handler);
+        });
+    },
+
     GetFulltextSnippets: function(url, doc_id, query) {
         // Try to determine status
         $.ajax({
@@ -119,6 +142,7 @@ var TueFind = {
             TueFind.SetFocus('#alphaBrowseForm_from');
         }
         TueFind.AddContentAnchors();
+        TueFind.AdjustSearchHandlers();
     },
 
     // function to register onload handler function
@@ -153,28 +177,7 @@ var TueFind = {
 };
 
 
+// DO NOT USE $(document).ready(function())!
+// E.g. if we define one here and one in sub-themes, sub-themes will override this!
+// So use RegisterOnLoad instead to append additional functions.
 TueFind.RegisterOnLoad(TueFind.OnLoad);
-
-
-$(document).ready(function() {
-    // Make sure that a selection of the search handler is transparently adjusted for a potential reload
-    // i.e. when changing the sort order
-    var saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler");
-    if (saved_search_handler != null) {
-        $("#searchForm_type option:selected").removeAttr('selected');
-        $("#searchForm_type").val(saved_search_handler);
-        // We also have to set the handler explicitly adjusting the selection
-        $("#searchForm_type [value=" + saved_search_handler + "]").attr('selected', 'selected');
-        // Make sure the type is adjusted for the next form submission
-        $("[name=type]").val(saved_search_handler);
-    }
-    $("#searchForm_type").on('focus', function () {
-        previous_search_handler = this.value;
-    }).change(function adjustSearchHandler(e) {
-        current_search_handler = $("#searchForm_type").val();
-        sessionStorage.setItem("tuefind_saved_search_handler", current_search_handler);
-        $("#searchForm_type [value=" + previous_search_handler + "]").removeAttr('selected');
-        $("#searchForm_type [value=" + current_search_handler + "]").attr('selected', 'selected');
-        $("[name=type]").val(current_search_handler);
-    });
-});
