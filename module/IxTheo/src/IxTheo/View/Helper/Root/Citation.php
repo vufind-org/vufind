@@ -2,7 +2,7 @@
 /**
  * Citation view helper
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) Universitätsbibliothek Tübingen 2017
@@ -28,6 +28,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace IxTheo\View\Helper\Root;
+
+use VuFind\Date\DateException;
 
 /**
  * Citation view helper
@@ -91,9 +93,9 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         $this->details = [
             'authors' => $this->prepareAuthors($authors),
             'title' => trim($title), 'subtitle' => trim($subtitle),
-            'pubPlace' => isset($pubPlaces[0]) ? $pubPlaces[0] : null,
-            'pubName' => isset($publishers[0]) ? $publishers[0] : null,
-            'pubDate' => isset($pubDates[0]) ? $pubDates[0] : null,
+            'pubPlace' => $pubPlaces[0] ?? null,
+            'pubName' => $publishers[0] ?? null,
+            'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
             'journal' => $this->getContainerTitle()
         ];
@@ -117,7 +119,6 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         endif;
         return $container_information;
     }
-
 
     /**
      * Get APA citation.
@@ -151,106 +152,39 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
             $apa['journal'] = $this->details['journal'];
             $apa['pageRange'] = $this->getPageRange();
             if ($doi = $this->driver->tryMethod('getCleanDOI')) {
-               $apa['doi'] = $doi;
-
+                $apa['doi'] = $doi;
             }
             return $partial('Citation/apa-article.phtml', $apa);
         }
     }
 
     /**
-     * Construct page range portion of citation.
+     * Get Chicago Style citation.
+     *
+     * This function returns a Chicago Style citation using a modified version
+     * of the MLA logic.
      *
      * @return string
      */
-    protected function getPageRange()
+    public function getCitationChicago()
     {
-         return $this->driver->getPages();
+        return $this->getCitationMLA(9, ', no. ', true, ': ', ' ', false);
     }
 
-
-    protected function getAPANumbersAndDate()
-    {
-        $vol = $this->driver->tryMethod('getVolume');
-        $num = $this->driver->tryMethod('getIssue');
-        $date = $this->details['pubDate'];
-        if (strlen($date) > 4) {
-            try {
-                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
-                $month = $this->dateConverter->convertFromDisplayDate('F', $date);
-                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
-            } catch (DateException $e) {
-                // If conversion fails, use raw date as year -- not ideal,
-                // but probably better than nothing:
-                $year = $date;
-                $month = $day = '';
-            }
-        } else {
-            $year = $date;
-            $month = $day = '';
-        }
-
-        // We need to supply additional date information if no vol/num:
-        if (!empty($vol) || !empty($num)) {
-            // If only the number is non-empty, move the value to the volume to
-            // simplify template behavior:
-            if (empty($vol) && !empty($num)) {
-                $vol = $num;
-                $num = '';
-            }
-            return [$vol, $num, $year];
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            $finalDate = $year
-                . (empty($month) ? '' : ', ' . $month)
-                . (($day > 1) ? ' ' . $day : '');
-            return ['', '', $finalDate];
-        }
-    }
-
-
-    protected function getMLANumberAndDate($volNumSeparator = '.', $useYearBrackets = false, $volPrefix = ', vol.')
-    {
-        $vol = $this->driver->tryMethod('getVolume');
-        $num = $this->driver->tryMethod('getIssue');
-        $date = $this->details['pubDate'];
-        if (strlen($date) > 4) {
-            try {
-                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
-                $month = $this->dateConverter->convertFromDisplayDate('M', $date)
-                    . '.';
-                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
-            } catch (DateException $e) {
-                // If conversion fails, use raw date as year -- not ideal,
-                // but probably better than nothing:
-                $year = $date;
-                $month = $day = '';
-            }
-        } else {
-            $year = $date;
-            $month = $day = '';
-        }
-
-        // We need to supply additional date information if no vol/num:
-        if (!empty($vol) || !empty($num)) {
-            // If volume and number are both non-empty, separate them with a
-            // period; otherwise just use the one that is set.
-            $volNum = (!empty($vol) && !empty($num))
-                ? $vol . $volNumSeparator . $num : $vol . $num;
-            return $volPrefix . $volNum . ($useYearBrackets ?  ' (' . $year . ')' : ', ' . $year);
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            return (($day > 1) ? $day . ' ' : '')
-                . (empty($month) ? '' : $month . ' ')
-                . $year;
-        }
-    }
-
-
+    /**
+     * Get MLA citation.
+     *
+     * This function assigns all the necessary variables and then returns an MLA
+     * citation. By adjusting the parameters below, it can also render a Chicago
+     * Style citation.
+     *
+     * @param int    $etAlThreshold   The number of authors to abbreviate with 'et
+     * al.'
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation.
+     *
+     * @return string
+     */
     public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.', $useYearBrackets = false,
                                    $yearPageSeparator = ', ', $volPrefix = ', vol. ', $usePagePrefix = true)
     {
@@ -295,9 +229,109 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
         }
     }
 
-
-    public function getCitationChicago()
+    /**
+     * Construct page range portion of citation.
+     *
+     * @return string
+     */
+    protected function getPageRange()
     {
-        return $this->getCitationMLA(9, ', no. ', true, ': ', ' ', false);
+         return $this->driver->getPages();
+    }
+
+    /**
+     * Construct volume/issue/date portion of MLA or Chicago Style citation.
+     *
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation (only difference between MLA/Chicago Style).
+     *
+     * @return string
+     */
+    protected function getMLANumberAndDate($volNumSeparator = '.', $useYearBrackets = false, $volPrefix = ', vol.')
+    {
+        $vol = $this->driver->tryMethod('getVolume');
+        $num = $this->driver->tryMethod('getIssue');
+        $date = $this->details['pubDate'];
+        if (strlen($date) > 4) {
+            try {
+                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
+                $month = $this->dateConverter->convertFromDisplayDate('M', $date)
+                    . '.';
+                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
+            } catch (DateException $e) {
+                // If conversion fails, use raw date as year -- not ideal,
+                // but probably better than nothing:
+                $year = $date;
+                $month = $day = '';
+            }
+        } else {
+            $year = $date;
+            $month = $day = '';
+        }
+
+        // We need to supply additional date information if no vol/num:
+        if (!empty($vol) || !empty($num)) {
+            // If volume and number are both non-empty, separate them with a
+            // period; otherwise just use the one that is set.
+            $volNum = (!empty($vol) && !empty($num))
+                ? $vol . $volNumSeparator . $num : $vol . $num;
+            return $volPrefix . $volNum . ($useYearBrackets ?  ' (' . $year . ')' : ', ' . $year);
+        } else {
+            // Right now, we'll assume if day == 1, this is a monthly publication;
+            // that's probably going to result in some bad citations, but it's the
+            // best we can do without writing extra record driver methods.
+            return (($day > 1) ? $day . ' ' : '')
+                . (empty($month) ? '' : $month . ' ')
+                . $year;
+        }
+    }
+
+    /**
+     * Construct volume/issue/date portion of APA citation.  Returns an array with
+     * three elements: volume, issue and date (since these end up in different areas
+     * of the final citation, we don't return a single string, but since their
+     * determination is related, we need to do the work in a single function).
+     *
+     * @return array
+     */
+    protected function getAPANumbersAndDate()
+    {
+        $vol = $this->driver->tryMethod('getVolume');
+        $num = $this->driver->tryMethod('getIssue');
+        $date = $this->details['pubDate'];
+        if (strlen($date) > 4) {
+            try {
+                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
+                $month = $this->dateConverter->convertFromDisplayDate('F', $date);
+                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
+            } catch (DateException $e) {
+                // If conversion fails, use raw date as year -- not ideal,
+                // but probably better than nothing:
+                $year = $date;
+                $month = $day = '';
+            }
+        } else {
+            $year = $date;
+            $month = $day = '';
+        }
+
+        // We need to supply additional date information if no vol/num:
+        if (!empty($vol) || !empty($num)) {
+            // If only the number is non-empty, move the value to the volume to
+            // simplify template behavior:
+            if (empty($vol) && !empty($num)) {
+                $vol = $num;
+                $num = '';
+            }
+            return [$vol, $num, $year];
+        } else {
+            // Right now, we'll assume if day == 1, this is a monthly publication;
+            // that's probably going to result in some bad citations, but it's the
+            // best we can do without writing extra record driver methods.
+            $finalDate = $year
+                . (empty($month) ? '' : ', ' . $month)
+                . (($day > 1) ? ' ' . $day : '');
+            return ['', '', $finalDate];
+        }
     }
 }
