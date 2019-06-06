@@ -12,7 +12,6 @@ function tuefindSetFocus(input_selector) {
 // helper function to add content anchors to content page links
 function tuefindAddContentAnchors() {
     $('a').each(function() {
-        console.log($(this));
         let href = $(this).attr('href');
         if (href != undefined && !href.includes('#')) {
             console.log(this);
