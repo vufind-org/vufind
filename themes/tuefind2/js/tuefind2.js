@@ -1,4 +1,4 @@
-var Tuefind = {
+var TueFind2 = {
     // these options can be overridden in child themes
     Searchbox: {
         HeightOptions: {
@@ -14,11 +14,10 @@ var Tuefind = {
     *   which looks strange and also screws up with anchors
     */
     ChangeSearchboxHeight: function() {
-        if (this.Searchbox.HeightOptions.Enabled) {
-            var parts = window.location.href.split('/');
-            if (parts.length > this.Searchbox.HeightOptions.MinHrefLength)
-                $('.panel-home').css("min-height", this.Searchbox.HeightOptions.MinHeight);
+        if (TueFind2.Searchbox.HeightOptions.Enabled) {
+            let parts = window.location.href.split('/');
+            if (parts.length > TueFind2.Searchbox.HeightOptions.MinHrefLength)
+                $('.panel-home').css("min-height", TueFind2.Searchbox.HeightOptions.MinHeight);
         }
     }
-
-};
+}

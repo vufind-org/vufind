@@ -1,1 +1,1 @@
-Tuefind.Searchbox.HeightOptions.Enabled = false;
+TueFind2.Searchbox.HeightOptions.Enabled = false;
