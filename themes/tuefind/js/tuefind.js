@@ -9,6 +9,20 @@ function tuefindSetFocus(input_selector) {
     }
 }
 
+// helper function to add content anchors to content page links
+function tuefindAddContentAnchors() {
+    $('a').each(function() {
+        console.log($(this));
+        let href = $(this).attr('href');
+        if (href != undefined && !href.includes('#')) {
+            console.log(this);
+            if (href.match(/\/Content\//) || href.match(/\?subpage=/)) {
+                this.setAttribute('href', href + '#content');
+            }
+        }
+    });
+}
+
 // function to register onload handler function
 // multiple handlers can be chained, if necessary
 function tuefindRegisterOnLoad(functionOnLoad) {
@@ -40,6 +54,7 @@ function tuefindOnLoad() {
     } else if (window.location.href.match(/\/Alphabrowse\//i)) {
         tuefindSetFocus('#alphaBrowseForm_from');
     }
+    tuefindAddContentAnchors();
 }
 
 tuefindRegisterOnLoad(tuefindOnLoad);
