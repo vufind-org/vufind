@@ -82,10 +82,10 @@
                 </td>
               </tr>
               <script>
-              tuefindGetJOPInformation('<?=$jop_place_holder_id?>', '<?=$jop_icons_id?>',
-                                       '<?=$url_ajax_proxy?>', '<?=$url_html?>', '<?=$part_img?>',
-                                       '<?=$this->transEsc("Available online")?>', '<?=$this->transEsc("Check Availability")?>',
-                                       '<?=count($issns_and_titles) > 1 ? $title : ''?>');
+              TueFind.GetJOPInformation('<?=$jop_place_holder_id?>', '<?=$jop_icons_id?>',
+                                        '<?=$url_ajax_proxy?>', '<?=$url_html?>', '<?=$part_img?>',
+                                        '<?=$this->transEsc("Available online")?>', '<?=$this->transEsc("Check Availability")?>',
+                                        '<?=count($issns_and_titles) > 1 ? $title : ''?>');
              </script>
              <? endif; ?>
         <?endforeach;?>
