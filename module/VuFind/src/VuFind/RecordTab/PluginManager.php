@@ -48,8 +48,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
+        'componentparts' => ComponentParts::class,
         'description' => Description::class,
         'excerpt' => Excerpt::class,
+        'formats' => Formats::class,
         'hierarchytree' => HierarchyTree::class,
         'holdingsils' => HoldingsILS::class,
         'holdingsworldcat' => HoldingsWorldCat::class,
@@ -59,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'similaritemscarousel' => SimilarItemsCarousel::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
+        'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
     ];
@@ -71,8 +74,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
         CollectionList::class => CollectionListFactory::class,
+        ComponentParts::class => ComponentPartsFactory::class,
         Description::class => InvokableFactory::class,
         Excerpt::class => ExcerptFactory::class,
+        Formats::class => InvokableFactory::class,
         HierarchyTree::class => HierarchyTreeFactory::class,
         HoldingsILS::class => HoldingsILSFactory::class,
         HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
@@ -82,6 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
         StaffViewArray::class => InvokableFactory::class,
         StaffViewMARC::class => InvokableFactory::class,
+        StaffViewOverdrive::class => InvokableFactory::class,
         TOC::class => TOCFactory::class,
         UserComments::class => UserCommentsFactory::class,
     ];

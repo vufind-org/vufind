@@ -9,6 +9,8 @@ $config = [
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\OverdriveController' =>
+                'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
             'Admin' => 'VuFindAdmin\Controller\AdminController',
@@ -16,6 +18,7 @@ $config = [
             'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'AdminTags' => 'VuFindAdmin\Controller\TagsController',
+            'AdminOverdrive' => 'VuFindAdmin\Controller\OverdriveController',
         ],
     ],
     'router' => [
@@ -77,6 +80,16 @@ $config = [
                             'route'    => '/Tags[/:action]',
                             'defaults' => [
                                 'controller' => 'AdminTags',
+                                'action'     => 'Home',
+                            ]
+                        ]
+                    ],
+                    'overdrive' => [
+                        'type' => 'Zend\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Overdrive',
+                            'defaults' => [
+                                'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
                             ]
                         ]
