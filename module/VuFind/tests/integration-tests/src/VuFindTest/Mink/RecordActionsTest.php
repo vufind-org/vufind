@@ -80,6 +80,9 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Make new account
      *
+     * @param \Behat\Mink\Element\Element $page     Page element
+     * @param string                      $username Username to create
+     *
      * @return void
      */
     protected function makeAccount($page, $username)
@@ -236,6 +239,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test searching for one of the tags created above.
+     *
+     * @return void
      */
     public function testTagSearch()
     {
