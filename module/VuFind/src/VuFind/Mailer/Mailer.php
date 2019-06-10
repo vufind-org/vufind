@@ -82,8 +82,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param UrlShortener                            $urlShortener URL shortener
      */
     public function __construct(\Zend\Mail\Transport\TransportInterface $transport,
-        UrlShortener $urlShortener = null)
-    {
+        UrlShortener $urlShortener = null
+    ) {
         $this->setTransport($transport);
         // Default to no link shortening if necessary:
         $this->setUrlShortener($urlShortener ?: new \VuFind\UrlShortener\None());

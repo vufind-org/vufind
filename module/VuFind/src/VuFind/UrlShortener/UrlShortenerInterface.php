@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\UrlShortener;
 
 interface UrlShortenerInterface

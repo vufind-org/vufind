@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\UrlShortener;
 
 class None implements UrlShortenerInterface
@@ -24,7 +23,8 @@ class None implements UrlShortenerInterface
      *
      * @throws Exception because this class is not meant to resolve shortlinks.
      */
-    public function resolve($id) {
+    public function resolve($id)
+    {
         throw \Exception('UrlShortener None is unable to resolve shortlinks.');
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\UrlShortener;
 
 use Zend\ServiceManager\Factory\InvokableFactory;

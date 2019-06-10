@@ -1,9 +1,8 @@
 <?php
-
 namespace VuFind\UrlShortener;
 
-use \VuFind\Config\PluginManager as Config;
-use \VuFind\Db\Table\Shortlinks as ShortlinksTable;
+use VuFind\Config\PluginManager as Config;
+use VuFind\Db\Table\Shortlinks as ShortlinksTable;
 
 class Database implements UrlShortenerInterface
 {
@@ -27,7 +26,7 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param Config $config
+     * @param Config          $config
      * @param ShortlinksTable $table
      */
     public function __construct(Config $config, ShortlinksTable $table)
@@ -46,7 +45,8 @@ class Database implements UrlShortenerInterface
      *
      * @throws \Exception
      */
-    protected function base62Encode($base10Number) {
+    protected function base62Encode($base10Number)
+    {
         $binaryNumber = intval($base10Number);
         if ($binaryNumber === 0) {
             throw new \Exception('not a base10 number: "' . $base10Number . '"');
@@ -71,7 +71,8 @@ class Database implements UrlShortenerInterface
      *
      * @throws \Exception
      */
-    protected function base62Decode($base62Number) {
+    protected function base62Decode($base62Number)
+    {
         $binaryNumber = 0;
         for ($i = 0; $i < strlen($base62Number); ++$i) {
             $digit = $base62Number[$i];
@@ -111,7 +112,8 @@ class Database implements UrlShortenerInterface
      *
      * @return string
      */
-    public function resolve($id) {
+    public function resolve($id)
+    {
         $results = $this->table->select(['id' => $this->base62Decode($id)]);
         if (count($results) !== 1) {
             throw new \Exception('Shortlink could not be resolved: ' . $id);

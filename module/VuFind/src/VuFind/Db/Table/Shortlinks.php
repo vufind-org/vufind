@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;

@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Db\Row;
 
 class Shortlinks extends RowGateway

@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\Controller;
 
 class ShortlinkController extends AbstractBase
