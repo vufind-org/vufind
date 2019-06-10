@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
+        'componentparts' => ComponentParts::class,
         'description' => Description::class,
         'excerpt' => Excerpt::class,
         'formats' => Formats::class,
@@ -73,6 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
         CollectionList::class => CollectionListFactory::class,
+        ComponentParts::class => ComponentPartsFactory::class,
         Description::class => InvokableFactory::class,
         Excerpt::class => ExcerptFactory::class,
         Formats::class => InvokableFactory::class,
