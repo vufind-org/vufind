@@ -300,7 +300,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '.mail-record')->click();
+        $this->findCss($page, '#mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         // Make account
@@ -325,7 +325,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '.mail-record')->click();
+        $this->findCss($page, '#mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
@@ -337,7 +337,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         $this->snooze();
         // Click email
-        $this->findCss($page, '.mail-record')->click();
+        $this->findCss($page, '#mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal #email_to');
         // Send text to false email
@@ -372,7 +372,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click SMS
-        $this->findCss($page, '.sms-record')->click();
+        $this->findCss($page, '#sms-record')->click();
         // Type invalid phone numbers
         // - too empty
         $this->findCss($page, '.modal #sms_to')->setValue('');
