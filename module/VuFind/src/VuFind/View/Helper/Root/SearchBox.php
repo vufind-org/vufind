@@ -163,6 +163,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Helper method: get special character to represent operator in filter
+     *
+     * @param string $operator Operator
+     *
+     * @return string
+     */
+    protected function getOperatorCharacter($operator)
+    {
+        static $map = ['NOT' => '-', 'OR' => '~'];
+        return $map[$operator] ?? '';
+    }
+
+    /**
      * Get an array of filter information for use by the "retain filters" feature
      * of the search box. Returns an array of arrays with 'id' and 'value' keys used
      * for generating hidden checkboxes.
@@ -178,7 +191,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
                 $results[] = is_array($value)
-                    ? $value['field'] . ':"' . $value['value'] . '"'
+                    ? $this->getOperatorCharacter($value['operator'] ?? '')
+                    . $value['field'] . ':"' . $value['value'] . '"'
                     : "$field:\"$value\"";
             }
         }
