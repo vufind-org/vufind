@@ -42,33 +42,44 @@
     </div>
   </div>
 
-  <?php if ($recordTotal > 0): ?>
-    <div class="clearfix hidden-print">
-      <div class="pull-left flip">
-        <?php
-          $transParams = [
-            '%%start%%' => $this->localizedNumber($results->getStartRecord()),
-            '%%end%%' => $this->localizedNumber($results->getEndRecord()),
-            '%%total%%' => $this->localizedNumber($recordTotal)
-          ];
-        ?>
-        <?php if (!isset($this->skipTotalCount)): ?>
-          <?=$this->translate('showing_items_of_html', $transParams); ?>
-        <?php else: ?>
-          <?=$this->translate('showing_items_html', $transParams); ?>
-        <?php endif; ?>
-      </div>
-    </div>
-    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
-      <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
-      <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
-    </form>
-  <?php else: ?>
-    <h4><?=$this->transEsc($params->getDisplayQuery() || $filterCount > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
-    <div class="clearfix">
-    </div>
+  <?php if (!empty($params->getFilterList(false))): ?>
+    <?=$this->render('search/filters.phtml',
+      [
+        'params' => $params,
+        'urlQuery' => $results->getUrlQuery(),
+      ]
+    ); ?>
   <?php endif; ?>
+
+  <div class="collection-list-results">
+    <?php if ($recordTotal > 0): ?>
+      <div class="clearfix hidden-print">
+        <div class="pull-left flip">
+          <?php
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($results->getStartRecord()),
+              '%%end%%' => $this->localizedNumber($results->getEndRecord()),
+              '%%total%%' => $this->localizedNumber($recordTotal)
+            ];
+          ?>
+          <?php if (!isset($this->skipTotalCount)): ?>
+            <?=$this->translate('showing_items_of_html', $transParams); ?>
+          <?php else: ?>
+            <?=$this->translate('showing_items_html', $transParams); ?>
+          <?php endif; ?>
+        </div>
+      </div>
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
+        <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+        <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
+      </form>
+    <?php else: ?>
+      <h4><?=$this->transEsc($params->getDisplayQuery() || $filterCount > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
+      <div class="clearfix">
+      </div>
+    <?php endif; ?>
+  </div>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

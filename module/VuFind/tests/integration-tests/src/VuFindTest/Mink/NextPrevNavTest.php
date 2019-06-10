@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Conor Sheehan <csheehan@nli.ie>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class NextPrevNavTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * if next_prev_navigation and first_last_navigation are set to true
      * and a search which returns no results is run

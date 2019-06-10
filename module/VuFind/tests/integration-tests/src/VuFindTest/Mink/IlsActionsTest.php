@@ -37,9 +37,12 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Unit\DemoDriverTestTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -79,93 +82,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'title_level_holds_mode' => 'driver',
                 'renewals_enabled' => true,
             ]
-        ];
-    }
-
-    /**
-     * Get transaction JSON for Demo.ini.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
-     *
-     * @return array
-     */
-    protected function getFakeTransactions($bibId)
-    {
-        $rawDueDate = strtotime("now +5 days");
-        return json_encode(
-            [
-                [
-                    'duedate' => $rawDueDate,
-                    'rawduedate' => $rawDueDate,
-                    'dueStatus' => 'due',
-                    'barcode' => 1234567890,
-                    'renew'   => 0,
-                    'renewLimit' => 1,
-                    'request' => 0,
-                    'id' => $bibId,
-                    'source' => 'Solr',
-                    'item_id' => 0,
-                    'renewable' => true,
-                ]
-            ]
-        );
-    }
-
-    /**
-     * Get Demo.ini override settings for testing ILS functions.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
-     *
-     * @return array
-     */
-    public function getDemoIniOverrides($bibId = 'testsample1')
-    {
-        return [
-            'Records' => [
-                'transactions' => $this->getFakeTransactions($bibId),
-            ],
-            'Failure_Probabilities' => [
-                'cancelHolds' => 0,
-                'cancelILLRequests' => 0,
-                'cancelStorageRetrievalRequests' => 0,
-                'checkILLRequestIsValid' => 0,
-                'checkRenewBlock' => 0,
-                'checkRequestIsValid' => 0,
-                'checkStorageRetrievalRequestIsValid' => 0,
-                'getAccountBlocks' => 0,
-                'getDefaultRequestGroup' => 0,
-                'getHoldDefaultRequiredDate' => 0,
-                'getRequestBlocks' => 0,
-                'placeHold' => 0,
-                'placeILLRequest' => 0,
-                'placeStorageRetrievalRequest' => 0,
-                'renewMyItems' => 0,
-            ],
-            'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
-            'Users' => ['catuser' => 'catpass'],
-        ];
-    }
-
-    /**
-     * Get a fake item record for inclusion in the Demo driver configuration.
-     *
-     * @return array
-     */
-    public function getFakeItem()
-    {
-        return [
-            'barcode'      => '12345678',
-            'availability' => true,
-            'status'       => 'Available',
-            'location'     => 'Test Location',
-            'locationhref' => false,
-            'reserve'      => 'N',
-            'callnumber'   => 'Test Call Number',
-            'duedate'      => '',
-            'is_holdable'  => true,
-            'addLink'      => true,
-            'addStorageRetrievalRequestLink' => 'check',
-            'addILLRequestLink' => 'check',
         ];
     }
 
@@ -265,6 +181,14 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Support method to place a storage retrieval request and end up on the SRR
+     * screen.
+     *
+     * @param Element $page Page element.
+     *
+     * @return void
+     */
     protected function placeStorageRetrievalRequestAndGoToSRRScreen($page)
     {
         // Open the "place hold" dialog
@@ -290,6 +214,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Test placing a hold
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
     public function testPlaceHold()
     {
         $this->changeConfigs(
@@ -567,6 +498,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      * that Apache is configured with "AllowEncodedSlashes on" inside the
      * VirtualHost used for your VuFind test instance!
      *
+     * @retryCallback removeUsername2
+     *
      * @return void
      */
     public function testHoldsAll()
@@ -616,6 +549,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(
             'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
         );
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testHoldsAll.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
     }
 
     /**
