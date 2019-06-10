@@ -12,7 +12,7 @@
     <?php if ($this->accountCapabilities()->getSmsSetting() !== 'disabled'): ?>
       <li><a id="sms-record" class="toolbar-btn" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" rel="nofollow"><i class="fa fa-mobile" aria-hidden="true"></i> <?=$this->transEsc('Text this')?></a></li>
     <?php endif; ?>
-    <li><a class="mail-record toolbar-btn" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this')?></a></li>
+    <li><a id="mail-record" class="toolbar-btn" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this')?></a></li>
 
     <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
     <?php if(count($exportFormats) > 0): ?>
