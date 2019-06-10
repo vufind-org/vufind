@@ -314,6 +314,20 @@ class UrlQueryHelper
     }
 
     /**
+     * Reset default filter state.
+     *
+     * @return string
+     */
+    public function resetDefaultFilters()
+    {
+        $params = $this->urlParams;
+        // Clear page:
+        unset($params['dfApplied']);
+
+        return new static($params, $this->queryObject, $this->config, false);
+    }
+
+    /**
      * Get the current search parameters as a GET query.
      *
      * @param bool $escape Should we escape the string for use in the view?

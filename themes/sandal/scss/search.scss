@@ -281,6 +281,15 @@
     }
   }
 }
+.reset-filters-btn {
+  font-weight: bold;
+  color: #fff;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(255,255,255,.2);
+  }
+}
 .active-filters .filters .filter-value,
 .search-filter-dropdown .btn,
 .search-filter-dropdown .btn:focus {
