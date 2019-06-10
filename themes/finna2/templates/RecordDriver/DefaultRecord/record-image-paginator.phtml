@@ -16,7 +16,7 @@
       $obj = [
         'small' => $img['urls']['small'],
         'medium' => $img['urls']['medium'],
-        'largest' => $enableImageZoom && $originalImage !== false ? $originalImage : $img['urls']['large'],
+        'largest' => $enableImageZoom && $originalImage !== false ? $originalImage : $img['urls']['large'] ?? $img['urls']['medium'],
         'index' => $ind++,
         'alt' => $desc,
         'description' => $img['description'],
