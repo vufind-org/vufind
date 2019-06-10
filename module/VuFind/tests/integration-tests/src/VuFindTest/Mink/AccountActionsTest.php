@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -65,6 +67,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test changing a password.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

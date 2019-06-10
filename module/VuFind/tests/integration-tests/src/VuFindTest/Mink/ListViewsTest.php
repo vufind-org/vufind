@@ -37,9 +37,11 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
+ * @retry    4
  */
 class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -98,6 +100,8 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that we can save a favorite from tab mode.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */

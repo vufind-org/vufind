@@ -37,11 +37,13 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\DemoDriverTestTrait;
+    use \VuFindTest\Unit\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -214,6 +216,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test placing a hold
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -494,6 +498,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      * that Apache is configured with "AllowEncodedSlashes on" inside the
      * VirtualHost used for your VuFind test instance!
      *
+     * @retryCallback removeUsername2
+     *
      * @return void
      */
     public function testHoldsAll()
@@ -543,6 +549,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(
             'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
         );
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testHoldsAll.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
     }
 
     /**

@@ -19,7 +19,8 @@ package org.vufind.index;
  */
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 /**
  * Class for managing record update dates.
@@ -29,7 +30,7 @@ public class UpdateDateTracker
     private Connection db;
     private String core;
     private String id;
-    private SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private DateTimeFormatter iso8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private Timestamp firstIndexed;
     private Timestamp lastIndexed;
@@ -64,8 +65,7 @@ public class UpdateDateTracker
     private void createRow(Timestamp newRecordChange) throws SQLException
     {
         // Save new values to the object:
-        java.util.Date rightNow = new java.util.Date();
-        firstIndexed = lastIndexed = new Timestamp(rightNow.getTime());
+        firstIndexed = lastIndexed = Timestamp.valueOf(LocalDateTime.now());
         lastRecordChange = newRecordChange;
         
         // Save new values to the database:
@@ -107,8 +107,7 @@ public class UpdateDateTracker
     private void updateRow(Timestamp newRecordChange) throws SQLException
     {
         // Save new values to the object:
-        java.util.Date rightNow = new java.util.Date();
-        lastIndexed = new Timestamp(rightNow.getTime());
+        lastIndexed = Timestamp.valueOf(LocalDateTime.now());
         // If first indexed is null, we're restoring a deleted record, so
         // we need to treat it as new -- we'll use the current time.
         if (firstIndexed == null) {
@@ -157,19 +156,19 @@ public class UpdateDateTracker
      */
     public String getFirstIndexed()
     {
-        return iso8601.format(new java.util.Date(firstIndexed.getTime()));
+        return firstIndexed.toLocalDateTime().format(iso8601);
     }
 
     /* Get the last indexed date (IMPORTANT: index() must be called before this method)
      */
     public String getLastIndexed()
     {
-        return iso8601.format(new java.util.Date(lastIndexed.getTime()));
+        return lastIndexed.toLocalDateTime().format(iso8601);
     }
 
     /* Update the database to indicate that the record has just been received by the indexer:
      */
-    public void index(String selectedCore, String selectedId, java.util.Date recordChange) throws SQLException
+    public void index(String selectedCore, String selectedId, LocalDateTime recordChange) throws SQLException
     {
         // If core and ID match the values currently in the class, we have already
         // indexed the record and do not need to repeat ourselves!
@@ -182,8 +181,8 @@ public class UpdateDateTracker
         core = selectedCore;
         id = selectedId;
 
-        // Convert incoming java.util.Date to a Timestamp:
-        Timestamp newRecordChange = new Timestamp(recordChange.getTime());
+        // Convert incoming LocalDateTime to a Timestamp:
+        Timestamp newRecordChange = Timestamp.valueOf(recordChange);
 
         // No row?  Create one!
         if (!readRow()) {

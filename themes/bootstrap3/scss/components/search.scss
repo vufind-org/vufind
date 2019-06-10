@@ -5,7 +5,6 @@ $thumbnail-width-large:  160px !default;
 
 // Hide these on mobile
 @media (max-width: 767px) {
-  .bulkActionButtons,
   #datevispublishDatexWrapper,
   .result .checkbox { display: none; }
 }
@@ -50,10 +49,31 @@ header .container.navbar { margin-bottom: 0; }
   .search-controls { text-align: right; }
 }
 
+.bulkActionButtons { @include clearfix(); }
 .bulk-checkbox,
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
-.bulkActionButtons { @include clearfix(); }
+@media print {
+  .bulkActionButtons { display: none; }
+}
+.action-toolbar {
+  display: inline-block;
+  padding: 0;
+  list-style: none;
+}
+.action-toolbar li {
+  display: inline-block;
+}
+.toolbar-btn {
+  @extend .btn;
+  @extend .btn-link;
+  font-weight: bold;
+
+  &:hover {
+    background-color: #eee;
+  }
+}
+
 @media (max-width: 767px) {
   .grid { min-height: 250px; }
 }
@@ -343,7 +363,7 @@ body.rtl {
   }
   .filters-toggle {
     flex: 1;
-    float: left;
+    display: inline-block;
     margin-top: 10px;
     cursor: pointer;
     &::after {
@@ -351,6 +371,9 @@ body.rtl {
     }
     &.collapsed::after {
       content: '\25BC';
+    }
+    @media (min-width: $screen-sm-min) {
+      float: left;
     }
   }
   .filters {
@@ -394,6 +417,15 @@ body.rtl {
     .title-value-pair {
       display: inline-block;
     }
+  }
+}
+.reset-filters-btn {
+  display: inline-block;
+  padding: .5rem 1rem;
+  color: #555;
+
+  &:hover {
+    background-color: #eee;
   }
 }
 .search-filter-remove {
