@@ -95,8 +95,10 @@ class Factory implements FactoryInterface
      */
     protected function getUrlShortener(ContainerInterface $container, $config)
     {
-        $shortener = $config->Mail->url_shortener ? $config->Mail->url_shortener : 'none';
-        return $container->get(\VuFind\UrlShortener\PluginManager::class)->get($shortener);
+        $shortener = empty($config->Mail->url_shortener)
+            ? 'none' : $config->Mail->url_shortener;
+        return $container->get(\VuFind\UrlShortener\PluginManager::class)
+            ->get($shortener);
     }
 
     /**

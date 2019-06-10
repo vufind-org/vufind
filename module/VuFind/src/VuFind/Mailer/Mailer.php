@@ -144,6 +144,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      *
      * @param UrlShortener $urlShortener URL shortener
      * object
+     *
+     * @return void
      */
     public function setUrlShortener(UrlShortener $urlShortener)
     {
