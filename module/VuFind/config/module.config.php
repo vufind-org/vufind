@@ -413,6 +413,7 @@ $config = [
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortenerInterface\ServiceFactory',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',

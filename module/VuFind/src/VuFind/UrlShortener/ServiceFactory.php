@@ -1,6 +1,6 @@
 <?php
 /**
- * Short link controller
+ * Factory to construct the configured UrlShortener service.
  *
  * PHP version 7
  *
@@ -20,40 +20,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Controller;
+namespace VuFind\UrlShortener;
 
-use VuFind\UrlShortener\UrlShortenerInterface;
+use Interop\Container\ContainerInterface;
 
 /**
- * Short link controller
+ * Factory to construct the configured UrlShortener service.
  *
  * @category VuFind
- * @package  Controller
+ * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class ShortlinkController extends AbstractBase
+class ServiceFactory
 {
     /**
-     * Resolve full version of shortlink & redirect to target.
+     * Create Database object
      *
-     * @return mixed
+     * @param  ContainerInterface $container
+     * @param  type               $requestedName
+     * @param  array              $options
+     * @return \VuFind\UrlShortener\requestedName
      */
-    public function redirectAction()
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        if ($id = $this->params('id')) {
-            $resolver = $this->serviceLocator->get(UrlShortenerInterface::class);
-            if ($url = $resolver->resolve($id)) {
-                return $this->redirect()->toUrl($url);
-            }
-        }
-
-        $this->getResponse()->setStatusCode(404);
+        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $service = empty($config->Mail->url_shortener)
+            ? 'none' : $config->Mail->url_shortener;
+        return $container->get(PluginManager::class)->get($service);
     }
 }

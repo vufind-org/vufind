@@ -86,22 +86,6 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * Get URL Shortener
-     *
-     * @param ContainerInterface  $container Service manager
-     * @param \Zend\Config\Config $config    Configuration
-     *
-     * @return \VuFind\UrlShortener\AbstractBase
-     */
-    protected function getUrlShortener(ContainerInterface $container, $config)
-    {
-        $shortener = empty($config->Mail->url_shortener)
-            ? 'none' : $config->Mail->url_shortener;
-        return $container->get(\VuFind\UrlShortener\PluginManager::class)
-            ->get($shortener);
-    }
-
-    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -129,7 +113,7 @@ class Factory implements FactoryInterface
         // Create service:
         $class = new $requestedName(
             $this->getTransport($config),
-            $this->getUrlShortener($container, $config)
+            $container->get(\VuFind\UrlShortener\UrlShortenerInterface::class)
         );
         if (!empty($config->Mail->override_from)) {
             $class->setFromAddressOverride($config->Mail->override_from);
