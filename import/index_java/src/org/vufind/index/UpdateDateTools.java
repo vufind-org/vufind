@@ -19,6 +19,7 @@ package org.vufind.index;
  */
 
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
@@ -36,7 +37,7 @@ public class UpdateDateTools
     // Initialize logging category
     static Logger logger = Logger.getLogger(UpdateDateTools.class.getName());
 
-    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static 
+    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static
     // which given the rest of the design of SolrMarc will make them work correctly.
     private DateTimeFormatter marc005date = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.S");
     private DateTimeFormatter marc008date = DateTimeFormatter.ofPattern("yyMMdd");
@@ -78,7 +79,7 @@ public class UpdateDateTools
         // parse the data successfully.
         LocalDateTime retVal;
         try {
-            retVal = LocalDateTime.parse(input.substring(0, 6), marc008date);
+            retVal = LocalDate.parse(input.substring(0, 6), marc008date).atStartOfDay();
         } catch(java.lang.StringIndexOutOfBoundsException | java.time.format.DateTimeParseException e) {
             retVal = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         }
