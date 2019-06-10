@@ -56,7 +56,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var bool
      */
-     protected $facetContainsIgnoreCase = null;
+    protected $facetContainsIgnoreCase = null;
 
     /**
      * Offset for facet results
