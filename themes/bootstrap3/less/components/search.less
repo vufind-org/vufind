@@ -327,3 +327,115 @@ body.rtl {
     height: auto !important;
   }
 }
+
+/* ------ CURRENT FILTERS ------ */
+.active-filters {
+  clear: both;
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  .retain-filters {
+    float: right;
+  }
+  .checkbox {
+    flex: 1;
+    white-space: nowrap;
+  }
+  .filters-toggle {
+    flex: 1;
+    float: left;
+    margin-top: 10px;
+    cursor: pointer;
+    &::after {
+      content: '\25B2';
+    }
+    &.collapsed::after {
+      content: '\25BC';
+    }
+  }
+  .filters {
+    flex: 10 1 auto;
+    padding: 5px 0 5px 10px;
+    .collapse {
+      display: none;
+      .in {
+        display: inline-block;
+      }
+    }
+
+    .checkbox label {
+      display: inline-block;
+      padding: 10px 0px;
+      @media (max-width: @screen-sm-min) {
+        float: right;
+        padding: 0px;
+      }
+    }
+    .filters-term {
+      font-size: 0.8em
+    }
+    .filter-value {
+      padding: 2px 8px;
+      margin: 5px;
+      font-weight: 600;
+      color: #fff;
+      background: @list-group-active-bg;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .checkbox {
+      display: inline;
+      padding-left: 0;
+      padding-right: 0;
+      @media (min-width: @screen-sm-min) {
+        padding-right: 20px;
+      }
+    }
+    .title-value-pair {
+      display: inline-block;
+    }
+  }
+}
+.search-filter-remove {
+  margin: 4px 1px 4px 4px;
+  font-weight: normal;
+  color: #fff;
+}
+.active-filters .search-filter-remove:hover {
+  color: red;
+}
+.search-filter-remove::after {
+  content: "\f2d3"; /* fa-window-close */
+  font-family: "FontAwesome";
+}
+.search-filter-dropdown {
+  display: inline-block;
+  .btn {
+    color: #fff;
+    background: @list-group-active-bg;
+    vertical-align: baseline;
+  }
+  .btn::after {
+    content: "\f107";
+    font-family: "FontAwesome";
+  }
+
+  .dropdown-menu {
+    .filters-term {
+      display: block;
+      text-align: center;
+    }
+    .filter-value {
+      display: flex;
+
+      .text {
+        flex-grow: 1;
+        margin-right: 0.5em;
+      }
+      a {
+        flex-shrink: 0;
+        margin: 0;
+      }
+    }
+  }
+}

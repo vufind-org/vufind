@@ -85,22 +85,31 @@ class Router
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
      * @param string                                   $tab    Action to access
+     * @param array                                    $query  Optional query params
      *
      * @return array
      */
-    public function getTabRouteDetails($driver, $tab = null)
+    public function getTabRouteDetails($driver, $tab = null, $query = [])
     {
         $route = $this->getRouteDetails(
             $driver, '', empty($tab) ? [] : ['tab' => $tab]
         );
+        // Add the options and query elements only if we need a query to avoid
+        // an empty element in the route definition:
+        if ($query) {
+            $route['options']['query'] = $query;
+        }
 
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
-        if ('record' == $route['route']) {
-            if (isset($this->config->Collections->collections)
-                && $this->config->Collections->collections
-            ) {
+        if ($this->config->Collections->collections ?? false) {
+            $routeConfig = isset($this->config->Collections->route)
+                ? $this->config->Collections->route->toArray() : [];
+            $collectionRoutes
+                = array_merge(['record' => 'collection'], $routeConfig);
+            $routeName = $route['route'];
+            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
                     list($source, $id) = $this->extractSourceAndId($driver);
                     try {
@@ -112,7 +121,7 @@ class Router
                 }
                 if (is_object($driver) && true === $driver->tryMethod('isCollection')
                 ) {
-                    $route['route'] = 'collection';
+                    $route['route'] = $collectionRoute;
                 }
             }
         }

@@ -152,6 +152,7 @@ $config = [
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Pazpar2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimorecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -236,6 +237,8 @@ $config = [
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'OAI' => 'VuFind\Controller\OaiController',
             'oai' => 'VuFind\Controller\OaiController',
+            'Overdrive' => 'VuFind\Controller\OverdriveController',
+            'overdrive' => 'VuFind\Controller\OverdriveController',
             'Pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'Primo' => 'VuFind\Controller\PrimoController',
@@ -342,6 +345,7 @@ $config = [
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
@@ -371,6 +375,7 @@ $config = [
             'VuFind\Record\Router' => 'VuFind\Record\RouterFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'VuFind\Related\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Resolver\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
@@ -538,110 +543,6 @@ $config = [
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
         ],
-        // This section behaves just like recorddriver_tabs below, but is used for
-        // the collection module instead of the standard record view.
-        'recorddriver_collection_tabs' => [
-            'VuFind\RecordDriver\AbstractBase' => [
-                'tabs' => [
-                    'CollectionList' => 'CollectionList',
-                    'HierarchyTree' => 'CollectionHierarchyTree',
-                ],
-                'defaultTab' => null,
-            ],
-        ],
-        // This section controls which tabs are used for which record driver classes.
-        // Each sub-array is a map from a tab name (as used in a record URL) to a tab
-        // service (found in recordtab plugin manager settings above). If a
-        // particular record driver is not defined here, it will inherit
-        // configuration from a configured parent class.  The defaultTab setting may
-        // be used to specify the default active tab; if null, the value from the
-        // relevant .ini file will be used. You can also specify which tabs are
-        // loaded in the background when arriving at a record tabs view with
-        // backgroundLoadedTabs as a list of tab indexes.
-        'recorddriver_tabs' => [
-            'VuFind\RecordDriver\EDS' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Pazpar2' => [
-                'tabs' => [
-                    'Details' => 'StaffViewMARC',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Primo' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\SolrAuthDefault' => [
-                'tabs' => [
-                    'Details' => 'StaffViewArray',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\SolrAuthMarc' => [
-                'tabs' => [
-                    'Details' => 'StaffViewMARC',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\DefaultRecord' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-                // 'backgroundLoadedTabs' => ['UserComments', 'Details']
-            ],
-            'VuFind\RecordDriver\SolrMarc' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Summon' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\WorldCat' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
-        ],
     ],
     // Authorization configuration:
     'zfc_rbac' => [
@@ -673,9 +574,6 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
-
-    // For legacy (1.x/2.x) compatibility:
-    'vufindrecord' => 'Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
@@ -711,13 +609,15 @@ $staticRoutes = [
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
     'MyResearch/Delete', 'MyResearch/DeleteAccount', 'MyResearch/DeleteList',
-    'MyResearch/Edit', 'MyResearch/Email', 'MyResearch/Favorites',
+    'MyResearch/Edit', 'MyResearch/Email', 'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
     'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
-    'MyResearch/Verify', 'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search',
+    'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
+    'Overdrive/MyContent','Overdrive/Hold',
+    'Pazpar2/Home', 'Pazpar2/Search',
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
