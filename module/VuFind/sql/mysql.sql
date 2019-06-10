@@ -190,6 +190,7 @@ CREATE TABLE `user` (
   `firstname` varchar(50) NOT NULL DEFAULT '',
   `lastname` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
+  `email_verified` datetime DEFAULT NULL,
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,

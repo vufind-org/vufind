@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * CSS selector for finding active filters
      *
@@ -386,28 +389,150 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test retrain current filters checkbox
+     * Assert that the filter used by these tests is still applied.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
      *
      * @return void
      */
-    public function testRetainFilters()
+    protected function assertFilterIsStillThere($page)
     {
-        $page = $this->getFilteredSearch();
-        $this->findCss($page, $this->activeFilterSelector); // Make sure we're filtered
-        // Perform search with retain
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
-        $this->snooze();
-        $this->findCss($page, $this->activeFilterSelector);
-        // Perform search double click retain
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
-        $this->snooze();
-        $this->findCss($page, $this->activeFilterSelector);
-        // Perform search without retain
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $this->assertEquals('weird_ids.mrc', $filter->getText());
+    }
+
+    /**
+     * Assert that no filters are applied.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoFilters($page)
+    {
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertEquals(0, count($items));
+    }
+
+    /**
+     * Assert that the "reset filters" button is not present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        $this->assertEquals(0, count($reset));
+    }
+
+    /**
+     * Test retain current filters default behavior
+     *
+     * @return void
+     */
+    public function testDefaultRetainFiltersBehavior()
+    {
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Re-click the search button and confirm that filters are still there
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+        // Click the "reset filters" button and confirm that filters are gone and
+        // that the button disappears when no longer needed.
+        $this->findCss($page, '.reset-filters-btn')->click();
+        $this->snooze();
+        $this->assertNoFilters($page);
+        $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
+     * Test that filters carry over to selected records and are retained
+     * from there.
+     *
+     * @return void
+     */
+    public function testFiltersOnRecord()
+    {
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Now click the first result:
+        $this->findCss($page, '.result-body a.title')->click();
+        $this->snooze();
+        // Confirm that filters are still visible:
+        $this->assertFilterIsStillThere($page);
+        // Re-click the search button...
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->snooze();
+        // Confirm that filter is STILL applied
+        $this->assertFilterIsStillThere($page);
+    }
+
+    /**
+     * Test "never retain filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testNeverRetainFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => ['retain_filters_by_default' => false]
+                ]
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
+        // Re-click the search button and confirm that filters go away
+        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->snooze();
+        $this->assertNoFilters($page);
+    }
+
+    /**
+     * Test resetting to a default filter state
+     *
+     * @return void
+     */
+    public function testDefaultFiltersWithResetButton()
+    {
+        // Unlike the other tests, which use $this->getFilteredSearch() to set up
+        // the weird_ids.mrc filter through a URL parameter, this test sets up the
+        // filter as a default through the configuration.
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => ['default_filters' => ['building:weird_ids.mrc']]
+                ]
+            ]
+        );
+
+        // Do a blank search to confirm that default filter is applied:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $page = $session->getPage();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+
+        // Confirm that the reset button is NOT present:
+        $this->assertNoResetFiltersButton($page);
+
+        // Now manually clear the filter:
+        $this->findCss($page, '.search-filter-remove')->click();
+        $this->snooze();
+
+        // Confirm that no filters are displayed:
+        $this->assertNoFilters($page);
+
+        // Now click the reset button to bring back the default:
+        $this->findCss($page, '.reset-filters-btn')->click();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+        $this->assertNoResetFiltersButton($page);
     }
 }

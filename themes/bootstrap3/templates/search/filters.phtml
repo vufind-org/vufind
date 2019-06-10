@@ -13,7 +13,18 @@
   $options = $this->searchOptions($params->getSearchClassId());
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
-  $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : '';
+
+  // Determine whether the only filters applied are the default ones; this controls
+  // when we display or hide the reset button:
+  $defaultFilters = $options->getDefaultFilters();
+  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  foreach ($defaultFilters as $currentDefault) {
+    if (!$params->hasFilter($currentDefault)) {
+      $onlyDefaultsApplied = false;
+      break;
+    }
+  }
+
   $advancedSearch = $params->getSearchType() === 'advanced';
 ?>
 <?php ob_start(); ?>
@@ -95,19 +106,18 @@
 <?php $filters = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
-<?php if ($filterCount > 0): ?>
+<?php if ($hasDefaultsApplied || $filterCount > 0): ?>
+  <?php
+    $resetLink = !$onlyDefaultsApplied && isset($urlQuery)
+      ? $urlQuery->removeAllFilters()->resetDefaultFilters() : false;
+  ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
-    <?php if (empty($disableRetainFilterControls)): ?>
-      <?php if ($advancedSearch): ?>
-        <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
-      <?php else: ?>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-            <?=$this->transEsc("basic_search_keep_filters")?>
-          </label>
-        </div>
+    <?php if ($advancedSearch): ?>
+      <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
+    <?php else: ?>
+      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+        <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
       <?php endif; ?>
     <?php endif; ?>
     <div class="filters">
@@ -118,19 +128,12 @@
   <?php // Narrow view ?>
   <div class="active-filters visible-xs">
     <div class="filters-toggle-bar">
+      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+        <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+      <?php endif; ?>
       <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
         <?=$this->transEsc('show_filters_html', ['%%count%%' => $filterCount])?>
       </div>
-      <?php if (empty($disableRetainFilterControls)): ?>
-        <div class="retain-filters">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
-              <?=$this->transEsc("basic_search_keep_filters")?>
-            </label>
-          </div>
-        </div>
-      <?php endif; ?>
       <div class="clearfix"></div>
     </div>
     <div id="active-filters-mobile" class="filters filters-bar collapse">
