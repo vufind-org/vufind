@@ -54,8 +54,9 @@ class None implements UrlShortenerInterface
      * Dummy implementation. Resolving is not necessary because initial URL
      * has not been shortened.
      *
-     * @param string $id
+     * @param string $id ID to resolve
      *
+     * @return string
      * @throws Exception because this class is not meant to resolve shortlinks.
      */
     public function resolve($id)

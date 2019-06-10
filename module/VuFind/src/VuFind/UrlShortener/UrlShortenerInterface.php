@@ -50,7 +50,7 @@ interface UrlShortenerInterface
     /**
      * Resolve a shortened URL by its id.
      *
-     * @param string $id
+     * @param string $id ID to resolve
      *
      * @return string
      */

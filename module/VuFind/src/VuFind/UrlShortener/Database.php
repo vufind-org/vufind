@@ -143,7 +143,7 @@ class Database implements UrlShortenerInterface
     /**
      * Resolve URL from Database via id.
      *
-     * @param string $id
+     * @param string $id ID to resolve
      *
      * @return string
      */

@@ -41,15 +41,20 @@ use Interop\Container\ContainerInterface;
 class ServiceFactory
 {
     /**
-     * Create Database object
+     * Create an object
      *
-     * @param  ContainerInterface $container
-     * @param  type               $requestedName
-     * @param  array              $options
-     * @return \VuFind\UrlShortener\requestedName
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         $config = $container->get(\VuFind\Config\PluginManager::class);
         $service = empty($config->Mail->url_shortener)
             ? 'none' : $config->Mail->url_shortener;
