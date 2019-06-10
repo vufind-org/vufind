@@ -41,7 +41,8 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  */
 class Database implements UrlShortenerInterface
 {
-    const BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const BASE62_ALPHABET
+        = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     const BASE62_BASE = 62;
 
     /**
@@ -61,8 +62,8 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param Config          $config
-     * @param ShortlinksTable $table
+     * @param Config          $config Configuration
+     * @param ShortlinksTable $table  Shortlinks database table
      */
     public function __construct(Config $config, ShortlinksTable $table)
     {
@@ -74,7 +75,7 @@ class Database implements UrlShortenerInterface
      * Common base62 encoding function.
      * Implemented here so we don't need additional PHP modules like bcmath.
      *
-     * @param string $base10Number
+     * @param string $base10Number Number to encode
      *
      * @return string
      *
@@ -89,7 +90,8 @@ class Database implements UrlShortenerInterface
 
         $base62Number = '';
         while ($binaryNumber != 0) {
-            $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE] . $base62Number;
+            $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE]
+                . $base62Number;
             $binaryNumber = intdiv($binaryNumber, self::BASE62_BASE);
         }
 
@@ -100,7 +102,7 @@ class Database implements UrlShortenerInterface
      * Common base62 decoding function.
      * Implemented here so we don't need additional PHP modules like bcmath.
      *
-     * @param string $base62Number
+     * @param string $base62Number Number to decode
      *
      * @return int
      *
