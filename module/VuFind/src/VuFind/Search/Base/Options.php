@@ -947,7 +947,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function configureAutocomplete(Config $searchSettings)
+    protected function configureAutocomplete(Config $searchSettings = null)
     {
         // Only change settings from current values if they are defined in .ini:
         $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
