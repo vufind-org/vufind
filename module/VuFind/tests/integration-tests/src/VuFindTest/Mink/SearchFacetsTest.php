@@ -415,6 +415,19 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Assert that the "reset filters" button is not present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        $this->assertEquals(0, count($reset));
+    }
+
+    /**
      * Test retain current filters default behavior
      *
      * @return void
@@ -427,10 +440,12 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
         $this->assertFilterIsStillThere($page);
-        // Click the "reset filters" button and confirm that filters are gone
+        // Click the "reset filters" button and confirm that filters are gone and
+        // that the button disappears when no longer needed.
         $this->findCss($page, '.reset-filters-btn')->click();
         $this->snooze();
         $this->assertNoFilters($page);
+        $this->assertNoResetFiltersButton($page);
     }
 
     /**
@@ -472,11 +487,52 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->getFilteredSearch();
         $this->assertFilterIsStillThere($page);
         // Confirm that there is no reset button:
-        $reset = $page->findAll('css', '.reset-filters-btn');
-        $this->assertEquals(0, count($reset));
+        $this->assertNoResetFiltersButton($page);
         // Re-click the search button and confirm that filters go away
         $this->findCss($page, '#searchForm .btn.btn-primary')->click();
         $this->snooze();
         $this->assertNoFilters($page);
+    }
+
+    /**
+     * Test resetting to a default filter state
+     *
+     * @return void
+     */
+    public function testDefaultFiltersWithResetButton()
+    {
+        // Unlike the other tests, which use $this->getFilteredSearch() to set up
+        // the weird_ids.mrc filter through a URL parameter, this test sets up the
+        // filter as a default through the configuration.
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => ['default_filters' => ['building:weird_ids.mrc']]
+                ]
+            ]
+        );
+
+        // Do a blank search to confirm that default filter is applied:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $page = $session->getPage();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+
+        // Confirm that the reset button is NOT present:
+        $this->assertNoResetFiltersButton($page);
+
+        // Now manually clear the filter:
+        $this->findCss($page, '.search-filter-remove')->click();
+        $this->snooze();
+
+        // Confirm that no filters are displayed:
+        $this->assertNoFilters($page);
+
+        // Now click the reset button to bring back the default:
+        $this->findCss($page, '.reset-filters-btn')->click();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+        $this->assertNoResetFiltersButton($page);
     }
 }
