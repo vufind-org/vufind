@@ -254,7 +254,7 @@ class Params extends \VuFind\Search\Base\Params
             parent::initSearch($request);
         }
     }
-    
+
     /**
      * Set Facet Contains
      *
