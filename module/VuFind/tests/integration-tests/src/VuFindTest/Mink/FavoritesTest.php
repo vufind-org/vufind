@@ -559,7 +559,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         // Now try to email the list:
         $this->selectAllItemsInList($page);
-        $this->findCss($page, '[name=bulkActionForm] .btn-group [name=email]')
+        $this->findCss($page, '[name=bulkActionForm] [name=email]')
             ->click();
         $this->snooze();
 
