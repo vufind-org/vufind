@@ -120,7 +120,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     {
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
         $this->snooze();
@@ -173,7 +173,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     {
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -229,7 +229,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
         // Save Record
         $this->snooze();
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
