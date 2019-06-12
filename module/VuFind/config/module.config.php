@@ -518,6 +518,7 @@ $config = [
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
             'search'           => ['id', 'search_id_seq'],
             'session'          => ['id', 'session_id_seq'],
+            'shortlinks'       => ['id', 'shortlinks_id_seq'],
             'tags'             => ['id', 'tags_id_seq'],
             'user'             => ['id', 'user_id_seq'],
             'user_card'        => ['id', 'user_card_id_seq'],
