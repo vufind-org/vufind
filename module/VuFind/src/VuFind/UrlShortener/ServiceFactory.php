@@ -55,7 +55,8 @@ class ServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $service = empty($config->Mail->url_shortener)
             ? 'none' : $config->Mail->url_shortener;
         return $container->get(PluginManager::class)->get($service);
