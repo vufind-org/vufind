@@ -28,7 +28,6 @@
 namespace VuFindTest\UrlShortener;
 
 use VuFind\UrlShortener\Database;
-use Zend\View\Exception\RuntimeException;
 
 /**
  * "Database" URL shortener test.

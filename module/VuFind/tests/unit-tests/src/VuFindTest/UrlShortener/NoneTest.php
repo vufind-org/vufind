@@ -28,7 +28,6 @@
 namespace VuFindTest\UrlShortener;
 
 use VuFind\UrlShortener\None;
-use Zend\View\Exception\RuntimeException;
 
 /**
  * "None" URL shortener test.

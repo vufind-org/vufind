@@ -31,7 +31,6 @@ use VuFind\UrlShortener\Database;
 use VuFind\UrlShortener\UrlShortenerInterface;
 use VuFind\View\Helper\Root\ShortenUrl;
 use VuFind\View\Helper\Root\ShortenUrlFactory;
-use Zend\View\Exception\RuntimeException;
 
 /**
  * ShortenUrl view helper Test Class

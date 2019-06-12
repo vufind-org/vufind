@@ -27,7 +27,6 @@
  */
 namespace VuFind\UrlShortener;
 
-use VuFind\Config\PluginManager as Config;
 use VuFind\Db\Table\Shortlinks as ShortlinksTable;
 
 /**
