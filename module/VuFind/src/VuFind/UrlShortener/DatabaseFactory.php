@@ -55,9 +55,11 @@ class DatabaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $router = $container->get('HttpRouter');
+        $baseUrl = $container->get('ViewRenderer')->plugin('serverurl')
+            ->__invoke($router->assemble([], ['name' => 'home']));
         $table = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('shortlinks');
-        return new $requestedName($config, $table);
+        return new $requestedName(rtrim($baseUrl, '/'), $table);
     }
 }

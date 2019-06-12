@@ -46,11 +46,11 @@ class Database implements UrlShortenerInterface
     const BASE62_BASE = 62;
 
     /**
-     * Configuration object
+     * Base URL of current VuFind site
      *
-     * @var Config
+     * @var string
      */
-    protected $config;
+    protected $baseUrl;
 
     /**
      * Table containing shortlinks
@@ -62,12 +62,12 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param Config          $config Configuration
-     * @param ShortlinksTable $table  Shortlinks database table
+     * @param string          $baseUrl Base URL of current VuFind site
+     * @param ShortlinksTable $table   Shortlinks database table
      */
-    public function __construct(Config $config, ShortlinksTable $table)
+    public function __construct(string $baseUrl, ShortlinksTable $table)
     {
-        $this->config = $config;
+        $this->baseUrl = $baseUrl;
         $this->table = $table;
     }
 
@@ -133,12 +133,11 @@ class Database implements UrlShortenerInterface
      */
     public function shorten($url)
     {
-        $baseUrl = $this->config->get('config')->Site->url;
-        $path = str_replace($baseUrl, '', $url);
+        $path = str_replace($this->baseUrl, '', $url);
         $this->table->insert(['path' => $path]);
         $id = $this->table->getLastInsertValue();
 
-        $shortUrl = $baseUrl . '/short/' . $this->base62Encode($id);
+        $shortUrl = $this->baseUrl . '/short/' . $this->base62Encode($id);
         return $shortUrl;
     }
 
@@ -156,7 +155,6 @@ class Database implements UrlShortenerInterface
             throw new \Exception('Shortlink could not be resolved: ' . $id);
         }
 
-        $baseUrl = $this->config->get('config')->Site->url;
-        return $baseUrl . $results->current()['path'];
+        return $this->baseUrl . $results->current()['path'];
     }
 }
