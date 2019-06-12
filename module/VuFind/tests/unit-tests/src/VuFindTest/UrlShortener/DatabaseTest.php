@@ -68,7 +68,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that the shortener does nothing.
+     * Test that the shortener works correctly under "happy path."
      *
      * @return void
      */
@@ -92,9 +92,11 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     {
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
-            ->setMethods(['current'])
+            ->setMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
+        $mockResults->expects($this->once())->method('count')
+            ->will($this->returnValue(1));
         $mockResults->expects($this->once())->method('current')
             ->will($this->returnValue(['path' => '/bar']));
         $table->expects($this->once())->method('select')
@@ -102,5 +104,29 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($mockResults));
         $db = $this->getShortener($table);
         $this->assertEquals('http://foo/bar', $db->resolve('A'));
+    }
+
+    /**
+     * Test that resolve errors correctly when given bad input
+     *
+     * @return void
+     *
+     * @expectedException        Exception
+     * @expectedExceptionMessage Shortlink could not be resolved: B
+     */
+    public function testResolutionOfBadInput()
+    {
+        $table = $this->getMockTable(['select']);
+        $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
+            ->setMethods(['count'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockResults->expects($this->once())->method('count')
+            ->will($this->returnValue(0));
+        $table->expects($this->once())->method('select')
+            ->with($this->equalTo(['id' => 11]))
+            ->will($this->returnValue($mockResults));
+        $db = $this->getShortener($table);
+        $db->resolve('B');
     }
 }

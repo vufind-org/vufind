@@ -150,7 +150,7 @@ class Database implements UrlShortenerInterface
     public function resolve($id)
     {
         $results = $this->table->select(['id' => $this->base62Decode($id)]);
-        if (count($results) !== 1) {
+        if ($results->count() !== 1) {
             throw new \Exception('Shortlink could not be resolved: ' . $id);
         }
 
