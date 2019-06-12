@@ -45,6 +45,19 @@ $config = [
                     ]
                 ],
             ],
+            'shortlink' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/short/[:id]',
+                    'constraints' => [
+                        'id'     => '[a-zA-Z0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Shortlink',
+                        'action'     => 'redirect',
+                    ]
+                ],
+            ],
             'legacy-alphabrowse-results' => [
                 'type' => 'Zend\Router\Http\Literal',
                 'options' => [
@@ -162,6 +175,7 @@ $config = [
             'VuFind\Controller\RelaisController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SummonController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SummonrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TagController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -257,6 +271,8 @@ $config = [
             'search' => 'VuFind\Controller\SearchController',
             'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
+            'Shortlink' => 'VuFind\Controller\ShortlinkController',
+            'shortlink' => 'VuFind\Controller\ShortlinkController',
             'Summon' => 'VuFind\Controller\SummonController',
             'summon' => 'VuFind\Controller\SummonController',
             'SummonRecord' => 'VuFind\Controller\SummonrecordController',
@@ -396,6 +412,8 @@ $config = [
             'VuFind\SMS\SMSInterface' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
+            'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
@@ -500,6 +518,7 @@ $config = [
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
             'search'           => ['id', 'search_id_seq'],
             'session'          => ['id', 'session_id_seq'],
+            'shortlinks'       => ['id', 'shortlinks_id_seq'],
             'tags'             => ['id', 'tags_id_seq'],
             'user'             => ['id', 'user_id_seq'],
             'user_card'        => ['id', 'user_card_id_seq'],
@@ -542,6 +561,7 @@ $config = [
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
+            'urlshortener' => [ /* see VuFind\UrlShortener\PluginManager for defaults */ ],
         ],
     ],
     // Authorization configuration:
