@@ -111,10 +111,7 @@ class Factory implements FactoryInterface
             ->get('config');
 
         // Create service:
-        $class = new $requestedName(
-            $this->getTransport($config),
-            $container->get(\VuFind\UrlShortener\UrlShortenerInterface::class)
-        );
+        $class = new $requestedName($this->getTransport($config));
         if (!empty($config->Mail->override_from)) {
             $class->setFromAddressOverride($config->Mail->override_from);
         }

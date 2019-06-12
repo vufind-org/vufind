@@ -28,7 +28,6 @@
 namespace VuFind\Mailer;
 
 use VuFind\Exception\Mail as MailException;
-use VuFind\UrlShortener\UrlShortenerInterface as UrlShortener;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
 use Zend\Mail\Header\ContentType;
@@ -55,13 +54,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $transport;
 
     /**
-     * URL shortener
-     *
-     * @var UrlShortener
-     */
-    protected $urlShortener;
-
-    /**
      * The maximum number of email recipients allowed (0 = no limit)
      *
      * @var int
@@ -78,15 +70,11 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Mail\Transport\TransportInterface $transport    Mail transport
-     * @param UrlShortener                            $urlShortener URL shortener
+     * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
      */
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport,
-        UrlShortener $urlShortener = null
-    ) {
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
+    {
         $this->setTransport($transport);
-        // Default to no link shortening if necessary:
-        $this->setUrlShortener($urlShortener ?: new \VuFind\UrlShortener\None());
     }
 
     /**
@@ -97,16 +85,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function getTransport()
     {
         return $this->transport;
-    }
-
-    /**
-     * Get the URL shortener object.
-     *
-     * @return UrlShortener
-     */
-    public function getUrlShortener()
-    {
-        return $this->urlShortener;
     }
 
     /**
@@ -137,19 +115,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function setTransport($transport)
     {
         $this->transport = $transport;
-    }
-
-    /**
-     * Set the URL shortener object.
-     *
-     * @param UrlShortener $urlShortener URL shortener
-     * object
-     *
-     * @return void
-     */
-    public function setUrlShortener(UrlShortener $urlShortener)
-    {
-        $this->urlShortener = $urlShortener;
     }
 
     /**
@@ -277,7 +242,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
         }
-        $url = $this->urlShortener->shorten($url);
         $body = $view->partial(
             'Email/share-link.phtml',
             [
