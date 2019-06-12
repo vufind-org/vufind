@@ -1,6 +1,6 @@
 <?php
 /**
- * No-op URL shortener (default version, does nothing).
+ * "None" URL shortener test.
  *
  * PHP version 7
  *
@@ -20,47 +20,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  UrlShortener
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFind\UrlShortener;
+namespace VuFindTest\UrlShortener;
+
+use VuFind\UrlShortener\None;
+use Zend\View\Exception\RuntimeException;
 
 /**
- * No-op URL shortener (default version, does nothing).
+ * "None" URL shortener test.
  *
  * @category VuFind
- * @package  UrlShortener
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class None implements UrlShortenerInterface
+class NoneTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Dummy to return original URL version.
+     * Test that the shortener does nothing.
      *
-     * @param string $url URL
-     *
-     * @return string
+     * @return void
      */
-    public function shorten($url)
+    public function testShortener()
     {
-        return $url;
+        $none = new None();
+        $url = 'http://foo';
+        $this->assertEquals($url, $none->shorten($url));
     }
 
     /**
-     * Dummy implementation. Resolving is not necessary because initial URL
-     * has not been shortened.
+     * Test that resolve is not supported.
      *
-     * @param string $id ID to resolve
+     * @return void
      *
-     * @return string
-     * @throws Exception because this class is not meant to resolve shortlinks.
+     * @expectedException        Exception
+     * @expectedExceptionMessage UrlShortener None is unable to resolve shortlinks.
      */
-    public function resolve($id)
+    public function testNoResolution()
     {
-        throw new \Exception('UrlShortener None is unable to resolve shortlinks.');
+        $none = new None();
+        $none->resolve('foo');
     }
 }
