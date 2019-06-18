@@ -2,7 +2,7 @@
 <?php if ($cart->isActive()): ?>
   <?php $cartId = $this->source . '|' . $this->id; ?>
   <span class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
-    <a href="#" class="cart-add hidden toolbar-btn<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>">
+    <a href="#" class="cart-add hidden<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>">
       <i class="cart-link-icon fa fa-plus" title="<?=$this->transEsc('Add to Book Bag') ?>"></i><!--
    --><span class="cart-link-label"><?=$this->transEsc('Add to Book Bag') ?></span><!--
  --></a>
