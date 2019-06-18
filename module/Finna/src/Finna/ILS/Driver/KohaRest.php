@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -37,6 +38,7 @@ use VuFind\Exception\ILS as ILSException;
  * @category VuFind
  * @package  ILS_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -1201,6 +1203,92 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
         $str = implode(', ', $result);
         return $str;
+    }
+
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details or throws an exception on failure of support
+     * classes
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @throws ILSException
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeHold($holdDetails)
+    {
+        $patron = $holdDetails['patron'];
+        $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
+            ? $holdDetails['level'] : 'copy';
+        $pickUpLocation = !empty($holdDetails['pickUpLocation'])
+            ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
+        $itemId = $holdDetails['item_id'] ?? false;
+        $comment = $holdDetails['comment'] ?? '';
+        $bibId = $holdDetails['id'];
+
+        // Convert last interest date from Display Format to Koha's required format
+        try {
+            $lastInterestDate = $this->dateConverter->convertFromDisplayDate(
+                'Y-m-d', $holdDetails['requiredBy']
+            );
+        } catch (DateException $e) {
+            // Hold Date is invalid
+            return $this->holdError('hold_date_invalid');
+        }
+
+        if ($level == 'copy' && empty($itemId)) {
+            throw new ILSException("Hold level is 'copy', but item ID is empty");
+        }
+
+        try {
+            $checkTime = $this->dateConverter->convertFromDisplayDate(
+                'U', $holdDetails['requiredBy']
+            );
+            if (!is_numeric($checkTime)) {
+                throw new DateException('Result should be numeric');
+            }
+        } catch (DateException $e) {
+            throw new ILSException('Problem parsing required by date.');
+        }
+
+        if (time() > $checkTime) {
+            // Hold Date is in the past
+            return $this->holdError('hold_date_past');
+        }
+
+        // Make sure pickup location is valid
+        if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
+            return $this->holdError('hold_invalid_pickup');
+        }
+
+        $request = [
+            'biblionumber' => (int)$bibId,
+            'borrowernumber' => (int)$patron['id'],
+            'branchcode' => $pickUpLocation,
+            'reservenotes' => $comment,
+            'expirationdate' => $this->dateConverter->convertFromDisplayDate(
+                'Y-m-d', $holdDetails['requiredBy']
+            )
+        ];
+        if ($level == 'copy') {
+            $request['itemnumber'] = (int)$itemId;
+        }
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'holds'],
+            json_encode($request),
+            'POST',
+            $patron,
+            true
+        );
+
+        if ($code >= 300) {
+            return $this->holdError($code, $result);
+        }
+        return ['success' => true];
     }
 
     /**
