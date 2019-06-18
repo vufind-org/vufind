@@ -302,7 +302,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->find('css', $this->activeFilterSelector)));
+        $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));
     }
 
     /**
