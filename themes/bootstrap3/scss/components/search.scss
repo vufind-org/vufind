@@ -64,17 +64,6 @@ header .container.navbar { margin-bottom: 0; }
 .action-toolbar li {
   display: inline-block;
 }
-.toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove {
-  @extend .btn;
-  @extend .btn-link;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: #eee;
-  }
-}
 
 @media (max-width: 767px) {
   .grid { min-height: 250px; }
@@ -421,9 +410,14 @@ body.rtl {
     }
   }
 }
+
+.toolbar-btn,
+.record-nav .cart-add,
+.record-nav .cart-remove,
 .reset-filters-btn {
   display: inline-block;
   padding: .5rem 1rem;
+  border: 0;
   color: #555;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
