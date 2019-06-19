@@ -399,6 +399,9 @@
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
     </lst>
+    <lst name="appends">
+      <str name="fl">[multiLanguageDocTransformer]</str>
+    </lst>
     <arr name="last-components">
       <str>spellcheck</str>
     </arr>
@@ -415,6 +418,9 @@
       <str name="lowercaseOperators">false</str>
       <str name="q.op">AND</str>
       <str name="df">allfields</str>
+    </lst>
+    <lst name="appends">
+      <str name="fl">[multiLanguageDocTransformer]</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -719,7 +725,7 @@
   <queryParser class="de.uni_tuebingen.ub.ixTheo.multiLanguageQuery.MultiLanguageQueryParserPlugin" name="multiLanguageQueryParser" />
   <transformer class="de.uni_tuebingen.ub.ixTheo.MultiLanguageDocTransformerFactory" name="multiLanguageDocTransformer">
     <bool name="enabled">true</bool>
-    <str name="fields">topic_standardized,topic_non_standardized</str>
+    <str name="fields">topic_standardized,topic_non_standardized,topic_facet,geographic_facet,era_facet,genre_facet</str>
     <str name="lang_extensions">_de,_en,_fr,_it,_es,_hant,_hans,_pt,_ru,_el</str>
   </transformer>
 
