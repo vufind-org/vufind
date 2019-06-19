@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "239341e0955023b31281368fe8de7a7c",
+    "content-hash": "ac7449e5f6615c2ecb44f9751810bf4a",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -362,16 +362,16 @@
         },
         {
             "name": "jasig/phpcas",
-            "version": "1.3.6",
+            "version": "1.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apereo/phpCAS.git",
-                "reference": "7972833e84f6ee5fa41f1479eab5d855109627f5"
+                "reference": "b5b29102c3a42f570c4a3e852f3cf67cae6d6082"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/7972833e84f6ee5fa41f1479eab5d855109627f5",
-                "reference": "7972833e84f6ee5fa41f1479eab5d855109627f5",
+                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/b5b29102c3a42f570c4a3e852f3cf67cae6d6082",
+                "reference": "b5b29102c3a42f570c4a3e852f3cf67cae6d6082",
                 "shasum": ""
             },
             "require": {
@@ -413,7 +413,7 @@
                 "cas",
                 "jasig"
             ],
-            "time": "2018-10-25T20:22:09+00:00"
+            "time": "2019-04-22T19:48:16+00:00"
         },
         {
             "name": "khanamiryan/qrcode-detector-decoder",
@@ -2405,16 +2405,16 @@
         },
         {
             "name": "yajra/laravel-pdo-via-oci8",
-            "version": "v1.3.7",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/pdo-via-oci8.git",
-                "reference": "68d8387fae774b1ba56c809a59f87ca91a29dbf5"
+                "reference": "91598cf82bf67b0e006e40be11af9ba33a802a44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/68d8387fae774b1ba56c809a59f87ca91a29dbf5",
-                "reference": "68d8387fae774b1ba56c809a59f87ca91a29dbf5",
+                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/91598cf82bf67b0e006e40be11af9ba33a802a44",
+                "reference": "91598cf82bf67b0e006e40be11af9ba33a802a44",
                 "shasum": ""
             },
             "require-dev": {
@@ -2437,7 +2437,7 @@
                 }
             ],
             "description": "PDO userspace driver proxying calls to PHP OCI8 driver",
-            "time": "2018-09-05T03:22:57+00:00"
+            "time": "2019-05-09T02:45:31+00:00"
         },
         {
             "name": "zendframework/zend-cache",
