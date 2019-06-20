@@ -119,6 +119,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
         // Make an account
         $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();

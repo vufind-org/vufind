@@ -254,6 +254,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Empty
         $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'blargasaurus']
         );
@@ -262,6 +263,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Test taken username
         $this->findCssAndSetValue($page, '#account_username', 'username1');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#account_firstname');
         // Correct
         $this->fillInAccountForm(
