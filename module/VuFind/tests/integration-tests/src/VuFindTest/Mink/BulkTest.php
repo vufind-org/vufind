@@ -153,6 +153,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
 
         // Create an account.
         $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
