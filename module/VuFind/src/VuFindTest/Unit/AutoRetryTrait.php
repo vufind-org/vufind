@@ -46,6 +46,13 @@ use PHPUnit\Framework\SkippedTestError;
 trait AutoRetryTrait
 {
     /**
+     * Flag whether we ran out of retries on a prior test.
+     *
+     * @var bool
+     */
+    protected $failedAfterRetries = false;
+
+    /**
      * Override PHPUnit's main run method, introducing annotation-based retry
      * behavior.
      *
@@ -55,10 +62,16 @@ trait AutoRetryTrait
     {
         // Fetch retry count from annotations, but make sure it's a sane number;
         // default to a single attempt with no retries unless told otherwise.
+        // Also skip retries if a past test has failed after running out of
+        // retries -- one failed test is likely to have a knock-on effect on
+        // subsequent tests, and retrying will just waste time before showing
+        // the cause of the initial error. We only really want to retry if it
+        // will prevent ANY failures from occurring.
         $annotations = $this->getAnnotations();
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
-        $retryCount = $retryCountAnnotation > 0 ? $retryCountAnnotation : 0;
+        $retryCount = !$this->failedAfterRetries && $retryCountAnnotation > 0
+            ? $retryCountAnnotation : 0;
 
         // Also fetch retry callbacks, if any, from annotations; always include
         // standard 'tearDown' method:
@@ -90,6 +103,7 @@ trait AutoRetryTrait
         // If we got this far, something went wrong... under healthy circumstances,
         // we should have returned from inside the loop above. $e should be set from
         // within the catch above, so if it's unset, something weird has occurred.
+        $this->failedAfterRetries = true;
         throw $e ?? new \Exception('Unexpected state reached');
     }
 }
