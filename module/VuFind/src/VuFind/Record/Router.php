@@ -39,13 +39,6 @@ namespace VuFind\Record;
 class Router
 {
     /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $loader;
-
-    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -55,13 +48,10 @@ class Router
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader Record loader
      * @param \Zend\Config\Config   $config VuFind configuration
      */
-    public function __construct(\VuFind\Record\Loader $loader,
-        \Zend\Config\Config $config
-    ) {
-        $this->loader = $loader;
+    public function __construct(\Zend\Config\Config $config)
+    {
         $this->config = $config;
     }
 
