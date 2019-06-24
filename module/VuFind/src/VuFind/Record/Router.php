@@ -48,7 +48,7 @@ class Router
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config   $config VuFind configuration
+     * @param \Zend\Config\Config $config VuFind configuration
      */
     public function __construct(\Zend\Config\Config $config)
     {
