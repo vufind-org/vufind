@@ -82,11 +82,8 @@ class Url extends \Zend\View\Helper\Url
     public function __invoke(
         $name = null, $params = [], $options = [], $reuseMatchedParams = false
     ) {
-        // Get object for functions
-        if (func_num_args() == 0) {
-            return $this;
-        }
-        return parent::__invoke(...func_get_args());
+        // If argument list is empty, return object for method access:
+        return func_num_args() == 0 ? $this : parent::__invoke(...func_get_args());
     }
 
     /**
