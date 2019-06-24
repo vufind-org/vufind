@@ -408,7 +408,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Test that we can add multiple records:
         for ($x = 1; $x <= 3; $x++) {
             $page = $this->getRecordPage('testsample' . $x);
-            $this->findCss($page, '.cart-add')->click();
+            $this->clickCss($page, '.cart-add');
             $this->assertEquals(
                 $x . ' items', $this->findCss($page, '#cartItems')->getText()
             );
@@ -429,7 +429,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // First try deleting without selecting anything:
         $delete->click();
         $this->snooze();
-        $this->findCss($page, '#cart-confirm-delete')->click();
+        $this->clickCss($page, '#cart-confirm-delete');
         $this->snooze();
         $this->checkForNonSelectedMessage($page);
 
@@ -556,10 +556,10 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkForLoginMessage($page);
 
         // Create an account.
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
@@ -567,7 +567,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCssAndSetValue(
             $page, '.modal #email_to', 'demian.katz@villanova.edu'
         );
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
@@ -603,7 +603,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Save the favorites.
         $this->snooze();
-        $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->clickCss($page, '.modal-body input[name=submit]');
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(

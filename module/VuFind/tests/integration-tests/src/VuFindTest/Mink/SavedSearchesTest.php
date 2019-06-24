@@ -75,12 +75,12 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     public function testSaveSearch()
     {
         $page = $this->performSearch('test');
-        $this->findCss($page, '.fa.fa-save')->click();
+        $this->clickCss($page, '.fa.fa-save');
         $this->snooze();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
             'Search saved successfully.',
@@ -114,7 +114,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
         // Now log in and see if our saved search shows up (without making the
         // unsaved search go away):
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
@@ -151,7 +151,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/History');
         $page = $session->getPage();
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
@@ -163,12 +163,12 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         list($base, $params) = explode('?', $delete);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'username2@example.com']
         );
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
         $this->findAndAssertLink($page, 'Log Out')->click();
         $this->snooze();
@@ -176,7 +176,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
         // Go back in as user A -- see if the saved search still exists.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->snooze();
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
