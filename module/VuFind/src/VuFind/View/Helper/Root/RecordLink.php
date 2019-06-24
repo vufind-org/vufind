@@ -180,15 +180,18 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
      * representing record to link to, or source|id pipe-delimited string
      * @param string                                   $tab    Optional record
      * tab to access
+     * @param array                                    $query  Optional query params
      *
      * @return string
      */
-    public function getTabUrl($driver, $tab = null)
+    public function getTabUrl($driver, $tab = null, $query = [])
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = $this->router->getTabRouteDetails($driver, $tab);
-        return $urlHelper($details['route'], $details['params']);
+        $details = $this->router->getTabRouteDetails($driver, $tab, $query);
+        return $urlHelper(
+            $details['route'], $details['params'], $details['options'] ?? []
+        );
     }
 
     /**

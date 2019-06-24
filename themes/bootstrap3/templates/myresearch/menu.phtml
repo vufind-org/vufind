@@ -3,6 +3,7 @@
   $patron = $user ? $this->auth()->getILSPatron() : false;
   $capabilityParams = $patron ? ['patron' => $patron] : [];
 ?>
+<button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <h4><?=$this->transEsc('Your Account')?></h4>
 <div class="myresearch-menu account-menu">
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -52,6 +53,11 @@
     <?php if ($user && $user->libraryCardsEnabled()): ?>
       <a href="<?=$this->url('librarycards-home')?>"<?=$this->active == 'librarycards' ? ' class="active"' : ''?>>
         <i class="fa fa-fw fa-barcode" aria-hidden="true"></i> <?=$this->transEsc('Library Cards')?>
+      </a>
+    <?php endif; ?>
+    <?php if ($this->overdrive()->showMyContentLink()):?>
+       <a href="<?=$this->url('overdrive-mycontent')?>"<?=$this->active == 'dgcontent' ? ' class="active"' : ''?>>
+        <i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?>
       </a>
     <?php endif; ?>
   <?php endif; ?>

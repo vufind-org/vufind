@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Go to a collection page.
      *
@@ -149,7 +152,7 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->findCss($page, '[recordid="colitem2"] a')->click();
+        $this->clickCss($page, '[recordid="colitem2"] a');
         $this->snooze();
 
         $this->assertEquals(

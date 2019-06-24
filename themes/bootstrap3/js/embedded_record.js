@@ -160,9 +160,7 @@ VuFind.register('embedded', function embedded() {
             });
             longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
               function embeddedComments() {
-                return registerAjaxCommentRecord(
-                  longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
-                );
+                return registerAjaxCommentRecord(longNode);
               }
             );
             longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {

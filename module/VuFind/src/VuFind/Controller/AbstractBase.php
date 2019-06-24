@@ -321,6 +321,7 @@ class AbstractBase extends AbstractActionController
 
         // Now check if the user has provided credentials with which to log in:
         $ilsAuth = $this->getILSAuthenticator();
+        $patron = null;
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
@@ -672,11 +673,10 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the tab configuration for this controller.
      *
-     * @return array
+     * @return \VuFind\RecordTab\TabManager
      */
-    protected function getRecordTabConfig()
+    protected function getRecordTabManager()
     {
-        $cfg = $this->serviceLocator->get('Config');
-        return $cfg['vufind']['recorddriver_tabs'];
+        return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
     }
 }

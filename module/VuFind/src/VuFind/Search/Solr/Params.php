@@ -43,6 +43,22 @@ class Params extends \VuFind\Search\Base\Params
     use \VuFind\Search\Params\FacetLimitTrait;
 
     /**
+     * Search with facet.contains
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     *
+     * @var string
+     */
+    protected $facetContains = null;
+
+    /**
+     * Ignore Case when using facet.contains
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     *
+     * @var bool
+     */
+    protected $facetContainsIgnoreCase = null;
+
+    /**
      * Offset for facet results
      *
      * @var int
@@ -92,6 +108,14 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected $defaultFacetLabelSections
         = ['Advanced', 'HomePage', 'ResultsTop', 'Results', 'ExtraFacetLabels'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
      * Constructor
@@ -188,6 +212,13 @@ class Params extends \VuFind\Search\Base\Params
                 }
                 $facetSet['field'][] = $facetField;
             }
+            if ($this->facetContains != null) {
+                $facetSet['contains'] = $this->facetContains;
+            }
+            if ($this->facetContainsIgnoreCase != null) {
+                $facetSet['contains.ignoreCase']
+                    = $this->facetContainsIgnoreCase ? 'true' : 'false';
+            }
             if ($this->facetOffset != null) {
                 $facetSet['offset'] = $this->facetOffset;
             }
@@ -222,6 +253,30 @@ class Params extends \VuFind\Search\Base\Params
             // Use standard initialization:
             parent::initSearch($request);
         }
+    }
+
+    /**
+     * Set Facet Contains
+     *
+     * @param string $p the new contains value
+     *
+     * @return void
+     */
+    public function setFacetContains($p)
+    {
+        $this->facetContains = $p;
+    }
+
+    /**
+     * Set Facet Contains Ignore Case
+     *
+     * @param bool $val the new boolean value
+     *
+     * @return void
+     */
+    public function setFacetContainsIgnoreCase($val)
+    {
+        $this->facetContainsIgnoreCase = $val;
     }
 
     /**

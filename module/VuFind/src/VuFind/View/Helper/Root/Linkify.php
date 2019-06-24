@@ -43,7 +43,7 @@ class Linkify extends AbstractHelper
     /**
      * Linkify a string
      *
-     * @param string $str String to linkify
+     * @param string $str String to linkify (must be HTML-escaped)
      *
      * @return string
      */
@@ -51,13 +51,13 @@ class Linkify extends AbstractHelper
     {
         $linkify = new \Misd\Linkify\Linkify();
         $proxyUrl = $this->getView()->plugin('proxyUrl');
-        $escapeHtml = $this->getView()->plugin('escapeHtml');
         $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
-        $callback = function ($url, $caption, $isEmail) use ($proxyUrl, $escapeHtml,
+        $callback = function ($url, $caption, $isEmail) use ($proxyUrl,
             $escapeHtmlAttr
         ) {
+            $url = html_entity_decode($url);
             return '<a href="' . $escapeHtmlAttr($proxyUrl($url)) . '">'
-                . $escapeHtml($caption) . '</a>';
+                . "$caption</a>";
         };
         return $linkify->process($str, ['callback' => $callback]);
     }

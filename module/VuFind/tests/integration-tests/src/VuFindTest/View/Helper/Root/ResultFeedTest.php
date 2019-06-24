@@ -68,7 +68,6 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        $this->getServiceManager()->get(\VuFind\Record\Loader::class),
                         new \Zend\Config\Config([])
                     )
                 ]

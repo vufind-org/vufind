@@ -293,13 +293,14 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     protected $profileTestResult = [
         'firstname' => "Nobody",
         'lastname' => "Nothing",
-        'address1' => null,
+        'address1' => "No street at all 8, D-21073 Hamburg",
         'address2' => null,
         'city' => null,
         'country' => null,
         'zip' => null,
         'phone' => null,
-        'group' => null,
+        'group' => "de-830:user-type:2",
+        'mobile_phone' => null,
         'expires' => "12-31-9999",
         'statuscode' => 0,
         'canWrite' => true
@@ -606,6 +607,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $conn->expects($this->any())->method('getScope')
             ->will($this->returnValue([
                 'write_items',
+                'change_password',
+                'read_fees',
+                'read_items',
+                'read_patron'
             ]));
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);
