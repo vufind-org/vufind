@@ -117,6 +117,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->findCss($page, '.modal.in'); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
@@ -124,16 +125,19 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make sure page updated for login
         // $page = $this->gotoRecord();
         $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
         $this->assertEquals(// Can Comment?
             'Add your comment',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
         );
         // "Add" empty comment
         $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->findCss($page, '.comment');
         // Remove comment
         $this->clickCss($page, '.comment .delete');
