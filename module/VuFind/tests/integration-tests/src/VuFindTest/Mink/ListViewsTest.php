@@ -37,9 +37,11 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
+ * @retry    4
  */
 class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -99,6 +101,8 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that we can save a favorite from tab mode.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testFavoritesInTabMode()
@@ -115,6 +119,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
         // Make an account
         $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
@@ -144,6 +149,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Click save inside the tools tab
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
+        $this->snooze();
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
         $this->snooze();
         // Login

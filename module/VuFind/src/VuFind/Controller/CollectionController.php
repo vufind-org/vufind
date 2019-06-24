@@ -61,12 +61,13 @@ class CollectionController extends AbstractRecord
     /**
      * Get the tab configuration for this controller.
      *
-     * @return array
+     * @return \VuFind\RecordTab\TabManager
      */
-    protected function getRecordTabConfig()
+    protected function getRecordTabManager()
     {
-        $cfg = $this->serviceLocator->get('Config');
-        return $cfg['vufind']['recorddriver_collection_tabs'];
+        $manager = parent::getRecordTabManager();
+        $manager->setContext('collection');
+        return $manager;
     }
 
     /**
