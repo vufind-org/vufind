@@ -105,13 +105,13 @@ class FeedbackTest extends \VuFindTest\Unit\MinkTestCase
     {
         // By default, no OpenURL on record page:
         $page = $this->setupPage();
-        $this->findCss($page, '#feedbackLink')->click();
+        $this->clickCss($page, '#feedbackLink');
         $this->snooze();
         $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
         $this->findCss($page, "#modal #message")->setValue('test test test');
-        $this->findCss($page, '#modal input[type="submit"]')->click();
+        $this->clickCss($page, '#modal input[type="submit"]');
         $this->snooze();
         $this->assertEquals(
             'Thank you for your feedback.',
