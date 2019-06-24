@@ -96,7 +96,7 @@ class Url extends \Zend\View\Helper\Url
      *
      * @return string
      */
-    public function addParameters($params)
+    public function addQueryParameters($params)
     {
         $requestQuery = $this->request->getQuery()->toArray();
         $options = ['query' => array_merge($requestQuery, $params)];
