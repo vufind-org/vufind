@@ -54,7 +54,7 @@
               <ul class="dropdown-menu">
                 <?php foreach ($this->layout()->themeOptions as $current): ?>
                   <li<?=$current['selected'] ? ' class="active"' : ''?>>
-                    <a href="<?=$this->url()->addParameters(['ui' => $current['name']]) ?>">
+                    <a href="<?=$this->url()->addParameters(['ui' => $current['name']]) ?>" rel="nofollow">
                       <?=$this->transEsc($current['desc']) ?>
                     </a>
                   </li>
@@ -69,7 +69,7 @@
               <ul class="dropdown-menu">
                 <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
                   <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>>
-                    <a href="<?=$this->url()->addParameters(['lng' => $langCode]) ?>">
+                    <a href="<?=$this->url()->addParameters(['lng' => $langCode]) ?>" rel="nofollow">
                       <?=$this->displayLanguageOption($langName) ?>
                     </a>
                   </li>
