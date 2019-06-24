@@ -100,6 +100,6 @@ class Url extends \Zend\View\Helper\Url
     {
         $requestQuery = $this->request->getQuery()->toArray();
         $options = ['query' => array_merge($requestQuery, $params)];
-        return $this->view->url(null, [], $options);
+        return $this->__invoke(null, [], $options);
     }
 }
