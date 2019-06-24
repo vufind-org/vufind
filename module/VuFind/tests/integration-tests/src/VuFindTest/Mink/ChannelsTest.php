@@ -85,7 +85,7 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
         $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
         // Click first add button
-        $this->findCss($channel, '.add-btn')->click();
+        $this->clickCss($channel, '.add-btn');
         $this->snooze();
         // Post count
         $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
@@ -100,10 +100,10 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->getChannelsPage();
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Click dropdown to display links
-        $this->findCss($channel, '.dropdown')->click();
+        $this->clickCss($channel, '.dropdown');
         $this->snooze();
         // Click link to go to search results
-        $this->findCss($channel, '.channel_search')->click();
+        $this->clickCss($channel, '.channel_search');
         $this->snooze();
         // Make sure the search translated
         $this->assertEquals(

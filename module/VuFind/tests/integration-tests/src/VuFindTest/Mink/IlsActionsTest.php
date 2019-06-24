@@ -112,7 +112,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->findCss($page, '#profile_cat_username')->setValue($username);
         $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
     }
 
@@ -126,13 +126,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     protected function placeHoldAndGoToHoldsScreen($page)
     {
         // Open the "place hold" dialog
-        $this->findCss($page, 'a.placehold')->click();
+        $this->clickCss($page, 'a.placehold');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -158,7 +158,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Open the "place hold" dialog
         $this->snooze();
-        $this->findCss($page, 'a.placeILLRequest')->click();
+        $this->clickCss($page, 'a.placeILLRequest');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
@@ -166,7 +166,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#pickupLibrary')->setValue('2');
         $this->snooze();
         $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -193,13 +193,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Open the "place hold" dialog
         $this->snooze();
-        $this->findCss($page, 'a.placeStorageRetrievalRequest')->click();
+        $this->clickCss($page, 'a.placeStorageRetrievalRequest');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '.modal-body select')->setValue('C');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -234,10 +234,10 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Test invalid patron login
@@ -310,7 +310,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Test empty selection
-        $this->findCss($page, '#cancelSelected')->click();
+        $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->snooze();
         $this->assertEquals(
@@ -327,7 +327,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Click cancel but bail out with no... item should still be there.
-        $this->findCss($page, '#cancelAll')->click();
+        $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
         $this->snooze();
         $this->assertEquals(
@@ -337,7 +337,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Now cancel for real:
-        $this->findCss($page, '#cancelAll')->click();
+        $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->snooze();
         $this->assertEquals(
@@ -475,7 +475,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page, false);
 
         // Test submitting with no selected checkboxes:
-        $this->findCss($page, '#renewSelected')->click();
+        $this->clickCss($page, '#renewSelected');
         $this->snooze();
         $this->assertEquals(
             'No items were selected',
@@ -483,7 +483,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Test "renew all":
-        $this->findCss($page, '#renewAll')->click();
+        $this->clickCss($page, '#renewAll');
         $this->snooze();
         $this->assertEquals(
             'Renewal Successful',
@@ -521,12 +521,12 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $element->click();
         $this->snooze();
         // Since we're not logged in...
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
         );
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Test valid patron login
@@ -536,7 +536,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:

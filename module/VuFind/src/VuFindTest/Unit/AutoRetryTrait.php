@@ -50,7 +50,7 @@ trait AutoRetryTrait
      *
      * @var bool
      */
-    protected $failedAfterRetries = false;
+    protected static $failedAfterRetries = false;
 
     /**
      * Override PHPUnit's main run method, introducing annotation-based retry
@@ -70,7 +70,7 @@ trait AutoRetryTrait
         $annotations = $this->getAnnotations();
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
-        $retryCount = !$this->failedAfterRetries && $retryCountAnnotation > 0
+        $retryCount = !self::$failedAfterRetries && $retryCountAnnotation > 0
             ? $retryCountAnnotation : 0;
 
         // Also fetch retry callbacks, if any, from annotations; always include
@@ -103,7 +103,7 @@ trait AutoRetryTrait
         // If we got this far, something went wrong... under healthy circumstances,
         // we should have returned from inside the loop above. $e should be set from
         // within the catch above, so if it's unset, something weird has occurred.
-        $this->failedAfterRetries = true;
+        self::$failedAfterRetries = true;
         throw $e ?? new \Exception('Unexpected state reached');
     }
 }

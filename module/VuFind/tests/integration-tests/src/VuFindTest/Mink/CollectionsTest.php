@@ -152,7 +152,7 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->findCss($page, '[recordid="colitem2"] a')->click();
+        $this->clickCss($page, '[recordid="colitem2"] a');
         $this->snooze();
 
         $this->assertEquals(

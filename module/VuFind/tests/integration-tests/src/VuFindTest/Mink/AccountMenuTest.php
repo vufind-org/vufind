@@ -127,12 +127,12 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // Seed some fines
@@ -258,10 +258,10 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         return $session;
     }
