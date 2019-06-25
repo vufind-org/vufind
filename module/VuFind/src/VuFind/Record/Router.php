@@ -39,13 +39,6 @@ namespace VuFind\Record;
 class Router
 {
     /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $loader;
-
-    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -55,13 +48,10 @@ class Router
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader Record loader
-     * @param \Zend\Config\Config   $config VuFind configuration
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct(\VuFind\Record\Loader $loader,
-        \Zend\Config\Config $config
-    ) {
-        $this->loader = $loader;
+    public function __construct(\Zend\Config\Config $config)
+    {
         $this->config = $config;
     }
 
@@ -111,16 +101,10 @@ class Router
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
-                    list($source, $id) = $this->extractSourceAndId($driver);
-                    try {
-                        $driver = $this->loader->load($id, $source);
-                    } catch (\Exception $e) {
-                        // Ignore exceptions here so that we don't crash when
-                        // creating a link to record that does not exist
-                    }
-                }
-                if (is_object($driver) && true === $driver->tryMethod('isCollection')
-                ) {
+                    // Avoid loading the driver. Set a flag so that if the link is
+                    // used, record controller will check for redirection.
+                    $route['options']['query']['checkRoute'] = 1;
+                } elseif (true === $driver->tryMethod('isCollection')) {
                     $route['route'] = $collectionRoute;
                 }
             }

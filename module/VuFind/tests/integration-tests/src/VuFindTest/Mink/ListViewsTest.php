@@ -79,7 +79,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testdeweybrowse');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->clickCss($page, '.btn.btn-primary');
         $this->snooze();
         return $page;
     }
@@ -93,7 +93,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
     protected function gotoRecord()
     {
         $page = $this->gotoSearch();
-        $this->findCss($page, '.result a.title')->click();
+        $this->clickCss($page, '.result a.title');
         $this->snooze();
         return $page;
     }
@@ -115,19 +115,19 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
 
         // Click save inside the tools tab
-        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
-        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
+        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
         // Make an account
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->findCss($page, '#save_list');
         // Save to list
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
-        $this->findCss($page, '#modal .close')->click();
+        $this->clickCss($page, '#modal .close');
         $this->snooze();
         // Check saved items status
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
@@ -148,24 +148,24 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
 
         // Click save inside the tools tab
-        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
+        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
         $this->snooze();
-        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
+        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
         $this->snooze();
         // Login
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make list
-        $this->findCss($page, '#make-list')->click();
+        $this->clickCss($page, '#make-list');
         $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // Save to list
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
-        $this->findCss($page, '#modal .close')->click();
+        $this->clickCss($page, '#modal .close');
         $this->snooze();
         // Check saved items status
         // Not visible, but still exists
@@ -188,21 +188,21 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.result.embedded');
 
         // Close it
-        $this->findCss($page, '.result a.title')->click();
+        $this->clickCss($page, '.result a.title');
         // Did our result stay closed?
         $session->reload();
         $result = $page->find('css', '.result.embedded');
         $this->assertFalse(is_object($result));
 
         // Open it
-        $this->findCss($page, '.result a.title')->click();
+        $this->clickCss($page, '.result a.title');
         $this->snooze();
         // Search for anything else
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('anything else');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->clickCss($page, '.btn.btn-primary');
         // Come back
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?

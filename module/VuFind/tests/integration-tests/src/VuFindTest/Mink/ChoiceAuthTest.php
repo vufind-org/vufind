@@ -123,14 +123,14 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Login', $element->getText());
         $element->click();
         $this->snooze();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Log back in to confirm that creation worked
@@ -141,7 +141,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page, true, '.authmethod0 ');
 
         // Log out again to confirm that login worked
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
