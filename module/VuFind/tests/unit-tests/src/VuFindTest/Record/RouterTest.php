@@ -52,7 +52,7 @@ class RouterTest extends TestCase
     public function testRoutingWithDriver()
     {
         $driver = $this->getDriver();
-        $router = $this->getRouter($driver);
+        $router = $this->getRouter();
         $this->assertEquals(
             ['params' => ['id' => 'test'], 'route' => 'record'],
             $router->getRouteDetails($driver)
@@ -94,11 +94,9 @@ class RouterTest extends TestCase
      */
     public function testCollectionSpecialCaseWithString()
     {
-        $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
-        $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
+        $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
-            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
+            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'record', 'options' => ['query' => ['checkRoute' => 1]]],
             $router->getTabRouteDetails('Solr|test', 'foo')
         );
     }
@@ -110,11 +108,9 @@ class RouterTest extends TestCase
      */
     public function testCollectionSpecialCaseWithStringMissingSource()
     {
-        $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
-        $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
+        $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
-            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
+            ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'record', 'options' => ['query' => ['checkRoute' => 1]]],
             $router->getTabRouteDetails('test', 'foo')
         );
     }
@@ -128,7 +124,7 @@ class RouterTest extends TestCase
     {
         $driver = $this->getDriver();
         $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
-        $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
+        $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
             $router->getTabRouteDetails($driver, 'foo')
@@ -157,7 +153,7 @@ class RouterTest extends TestCase
     public function testActionRoutingWithDriver()
     {
         $driver = $this->getDriver();
-        $router = $this->getRouter($driver);
+        $router = $this->getRouter();
         $this->assertEquals(
             ['params' => ['id' => 'test'], 'route' => 'record-sms'],
             $router->getActionRouteDetails($driver, 'SMS')
@@ -185,26 +181,12 @@ class RouterTest extends TestCase
     /**
      * Get test router object
      *
-     * @param RecordDriver $record Record to return from loader.
-     * @param array        $config Configuration.
+     * @param array $config Configuration.
      *
      * @return Router
      */
-    protected function getRouter($record = null, $config = [])
+    protected function getRouter($config = [])
     {
-        if (null === $record) {
-            $record = $this->getDriver();
-        }
-        $loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->setConstructorArgs(
-                [
-                    $this->createMock(\VuFindSearch\Service::class),
-                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
-                ]
-            )->getMock();
-        $loader->expects($this->any())->method('load')
-            ->will($this->returnValue($record));
-
-        return new Router($loader, new Config($config));
+        return new Router(new Config($config));
     }
 }

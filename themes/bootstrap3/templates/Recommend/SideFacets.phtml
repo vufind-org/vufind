@@ -4,6 +4,20 @@
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
   $this->options = $options = $results->getOptions();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $forceUncollapsedFacets = [];
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+        $forceUncollapsedFacets[] = $filter['field'];
+      }
+    }
+  }
 
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
   if ($hierarchicalFacets) {
@@ -20,7 +34,7 @@
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):
     foreach ($checkboxFilters as $current) {
-      if ($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible']) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
         $checkboxesShown = true;
         break;
       }
@@ -32,16 +46,6 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
-<?php $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-<?php $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<?php if (!empty($filterList)): ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [
-    'collapsedFacets' => $collapsedFacets,
-    'extraFilters' => $extraFilters,
-    'filterList' => $filterList,
-  ]); ?>
-<?php endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
@@ -49,16 +53,17 @@
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
-      <button class="title<?php if(in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+      <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if(!in_array($title, $collapsedFacets)): ?> in<?php endif ?>">
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <?=$this->context($this)->renderInContext(
           'Recommend/SideFacets/facet.phtml',
           [
             'facet' => $title,
             'cluster' => $cluster,
-            'collapsedFacets' => $collapsedFacets          ]
+            'collapsedFacets' => $collapsedFacets
+          ]
         ); ?>
       </div>
     </div>

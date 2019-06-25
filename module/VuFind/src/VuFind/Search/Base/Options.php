@@ -28,6 +28,7 @@
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Zend\Config\Config;
 
 /**
  * Abstract options search model.
@@ -937,5 +938,21 @@ abstract class Options implements TranslatorAwareInterface
     public function supportsFirstLastNavigation()
     {
         return $this->firstlastNavigation;
+    }
+
+    /**
+     * Configure autocomplete preferences from an .ini file.
+     *
+     * @param Config $searchSettings Object representation of .ini file
+     *
+     * @return void
+     */
+    protected function configureAutocomplete(Config $searchSettings = null)
+    {
+        // Only change settings from current values if they are defined in .ini:
+        $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
+            ?? $this->autocompleteEnabled;
+        $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
+            ?? $this->autocompleteAutoSubmit;
     }
 }

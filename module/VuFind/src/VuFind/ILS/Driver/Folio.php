@@ -373,7 +373,7 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'notes' => $item->notes ?? [],
-                    'callnumber' => $holding->callNumber,
+                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
                     'addLink' => true

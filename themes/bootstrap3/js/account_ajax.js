@@ -122,7 +122,12 @@ VuFind.register('account', function Account() {
 
   var init = function init() {
     // Update information when certain actions are performed
-    $('#cancelHold, #renewals').submit(clearCache);
+    $("[data-clear-account-cache]").submit(function dataClearCache() {
+      clearCache($(this).attr("data-clear-account-cache"));
+    });
+    $("#library_card").change(function clearChangeLibraryCard() {
+      clearCache(/* all */);
+    });
   };
 
   var register = function register(name, module) {

@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -99,6 +101,10 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test creating a DB user....
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
      */
     public function testCreateDatabaseUser()
     {
@@ -117,14 +123,14 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Login', $element->getText());
         $element->click();
         $this->snooze();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Log back in to confirm that creation worked
@@ -135,7 +141,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page, true, '.authmethod0 ');
 
         // Log out again to confirm that login worked
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**

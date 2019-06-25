@@ -1621,6 +1621,23 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Extract a bib call number from a bib record (if configured to do so).
+     *
+     * @param array $bib Bib record
+     *
+     * @return string
+     */
+    protected function getBibCallNumber($bib)
+    {
+        $result = empty($this->config['CallNumber']['bib_fields'])
+            ? '' : $this->extractFieldsFromApiData(
+                [$bib], // wrap $bib in array to conform to expected format
+                $this->config['CallNumber']['bib_fields']
+            );
+        return is_array($result) ? reset($result) : $result;
+    }
+
+    /**
      * Get Item Statuses
      *
      * This is responsible for retrieving the status information of a certain
@@ -1633,7 +1650,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getItemStatusesForBib($id)
     {
-        $bib = $this->getBibRecord($id, 'bibLevel');
+        // If we need to look at bib call numbers, retrieve varFields:
+        $bibFields = empty($this->config['CallNumber']['bib_fields'])
+            ? 'bibLevel' : 'bibLevel,varFields';
+        $bib = $this->getBibRecord($id, $bibFields);
         $holdingsData = [];
         if ($this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
@@ -1721,7 +1741,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'status' => $status,
                     'reserve' => 'N',
                     'callnumber' => isset($item['callNumber'])
-                        ? preg_replace('/^\|a/', '', $item['callNumber']) : '',
+                        ? preg_replace('/^\|a/', '', $item['callNumber'])
+                        : $this->getBibCallNumber($bib),
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
@@ -1798,7 +1819,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = [];
         // Get Notes
         if (isset($this->config['Holdings']['notes'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['notes']
             );
@@ -1808,7 +1829,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         // Get Summary (may be multiple lines)
-        $data = $this->getHoldingFields(
+        $data = $this->extractFieldsFromApiData(
             $holdings,
             isset($this->config['Holdings']['summary'])
             ? $this->config['Holdings']['summary']
@@ -1820,7 +1841,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Get Supplements
         if (isset($this->config['Holdings']['supplements'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['supplements']
             );
@@ -1831,7 +1852,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Get Indexes
         if (isset($this->config['Holdings']['indexes'])) {
-            $data = $this->getHoldingFields(
+            $data = $this->extractFieldsFromApiData(
                 $holdings,
                 $this->config['Holdings']['indexes']
             );
@@ -1843,26 +1864,26 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
-     * Get fields from holdings according to the field spec.
+     * Get fields from holdings or bib API response according to the field spec.
      *
-     * @param array        $holdings   Holdings records
+     * @param array        $response   API response data
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
      * @return string|string[] Results as a string if single, array if multiple
      */
-    protected function getHoldingFields($holdings, $fieldSpecs)
+    protected function extractFieldsFromApiData($response, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
         }
         $result = [];
-        foreach ($holdings as $holding) {
+        foreach ($response as $row) {
             foreach ($fieldSpecs as $fieldSpec) {
                 $fieldCode = substr($fieldSpec, 0, 3);
                 $subfieldCodes = substr($fieldSpec, 3);
-                $fields = $holding['varFields'] ?? [];
+                $fields = $row['varFields'] ?? [];
                 foreach ($fields as $field) {
                     if (($field['marcTag'] ?? '') !== $fieldCode
                         && ($field['fieldTag'] ?? '') !== $fieldCode
