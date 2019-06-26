@@ -64,18 +64,17 @@ class Url extends \Zend\View\Helper\Url
      * @param array             $params             Parameters for the link
      * @param array|Traversable $options            Options for the route
      * @param bool              $reuseMatchedParams Whether to reuse matched
-     *                                              parameters
+     * parameters
      *
      * @see Zend\Mvc\Router\RouteInterface::assemble()
      * @see Zend\Router\RouteInterface::assemble()
      *
-     * @throws Exception\RuntimeException If no RouteStackInterface was
-     *                                    provided
+     * @throws Exception\RuntimeException If no RouteStackInterface was provided
      * @throws Exception\RuntimeException If no RouteMatch was provided
-     * @throws Exception\RuntimeException If RouteMatch didn't contain a
-     *                                    matched route name
-     * @throws Exception\InvalidArgumentException If the params object was not
-     *                                            an array or Traversable object.
+     * @throws Exception\RuntimeException If RouteMatch didn't contain a matched
+     * route name
+     * @throws Exception\InvalidArgumentException If the params object was not an
+     * array or Traversable object.
      *
      * @return string Url For the link href attribute
      */
@@ -89,14 +88,15 @@ class Url extends \Zend\View\Helper\Url
     /**
      * Get URL with current GET parameters and add one
      *
-     * @param array $params Key-paired parameters
+     * @param array $params             Key-paired parameters
+     * @param bool  $reuseMatchedParams Whether to reuse matched parameters
      *
      * @return string
      */
-    public function addQueryParameters($params)
+    public function addQueryParameters($params, $reuseMatchedParams = true)
     {
         $requestQuery = $this->request->getQuery()->toArray();
         $options = ['query' => array_merge($requestQuery, $params)];
-        return $this->__invoke(null, [], $options);
+        return $this->__invoke(null, [], $options, $reuseMatchedParams);
     }
 }
