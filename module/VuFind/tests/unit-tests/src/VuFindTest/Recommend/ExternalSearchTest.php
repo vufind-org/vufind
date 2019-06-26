@@ -54,9 +54,11 @@ class ExternalSearchTest extends \VuFindTest\Unit\TestCase
     {
         $rec = new ExternalSearch();
         $rec->setConfig($label . ':' . $template);
+        $params = new \Zend\StdLib\Parameters();
+        $params->set('lookfor', $lookfor);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
-            new \Zend\StdLib\Parameters([compact($lookfor)])
+            $params
         );
         $rec->process(
             $this->createMock(\VuFind\Search\Solr\Results::class)
