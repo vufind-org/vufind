@@ -62,6 +62,7 @@ return [
             'VuFind\View\Helper\Root\TransEsc' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Translate' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Truncate' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
             'VuFind\View\Helper\Root\UserList' => 'VuFind\View\Helper\Root\UserListFactory',
             'VuFind\View\Helper\Root\UserTags' => 'VuFind\View\Helper\Root\UserTagsFactory',
         ],
@@ -127,6 +128,7 @@ return [
             'truncate' => 'VuFind\View\Helper\Root\Truncate',
             'userlist' => 'VuFind\View\Helper\Root\UserList',
             'usertags' => 'VuFind\View\Helper\Root\UserTags',
+            'Zend\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
         ]
     ],
 ];
