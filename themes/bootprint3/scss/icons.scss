@@ -22,7 +22,7 @@ $bp3-icon-path: '../../bootprint3/images/icons' !default;
  * Toolbar Button Icons
  */
 [class*="btn-type-"]::before {
-  margin-right: 6px;
+  margin-right: .25rem;
 }
 .btn-type-add::before,
 i.fa-plus-circle { background-image: url("#{$bp3-icon-path}/add.png"); @extend .bp-icon; }
