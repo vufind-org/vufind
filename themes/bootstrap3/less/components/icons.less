@@ -1,4 +1,19 @@
 /**
+ * Toolbar Button Icons
+ */
+[class*="btn-type-"]::before {
+  display: inline-block;
+  margin-right: .25rem;
+  font-family: "FontAwesome";
+  color: inherit;
+}
+.btn-type-add::before { content: "\f055"; } // .fa-plus-circle
+.btn-type-email::before { content: "\f0e0"; } // .fa-envelope
+.btn-type-export::before { content: "\f08e"; } // .fa-external-link
+.btn-type-print::before { content: "\f02f"; } // .fa-print
+.btn-type-save::before { content: "\f0c7"; } // .fa-save
+
+/**
  * Assign catalog formats to Font Awesome icons
  */
 .doi-icon {
