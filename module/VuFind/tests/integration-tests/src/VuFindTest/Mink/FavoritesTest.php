@@ -454,7 +454,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
-        $button = $this->findCss($page, '[name=bulkActionForm] .btn-group [name=email]');
+        $button = $this->findCss($page, '[name=bulkActionForm] [name=email]');
         $button->click();
         $this->snooze();
         $this->checkForNonSelectedMessage($page);
@@ -485,7 +485,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
-        $button = $this->findCss($page, '[name=bulkActionForm] .btn-group [name=export]');
+        $button = $this->findCss($page, '[name=bulkActionForm] [name=export]');
         $button->click();
         $this->snooze();
         $this->checkForNonSelectedMessage($page);
@@ -518,7 +518,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
-        $button = $this->findCss($page, '[name=bulkActionForm] .btn-group [name=print]');
+        $button = $this->findCss($page, '[name=bulkActionForm] [name=print]');
         $button->click();
         $this->snooze();
         $warning = $this->findCss($page, '.flash-message');
@@ -561,7 +561,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         // Now try to email the list:
         $this->selectAllItemsInList($page);
-        $this->findCss($page, '[name=bulkActionForm] .btn-group [name=email]')
+        $this->findCss($page, '[name=bulkActionForm] [name=email]')
             ->click();
         $this->snooze();
 
@@ -592,7 +592,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
-        $button = $this->findCss($page, '[name=bulkActionForm] .btn-group [name=delete]');
+        $button = $this->findCss($page, '[name=bulkActionForm] [name=delete]');
         $button->click();
         $this->snooze();
         $this->checkForNonSelectedMessage($page);

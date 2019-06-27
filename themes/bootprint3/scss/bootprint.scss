@@ -127,6 +127,12 @@ ul.random.image li img { margin: 0 auto; }
   margin: 5px 10px 5px 0;
 }
 
+/* --- Record --- */
+.record-nav .action-toolbar {
+  display: table;
+  margin: 0 auto 1rem;
+}
+
 /* --- Sidebar --- */
 .sidebar {
   .facet-group { margin-bottom: 5px; }

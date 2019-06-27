@@ -5,6 +5,14 @@
 }
 .group .match { margin-top: .5em; }
 
+.toolbar-btn,
+.record-nav .cart-add,
+.record-nav .cart-remove,
+.reset-filters-btn {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
 /* --- Search form --- */
 .searchForm_lookfor,
 .searchForm_type { border-color: $brand-primary; }
@@ -48,7 +56,6 @@
   }
 }
 
-.bulkActionButtons { padding-bottom: 1rem; }
 .top-facets .facet a { vertical-align: middle; }
 .result {
   padding: 1rem;

@@ -4,12 +4,13 @@
 }
 .list-group-item.title { color: $dark-gray; }
 .bulkActionButtons {
+  margin-bottom: 0;
   label {
     font-weight: 500;
     color: $mid-gray;
   }
 }
-.search-header.search-header { padding-top: 0; } // Duplicate to increase specificity
+.search-header.search-header { padding: 0; } // Duplicate to increase specificity
 .search-stats > h2 { margin: 0; } // No results padding
 
 .author-facets { font-size: $reduced-font-size; }
@@ -281,6 +282,7 @@
     }
   }
 }
+
 .reset-filters-btn {
   font-weight: bold;
   color: #fff;
