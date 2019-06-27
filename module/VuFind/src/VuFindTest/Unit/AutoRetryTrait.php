@@ -58,7 +58,7 @@ trait AutoRetryTrait
      *
      * @return void
      */
-    public function runBare()
+    public function runBare(): void
     {
         // Fetch retry count from annotations, but make sure it's a sane number;
         // default to a single attempt with no retries unless told otherwise.
