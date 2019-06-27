@@ -10,11 +10,11 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "7.0.8"
+            "php": "7.1"
         }
     },
     "require": {
-        "php": ">=7.0.8",
+        "php": ">=7.1",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
         "endroid/qr-code": "2.5.0",
