@@ -1,7 +1,7 @@
 <? if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <? endif; ?>
 &quot;<?=$this->title?><? if ($this->periodAfterTitle): ?>.<? endif ?>&quot; 
 <span style="font-style:italic;"><?=$this->escapeHtml($this->journal)?></span><!--Comment needed because otherwise this newline is interpreted as an unwanted space
---><? if (!empty($this->numberAndDate)): ?><?=$this->escapeHtml($this->numberAndDate)?><?if (!empty($this->pageRange)): ?><?=$this->yearPageSeparator?><? endif; ?>
+--><? if (!empty($this->numberAndDate)): ?><?=' ' . $this->escapeHtml($this->numberAndDate)?><?if (!empty($this->pageRange)): ?><?=$this->yearPageSeparator?><? endif; ?>
 <? if ($this->usePagePrefix) echo strstr($this->pageRange, '-') ? 'pp. ' : 'p. '; ?><? endif; ?>
 <?=$this->escapeHtml($this->pageRange)?>. 
 <? if (isset($this->doi)): ?>doi:<?=$this->escapeHtml($this->doi)?><? endif; ?>

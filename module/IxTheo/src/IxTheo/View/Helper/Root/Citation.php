@@ -209,7 +209,7 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
             if ($doi = $this->driver->tryMethod('getCleanDOI'))
                $mla['doi'] = $doi;
 
-            $urls =  $this->driver->tryMethod('getUrls');
+            $urls =  $this->driver->tryMethod('getURLs');
             if (!empty($urls)) {
                 // Choose first available URL
                 $url = $urls[0]['url'];
