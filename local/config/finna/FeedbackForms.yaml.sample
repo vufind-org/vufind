@@ -108,6 +108,7 @@ forms:
           - feedback_category_general
           - feedback_category_metadata
           - feedback_category_services
+          - feedback_category_accessibility
           - feedback_category_usability
           - feedback_category_technical
         label: Subject
