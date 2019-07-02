@@ -25,29 +25,69 @@
     }
 
     .notes {
+        display: inline-block;
         margin-top: 10px;
         .heading {
             font-weight: bold;
         }
         p.note-heading {
             margin: 0;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            i {
+                padding-right: 2px;
+            }
         }
         p.note-rows {
             margin-top: 3px;
         }
     }
 
-    .grid {
-        .notes {
-            p.note-heading {
-                margin: 0 4px;
-            }
-            p.note-rows {
-                margin: 0 4px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
+    .note-button {
+        position: absolute;
+        z-index: 6;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.7);
+        right: 5px;
+        top: 0px;
+        padding: 5px;
+        font-size: 1.5em;
+        border: 0;
+        &:focus {
+            outline: 0;
+        }
+        @media (max-width: @screen-sm) {
+            font-size: 2.0em;
+        }
+        &.note-show {
+            color: black;
+            background-color: rgba(255, 255, 255, 0.7);
+
+        }
+    }
+
+    .note-overlay {
+        position: absolute;
+        z-index: 4;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.7);
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+        .note-heading {
+            padding-top: 4px;
+            padding-bottom: 10px;
+        }
+        p {
+            display: inline-block;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        &.note-hide {
+            display: none;
+        }
+        &.note-show {
+            display: block;
         }
     }
 }

@@ -2,19 +2,20 @@
 <?php
   $list = $this->results->getListObject();
   $notes = $this->driver->getListNotes($list->id); if (!empty($notes)): ?>
-  <div class="notes">
-    <p class="note-heading">
-      <span class="heading"><?=$this->transEsc('Description')?>:</span>
-    </p>
-    <div class="note-rows">
-      <?php
-      $note = implode('', $notes);
-      if ($this->params->getView() == 'list') {
-        $note = $this->markdown()->toHtml($note);
-      }
-      echo $note
-      ?>
+  <?php
+    $note = implode('', $notes);
+    $note = $this->markdown()->toHtml($note);
+    $grid = $this->params->getView() === 'grid'; ?>
+    <?= $grid ? '<button class="note-button"><i class="fa fa-file-text-o" aria-hidden="true"></i></button>' : '' ?>
+    <div class="<?= $grid ? 'note-overlay note-hide' : '' ?>">
+      <div class="notes">
+        <p class="note-heading">
+          <span class="heading"><i class="fa fa-file-text-o" aria-hidden="true"></i> <?=$this->transEsc('Note')?>:</span>
+        </p>
+        <div class="note-rows">
+          <?php echo $note; ?>
+        </div>
+      </div>
     </div>
-  </div>
 <?php endif; ?>
 <!-- END of: finna - list/list-notes.phtml -->

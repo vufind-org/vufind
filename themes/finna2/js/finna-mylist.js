@@ -8,7 +8,7 @@ finna.myList = (function finnaMyList() {
   function onSaveCustomOrder(ev, data) {
     var url = '';
     data.forEach(function redirectToList(element) {
-      if (element.name == 'list_url') {
+      if (element.name === 'list_url') {
         url = element.value;
       }
     });
@@ -359,12 +359,59 @@ finna.myList = (function finnaMyList() {
       }
     });
 
+    // hide/show notes on images
+    $('.notes').each(function initNotes() {
+      var noteButton = $(this).closest('.grid-body').find('.note-button');
+      var noteOverlay = $(this).closest('.grid-body').find('.note-overlay');
+      noteButton.click(function onClick() {
+        adjustNoteOverlaySize(noteOverlay);
+        if (!noteOverlay.hasClass('note-show')) {
+          noteButton.addClass('note-show');
+          noteOverlay.addClass('note-show');
+        } else {
+          noteButton.removeClass('note-show');
+          noteOverlay.removeClass('note-show');
+        }
+      });
+    });
+    
+    function adjustNoteOverlaySize(noteOverlay) {
+      var container = noteOverlay.closest('.grid-body');
+      var coverContainer = container.find('.grid-image');
+      var imageWidth = coverContainer.width();
+      var imageHeight = Math.min(container.find('.grid-title').position().top, container.find('.recordcover-container').height());
+      noteOverlay.height(imageHeight);
+      noteOverlay.width(imageWidth);
+    }
+
+    function adjustOpenedNoteOverlays() {
+      $('.note-overlay.note-show').each(function adjustOverlay() {
+        adjustNoteOverlaySize($(this));
+      });
+    }
+
     // Prompt before leaving page if Ajax load is in progress
     window.onbeforeunload = function onBeforeUnloadWindow(/*e*/) {
       if ($('.list-save').length) {
         return VuFind.translate('loading') + '...';
       }
     };
+
+    // Adjust opened note overlays when Masonry layout has been updated
+    var masonryWrapper = $('.result-view-grid .masonry-wrapper');
+    function addMasonryLayoutListener() {
+      masonryWrapper.on('layoutComplete', function onMasonryLayoutComplete(/*event, items*/) {
+        adjustOpenedNoteOverlays();
+      });
+    }
+    if (finna.layout.getMasonryState()) {
+      addMasonryLayoutListener();
+    } else {
+      masonryWrapper.on('masonryInited', function onMasonryInited() {
+        adjustOpenedNoteOverlays();
+        addMasonryLayoutListener();
+      });
+    }
   }
 
   function initFavoriteOrderingFunctionality() {
