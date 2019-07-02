@@ -209,12 +209,15 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
             if ($doi = $this->driver->tryMethod('getCleanDOI'))
                $mla['doi'] = $doi;
 
-            $urls =  $this->driver->tryMethod('getUrls');
-            if (!empty($urls)) {
-                // Choose first available URL
-                $url = $urls[0]['url'];
-                if (!empty($url))
-                    $mla['url'] = $url;
+            $urls_and_types =  $this->driver->tryMethod('getURLsAndMaterialTypes');
+            if (!empty($urls_and_types)) {
+                // Choose first available Fulltext URL
+                foreach ($urls_and_types as $url => $type) {
+                    if ($type == "Free Access" && !empty($url)) {
+                        $mla['url'] = $url;
+                        break;
+                    }
+                }
             }
 
             $formatter = new \IntlDateFormatter($this->getTranslatorLocale(),
