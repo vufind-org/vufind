@@ -15,9 +15,15 @@
     "grunt-less-to-sass": "0.0.10",
     "grunt-sass": "^1.0.0",
     "jit-grunt": "^0.9.1",
-    "node-sass": "^4.11.0"
+    "node-sass": "^4.11.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "grunt-contrib-watch": "~0.6.1"
-  }
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
