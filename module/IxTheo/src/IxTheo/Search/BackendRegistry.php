@@ -7,6 +7,7 @@ class BackendRegistry extends \VuFind\Search\BackendRegistry {
         array $v3config = []
     ) {
         $this->factories['Solr'] = 'IxTheo\Search\Factory\SolrDefaultBackendFactory';
+        $this->factories['Search2'] = 'IxTheo\Search\Factory\Search2BackendFactory';
         parent::__construct($configOrContainerInstance, $v3config);
     }
 }
