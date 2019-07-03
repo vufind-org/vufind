@@ -16,7 +16,7 @@
 <h2><?=$this->transEsc('Sort manually') ?></h2>
 
 <?=$this->flashmessages()?>
-<form method="post" id="sort_form" name="sortForm" data-lightbox-onsubmit="finna.myList.onSaveCustomOrder">
+<form method="post" id="sort_form" name="sortForm" data-lightbox-onclose="finna.myList.onCustomOrderSaved">
   <input type="hidden" name="user_id" value="<?=$user->id ?>">
   <input type="hidden" name="list_id" value="<?=$list->id ?>">
   <input type="hidden" name="list_url" value="<?= $this->url('userList', ['id' => $list->id])?>">
@@ -39,10 +39,10 @@
 <?php
 $script = <<<EOT
 if ($.isReady) {
-  finna.myList.initFavoriteOrderingFunctionality();
+  finna.myList.initFavoriteOrderingFunctionality('{$this->listUrl}');
 } else {
   $(document).ready(function(){
-    finna.myList.initFavoriteOrderingFunctionality();
+    finna.myList.initFavoriteOrderingFunctionality('{$this->listUrl}');
   });
 }
 EOT;
