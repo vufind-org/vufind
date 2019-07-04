@@ -134,41 +134,20 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
-     * Get item paginator options that will be passed to the ILS driver.
-     *
-     * @return array Options for an item paginator with keys: page, itemLimit, offset
-     */
-    public function getPaginatorOptions()
-    {
-        $options = [];
-        $page = $this->getCurrentPage();
-        $itemLimit = $this->getHoldsItemLimit();
-        $offset = ($itemLimit && is_numeric($itemLimit))
-            ? ($page * $itemLimit) - $itemLimit
-            : null;
-        $options = ['page' => $page, 'itemLimit' => $itemLimit, 'offset' => $offset];
-        return $options;
-    }
-
-    /**
      * Getting a paginator for the items list.
      *
      * @param int $totalItemCount Total count of items for a bib record
+     * @param int $page           Currently selected page of the items paginator
+     * @param int $itemLimit      Max. no of items per page
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function getPaginator($totalItemCount)
+    public function getPaginator($totalItemCount, $page, $itemLimit)
     {
-        // The number of items that should be called with one single API call
-        $itemLimit = $this->getHoldsItemLimit();
-
-        // Return if a paginator is not needed
-        if ($totalItemCount < $itemLimit) {
+        // Return if a paginator is not needed or not supported ($itemLimit = null)
+        if (!$itemLimit || $totalItemCount < $itemLimit) {
             return;
         }
-
-        // The currently selected page in the paginator
-        $page = $this->getCurrentPage();
 
         // Create the paginator
         $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
@@ -181,30 +160,5 @@ class HoldingsILS extends AbstractBase
             ->setPageRange(10);
 
         return $paginator;
-    }
-
-    /**
-     * Get the currently selected page in the items paginator.
-     *
-     * @return \Zend\Stdlib\ParametersInterface|mixed
-     */
-    public function getCurrentPage()
-    {
-        $page = $this->getRequest()->getQuery('page') ?? 1;
-        return $page;
-    }
-
-    /**
-     * Get the max. number of items that should be displayed on the holdings ILS tab.
-     * The value is defined in the ILS config file.
-     *
-     * @return mixed Max. no. of items to be displayed on the holdings ILS tab or
-     *               null if not set
-     */
-    public function getHoldsItemLimit()
-    {
-        return !empty($this->catalog->getConfig('Holds')['itemLimit'])
-            ? $this->catalog->getConfig('Holds')['itemLimit']
-            : null;
     }
 }

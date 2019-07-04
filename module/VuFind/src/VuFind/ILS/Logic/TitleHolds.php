@@ -105,14 +105,13 @@ class TitleHolds
     /**
      * Public method for getting title level holds
      *
-     * @param string $id      A Bib ID
-     * @param array  $options Possible additional options
+     * @param string $id A Bib ID
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
      *
      * @todo Indicate login failure or ILS connection failure somehow?
      */
-    public function getHold($id, $options = null)
+    public function getHold($id)
     {
         // Get Holdings Data
         if ($this->catalog) {
@@ -135,8 +134,8 @@ class TitleHolds
                 } catch (ILSException $e) {
                     $patron = false;
                 }
-                $mode = $this->checkOverrideMode($id, $mode, $options);
-                return $this->generateHold($id, $mode, $patron, $options);
+                $mode = $this->checkOverrideMode($id, $mode);
+                return $this->generateHold($id, $mode, $patron);
             }
         }
         return false;
@@ -145,19 +144,18 @@ class TitleHolds
     /**
      * Get holdings for a particular record.
      *
-     * @param string $id      ID to retrieve
-     * @param array  $options Possible additional options
+     * @param string $id ID to retrieve
      *
      * @return array
      */
-    protected function getHoldings($id, $options = null)
+    protected function getHoldings($id)
     {
         // Cache results in a static array since the same holdings may be requested
         // multiple times during a run through the class:
         static $holdings = [];
 
         if (!isset($holdings[$id])) {
-            $holding = $this->catalog->getHolding($id, null, $options);
+            $holding = $this->catalog->getHolding($id, null);
             $holdings[$id] = $holding['holdings'];
         }
         return $holdings[$id];
@@ -167,18 +165,17 @@ class TitleHolds
      * Support method for getHold to determine if we should override the configured
      * holds mode.
      *
-     * @param string $id      Record ID to check
-     * @param string $mode    Current mode
-     * @param array  $options Possible additional options for getting holdings
+     * @param string $id   Record ID to check
+     * @param string $mode Current mode
      *
      * @return string
      */
-    protected function checkOverrideMode($id, $mode, $options = null)
+    protected function checkOverrideMode($id, $mode)
     {
         if (isset($this->config->Catalog->allow_holds_override)
             && $this->config->Catalog->allow_holds_override
         ) {
-            $holdings = $this->getHoldings($id, $options);
+            $holdings = $this->getHoldings($id);
 
             // For title holds, the most important override feature to handle
             // is to prevent displaying a link if all items are disabled.  We
@@ -226,15 +223,15 @@ class TitleHolds
     /**
      * Protected method for vufind (i.e. User) defined holds
      *
-     * @param string $id      A Bib ID
-     * @param string $type    The holds mode to be applied from:
-     * (disabled, always, availability, driver)
-     * @param array  $patron  Patron
-     * @param array  $options Possible additional options for getting holdings
+     * @param string $id     A Bib ID
+     * @param string $type   The holds mode to be applied from:
+     *                       (disabled, always, availability,
+     *                       driver)
+     * @param array  $patron Patron
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type, $patron, $options = null)
+    protected function generateHold($id, $type, $patron)
     {
         $any_available = false;
         $addlink = false;
@@ -253,7 +250,7 @@ class TitleHolds
             if ($type == 'always') {
                 $addlink = true;
             } elseif ($type == 'availability') {
-                $holdings = $this->getHoldings($id, $options);
+                $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if ($holding['availability']
                         && !in_array($holding['location'], $this->hideHoldings)

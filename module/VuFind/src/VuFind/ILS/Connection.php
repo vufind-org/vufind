@@ -111,6 +111,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $failing = false;
 
     /**
+     * Request object
+     *
+     * @var \Zend\Http\Request
+     */
+    protected $request;
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config              $config        Configuration
@@ -119,10 +126,11 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *                                                        config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
+     * @param \Zend\Http\Request               $request       Request object
      */
     public function __construct(\Zend\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
-        \VuFind\Config\PluginManager $configReader
+        \VuFind\Config\PluginManager $configReader, \Zend\Http\Request $request
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -133,6 +141,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->config = $config;
         $this->configReader = $configReader;
         $this->driverManager = $driverManager;
+        $this->request = $request;
     }
 
     /**
@@ -980,19 +989,34 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * Retrieve holdings from ILS driver class and normalize result array if needed.
      *
-     * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
-     * @param array  $options Possible additional options
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
      *
      * @return array           Array with holding data
      */
-    public function getHolding($id, $patron = null, $options = null)
+    public function getHolding($id, $patron = null)
     {
-        $result = $this->__call('getHolding', [$id, $patron, $options]);
+        // Get pagination options for holdings tab
+        $itemLimit = !empty($this->driver->getConfig('Holds')['itemLimit'])
+            ? $this->driver->getConfig('Holds')['itemLimit']
+            : null;
+        $page = $this->request->getQuery('page', 1);
+        $offset = ($itemLimit && is_numeric($itemLimit))
+            ? ($page * $itemLimit) - $itemLimit
+            : null;
+        $options = ['page' => $page, 'itemLimit' => $itemLimit, 'offset' => $offset];
 
-        return isset($result['total'])
-            ? $result
-            : ['total' => count($result), 'holdings' => $result];
+        // Get the holdings from the ILS
+        $holdings = $this->__call('getHolding', [$id, $patron, $options]);
+
+        // Create the output array and add information
+        $output = [];
+        $output['total'] = $holdings['total'] ?? count($holdings);
+        $output['holdings'] = $holdings['holdings'] ?? $holdings;
+        $output['page'] = $page;
+        $output['itemLimit'] = $itemLimit;
+
+        return $output;
     }
 
     /**

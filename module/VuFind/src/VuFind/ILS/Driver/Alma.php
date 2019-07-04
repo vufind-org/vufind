@@ -250,16 +250,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $results['total'] = 0;
         $results['holdings'] = [];
 
-        $copyCount = 0;
+        // Correct copy count in case of paging
+        $copyCount = $options['offset'] ?? 0;
         $username = $patron['cat_username'] ?? null;
 
-        // The path for the API call. We call "ALL" available items, but not at once.
-        // The "limit" tells the API how many items should be returned by the call
-        // at once (e. g. 10). The "offset" defines the range (e. g. get items 30 to
-        // 40). With these parameters we are able to use a paginator for paging
-        // through many items.
-        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?limit='
-            . $options['itemLimit'] . '&offset=' . $options['offset']
+        // Paging parameters for paginated API call. The "limit" tells the API how
+        // many items the call should return at once (e. g. 10). The "offset" defines
+        // the range (e. g. get items 30 to 40). With these parameters we are able to
+        // use a paginator for paging through many items.
+        $apiPagingParams = '';
+        if ($options['itemLimit']) {
+            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
+                . '&offset=' . urlencode($options['offset'] ?? 0);
+        }
+
+        // The path for the API call. We call "ALL" available items, but not at once
+        // as a pagination mechanism is used. If paging params are not set for some
+        // reason, the first 10 items are called which is the default API behaviour.
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
+            . $apiPagingParams
             . '&order_by=library,location,enum_a,enum_b&direction=desc';
 
         if ($items = $this->makeRequest($itemsPath)) {

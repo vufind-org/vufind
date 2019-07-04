@@ -102,14 +102,12 @@ trait IlsAwareTrait
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
-     * @param array $options Possible additional options
-     *
      * @return array
      */
-    public function getRealTimeHoldings($options = null)
+    public function getRealTimeHoldings()
     {
         return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->tryMethod('getConsortialIDs'), $options
+            $this->getUniqueID(), $this->tryMethod('getConsortialIDs')
         ) : [];
     }
 
@@ -135,19 +133,16 @@ trait IlsAwareTrait
     /**
      * Get a link for placing a title level hold.
      *
-     * @param array $options Possible additional options
-     *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold($options = null)
+    public function getRealTimeTitleHold()
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
             if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
                     return $this->titleHoldLogic->getHold(
-                        $this->getUniqueID(),
-                        $options
+                        $this->getUniqueID()
                     );
                 }
             }

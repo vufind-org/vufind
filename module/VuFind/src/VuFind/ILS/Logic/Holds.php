@@ -173,14 +173,13 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id      A Bib ID
-     * @param array  $ids     A list of Source Records (if catalog is for a
-     *                        consortium)
-     * @param array  $options Possible additional options
+     * @param string $id  A Bib ID
+     * @param array  $ids A list of Source Records (if catalog is for a
+     *                    consortium)
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = null)
+    public function getHoldings($id, $ids = null)
     {
         $holdings = [];
 
@@ -206,9 +205,7 @@ class Holds
                     $id, $patron ? $patron : null, $ids
                 );
             } else {
-                $result = $this->catalog->getHolding(
-                    $id, $patron ? $patron : null, $options
-                );
+                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
             }
 
             $grb = 'getRequestBlocks'; // use variable to shorten line below:
@@ -236,6 +233,8 @@ class Holds
         return [
             'blocks' => $blocks,
             'total' => $result['total'],
+            'page' => $result['page'],
+            'itemLimit' => $result['itemLimit'],
             'holdings' => $this->formatHoldings($holdings)
         ];
     }

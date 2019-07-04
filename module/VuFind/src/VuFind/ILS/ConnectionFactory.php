@@ -65,7 +65,8 @@ class ConnectionFactory implements FactoryInterface
         $catalog = new $requestedName(
             $configManager->get('config')->Catalog,
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get('Request')
         );
         return $catalog->setHoldConfig(
             $container->get(\VuFind\ILS\HoldSettings::class)
