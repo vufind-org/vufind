@@ -123,9 +123,12 @@ class AbstractSolrSearch extends AbstractSearch
     /**
      * Process the facets to be used as limits on the Advanced Search screen.
      *
-     * @param array  $facetList          The advanced facet values
-     * @param object $searchObject       Saved search object (false if none)
-     * @param array  $hierarchicalFacets Hierarchical facet list (if any)
+     * @param array  $facetList                     The advanced facet values
+     * @param object $searchObject                  Saved search object
+     *                                              (false if none)
+     * @param array  $hierarchicalFacets            Hierarchical facet list (if any)
+     * @param array  $hierarchicalFacetsSortOptions Hierarchical facet sort options
+     *                                              (if any)
      *
      * @return array               Sorted facets, with selected values flagged.
      */
