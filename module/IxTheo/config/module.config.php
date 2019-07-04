@@ -115,6 +115,7 @@ $recordRoutes = [
     // needs to be registered again even if already registered in parent module,
     // for the nonTabRecordActions added in \IxTheo\Route\RouteGenerator
     'record' => 'Record',
+    'search2record' => 'Search2Record',
 ];
 $dynamicRoutes = [];
 $staticRoutes = [
