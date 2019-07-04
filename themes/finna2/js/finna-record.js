@@ -198,16 +198,7 @@ finna.record = (function finnaRecord() {
     var tabid = accordion.find('.accordion-toggle a').data('tab');
     var $recordTabs = $('.record-tabs');
     var $tabContent = $recordTabs.find('.tab-content');
-    if (!initialLoad && accordion.hasClass('active')) {
-      $('.record-accordions').find('.accordion.active').removeClass('active');
-      // Hide tab from accordion
-      $recordTabs.find('.tab-pane.active').removeClass('active');
-      // Deactivate any tab since it can't follow the state of a collapsed accordion
-      $recordTabs.find('.nav-tabs li.active').removeClass('active');
-      removeHashFromLocation();
-      // Move tab content out from accordions
-      $tabContent.insertAfter($('.record-accordions'));
-    } else {
+    if (initialLoad || !accordion.hasClass('active')) {
       // Move tab content under the correct accordion toggle
       $tabContent.insertAfter(accordion);
       if (accordion.hasClass('noajax') && !$recordTabs.find('.' + tabid + '-tab').length) {

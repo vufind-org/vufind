@@ -265,6 +265,7 @@ finna.feed = (function finnaFeed() {
   }
 
   var my = {
+    loadFeed: loadFeed,
     loadFeedFromUrl: loadFeedFromUrl,
     init: function init() {
       initComponents();

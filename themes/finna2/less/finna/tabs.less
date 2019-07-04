@@ -226,6 +226,54 @@
     }
   }
 }
+// RSS-feed tabs
+.feed-tabs .nav-tabs {
+  border-bottom: 1px solid @nav-tabs-border-color;
+  > li {
+    // Make the list-items overlay the bottom border
+    margin-bottom: -1px;
+    font-size: 1.1em;
+    font-weight: 500;
+    background-color: transparent;
+    color: @nav-tabs-text-color;
+    margin-right: 3px;
+    padding: .6em .5em;
+    border: 1px solid transparent;
+    border-radius: 0;
+    transition: none;
+    border-top: 4px solid transparent;
+    cursor: pointer;
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+      i {
+        display: block;
+        text-align: center;
+      }
+    }
+    @media (max-width: @screen-sm-max) {
+      font-size: .9em;
+    }
+    &:hover {
+      color: @nav-tabs-link-hover-color;
+      border-color: transparent;
+    }
+
+    // Active state, and its :hover to override normal :hover
+    &.active {
+      cursor: initial;
+      &,
+      &:hover,
+      &:focus {
+        background-color: @body-bg;
+        border: 1px solid @nav-tabs-border-color;
+        border-top: 4px solid @nav-tabs-active-color;
+        border-bottom-color: transparent;
+        transition: border 0.05s linear;
+        color: @text-color;
+      }
+    }
+  }
+}
+
 
 .useraccount-nav.nav-tabs {
   border-bottom: none;

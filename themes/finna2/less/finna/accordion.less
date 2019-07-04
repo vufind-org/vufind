@@ -1,5 +1,6 @@
 .accordion {
   list-style-type: none;
+  cursor: pointer;
   .accordion-toggle {
     padding: 15px 10px;
     margin-bottom: 5px;
@@ -28,6 +29,7 @@
     text-overflow: ellipsis;
     line-height: @content-headings-line-height;
     width: 100%;
+    cursor: inherit;
     .title {
       flex: 1;
       font-size: @font-size-h2;
@@ -52,10 +54,11 @@
     }
   }
   &.active {
+    cursor: default;
     .accordion-toggle {
       border-left: 4px solid @action-link-color;
       .icon:after {
-        content: "\e916";
+        display: none;
       }
       @media print {
         border-left: none;
@@ -81,6 +84,82 @@
   .tab-content {
     .truncate-field {
       display: block;
+    }
+  }
+}
+// RSS-feed accordions
+.feed-accordions {
+  .tab-content {
+    margin-bottom: 0;
+  }
+  .accordion {
+    list-style-type: none;
+    cursor: pointer;
+    padding: 15px 10px;
+    margin-bottom: 5px;
+    font-size: 1em;
+    font-weight: 500;
+    background-color: @gray-ultralight;
+    border-top: 1px solid @gray-lighter;
+    border-right: 1px solid @gray-lighter;
+    border-bottom: 1px solid @gray-lighter;
+    border-left: 4px solid @gray-lighter;
+    @media(min-width: @screen-md) {
+      display: none;
+    }
+    @media print {
+      border: none;
+      i {
+        display: none;
+      }
+    }
+    color: @text-color;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: @content-headings-line-height;
+    width: 100%;
+    .title {
+      flex: 1;
+      font-size: @font-size-h2;
+    }
+    .icon:after {
+      font-family: icomoon;
+      font-size: 24px;
+      content: "\e91a";
+      color: @action-link-color;
+      flex: 1;
+      font-style: normal;
+    }
+    
+    &.accordion-details{
+      @media(max-width: @screen-sm-max) {
+        display: @accordion-details-display;
+      }
+    }
+    @media print {
+      &:not(.active) {
+        display: none;
+      }
+    }
+    &.active {
+      cursor: default;
+      
+      border-left: 4px solid @action-link-color;
+      .icon:after {
+        display: none;
+      }
+      @media print {
+        border-left: none;
+      }
+      
+      @media (max-width: @screen-sm-max) {
+        .tab-content {
+          display: block;
+          margin: 10px 0;
+        }
+      }
     }
   }
 }

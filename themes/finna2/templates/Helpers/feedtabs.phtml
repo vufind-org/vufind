@@ -1,0 +1,67 @@
+<!-- START of: finna - Helpers/feedtabs.phtml -->
+<div class="feed-tabs" id="feed-tabs-<?=$this->escapeHtmlAttr($this->id)?>">
+  <?php if (count($this->feedIds) > 3): ?>
+  <div class="tabs-responsive">
+  <?php endif; ?>
+    <ul class="feedTabs nav nav-tabs visible-md visible-lg" role="tablist">
+      <?php $tabNames = []; ?>
+      <?php foreach ($this->feedIds as $desc => $feed): ?>
+        <?php
+          $tabName = preg_replace("/\W/", "-", strtolower($feed));
+          $tabNames[] = $tabName;
+          $tabClasses = [ 'nav-item', 'feed-tab', $tabName ];
+          $isActive = 0 === strcasecmp($this->active, $feed);
+          if ($isActive) {
+              $tabClasses[] = 'active initial-active';
+          }
+          $tabId = $this->id . '-' . $feed;
+        ?>
+      <li class="<?=$this->escapeHtmlAttr(implode(' ', $tabClasses))?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"
+          aria-label="<?=$this->escapeHtmlAttr($this->transEsc($desc))?>"
+          id="<?=$this->escapeHtmlAttr($tabId)?>-tab"
+          role="tab"
+          tabindex="0"
+          data-tab="<?=$this->escapeHtmlAttr($feed)?>"
+          aria-selected="<?= $isActive ? 'true' : 'false' ?>"><?= $this->transEsc($desc)?>
+      </li>
+      <?php endforeach; ?>
+    </ul>
+  <?php if (count($this->feedIds) > 3): ?>
+  </div>
+  <?php endif; ?>
+
+  <div class="feed-accordions" role="tablist">
+    <?php $i = 0; foreach ($this->feedIds as $desc => $feed): ?>
+      <?php
+        $classes = ['accordion', 'accordion-' . $tabNames[$i++]];
+        $isActive = 0 === strcasecmp($this->active, $feed);
+        if ($isActive) {
+          $classes[] = 'active initial-active';
+        }
+        $tabId = $this->id . '-' . $feed;
+      ?>
+      <div class="<?=$this->escapeHtmlAttr(implode(' ', $classes))?>"
+           data-tab="<?=$this->escapeHtmlAttr($feed)?>"
+           role="tab"
+           tabindex="0"
+           aria-selected="<?= $isActive ? 'true' : 'false' ?>">
+          <span class="title"><?=$this->transEsc($desc)?></span>
+          <i class="icon"></i>
+      </div>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="tab-content" id="tab-content-<?=$this->escapeHtmlAttr($this->id)?>">
+    <div class="feed-container" data-init="0"></div>
+  </div>
+</div>
+<?php
+$this->headScript()->appendFile("finna-feed-tabs.js");
+$js = <<<JS
+$(document).ready(function(){
+  finna.feedTabs.init("feed-tabs-{$this->id}");
+});
+JS;
+$this->headScript()->appendScript($js);
+?>
+<!-- END of: finna - Helpers/feedtabs.phtml -->
