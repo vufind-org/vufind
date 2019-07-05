@@ -1108,7 +1108,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id)['holdings'];
+        $idList = [$id];
+        $status = $this->getStatuses($idList);
+        return current($status);
     }
 
     /**
