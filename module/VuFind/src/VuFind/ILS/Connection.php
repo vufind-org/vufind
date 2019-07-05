@@ -121,16 +121,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Constructor
      *
      * @param \Zend\Config\Config              $config        Configuration
-     *                                                        representing the
-     *                                                        [Catalog] section of
-     *                                                        config.ini
+     * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
      * @param \Zend\Http\Request               $request       Request object
      */
     public function __construct(\Zend\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
-        \VuFind\Config\PluginManager $configReader, \Zend\Http\Request $request
+        \VuFind\Config\PluginManager $configReader,
+        \Zend\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -219,7 +218,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Get access to the driver object.
      *
      * @param bool $init Should we initialize the driver (if necessary), or load it
-     *                   "as-is"?
+     * "as-is"?
      *
      * @throws \Exception
      * @return object
@@ -436,7 +435,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * retrieval requests.
      *
      * @param array $functionConfig The storage retrieval request configuration
-     *                              values
+     * values
      * @param array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
@@ -800,7 +799,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * This is responsible for returning the offline mode
      *
      * @param bool $healthCheck Perform a health check in addition to consulting
-     *                          the ILS status?
+     * the ILS status?
      *
      * @return string|bool "ils-offline" for systems where the main ILS is offline,
      * "ils-none" for systems which do not use an ILS, false for online systems.
@@ -992,15 +991,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return array           Array with holding data
+     * @return array Array with holding data
      */
     public function getHolding($id, $patron = null)
     {
         // Get pagination options for holdings tab
-        $itemLimit = !empty($this->driver->getConfig('Holds')['itemLimit'])
-            ? $this->driver->getConfig('Holds')['itemLimit']
-            : null;
-        $page = $this->request->getQuery('page', 1);
+        $holdsConfig = $this->driver->getConfig('Holds');
+        $itemLimit = !empty($holdsConfig['itemLimit'])
+            ? $holdsConfig['itemLimit'] : null;
+        $page = $this->request ? $this->request->getQuery('page', 1) : 1;
         $offset = ($itemLimit && is_numeric($itemLimit))
             ? ($page * $itemLimit) - $itemLimit
             : null;
