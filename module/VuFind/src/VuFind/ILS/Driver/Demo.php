@@ -585,7 +585,7 @@ class Demo extends AbstractBase
         $holding = [];
         $records = rand() % 15;
         for ($i = 1; $i <= $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i, $patron);
+            $holding[] = $this->setStatus($id, [], true, $patron);
         }
         return $holding;
     }
@@ -598,16 +598,17 @@ class Demo extends AbstractBase
      *      number, barcode, availability, status, location,
      *      reserve, callnumber, duedate, is_holdable, and addLink
      * @param bool  $append  add another record or replace current record
+     * @param array  patron  Patron data
      *
      * @return array
      */
-    protected function setStatus($id, $holding = [], $append = true)
+    protected function setStatus($id, $holding = [], $append = true, $patron = null)
     {
         $id = (string)$id;
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         $i = isset($session->statuses[$id])
             ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i), $holding);
+        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
 
         // if statuses is already stored
         if ($session->statuses) {
