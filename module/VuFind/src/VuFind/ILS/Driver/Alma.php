@@ -241,7 +241,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * availability, status, location, reserve, callnumber, duedate, returnDate,
      * number, barcode, item_notes, item_id, holding_id, addLink, description
      */
-    public function getHolding($id, $patron = null, $options = null)
+    public function getHolding($id, $patron = null, array $options = [])
     {
         // Prepare result array with default values. If no API result can be received
         // these will be returned.
@@ -257,7 +257,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // the range (e. g. get items 30 to 40). With these parameters we are able to
         // use a paginator for paging through many items.
         $apiPagingParams = '';
-        if ($options['itemLimit']) {
+        if ($options['itemLimit'] ?? null) {
             $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
                 . '&offset=' . urlencode($options['offset'] ?? 0);
         }
