@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class BasicTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Test that the home page is available.
      *
@@ -64,7 +67,7 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->clickCss($page, '.btn.btn-primary');
         $this->snooze();
 
         // Check for sample driver location/call number in output (this will
@@ -95,8 +98,8 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, 'footer .help-link')->getHTML()
         );
         // Change the language:
-        $this->findCss($page, '.language.dropdown')->click();
-        $this->findCss($page, '.language.dropdown li:not(.active) a')->click();
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li:not(.active) a');
         $this->snooze();
         // Check footer help-link
         $this->assertNotEquals(
@@ -116,10 +119,10 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         // Open Search tips lightbox
-        $this->findCss($page, 'footer .help-link')->click();
+        $this->clickCss($page, 'footer .help-link');
         $this->snooze();
         // Click a jump link
-        $this->findCss($page, '.modal-body .HelpMenu a')->click();
+        $this->clickCss($page, '.modal-body .HelpMenu a');
         // Make sure we're still in the Search Tips
         $this->snooze();
         $this->findCss($page, '.modal-body .HelpMenu');
