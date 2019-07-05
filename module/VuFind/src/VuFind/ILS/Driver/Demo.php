@@ -526,6 +526,16 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get suppressed records.
+     *
+     * @return array ID numbers of suppressed records in the system.
+     */
+    public function getSuppressedRecords()
+    {
+        return $this->config['Records']['suppressed'] ?? [];
+    }
+
+    /**
      * Get the session container (constructing it on demand if not already present)
      *
      * @param string $patron ID of current patron
