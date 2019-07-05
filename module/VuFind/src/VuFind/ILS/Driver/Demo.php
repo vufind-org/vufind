@@ -598,7 +598,7 @@ class Demo extends AbstractBase
      *      number, barcode, availability, status, location,
      *      reserve, callnumber, duedate, is_holdable, and addLink
      * @param bool  $append  add another record or replace current record
-     * @param array  patron  Patron data
+     * @param array $patron  Patron data
      *
      * @return array
      */
