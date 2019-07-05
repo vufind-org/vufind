@@ -746,7 +746,11 @@ finna.imagePaginator = (function imagePaginator() {
    * Function to set image dimensions to download image link
    */
   FinnaPaginator.prototype.setDimensions = function setDimensions() {
-    var openLink = $('.open-link a').attr('href');
+    var popupHidden = $('.mfp-content').length === 0;
+    var container = popupHidden
+      ? $('.image-details-container').not('.hidden')
+      : $('.image-information-holder');
+    var openLink = container.find('.open-link a').attr('href');
     if (typeof openLink !== 'undefined') {
       var img = new Image();
       img.src = openLink;
@@ -757,7 +761,7 @@ finna.imagePaginator = (function imagePaginator() {
           $('.open-link').hide();
         }
         else {
-          $('.open-link .image-dimensions').text( '(' + width + ' X ' + height + ')')
+          container.find('.open-link .image-dimensions').text( '(' + width + ' X ' + height + ')')
         }
       }
     }
