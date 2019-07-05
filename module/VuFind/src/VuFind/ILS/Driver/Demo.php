@@ -651,13 +651,11 @@ class Demo extends AbstractBase
      *
      * @param string $id      The record id to retrieve the holdings for
      * @param array  $patron  Patron data
-     * @param array  $options Extra options (not currently used)
+     * @param array  $options Extra options
      *
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * @return array On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($id, array $patron = null, array $options = [])
     {
@@ -689,8 +687,26 @@ class Demo extends AbstractBase
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
+        // Slice out a chunk if pagination is enabled.
+        $slice = null;
+        if ($options['itemLimit'] ?? null) {
+            // For sensible pagination, we need to sort by location:
+            $callback = function ($a, $b) {
+                return strcmp($a['location'], $b['location']);
+            };
+            usort($status, $callback);
+            $slice = array_slice(
+                $status,
+                $options['offset'] ?? 0,
+                $options['itemLimit']
+            );
+        }
+
         // Send back final value:
-        return $status;
+        return [
+            'total' => count($status),
+            'holdings' => $slice ?: $status,
+        ];
     }
 
     /**
@@ -2243,6 +2259,7 @@ class Demo extends AbstractBase
                 'extraHoldFields' =>
                     'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',
+                'itemLimit' => $this->config['Holds']['itemLimit'] ?? null,
             ];
         }
         if ($function == 'StorageRetrievalRequests'
