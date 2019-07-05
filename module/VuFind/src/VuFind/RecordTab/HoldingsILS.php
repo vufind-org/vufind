@@ -57,27 +57,26 @@ class HoldingsILS extends AbstractBase
     /**
      * Whether the holdings tab should be hidden when empty or not.
      *
-     * @var boolean
+     * @var bool
      */
-    protected $hideHoldingsTabWhenEmpty;
+    protected $hideWhenEmpty;
 
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog                  ILS connection to
-     * use to check for holdings before displaying the tab; set to null if no check
+     * @param \VuFind\ILS\Connection|bool $catalog       ILS connection to use to
+     * check for holdings before displaying the tab; may be set to null if no check
      * is needed.
-     * @param string                      $template                 Holdings template
-     * to use
-     * @param boolean                     $hideHoldingsTabWhenEmpty Whether the
+     * @param string                      $template      Holdings template to use
+     * @param bool                        $hideWhenEmpty Whether the
      * holdings tab should be hidden when empty or not
      */
     public function __construct(Connection $catalog = null, $template = null,
-        $hideHoldingsTabWhenEmpty = false
+        $hideWhenEmpty = false
     ) {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
-        $this->hideHoldingsTabWhenEmpty = $hideHoldingsTabWhenEmpty;
+        $this->hideWhenEmpty = $hideWhenEmpty;
     }
 
     /**
@@ -117,10 +116,8 @@ class HoldingsILS extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->catalog && $this->hideHoldingsTabWhenEmpty) {
-            return $this->catalog->hasHoldings($this->driver->getUniqueID());
-        }
-        return true;
+        return ($this->catalog && $this->hideWhenEmpty)
+            ? $this->catalog->hasHoldings($this->driver->getUniqueID()) : true;
     }
 
     /**
