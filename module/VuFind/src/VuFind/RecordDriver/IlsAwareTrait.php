@@ -141,9 +141,7 @@ trait IlsAwareTrait
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
             if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold(
-                        $this->getUniqueID()
-                    );
+                    return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
             }
         }

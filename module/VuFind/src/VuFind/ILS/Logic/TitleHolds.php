@@ -225,8 +225,7 @@ class TitleHolds
      *
      * @param string $id     A Bib ID
      * @param string $type   The holds mode to be applied from:
-     *                       (disabled, always, availability,
-     *                       driver)
+     * (disabled, always, availability, driver)
      * @param array  $patron Patron
      *
      * @return mixed A url on success, boolean false on failure

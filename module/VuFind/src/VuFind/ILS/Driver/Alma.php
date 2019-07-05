@@ -235,13 +235,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array  $patron  Patron data
      * @param array  $options Additional options
      *
-     * @return array          On success an array with the key "total" containing the
-     *                        total number of items for the given bib id, and the key
-     *                        "holdings" containing an array of holding information
-     *                        each one with these keys: id, source, availability,
-     *                        status, location, reserve, callnumber, duedate,
-     *                        returnDate, number, barcode, item_notes, item_id,
-     *                        holding_id, addLink, description
+     * @return array On success an array with the key "total" containing the total
+     * number of items for the given bib id, and the key "holdings" containing an
+     * array of holding information each one with these keys: id, source,
+     * availability, status, location, reserve, callnumber, duedate, returnDate,
+     * number, barcode, item_notes, item_id, holding_id, addLink, description
      */
     public function getHolding($id, $patron = null, $options = null)
     {

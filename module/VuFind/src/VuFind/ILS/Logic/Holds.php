@@ -174,8 +174,7 @@ class Holds
      * holding method to call
      *
      * @param string $id  A Bib ID
-     * @param array  $ids A list of Source Records (if catalog is for a
-     *                    consortium)
+     * @param array  $ids A list of Source Records (if catalog is for a consortium)
      *
      * @return array A sorted results set
      */
@@ -306,7 +305,7 @@ class Holds
      *
      * @param array  $result     A result set returned from a driver
      * @param string $type       The holds mode to be applied from:
-     *                           (all, holds, recalls, availability)
+     * (all, holds, recalls, availability)
      * @param array  $holdConfig Hold configuration from driver
      *
      * @return array A sorted results set
