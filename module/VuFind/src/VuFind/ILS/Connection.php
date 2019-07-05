@@ -988,12 +988,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * Retrieve holdings from ILS driver class and normalize result array if needed.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
      *
      * @return array Array with holding data
      */
-    public function getHolding($id, $patron = null)
+    public function getHolding($id, $patron = null, $options = [])
     {
         // Get pagination options for holdings tab
         $holdsConfig = $this->driver->getConfig('Holds');
@@ -1003,19 +1004,19 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $offset = ($itemLimit && is_numeric($itemLimit))
             ? ($page * $itemLimit) - $itemLimit
             : null;
-        $options = ['page' => $page, 'itemLimit' => $itemLimit, 'offset' => $offset];
+        $defaultOptions = compact('page', 'itemLimit', 'offset');
+        $finalOptions = $options + $defaultOptions;
 
         // Get the holdings from the ILS
-        $holdings = $this->__call('getHolding', [$id, $patron, $options]);
+        $holdings = $this->__call('getHolding', [$id, $patron, $finalOptions]);
 
-        // Create the output array and add information
-        $output = [];
-        $output['total'] = $holdings['total'] ?? count($holdings);
-        $output['holdings'] = $holdings['holdings'] ?? $holdings;
-        $output['page'] = $page;
-        $output['itemLimit'] = $itemLimit;
-
-        return $output;
+        // Return all the necessary details:
+        return [
+            'total' => $holdings['total'] ?? count($holdings),
+            'holdings' => $holdings['holdings'] ?? $holdings,
+            'page' => $finalOptions['page'],
+            'itemLimit' => $finalOptions['itemLimit'],
+        ];
     }
 
     /**
