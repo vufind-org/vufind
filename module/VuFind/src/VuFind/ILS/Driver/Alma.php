@@ -231,116 +231,132 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
      *
-     * @return array         On success an associative array with the following keys:
-     *                       id, source, availability (boolean), status, location,
-     *                       reserve, callnumber, duedate, returnDate, number,
-     *                       barcode, item_notes, item_id, holding_id, addLink.
+     * @return array On success an array with the key "total" containing the total
+     * number of items for the given bib id, and the key "holdings" containing an
+     * array of holding information each one with these keys: id, source,
+     * availability, status, location, reserve, callnumber, duedate, returnDate,
+     * number, barcode, item_notes, item_id, holding_id, addLink, description
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, $patron = null, array $options = [])
     {
-        $results = [];
-        $copyCount = 0;
+        // Prepare result array with default values. If no API result can be received
+        // these will be returned.
+        $results['total'] = 0;
+        $results['holdings'] = [];
+
+        // Correct copy count in case of paging
+        $copyCount = $options['offset'] ?? 0;
         $username = $patron['cat_username'] ?? null;
-        $bibPath = '/bibs/' . urlencode($id) . '/holdings';
-        if ($holdings = $this->makeRequest($bibPath)) {
-            foreach ($holdings->holding as $holding) {
-                $holdingId = (string)$holding->holding_id;
-                $locationCode = (string)$holding->location;
 
-                $itemPath = $bibPath . '/' . urlencode($holdingId) . '/items';
-                if ($currentItems = $this->makeRequest($itemPath)) {
-                    foreach ($currentItems->item as $item) {
-                        $itemId = (string)$item->item_data->pid;
-                        $barcode = (string)$item->item_data->barcode;
-                        $processType = (string)$item->item_data->process_type;
-                        $itemNotes = null;
-                        if ($item->item_data->public_note != null
-                            && !empty($item->item_data->public_note)
-                        ) {
-                            $itemNotes = [(string)$item->item_data->public_note];
-                        }
-                        $requested = ((string)$item->item_data->requested == 'false')
-                            ? false
-                            : true;
+        // Paging parameters for paginated API call. The "limit" tells the API how
+        // many items the call should return at once (e. g. 10). The "offset" defines
+        // the range (e. g. get items 30 to 40). With these parameters we are able to
+        // use a paginator for paging through many items.
+        $apiPagingParams = '';
+        if ($options['itemLimit'] ?? null) {
+            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
+                . '&offset=' . urlencode($options['offset'] ?? 0);
+        }
 
-                        $number = ++$copyCount;
-                        $description = null;
-                        if ($item->item_data->description != null
-                            && !empty($item->item_data->description)
-                        ) {
-                            $number = (string)$item->item_data->description;
-                            $description = (string)$item->item_data->description;
-                        }
+        // The path for the API call. We call "ALL" available items, but not at once
+        // as a pagination mechanism is used. If paging params are not set for some
+        // reason, the first 10 items are called which is the default API behaviour.
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
+            . $apiPagingParams
+            . '&order_by=library,location,enum_a,enum_b&direction=desc';
 
-                        // For some data we need to do additional API calls
-                        // due to the Alma API architecture
-                        $duedate = ($requested) ? 'requested' : null;
-                        if ($processType == 'LOAN' && !$requested) {
-                            $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
-                                . urlencode($holdingId) . '/items/'
-                                . urlencode($itemId) . '/loans';
-                            $loanData = $this->makeRequest($loanDataPath);
-                            $loan = $loanData->item_loan;
-                            $duedate = $this->parseDate((string)$loan->due_date);
-                        }
+        if ($items = $this->makeRequest($itemsPath)) {
+            // Get the total number of items returned from the API call and set it to
+            // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+            // the items paginator.
+            $results['total'] = (int)$items->attributes()->total_record_count;
 
-                        // Calculate request options if a user is logged-in
-                        if ($username) {
+            foreach ($items->item as $item) {
+                $number = ++$copyCount;
+                $holdingId = (string)$item->holding_data->holding_id;
+                $itemId = (string)$item->item_data->pid;
+                $processType = (string)$item->item_data->process_type;
+                $barcode = (string)$item->item_data->barcode;
+                $requested = ((string)$item->item_data->requested == 'false')
+                             ? false
+                             : true;
 
-                            // Call the request-options API for the logged-in user
-                            $requestOptionsPath = '/bibs/' . urlencode($id)
-                                . '/holdings/' . urlencode($holdingId) . '/items/'
-                                . urlencode($itemId) . '/request-options?user_id='
-                                . urlencode($username);
-
-                            // Make the API request
-                            $requestOptions = $this->makeRequest(
-                                $requestOptionsPath
-                            );
-
-                            // Get all possible request types from the API answer
-                            $requestTypes = $requestOptions->xpath(
-                                '/request_options/request_option//type'
-                            );
-
-                            // Add all allowed request types to an array
-                            $requestTypesArr = [];
-                            foreach ($requestTypes as $requestType) {
-                                $requestTypesArr[] = (string)$requestType;
-                            }
-
-                            // If HOLD is an allowed request type, add the link for
-                            // placing a hold
-                            $addLink = in_array('HOLD', $requestTypesArr);
-                        }
-
-                        $results[] = [
-                            'id' => $id,
-                            'source' => 'Solr',
-                            'availability' => $this->getAvailabilityFromItem($item),
-                            'status' => (string)$item
-                                ->item_data
-                                ->base_status[0]
-                                ->attributes()['desc'],
-                            'location' => $locationCode,
-                            'reserve' => 'N',   // TODO: support reserve status
-                            'callnumber' => (string)$item->holding_data->call_number,
-                            'duedate' => $duedate,
-                            'returnDate' => false, // TODO: support recent returns
-                            'number' => $number,//++$copyCount,
-                            'barcode' => empty($barcode) ? 'n/a' : $barcode,
-                            'item_notes' => $itemNotes,
-                            'item_id' => $itemId,
-                            'holding_id' => $holdingId,
-                            'addLink' => $addLink ?? false,
-                               // For Alma title-level hold requests
-                            'description' => $description
-                        ];
-                    }
+                // For some data we need to do additional API calls due to the Alma
+                // API architecture.
+                $duedate = ($requested) ? 'requested' : null;
+                if ($processType === 'LOAN' && !$requested) {
+                    $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
+                        . urlencode($holdingId) . '/items/'
+                        . urlencode($itemId) . '/loans';
+                    $loanData = $this->makeRequest($loanDataPath);
+                    $loan = $loanData->item_loan;
+                    $duedate = $this->parseDate((string)$loan->due_date);
                 }
+
+                // Calculate request options if a user is logged-in
+                if ($username) {
+                    // Call the request-options API for the logged-in user
+                    $requestOptionsPath = '/bibs/' . urlencode($id)
+                       . '/holdings/' . urlencode($holdingId) . '/items/'
+                       . urlencode($itemId) . '/request-options?user_id='
+                       . urlencode($username);
+
+                    // Make the API request
+                    $requestOptions = $this->makeRequest($requestOptionsPath);
+
+                    // Get all possible request types from the API answer
+                    $requestTypes = $requestOptions->xpath(
+                        '/request_options/request_option//type'
+                    );
+
+                    // Add all allowed request types to an array
+                    $requestTypesArr = [];
+                    foreach ($requestTypes as $requestType) {
+                        $requestTypesArr[] = (string)$requestType;
+                    }
+
+                    // If HOLD is an allowed request type, add the link for placing
+                    // a hold
+                    $addLink = in_array('HOLD', $requestTypesArr);
+                }
+
+                if ($item->item_data->public_note != null
+                    && !empty($item->item_data->public_note)
+                ) {
+                    $itemNotes = [(string)$item->item_data->public_note];
+                }
+
+                if ($item->item_data->description != null
+                    && !empty($item->item_data->description)
+                ) {
+                    $number = (string)$item->item_data->description;
+                    $description = (string)$item->item_data->description;
+                }
+
+                $results['holdings'][] = [
+                    'id' => $id,
+                    'source' => 'Solr',
+                    'availability' => $this->getAvailabilityFromItem($item),
+                    'status' => (string)$item->item_data->base_status[0]
+                        ->attributes()['desc'],
+                    'location' => (string)$item->item_data->location,
+                    'reserve' => 'N',   // TODO: support reserve status
+                    'callnumber' => (string)$item->holding_data->call_number,
+                    'duedate' => $duedate,
+                    'returnDate' => false, // TODO: support recent returns
+                    'number' => $number,
+                    'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                    'item_notes' => $itemNotes ?? null,
+                    'item_id' => $itemId,
+                    'holding_id' => $holdingId,
+                    'addLink' => $addLink ?? false,
+                    // For Alma title-level hold requests
+                    'description' => $description ?? null
+                ];
             }
         }
 
@@ -1092,7 +1108,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id);
+        $idList = [$id];
+        $status = $this->getStatuses($idList);
+        return current($status);
     }
 
     /**
@@ -1194,6 +1212,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
+
+            // Set default value for "itemLimit" in Alma driver
+            if ($function === 'Holds') {
+                $functionConfig['itemLimit'] = $functionConfig['itemLimit']
+                    ?? 10
+                    ?: 10;
+            }
         } else {
             $functionConfig = false;
         }
