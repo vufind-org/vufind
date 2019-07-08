@@ -214,12 +214,13 @@
         <tr>
           <th><?=$this->transEsc('Reviewed')?>: </th>
           <td>
-            <? foreach ($reviews as $id => $title): ?>
-	      <? if (empty($title[0])): $reviewer = ""; else: $reviewer = " (".$this->escapeHtml($title[0]).")"; endif; ?>
-	      <? if ($id != "000000000"): ?>
-                <a href="<?=$id?>"><?=$this->escapeHtml($title[1]) . $reviewer?></a>
+            <? foreach ($reviews as $title => $title_properties): ?>
+              <? $linked_ppn = $title_properties[1]; ?>
+	      <? if (empty($title_properties[0])): $reviewer = ""; else: $reviewer = " (".$this->escapeHtml($title_properties[0]).")"; endif; ?>
+	      <? if ($linked_ppn != "000000000"): ?>
+                <a href="<?=$linked_ppn?>"><?=$this->escapeHtml($title) . $reviewer?></a>
 	      <? else: ?>
-	        <?=$this->escapeHtml($title[1]) . $reviewer?>
+	        <?=$this->escapeHtml($title) . $reviewer?>
 	      <? endif; ?>
               <br/>
             <? endforeach; ?>
