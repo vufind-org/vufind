@@ -190,10 +190,11 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             foreach ($this->fields['reviewed_records'] as $review) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
                 if (count($a) == 3) {
-                    $retval[$a[0]] = array($a[1], $a[2]);
+                    $retval[$a[2]] = array($a[1], $a[0]);
                 }
             }
         }
+        ksort($retval);
         return $retval;
     }
 
