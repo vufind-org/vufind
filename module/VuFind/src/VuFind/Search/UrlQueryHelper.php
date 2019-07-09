@@ -261,6 +261,21 @@ class UrlQueryHelper
     }
 
     /**
+     * Replace a term in the search query (used for spelling replacement)
+     *
+     * @param string $from Search term to find
+     * @param string $to   Search term to insert
+     *
+     * @return UrlQueryHelper
+     */
+    public function replaceTermIgnoringAccents($from, $to)
+    {
+        $query = clone $this->queryObject;
+        $query->replaceTermIgnoringAccents($from, $to);
+        return new static($this->urlParams, $query, $this->config);
+    }
+
+    /**
      * Add a facet to the parameters.
      *
      * @param string $field    Facet field
