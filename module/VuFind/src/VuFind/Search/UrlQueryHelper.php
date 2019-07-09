@@ -253,25 +253,14 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function replaceTerm($from, $to)
-    {
+    public function replaceTerm(
+        $from,
+        $to,
+        $ignoreCase = false,
+        $ignoreDiacritics = false
+    ) {
         $query = clone $this->queryObject;
-        $query->replaceTerm($from, $to);
-        return new static($this->urlParams, $query, $this->config);
-    }
-
-    /**
-     * Replace a term in the search query (used for spelling replacement)
-     *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
-     *
-     * @return UrlQueryHelper
-     */
-    public function replaceTermIgnoringAccents($from, $to)
-    {
-        $query = clone $this->queryObject;
-        $query->replaceTermIgnoringAccents($from, $to);
+        $query->replaceTerm($from, $to, $ignoreCase, $ignoreDiacritics);
         return new static($this->urlParams, $query, $this->config);
     }
 

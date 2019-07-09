@@ -91,7 +91,7 @@ class Query extends AbstractQuery
      */
     public function getNormalizedString()
     {
-        return strtolower($this->stripAccents($this->queryString));
+        return strtolower($this->stripDiacritics($this->queryString));
     }
 
     /**
@@ -181,11 +181,11 @@ class Query extends AbstractQuery
         // errors:
         $needle = preg_quote($needle, '/');
 
-        $needle = strtolower($this->stripAccents($needle));
+        $needle = strtolower($this->stripDiacritics($needle));
 
         return (bool)preg_match(
             "/\b$needle\b/u",
-            strtolower($this->stripAccents($this->getString()))
+            strtolower($this->stripDiacritics($this->getString()))
         );
     }
 
@@ -207,11 +207,26 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm($from, $to)
-    {
+    public function replaceTerm(
+        $from,
+        $to,
+        $ignoreCase = false,
+        $ignoreDiacritics = false
+    ) {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
         $from = preg_quote($from, '/');
+        $queryString = $this->queryString;
+
+        if ($ignoreCase) {
+            $from = strtolower($from);
+            $queryString = strtolower($queryString);
+        }
+
+        if ($ignoreDiacritics) {
+            $from = $this->stripDiacritics($from);
+            $queryString = $this->stripDiacritics($queryString);
+        }
 
         // If our "from" pattern contains non-word characters, we can't use word
         // boundaries for matching.  We want to try to use word boundaries when
@@ -224,7 +239,7 @@ class Query extends AbstractQuery
         }
 
         // Perform the replacement:
-        $this->queryString = preg_replace($pattern, $to, $this->queryString);
+        $this->queryString = preg_replace($pattern, $to, $queryString);
     }
 
     /**
@@ -241,7 +256,7 @@ class Query extends AbstractQuery
         // includes any weird punctuation -- unlikely but possible):
         $from = preg_quote($from, '/');
 
-        $from = $this->stripAccents($from);
+        $from = $this->stripDiacritics($from);
 
         $from = strtolower($from);
 
@@ -259,7 +274,7 @@ class Query extends AbstractQuery
         $this->queryString = preg_replace(
             $pattern,
             $to,
-            strtolower($this->stripAccents($this->queryString))
+            strtolower($this->stripDiacritics($this->queryString))
         );
     }
 
@@ -272,7 +287,7 @@ class Query extends AbstractQuery
      *
      * @return string      The input text with accents removed
      */
-    protected function stripAccents($string)
+    protected function stripDiacritics($string)
     {
         if (!preg_match('/[\x80-\xff]/', $string)) {
             return $string;

@@ -230,7 +230,6 @@ class SpellingProcessor
             return true;
         }
         // We should also skip terms already contained within the query:
-        $test = $query->containsNormalizedTerm($term);
         return $queryContains == $query->containsNormalizedTerm($term);
     }
 
