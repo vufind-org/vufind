@@ -202,8 +202,13 @@ class Query extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from             Search term to find
+     * @param string  $to               Search term to insert
+     * @param boolean $ignoreCase       If we should ignore the case differences
+     *                                  when replacing
+     * @param boolean $ignoreDiacritics If we should ignore the diacritics when
+     *                                  replacing, i.e. if $from is durenmatt,
+     *                                  it could replace dürenmatt in the query
      *
      * @return void
      */
