@@ -240,42 +240,6 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Replaces a term with accents and umlauts removed
-     *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
-     *
-     * @return void
-     */
-    public function replaceTermIgnoringAccents($from, $to)
-    {
-        // Escape $from so it is regular expression safe (just in case it
-        // includes any weird punctuation -- unlikely but possible):
-        $from = preg_quote($from, '/');
-
-        $from = $this->stripDiacritics($from);
-
-        $from = strtolower($from);
-
-        // If our "from" pattern contains non-word characters, we can't use word
-        // boundaries for matching.  We want to try to use word boundaries when
-        // possible, however, to avoid the replacement from affecting unexpected
-        // parts of the search query.
-        if (!preg_match('/.*[^\w].*/', $from)) {
-            $pattern = "/\b$from\b/i";
-        } else {
-            $pattern = "/$from/i";
-        }
-
-        // Perform the replacement:
-        $this->queryString = preg_replace(
-            $pattern,
-            $to,
-            strtolower($this->stripDiacritics($this->queryString))
-        );
-    }
-
-    /**
      * Remove accents and umlauts from a string
      *
      * @param string $string The text where we would like to remove accents
