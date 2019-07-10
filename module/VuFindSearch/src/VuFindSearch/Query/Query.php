@@ -85,13 +85,25 @@ class Query extends AbstractQuery
     }
 
     /**
+     * Apply normalization to a string.
+     *
+     * @param string $text String to normalize.
+     *
+     * @return string
+     */
+    protected function normalizeText($text)
+    {
+        return strtolower($this->stripDiacritics($text));
+    }
+
+    /**
      * Return search string without accents and umlauts
      *
      * @return string
      */
     public function getNormalizedString()
     {
-        return strtolower($this->stripDiacritics($this->queryString));
+        return $this->normalizeText($this->queryString);
     }
 
     /**
@@ -179,13 +191,10 @@ class Query extends AbstractQuery
     {
         // Escape characters with special meaning in regular expressions to avoid
         // errors:
-        $needle = preg_quote($needle, '/');
-
-        $needle = strtolower($this->stripDiacritics($needle));
+        $needle = preg_quote($this->normalizeText($needle), '/');
 
         return (bool)preg_match(
-            "/\b$needle\b/u",
-            strtolower($this->stripDiacritics($this->getString()))
+            "/\b$needle\b/u", $this->getNormalizedString()
         );
     }
 
@@ -202,36 +211,19 @@ class Query extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string  $from             Search term to find
-     * @param string  $to               Search term to insert
-     * @param boolean $ignoreCase       If we should ignore the case differences
-     *                                  when replacing
-     * @param boolean $ignoreDiacritics If we should ignore the diacritics when
-     *                                  replacing, i.e. if $from is durenmatt,
-     *                                  it could replace dürenmatt in the query
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return void
      */
-    public function replaceTerm(
-        $from,
-        $to,
-        $ignoreCase = false,
-        $ignoreDiacritics = false
-    ) {
+    public function replaceTerm($from, $to, $normalize = false)
+    {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
-        $from = preg_quote($from, '/');
-        $queryString = $this->queryString;
-
-        if ($ignoreCase) {
-            $from = strtolower($from);
-            $queryString = strtolower($queryString);
-        }
-
-        if ($ignoreDiacritics) {
-            $from = $this->stripDiacritics($from);
-            $queryString = $this->stripDiacritics($queryString);
-        }
+        $from = preg_quote($normalize ? $this->normalizeText($from) : $from, '/');
+        $queryString = $normalize
+            ? $this->getNormalizedString() : $this->queryString;
 
         // If our "from" pattern contains non-word characters, we can't use word
         // boundaries for matching.  We want to try to use word boundaries when

@@ -288,29 +288,16 @@ class QueryGroup extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string  $from             Search term to find
-     * @param string  $to               Search term to insert
-     * @param boolean $ignoreCase       If we should ignore the case differences
-     *                                  when replacing
-     * @param boolean $ignoreDiacritics If we should ignore the diacritics when
-     *                                  replacing, i.e. if $from is durenmatt,
-     *                                  it could replace dürenmatt in the query
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return void
      */
-    public function replaceTerm(
-        $from,
-        $to,
-        $ignoreCase = false,
-        $ignoreDiacritics = false
-    ) {
+    public function replaceTerm($from, $to, $normalize = false)
+    {
         foreach ($this->getQueries() as $q) {
-            $q->replaceTerm(
-                $from,
-                $to,
-                $ignoreCase,
-                $ignoreDiacritics
-            );
+            $q->replaceTerm($from, $to, $normalize);
         }
     }
 }

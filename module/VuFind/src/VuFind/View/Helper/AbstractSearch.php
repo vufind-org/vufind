@@ -87,7 +87,6 @@ abstract class AbstractSearch extends AbstractHelper
                     ->replaceTerm(
                         $term,
                         $data['new_term'],
-                        true,
                         true
                     )->getParams();
                 $html .= '<a href="' . $href . '">' . $view->escapeHtml($word)
@@ -97,7 +96,6 @@ abstract class AbstractSearch extends AbstractHelper
                         ->replaceTerm(
                             $term,
                             $data['expand_term'],
-                            true,
                             true
                         )->getParams();
                     $html .= $this->renderExpandLink($url, $view);
