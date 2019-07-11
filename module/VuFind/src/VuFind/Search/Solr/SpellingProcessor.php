@@ -230,7 +230,7 @@ class SpellingProcessor
             return true;
         }
         // We should also skip terms already contained within the query:
-        return $queryContains == $query->containsTerm($term);
+        return $queryContains == $query->containsNormalizedTerm($term);
     }
 
     /**
@@ -250,9 +250,8 @@ class SpellingProcessor
             $inToken = false;
             $targetTerm = "";
             foreach ($this->tokenize($query) as $token) {
-                // TODO - Do we need stricter matching here, similar to that in
-                // \VuFindSearch\Query\Query::replaceTerm()?
-                if (stripos($token, (string)$term) !== false) {
+                // Is the term part of the current token?
+                if (strpos($token, (string)$term) !== false) {
                     $inToken = true;
                     // We need to replace the whole token
                     $targetTerm = $token;

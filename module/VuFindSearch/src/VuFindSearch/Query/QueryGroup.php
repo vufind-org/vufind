@@ -254,6 +254,23 @@ class QueryGroup extends AbstractQuery
     }
 
     /**
+     * Does the query contain the specified term when comparing normalized strings?
+     *
+     * @param string $needle Term to check
+     *
+     * @return bool
+     */
+    public function containsNormalizedTerm($needle)
+    {
+        foreach ($this->getQueries() as $q) {
+            if ($q->containsNormalizedTerm($needle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get a concatenated list of all query strings within the object.
      *
      * @return string
@@ -270,15 +287,16 @@ class QueryGroup extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return void
      */
-    public function replaceTerm($from, $to)
+    public function replaceTerm($from, $to, $normalize = false)
     {
         foreach ($this->getQueries() as $q) {
-            $q->replaceTerm($from, $to);
+            $q->replaceTerm($from, $to, $normalize);
         }
     }
 }
