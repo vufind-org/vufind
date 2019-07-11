@@ -254,8 +254,7 @@ class QueryGroup extends AbstractQuery
     }
 
     /**
-     * Does the query contain the specified term?
-     * Diacritics and case are ignored
+     * Does the query contain the specified term when comparing normalized strings?
      *
      * @param string $needle Term to check
      *

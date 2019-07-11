@@ -97,7 +97,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Return search string without accents and umlauts
+     * Return search string in a normalized format.
      *
      * @return string
      */
@@ -179,9 +179,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Does the query contain the specified term?
-     * Accents and umlauts are removed from both
-     * $needle and query
+     * Does the query contain the specified term when comparing normalized strings?
      *
      * @param string $needle Term to check
      *
@@ -240,11 +238,11 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Remove accents and umlauts from a string
+     * Remove diacritics (accents, umlauts, etc.) from a string
      *
-     * @param string $string The text where we would like to remove accents
+     * @param string $string The text where we would like to remove diacritics
      *
-     * @return string The input text with accents removed
+     * @return string The input text with diacritics removed
      */
     protected function stripDiacritics($string)
     {

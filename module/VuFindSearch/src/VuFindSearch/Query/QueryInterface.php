@@ -40,6 +40,15 @@ namespace VuFindSearch\Query;
 interface QueryInterface
 {
     /**
+     * Does the query contain the specified term when comparing normalized strings?
+     *
+     * @param string $needle Term to check
+     *
+     * @return bool
+     */
+    public function containsNormalizedTerm($needle);
+
+    /**
      * Does the query contain the specified term?
      *
      * @param string $needle Term to check
@@ -58,10 +67,11 @@ interface QueryInterface
     /**
      * Replace a term.
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return void
      */
-    public function replaceTerm($from, $to);
+    public function replaceTerm($from, $to, $normalize = false);
 }
