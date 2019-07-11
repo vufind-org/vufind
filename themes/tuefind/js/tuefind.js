@@ -135,7 +135,7 @@ var TueFind = {
         if ($(input_selector).length) {
            // now we are sure that element exists
            // don't assign input_field earlier, JS might crash if element doesnt exist
-           var input_field = $(input_selector);
+           let input_field = $(input_selector);
            input_field[0].setSelectionRange(input_field.val().length, input_field.val().length);
         }
     }
