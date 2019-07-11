@@ -250,8 +250,7 @@ class SpellingProcessor
             $inToken = false;
             $targetTerm = "";
             foreach ($this->tokenize($query) as $token) {
-                // TODO - Do we need stricter matching here, similar to that in
-                // \VuFindSearch\Query\Query::replaceTerm()?
+                // Is the term part of the current token?
                 if (strpos($token, (string)$term) !== false) {
                     $inToken = true;
                     // We need to replace the whole token
