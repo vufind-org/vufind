@@ -102,7 +102,7 @@ class CombinedController extends AbstractSearch
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
-        if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
+        if (($settings['hide_if_empty'] ?? false)
             && $settings['view']->results->getResultTotal() == 0
         ) {
             $html = '';
@@ -117,8 +117,7 @@ class CombinedController extends AbstractSearch
                 'showCartControls' => $currentOptions->supportsCart()
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
-                    && isset($general->Site->showBulkOptions)
-                    && $general->Site->showBulkOptions
+                    && ($general->Site->showBulkOptions ?? false)
             ];
             // Load custom CSS, if necessary:
             $html = $this->getViewRenderer()->plugin('headLink')->__invoke();
@@ -175,10 +174,9 @@ class CombinedController extends AbstractSearch
             $combinedResults[$current]['domId']
                 = 'combined_' . str_replace(':', '____', $current);
 
-            $combinedResults[$current]['view']
-                = (!isset($settings['ajax']) || !$settings['ajax'])
-                ? $this->forwardTo($controller, $action)
-                : $this->createViewModel(['results' => $results]);
+            $combinedResults[$current]['view'] = ($settings['ajax'] ?? false)
+                ? $this->createViewModel(['results' => $results])
+                : $this->forwardTo($controller, $action);
 
             // Special case: include appropriate "powered by" message:
             if (strtolower($searchClassId) == 'summon') {
@@ -190,10 +188,9 @@ class CombinedController extends AbstractSearch
         // Run the search to obtain recommendations:
         $results->performAndProcessSearch();
 
-        $columns = isset($config['Layout']['columns'])
-        && intval($config['Layout']['columns']) <= count($combinedResults)
-            ? intval($config['Layout']['columns'])
-            : count($combinedResults);
+        $actualMaxColumns = count($combinedResults);
+        $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
+        $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement']
             ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
@@ -301,9 +298,7 @@ class CombinedController extends AbstractSearch
         // Always leave noresults active (useful for 0-hit searches) and
         // side inactive (no room to display) but display or hide top based
         // on include_recommendations setting.
-        if (isset($settings['include_recommendations'])
-            && $settings['include_recommendations']
-        ) {
+        if ($settings['include_recommendations'] ?? false) {
             $query->noRecommend = 'side';
             if (is_array($settings['include_recommendations'])) {
                 $query->recommendOverride
