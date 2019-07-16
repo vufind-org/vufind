@@ -54,11 +54,11 @@ class Options extends \VuFind\Search\Base\Options
         }
     }
 
-     /**
-      * Return the route name for the search results action.
-      *
-      * @return string
-      */
+    /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
     public function getSearchAction()
     {
         return 'combined-results';
