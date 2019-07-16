@@ -98,7 +98,10 @@ class CombinedController extends AbstractSearch
             = explode('-', $currentOptions->getSearchAction());
         $settings = $tabConfig[$sectionId];
 
-        $this->adjustQueryForSettings($settings);
+        $this->adjustQueryForSettings(
+            $settings,
+            $currentOptions->getHandlerForLabel($this->params()->fromQuery('type'))
+        );
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
@@ -157,10 +160,14 @@ class CombinedController extends AbstractSearch
             ->get('combined')->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
+        // Save the initial type value, since it may get manipulated below:
+        $initialType = $this->params()->fromQuery('type');
         foreach ($this->getTabConfig($config) as $current => $settings) {
             list($searchClassId) = explode(':', $current);
-            $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($searchClassId);
+            $this->adjustQueryForSettings(
+                $settings, $currentOptions->getHandlerForLabel($initialType)
+            );
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
                 $supportsCart = true;
@@ -184,6 +191,9 @@ class CombinedController extends AbstractSearch
                     . 'Solutions, a division of ProQuest.';
             }
         }
+
+        // Restore the initial type value to the query to prevent weird behavior:
+        $this->getRequest()->getQuery()->type = $initialType;
 
         // Run the search to obtain recommendations:
         $results->performAndProcessSearch();
@@ -266,11 +276,12 @@ class CombinedController extends AbstractSearch
     /**
      * Adjust the query context to reflect the current settings.
      *
-     * @param array $settings Settings
+     * @param array  $settings   Settings
+     * @param string $searchType Override for search handler name
      *
      * @return void
      */
-    protected function adjustQueryForSettings($settings)
+    protected function adjustQueryForSettings($settings, $searchType = null)
     {
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
@@ -294,6 +305,9 @@ class CombinedController extends AbstractSearch
         // Always disable 'jumpto' setting, as it does not make sense to
         // load a record view in the context of combined search.
         $query->jumpto = false;
+
+        // Override the search type:
+        $query->type = $searchType;
 
         // Always leave noresults active (useful for 0-hit searches) and
         // side inactive (no room to display) but display or hide top based
@@ -319,6 +333,7 @@ class CombinedController extends AbstractSearch
     protected function getTabConfig($config)
     {
         // Strip out non-tab sections of the configuration:
+        unset($config['Basic_Searches']);
         unset($config['HomePage']);
         unset($config['Layout']);
         unset($config['RecommendationModules']);
