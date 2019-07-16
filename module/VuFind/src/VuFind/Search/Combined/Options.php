@@ -43,11 +43,11 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-     public function __construct(\VuFind\Config\PluginManager $configLoader)
-     {
-         parent::__construct($configLoader);
-         $searchSettings = $this->configLoader->get('combined');
-         if (isset($searchSettings->Basic_Searches)) {
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($configLoader);
+        $searchSettings = $this->configLoader->get('combined');
+        if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
             }
@@ -55,10 +55,10 @@ class Options extends \VuFind\Search\Base\Options
     }
 
      /**
-     * Return the route name for the search results action.
-     *
-     * @return string
-     */
+      * Return the route name for the search results action.
+      *
+      * @return string
+      */
     public function getSearchAction()
     {
         return 'combined-results';
