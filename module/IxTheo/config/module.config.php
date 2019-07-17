@@ -70,6 +70,8 @@ $config = [
             'IxTheo\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'IxTheo\RecordTab\FulltextSearch' => 'Zend\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'VuFind\AuthManager' => 'IxTheo\Auth\Manager',
@@ -89,6 +91,7 @@ $config = [
             'VuFind\Search\Options\PluginManager' => 'IxTheo\Search\Options\PluginManager',
             'VuFind\Search\Params\PluginManager' => 'IxTheo\Search\Params\PluginManager',
             'VuFind\Search\Results\PluginManager' => 'IxTheo\Search\Results\PluginManager',
+            'VuFind\RecordTab\PluginManager' => 'IxTheo\RecordTab\PluginManager',
         ],
     ],
     'vufind' => [
@@ -105,7 +108,9 @@ $config = [
                     'Similar' => null,
                     'TOC' => null,
                     'UserComments' => null,
+                    'FulltextSearch' => 'FulltextSearch'
                 ],
+                'default_tab' => null,
             ],
         ],
     ],
