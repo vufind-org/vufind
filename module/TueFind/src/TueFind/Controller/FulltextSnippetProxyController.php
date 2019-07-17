@@ -28,11 +28,12 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected $es; // Elasticsearch interface
     protected $logger;
     protected $configLoader;
-    const FIELD = 'document_chunk';
-    const DOCUMENT_ID = 'document_id';
+    const FIELD = 'full_text';
+    const DOCUMENT_ID = 'id';
     const highlightStartTag = '<span class="highlight">';
     const highlightEndTag = '</span>';
     const fulltextsnippetIni = 'fulltextsnippet';
+    const MAX_SNIPPETS = 5;
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
@@ -40,7 +41,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         $this->configLoader = $configLoader;
         $config = $configLoader->get($this->getFulltextSnippetIni());
         $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
-        $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'fulltext';
+        $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
     }
 
@@ -58,6 +59,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
              'type' => '_doc',
              'body' => [
                  '_source' => false,
+                 'size' => '100',
                  'query' => [
                      'bool' => [
                            'must' => [
@@ -99,9 +101,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             return false;
 
         $snippets = [];
+        if (count($hits) > self::MAX_SNIPPETS)
+                $hits = array_slice($hits, 0, self::MAX_SNIPPETS);
+        error_log("HITS:" . count($hits));
         foreach ($hits as $hit) {
             if (array_key_exists('highlight', $hit))
                 $highlight_results = $hit['highlight'][self::FIELD];
+            if (count($highlight_results) > self::MAX_SNIPPETS);
+                $highlight_results = array_slice($highlight_results, 0, self::MAX_SNIPPETS);
             foreach ($highlight_results as $highlight_result) {
                 array_push($snippets, $highlight_result);
             }
