@@ -45,9 +45,10 @@ var TueFind = {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder").each(function () {
                         if (snippets) {
-                            $(this).replaceWith(snippets.join('<br/>') + '<br/>');
+                            $(this).removeAttr('style');
+                            $(this).html(snippets.join('<br/>') + '<br/>');
                         } else
-                            $("#fulltext_snippets").remove();
+                            $(this).html("");
                     });
                 });
             }, // end success

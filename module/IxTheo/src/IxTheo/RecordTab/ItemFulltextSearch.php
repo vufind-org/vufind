@@ -1,11 +1,11 @@
 <?php 
 namespace IxTheo\RecordTab;
 
-class FulltextSearch extends \VuFind\RecordTab\AbstractContent
+class ItemFulltextSearch extends \VuFind\RecordTab\AbstractContent
 {
     public function __construct()
     {
-        $this->accessPermission = 'access.FulltextSearchTab';
+        $this->accessPermission = 'access.ItemFulltextSearchTab';
     }
 
     public function getDescription()
