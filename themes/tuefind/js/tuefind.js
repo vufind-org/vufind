@@ -34,11 +34,11 @@ var TueFind = {
         });
     },
 
-    GetFulltextSnippets: function(url, doc_id, query) {
+    GetFulltextSnippets: function(url, doc_id, query, verbose = false) {
         // Try to determine status
         $.ajax({
             type: "GET",
-            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id,
+            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : ""),
             dataType: "json",
             success: function (json) {
                 $(document).ready(function () {

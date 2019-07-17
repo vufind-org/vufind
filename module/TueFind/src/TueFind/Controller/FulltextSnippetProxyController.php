@@ -51,7 +51,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function getFulltext($doc_id, $search_query) {
+    protected function getFulltext($doc_id, $search_query, $verbose) {
         // Is this an ordinary query or a phrase query (surrounded by quotes) ?
         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
         $params = [
@@ -71,7 +71,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'highlight' => [
                      'fields' => [
                           self::FIELD => [
-                               'fragmenter' => 'sentence',
+                               'fragment_size' => $verbose ? '800' : '200',
                                'phrase_limit' => '3'
                            ]
                       ]
@@ -142,7 +142,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             return new JsonModel([
                 'status' => 'EMPTY QUERY'
                 ]);
-        $snippets = $this->getFulltext($doc_id, $search_query);
+        $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
+        $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
         if (empty($snippets))
             return new JsonModel([
                  'status' => 'NO RESULTS'
