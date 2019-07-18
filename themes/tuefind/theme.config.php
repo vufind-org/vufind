@@ -6,11 +6,13 @@ return [
             'VuFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
             'TueFind\View\Helper\Root\HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
             'TueFind\View\Helper\TueFind\TueFind' => 'TueFind\View\Helper\TueFind\Factory',
+            'TueFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
         ],
         'aliases' => [
             'helptext' => 'TueFind\View\Helper\Root\HelpText',
             'helpText' => 'TueFind\View\Helper\Root\HelpText',
             'HelpText' => 'TueFind\View\Helper\Root\HelpText',
+            'recordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatter',
             'tuefind' => 'TueFind\View\Helper\TueFind\TueFind',
         ],
     ],
