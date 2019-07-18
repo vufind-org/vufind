@@ -1,10 +1,10 @@
 <?php
 /**
- * Abstract authentication base class
+ * Password Access authentication class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Authentication
- * @author   Franck Borel <franck.borel@gbv.de>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -32,11 +32,11 @@ use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Abstract authentication base class
+ * Password Access authentication class
  *
  * @category VuFind
  * @package  Authentication
- * @author   Franck Borel <franck.borel@gbv.de>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
