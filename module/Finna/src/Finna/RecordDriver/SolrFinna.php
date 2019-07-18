@@ -174,7 +174,8 @@ trait SolrFinna
      */
     public function getBuilding()
     {
-        return isset($this->fields['building']) ? $this->fields['building'] : [];
+        return isset($this->fields['building']) ? (array)$this->fields['building']
+            : [];
     }
 
     /**
@@ -203,7 +204,7 @@ trait SolrFinna
     public function getDataSource()
     {
         return isset($this->fields['datasource_str_mv'])
-            ? $this->fields['datasource_str_mv'][0]
+            ? ((array)$this->fields['datasource_str_mv'])[0]
             : '';
     }
 
@@ -492,7 +493,7 @@ trait SolrFinna
      */
     public function getSector()
     {
-        $sector = $this->fields['sector_str_mv'][0]->getDisplayString();
+        $sector = (string)($this->fields['sector_str_mv'][0] ?? '');
         return $sector;
     }
 

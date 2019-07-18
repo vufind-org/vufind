@@ -98,7 +98,7 @@ class DefaultRecord extends AbstractBase
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
             if (isset($this->fields[$field])) {
-                $headings = array_merge($headings, $this->fields[$field]);
+                $headings = array_merge($headings, (array)$this->fields[$field]);
             }
         }
 
