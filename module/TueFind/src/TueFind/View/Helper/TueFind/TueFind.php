@@ -236,29 +236,39 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * @return string
       */
     function getUserEmail() {
-        $auth = $this->container->get('ViewHelperManager')->get('Auth');
+        $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
-        return  ($user = $manager->isLoggedIn()) ? $user->email : "";
+        return ($user = $manager->isLoggedIn()) ? $user->email : "";
     }
 
     /**
-      * Get the user address from a logged in user
-      * @return string
-      */
-    function getUserLastname() {
-        $auth = $this->container()->get('ViewHelperManager')->get('Auth');
-        $manager = $auth->getManager();
-        return  ($user = $manager->isLoggedIn()) ? $user->lastname : "";
-    }
-
-    /**
-    * Get the user address from a logged in user
+    * Get the first name of the logged in user
     * @return string
     */
     function getUserFirstName() {
-        $auth = $this->container->get('ViewHelperManager')->get('Auth');
+        $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
-        return  ($user = $manager->isLoggedIn()) ? $user->firstname : "";
+        return ($user = $manager->isLoggedIn()) ? $user->firstname : "";
+    }
+
+    /**
+     * Get the full name of the logged in user
+     * @return string
+     */
+    function getUserFullName() {
+        $auth = $this->container->get('ViewHelperManager')->get('auth');
+        $manager = $auth->getManager();
+        return ($user = $manager->isLoggedIn()) ? $user->firstname . ' ' . $user->lastname : "";
+    }
+
+    /**
+      * Get the last name of the logged in user
+      * @return string
+      */
+    function getUserLastName() {
+        $auth = $this->container->get('ViewHelperManager')->get('auth');
+        $manager = $auth->getManager();
+        return ($user = $manager->isLoggedIn()) ? $user->lastname : "";
     }
 
     /**
