@@ -45,6 +45,35 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * This function is used to get author roles for a given author from MARC.
+     * VuFind only stores the first roles in Solr. If MARC roles cannot be found,
+     * Solr roles can be passed as fallback.
+     *
+     * (same result format as getPrimaryAuthorsRoles: ['role' => []])
+     *
+     * @param string $author_heading
+     * @param array $fallback_roles
+     * @return array
+     */
+    public function getAuthorRoles($author_heading, $fallback_roles=[]) {
+        $roles = [];
+        $authors = $this->getMarcRecord()->getFields('^100|700$', true);
+        foreach ($authors as $author) {
+            $subfield_a = $author->getSubfield('a');
+            if ($subfield_a != false && $subfield_a->getData() == $author_heading) {
+                $subfields_4 = $author->getSubfields('4');
+                foreach ($subfields_4 as $subfield_4) {
+                    $roles[] = $subfield_4->getData();
+                }
+                break;
+            }
+        }
+        if (count($roles) == 0)
+            return $fallback_roles;
+        return ['role' => $roles];
+    }
+
+    /**
      * Get DOI from 024 instead of doi_str_mv field
      *
      * @return string

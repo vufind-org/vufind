@@ -95,6 +95,7 @@
           <td>
             <?php $i = 0; ?>
             <?php foreach ($authors['primary'] as $author => $roles): ?>
+              <?php $roles = $this->driver->getAuthorRoles($author, $roles);?>
               <?=($i++ == 0)?'':'; '?>
               <span property="author">
                 <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
@@ -113,6 +114,7 @@
           <td>
             <?php $i = 0;?>
             <?php foreach ($authors['corporate'] as $corporate => $roles): ?>
+              <?php $roles = $this->driver->getAuthorRoles($author, $roles);?>
               <?=($i++ == 0)?'':'; '?>
               <span property="creator">
                 <a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>">
@@ -131,6 +133,7 @@
           <td>
             <?php $i = 0;?>
             <?php foreach ($authors['secondary'] as $author => $roles): ?>
+              <?php $roles = $this->driver->getAuthorRoles($author, $roles);?>
               <?=($i++ == 0)?'':'; '?>
               <span property="contributor">
                 <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
