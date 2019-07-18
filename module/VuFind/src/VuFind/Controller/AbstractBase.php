@@ -125,7 +125,7 @@ class AbstractBase extends AbstractActionController
      */
     public function setAccessPermission($ap)
     {
-        $this->accessPermission = $ap;
+        $this->accessPermission = empty($ap) ? null : $ap;
     }
 
     /**
