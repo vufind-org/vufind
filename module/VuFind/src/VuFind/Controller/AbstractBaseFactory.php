@@ -42,6 +42,42 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 class AbstractBaseFactory implements FactoryInterface
 {
     /**
+     * Apply permission settings to the controller.
+     *
+     * @param ContainerInterface $container  Service manager
+     * @param AbstractBase       $controller Controller to configure
+     *
+     * @return AbstractBase
+     */
+    protected function applyPermissions($container, $controller)
+    {
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('permissionBehavior');
+        $permissions = $config->global->controllerAccess ?? [];
+
+        if (!empty($permissions)) {
+            // Iterate through parent classes until we find the most specific
+            // class access permission defined (if any):
+            $class = get_class($controller);
+            do {
+                if (isset($permissions[$class])) {
+                    $controller->setAccessPermission($permissions[$class]);
+                    break;
+                }
+                $class = get_parent_class($class);
+            } while ($class);
+
+            // If the class does not internally define a permission, and we
+            // did not find a configured override permission, apply the default:
+            if (isset($permissions['*']) && !$controller->getAccessPermission()) {
+                $controller->setAccessPermission($permissions['*']);
+            }
+        }
+
+        return $controller;
+    }
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -61,6 +97,6 @@ class AbstractBaseFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container);
+        return $this->applyPermissions($container, new $requestedName($container));
     }
 }

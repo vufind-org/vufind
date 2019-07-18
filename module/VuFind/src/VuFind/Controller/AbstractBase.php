@@ -106,6 +106,29 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Getter for access permission.
+     *
+     * @return string
+     */
+    public function getAccessPermission()
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @param string $ap Permission to require for access to the controller (null
+     * for no requirement)
+     *
+     * @return void
+     */
+    public function setAccessPermission($ap)
+    {
+        $this->accessPermission = $ap;
+    }
+
+    /**
      * Register the default events for this controller
      *
      * @return void
