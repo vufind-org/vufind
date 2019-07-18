@@ -60,6 +60,7 @@ class PasswordAccess extends AbstractBase
 
         return $this->config;
     }
+
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
