@@ -185,12 +185,13 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getReviewedRecords()
     {
-        $retval = array();
+        $retval = [];
         if (isset($this->fields['reviewed_records']) && !empty($this->fields['reviewed_records'])) {
             foreach ($this->fields['reviewed_records'] as $review) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
                 if (count($a) == 3) {
-                    $retval[$a[2]] = array($a[1], $a[0]);
+                    // $retval[$title] = [$reviewer, $parentId];
+                    $retval[$a[2]] = [$a[1], $a[0]];
                 }
             }
         }
@@ -200,12 +201,13 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getReviews()
     {
-        $retval = array();
+        $retval = [];
         if (isset($this->fields['reviews']) && !empty($this->fields['reviews'])) {
             foreach ($this->fields['reviews'] as $review) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
                 if (count($a) == 3) {
-                    $retval[$a[0]] = array($a[1], $a[2]);
+                    // $retval[$parentId] = [$reviewer, $title];
+                    $retval[$a[0]] = [$a[1], $a[2]];
                 }
             }
         }
