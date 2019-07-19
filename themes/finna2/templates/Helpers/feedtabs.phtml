@@ -5,6 +5,7 @@
   <?php endif; ?>
     <ul class="feedTabs nav nav-tabs visible-md visible-lg" role="tablist">
       <?php $tabNames = []; ?>
+      <li class="feed-tabs-title"><?= $this->transEsc($this->title);?></li>
       <?php foreach ($this->feedIds as $desc => $feed): ?>
         <?php
           $tabName = preg_replace("/\W/", "-", strtolower($feed));
@@ -31,6 +32,7 @@
   <?php endif; ?>
 
   <div class="feed-accordions" role="tablist">
+    <div class="feed-accordions-title"><?= $this->transEsc($this->title); ?></div>
     <?php $i = 0; foreach ($this->feedIds as $desc => $feed): ?>
       <?php
         $classes = ['accordion', 'accordion-' . $tabNames[$i++]];

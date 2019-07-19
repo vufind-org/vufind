@@ -47,12 +47,15 @@ class FeedTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($feedIds)
     {
+        $title = $feedIds['title'] ?? '';
+        $ids = $feedIds['ids'];
         return $this->getView()->render(
             'Helpers/feedtabs.phtml',
             [
-                'id' => md5(json_encode($feedIds)),
-                'feedIds' => $feedIds,
-                'active' => array_shift($feedIds)
+                'title' => $title,
+                'id' => md5(json_encode($ids)),
+                'feedIds' => $ids,
+                'active' => array_shift($ids)
             ]
         );
     }
