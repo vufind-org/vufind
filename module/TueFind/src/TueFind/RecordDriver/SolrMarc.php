@@ -191,7 +191,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function showSubito() {
-        return !$this->suppressDisplayByFormat() && ($this->getSubitoURL('IXTHEO') != '');
+        return !$this->suppressDisplayByFormat() && $this->getSubitoURL() != '';
     }
 
     public function getParallelEditionPPNs() {

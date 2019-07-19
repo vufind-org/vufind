@@ -4,6 +4,8 @@ namespace KrimDok\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
+    const SUBITO_BROKER_ID = 'KRIMDOK';
+
     /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most

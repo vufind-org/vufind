@@ -75,14 +75,14 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         $spec->setTemplateLine(
             'Journals Online & Print', 'showJOP', 'data-JOP.phtml'
         );
-        // PDA
+        // PDA (IxTheo-specific)
         $spec->setTemplateLine(
             'PDA', 'showPDA', 'data-PDA.phtml', ['rowId' => 'pda_row']
         );
         // TAD
         if ($this->user != null && $this->dbTablePluginManager->get('IxTheoUser')->canUseTAD($this->user->id)) {
             $spec->setTemplateLine(
-                'TAD', 'showContainerIdsAndTitles', 'data-TAD.phtml'
+                'TAD', 'workIsTADCandidate', 'data-TAD.phtml'
             );
         }
         // publications
@@ -91,7 +91,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         );
         // ContainerIDsandTitles
         $spec->setTemplateLine(
-            'In', 'workIsTADCandidate', 'data-container_ids_and_titles.phtml'
+            'In', 'showContainerIdsAndTitles', 'data-container_ids_and_titles.phtml'
         );
         // Reviews
         $spec->setTemplateLine(

@@ -5,4 +5,12 @@ return [
     'js' => [
         'overrides.js',
     ],
+    'helpers' => [
+        'factories' => [
+            'TueFind\View\Helper\Root\RecordDataFormatter' => 'KrimDok\View\Helper\Root\RecordDataFormatterFactory',
+        ],
+        'aliases' => [
+            
+        ],
+    ],
 ];

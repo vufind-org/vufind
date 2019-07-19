@@ -22,6 +22,8 @@ use Interop\Container\ContainerInterface;
 
 class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 {
+    const SUBITO_BROKER_ID = 'TUEFIND';
+
     protected $container;
 
     public function setContainer(ContainerInterface $container)
@@ -219,12 +221,12 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return isset($this->fields['is_open_access']) && ($this->fields['is_open_access'] == 'open-access');
     }
 
-    public function getSubitoURL($broker_id) {
+    public function getSubitoURL() {
         // Suppress Subito links for open access items:
         if ($this->isOpenAccess())
 	    return "";
 
-        $base_url = "http://www.subito-doc.de/preorder/?BI=" . $broker_id;
+        $base_url = "http://www.subito-doc.de/preorder/?BI=" . static::SUBITO_BROKER_ID;
         switch ($this->getBibliographicLevel()) {
             case 'Monograph':
                 $isbn = $this->getCleanISBN();
@@ -542,5 +544,9 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function isHybrid() {
         return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
+    }
+
+    public function showAvailability() {
+        return $this->isAvailableInTuebingen() && !empty($this->getLocalSignatures());
     }
 }
