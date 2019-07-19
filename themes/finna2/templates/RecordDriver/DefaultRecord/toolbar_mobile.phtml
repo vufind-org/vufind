@@ -69,13 +69,11 @@
         </ul>
       </li>
     </ul>
-    <?php if ($mergedData && count($mergedData['records']) > 1): ?>
     <ul class="nav nav-pills library-link">
-      <li>
-        <?=$this->translate('record_library_count_html', ['%%count%%' => count($mergedData['records'])])?>
-      <li>
+      <li class="hidden">
+        <?= $this->transEsc('Holdings'); ?>
+      </li>
     </ul>
-    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/toolbar_mobile.phtml -->

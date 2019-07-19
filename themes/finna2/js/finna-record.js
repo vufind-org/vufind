@@ -1,5 +1,7 @@
 /*global VuFind, finna, removeHashFromLocation, getNewRecordTab, ajaxLoadTab */
 finna.record = (function finnaRecord() {
+  var accordionTitleHeight = 64;
+
   function initDescription() {
     var description = $('#description_text');
     if (description.length) {
@@ -171,6 +173,14 @@ finna.record = (function finnaRecord() {
     $('.record-accordions .accordion-toggle').click(function accordionClicked(e) {
       return _toggleAccordion($(e.target).closest('.accordion'));
     });
+    if ($('.mobile-toolbar').length > 0 && $('.accordion-holdings').length > 0) {
+      $('.mobile-toolbar .library-link li').removeClass('hidden');
+      $('.mobile-toolbar .library-link li').click(function onLinkClick(e) {
+        e.stopPropagation();
+        $('html, body').animate({scrollTop: $('#tabnav').offset().top - accordionTitleHeight}, 150);
+        _toggleAccordion($('.accordion-holdings'));
+      });
+    }
   }
 
   function applyRecordAccordionHash(callback) {
@@ -208,7 +218,7 @@ finna.record = (function finnaRecord() {
       accordion.addClass('active');
       $recordTabs.find('.tab-pane.active').removeClass('active');
       if (!initialLoad && $('.record-accordions').is(':visible')) {
-        $('html, body').animate({scrollTop: accordion.offset().top - 64}, 150);
+        $('html, body').animate({scrollTop: accordion.offset().top - accordionTitleHeight}, 150);
       }
 
       if ($recordTabs.find('.' + tabid + '-tab').length > 0) {
