@@ -1,0 +1,89 @@
+<!-- START of: finna - record/previewform.phtml -->
+<h2><?= $this->transEsc('Preview'); ?></h2>
+
+<?=$this->flashmessages()?>
+<form class="form preview-record-form" method="post" name="previewRecord" action="<?=$this->recordLink()->getTabUrl('0', 'Preview') ?>" target="_blank">
+  <div class="form-group">
+    <label for="data" class="control-label"><?=$this->transEsc('Metadata')?>:</label>
+    <div>
+      <textarea id="data" name="data" class="form-control" required aria-required="true"></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="format" class="control-label"><?=$this->transEsc('Record Type')?>:</label>
+    <div>
+      <select id="format" name="format" class="form-control" required aria-required="true">
+        <option value=""><?=$this->transEsc('Select')?></option>
+        <option value="dc">Dublin Core</option>
+        <option value="qdc">Dublin Core (qualified)</option>
+        <option value="ead">EAD</option>
+        <option value="ead3">EAD 3</option>
+        <option value="forward">FORWARD</option>
+        <option value="lido">LIDO</option>
+        <option value="marc">MARC</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="source" class="control-label"><?=$this->transEsc('Source')?>:</label>
+    <div>
+      <select id="source" name="source" class="form-control" required aria-required="true">
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
+  </div>
+</form>
+
+<script>
+  // Try to guess the format
+  $('#data').change(function onDataChange() {
+    $format = $('#format');
+    if ($format.val() !== '') {
+      return;
+    }
+    var format = '';
+    var data = $(this).val();
+    if (data.match(/<\/([^>]+:)?lidoWrap>/)) {
+      format = 'lido';
+    } else if ((data.match(/<\/([^>]+:)?record>/) && data.match(/<\/([^>]+:)?leader>/)
+      || data.match(/^\d{5}/))
+    ) {
+      format = 'marc';
+    } else if (data.match(/<\/([^>]+:)?qualifieddc>/)) {
+      format = 'qdc';
+    } else if (data.match(/<\/([^>]+:)?dc>/)) {
+      format = 'dc';
+    } else if (data.match(/<\/([^>]+:)?ExchangeSet>/)) {
+      format = 'forward';
+    } else if (data.match(/<\/([^>]+:)?did>/)) {
+      format = 'ead';
+    }
+    if (format) {
+      $format.val(format);
+      $format.change();
+    }
+  });
+
+  var sources = <?=json_encode($this->sources);?>;
+  $('#format').change(function onFormatChange() {
+    var format = $(this).val();
+    var $source = $('#source');
+    $source.find('option').remove();
+    $(sources).each(function processSource(index, elem) {
+      if (elem.format === format) {
+        var desc = elem.institutionName;
+        if (elem.institutionName !== elem.institution) {
+          desc += ' (' + elem.institution + ')';
+        }
+        desc += ' - ' + elem.id
+        var $elem = $('<option>')
+          .attr('value', elem.id)
+          .text(desc);
+        $elem.appendTo($source);
+      }
+    });
+  });
+</script>
+<!-- END of: finna - record/previewform.phtml -->

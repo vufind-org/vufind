@@ -133,6 +133,16 @@ $config = [
                         'action'     => 'Feedback',
                     ]
                 ]
+            ],
+            'record-preview' => [
+                'type' => 'Zend\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/RecordPreview',
+                    'defaults' => [
+                        'controller' => 'Record',
+                        'action'     => 'PreviewForm',
+                    ]
+                ],
             ]
         ],
     ],
