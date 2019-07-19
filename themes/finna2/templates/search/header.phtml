@@ -104,7 +104,7 @@
     </div>
   </div>
 <?php else: ?>
-  <div class="finna-main-header-wrapper">
+  <div class="finna-main-header-wrapper<?=$searchType === 'advanced' ? ' search-advanced' : ''?>">
     <div class="container <?=$searchType != 'advanced' ? 'hidden-xs' : '';?>">
       <div class="finna-main-header">
         <h1 class="search-result-header">
