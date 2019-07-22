@@ -102,7 +102,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
         $snippets = [];
         if (count($hits) > self::MAX_SNIPPETS)
-                $hits = array_slice($hits, 0, self::MAX_SNIPPETS);
+            $hits = array_slice($hits, 0, self::MAX_SNIPPETS);
         error_log("HITS:" . count($hits));
         foreach ($hits as $hit) {
             if (array_key_exists('highlight', $hit))
