@@ -210,7 +210,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine('Language', 'getLanguages', null, ['translate' => true]);
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
