@@ -67,7 +67,7 @@
   });
 
   var sources = <?=json_encode($this->sources);?>;
-  $('#format').change(function onFormatChange() {
+  var onFormatChange = function onFormatChange() {
     var format = $(this).val();
     var $source = $('#source');
     $source.find('option').remove();
@@ -84,6 +84,8 @@
         $elem.appendTo($source);
       }
     });
-  });
+  };
+  $('#format').change(onFormatChange);
+  $('#format').change();
 </script>
 <!-- END of: finna - record/previewform.phtml -->
