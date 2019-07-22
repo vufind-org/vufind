@@ -147,16 +147,15 @@
           <li>
             <form class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
                <div class="input-group input-group-sm pull-right" style="padding-top:10px; padding-bottom:10px; max-width: 200px">
-                 <input id="searchForm_bibleranges" class="searchForm form-control search-query" type="text" name="lookfor" placeholder="<?=$this->transEsc("Bible Ranges")?>"
-                        value="<?=($currentHandler == "BibleRangeSearch") ? $this->escapeHtmlAttr($this->lookfor) : ''?>"/>
-
+                 <input id="searchForm_canonesranges" class="searchForm form-control search-query" type="text" name="lookfor" placeholder="<?=$this->transEsc("Canon Law Search")?>"
+                        value="<?=($currentHandler == "CanonesRangeSearch") ? $this->escapeHtmlAttr($this->lookfor) : ''?>"/>
                  <div class="input-group-btn">
-                     <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr("BibleRangeSearch")?>" data-type-protected="1"/>
-                     <input type="hidden" name="activeSearchClassId" value='Solr'>
-                     <? if (!empty($lastLimit)) {
-                         echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
-                     }?>
-                     <button type="submit" class="btn btn-primary search-button" value="bibleRange"><i class="fa fa-search"></i></button>
+                     <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr("CanonesRangeSearch")?>" data-type-protected="1"/>
+                 <input type="hidden" name="activeSearchClassId" value='Solr'>
+                 <? if (!empty($lastLimit)) {
+                     echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
+                 }?>
+                     <button type="submit" class="btn btn-primary search-button" value="Canones Range Search"><i class="fa fa-search"></i></button>
                  </div>
               </div>
             </form>
