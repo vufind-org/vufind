@@ -54,7 +54,8 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
     }
 
     protected function addLanguages(&$spec) {
-        $spec->setLine('Language', 'getLanguages');
+        // note: translation added, will probably be fixed in VuFind 6
+        $spec->setLine('Language', 'getLanguages', null, ['translate' => true]);
     }
 
     protected function addNewerTitles(&$spec) {
