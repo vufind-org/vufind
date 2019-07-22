@@ -71,7 +71,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'highlight' => [
                      'fields' => [
                           self::FIELD => [
-                               'fragment_size' => $verbose ? '800' : '200',
+                               'fragment_size' => $verbose ? '700' : '300',
                                'phrase_limit' => '3'
                            ]
                       ]

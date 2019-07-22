@@ -44,6 +44,11 @@ var TueFind = {
                 $(document).ready(function () {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder").each(function () {
+                        if(snippets) {
+                          $(this).replaceWith('<div id="snippets">' + snippets.join('<br/>') + '<br/>' +'</div>');
+                        }
+                    });
+                    $("#snippets").each(function () {
                         if (snippets) {
                             $(this).removeAttr('style');
                             $(this).html(snippets.join('<br/>') + '<br/>');
