@@ -116,7 +116,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                 }
               }
           }
-          return implode(',', $translatedRoles);
+          return implode(', ', $translatedRoles);
         };
         return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
     }

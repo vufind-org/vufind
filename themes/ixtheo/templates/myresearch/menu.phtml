@@ -90,9 +90,12 @@
 <?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <div class="list-group">
+    <!-- IxTheo: Hide duplicate menu entry for "myresearch-favorites" -->
+    <!--
     <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Your Favorites')?>
     </a>
+    -->
     <?php $lists = $user->getLists() ?>
     <?php foreach ($lists as $list): ?>
       <a href="<?=$this->url('userList', ['id' => $list['id']])?>" class="list-group-item<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>">
