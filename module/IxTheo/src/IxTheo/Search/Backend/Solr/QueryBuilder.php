@@ -12,52 +12,54 @@ define("_BIB_REF_CMD_PARAMS_", implode(' ', [_BIB_REF_MAPS_PATH_ . 'bible_aliase
 class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
 {
     const BIBLE_REFERENCE_COMMAND = '/usr/local/bin/bib_ref_to_codes_tool';
+    const CANONES_REFERENCE_COMMAND = '/usr/local/bin/canon_law_ref_to_codes_tool';
     const BIBLE_REFERENCE_COMMAND_PARAMETERS = _BIB_REF_CMD_PARAMS_;
+    const BIBLE_RANGE_HANDLER = 'BibleRangeSearch';
+    const CANONES_RANGE_HANDLER = 'CanonesRangeSearch';
+    const BIBLE_RANGE_PARSER = 'bibleRangeParser';
+    const CANONES_RANGE_PARSER = 'canonesRangeParser';
+
 
     public function build(AbstractQuery $query)
     {
         // TODO: Bei Erweiterter Suche wird eine andere Query-Klasse genutzt.
         // Diese muss anders behandelt werden, da sie aus vielen Sub-Queries
-        // besteht. Vorerst wird die Bibelstellensuche nur bei der Standartsuche
-        // angewendet, wenn direkt für Bibelstellen gesucht wird.
-        if (is_a($query, 'VuFindSearch\Query\QueryGroup') || $query->getHandler() !== "BibleRangeSearch") {
+        // besteht. Vorerst werden die Ixtheo-Bereichssuchen nur bei der Standardsuche angewendet
+        $handler = $query->getHandler();
+        if (is_a($query, 'VuFindSearch\Query\QueryGroup') || ($handler !== self::BIBLE_RANGE_HANDLER && $handler !== self::CANONES_RANGE_HANDLER))
             return parent::build($query);
-        }
         $queryString = $query->getString();
-        $newQuery = $this->getManipulatedQueryString($query);
+        $newQuery = $this->getManipulatedQueryString($handler, $query);
         $result = parent::build($query);
         $result->set('q', $newQuery);
         $query->setString($queryString);
-        $result->set('defType', 'bibleRangeParser');
+        $customParser = $handler == self::CANONES_RANGE_HANDLER ? self::CANONES_RANGE_PARSER : self::BIBLE_RANGE_PARSER;
+        $result->set('defType', $customParser);
         return $result;
     }
 
-    private function getManipulatedQueryString(AbstractQuery $query)
+
+    private function getManipulatedQueryString($handler, AbstractQuery $query)
     {
-        $bibleReferences = $this->parseBibleReference($query);
-        return $this->translateToSearchString($bibleReferences);
+        $rangeReferences = '';
+        if ($handler == self::BIBLE_RANGE_HANDLER)
+            $rangeReferences = $this->parseBibleReference($query);
+        else if ($handler == self::CANONES_RANGE_HANDLER)
+            $rangeReferences = $this->parseCanonesReference($query);
+        return $this->translateToSearchString($rangeReferences);
     }
 
-    private function parseBibleReference(AbstractQuery $query)
-    {
-        $searchQuery = $query->getString();
-        if (!empty($searchQuery)) {
-            $cmd = $this->getBibleReferenceCommand($searchQuery);
-            exec($cmd, $output, $return_var);
-            return $output;
-        }
-        return array();
-    }
 
-    private function translateToSearchString($bibleReferences)
+    private function translateToSearchString($rangeReferences)
     {
-        if (empty($bibleReferences)) {
-            // if no bible references were found for given query, search for a range which doesn't exist to get no result.
-            $bibleReferences = ["99999999_99999999"];
+        if (empty($rangeReferences)) {
+            // if no references were found for given query, search for a range which doesn't exist to get no result.
+            $rangeReferences = ["999999999_999999999"];
         }
-        $searchString = implode(',', $bibleReferences);
+        $searchString = implode(',', $rangeReferences);
         return $searchString;
     }
+
 
     private function getBibleReferenceCommand($searchQuery)
     {
@@ -68,5 +70,38 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
             escapeshellarg($searchQuery),
             self::BIBLE_REFERENCE_COMMAND_PARAMETERS
         ]);
+    }
+
+
+    private function getCanonesReferenceCommand($searchQuery) {
+        return implode(' ', [
+            self::CANONES_REFERENCE_COMMAND,
+            "--query",
+            escapeshellarg($searchQuery)
+        ]);
+    }
+
+
+    private function parseBibleReference(AbstractQuery $query)
+    {
+        $searchQuery = $query->getString();
+        if (!empty($searchQuery)) {
+            $cmd = $this->getBibleReferenceCommand($searchQuery);
+            exec($cmd, $output, $return_var);
+            return $output;
+        }
+        return [];
+    }
+
+
+    private function parseCanonesReference(AbstractQuery $query)
+    {
+        $searchQuery = $query->getString();
+        if (!empty($searchQuery)) {
+            $cmd = $this->getCanonesReferenceCommand($searchQuery);
+            exec($cmd, $output, $return_var);
+            return $output;
+        }
+        return [];
     }
 }

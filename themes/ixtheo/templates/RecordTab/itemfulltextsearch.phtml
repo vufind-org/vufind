@@ -1,0 +1,15 @@
+<?php
+    $this->headTitle($this->translate('Item Fulltext Search') . ': ' . $this->driver->getBreadcrumb())
+?>
+<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" autocomplete="off" 
+      onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;, &quot;<?=$this->driver->getUniqueID()?>&quot;, this.searchForm_fulltext.value, true)">
+  <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
+      <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="Search the fulltext of this item"/>
+      <div class="input-group-btn">
+          <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i></button>
+      </div>
+   </div>
+</form>
+<span id="fulltext_snippets">
+    <div id="snippet_place_holder"></div>
+</span>

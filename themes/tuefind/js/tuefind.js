@@ -34,20 +34,26 @@ var TueFind = {
         });
     },
 
-    GetFulltextSnippets: function(url, doc_id, query) {
+    GetFulltextSnippets: function(url, doc_id, query, verbose = false) {
         // Try to determine status
         $.ajax({
             type: "GET",
-            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id,
+            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : ""),
             dataType: "json",
             success: function (json) {
                 $(document).ready(function () {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder").each(function () {
+                        if(snippets) {
+                          $(this).replaceWith('<div id="snippets">' + snippets.join('<br/>') + '<br/>' +'</div>');
+                        }
+                    });
+                    $("#snippets").each(function () {
                         if (snippets) {
-                            $(this).replaceWith(snippets.join('<br/>') + '<br/>');
+                            $(this).removeAttr('style');
+                            $(this).html(snippets.join('<br/>') + '<br/>');
                         } else
-                            $("#fulltext_snippets").remove();
+                            $(this).html("");
                     });
                 });
             }, // end success
