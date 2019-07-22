@@ -15,12 +15,12 @@ class ItemFulltextSearch extends \VuFind\RecordTab\AbstractContent
 
     public function isActive()
     {
-         return true;
+         return false;
     }
 
     public function isVisisble()
     {
-         return true;
+         return false;
     }
 }
 ?>
