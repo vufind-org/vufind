@@ -90,7 +90,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
             exec($cmd, $output, $return_var);
             return $output;
         }
-        return array();
+        return [];
     }
 
 
@@ -102,6 +102,6 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
             exec($cmd, $output, $return_var);
             return $output;
         }
-        return array();
+        return [];
     }
 }
