@@ -2,10 +2,9 @@
 
 namespace KrimDok\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
 
-class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataFormatterFactory {
+class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFormatterFactory {
 
     /**
      * Get default specifications for displaying data in core metadata.
@@ -16,79 +15,32 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
     {
         $spec = new SpecBuilder();
 
-        // Published in (Journal Title)
+        $this->addPublishedIn($spec);
+        $this->addNewerTitles($spec);
+        $this->addPreviousTitles($spec);
+        $this->addDeduplicatedAuthors($spec);
+        $this->addFormats($spec);
+        $this->addLanguages($spec);
+        $this->addPublications($spec);
+        $this->addContainerIdsAndTitles($spec);
+        $this->addEdition($spec);
+        $this->addOnlineAccess($spec);
+        $this->addJOP($spec);
+        // Availability in Tübingen (KrimDok-specific)
         $spec->setTemplateLine(
-            'Published in', 'getContainerTitle', 'data-containerTitle.phtml'
+            'Availability in Tubingen', 'showAvailabilityInTuebingen', 'data-availability_in_tuebingen.phtml'
         );
-        // Newer Titles
-        $spec->setLine(
-            'New Title', 'getNewerTitles', null, ['recordLink' => 'title']
-        );
-        // Prev Titles
-        $spec->setLine(
-            'Previous Title', 'getPreviousTitles', null, ['recordLink' => 'title']
-        );
-        // Deduplicated Authors (primary, corporate, secondary)
-        $spec->setMultiLine(
-            'Authors', 'getDeduplicatedAuthors', $this->getAuthorFunction()
-        );
-        // Formats
-        $spec->setLine(
-            'Format', 'getFormats', 'RecordHelper',
-            ['helperMethod' => 'getFormatList']
-        );
-        // Languages
-        $spec->setLine('Language', 'getLanguages');
-        // Publications
-        $spec->setTemplateLine(
-            'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
-        );
-        // Container IDs and Titles
-        $spec->setTemplateLine(
-            'In', 'showContainerIdsAndTitles', 'data-container_ids_and_titles.phtml'
-        );
-        // Edition
-        $spec->setLine(
-            'Edition', 'getEdition', null,
-            ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
-        );
-        // Online Access (URLS and material types)
-        $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
-        // JOP
-        $spec->setTemplateLine(
-            'Journals Online & Print', 'showJOP', 'data-JOP.phtml'
-        );
-        // Availability
-        $spec->setTemplateLine(
-            'Availability in Tubingen', 'showAvailability', 'data-availability.phtml'
-        );
-        // HBZ
-        $spec->setTemplateLine(
-            'Check Availability', 'showHBZ', 'data-HBZ.phtml'
-        );
+        $this->addHBZ($spec);
         // PDA (KrimDok-specific)
         $spec->setTemplateLine(
             'PDA', 'isAvailableForPDA', 'data-PDA.phtml'
         );
-        // Subito
-        $spec->setTemplateLine(
-            'Subito Delivery Service', 'showSubito', 'data-subito.phtml'
-        );
-        // Volumes / Articles (Superior Work)
-        $spec->setTemplateLine(
-            'Volumes / Articles', 'isRealSuperiorWork', 'data-volumes_articles.phtml'
-        );
-        // Subjects
-        $spec->setTemplateLine(
-            'Subjects', 'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml'
-        );
-        // Tags
-        $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
-        // Record Links
-        $spec->setTemplateLine(
-            'Related Items', 'getAllRecordLinks', 'data-allRecordLinks.phtml'
-        );
-        
+        $this->addSubito($spec);
+        $this->addVolumesAndArticles($spec);
+        $this->addSubjects($spec);
+        $this->addTags($spec);
+        $this->addRecordLinks($spec);
+
         return $spec->getArray();
     }
 }
