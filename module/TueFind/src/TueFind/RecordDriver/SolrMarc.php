@@ -70,7 +70,7 @@ class SolrMarc extends SolrDefault
         }
         if (count($roles) == 0)
             return $fallback_roles;
-        return ['role' => $roles];
+        return $roles;
     }
 
     /**

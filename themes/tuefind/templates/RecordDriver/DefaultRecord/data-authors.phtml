@@ -19,6 +19,10 @@ $formattedAuthors = [];
         <?=$this->escapeHtml($author)?>
       </a>
       <?php
+        // TueFind: Show all author roles
+        if (isset($dataFields['role']))
+            $dataFields['role'] = $this->driver->getAuthorRoles($author, $dataFields['role']);
+
         // Display additional data using the appropriate translation prefix
         // (for example, to render author roles correctly):
         if (!empty($requiredDataFields)) {
