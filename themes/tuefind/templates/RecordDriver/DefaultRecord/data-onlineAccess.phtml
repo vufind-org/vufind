@@ -1,0 +1,4 @@
+<?php foreach ($this->driver->getURLsAndMaterialTypes() as $url => $material_type): ?>
+  <a href="<?=$url?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=$this->transEsc($material_type)?></a>
+  <br/>
+<?php endforeach; ?>

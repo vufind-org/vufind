@@ -1,0 +1,86 @@
+<?php $formats = $this->driver->getFormats(); ?>
+<?php $i = 0 ?>
+<?php $issns_and_titles = [] ?>
+<?php if (in_array("Article", $formats) || in_array("Review", $formats)): ?>
+    <?php $article_issn = $this->driver->tryMethod('getCleanISSN') ?>
+    <?php if (!empty($article_issn)): ?>
+        <?php $issns_and_titles[$article_issn] = '' ?>
+    <?php endif; ?>
+<?php elseif (in_array("Journal", $formats) || in_array("Serial", $formats)): ?>
+    <?php $issns_and_titles = $this->driver->tryMethod('getJOPISSNsAndTitles') ?>
+<?php endif; ?>
+<?php foreach ($issns_and_titles as $issn => $title): ?>
+    <?php ++$i ?>
+    <?php $jop_place_holder_id = "jop_place_holder_" . $i ?>
+    <?php $jop_icons_id = "jop_icons_" . $i ?>
+
+    <?php $issn = (substr_count($issn, "-") == 0) ? implode("-", str_split($issn, 4)) : $issn ?>
+    <?php if (!empty($issn)): ?>
+        <?php
+        // prepare URL params
+        $vufind_lang = $this->tuefind()->getTranslatorLocale();
+        $jop_lang = $vufind_lang == 'de' ? 'de' : 'en';
+        $genre = in_array('Article', $formats) ? "article" : "journal";
+        $url_params = ['sid' => 'bib:tueb',
+            'issn' => $issn,
+            'genre' => $genre,
+            'lang' => $jop_lang];
+        if ($genre == "article") {
+            $volume = $this->escapeHtml($this->driver->getVolume());
+            if (!empty($volume))
+                $url_params['volume'] = $volume;
+            $issue = $this->escapeHtml($this->driver->getIssue());
+            if (!empty($issue))
+                $url_params['issue'] = $issue;
+            $year = $this->escapeHtml($this->driver->getYear());
+            if (!empty($year))
+                $url_params['date'] = $year;
+            $pages = $this->escapeHtml(str_replace(" ", "", $this->driver->getPages()));
+            if (!empty($pages))
+                $url_params['pages'] = $pages;
+        }
+
+        // prepare url_suffix (same for each url)
+        $url_suffix_params = '?';
+        foreach ($url_params as $key => $param) {
+            if ($url_suffix_params != '?')
+                $url_suffix_params .= '&';
+            $url_suffix_params .= urlencode($key) . '=' . urlencode($param);
+        }
+
+        // special handling for client ip
+        $client_ip = $_SERVER['REMOTE_ADDR'];
+        $url_suffix_client = '&pid=' . urlencode('client_ip=' . $client_ip);
+
+        $url_suffix_full = $url_suffix_params . $url_suffix_client;
+
+        // base URLs
+        $url_html_base = 'http://services.dnb.de/fize-service/gvr/html-service.htm';
+        $url_img_base = 'http://services.dnb.de/fize-service/gvr/icon';
+        $url_ajax_base = 'http://services.dnb.de/fize-service/gvr/full.xml';
+
+        // full URLs with suffix
+        $url_html = $url_html_base . $url_suffix_full;
+        $url_img = $url_img_base . $url_suffix_full;
+        $url_ajax = $url_ajax_base . $url_suffix_full;
+
+        // proxy URLs
+        $url_img_proxy = $this->url('home') . 'proxy/load?url=' . urlencode($url_img);
+        $url_ajax_proxy = $this->url('home') . 'proxy/load?url=' . urlencode($url_ajax);
+
+        $part_img = '<img src="' . $url_img_proxy . '" alt="JOP Icons should be here"/>';
+        ?>
+        <div style="color:grey" id="<?= $jop_icons_id ?>">
+            <a href="<?= $url_html ?>" target="_blank">
+                <?= $part_img ?>
+            </a>
+        </div>
+        <div style="color:grey" id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
+        <script>
+            TueFind.GetJOPInformation('<?= $jop_place_holder_id ?>', '<?= $jop_icons_id ?>',
+                    '<?= $url_ajax_proxy ?>', '<?= $url_html ?>', '<?= $part_img ?>',
+                    '<?= $this->transEsc("Available online") ?>', '<?= $this->transEsc("Check Availability") ?>',
+                    '<?= count($issns_and_titles) > 1 ? $title : '' ?>');
+        </script>
+    <?php endif; ?>
+<?php endforeach; ?>

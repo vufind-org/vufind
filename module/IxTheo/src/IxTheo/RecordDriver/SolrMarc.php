@@ -4,6 +4,8 @@ namespace IxTheo\RecordDriver;
 
 class SolrMarc extends SolrDefault
 {
+    const SUBITO_BROKER_ID = 'IXTHEO';
+
     public function canUseTAD($userId)
     {
         $formats_tad_allowed = array('Article');

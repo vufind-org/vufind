@@ -151,6 +151,14 @@ class SolrMarc extends SolrDefault
         return false;
     }
 
+    public function isSubscriptionBundle() {
+        return ($this->isSuperiorWork() && in_array("Subscription Bundle", $this->getFormats()));
+    }
+
+    public function isRealSuperiorWork() {
+        return ($this->isSuperiorWork() && !$this->isSubscriptionBundle());
+    }
+
     public function workIsTADCandidate() {
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isAvailableInTubingenUniversityLibrary();
     }
@@ -161,6 +169,29 @@ class SolrMarc extends SolrDefault
         if (in_array("Subscription Bundle", $this->getFormats()))
             return true;
         return false;
+    }
+
+    public function showContainerIdsAndTitles() {
+        return (!empty($this->getContainerIDsAndTitles())
+                || $this->getIssue() || $this->getPages()
+                || $this->getVolume() || $this->getYear());
+    }
+
+    public function showHBZ() {
+        return !$this->suppressDisplayByFormat();
+    }
+
+    public function showJOP() {
+        return (count($this->getFormats()) > 0);
+    }
+
+    public function showPDA() {
+        $formats = $this->getFormats();
+        return (!empty($formats) && (in_array("Book", $formats)) && $this->isPotentiallyPDA());
+    }
+
+    public function showSubito() {
+        return !$this->suppressDisplayByFormat() && $this->getSubitoURL() != '';
     }
 
     public function getParallelEditionPPNs() {
