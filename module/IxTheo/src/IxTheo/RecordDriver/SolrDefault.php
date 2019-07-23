@@ -78,13 +78,15 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         if (!isset($this->fields['author2_and_role']))
             return [];
 
-        $roles = array();
+        $authorsRoles = [];
         foreach ($this->fields['author2_and_role'] as $author_and_roles) {
             $parts = explode('$', $author_and_roles);
-            $roles[] = array_slice($parts, 1);
+            $roles = array_slice($parts, 1);
+            $roles = array_filter($roles, function($value) { return $value !== ''; });
+            $authorsRoles[] = $roles;
         }
 
-        return $roles;
+        return $authorsRoles;
     }
 
     /**
