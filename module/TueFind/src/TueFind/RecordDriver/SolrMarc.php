@@ -55,7 +55,7 @@ class SolrMarc extends SolrDefault
      * @param array $fallback_roles
      * @return array
      */
-    public function getAuthorRoles($author_heading, $fallback_roles=[]) {
+    public function getAuthorRoles($author_heading) {
         $roles = [];
         $authors = $this->getMarcRecord()->getFields('^100|700$', true);
         foreach ($authors as $author) {
@@ -68,8 +68,6 @@ class SolrMarc extends SolrDefault
                 break;
             }
         }
-        if (count($roles) == 0)
-            return $fallback_roles;
         return $roles;
     }
 
