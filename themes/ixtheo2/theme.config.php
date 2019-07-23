@@ -3,7 +3,7 @@ return [
     'extends' => 'tuefind2',
     'favicon' => 'ixtheo-favicon.ico',
     'js' => [
-        'scripts.js',
+        'ixtheo.js',
     ],
     'helpers' => [
         'factories' => [
