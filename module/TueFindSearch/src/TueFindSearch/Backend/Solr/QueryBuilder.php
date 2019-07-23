@@ -9,7 +9,7 @@ use VuFindSearch\Query\QueryGroup;
 
 
 class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
-    protected $createExplainQuery = true;
+    protected $createExplainQuery = false;
 
     public function setCreateExplainQuery($enable)
     {
