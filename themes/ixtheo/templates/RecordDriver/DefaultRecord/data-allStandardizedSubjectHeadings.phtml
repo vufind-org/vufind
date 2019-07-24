@@ -1,0 +1,15 @@
+<?php foreach ($data as $current):?>
+  <?php // Offer a browse button that allows to jump to browse mode ?>
+  <?php $parts = preg_split("~(?<!\\\)/~", $current); ?>
+  <?php $query = '"'. implode('" "', $parts).'"'; ?>
+  <a href="<?=$this->url('keywordchainsearch-results')?>?lookfor=<?=urlencode($query)?>" title="<?=$this->transEsc('Browse Keywordchains')?>"><span class="iconlabel label label-info">B</span></a>
+  <?php // Make single keywords clickable ?>
+  <?php if (count($parts) > 0):?>
+    <?php $i=0 ?>
+    <?php foreach ($parts as $part):?>
+      <a href="<?= $this->record($this->driver)->getLink('subject', $part)?>"><?= $this->escapeHtml(str_replace("\\/", "/", $part)) ?></a>
+      <?= $i++ < count($parts) - 1 ? ' / ' : '' ?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+  <br/>
+<?php endforeach; ?>
