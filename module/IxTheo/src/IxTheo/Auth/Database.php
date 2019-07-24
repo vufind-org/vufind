@@ -78,7 +78,7 @@ class Database extends \VuFind\Auth\Database
     public function authenticate($request)
     {
         $user = parent::authenticate($request);
-        $userSystem = $ixTheoUser->user_type;
+        $userSystem = $user->user_type;
         $ixTheoUser = $this->getDbTableManager()->get('IxTheoUser')->get($user->id);
         $currentSystem = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
         if ($userSystem != $currentSystem)
