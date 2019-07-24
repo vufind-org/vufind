@@ -119,6 +119,58 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get Author Information with Associated Data Fields
+     *
+     * @param string $index      The author index [primary, corporate, or secondary]
+     * used to construct a method name for retrieving author data (e.g.
+     * getPrimaryAuthors).
+     * @param array  $dataFields An array of fields to used to construct method
+     * names for retrieving author-related data (e.g., if you pass 'role' the
+     * data method will be similar to getPrimaryAuthorsRoles). This value will also
+     * be used as a key associated with each author in the resulting data array.
+     *
+     * @return array
+     */
+    public function getAuthorDataFields($index, $dataFields = [])
+    {
+        $data = $dataFieldValues = [];
+
+        // Collect author data
+        $authorMethod = sprintf('get%sAuthors', ucfirst($index));
+        $authors = $this->tryMethod($authorMethod, [], []);
+
+        // Collect attribute data
+        foreach ($dataFields as $field) {
+            $fieldMethod = $authorMethod . ucfirst($field) . 's';
+            $dataFieldValues[$field] = $this->tryMethod($fieldMethod, [], []);
+        }
+
+        // Match up author and attribute data (this assumes that the attribute
+        // arrays have the same indices as the author array; i.e. $author[$i]
+        // has $dataFieldValues[$attribute][$i].
+        foreach ($authors as $i => $author) {
+            if (!isset($data[$author])) {
+                $data[$author] = [];
+            }
+
+            foreach ($dataFieldValues as $field => $dataFieldValue) {
+                if (!empty($dataFieldValue[$i])) {
+                    // IxTheo: Field can have multiple values (e.g. secondary author roles)
+                    if (!isset($data[$author][$field]))
+                        $data[$author][$field] = [];
+                    if (is_array($dataFieldValue[$i])) {
+                        $data[$author][$field] = array_merge($data[$author][$field], $dataFieldValue[$i]);
+                    } else {
+                        $data[$author][$field][] = $dataFieldValue[$i];
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Get corporation.
      *
      * @return array
