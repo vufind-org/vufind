@@ -79,7 +79,14 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $this->addVolumesAndArticles($spec);
         $this->addEdition($spec);
         $this->addSeries($spec);
-        $this->addSubjects($spec);
+        // Standardized Subjects (IxTheo-specific)
+        $spec->setTemplateLine(
+            'Standardized Subjects', 'getAllStandardizedSubjectHeadings', 'data-allStandardizedSubjectHeadings.phtml'
+        );
+        // Non-standardized Subjects (IxTheo-specific)
+        $spec->setTemplateLine(
+            'Nonstandardized Subjects', 'getAllNonStandardizedSubjectHeadings', 'data-allNonStandardizedSubjectHeadings.phtml'
+        );
         $this->addChildRecords($spec);
         $this->addOnlineAccess($spec);
         // Parallel Edition PPNs + Unlinked parallel Editions (IxTheo-specific)
