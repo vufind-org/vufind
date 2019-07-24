@@ -60,7 +60,6 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         }
         $this->addPublications($spec);
         $this->addContainerIdsAndTitles($spec);
-
         // Reviews (IxTheo-specific)
         $spec->setTemplateLine(
             'Reviews', 'getReviews', 'data-reviews.phtml'
