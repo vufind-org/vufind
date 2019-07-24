@@ -18,7 +18,7 @@ class ItemFulltextSearch extends \VuFind\RecordTab\AbstractContent
          return $this->getRecordDriver()->tryMethod('hasFulltext');
     }
 
-    public function isVisisble()
+    public function isVisible()
     {
          return $this->getRecordDriver()->tryMethod('hasFulltext');
     }
