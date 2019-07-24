@@ -117,4 +117,15 @@ class SolrMarc extends SolrDefault
 
         return $result;
     }
+
+
+    /**
+     * Check whether there are fulltexts associated with this record
+     * @return bool
+     */
+
+    public function hasFulltext() {
+        return isset($this->fields['has_fulltext']);
+    }
+
 }
