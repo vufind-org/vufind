@@ -15,12 +15,12 @@ class ItemFulltextSearch extends \VuFind\RecordTab\AbstractContent
 
     public function isActive()
     {
-         return false;
+         return $this->getRecordDriver()->tryMethod('hasFulltext');
     }
 
     public function isVisisble()
     {
-         return false;
+         return $this->getRecordDriver()->tryMethod('hasFulltext');
     }
 }
 ?>
