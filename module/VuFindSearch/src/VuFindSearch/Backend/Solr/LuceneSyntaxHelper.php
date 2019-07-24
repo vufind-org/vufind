@@ -485,11 +485,11 @@ class LuceneSyntaxHelper
      */
     protected function normalizeUnquotedText($input)
     {
-        // Freestanding hyphens and slashes can cause problems:
+        // Freestanding hyphens, pluses and slashes can cause problems:
         $lookahead = self::$insideQuotes;
-        // remove freestanding hyphens
+        // remove freestanding hyphens and pluses
         $input = preg_replace(
-            '/(\s+[-]$|\s+[-]\s+|^[-]\s+)' . $lookahead . '/',
+            '/(\s+[+-]$|\s+[+-]\s+|^[+-]\s+)' . $lookahead . '/',
             ' ', $input
         );
         // wrap quotes on standalone slashes
