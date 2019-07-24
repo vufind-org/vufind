@@ -89,6 +89,7 @@
     <field name="relbib_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="reviews" type="text" indexed="false" stored="true" multiValued="true"/>
     <field name="reviewed_records" type="text" indexed="false" stored="true" multiValued="true"/>
+    <field name="time_aspect_ranges" type="string" indexed="true" stored="true" />
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_synonyms" type="text" indexed="true" stored="true" multiValued="true"/>

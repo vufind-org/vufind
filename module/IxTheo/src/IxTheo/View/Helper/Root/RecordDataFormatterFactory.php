@@ -35,7 +35,6 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
     public function getDefaultCoreSpecs()
     {
         $spec = new SpecBuilder();
-
         $this->addPublishedIn($spec);
         $this->addNewerTitles($spec);
         $this->addPreviousTitles($spec);
@@ -70,8 +69,8 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
             'Reviewed', 'getReviewedRecords', 'data-reviewed_records.phtml'
         );
         // Enclosed Titles (IxTheo-specific)
-        $spec->setMultiLine(
-            'Enclosed titles', 'getEnclosedTitles', null
+        $spec->setLine(
+            'Enclosed titles', 'getEnclosedTitles'
         );
         // Subscription Bundle (IxTheo-specific)
         $spec->setTemplateLine(
