@@ -75,25 +75,17 @@ class Database extends \VuFind\Auth\Database
         exec("/usr/local/bin/set_tad_access_flag.sh " . $user->id);
     }
 
-
-    protected function updateUserType($userID) {
-         $ixTheoUserTable = $this->getDbTableManager()->get('IxTheoUser');
-         if (!isset($ixTheoUserTable) || !$ixTheoUserTable)
-             return;
-         $ixtheoSelect = $ixTheoUserTable->getSql()->select()->where(['id' => $userID]);
-         $userRow = $ixTheoUserTable->selectWith($ixtheoSelect)->current();
-         // Derive user_type from the instance used
-         if (!isset($userRow))
-             return;
-         $userRow->user_type = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
-         $userRow->save();
-    }
-
-
     public function authenticate($request)
     {
         $user = parent::authenticate($request);
-        $this->updateUserType($user->id);
+        $userSystem = $ixTheoUser->user_type;
+        $ixTheoUser = $this->getDbTableManager()->get('IxTheoUser')->get($user->id);
+        $currentSystem = \IxTheo\Utility::getUserTypeFromUsedEnvironment();
+        if ($userSystem != $currentSystem)
+            throw new AuthException($this->translate('authentication_error_wrong_system',
+                                    ['%%currentSystem%%' => $currentSystem,
+                                     '%%userSystem%%' => $userSystem]));
+
         return $user;
     }
 
