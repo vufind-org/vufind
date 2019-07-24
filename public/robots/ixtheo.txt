@@ -42,3 +42,4 @@ Disallow: /RssFeed
 Disallow: /Search/Results
 Disallow: /Summon
 Disallow: /SummonRecord
+Sitemap: https://ixtheo.de/sitemaps/ixtheo/sitemapIndex.xml
