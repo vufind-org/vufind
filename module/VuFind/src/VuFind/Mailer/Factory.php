@@ -64,6 +64,9 @@ class Factory implements FactoryInterface
         $settings = [
             'host' => $config->Mail->host, 'port' => $config->Mail->port
         ];
+        if (isset($config->Mail->name)) {
+            $settings['name'] = $config->Mail->name;
+        }
         if (isset($config->Mail->username) && isset($config->Mail->password)) {
             $settings['connection_class'] = 'login';
             $settings['connection_config'] = [
