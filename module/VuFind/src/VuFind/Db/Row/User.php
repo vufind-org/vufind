@@ -144,6 +144,23 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Save date/time when email address has been verified.
+     *
+     * @param string $datetime optional date/time to save.
+     *
+     * @return mixed           The output of the save method.
+     */
+    public function saveEmailVerified($datetime=null)
+    {
+        if ($datetime === null) {
+            $datetime = date('Y-m-d H:i:s');
+        }
+
+        $this->email_verified = $datetime;
+        return $this->save();
+    }
+
+    /**
      * This is a getter for the Catalog Password. It will return a plaintext version
      * of the password.
      *
@@ -225,6 +242,16 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $this->home_library = $homeLibrary;
         $this->updateLibraryCardEntry();
         return $this->save();
+    }
+
+    /**
+     * Check whether the email address has been verified yet.
+     *
+     * @return bool
+     */
+    public function checkEmailVerified()
+    {
+        return !empty($this->email_verified);
     }
 
     /**

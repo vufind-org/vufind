@@ -275,6 +275,10 @@ footer {
 .myresearch-menu .badge.ok { background-color: $state-success-bg; }
 .myresearch-menu .badge.warn { background-color: $state-warning-bg; }
 .myresearch-menu .badge.overdue { background-color: $state-danger-bg; }
+.myresearch-menu .status .fa {
+  height: 1rem;
+  margin-top: 3px;
+}
 
 .checkedout-status .badge {
   border-radius: 2px;
@@ -282,7 +286,7 @@ footer {
   border: 1px solid; /* color inherited from bootstrap */
   height: 20px;
 }
-.active .status .badge {
+.myresearch-menu .active .status .badge {
   color: #fff;
   background-color: transparent;
   border: 1px solid #fff;
@@ -401,3 +405,8 @@ div.holding-notes {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
+
+.odbrand {
+  padding: 7px;
+}
+

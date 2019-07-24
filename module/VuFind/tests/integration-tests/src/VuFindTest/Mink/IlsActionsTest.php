@@ -37,9 +37,12 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Unit\DemoDriverTestTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -83,93 +86,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Get transaction JSON for Demo.ini.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
-     *
-     * @return array
-     */
-    protected function getFakeTransactions($bibId)
-    {
-        $rawDueDate = strtotime("now +5 days");
-        return json_encode(
-            [
-                [
-                    'duedate' => $rawDueDate,
-                    'rawduedate' => $rawDueDate,
-                    'dueStatus' => 'due',
-                    'barcode' => 1234567890,
-                    'renew'   => 0,
-                    'renewLimit' => 1,
-                    'request' => 0,
-                    'id' => $bibId,
-                    'source' => 'Solr',
-                    'item_id' => 0,
-                    'renewable' => true,
-                ]
-            ]
-        );
-    }
-
-    /**
-     * Get Demo.ini override settings for testing ILS functions.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
-     *
-     * @return array
-     */
-    public function getDemoIniOverrides($bibId = 'testsample1')
-    {
-        return [
-            'Records' => [
-                'transactions' => $this->getFakeTransactions($bibId),
-            ],
-            'Failure_Probabilities' => [
-                'cancelHolds' => 0,
-                'cancelILLRequests' => 0,
-                'cancelStorageRetrievalRequests' => 0,
-                'checkILLRequestIsValid' => 0,
-                'checkRenewBlock' => 0,
-                'checkRequestIsValid' => 0,
-                'checkStorageRetrievalRequestIsValid' => 0,
-                'getAccountBlocks' => 0,
-                'getDefaultRequestGroup' => 0,
-                'getHoldDefaultRequiredDate' => 0,
-                'getRequestBlocks' => 0,
-                'placeHold' => 0,
-                'placeILLRequest' => 0,
-                'placeStorageRetrievalRequest' => 0,
-                'renewMyItems' => 0,
-            ],
-            'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
-            'Users' => ['catuser' => 'catpass'],
-        ];
-    }
-
-    /**
-     * Get a fake item record for inclusion in the Demo driver configuration.
-     *
-     * @return array
-     */
-    public function getFakeItem()
-    {
-        return [
-            'barcode'      => '12345678',
-            'availability' => true,
-            'status'       => 'Available',
-            'location'     => 'Test Location',
-            'locationhref' => false,
-            'reserve'      => 'N',
-            'callnumber'   => 'Test Call Number',
-            'duedate'      => '',
-            'is_holdable'  => true,
-            'addLink'      => true,
-            'addStorageRetrievalRequestLink' => 'check',
-            'addILLRequestLink' => 'check',
-        ];
-    }
-
-    /**
      * Move the current page to a record by performing a search.
      *
      * @param string $id ID of record to access.
@@ -196,7 +112,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->findCss($page, '#profile_cat_username')->setValue($username);
         $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
     }
 
@@ -210,13 +126,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     protected function placeHoldAndGoToHoldsScreen($page)
     {
         // Open the "place hold" dialog
-        $this->findCss($page, 'a.placehold')->click();
+        $this->clickCss($page, 'a.placehold');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -242,7 +158,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Open the "place hold" dialog
         $this->snooze();
-        $this->findCss($page, 'a.placeILLRequest')->click();
+        $this->clickCss($page, 'a.placeILLRequest');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
@@ -250,7 +166,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#pickupLibrary')->setValue('2');
         $this->snooze();
         $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -265,17 +181,25 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Support method to place a storage retrieval request and end up on the SRR
+     * screen.
+     *
+     * @param Element $page Page element.
+     *
+     * @return void
+     */
     protected function placeStorageRetrievalRequestAndGoToSRRScreen($page)
     {
         // Open the "place hold" dialog
         $this->snooze();
-        $this->findCss($page, 'a.placeStorageRetrievalRequest')->click();
+        $this->clickCss($page, 'a.placeStorageRetrievalRequest');
         $this->snooze();
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '.modal-body select')->setValue('C');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -290,6 +214,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
     }
 
+    /**
+     * Test placing a hold
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
     public function testPlaceHold()
     {
         $this->changeConfigs(
@@ -303,10 +234,10 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->snooze();
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Test invalid patron login
@@ -379,7 +310,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Test empty selection
-        $this->findCss($page, '#cancelSelected')->click();
+        $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->snooze();
         $this->assertEquals(
@@ -396,7 +327,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Click cancel but bail out with no... item should still be there.
-        $this->findCss($page, '#cancelAll')->click();
+        $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
         $this->snooze();
         $this->assertEquals(
@@ -406,7 +337,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Now cancel for real:
-        $this->findCss($page, '#cancelAll')->click();
+        $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
         $this->snooze();
         $this->assertEquals(
@@ -544,7 +475,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page, false);
 
         // Test submitting with no selected checkboxes:
-        $this->findCss($page, '#renewSelected')->click();
+        $this->clickCss($page, '#renewSelected');
         $this->snooze();
         $this->assertEquals(
             'No items were selected',
@@ -552,7 +483,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Test "renew all":
-        $this->findCss($page, '#renewAll')->click();
+        $this->clickCss($page, '#renewAll');
         $this->snooze();
         $this->assertEquals(
             'Renewal Successful',
@@ -566,6 +497,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
      * that Apache is configured with "AllowEncodedSlashes on" inside the
      * VirtualHost used for your VuFind test instance!
+     *
+     * @retryCallback removeUsername2
      *
      * @return void
      */
@@ -588,12 +521,12 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $element->click();
         $this->snooze();
         // Since we're not logged in...
-        $this->findCss($page, '.createAccountLink')->click();
+        $this->clickCss($page, '.createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
         );
-        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->clickCss($page, 'input.btn.btn-primary');
         $this->snooze();
 
         // Test valid patron login
@@ -603,7 +536,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // If successful, we should now have a link to review the hold:
@@ -616,6 +549,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(
             'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
         );
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testHoldsAll.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
     }
 
     /**

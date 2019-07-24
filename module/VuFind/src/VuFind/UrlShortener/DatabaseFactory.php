@@ -1,10 +1,10 @@
 <?php
 /**
- * Record router factory.
+ * Factory for local database-driven URL shortener.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Record
+ * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Record;
+namespace VuFind\UrlShortener;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Record router factory.
+ * Factory for local database-driven URL shortener.
  *
  * @category VuFind
- * @package  Record
+ * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RouterFactory implements FactoryInterface
+class DatabaseFactory
 {
     /**
      * Create an object
@@ -49,11 +48,6 @@ class RouterFactory implements FactoryInterface
      * @param null|array         $options       Extra options (optional)
      *
      * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -61,9 +55,11 @@ class RouterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
-        );
+        $router = $container->get('HttpRouter');
+        $baseUrl = $container->get('ViewRenderer')->plugin('serverurl')
+            ->__invoke($router->assemble([], ['name' => 'home']));
+        $table = $container->get(\VuFind\Db\Table\PluginManager::class)
+            ->get('shortlinks');
+        return new $requestedName(rtrim($baseUrl, '/'), $table);
     }
 }

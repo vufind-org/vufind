@@ -628,6 +628,26 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Normalize constraint values.
+     *
+     * @param array $constraints Constraints to normalize
+     *
+     * @return array
+     */
+    protected function normalizeConstraints($constraints)
+    {
+        foreach (['deleteRule', 'updateRule'] as $key) {
+            // NO ACTION and RESTRICT are equivalent in MySQL, but different
+            // versions return different values. Here we normalize them to RESTRICT
+            // for simplicity/consistency.
+            if ($constraints[$key] == 'NO ACTION') {
+                $constraints[$key] = 'RESTRICT';
+            }
+        }
+        return $constraints;
+    }
+
+    /**
      * Compare expected vs. actual constraint actions and return an array of SQL
      * clauses required to create the modified constraints.
      *
@@ -646,7 +666,7 @@ class DbUpgrade extends AbstractPlugin
                         "Could not find constraint '$name' in actual constraints"
                     );
                 }
-                $actualConstr = $actual[$type][$name];
+                $actualConstr = $this->normalizeConstraints($actual[$type][$name]);
                 if ($constraint['deleteRule'] !== $actualConstr['deleteRule']
                     || $constraint['updateRule'] !== $actualConstr['updateRule']
                 ) {
@@ -791,7 +811,9 @@ class DbUpgrade extends AbstractPlugin
 
         // If it's not a blob or a text (which don't have explicit sizes in our SQL),
         // we should see what the character length is, if any:
-        if ($type != 'blob' && $type != 'text' && $type != 'longtext') {
+        if ($type != 'blob' && $type != 'text' && $type !== 'mediumtext'
+            && $type != 'longtext'
+        ) {
             $charLen = $column->getCharacterMaximumLength();
             if ($charLen) {
                 $type .= '(' . $charLen . ')';

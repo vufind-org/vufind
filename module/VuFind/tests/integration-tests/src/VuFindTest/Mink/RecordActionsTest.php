@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -71,28 +73,33 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     protected function gotoRecord()
     {
         $page = $this->performSearch('Dewey');
-        $this->findCss($page, '.result a.title')->click();
+        $this->clickCss($page, '.result a.title');
         return $page;
     }
 
     /**
      * Make new account
      *
+     * @param \Behat\Mink\Element\Element $page     Page element
+     * @param string                      $username Username to create
+     *
      * @return void
      */
     protected function makeAccount($page, $username)
     {
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm(
             $page, ['username' => $username, 'email' => $username . '@vufind.org']
         );
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
     }
 
     /**
      * Test adding comments on records.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -102,42 +109,48 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
-        $this->findCss($page, '.record-tabs .usercomments')->click();
+        $this->clickCss($page, '.record-tabs .usercomments');
         $this->snooze();
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
         );
-        $this->findCss($page, 'form.comment-form .btn-primary')->click();
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->findCss($page, '.modal.in'); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
         $this->makeAccount($page, 'username1');
         // Make sure page updated for login
         // $page = $this->gotoRecord();
-        $this->findCss($page, '.record-tabs .usercomments')->click();
+        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
         $this->assertEquals(// Can Comment?
             'Add your comment',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
         );
         // "Add" empty comment
-        $this->findCss($page, 'form.comment-form .btn-primary')->click();
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
-        $this->findCss($page, 'form.comment-form .btn-primary')->click();
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
         $this->findCss($page, '.comment');
         // Remove comment
-        $this->findCss($page, '.comment .delete')->click();
+        $this->clickCss($page, '.comment .delete');
         $this->snooze(); // wait for UI update
         $this->assertNull($page->find('css', '.comment'));
         // Logout
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
      * Test adding tags on records.
+     *
+     * @retryCallback removeUsername2
      *
      * @return void
      */
@@ -147,7 +160,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click to add tag
         $this->snooze();
-        $this->findCss($page, '.tag-record')->click();
+        $this->clickCss($page, '.tag-record');
         $this->snooze();
         // Lightbox login open?
         $this->findCss($page, '.modal.in [name="username"]');
@@ -155,23 +168,23 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->makeAccount($page, 'username2');
         // Add tag exists?
         $this->findCss($page, '.modal #addtag_tag');
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         $this->snooze(); // wait for display to update
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
         // Login
         // $page = $this->gotoRecord();
-        $this->findCss($page, '.tag-record')->click();
+        $this->clickCss($page, '.tag-record');
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Add tags
         $this->findCss($page, '.modal #addtag_tag')->setValue('one 2 "three 4" five');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $success = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals('Tags Saved', $success->getText());
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         // Count tags
         $this->snooze(); // wait for UI update
         $tags = $page->findAll('css', '.tagList .tag');
@@ -197,18 +210,18 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         }
         $this->assertEquals(3, $sum);
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze(); // wait for UI update
 
         // Flat tags
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->assertNull($page->find('css', '.tagList .tag .fa'));
         // Login with second account
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // $page = $this->gotoRecord();
         // Check selected == 0
@@ -216,20 +229,22 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.tagList .tag');
         $this->findCss($page, '.tagList .tag .fa-plus');
         // Click one
-        $this->findCss($page, '.tagList .tag button')->click();
+        $this->clickCss($page, '.tagList .tag button');
         $this->snooze();
         // Check selected == 1
         $this->findCss($page, '.tagList .tag.selected');
         // Click again
-        $this->findCss($page, '.tagList .tag button')->click();
+        $this->clickCss($page, '.tagList .tag button');
         $this->snooze();
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
      * Test searching for one of the tags created above.
+     *
+     * @return void
      */
     public function testTagSearch()
     {
@@ -264,17 +279,17 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Login
         $page = $this->gotoRecord();
-        $this->findCss($page, '.tag-record')->click();
+        $this->clickCss($page, '.tag-record');
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Add tags
         $this->findCss($page, '.modal #addtag_tag')->setValue('one ONE "new tag" ONE "THREE 4"');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $success = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals('Tags Saved', $success->getText());
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         // Count tags
         $this->snooze();
         $tags = $page->findAll('css', '.tagList .tag');
@@ -283,6 +298,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test record view email.
+     *
+     * @retryCallback removeEmailManiac
      *
      * @return void
      */
@@ -300,7 +317,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '.mail-record')->click();
+        $this->clickCss($page, '.mail-record');
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         // Make account
@@ -314,18 +331,18 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Send text to false email
         $this->snooze();
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         // Logout
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
 
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '.mail-record')->click();
+        $this->clickCss($page, '.mail-record');
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
@@ -334,23 +351,23 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make sure Lightbox redirects to email view
         $this->findCss($page, '.modal #email_to');
         // Close lightbox
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         $this->snooze();
         // Click email
-        $this->findCss($page, '.mail-record')->click();
+        $this->clickCss($page, '.mail-record');
         $this->snooze();
         $this->findCss($page, '.modal #email_to');
         // Send text to false email
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal #email_from')->setValue('asdf@vufind.org');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // Check for confirmation message and close lightbox
         $this->findCss($page, '.modal .alert-success');
-        $this->findCss($page, '.modal .close')->click();
+        $this->clickCss($page, '.modal .close');
         $this->snooze();
         // Logout
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
     }
 
     /**
@@ -372,42 +389,62 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click SMS
-        $this->findCss($page, '.sms-record')->click();
+        $this->clickCss($page, '.sms-record');
         // Type invalid phone numbers
         // - too empty
         $this->findCss($page, '.modal #sms_to')->setValue('');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too short
         $this->findCss($page, '.modal #sms_to')->setValue('123');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too long
         $this->findCss($page, '.modal #sms_to')->setValue('12345678912345678912345679');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - too lettery
         $this->findCss($page, '.modal #sms_to')->setValue('123abc');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->findCss($page, '.modal .sms-error');
         // - just right
         $this->findCss($page, '.modal #sms_to')->setValue('8005555555');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze(); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
         // - pretty just right
         $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze(); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
         // Send text to false number
         $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
         $optionElement = $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testAddTag.
+     *
+     * @return void
+     */
+    protected function removeUsername2()
+    {
+        static::removeUsers(['username2']);
+    }
+
+    /**
+     * Retry cleanup method in case of failure during testEmail.
+     *
+     * @return void
+     */
+    protected function removeEmailManiac()
+    {
+        static::removeUsers(['emailmaniac']);
     }
 
     /**

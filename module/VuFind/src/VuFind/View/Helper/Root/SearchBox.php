@@ -163,6 +163,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Helper method: get special character to represent operator in filter
+     *
+     * @param string $operator Operator
+     *
+     * @return string
+     */
+    protected function getOperatorCharacter($operator)
+    {
+        static $map = ['NOT' => '-', 'OR' => '~'];
+        return $map[$operator] ?? '';
+    }
+
+    /**
      * Get an array of filter information for use by the "retain filters" feature
      * of the search box. Returns an array of arrays with 'id' and 'value' keys used
      * for generating hidden checkboxes.
@@ -177,7 +190,10 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         $results = [];
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
-                $results[] = "$field:\"$value\"";
+                $results[] = is_array($value)
+                    ? $this->getOperatorCharacter($value['operator'] ?? '')
+                    . $value['field'] . ':"' . $value['value'] . '"'
+                    : "$field:\"$value\"";
             }
         }
         foreach ($checkboxFilters as $current) {
@@ -237,6 +253,28 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         return $this->combinedHandlersActive()
             ? $this->getCombinedHandlers($activeSearchClass, $activeHandler)
             : $this->getBasicHandlers($activeSearchClass, $activeHandler);
+    }
+
+    /**
+     * Get number of active filters
+     *
+     * @param array $checkboxFilters Checkbox filters
+     * @param array $filterList      Other filters
+     *
+     * @return int
+     */
+    public function getFilterCount($checkboxFilters, $filterList)
+    {
+        $result = 0;
+        foreach ($checkboxFilters as $filter) {
+            if ($filter['selected']) {
+                ++$result;
+            }
+        }
+        foreach ($filterList as $filter) {
+            $result += count($filter);
+        }
+        return $result;
     }
 
     /**
