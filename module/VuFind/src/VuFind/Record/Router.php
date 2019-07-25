@@ -90,6 +90,10 @@ class Router
             $route['options']['query'] = $query;
         }
 
+        // Disable path normalization since it can unencode e.g. encoded slashes in
+        // record id's
+        $route['options']['normalize_path'] = false;
+
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
