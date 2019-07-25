@@ -42,4 +42,5 @@ Disallow: /RssFeed
 Disallow: /Search/Results
 Disallow: /Summon
 Disallow: /SummonRecord
+Disallow: /wikidataproxy
 Sitemap: https://krimdok.uni-tuebingen.de/sitemaps/krimdok/sitemapIndex.xml

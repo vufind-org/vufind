@@ -34,6 +34,16 @@ $config = [
                     ],
                 ],
             ],
+            'wikidataproxy-load' => [
+                'type'    => 'Zend\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/WikidataProxy/Load',
+                    'defaults' => [
+                        'controller' => 'WikidataProxy',
+                        'action'     => 'Load',
+                    ],
+                ],
+            ],
             'quicklink' => [
                 'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
@@ -73,6 +83,7 @@ $config = [
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
             'AJAX' => 'TueFind\Controller\AjaxController',
@@ -88,6 +99,7 @@ $config = [
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
+            'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
     ],
     'service_manager' => [
