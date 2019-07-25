@@ -72,7 +72,9 @@ class InjectFulltextMatchIdsListener
             if ($params) {
                 $searchHandler = $this->getSearchHandlerName($event);
                 // Do not use explain on BibleRangeSearch for performance reasons
-                $explain = ($searchHandler == 'BibleRangeSearch' || $searchHandler == 'CanonesRangeSearch') ? false : true;
+                $explain = ($searchHandler == 'BibleRangeSearch'
+                           || $searchHandler == 'CanonesRangeSearch'
+                           || $searchHandler == 'TimeRangeSearch') ? false : true;
                 if ($explain == 'true') {
                     $this->active = true;
                     $params->set('debug', 'results');

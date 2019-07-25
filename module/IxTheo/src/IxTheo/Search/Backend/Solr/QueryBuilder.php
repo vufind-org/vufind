@@ -13,11 +13,14 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
 {
     const BIBLE_REFERENCE_COMMAND = '/usr/local/bin/bib_ref_to_codes_tool';
     const CANONES_REFERENCE_COMMAND = '/usr/local/bin/canon_law_ref_to_codes_tool';
+    const TIME_ASPECTS_COMMAND = '/usr/local/bin/time_aspects_to_codes_tool';
     const BIBLE_REFERENCE_COMMAND_PARAMETERS = _BIB_REF_CMD_PARAMS_;
     const BIBLE_RANGE_HANDLER = 'BibleRangeSearch';
     const CANONES_RANGE_HANDLER = 'CanonesRangeSearch';
+    const TIME_RANGE_HANDLER = 'TimeRangeSearch';
     const BIBLE_RANGE_PARSER = 'bibleRangeParser';
     const CANONES_RANGE_PARSER = 'canonesRangeParser';
+    const TIME_RANGE_PARSER = 'timeAspectRangeParser';
 
 
     public function build(AbstractQuery $query)
@@ -26,14 +29,29 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
         // Diese muss anders behandelt werden, da sie aus vielen Sub-Queries
         // besteht. Vorerst werden die Ixtheo-Bereichssuchen nur bei der Standardsuche angewendet
         $handler = $query->getHandler();
-        if (is_a($query, 'VuFindSearch\Query\QueryGroup') || ($handler !== self::BIBLE_RANGE_HANDLER && $handler !== self::CANONES_RANGE_HANDLER))
+        if (is_a($query, 'VuFindSearch\Query\QueryGroup') || ($handler !== self::BIBLE_RANGE_HANDLER
+                                                              && $handler !== self::CANONES_RANGE_HANDLER
+                                                              && $handler !== self::TIME_RANGE_HANDLER))
             return parent::build($query);
         $queryString = $query->getString();
         $newQuery = $this->getManipulatedQueryString($handler, $query);
         $result = parent::build($query);
         $result->set('q', $newQuery);
         $query->setString($queryString);
-        $customParser = $handler == self::CANONES_RANGE_HANDLER ? self::CANONES_RANGE_PARSER : self::BIBLE_RANGE_PARSER;
+        $customParser = null;
+        switch($handler) {
+            case self::BIBLE_RANGE_HANDLER:
+                $customParser = self::BIBLE_RANGE_PARSER;
+                break;
+            case self::CANONES_RANGE_HANDLER:
+                $customParser = self::CANONES_RANGE_PARSER;
+                break;
+            case self::TIME_RANGE_HANDLER:
+                $customParser = self::TIME_RANGE_PARSER;
+                break;
+            default:
+                throw new Exception('No parser available for handler: ' . $handler);
+        }
         $result->set('defType', $customParser);
         return $result;
     }
@@ -46,6 +64,8 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
             $rangeReferences = $this->parseBibleReference($query);
         else if ($handler == self::CANONES_RANGE_HANDLER)
             $rangeReferences = $this->parseCanonesReference($query);
+        else if ($handler == self::TIME_RANGE_HANDLER)
+            $rangeReferences = $this->parseTimeAspect($query);
         return $this->translateToSearchString($rangeReferences);
     }
 
@@ -82,6 +102,14 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     }
 
 
+    private function getTimeAspectsCommand($searchQuery) {
+        return implode(' ', [
+            self::TIME_ASPECTS_COMMAND,
+            escapeshellarg($searchQuery)
+        ]);
+    }
+
+
     private function parseBibleReference(AbstractQuery $query)
     {
         $searchQuery = $query->getString();
@@ -99,6 +127,17 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
         $searchQuery = $query->getString();
         if (!empty($searchQuery)) {
             $cmd = $this->getCanonesReferenceCommand($searchQuery);
+            exec($cmd, $output, $return_var);
+            return $output;
+        }
+        return [];
+    }
+
+
+    private function parseTimeAspect(AbstractQuery $query) {
+        $searchQuery = $query->getString();
+        if (!empty($searchQuery)) {
+            $cmd = $this->getTimeAspectsCommand($searchQuery);
             exec($cmd, $output, $return_var);
             return $output;
         }
