@@ -37,7 +37,7 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
         $pattern = '"^(\d+)(-?)(\d+)?$"';
         $values = $this->getFieldArray('100', ['d']);
         foreach ($values as $value) {
-            if (preg_match($pattern, $value, $hits))
+            if (preg_match($pattern, $value, $hits) && isset($hits[3]))
                 return $hits[3];
         }
     }
