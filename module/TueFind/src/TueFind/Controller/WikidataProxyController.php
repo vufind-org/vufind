@@ -11,6 +11,8 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     const API_URL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json';
+    const CACHE_DIR = '/tmp/wikidata';
+    const CACHE_LIFETIME = 3600;
 
     // https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
     public function loadAction()
@@ -52,7 +54,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
      * @return \DOMElement or null if not found
      */
     protected function performSearch($apiUrl, $xpathString, $filters=[]) {
-        $response = file_get_contents($apiUrl);
+        $response = $this->getCachedUrlContents($apiUrl);
         if ($response) {
             $json = json_decode($response);
             if ($json && $json->success == 1) {
@@ -77,7 +79,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
      * @return \DOMElement or null if not found
      */
     protected function getFirstMatchingElement($entryUrl, $xpathString, $xpathFilters=[]) {
-        $html = file_get_contents($entryUrl);
+        $html = $this->getCachedUrlContents($entryUrl);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->recover = true;
@@ -91,5 +93,30 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         }
 
         return $xpath->query($xpathString)->item(0);
+    }
+
+    /**
+     * Resolve URL from cache if possible
+     *
+     * @param string $url
+     * @return string
+     * @throws \Exception
+     */
+    protected function getCachedUrlContents($url) {
+        if (!is_dir(self::CACHE_DIR)) mkdir(self::CACHE_DIR);
+        $cachedFile = self::CACHE_DIR . '/' . md5($url);
+
+        if (is_file($cachedFile)) {
+            if (filemtime($cachedFile) + self::CACHE_LIFETIME > time())
+                return file_get_contents($cachedFile);
+        }
+
+        $contents = file_get_contents($url);
+        if (!$contents)
+            throw new \Exception("Could not resolve URL: " + $url);
+
+        \file_put_contents($cachedFile, $contents);
+
+        return $contents;
     }
 }
