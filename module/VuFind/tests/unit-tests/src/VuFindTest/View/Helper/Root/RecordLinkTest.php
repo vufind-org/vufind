@@ -88,11 +88,16 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a URL helper.
      *
-     * @return \Zend\View\Helper\Url
+     * @return \VuFind\View\Helper\Root\Url
      */
     protected function getUrl()
     {
-        $url = new \Zend\View\Helper\Url();
+        $request = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+            ->setMethods(['getQuery'])->getMock();
+        $request->expects($this->any())->method('getQuery')
+            ->will($this->returnValue(new \Zend\StdLib\Parameters()));
+
+        $url = new \VuFind\View\Helper\Root\Url($request);
 
         // Create router
         $router = new \Zend\Router\Http\TreeRouteStack();
