@@ -22,7 +22,15 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         $search = $parameters['search'];
         $language = $this->getTranslatorLocale();
         $apiUrl = self::API_URL . '&search=' . urlencode($search) . '&language=' . $language;
-        $match = $this->performSearch($apiUrl, '//img');
+
+        $filters = [];
+        if (isset($parameters['birthYear'])) {
+            $filters[] = '//div[contains(text(), "'.$parameters['birthYear'].'")]/ancestor::div[@data-property-id="P569"]';
+        }
+        if (isset($parameters['deathYear']))
+            $filters[] = '//div[contains(text(), "'.$parameters['deathYear'].'")]/ancestor::div[@data-property-id="P570"]';
+
+        $match = $this->performSearch($apiUrl, '//img', $filters);
 
         $response = $this->getResponse();
         if ($match !== null) {
@@ -36,19 +44,21 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
 
     /**
      * Query API & Search for first specified element in result list
+     * (Use HTML screenscraping instead of JSON, else we can't get image)
      *
      * @param string $apiUrl
      * @param string $xpathString
-     * @return \DOMElement
+     * @param array $xpathFilters
+     * @return \DOMElement or null if not found
      */
-    protected function performSearch($apiUrl, $xpathString) {
+    protected function performSearch($apiUrl, $xpathString, $filters=[]) {
         $response = file_get_contents($apiUrl);
         if ($response) {
             $json = json_decode($response);
             if ($json && $json->success == 1) {
                 foreach ($json->search as $entry) {
                     $entryUrl = 'https:' . $entry->url;
-                    $match = $this->getFirstMatchingElement($entryUrl, $xpathString);
+                    $match = $this->getFirstMatchingElement($entryUrl, $xpathString, $filters);
                     if ($match !== null)
                         return $match;
                 }
@@ -62,10 +72,11 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
      *
      * @param string $entryUrl
      * @param string $xpathString
+     * @param array $xpathFilters
      *
-     * @return \DOMElement
+     * @return \DOMElement or null if not found
      */
-    protected function getFirstMatchingElement($entryUrl, $xpathString) {
+    protected function getFirstMatchingElement($entryUrl, $xpathString, $xpathFilters=[]) {
         $html = file_get_contents($entryUrl);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
@@ -73,7 +84,12 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         $dom->strictErrorChecking = false;
         $dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
-        $matches = $xpath->query($xpathString);
-        return $matches->item(0);
+
+        foreach ($xpathFilters as $filter) {
+            if ($xpath->query($filter)->count() == 0)
+                return null;
+        }
+
+        return $xpath->query($xpathString)->item(0);
     }
 }

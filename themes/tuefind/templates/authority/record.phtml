@@ -1,10 +1,22 @@
-<? $this->layout()->breadcrumbs = false; ?>
-<?
+<?php
+    $this->layout()->breadcrumbs = false;
+
     // Heading
     ?>
     <h1><?=$this->driver->getTitle()?></h1>
-    <?
+    <?php
 
+    // Image
+    $imgUrl = '/wikidataproxy/load?search=' . urlencode($this->driver->getName());
+    $params = ['birthYear' => $this->driver->getBirthYear(),
+               'deathYear' => $this->driver->getDeathYear()];
+    foreach ($params as $key => $value) {
+        if ($value)
+            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+    }
+    ?>
+    <img src="<?=$imgUrl?>" title="Source: Wikidata" alt="&nbsp;">
+    <?php
     // Professions
     $professions = $this->driver->getProfessions();
     $professions_display = '';
@@ -22,7 +34,7 @@
     <p>
         <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
     </p>
-    <?
+    <?php
 
     // Locations
     $locations = $this->driver->getLocations();
@@ -31,9 +43,9 @@
             <p>
                 Locations:<br/>
                 <ul>
-                <?
+                <?php
                 foreach ($locations as $location) {
-                    ?><li><?=$location['type'] . ': ' . $location['name']?></li><?
+                    ?><li><?=$location['type'] . ': ' . $location['name']?></li><?php
                 }
                 ?>
                 </ul>
@@ -52,7 +64,7 @@
                     <li><a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a></li>
                 </ul>
             </p>
-        <?
+        <?php
     }
 
     // BEACON
@@ -62,7 +74,7 @@
         <p>
             BEACON References:<br/>
             <ul>
-            <?
+            <?php
             foreach ($beacon_references as $beacon_reference) {
                 ?><li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li><?
             }

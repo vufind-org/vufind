@@ -24,6 +24,24 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
         return $beacon_references;
     }
 
+    public function getBirthYear() {
+        $pattern = '"^(\d+)(-?)(\d+)?$"';
+        $values = $this->getFieldArray('100', ['d']);
+        foreach ($values as $value) {
+            if (preg_match($pattern, $value, $hits))
+                return $hits[1];
+        }
+    }
+
+    public function getDeathYear() {
+        $pattern = '"^(\d+)(-?)(\d+)?$"';
+        $values = $this->getFieldArray('100', ['d']);
+        foreach ($values as $value) {
+            if (preg_match($pattern, $value, $hits))
+                return $hits[3];
+        }
+    }
+
     /**
      * Get GND Number from 035a (DE-588) or null
      * @return string
