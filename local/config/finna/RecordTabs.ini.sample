@@ -1,0 +1,100 @@
+; This file controls the display of tabs on the Record page for various types of
+; records. Each section name matches a record driver class name, and those settings
+; will be used when displaying that type of record. If no settings are found for a
+; particular class, its parent classes will be checked in turn; thus, you could set
+; up global defaults using a [VuFind\RecordDriver\AbstractBase] section.
+;
+; Within each section, the following settings are supported:
+;
+; tabs[X] = Y -- This activates a tab, using "X" to identify that tab in the URL,
+;                and using a service named "Y" loaded from the RecordTab plugin
+;                manager. The order of tabs entries controls display order.
+; defaultTab  -- This matches an "X" value from a tabs setting, and controls which
+;                tab is active by default. If empty, the global default tab setting
+;                (defaultRecordTab) from config.ini will be used.
+; backgroundLoadedTabs[] -- This repeatable setting can be used to identify tabs
+;                that should be asynchronously loaded in the background to improve
+;                performance. Use the "X" value from the tabs setting as the id.
+[VuFind\RecordDriver\EDS]
+tabs[TOC] = TOC
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Excerpt] = Excerpt
+tabs[Preview] = preview
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[VuFind\RecordDriver\Primo]
+tabs[UserComments] = UserComments
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[VuFind\RecordDriver\DefaultRecord]
+tabs[Holdings] = HoldingsILS
+tabs[ComponentParts] = ComponentParts
+tabs[TOC] = TOC
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Excerpt] = Excerpt
+tabs[Preview] = preview
+tabs[HierarchyTree] = HierarchyTree
+tabs[Map] = Map
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[VuFind\RecordDriver\SolrMarc]
+tabs[Holdings] = HoldingsILS
+tabs[ComponentParts] = ComponentParts
+tabs[TOC] = TOC
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Excerpt] = Excerpt
+tabs[Preview] = preview
+tabs[HierarchyTree] = HierarchyTree
+tabs[Map] = Map
+tabs[Details] = StaffViewMARC
+defaultTab = null
+
+[Finna\RecordDriver\SolrEad]
+tabs[HierarchyTree] = HierarchyTree
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Map] = Map
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrEad3]
+tabs[LocationsEad3] = LocationsEad3
+tabs[HierarchyTree] = HierarchyTree
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Map] = Map
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrForward]
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Map] = Map
+tabs[PressReview] = PressReview
+tabs[Music] = Music
+tabs[Distribution] = Distribution
+tabs[InspectionDetails] = InspectionDetails
+tabs[DescriptionFWD] = DescriptionFWD
+tabs[ItemDescription] = ItemDescription
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrLido]
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Map] = Map
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrQdc]
+tabs[UserComments] = UserComments
+tabs[Reviews] = Reviews
+tabs[Map] = Map
+tabs[Details] = StaffViewArray
+defaultTab = null
