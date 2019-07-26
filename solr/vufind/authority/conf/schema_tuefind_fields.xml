@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fields>
+    <!-- COMMON fields -->
+    <field name="beacons" type="string" indexed="true" stored="true" multiValued="true"/>
+</fields>
