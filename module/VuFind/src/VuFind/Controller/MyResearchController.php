@@ -1816,7 +1816,7 @@ class MyResearchController extends AbstractBase
         // Identification
         $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
         // Special case: form was submitted:
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Update email
             $validator = new \Zend\Validator\EmailAddress();
             $email = $this->params()->fromPost('email', '');
