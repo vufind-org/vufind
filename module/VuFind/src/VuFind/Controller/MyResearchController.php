@@ -1588,7 +1588,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($user->verify_hash);
             $recoveryInterval = $this->getConfig()->Authentication->recover_interval
                 ?? 60;
-            if (time() - $hashtime < $recoveryInterval) {
+            if (time() - $hashtime < $recoveryInterval && !$change) {
                 $this->flashMessenger()
                     ->addMessage('verification_too_soon', 'error');
             } else {
@@ -1847,7 +1847,7 @@ class MyResearchController extends AbstractBase
                 $this->getAuthManager()->updateEmail($user, $email);
                 // If we have a pending change, we need to send a verification email:
                 if (!empty($user->pending_email)) {
-                    $this->sendVerificationEmail($user);
+                    $this->sendVerificationEmail($user, true);
                 } else {
                     $this->flashMessenger()
                         ->addMessage('new_email_success', 'success');
