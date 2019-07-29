@@ -102,6 +102,14 @@ $config = [
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
     ],
+    'controller_plugins' => [
+        'factories' => [
+            'TueFind\Controller\Plugin\Wikidata' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        ],
+        'aliases' => [
+            'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
+        ],
+    ],
     'service_manager' => [
         'factories' => [
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',

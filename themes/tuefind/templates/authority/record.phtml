@@ -15,7 +15,7 @@
             $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
     }
     ?>
-    <img src="<?=$imgUrl?>" title="Source: Wikidata" alt="&nbsp;">
+    <img src="<?=$imgUrl?>" title="Source: Wikidata" alt="&nbsp;" width="200">
     <?php
     // Professions
     $professions = $this->driver->getProfessions();

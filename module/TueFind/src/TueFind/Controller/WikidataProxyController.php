@@ -10,10 +10,6 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
-    const API_URL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json';
-    const CACHE_DIR = '/tmp/wikidata';
-    const CACHE_LIFETIME = 3600;
-
     // https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
     public function loadAction()
     {
@@ -23,100 +19,76 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
 
         $search = $parameters['search'];
         $language = $this->getTranslatorLocale();
-        $apiUrl = self::API_URL . '&search=' . urlencode($search) . '&language=' . $language;
 
+        $entities = $this->wikidata()->searchAndGetEntities($search, $language);
+
+        // P18: image
+        // P569: birthYear
+        // P570: deathYear
         $filters = [];
-        if (isset($parameters['birthYear'])) {
-            $filters[] = '//div[contains(text(), "'.$parameters['birthYear'].'")]/ancestor::div[@data-property-id="P569"]';
-        }
+        if (isset($parameters['birthYear']))
+            $filters['P569'] = ['value' => $parameters['birthYear'], 'type' => 'year'];
         if (isset($parameters['deathYear']))
-            $filters[] = '//div[contains(text(), "'.$parameters['deathYear'].'")]/ancestor::div[@data-property-id="P570"]';
+            $filters['P570'] = ['value' => $parameters['deathYear'], 'type' => 'year'];
 
-        $match = $this->performSearch($apiUrl, '//img', $filters);
+        $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
+        $imgFilename = $entity->claims->P18[0]->mainsnak->datavalue->value;
+        $imgBinary = $this->wikidata()->getImage($imgFilename);
 
         $response = $this->getResponse();
-        if ($match !== null) {
-            $srcUrl = 'http:' . $match->getAttribute('src');
-            $imgBinary = file_get_contents($srcUrl);
-            $response->getHeaders()->addHeaderLine('Content-Type', 'image/jpeg');
-            $response->setContent($imgBinary);
-        }
+        $response->getHeaders()->addHeaderLine('Content-Type', 'image/jpeg');
+        $response->setContent($imgBinary);
         return $response;
-    }
-
-    /**
-     * Query API & Search for first specified element in result list
-     * (Use HTML screenscraping instead of JSON, else we can't get image)
-     *
-     * @param string $apiUrl
-     * @param string $xpathString
-     * @param array $xpathFilters
-     * @return \DOMElement or null if not found
-     */
-    protected function performSearch($apiUrl, $xpathString, $filters=[]) {
-        $response = $this->getCachedUrlContents($apiUrl);
-        if ($response) {
-            $json = json_decode($response);
-            if ($json && $json->success == 1) {
-                foreach ($json->search as $entry) {
-                    $entryUrl = 'https:' . $entry->url;
-                    $match = $this->getFirstMatchingElement($entryUrl, $xpathString, $filters);
-                    if ($match !== null)
-                        return $match;
-                }
-            }
-        }
-        return null;
     }
 
     /**
      * Get first matching element for a single entry
      *
-     * @param string $entryUrl
-     * @param string $xpathString
-     * @param array $xpathFilters
+     * @param json $entities
+     * @param array $filters
+     * @param array $mandatoryFields
      *
      * @return \DOMElement or null if not found
      */
-    protected function getFirstMatchingElement($entryUrl, $xpathString, $xpathFilters=[]) {
-        $html = $this->getCachedUrlContents($entryUrl);
-        $dom = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        $dom->recover = true;
-        $dom->strictErrorChecking = false;
-        $dom->loadHTML($html);
-        $xpath = new \DOMXPath($dom);
+    protected function getFirstMatchingEntity(&$entities, $filters=[], $mandatoryFields=[]) {
+        foreach ($entities->entities as $entity) {
+            $skip = false;
 
-        foreach ($xpathFilters as $filter) {
-            if ($xpath->query($filter)->count() == 0)
-                return null;
+            // must have values
+            foreach ($mandatoryFields as $field) {
+                if (!isset($entity->claims->$field[0]->mainsnak->datavalue->value)) {
+                    $skip = true;
+                    break;
+                }
+            }
+
+            // filters
+            foreach ($filters as $field => $filterProperties) {
+                // filters
+                if (!isset($entity->claims->$field)) {
+                    $skip = true;
+                    break;
+                }
+                else {
+                    foreach ($entity->claims->$field as $fieldValue) {
+                        $compareValue = $fieldValue->mainsnak->property;
+                        if ($filterProperties['type'] == 'year') {
+                            $compareValue = $fieldValue->mainsnak->datavalue->value->time;
+                            $compareValue = date('Y', strtotime($compareValue));
+                        }
+
+                        if ($compareValue != $filterProperties['value']) {
+                            $skip = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!$skip)
+                return $entity;
         }
 
-        return $xpath->query($xpathString)->item(0);
-    }
-
-    /**
-     * Resolve URL from cache if possible
-     *
-     * @param string $url
-     * @return string
-     * @throws \Exception
-     */
-    protected function getCachedUrlContents($url) {
-        if (!is_dir(self::CACHE_DIR)) mkdir(self::CACHE_DIR);
-        $cachedFile = self::CACHE_DIR . '/' . md5($url);
-
-        if (is_file($cachedFile)) {
-            if (filemtime($cachedFile) + self::CACHE_LIFETIME > time())
-                return file_get_contents($cachedFile);
-        }
-
-        $contents = file_get_contents($url);
-        if (!$contents)
-            throw new \Exception("Could not resolve URL: " + $url);
-
-        \file_put_contents($cachedFile, $contents);
-
-        return $contents;
+        throw new \Exception('No valid entity found');
     }
 }
