@@ -1817,6 +1817,13 @@ class MyResearchController extends AbstractBase
         $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
         // Special case: form was submitted:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
             // Update email
             $validator = new \Zend\Validator\EmailAddress();
             $email = $this->params()->fromPost('email', '');
