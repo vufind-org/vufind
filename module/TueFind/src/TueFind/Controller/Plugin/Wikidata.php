@@ -35,19 +35,27 @@ class Wikidata extends AbstractPlugin {
     }
 
     public function getImageProperties($filename) {
-        $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime&titles=File:' . urlencode($filename);
+        $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime|extmetadata&titles=File:' . urlencode($filename);
         $lookupResult = $this->getCachedUrlContents($lookupUrl, true);
         $subindex = '-1';
 
-        $imageUrl = $lookupResult->query->pages->$subindex->imageinfo[0]->url ?? null;
+        $imageInfo = $lookupResult->query->pages->$subindex->imageinfo[0] ?? null;
+
+        $imageUrl = $imageInfo->url ?? null;
         if ($imageUrl === null)
             throw new \Exception('Image URL could not be found for: ' . $filename);
 
-        $mime = $lookupResult->query->pages->$subindex->imageinfo[0]->mime;
+        $mime = $imageInfo->mime;
         if ($mime === null)
             throw new \Exception('Mime type could not be found for: ' . $filename);
 
-        return ['url' => $imageUrl, 'mime' => $mime];
+        $license = $imageInfo->extmetadata->LicenseShortName->value ?? null;
+        if ($license === null)
+            throw new \Exception('License could not be found for: ' . $filename);
+        else if (!preg_match('"^CC "i', $license))
+            throw new Exception('Image uses a non-CC-license (' . $license . '): ' . $filename);
+
+        return ['url' => $imageUrl, 'mime' => $mime, 'license' => $license];
     }
 
     /**
