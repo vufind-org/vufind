@@ -37,6 +37,11 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
                 $image = $this->searchImage($search, $language, $filters, $mandatoryFields);
                 $response = $this->getResponse();
                 $response->getHeaders()->addHeaderLine('Content-Type', $image['mime']);
+                // See RFC 5988 + http://www.otsukare.info/2011/07/12/using-http-link-header-for-cc-licenses
+                if ($image['licenseUrl'] !== null)
+                    $response->getHeaders()->addHeaderLine('Link', '<'.$image['licenseUrl'].'>; rel="license"; title="'.$image['license'].'"');
+                if ($image['artist'] !== null)
+                    $response->getHeaders()->addHeaderLine('Artist', $image['artist']);
                 $response->setContent($image['image']);
                 return $response;
             } catch (\Exception $e) {

@@ -6,7 +6,7 @@
     <h1><?=$this->driver->getTitle()?></h1>
     <?php
 
-    // Image
+    // Image (partially rendered by JS)
     $imgUrl = '/wikidataproxy/load?search[]=';
     $names = $this->driver->getNameAliases();
     $encodedNames = [];
@@ -21,7 +21,8 @@
             $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
     }
     ?>
-    <img src="<?=$imgUrl?>" title="Source: Wikidata" alt="&nbsp;" width="200">
+    <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
+
     <?php
     // Professions
     $professions = $this->driver->getProfessions();

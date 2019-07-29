@@ -52,10 +52,23 @@ class Wikidata extends AbstractPlugin {
         $license = $imageInfo->extmetadata->LicenseShortName->value ?? null;
         if ($license === null)
             throw new \Exception('License could not be found for: ' . $filename);
-        else if (!preg_match('"^CC "i', $license))
-            throw new Exception('Image uses a non-CC-license (' . $license . '): ' . $filename);
 
-        return ['url' => $imageUrl, 'mime' => $mime, 'license' => $license];
+        if (!preg_match('"^Public domain|CC "i', $license))
+            throw new \Exception('Image not usable due to license restrictions (' . $license . '): ' . $filename);
+
+        $licenseUrl = $imageInfo->extmetadata->LicenseUrl->value ?? null;
+        if (!preg_match('"^Public domain$"i', $license) && $licenseUrl === null)
+            throw new \Exception('License URL could not be found for: ' . $filename);
+
+        $artist = $imageInfo->extmetadata->Artist->value ?? null;
+        if ($artist === null)
+            throw new \Exception('Artist could not be found for: ' . $filename);
+
+        return ['url' => $imageUrl,
+                'mime' => $mime,
+                'license' => $license,
+                'licenseUrl' => $licenseUrl,
+                'artist' => $artist];
     }
 
     /**
