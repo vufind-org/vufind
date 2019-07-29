@@ -78,6 +78,20 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
     }
 
     /**
+     * Get multiple notations of the name
+     * (e.g. for external searches like wikidata)
+     */
+    public function getNameAliases() {
+        $names = [];
+        $name = $this->getName();
+        $names[] = $name;
+        $alias = preg_replace('"^([^,]+)\s*,\s*([^,]+)$"', '\\2 \\1', $name);
+        if ($alias != $name)
+            $names[] = $alias;
+        return $names;
+    }
+
+    /**
      * Get professions from 550
      * @return [['title']] (array to be extended)
      */

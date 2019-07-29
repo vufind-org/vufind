@@ -7,7 +7,13 @@
     <?php
 
     // Image
-    $imgUrl = '/wikidataproxy/load?search=' . urlencode($this->driver->getName());
+    $imgUrl = '/wikidataproxy/load?search[]=';
+    $names = $this->driver->getNameAliases();
+    $encodedNames = [];
+    foreach ($names as $name) {
+        $encodedNames[] = urlencode($name);
+    }
+    $imgUrl .= implode('&search[]=', $encodedNames);
     $params = ['birthYear' => $this->driver->getBirthYear(),
                'deathYear' => $this->driver->getDeathYear()];
     foreach ($params as $key => $value) {

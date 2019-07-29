@@ -17,28 +17,43 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         $parameters = [];
         parse_str($query, $parameters);
 
-        $search = $parameters['search'];
+        $searches = $parameters['search'];
+        if (!is_array($searches))
+            $searches = [$searches];
         $language = $this->getTranslatorLocale();
-
-        $entities = $this->wikidata()->searchAndGetEntities($search, $language);
 
         // P18: image
         // P569: birthYear
         // P570: deathYear
+        $mandatoryFields = ['P18'];
         $filters = [];
         if (isset($parameters['birthYear']))
             $filters['P569'] = ['value' => $parameters['birthYear'], 'type' => 'year'];
         if (isset($parameters['deathYear']))
             $filters['P570'] = ['value' => $parameters['deathYear'], 'type' => 'year'];
 
+        foreach ($searches as $search) {
+            try {
+                $imgBinary = $this->searchImage($search, $language, $filters, $mandatoryFields);
+                $response = $this->getResponse();
+                $response->getHeaders()->addHeaderLine('Content-Type', 'image/jpeg');
+                $response->setContent($imgBinary);
+                return $response;
+            } catch (\Exception $e) {
+                // just continue and search for next image
+                continue;
+            }
+        }
+
+        throw new \Exception('No image found');
+    }
+
+    protected function searchImage($search, $language, $filters=[], $mandatoryFields=[]) {
+        $entities = $this->wikidata()->searchAndGetEntities($search, $language);
         $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
         $imgFilename = $entity->claims->P18[0]->mainsnak->datavalue->value;
         $imgBinary = $this->wikidata()->getImage($imgFilename);
-
-        $response = $this->getResponse();
-        $response->getHeaders()->addHeaderLine('Content-Type', 'image/jpeg');
-        $response->setContent($imgBinary);
-        return $response;
+        return $imgBinary;
     }
 
     /**
