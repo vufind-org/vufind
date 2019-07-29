@@ -34,10 +34,10 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
 
         foreach ($searches as $search) {
             try {
-                $imgBinary = $this->searchImage($search, $language, $filters, $mandatoryFields);
+                $image = $this->searchImage($search, $language, $filters, $mandatoryFields);
                 $response = $this->getResponse();
-                $response->getHeaders()->addHeaderLine('Content-Type', 'image/jpeg');
-                $response->setContent($imgBinary);
+                $response->getHeaders()->addHeaderLine('Content-Type', $image['mime']);
+                $response->setContent($image['image']);
                 return $response;
             } catch (\Exception $e) {
                 // just continue and search for next image
@@ -51,9 +51,9 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
     protected function searchImage($search, $language, $filters=[], $mandatoryFields=[]) {
         $entities = $this->wikidata()->searchAndGetEntities($search, $language);
         $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
-        $imgFilename = $entity->claims->P18[0]->mainsnak->datavalue->value;
-        $imgBinary = $this->wikidata()->getImage($imgFilename);
-        return $imgBinary;
+        $imageFilename = $entity->claims->P18[0]->mainsnak->datavalue->value;
+        $image = $this->wikidata()->getImage($imageFilename);
+        return $image;
     }
 
     /**

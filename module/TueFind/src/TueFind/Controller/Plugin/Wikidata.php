@@ -29,18 +29,25 @@ class Wikidata extends AbstractPlugin {
     }
 
     public function getImage($filename) {
-        $url = $this->getImageUrl($filename);
-        return $this->getCachedUrlContents($url);
+        $properties = $this->getImageProperties($filename);
+        $properties['image'] = $this->getCachedUrlContents($properties['url']);
+        return $properties;
     }
 
-    public function getImageUrl($filename) {
-        $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url&titles=File:' . urlencode($filename);
+    public function getImageProperties($filename) {
+        $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime&titles=File:' . urlencode($filename);
         $lookupResult = $this->getCachedUrlContents($lookupUrl, true);
         $subindex = '-1';
+
         $imageUrl = $lookupResult->query->pages->$subindex->imageinfo[0]->url ?? null;
         if ($imageUrl === null)
             throw new \Exception('Image URL could not be found for: ' . $filename);
-        return $imageUrl;
+
+        $mime = $lookupResult->query->pages->$subindex->imageinfo[0]->mime;
+        if ($mime === null)
+            throw new \Exception('Mime type could not be found for: ' . $filename);
+
+        return ['url' => $imageUrl, 'mime' => $mime];
     }
 
     /**
