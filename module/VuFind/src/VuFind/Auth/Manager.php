@@ -214,10 +214,24 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Is email changing currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsEmailChange($authMethod = null)
+    {
+        return ($this->config->Authentication->change_email ?? false)
+            ? $this->getAuth($authMethod)->supportsEmailChange() : false;
+    }
+
+    /**
      * Is new passwords currently allowed?
      *
      * @param string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * the one in config file
      *
      * @return bool
      */
@@ -560,6 +574,23 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
+    }
+
+    /**
+     * Update a user's email from the request.
+     *
+     * @param User   $user  Object representing user being updated.
+     * @param string $email New email address to set (must be pre-validated!).
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updateEmail(User $user, $email)
+    {
+        $this->getAuth()->updateEmail($user, $email);
+        $this->updateSession($user);
     }
 
     /**

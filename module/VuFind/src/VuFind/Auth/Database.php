@@ -137,6 +137,27 @@ class Database extends AbstractBase
     }
 
     /**
+     * Update a user's email from the request.
+     *
+     * @param User   $user  Object representing user being updated.
+     * @param string $email New email address to set (must be pre-validated!).
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updateEmail(User $user, $email)
+    {
+        if (!$this->supportsEmailChange()) {
+            throw new \Exception('Email change disabled.');
+        }
+        $user->email = $email;
+        // TODO: deal with email verification
+        $user->save();
+    }
+
+    /**
      * Update a user's password from the request.
      *
      * @param Request $request Request object containing new account details.
@@ -286,6 +307,16 @@ class Database extends AbstractBase
      * @return bool
      */
     public function supportsCreation()
+    {
+        return true;
+    }
+
+    /**
+     * Does this authentication method support email changing?
+     *
+     * @return bool
+     */
+    public function supportsEmailChange()
     {
         return true;
     }

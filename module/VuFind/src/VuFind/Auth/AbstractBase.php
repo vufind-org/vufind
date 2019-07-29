@@ -196,6 +196,24 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Update a user's email from the request.
+     *
+     * @param User   $user  Object representing user being updated.
+     * @param string $email New email address to set (must be pre-validated!).
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updateEmail(User $user, $email)
+    {
+        throw new AuthException(
+            'Account email updating not supported by ' . get_class($this)
+        );
+    }
+
+    /**
      * Update a user's password from the request.
      *
      * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
@@ -251,6 +269,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function supportsCreation()
     {
         // By default, account creation is not supported.
+        return false;
+    }
+
+    /**
+     * Does this authentication method support email changing?
+     *
+     * @return bool
+     */
+    public function supportsEmailChange()
+    {
+        // By default, password changing is not supported.
         return false;
     }
 

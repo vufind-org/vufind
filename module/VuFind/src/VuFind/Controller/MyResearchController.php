@@ -1795,6 +1795,48 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Handling submission of a new email for a user.
+     *
+     * @return view
+     */
+    public function changeEmailAction()
+    {
+        // Always check that we are logged in and function is enabled first:
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        if (!$this->getAuthManager()->supportsEmailChange()) {
+            $this->flashMessenger()->addMessage('change_email_disabled', 'error');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Display email
+        $user = $this->getUser();
+        $view->email = $user->email;
+        // Identification
+        $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
+        // Special case: form was submitted:
+        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            // Update email
+            $validator = new \Zend\Validator\EmailAddress();
+            $email = $this->params()->fromPost('email', '');
+            try {
+                if (!$validator->isValid($email)) {
+                    throw new AuthException('Email address is invalid');
+                }
+                $this->getAuthManager()->updateEmail($user, $email);
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                return $view;
+            }
+            // Go to favorites
+            $this->flashMessenger()->addMessage('new_email_success', 'success');
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        return $view;
+    }
+
+    /**
      * Handling submission of a new password for a user.
      *
      * @return view
