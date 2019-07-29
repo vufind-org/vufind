@@ -1,94 +1,98 @@
 <?php
     $this->layout()->breadcrumbs = false;
+?>
+<h1><?=$this->driver->getTitle()?></h1>
+<div class="row">
+    <div class="col-sm-8">
+        <?php
+        // Professions
+        $professions = $this->driver->getProfessions();
+        $professions_display = '';
+        foreach ($professions as $profession) {
+            if ($professions_display != '')
+                $professions_display .= '/';
+            $professions_display .= $profession['title'];
+        }
+        if (count($professions) > 0) {
+            ?><p><?=$professions_display?></p><?php
+        }
 
-    // Heading
-    ?>
-    <h1><?=$this->driver->getTitle()?></h1>
-    <?php
-
-    // Image (partially rendered by JS)
-    $imgUrl = '/wikidataproxy/load?search[]=';
-    $names = $this->driver->getNameAliases();
-    $encodedNames = [];
-    foreach ($names as $name) {
-        $encodedNames[] = urlencode($name);
-    }
-    $imgUrl .= implode('&search[]=', $encodedNames);
-    $params = ['birthYear' => $this->driver->getBirthYear(),
-               'deathYear' => $this->driver->getDeathYear()];
-    foreach ($params as $key => $value) {
-        if ($value)
-            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
-    }
-    ?>
-    <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
-
-    <?php
-    // Professions
-    $professions = $this->driver->getProfessions();
-    $professions_display = '';
-    foreach ($professions as $profession) {
-        if ($professions_display != '')
-            $professions_display .= '/';
-        $professions_display .= $profession['title'];
-    }
-    if (count($professions) > 0) {
-        ?><p><?=$professions_display?></p><?
-    }
-
-    // Internal search
-    ?>
-    <p>
-        <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
-    </p>
-    <?php
-
-    // Locations
-    $locations = $this->driver->getLocations();
-    if (count($locations) > 0) {
+        // Internal search
         ?>
+        <p>
+            <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
+        </p>
+
+        <?php
+        // Locations
+        $locations = $this->driver->getLocations();
+        if (count($locations) > 0) {
+            ?>
+                <p>
+                    Locations:<br/>
+                    <ul>
+                    <?php
+                    foreach ($locations as $location) {
+                        ?><li><?=$location['type'] . ': ' . $location['name']?></li><?php
+                    }
+                    ?>
+                    </ul>
+                </p>
+            <?
+        }
+
+        // Other databases
+        $gnd_number = $this->driver->getGNDNumber();
+        if ($gnd_number != null) {
+            ?>
+                <p>
+                    Other databases:
+                    <ul>
+                        <li><a target="_blank" href="http://www.deutsche-digitale-bibliothek.de/entity/<?=urlencode($gnd_number)?>">Entity Facts</a></li>
+                        <li><a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a></li>
+                    </ul>
+                </p>
+            <?php
+        }
+
+        // BEACON references
+        $beacon_references = $this->driver->getBeaconReferences();
+        if (count($beacon_references) > 0) {
+            ?>
             <p>
-                Locations:<br/>
+                BEACON References:<br/>
                 <ul>
                 <?php
-                foreach ($locations as $location) {
-                    ?><li><?=$location['type'] . ': ' . $location['name']?></li><?php
+                foreach ($beacon_references as $beacon_reference) {
+                    ?><li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li><?
                 }
                 ?>
                 </ul>
             </p>
-        <?
-    }
-
-    // Other databases
-    $gnd_number = $this->driver->getGNDNumber();
-    if ($gnd_number != null) {
-        ?>
-            <p>
-                Other databases:
-                <ul>
-                    <li><a target="_blank" href="http://www.deutsche-digitale-bibliothek.de/entity/<?=urlencode($gnd_number)?>">Entity Facts</a></li>
-                    <li><a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a></li>
-                </ul>
-            </p>
-        <?php
-    }
-
-    // BEACON
-    $beacon_references = $this->driver->getBeaconReferences();
-    if (count($beacon_references) > 0) {
-        ?>
-        <p>
-            BEACON References:<br/>
-            <ul>
             <?php
-            foreach ($beacon_references as $beacon_reference) {
-                ?><li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li><?
+        }
+        ?>
+    </div>
+    <div class="col-sm-4">
+        <?php
+            // Image (partially rendered by JS)
+            $imgUrl = '/wikidataproxy/load?search[]=';
+            $names = $this->driver->getNameAliases();
+            $encodedNames = [];
+            foreach ($names as $name) {
+                $encodedNames[] = urlencode($name);
             }
-            ?>
-            </ul>
-        </p>
-        <?
-    }
-?>
+            $imgUrl .= implode('&search[]=', $encodedNames);
+            $params = ['birthYear' => $this->driver->getBirthYear(),
+                       'deathYear' => $this->driver->getDeathYear()];
+            foreach ($params as $key => $value) {
+                if ($value)
+                    $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+            }
+        ?>
+        <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
+    </div>
+</div>
+
+<br/>
 <?=$this->record($this->driver)->getTab($this->tabs['Details'])?>
