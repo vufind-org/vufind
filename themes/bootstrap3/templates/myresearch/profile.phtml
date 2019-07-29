@@ -53,7 +53,7 @@
   </table>
 
   <div id="account-actions">
-  <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
+    <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
       <a class="btn btn-default" href="<?=$this->url('myresearch-changeemail') ?>">
         <i class="fa fa-fw fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Change Email Address') ?>
       </a>
