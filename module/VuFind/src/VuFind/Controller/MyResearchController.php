@@ -1858,7 +1858,7 @@ class MyResearchController extends AbstractBase
                 'email_change_pending',
                 'info',
                 ['%%pending%%' => $user->pending_email]
-            )
+            );
         }
         return $view;
     }
