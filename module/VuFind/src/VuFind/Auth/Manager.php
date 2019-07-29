@@ -579,15 +579,15 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Update a user's email from the request.
      *
-     * @param User   $user  Object representing user being updated.
-     * @param string $email New email address to set (must be pre-validated!).
+     * @param UserRow $user  Object representing user being updated.
+     * @param string  $email New email address to set (must be pre-validated!).
      *
      * @throws AuthException
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function updateEmail(User $user, $email)
+    public function updateEmail(UserRow $user, $email)
     {
         $this->getAuth()->updateEmail($user, $email);
         $this->updateSession($user);
