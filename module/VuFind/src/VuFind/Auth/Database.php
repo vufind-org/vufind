@@ -151,10 +151,13 @@ class Database extends AbstractBase
     public function updateEmail(User $user, $email)
     {
         if (!$this->supportsEmailChange()) {
-            throw new \Exception('Email change disabled.');
+            throw new AuthException('change_email_disabled');
         }
-        $user->email = $email;
-        // TODO: deal with email verification
+        // Depending on verification setting, either do a direct update or else
+        // put the new address into a pending state.
+        $emailField = ($this->getConfig()->Authentication->verify_email ?? false)
+            ? 'pending_email' : 'email';
+        $user->{$emailField} = $email;
         $user->save();
     }
 

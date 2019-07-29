@@ -1607,8 +1607,12 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
+                    // If the user is setting up a new account, use the main email
+                    // address; if they have a pending address change, use that.
+                    $to = empty($user->pending_email)
+                        ? $user->email : $user->pending_email;
                     $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
-                        $user->email,
+                        $to,
                         $config->Site->email,
                         $this->translate('verification_email_subject'),
                         $message
@@ -1689,6 +1693,11 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, store validation in DB and forward to login
                 if (null != $user) {
+                    // Apply pending email address change, if applicable:
+                    if (!empty($user->pending_email)) {
+                        $user->email = $user->pending_email;
+                        $user->pending_email = '';
+                    }
                     $user->saveEmailVerified();
                     $this->setUpAuthenticationFromRequest();
 
@@ -1832,6 +1841,10 @@ class MyResearchController extends AbstractBase
                     throw new AuthException('Email address is invalid');
                 }
                 $this->getAuthManager()->updateEmail($user, $email);
+                // If we have a pending change, we need to send a verification email:
+                if (!empty($user->pending_email)) {
+                    $this->sendVerificationEmail($user);
+                }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 return $view;
@@ -1839,6 +1852,13 @@ class MyResearchController extends AbstractBase
             // Go to favorites
             $this->flashMessenger()->addMessage('new_email_success', 'success');
             return $this->redirect()->toRoute('myresearch-home');
+        }
+        if (!empty($user->pending_email)) {
+            $this->flashMessenger()->addMessage(
+                'email_change_pending',
+                'info',
+                ['%%pending%%' => $user->pending_email]
+            )
         }
         return $view;
     }
