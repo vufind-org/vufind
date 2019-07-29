@@ -1854,10 +1854,18 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toRoute('myresearch-home');
         }
         if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute('myresearch-emailnotverified')
+                . '?reverify=true';
             $this->flashMessenger()->addMessage(
-                'email_change_pending',
-                'info',
-                ['%%pending%%' => $user->pending_email]
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ],
+                'info'
             );
         }
         return $view;
