@@ -1571,11 +1571,13 @@ class MyResearchController extends AbstractBase
     /**
      * Send a verify email message.
      *
-     * @param \VuFind\Db\Row\User $user User object we're recovering
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param bool                $change Is the user changing their email (true)
+     * or setting up a new account (false).
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendVerificationEmail($user)
+    protected function sendVerificationEmail($user, $change = false)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1617,8 +1619,10 @@ class MyResearchController extends AbstractBase
                         $this->translate('verification_email_subject'),
                         $message
                     );
-                    $this->flashMessenger()
-                        ->addMessage('verification_email_sent', 'info');
+                    $flashMessage = $change
+                        ? 'verification_email_change_sent'
+                        : 'verification_email_sent';
+                    $this->flashMessenger()->addMessage($flashMessage, 'info');
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
@@ -1844,13 +1848,15 @@ class MyResearchController extends AbstractBase
                 // If we have a pending change, we need to send a verification email:
                 if (!empty($user->pending_email)) {
                     $this->sendVerificationEmail($user);
+                } else {
+                    $this->flashMessenger()
+                        ->addMessage('new_email_success', 'success');
                 }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 return $view;
             }
             // Go to favorites
-            $this->flashMessenger()->addMessage('new_email_success', 'success');
             return $this->redirect()->toRoute('myresearch-home');
         }
         if (!empty($user->pending_email)) {
