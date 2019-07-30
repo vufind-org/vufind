@@ -42,4 +42,5 @@ Disallow: /RssFeed
 Disallow: /Search/Results
 Disallow: /Summon
 Disallow: /SummonRecord
+Disallow: /wikidataproxy
 Sitemap: https://ixtheo.de/sitemaps/ixtheo/sitemapIndex.xml

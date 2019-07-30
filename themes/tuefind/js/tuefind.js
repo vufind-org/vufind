@@ -34,6 +34,15 @@ var TueFind = {
         });
     },
 
+    EscapeHTML: function(text) {
+        return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false) {
         // Try to determine status
         $.ajax({
@@ -61,6 +70,33 @@ var TueFind = {
                     $(this).replaceWith('Invalid server response!!!!!');
                 })
             }
+        });
+    },
+
+    GetImagesFromWikidata: function() {
+        $('.tf-wikidata-image').each(function() {
+            var placeholder = this;
+            var imageUrl = this.getAttribute('data-url');
+            $.ajax({
+                type: 'GET',
+                url: imageUrl,
+                success: function(image, textStatus, request) {
+                    // example for embedding, see:
+                    // https://commons.wikimedia.org/wiki/File:Angela_Merkel._Tallinn_Digital_Summit.jpg
+                    // => "Use this file on the web"
+                    let artist = request.getResponseHeader('artist');
+                    let license = request.getResponseHeader('link');
+                    let title = TueFind.EscapeHTML(artist);
+                    if (license != null) {
+                        let pattern = /<([^>]+)>;\s*rel="license";\s*title="([^"]+)"/;
+                        let match = pattern.exec(license);
+                        title += '[' + match[2] + ' by ' + match[1]+ ']';
+                    }
+                    title += ', via Wikimedia Commons';
+                    let content = '<img src="'+imageUrl+'" width="200" title="'+title+'">';
+                    $(placeholder).append(content);
+                }
+            });
         });
     },
 
