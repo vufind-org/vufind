@@ -1,9 +1,9 @@
 <? if ($this->driver->hasFulltextMatch()): ?>
-  <span id="fulltext_snippets">
-      <div style="color:grey" id="snippet_place_holder"><?=$this->transEsc("Loading")?>...</div>
+<span id="fulltext_snippets">
+      <div style="color:grey" id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"><?=$this->transEsc("Loading")?>...</div>
   <script>
       <? $query = $this->params->getQuery()->getAllTerms();?>
       TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query);?>");
   </script>
-  </span>
+</span>
 <? endif; ?>

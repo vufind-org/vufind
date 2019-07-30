@@ -21,7 +21,7 @@ var TueFind = {
             // We also have to set the handler explicitly adjusting the selection
             $("#searchForm_type [value=" + saved_search_handler + "]").attr('selected', 'selected');
             // Make sure the type is adjusted for the next form submission
-            $("[name=type], :not[data-type-protected='1']").val(saved_search_handler);
+            $('[name=type], :not[data-type-protected="1"]').val(saved_search_handler);
         }
         $("#searchForm_type").on('focus', function () {
             previous_search_handler = this.value;
@@ -30,7 +30,7 @@ var TueFind = {
             sessionStorage.setItem("tuefind_saved_search_handler", current_search_handler);
             $("#searchForm_type [value=" + previous_search_handler + "]").removeAttr('selected');
             $("#searchForm_type [value=" + current_search_handler + "]").attr('selected', 'selected');
-            $("[name=type], :not[data-type-protected='1']").val(current_search_handler);
+            $('[name=type], :not[data-type-protected="1"]').val(current_search_handler);
         });
     },
 
@@ -43,12 +43,11 @@ var TueFind = {
             success: function (json) {
                 $(document).ready(function () {
                     var snippets = json['snippets'];
-                    $("#snippet_place_holder").each(function () {
-                        if(snippets) {
-                          $(this).replaceWith('<div id="snippets">' + snippets.join('<br/>') + '<br/>' +'</div>');
-                        }
+                    $("#snippet_place_holder_" + doc_id).each(function () {
+                        if(snippets)
+                          $(this).replaceWith('<div id="snippets_' + doc_id + '">' + snippets.join('<br/>') + '<br/>' +'</div>');
                     });
-                    $("#snippets").each(function () {
+                    $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
                             $(this).removeAttr('style');
                             $(this).html(snippets.join('<br/>') + '<br/>');
