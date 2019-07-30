@@ -1856,7 +1856,7 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 return $view;
             }
-            // Go to favorites
+            // Return to account home
             return $this->redirect()->toRoute('myresearch-home');
         }
         if (!empty($user->pending_email)) {
