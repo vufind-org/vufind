@@ -1,5 +1,5 @@
 <!-- START of: finna - Helpers/OnlinePayment/CPU.phtml -->
-<form id="cpu-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox>
+<form id="cpu-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox data-clear-account-cache="fines">
   <img src="<?=$this->imageLink('online-payment-cpu.png')?>" id="cpu-logo" alt="CPU" />
   <input name="transactionId" type="hidden" value="<?=$this->transactionId?>">
   <input type="submit" name="pay" class="btn btn-primary" value="<?=$this->transEsc('online_payment_go_to_pay', ['%%amount%%' => $this->safeMoneyFormat($this->amount / 100.00)])?>" />

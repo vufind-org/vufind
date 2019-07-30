@@ -13,7 +13,7 @@
 <?php endif; ?>
 
 <div class="hold-form">
-  <form method="post" name="placeHold">
+  <form method="post" name="placeHold" data-clear-account-cache="holds">
     <?=$this->flashmessages()?>
     <?php if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group hold-comment">
