@@ -80,6 +80,7 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
     /**
      * Get multiple notations of the name
      * (e.g. for external searches like wikidata)
+     * (e.g. "King, Martin Luther" => "Martin Luther King")
      */
     public function getNameAliases() {
         $names = [];
