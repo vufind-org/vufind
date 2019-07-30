@@ -53,6 +53,16 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         throw new \Exception('No image found');
     }
 
+    /**
+     * Search for a matching entry with an existing image
+     * and return its image with all metadata
+     *
+     * @param string $search
+     * @param string $language
+     * @param array $filters
+     * @param array $mandatoryFields
+     * @return array
+     */
     protected function searchImage($search, $language, $filters=[], $mandatoryFields=[]) {
         $entities = $this->wikidata()->searchAndGetEntities($search, $language);
         $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
@@ -67,7 +77,6 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
      * @param json $entities
      * @param array $filters
      * @param array $mandatoryFields
-     *
      * @return \DOMElement or null if not found
      */
     protected function getFirstMatchingEntity(&$entities, $filters=[], $mandatoryFields=[]) {

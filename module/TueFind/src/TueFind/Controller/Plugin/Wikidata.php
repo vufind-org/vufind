@@ -2,13 +2,27 @@
 
 namespace TueFind\Controller\Plugin;
 
+
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
+
+/**
+ * Class implementing API & utility functions for Wikidata.org
+ * For documentation, see: https://www.wikidata.org/w/api.php
+ */
 class Wikidata extends AbstractPlugin {
     const API_URL = 'https://www.wikidata.org/w/api.php?format=json';
     const CACHE_DIR = '/tmp/wikidata';
     const CACHE_LIFETIME = 3600;
 
+    /**
+     * Search for entities and get metadata of all found entities
+     * (needs multiple API calls)
+     *
+     * @param type $search
+     * @param type $language
+     * @return object
+     */
     public function searchAndGetEntities($search, $language) {
         $entities = $this->searchEntities($search, $language);
         $ids = [];
@@ -18,23 +32,50 @@ class Wikidata extends AbstractPlugin {
         return $this->getEntities($ids);
     }
 
+    /**
+     * Search for entities and return a short metadata array
+     * (wrapper for "wbsearchentities")
+     *
+     * @param string $search
+     * @param string $language
+     * @return object
+     */
     public function searchEntities($search, $language) {
         $url = self::API_URL . '&action=wbsearchentities&search=' . urlencode($search) . '&language=' . $language;
         return $this->getCachedUrlContents($url, true);
     }
 
+    /**
+     * Get detailed metadata for objects with given IDs
+     * (wrapper for "wbgetentities")
+     *
+     * @param array $ids
+     * @return object
+     */
     public function getEntities($ids) {
         $url = self::API_URL . '&action=wbgetentities&ids=' . urlencode(implode('|', $ids));
         return $this->getCachedUrlContents($url, true);
     }
 
+    /**
+     * Get image (binary contents + metadata) by a given unique filename
+     *
+     * @param string $filename
+     * @return array
+     */
     public function getImage($filename) {
-        $properties = $this->getImageProperties($filename);
-        $properties['image'] = $this->getCachedUrlContents($properties['url']);
-        return $properties;
+        $metadata = $this->getImageMetadata($filename);
+        $metadata['image'] = $this->getCachedUrlContents($properties['url']);
+        return $metadata;
     }
 
-    public function getImageProperties($filename) {
+    /**
+     * Get image metadata by a given unique filename
+     *
+     * @param string $filename
+     * @return array
+     */
+    public function getImageMetadata($filename) {
         $lookupUrl = self::API_URL . '&action=query&prop=imageinfo&iiprop=url|mime|extmetadata&titles=File:' . urlencode($filename);
         $lookupResult = $this->getCachedUrlContents($lookupUrl, true);
         $subindex = '-1';
@@ -76,7 +117,6 @@ class Wikidata extends AbstractPlugin {
      *
      * @param string $url
      * @return json
-     * @throws \Exception
      */
     protected function getCachedUrlContents($url, $decodeJson=false) {
         if (!is_dir(self::CACHE_DIR)) mkdir(self::CACHE_DIR);
