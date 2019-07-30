@@ -1802,7 +1802,7 @@ class MyResearchController extends AbstractBase
         $user->updateHash();
         // Login
         $this->getAuthManager()->login($this->request);
-        // Go to favorites
+        // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
         return $this->redirect()->toRoute('myresearch-home');
     }
