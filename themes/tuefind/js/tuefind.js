@@ -74,7 +74,7 @@ var TueFind = {
         });
     },
 
-    GetImageFromWikidata: function() {
+    GetImagesFromWikidata: function() {
         $('.tf-wikidata-image').each(function() {
             var placeholder = this;
             var imageUrl = this.getAttribute('data-url');
@@ -197,5 +197,4 @@ $(document).ready(function () {
     }
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
-    TueFind.GetImageFromWikidata();
 });
