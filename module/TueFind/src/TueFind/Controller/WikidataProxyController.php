@@ -4,13 +4,13 @@ namespace TueFind\Controller;
 
 /**
  * Use Wikidata API to search for specific information (e.g. a picture)
+ * Example call: https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
  */
 class WikidataProxyController extends \VuFind\Controller\AbstractBase
                               implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
-    // https://ptah.ub.uni-tuebingen.de/wikidataproxy/load?search=Martin%20Luther
     public function loadAction()
     {
         $query = $this->getRequest()->getUri()->getQuery();
