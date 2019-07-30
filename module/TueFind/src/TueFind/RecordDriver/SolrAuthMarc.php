@@ -24,6 +24,24 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
         return $beacon_references;
     }
 
+    public function getBirthYear() {
+        $pattern = '"^(\d+)(-?)(\d+)?$"';
+        $values = $this->getFieldArray('100', ['d']);
+        foreach ($values as $value) {
+            if (preg_match($pattern, $value, $hits))
+                return $hits[1];
+        }
+    }
+
+    public function getDeathYear() {
+        $pattern = '"^(\d+)(-?)(\d+)?$"';
+        $values = $this->getFieldArray('100', ['d']);
+        foreach ($values as $value) {
+            if (preg_match($pattern, $value, $hits) && isset($hits[3]))
+                return $hits[3];
+        }
+    }
+
     /**
      * Get GND Number from 035a (DE-588) or null
      * @return string
@@ -57,6 +75,21 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
      */
     public function getName() {
         return $this->getFirstFieldValue('100', 'a');
+    }
+
+    /**
+     * Get multiple notations of the name
+     * (e.g. for external searches like wikidata)
+     * (e.g. "King, Martin Luther" => "Martin Luther King")
+     */
+    public function getNameAliases() {
+        $names = [];
+        $name = $this->getName();
+        $names[] = $name;
+        $alias = preg_replace('"^([^,]+)\s*,\s*([^,]+)$"', '\\2 \\1', $name);
+        if ($alias != $name)
+            $names[] = $alias;
+        return $names;
     }
 
     /**
