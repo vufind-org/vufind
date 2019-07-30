@@ -1,5 +1,19 @@
 <!-- START of: finna - search/filters.phtml -->
-<?php $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
+<?php
+  $hasDefaultsApplied = $params->hasDefaultsApplied();
+  $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
+
+  // Determine whether the only filters applied are the default ones; this controls
+  // when we display or hide the reset button:
+  $defaultFilters = $options->getDefaultFilters();
+  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  foreach ($defaultFilters as $currentDefault) {
+    if (!$params->hasFilter($currentDefault)) {
+      $onlyDefaultsApplied = false;
+      break;
+    }
+  }
+?>
 <?php $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList); ?>
 <?php ob_start(); ?>
   <?php foreach ($checkboxFilters as $filter): ?>
@@ -78,17 +92,18 @@
 <div class="finna-filters">
   <?php if (!isset($isCollectionTab) || !$isCollectionTab): ?>
     <?php $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+    <?php
+      $resetLink = !$onlyDefaultsApplied && isset($urlQuery)
+        ? $urlQuery->removeAllFilters()->resetDefaultFilters() : false;
+    ?>
     <div class="filter-options">
       <button type="button" class="btn-unstyled filters-toggle visible-xs visible-sm">
         <?=$this->transEsc("show_filters")?>
         <span class="active-filter-count">(<?=$filterCount?>)</span><i class="fa fa-arrow-down"></i>
       </button>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"<?=$defaultFilterState?> id="filter-checkbox" class="searchFormKeepFilters"/>
-          <?=$this->transEsc("basic_search_keep_filters")?>
-        </label>
-      </div>
+      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+        <a class="btn btn-default reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
   <div class="filters">

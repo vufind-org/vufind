@@ -273,6 +273,10 @@ span.badge.cb-facet {
   }
   .collapsed::after {content: '\25BC';}
 
+  .collapse, .collapsing {
+    position: relative;
+  }
+
   .badge { flex-shrink: 0; }
   .text { flex-grow: 1; }
   .exclude {
@@ -288,6 +292,23 @@ span.badge.cb-facet {
     padding-left: 0;
     padding-right: 15px;
   }
+}
+.facet-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 2;
+}
+.facet-loading-overlay-label {
+  padding: 1px .5rem;
+  color: #fff;
+  background-color: #000;
 }
 
 // Full facet list
