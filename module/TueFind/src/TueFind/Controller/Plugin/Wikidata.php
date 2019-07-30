@@ -65,7 +65,7 @@ class Wikidata extends AbstractPlugin {
      */
     public function getImage($filename) {
         $metadata = $this->getImageMetadata($filename);
-        $metadata['image'] = $this->getCachedUrlContents($properties['url']);
+        $metadata['image'] = $this->getCachedUrlContents($metadata['url']);
         return $metadata;
     }
 
