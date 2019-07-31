@@ -4,10 +4,12 @@
 <?php if (count($links) > 0) :?>
   <div class="info">
     <?=$this->transEsc('recommend_links_text')?>
+    <ul>
       <?php foreach($links as $title => $href): ?>
-        <p>
-          <a href="<?=$href?>"><?=$this->transEsc($title)?></a>
-        </p>
+        <li>
+          <a href="<?=$this->escapeHtmlAttr($href)?>"><?=$this->transEsc($title)?></a>
+        </li>
       <?php endforeach; ?>
+    </ul>
   </div>
 <?php endif;?>
