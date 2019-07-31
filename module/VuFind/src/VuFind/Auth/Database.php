@@ -155,9 +155,11 @@ class Database extends AbstractBase
         }
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
-        $emailField = ($this->getConfig()->Authentication->verify_email ?? false)
-            ? 'pending_email' : 'email';
-        $user->{$emailField} = $email;
+        if ($this->getConfig()->Authentication->verify_email ?? false) {
+            $user->pending_email = $email;
+        } else {
+            $user->updateEmail($email, true);
+        }
         $user->save();
     }
 
@@ -429,7 +431,7 @@ class Database extends AbstractBase
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
+        $user->updateEmail($params['email'], true);
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $user->pass_hash = $bcrypt->create($params['password']);

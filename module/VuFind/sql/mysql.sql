@@ -206,6 +206,7 @@ CREATE TABLE `user` (
   `email` varchar(255) NOT NULL DEFAULT '',
   `email_verified` datetime DEFAULT NULL,
   `pending_email` varchar(255) NOT NULL DEFAULT '',
+  `user_provided_email` tinyint(1) NOT NULL DEFAULT '0',
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,

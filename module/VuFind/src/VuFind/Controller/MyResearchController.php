@@ -1699,7 +1699,7 @@ class MyResearchController extends AbstractBase
                 if (null != $user) {
                     // Apply pending email address change, if applicable:
                     if (!empty($user->pending_email)) {
-                        $user->email = $user->pending_email;
+                        $user->updateEmail($user->pending_email, true);
                         $user->pending_email = '';
                     }
                     $user->saveEmailVerified();
