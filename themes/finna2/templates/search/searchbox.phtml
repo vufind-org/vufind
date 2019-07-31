@@ -32,10 +32,7 @@
 
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
-    $handlers = $this->searchbox()->getHandlers(
-        $this->searchClassId,
-        isset($this->searchIndex) ? $this->searchIndex : null
-    );
+    $handlers = $this->searchbox()->getHandlers($this->searchClassId, $this->searchIndex ?? null);
     $handlerCount = count($handlers);
     $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
     $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
@@ -43,8 +40,8 @@
     $lastLimit = $browse ? null: $this->searchMemory()->getLastLimit($this->searchClassId);
     $defaultSortApplied = !isset($this->params) || $lastSort == $options->getDefaultSortByHandler($this->params->getSearchHandler());
 
-    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
-    $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+    $ignoreHiddenFilterMemory = $this->ignoreHiddenFilterMemory ?? false;
+    $ignoreHiddenFiltersInRequest = $this->ignoreHiddenFiltersInRequest ?? false;
     $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
