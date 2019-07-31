@@ -70,8 +70,9 @@ class RecommendLinks implements RecommendInterface
      * Store the configuration of the recommendation module.
      *
      * RecommendLinks:[ini section]:[ini name]
-     *      Display links listed in the specified section of the specified ini file;
-     *      if [ini name] is left out, it defaults to "searches."
+     *     Display a list of recommended links, taken from [ini section] in
+     *     [ini name], where the section is a mapping of label => URL. [ini name]
+     *     defaults to searches.ini, and [ini section] defaults to RecommendLinks.
      *
      * @param string $settings Settings from searches.ini.
      *
