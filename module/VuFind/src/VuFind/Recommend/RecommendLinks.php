@@ -84,7 +84,7 @@ class RecommendLinks implements RecommendInterface
         $iniName = $settings[1] ?? 'searches';
         $config = $this->configLoader->get($iniName);
         $this->links = isset($config->$mainSection)
-        ? $config->$mainSection->toArray() : [];
+            ? $config->$mainSection->toArray() : [];
     }
 
     /**
