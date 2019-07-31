@@ -166,6 +166,8 @@ class SolrMarc extends SolrDefault
             return true;
         if (in_array("Subscription Bundle", $this->getFormats()))
             return true;
+        if (in_array("Literary Remains"), $this->getFormats()))
+            return true;
         return false;
     }
 
