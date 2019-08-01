@@ -139,15 +139,4 @@ class AlmaDatabase extends Database
 
         return $user;
     }
-
-    /**
-     * Does this authentication method support email changing?
-     *
-     * @return bool
-     */
-    public function supportsEmailChange()
-    {
-        // TODO: if the user changes the email in VuFind, can we update Alma too?
-        return false;
-    }
 }

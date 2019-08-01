@@ -219,8 +219,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsEmailChange($authMethod = null)
     {
-        return ($this->config->Authentication->change_email ?? false)
-            ? $this->getAuth($authMethod)->supportsEmailChange() : false;
+        return ($this->config->Authentication->change_email ?? false);
     }
 
     /**
@@ -578,7 +577,14 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function updateEmail(UserRow $user, $email)
     {
-        $this->getAuth()->updateEmail($user, $email);
+        // Depending on verification setting, either do a direct update or else
+        // put the new address into a pending state.
+        if ($this->config->Authentication->verify_email ?? false) {
+            $user->pending_email = $email;
+        } else {
+            $user->updateEmail($email, true);
+        }
+        $user->save();
         $this->updateSession($user);
     }
 

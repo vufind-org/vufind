@@ -200,7 +200,6 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
         $ca = $this->getChoiceAuth();
         $this->assertFalse($ca->getSessionInitiator('http://foo'));
         $this->assertFalse($ca->supportsPasswordChange());
-        $this->assertFalse($ca->supportsEmailChange());
     }
 
     /**

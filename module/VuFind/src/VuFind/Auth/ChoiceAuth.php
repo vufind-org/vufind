@@ -277,16 +277,6 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support email changing?
-     *
-     * @return bool
-     */
-    public function supportsEmailChange()
-    {
-        return $this->proxyAuthMethod('supportsEmailChange', func_get_args());
-    }
-
-    /**
      * Does this authentication method support password changing
      *
      * @return bool
@@ -314,22 +304,6 @@ class ChoiceAuth extends AbstractBase
     public function getPasswordPolicy()
     {
         return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
-    }
-
-    /**
-     * Update a user's email from the request.
-     *
-     * @param User   $user  Object representing user being updated.
-     * @param string $email New email address to set (must be pre-validated!).
-     *
-     * @throws AuthException
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function updateEmail(User $user, $email)
-    {
-        return $this->proxyAuthMethod('updateEmail', func_get_args());
     }
 
     /**
