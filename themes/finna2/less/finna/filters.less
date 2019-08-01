@@ -74,7 +74,7 @@
     flex-wrap: wrap;
   }
   .filters-term {
-    font-size: 0.8em
+    margin-left: 5px;
   }
 
   .filter-title-group {
@@ -87,11 +87,11 @@
   }
   .filter-value {
     padding: 5px 10px;
-    margin: 5px;
+    margin: 5px 0 5px 5px;
     font-weight: 600;
     background: @filters-background-color;
     color: @filters-text-color;
-    border-radius: @border-radius-large;
+    border-radius: @border-radius-small;
     // < ie 10
     display: inline-block;
     display: inline-flex;
@@ -107,6 +107,12 @@
       color: @filters-icon-color;
       margin: 4px;
     }
+  }
+  .title-value-pair {
+    margin-left: 10px;
+  }
+  .active-filter-count {
+    margin-left: 5px;
   }
 }
 .results .noresults {
@@ -168,6 +174,7 @@
     }
     .filter-value {
       display: flex;
+      margin-right: 5px;
 
       .filter-text {
         flex-grow: 1;
@@ -184,9 +191,12 @@
 @media (max-width: @screen-sm) {
   .filters {
     width: 100%;
-  }
-  .filters-title, .filter-value {
     font-size: 80%;
+
+    // Reset specific font sizes
+    .btn, .dropdown-menu {
+      font-size: 100%;
+    }
   }
   .finna-filters .retain-filters .checkbox label:before {
     font-size: 15px;
