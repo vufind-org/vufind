@@ -219,7 +219,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsEmailChange($authMethod = null)
     {
-        return ($this->config->Authentication->change_email ?? false);
+        return $this->config->Authentication->change_email ?? false;
     }
 
     /**
