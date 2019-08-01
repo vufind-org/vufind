@@ -122,14 +122,6 @@
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
   </target>
 
-  <!-- JSHint -->
-  <target name="jshint">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
-  </target>
-  <target name="jshint-report">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
-  </target>
-
   <!-- Finna ESLint -->
   <target name="eslint-finna">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js" escape="false" checkreturn="true" passthru="true" />
@@ -142,6 +134,20 @@
   <target name="eslint-finna-report">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna.xml" escape="false" />
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna2/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna2.xml" escape="false" />
+  </target>
+
+  <!-- JSHint -->
+  <target name="jshint">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+  </target>
+  <target name="jshint-report">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+  </target>
+
+  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <target name="checkLessToSass">
+    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
   </target>
 
   <!-- PHP API Documentation -->
