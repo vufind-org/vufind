@@ -4,21 +4,12 @@ finna.MapFacet = (function finnaStreetMap() {
   var searchRadius = 0.1; // Radius of the search area in KM
   var progressContainer;
 
-  function initMapFacet(_options){
-    progressContainer = $('.location-search-info');
-    $(".user-location-filter").click(function onLocationFilterClick(e){
-      e.preventDefault();
-      progressContainer.find('.fa-spinner').removeClass('hidden');
-      progressContainer.find('.info').empty();
-      progressContainer.removeClass('hidden');
-      navigator.geolocation.getCurrentPosition(locationSearch, geoLocationError, { timeout: 30000, maximumAge: 10000 });
-    });
-
-    $('.close-info').click(function onCloseInfoClick(){
-      progressContainer.addClass('hidden');
-    });
-
-    finna.map.initMap($(".map"), false, _options);
+  function info(message, stopped) {
+    if (typeof stopped !== 'undefined' && stopped) {
+      progressContainer.find('.fa-spinner').addClass('hidden');
+    }
+    var div = $('<div class="info-message"></div>').text(message);
+    progressContainer.find('.info').empty().append(div);
   }
 
   function locationSearch(position) {
@@ -63,14 +54,6 @@ finna.MapFacet = (function finnaStreetMap() {
     info(errorString, true);
   }
 
-  function info(message, stopped){
-    if (typeof stopped !== 'undefined' && stopped) {
-      progressContainer.find('.fa-spinner').addClass('hidden');
-    }
-    var div = $('<div class="info-message"></div>').text(message);
-    progressContainer.find('.info').empty().append(div);
-  }
-
   function initMapModal(_options) {
     function closeModalCallback(modal) {
       modal.removeClass('location-service location-service-qrcode');
@@ -82,6 +65,10 @@ finna.MapFacet = (function finnaStreetMap() {
     });
     modal.find('.modal-dialog').addClass('modal-lg');
 
+    var mapCanvas = $('.modal-map');
+    var mapData = finna.map.initMap(mapCanvas, true, _options);
+    var drawnItems = mapData.drawnItems;
+
     $('#modal').on('shown.bs.modal', function onShownModal() {
       mapData.map.invalidateSize();
       var bounds = drawnItems.getBounds();
@@ -89,9 +76,6 @@ finna.MapFacet = (function finnaStreetMap() {
       mapData.map.fitBounds(bounds, fitZoom);
     });
 
-    var mapCanvas = $('.modal-map');
-    var mapData = finna.map.initMap(mapCanvas, true, _options);
-    var drawnItems = mapData.drawnItems;
 
     mapCanvas.closest('form').submit(function mapFormSubmit(e) {
       $('input[name="filter[]"]').each(function removeLastSearchLocationFilter() {
@@ -132,6 +116,23 @@ finna.MapFacet = (function finnaStreetMap() {
         mapCanvas.closest('form').append(field);
       }
     });
+  }
+
+  function initMapFacet(_options){
+    progressContainer = $('.location-search-info');
+    $(".user-location-filter").click(function onLocationFilterClick(e){
+      e.preventDefault();
+      progressContainer.find('.fa-spinner').removeClass('hidden');
+      progressContainer.find('.info').empty();
+      progressContainer.removeClass('hidden');
+      navigator.geolocation.getCurrentPosition(locationSearch, geoLocationError, { timeout: 30000, maximumAge: 10000 });
+    });
+
+    $('.close-info').click(function onCloseInfoClick(){
+      progressContainer.addClass('hidden');
+    });
+
+    finna.map.initMap($(".map"), false, _options);
   }
 
   var my = {

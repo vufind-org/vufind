@@ -5,151 +5,39 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
   var schedulesLoading = false;
   var organisationList = {};
 
-  function loadOrganisationList() {
-    holder.find('.week-navi.prev-week').fadeTo(0, 0);
-
-    var parent = holder.data('parent');
-    if (typeof parent == 'undefined') {
-      return;
-    }
-    var buildings = holder.data('buildings');
-
-    toggleSpinner(true);
-    holder.find('.error,.info-element').hide();
-    service.getOrganisations(holder.data('target'), parent, buildings, {}, function onGetOrganisations(response) {
-      if (response === false) {
-        holder.html('<!-- Organisation info could not be loaded');
-      } else {
-        organisationListLoaded(response);
-      }
-    });
-  }
-
-  function organisationListLoaded(data) {
-    var list = data.list;
-    var id = data.id;
-    var found = false;
-    var menu = holder.find('.organisation ul.dropdown-menu');
-    var menuInput = holder.find('.organisation .dropdown-toggle input');
-
-    $.each(list, function handleOrganisationList(ind, obj) {
-      if (String(id) === String(obj.id)) {
-        found = true;
-      }
-      $('<li role="menuitem"><input type="hidden" value="' + obj.id + '"></input>' + obj.name + '</li>').appendTo(menu);
-      organisationList[obj.id] = obj;
-    });
-
-    if (!found) {
-      id = finna.common.getField(data.consortium.finna, 'service_point');
-      if (!id) {
-        id = menu.find('li input').eq(0).val();
-      }
-    }
-    menuInput.val(id);
-    var menuItem = holder.find('.organisation ul.dropdown-menu li');
-    menuItem.on('click', function onClickMenuItem() {
-      menuInput.val($(this).find('input').val());
-      menuClicked(false);
-    });
-
-    menuClicked(list.length === 1);
-    toggleSpinner(false);
-    holder.find('.content').removeClass('hide');
-    var week = parseInt(data.weekNum);
-    updateWeekNum(week);
-    attachWeekNaviListener();
-  }
-
-  function menuClicked(disable) {
-    var toggle = holder.find('.organisation .dropdown-toggle');
-    var input = toggle.find('input');
-    var id = input.val();
-    var name = holder.find('.organisation ul.dropdown-menu li input[value="' + id + '"]').parent('li').text();
-
-    toggle.find('span').text(name);
-    showDetails(id, name, false);
-
-    if (disable) {
-      var menu = holder.find('.organisation.dropdown');
-      menu.replaceWith(menu.find('.dropdown-toggle span'));
-    }
-  }
-
-  function attachWeekNaviListener() {
-    holder.find('.week-navi').unbind('click').click(function onClickWeekNavi() {
-      if (schedulesLoading) {
-        return;
-      }
-      schedulesLoading = true;
-
-      var parent = holder.data('parent');
-      var id = holder.data('id');
-      var dir = parseInt($(this).data('dir'));
-
-      holder.find('.week-text .num').text(holder.data('week-num') + dir);
-      $(this).attr('data-classes', $(this).attr('class'));
-      $(this).removeClass('fa-arrow-right fa-arrow-left');
-      $(this).addClass('fa-spinner fa-spin');
-
-      service.getSchedules(
-        holder.data('target'), parent, id, holder.data('period-start'), dir, false, false,
-        function onGetSchedules(response) {
-          schedulesLoaded(id, response);
-        }
-      );
-    });
-  }
-
-  function showDetails(id, name, allServices) {
-    holder.find('.error,.info-element').hide();
-    holder.find('.is-open').hide();
-
-    var parent = holder.data('parent');
-    var data = service.getDetails(id);
-    if (!data) {
-      detailsLoaded(id, null);
-      return;
-    }
-
-    holder.data('id', id);
-
-    if ('openTimes' in data && 'openNow' in data
-      && 'schedules' in data.openTimes && data.openTimes.schedules.length
+  function updatePrevBtn(response) {
+    var prevBtn = holder.find('.week-navi.prev-week');
+    if ('openTimes' in response
+      && 'currentWeek' in response.openTimes
+      && response.openTimes.currentWeek
     ) {
-      holder.find('.is-open' + (data.openNow ? '.open' : '.closed')).show();
+      prevBtn.fadeTo(200, 0).addClass('disabled');
+    } else {
+      prevBtn.fadeTo(200, 1).removeClass('disabled');
     }
+  }
 
-    if ('email' in data) {
-      holder.find('.email').attr('href', 'mailto:' + data.email).show();
+  function updateNextBtn(response) {
+    var nextBtn = holder.find('.week-navi.next-week');
+    if (response.openTimes.museum === true) {
+      nextBtn.fadeTo(200, 0).addClass('disabled');
+    } else {
+      nextBtn.fadeTo(200, 1).removeClass('disabled');
     }
+  }
 
-    var detailsLinkHolder = holder.find('.details-link').show();
-    var detailsLink = detailsLinkHolder.find('a');
-    detailsLink.attr('href', detailsLink.data('href') + ('#' + id));
+  function updateWeekNum(week) {
+    holder.data('week-num', week);
+    holder.find('.week-navi-holder .week-text .num').text(week);
+  }
 
-    if ('routeUrl' in data) {
-      holder.find('.route').attr('href', data.routeUrl).show();
+  function toggleSpinner(mode) {
+    var spinner = holder.find('.loader');
+    if (mode) {
+      spinner.fadeIn();
+    } else {
+      spinner.hide();
     }
-
-    if ('mapUrl' in data && 'address' in data) {
-      var map = holder.find('.map');
-      map.find('> a').attr('href', data.mapUrl);
-      map.find('.map-address').text(data.address);
-      map.show();
-    }
-
-    service.getSchedules(
-      holder.data('target'), parent, id,
-      holder.data('period-start'), null, true, allServices,
-      function handleSchedule(response) {
-        if (response) {
-          schedulesLoaded(id, response);
-          detailsLoaded(id, response);
-          holder.trigger('detailsLoaded', id);
-        }
-      }
-    );
   }
 
   function schedulesLoaded(id, response) {
@@ -299,6 +187,34 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     schedulesHolder.stop(true, false).fadeTo(200, 1);
   }
 
+  function attachWeekNaviListener() {
+    holder.find('.week-navi').unbind('click').click(function onClickWeekNavi() {
+      if ($(this).hasClass('disabled')) {
+        return;
+      }
+      if (schedulesLoading) {
+        return;
+      }
+      schedulesLoading = true;
+
+      var parent = holder.data('parent');
+      var id = holder.data('id');
+      var dir = parseInt($(this).data('dir'));
+
+      holder.find('.week-text .num').text(holder.data('week-num') + dir);
+      $(this).attr('data-classes', $(this).attr('class'));
+      $(this).removeClass('fa-arrow-right fa-arrow-left');
+      $(this).addClass('fa-spinner fa-spin');
+
+      service.getSchedules(
+        holder.data('target'), parent, id, holder.data('period-start'), dir, false, false,
+        function onGetSchedules(response) {
+          schedulesLoaded(id, response);
+        }
+      );
+    });
+  }
+
   function detailsLoaded(id, response) {
     toggleSpinner(false);
     if (null === response) {
@@ -353,41 +269,126 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     }
   }
 
-  function updatePrevBtn(response) {
-    var prevBtn = holder.find('.week-navi.prev-week');
-    if ('openTimes' in response
-      && 'currentWeek' in response.openTimes
-      && response.openTimes.currentWeek
+  function showDetails(id, name, allServices) {
+    holder.find('.error,.info-element').hide();
+    holder.find('.is-open').hide();
+
+    var parent = holder.data('parent');
+    var data = service.getDetails(id);
+    if (!data) {
+      detailsLoaded(id, null);
+      return;
+    }
+
+    holder.data('id', id);
+
+    if ('openTimes' in data && 'openNow' in data
+      && 'schedules' in data.openTimes && data.openTimes.schedules.length
     ) {
-      prevBtn.unbind('click').fadeTo(200, 0);
-    } else {
-      prevBtn.fadeTo(200, 1);
-      attachWeekNaviListener();
+      holder.find('.is-open' + (data.openNow ? '.open' : '.closed')).show();
+    }
+
+    if ('email' in data) {
+      holder.find('.email').attr('href', 'mailto:' + data.email).show();
+    }
+
+    var detailsLinkHolder = holder.find('.details-link').show();
+    var detailsLink = detailsLinkHolder.find('a');
+    detailsLink.attr('href', detailsLink.data('href') + ('#' + id));
+
+    if ('routeUrl' in data) {
+      holder.find('.route').attr('href', data.routeUrl).show();
+    }
+
+    if ('mapUrl' in data && 'address' in data) {
+      var map = holder.find('.map');
+      map.find('> a').attr('href', data.mapUrl);
+      map.find('.map-address').text(data.address);
+      map.show();
+    }
+
+    service.getSchedules(
+      holder.data('target'), parent, id,
+      holder.data('period-start'), null, true, allServices,
+      function handleSchedule(response) {
+        if (response) {
+          schedulesLoaded(id, response);
+          detailsLoaded(id, response);
+          holder.trigger('detailsLoaded', id);
+        }
+      }
+    );
+  }
+
+  function menuClicked(disable) {
+    var toggle = holder.find('.organisation .dropdown-toggle');
+    var input = toggle.find('input');
+    var id = input.val();
+    var name = holder.find('.organisation ul.dropdown-menu li input[value="' + id + '"]').parent('li').text();
+
+    toggle.find('span').text(name);
+    showDetails(id, name, false);
+
+    if (disable) {
+      var menu = holder.find('.organisation.dropdown');
+      menu.replaceWith(menu.find('.dropdown-toggle span'));
     }
   }
 
-  function updateNextBtn(response) {
-    var nextBtn = holder.find('.week-navi.next-week');
-    if (response.openTimes.museum === true) {
-      nextBtn.unbind('click').fadeTo(200, 0);
-    } else {
-      nextBtn.fadeTo(200, 1);
-      attachWeekNaviListener();
+  function organisationListLoaded(data) {
+    var list = data.list;
+    var id = data.id;
+    var found = false;
+    var menu = holder.find('.organisation ul.dropdown-menu');
+    var menuInput = holder.find('.organisation .dropdown-toggle input');
+
+    $.each(list, function handleOrganisationList(ind, obj) {
+      if (String(id) === String(obj.id)) {
+        found = true;
+      }
+      $('<li role="menuitem"><input type="hidden" value="' + obj.id + '"></input>' + obj.name + '</li>').appendTo(menu);
+      organisationList[obj.id] = obj;
+    });
+
+    if (!found) {
+      id = finna.common.getField(data.consortium.finna, 'service_point');
+      if (!id) {
+        id = menu.find('li input').eq(0).val();
+      }
     }
+    menuInput.val(id);
+    var menuItem = holder.find('.organisation ul.dropdown-menu li');
+    menuItem.on('click', function onClickMenuItem() {
+      menuInput.val($(this).find('input').val());
+      menuClicked(false);
+    });
+
+    menuClicked(list.length === 1);
+    toggleSpinner(false);
+    holder.find('.content').removeClass('hide');
+    var week = parseInt(data.weekNum);
+    updateWeekNum(week);
+    attachWeekNaviListener();
   }
 
-  function updateWeekNum(week) {
-    holder.data('week-num', week);
-    holder.find('.week-navi-holder .week-text .num').text(week);
-  }
+  function loadOrganisationList() {
+    holder.find('.week-navi.prev-week').fadeTo(0, 0);
 
-  function toggleSpinner(mode) {
-    var spinner = holder.find('.loader');
-    if (mode) {
-      spinner.fadeIn();
-    } else {
-      spinner.hide();
+    var parent = holder.data('parent');
+    if (typeof parent == 'undefined') {
+      return;
     }
+    var buildings = holder.data('buildings');
+
+    toggleSpinner(true);
+    holder.find('.error,.info-element').hide();
+    service.getOrganisations(holder.data('target'), parent, buildings, {}, function onGetOrganisations(response) {
+      if (response === false) {
+        holder.html('<!-- Organisation info could not be loaded');
+      } else {
+        organisationListLoaded(response);
+      }
+    });
   }
 
   var my = {

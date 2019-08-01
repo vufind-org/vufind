@@ -1,5 +1,36 @@
 /*global VuFind, finna, L */
 finna.map = (function finnaMap() {
+
+  function addRemoveButton(layer, featureGroup) {
+    var button = $('<a/>')
+      .html('<i class="fa fa-times" aria-hidden="true"></i>')
+      .click(function mapOnRemoveButtonClick(/*e*/) {
+        layer.editing.disable();
+        featureGroup.removeLayer(layer);
+      });
+    $('<span/>').text(VuFind.translate('removeCaption')).appendTo(button);
+    layer.bindPopup(button.get(0), {closeButton: false});
+  }
+
+  function initMapZooming(map) {
+    // Add zoom control with translated tooltips
+    L.control.zoom({
+      position: 'topleft',
+      zoomInTitle: VuFind.translate('map_zoom_in'),
+      zoomOutTitle: VuFind.translate('map_zoom_out')
+    }).addTo(map);
+
+    $('.leaflet-control-zoom').children('a').each(function removeFocus() {
+      $(this).attr('tabindex', -1);
+    });
+
+    // Enable mouseWheel zoom on click
+    map.once('focus', function onFocusMap() {
+      map.scrollWheelZoom.enable();
+    });
+    map.scrollWheelZoom.disable();
+  }
+
   function initMap($mapContainer, editable, _options) {
     var mapCanvas = $mapContainer;
     if (mapCanvas.length === 0) {
@@ -121,36 +152,6 @@ finna.map = (function finnaMap() {
       map: map,
       drawnItems: drawnItems
     };
-  }
-
-  function addRemoveButton(layer, featureGroup) {
-    var button = $('<a/>')
-      .html('<i class="fa fa-times" aria-hidden="true"></i>')
-      .click(function mapOnRemoveButtonClick(/*e*/) {
-        layer.editing.disable();
-        featureGroup.removeLayer(layer);
-      });
-    $('<span/>').text(VuFind.translate('removeCaption')).appendTo(button);
-    layer.bindPopup(button.get(0), {closeButton: false});
-  }
-
-  function initMapZooming(map) {
-    // Add zoom control with translated tooltips
-    L.control.zoom({
-      position: 'topleft',
-      zoomInTitle: VuFind.translate('map_zoom_in'),
-      zoomOutTitle: VuFind.translate('map_zoom_out')
-    }).addTo(map);
-
-    $('.leaflet-control-zoom').children('a').each(function removeFocus() {
-      $(this).attr('tabindex', -1);
-    });
-
-    // Enable mouseWheel zoom on click
-    map.once('focus', function onFocusMap() {
-      map.scrollWheelZoom.enable();
-    });
-    map.scrollWheelZoom.disable();
   }
 
   var my = {

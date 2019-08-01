@@ -1,50 +1,19 @@
-/*global VuFind, finna, registerAjaxCommentRecord, deleteRecordComment, refreshCommentList */
+/*global VuFind, finna, registerAjaxCommentRecord:true, deleteRecordComment:true, refreshCommentList */
 /*exported deleteRecordComment */
 finna.comments = (function finnaComments() {
-  function initCommentList(allowCommenting, allowRating, commentCount) {
-    $('.recordTabs #usercomments .count').text(commentCount);
 
-    var form = $('form.comment-form');
-    form.toggle(allowCommenting);
-    form.find('input[type=hidden][name=commentId]').val('');
-
-    if (allowRating) {
-      var rating = form.find('.rating');
-      rating.rating('rate', 0);
-      initRating();
+  function updateAverageRating(rating, count) {
+    if ($('.rating-average .rating').length) {
+      $('.rating-average .rating').rating('rate', rating);
+      $('.rating-average .count>span').text(count);
     }
-    initEditComment(allowCommenting, allowRating);
+  }
 
-    // Override global method
-    var _registerAjaxCommentRecord = registerAjaxCommentRecord;
-    registerAjaxCommentRecord = function registerAjaxCommentRecord() { // eslint-disable-line no-global-assign
-      initCommentForm(_registerAjaxCommentRecord, allowRating);
-    };
-
-    // Override global method
-    deleteRecordComment = function deleteRecordComment(element, recordId, recordSource, commentId) { // eslint-disable-line no-global-assign
-      var url = VuFind.path + '/AJAX/JSON?'
-        + $.param({method: 'deleteRecordComment', id: commentId});
-      $.ajax({
-        dataType: 'json',
-        url: url,
-        data: {recordId: recordId}
-      })
-        .done(function commentAjaxDone(response) {
-          requestRefreshComments();
-          if ('rating' in response.data) {
-            updateAverageRating(
-              response.data.rating.average,
-              response.data.rating.count
-            );
-          }
-        })
-        .fail(function commentAjaxFail(response, textStatus) {
-          alert(textStatus);
-        });
-    };
-
-    VuFind.lightbox.bind($('.usercomments-tab'));
+  function requestRefreshComments() {
+    var record = $('input.hiddenId').val();
+    var source = $('input.hiddenSource').val();
+    var tab = $('.usercomments-tab');
+    refreshCommentList(tab, record, source);
   }
 
   function initCommentForm(parentMethod, allowRating) {
@@ -126,13 +95,6 @@ finna.comments = (function finnaComments() {
     $('.usercomments-tab .rating').rating();
   }
 
-  function updateAverageRating(rating, count) {
-    if ($('.rating-average .rating').length) {
-      $('.rating-average .rating').rating('rate', rating);
-      $('.rating-average .count>span').text(count);
-    }
-  }
-
   function initEditComment(allowCommenting, allowRating) {
     $('.comment-list .edit').unbind('click').click(function onCommentEditClick() {
       var comment = $(this).closest('.comment');
@@ -169,11 +131,50 @@ finna.comments = (function finnaComments() {
     });
   }
 
-  function requestRefreshComments() {
-    var record = $('input.hiddenId').val();
-    var source = $('input.hiddenSource').val();
-    var tab = $('.usercomments-tab');
-    refreshCommentList(tab, record, source);
+  function initCommentList(allowCommenting, allowRating, commentCount) {
+    $('.recordTabs #usercomments .count').text(commentCount);
+
+    var form = $('form.comment-form');
+    form.toggle(allowCommenting);
+    form.find('input[type=hidden][name=commentId]').val('');
+
+    if (allowRating) {
+      var rating = form.find('.rating');
+      rating.rating('rate', 0);
+      initRating();
+    }
+    initEditComment(allowCommenting, allowRating);
+
+    // Override global method
+    var _registerAjaxCommentRecord = registerAjaxCommentRecord;
+    registerAjaxCommentRecord = function registerAjaxCommentRecord() { // eslint-disable-line no-global-assign
+      initCommentForm(_registerAjaxCommentRecord, allowRating);
+    };
+
+    // Override global method
+    deleteRecordComment = function deleteRecordComment(element, recordId, recordSource, commentId) { // eslint-disable-line no-global-assign
+      var url = VuFind.path + '/AJAX/JSON?'
+        + $.param({method: 'deleteRecordComment', id: commentId});
+      $.ajax({
+        dataType: 'json',
+        url: url,
+        data: {recordId: recordId}
+      })
+        .done(function commentAjaxDone(response) {
+          requestRefreshComments();
+          if ('rating' in response.data) {
+            updateAverageRating(
+              response.data.rating.average,
+              response.data.rating.count
+            );
+          }
+        })
+        .fail(function commentAjaxFail(response, textStatus) {
+          alert(textStatus);
+        });
+    };
+
+    VuFind.lightbox.bind($('.usercomments-tab'));
   }
 
   var my = {

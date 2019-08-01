@@ -3,6 +3,40 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
   var holder = false;
   var parent = false;
 
+  function initSectorUsageInfo(id, callback) {
+    // Resolve building sector
+    var url = 'https://api.finna.fi/v1/search?';
+    var params = {
+      'filter[]': 'building:0/' + id + '/',
+      'limit': 1,
+      'field[]': 'sectors'
+    };
+    url += $.param(params) + '&callback=?';
+
+    $.getJSON(url)
+      .done(function onSearchDone(response) {
+        if (response.status === 'OK' && response.resultCount > 0 && 'sectors' in response.records[0]) {
+          // General usage info for sector
+          var sector = $(response.records[0].sectors).last()[0].value;
+          // Use same info for academic libraries
+          if (sector === '1/lib/poly/') {
+            sector = '1/lib/uni/';
+          }
+          var usageInfo = VuFind.translate('usageInfo-' + sector);
+          callback(true, finna.common.decodeHtml(usageInfo));
+        } else {
+          callback(false);
+        }
+      })
+      .fail(function onSearchFail(/*response, textStatus, err*/) {
+        callback(false);
+      });
+  }
+
+  function enableConsortiumNaviItem(id) {
+    holder.find('.consortium-navigation .scroll.' + id).addClass('active');
+  }
+
   function updateConsortiumInfo(data, organisationList) {
     var infoField = holder.find('.consortium-info');
     var usageInfo = holder.find('.consortium-usage-rights').removeClass('hide');
@@ -56,7 +90,7 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
           var opts = {
             lines: 0,
             angle: 0.1,
-            lineWidth: .09,
+            lineWidth: 0.09,
             limitMax: 'true',
             colorStart: '#00A2B5',
             colorStop: '#00A2B5',
@@ -148,40 +182,6 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
       listHolder.addClass('truncate-field');
       finna.layout.initTruncate(listHolder.parent());
     }
-  }
-
-  function initSectorUsageInfo(id, callback) {
-    // Resolve building sector
-    var url = 'https://api.finna.fi/v1/search?';
-    var params = {
-      'filter[]': 'building:0/' + id + '/',
-      'limit': 1,
-      'field[]': 'sectors'
-    };
-    url += $.param(params) + '&callback=?';
-
-    $.getJSON(url)
-      .done(function onSearchDone(response) {
-        if (response.status === 'OK' && response.resultCount > 0 && 'sectors' in response.records[0]) {
-          // General usage info for sector
-          var sector = $(response.records[0].sectors).last()[0].value;
-          // Use same info for academic libraries
-          if (sector === '1/lib/poly/') {
-            sector = '1/lib/uni/';
-          }
-          var usageInfo = VuFind.translate('usageInfo-' + sector);
-          callback(true, finna.common.decodeHtml(usageInfo));
-        } else {
-          callback(false);
-        }
-      })
-      .fail(function onSearchFail(/*response, textStatus, err*/) {
-        callback(false);
-      });
-  }
-
-  function enableConsortiumNaviItem(id) {
-    holder.find('.consortium-navigation .scroll.' + id).addClass('active');
   }
 
   function initConsortiumNavi() {

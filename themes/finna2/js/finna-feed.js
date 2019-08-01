@@ -4,16 +4,16 @@ finna.feed = (function finnaFeed() {
     return scrollSpeed * Math.max(1, (scrollCnt / 5));
   }
 
+  function centerImage(img) {
+    var offset = img.width() - img.closest('.slick-slide').width();
+    img.css('margin-left', offset > 0 ? '-' + offset / 2 + 'px' : 'auto');
+  }
+
   // Horizontal carousel:
   function centerImages(holder) {
     holder.find('.carousel-feed:not(.slick-vertical) .slick-slide .wrapper img').each (function centerEachImage() {
       centerImage($(this));
     });
-  }
-
-  function centerImage(img) {
-    var offset = img.width() - img.closest('.slick-slide').width();
-    img.css('margin-left', offset > 0 ? '-' + offset / 2 + 'px' : 'auto');
   }
 
   function adjustWidth(holder) {
@@ -36,13 +36,6 @@ finna.feed = (function finnaFeed() {
     holder.find('.carousel-feed .slick-slide .carousel-text').addClass('text-bottom');
   }
 
-  // Vertical carousel:
-  function adjustTextFields(holder) {
-    holder.find('.carousel-feed .slick-slide').each(function adjustEachTextField() {
-      adjustTextField($(this));
-    });
-  }
-
   function adjustTextField(slide) {
     var imgH = slide.find('.wrapper').height();
     var titleH = slide.find('.carousel-slide-header p').height();
@@ -62,29 +55,56 @@ finna.feed = (function finnaFeed() {
     }
   }
 
-  function loadFeed(holder) {
-    var id = holder.data('feed');
-    if (typeof id == 'undefined') {
-      return;
-    }
-    processLoadFeed(holder, {method: 'getFeed', id: id});
+  // Vertical carousel:
+  function adjustTextFields(holder) {
+    holder.find('.carousel-feed .slick-slide').each(function adjustEachTextField() {
+      adjustTextField($(this));
+    });
   }
 
-  function loadFeedFromUrl(holder) {
-    var feedUrl = holder.data('url');
-    var id = holder.data('feed');
-
-    if (typeof feedUrl == 'undefined' || typeof id == 'undefined') {
-      return;
-    }
-    processLoadFeed(
-      holder,
-      {
-        method: 'getOrganisationPageFeed',
-        url: feedUrl,
-        id: id
-      }
-    );
+  function getCarouselSettings(settings) {
+    var autoplay = typeof settings.autoplay !== 'boolean' ? parseInt(settings.autoplay, 10) : 0;
+    return {
+      dots: settings.dots,
+      swipe: !settings.vertical,
+      infinite: true,
+      prevArrow: '<button class="slick-prev" aria-label=' + VuFind.translate("Prev") + ' type="button">' + VuFind.translate("Prev") + '</button>',
+      nextArrow: '<button class="slick-next" aria-label=' + VuFind.translate("Next") + ' type="button">' + VuFind.translate("Next") + '</button>',
+      touchThreshold: 8,
+      autoplay: autoplay !== 0,
+      autoplaySpeed: autoplay,
+      slidesToShow: settings.slidesToShow.desktop,
+      slidesToScroll: settings.scrolledItems.desktop,
+      speed: calculateScrollSpeed(settings.scrolledItems.desktop, settings.scrollSpeed),
+      vertical: settings.vertical,
+      lazyLoad: (typeof settings.lazyLoad !== 'undefined') ? settings.lazyLoad : 'ondemand',
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: {
+            slidesToShow: settings.slidesToShow['desktop-small'],
+            slidesToScroll: settings.scrolledItems['desktop-small'],
+            speed: calculateScrollSpeed(settings.scrolledItems['desktop-small'], settings.scrollSpeed)
+          }
+        },
+        {
+          breakpoint: 992,
+          settings: {
+            slidesToShow: settings.slidesToShow.tablet,
+            slidesToScroll: settings.scrolledItems.tablet,
+            speed: calculateScrollSpeed(settings.scrolledItems.tablet, settings.scrollSpeed)
+          }
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: settings.slidesToShow.mobile,
+            slidesToScroll: settings.scrolledItems.mobile,
+            speed: calculateScrollSpeed(settings.scrolledItems.mobile, settings.scrollSpeed)
+          }
+        }
+      ]
+    };
   }
 
   function processLoadFeed(holder, params) {
@@ -213,49 +233,29 @@ finna.feed = (function finnaFeed() {
       });
   }
 
-  function getCarouselSettings(settings) {
-    var autoplay = typeof settings.autoplay !== 'boolean' ? parseInt(settings.autoplay, 10) : 0;
-    return {
-      dots: settings.dots,
-      swipe: !settings.vertical,
-      infinite: true,
-      prevArrow: '<button class="slick-prev" aria-label=' + VuFind.translate("Prev") + ' type="button">' + VuFind.translate("Prev") + '</button>',
-      nextArrow: '<button class="slick-next" aria-label=' + VuFind.translate("Next") + ' type="button">' + VuFind.translate("Next") + '</button>',
-      touchThreshold: 8,
-      autoplay: autoplay !== 0,
-      autoplaySpeed: autoplay,
-      slidesToShow: settings.slidesToShow.desktop,
-      slidesToScroll: settings.scrolledItems.desktop,
-      speed: calculateScrollSpeed(settings.scrolledItems.desktop, settings.scrollSpeed),
-      vertical: settings.vertical,
-      lazyLoad: (typeof settings.lazyLoad !== 'undefined') ? settings.lazyLoad : 'ondemand',
-      responsive: [
-        {
-          breakpoint: 1200,
-          settings: {
-            slidesToShow: settings.slidesToShow['desktop-small'],
-            slidesToScroll: settings.scrolledItems['desktop-small'],
-            speed: calculateScrollSpeed(settings.scrolledItems['desktop-small'], settings.scrollSpeed)
-          }
-        },
-        {
-          breakpoint: 992,
-          settings: {
-            slidesToShow: settings.slidesToShow.tablet,
-            slidesToScroll: settings.scrolledItems.tablet,
-            speed: calculateScrollSpeed(settings.scrolledItems.tablet, settings.scrollSpeed)
-          }
-        },
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: settings.slidesToShow.mobile,
-            slidesToScroll: settings.scrolledItems.mobile,
-            speed: calculateScrollSpeed(settings.scrolledItems.mobile, settings.scrollSpeed)
-          }
-        }
-      ]
-    };
+  function loadFeed(holder) {
+    var id = holder.data('feed');
+    if (typeof id == 'undefined') {
+      return;
+    }
+    processLoadFeed(holder, {method: 'getFeed', id: id});
+  }
+
+  function loadFeedFromUrl(holder) {
+    var feedUrl = holder.data('url');
+    var id = holder.data('feed');
+
+    if (typeof feedUrl == 'undefined' || typeof id == 'undefined') {
+      return;
+    }
+    processLoadFeed(
+      holder,
+      {
+        method: 'getOrganisationPageFeed',
+        url: feedUrl,
+        id: id
+      }
+    );
   }
 
   function initComponents() {

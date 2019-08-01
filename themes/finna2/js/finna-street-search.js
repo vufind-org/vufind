@@ -6,25 +6,16 @@ finna.StreetSearch = (function finnaStreetSearch() {
   var geolocationAccuracyThreshold = 20; // If accuracy >= threshold then give a warning for the user
   var searchRadius = 0.1; // Radius of the search area in KM
 
-  function doStreetSearch() {
-    progressContainer.removeClass('hidden');
-    progressContainer.find('.fa-spinner').removeClass('hidden');
-    terminate = false;
-
-    info(VuFind.translate('street_search_checking_for_geolocation'));
-
-    if ('geolocation' in navigator) {
-      info(VuFind.translate('street_search_geolocation_available'));
-      navigator.geolocation.getCurrentPosition(locationSearch, geoLocationError, { timeout: 30000, maximumAge: 10000 });
-    } else {
-      geoLocationError();
+  function info(message, stopped, allowStopping) {
+    if (typeof stopped !== 'undefined' && stopped) {
+      terminateButton.addClass('hidden');
+      progressContainer.find('.fa-spinner').addClass('hidden');
+      $('.street-search-action-links').removeClass('hidden');
+    } else if (typeof allowStopping !== 'undefined' && !allowStopping) {
+      terminateButton.addClass('hidden');
     }
-  }
-
-  function terminateStreetSearch() {
-    terminate = true;
-    progressContainer.addClass('hidden');
-    $('.street-search-action-links').removeClass('hidden');
+    var div = $('<div></div>').text(message);
+    progressContainer.find('.info').empty().append(div);
   }
 
   function geoLocationError(error) {
@@ -81,16 +72,25 @@ finna.StreetSearch = (function finnaStreetSearch() {
     window.location.href = url;
   }
 
-  function info(message, stopped, allowStopping) {
-    if (typeof stopped !== 'undefined' && stopped) {
-      terminateButton.addClass('hidden');
-      progressContainer.find('.fa-spinner').addClass('hidden');
-      $('.street-search-action-links').removeClass('hidden');
-    } else if (typeof allowStopping !== 'undefined' && !allowStopping) {
-      terminateButton.addClass('hidden');
+  function doStreetSearch() {
+    progressContainer.removeClass('hidden');
+    progressContainer.find('.fa-spinner').removeClass('hidden');
+    terminate = false;
+
+    info(VuFind.translate('street_search_checking_for_geolocation'));
+
+    if ('geolocation' in navigator) {
+      info(VuFind.translate('street_search_geolocation_available'));
+      navigator.geolocation.getCurrentPosition(locationSearch, geoLocationError, { timeout: 30000, maximumAge: 10000 });
+    } else {
+      geoLocationError();
     }
-    var div = $('<div></div>').text(message);
-    progressContainer.find('.info').empty().append(div);
+  }
+
+  function terminateStreetSearch() {
+    terminate = true;
+    progressContainer.addClass('hidden');
+    $('.street-search-action-links').removeClass('hidden');
   }
 
   function initPageElements() {
