@@ -378,4 +378,45 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
             );
         }
     }
+
+    /**
+     * Test normalization of unquoted special characters
+     *
+     * @return void
+     */
+    public function testUnquotedNormalization()
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $tests = [
+            'this - that' => 'this that',
+            'this -- that' => 'this that',
+            '- this that' => 'this that',
+            'this that -' => 'this that',
+            '-- this -- that --' => 'this that',
+            'this -that' => 'this -that',
+            'this + that' => 'this that',
+            '+ this ++ that +' => 'this that',
+            'this +that' => 'this +that',
+            'this / that' => 'this "/" that',
+            'this/that' => 'this/that',
+            '/this' => 'this',
+            '/this that' => 'this that',
+            'this/' => 'this',
+            'this that/' => 'this that',
+            '/this that/' => 'this that',
+
+            // Quoted ones must not be affected
+            '"this - that"' => '"this - that"',
+            '"- this that"' => '"- this that"',
+            '"this that -"' => '"this that -"',
+            '"this + that"' => '"this + that"',
+            '"+ this ++ that +"' => '"+ this ++ that +"',
+            '"this / that"' => '"this / that"',
+        ];
+        foreach ($tests as $input => $expected) {
+            $this->assertEquals(
+                $expected, $lh->normalizeSearchString($input)
+            );
+        }
+    }
 }

@@ -1,38 +1,6 @@
 /*global VuFind, finna, videojs */
 finna.videoPopup = (function finnaVideoPopup() {
 
-  function initVideoPopup(_container) {
-    var container = typeof _container === 'undefined' ? $('body') : $(_container);
-
-    container.find('[data-embed-video]').click(function onClickVideoLink(e) {
-      var videoSources = $(this).data('videoSources');
-      var scripts = $(this).data('scripts');
-      var posterUrl = $(this).data('posterUrl');
-
-      $.magnificPopup.open({
-        type: 'inline',
-        items: {
-          src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
-        },
-        callbacks: {
-          open: function onOpen() {
-            $('#video-player').closest('.mfp-content').addClass('videoplayer-only');
-            finna.layout.loadScripts(scripts, function onScriptsLoaded() {
-              initVideoJs('.video-popup', videoSources, posterUrl);
-            });
-          },
-          close: function onClose() {
-            videojs('video-player').dispose();
-          },
-          resize: function resizeVideo() {
-            resizeVideoPopup($('.video-popup'));
-          }
-        }
-      });
-      e.preventDefault();
-    });
-  }
-
   function resizeVideoPopup($container) {
     var mfp = $container.closest('.mfp-content');
     if (mfp.length === 0) {
@@ -70,7 +38,7 @@ finna.videoPopup = (function finnaVideoPopup() {
       } else {
         $('.mfp-close').css('opacity', '0');
       }
-    }
+    };
 
     player.on('useractive', handleCloseButton);
     player.on('userinactive', handleCloseButton);
@@ -169,6 +137,38 @@ finna.videoPopup = (function finnaVideoPopup() {
       });
   }
 
+  function initVideoPopup(_container) {
+    var container = typeof _container === 'undefined' ? $('body') : $(_container);
+
+    container.find('[data-embed-video]').click(function onClickVideoLink(e) {
+      var videoSources = $(this).data('videoSources');
+      var scripts = $(this).data('scripts');
+      var posterUrl = $(this).data('posterUrl');
+
+      $.magnificPopup.open({
+        type: 'inline',
+        items: {
+          src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
+        },
+        callbacks: {
+          open: function onOpen() {
+            $('#video-player').closest('.mfp-content').addClass('videoplayer-only');
+            finna.layout.loadScripts(scripts, function onScriptsLoaded() {
+              initVideoJs('.video-popup', videoSources, posterUrl);
+            });
+          },
+          close: function onClose() {
+            videojs('video-player').dispose();
+          },
+          resize: function resizeVideo() {
+            resizeVideoPopup($('.video-popup'));
+          }
+        }
+      });
+      e.preventDefault();
+    });
+  }
+
   function initIframeEmbed(_container) {
     var container = typeof _container === 'undefined' ? $('body') : _container;
 
@@ -192,7 +192,7 @@ finna.videoPopup = (function finnaVideoPopup() {
         iframe: {
           markup: '<div class="mfp-iframe-scaler">'
             + '<div class="mfp-close"></div>'
-            + '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>' +
+            + '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'
             + '</div>',
           patterns: {
             youtube_short: {

@@ -3,6 +3,46 @@ finna.changeHolds = (function finnaChangeHolds() {
   function setupChangeHolds() {
     var errorOccured = $('<div></div>').attr('class', 'alert alert-danger hold-change-error').text(VuFind.translate('error_occurred'));
 
+    function pickupSubmitHandler() {
+      $().dropdown('toggle');
+      var selected = $(this);
+      var requestId = selected.data('requestId');
+      var locationId = selected.data('locationId');
+      var locationDisplay = selected.data('locationDisplay');
+      var hold = selected.data('hold');
+
+      var spinnerChange = hold.find('.pickup-change-load-indicator');
+      spinnerChange.removeClass('hidden');
+
+      var pickupLocationsSelected = hold.find('.pickupLocationSelected');
+      pickupLocationsSelected.text(locationDisplay);
+
+      var params = {
+        method: 'changePickupLocation',
+        requestId: requestId,
+        pickupLocationId: locationId
+      };
+      $.ajax({
+        data: params,
+        dataType: 'json',
+        cache: false,
+        url: VuFind.path + '/AJAX/JSON'
+      })
+        .done(function onChangePickupLocationDone(response) {
+          spinnerChange.addClass('hidden');
+          if (response.data.success) {
+            var success = $('<div></div>').attr('class', 'alert alert-success hold-change-success').text(VuFind.translate('change_hold_success'));
+            hold.closest('.pickup-location-container').append(success);
+          } else {
+            hold.closest('.pickup-location-container').append(errorOccured);
+          }
+        })
+        .fail(function onChangePickupLocationFail() {
+          spinnerChange.addClass('hidden');
+          hold.append(errorOccured);
+        });
+    }
+
     var changeHolds = $('.changeHolds');
     changeHolds.click(function onClickChangeHolds() {
       var hold = $(this);
@@ -44,60 +84,6 @@ finna.changeHolds = (function finnaChangeHolds() {
       }
     });
 
-    $('.hold-status-freeze').click(function onClickHoldFreeze() {
-      var container = $(this).closest('.change-hold-status');
-      var requestId = container.data('request-id');
-      changeHoldStatus(container, requestId, 1);
-      return false;
-    });
-
-    $('.hold-status-release').click(function onClickHoldRelease() {
-      var container = $(this).closest('.change-hold-status');
-      var requestId = container.data('request-id');
-      changeHoldStatus(container, requestId, 0);
-      return false;
-    });
-
-    function pickupSubmitHandler() {
-      $().dropdown('toggle');
-      var selected = $(this);
-      var requestId = selected.data('requestId');
-      var locationId = selected.data('locationId');
-      var locationDisplay = selected.data('locationDisplay');
-      var hold = selected.data('hold');
-
-      var spinnerChange = hold.find('.pickup-change-load-indicator');
-      spinnerChange.removeClass('hidden');
-
-      var pickupLocationsSelected = hold.find('.pickupLocationSelected');
-      pickupLocationsSelected.text(locationDisplay);
-
-      var params = {
-        method: 'changePickupLocation',
-        requestId: requestId,
-        pickupLocationId: locationId
-      };
-      $.ajax({
-        data: params,
-        dataType: 'json',
-        cache: false,
-        url: VuFind.path + '/AJAX/JSON'
-      })
-        .done(function onChangePickupLocationDone(response) {
-          spinnerChange.addClass('hidden');
-          if (response.data.success) {
-            var success = $('<div></div>').attr('class', 'alert alert-success hold-change-success').text(VuFind.translate('change_hold_success'));
-            hold.closest('.pickup-location-container').append(success);
-          } else {
-            hold.closest('.pickup-location-container').append(errorOccured);
-          }
-        })
-        .fail(function onChangePickupLocationFail() {
-          spinnerChange.addClass('hidden');
-          hold.append(errorOccured);
-        });
-    }
-
     function changeHoldStatus(container, requestId, frozen) {
       var spinnerChange = container.find('.status-change-load-indicator');
 
@@ -135,6 +121,20 @@ finna.changeHolds = (function finnaChangeHolds() {
           container.append(errorOccured);
         });
     }
+
+    $('.hold-status-freeze').click(function onClickHoldFreeze() {
+      var container = $(this).closest('.change-hold-status');
+      var requestId = container.data('request-id');
+      changeHoldStatus(container, requestId, 1);
+      return false;
+    });
+
+    $('.hold-status-release').click(function onClickHoldRelease() {
+      var container = $(this).closest('.change-hold-status');
+      var requestId = container.data('request-id');
+      changeHoldStatus(container, requestId, 0);
+      return false;
+    });
   }
 
   var my = {

@@ -4,38 +4,6 @@ finna.menu = (function finnaMenu() {
   var listHolder = null;
   var loading = false;
 
-  function init() {
-    listHolder = $('.mylist-bar');
-
-    if (!listHolder.children().length > 0) {
-      $('#open-list').addClass('collapsed');
-
-      $('#open-list > .caret').unbind('click').click(function onCaretClick(event) {
-        event.preventDefault();
-
-        if (!$('.ajax-error').hasClass('hidden')) {
-          $('.ajax-error').addClass('hidden');
-        }
-        
-        if (!loading) {
-          loadLists();
-          loading = true;
-        } 
-      });
-    } else { 
-      $('#open-list > .caret').unbind('click').click(function toggleFavourites(event) {
-        event.preventDefault();
-        toggleList();
-      });
-    }
-
-    $('#open-loans > .caret').unbind('click').click(function getLists(event) {
-      event.preventDefault();
-      $('#myLoans').toggleClass('in');
-      $('#open-loans').toggleClass('collapsed');
-    });
-  }
-
   function toggleList() {
     $('#favorites-collapse').toggleClass('in');
     $('#open-list').toggleClass('collapsed');
@@ -46,7 +14,6 @@ finna.menu = (function finnaMenu() {
     }
   }
 
-  //Load lists if there is none to show
   function loadLists() {
     $('#open-list .fa').toggleClass('hidden');
 
@@ -75,9 +42,42 @@ finna.menu = (function finnaMenu() {
       });
   }
 
+
+  function init() {
+    listHolder = $('.mylist-bar');
+
+    if (listHolder.children().length === 0) {
+      $('#open-list').addClass('collapsed');
+
+      $('#open-list > .caret').unbind('click').click(function onCaretClick(event) {
+        event.preventDefault();
+
+        if (!$('.ajax-error').hasClass('hidden')) {
+          $('.ajax-error').addClass('hidden');
+        }
+
+        if (!loading) {
+          loadLists();
+          loading = true;
+        }
+      });
+    } else {
+      $('#open-list > .caret').unbind('click').click(function toggleFavourites(event) {
+        event.preventDefault();
+        toggleList();
+      });
+    }
+
+    $('#open-loans > .caret').unbind('click').click(function getLists(event) {
+      event.preventDefault();
+      $('#myLoans').toggleClass('in');
+      $('#open-loans').toggleClass('collapsed');
+    });
+  }
+
   var my = {
     init: init
-  }
+  };
 
   return my;
 })();

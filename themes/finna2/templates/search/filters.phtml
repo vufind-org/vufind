@@ -1,6 +1,33 @@
 <!-- START of: finna - search/filters.phtml -->
-<?php $hasDefaultsApplied = $params->hasDefaultsApplied() ?>
-<?php $filterCount = $this->search()->getFilterCount($checkboxFilters, $filterList); ?>
+<?php
+  if (!isset($this->params)) {
+    // No current search, use last search in memory
+    $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  } else {
+    // clone params so that the manipulation doesn't cause trouble e.g. for facets
+    $params = clone $this->params;
+  }
+
+  $filterList = $params->getFilterList(true);
+  $checkboxFilters = $params->getCheckboxFacets();
+  $lastSort = $this->searchMemory()->getLastSort($params->getSearchClassId());
+  $options = $this->searchOptions($params->getSearchClassId());
+  $hasDefaultsApplied = $params->hasDefaultsApplied();
+  $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
+
+  // Determine whether the only filters applied are the default ones; this controls
+  // when we display or hide the reset button:
+  $defaultFilters = $options->getDefaultFilters();
+  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  foreach ($defaultFilters as $currentDefault) {
+    if (!$params->hasFilter($currentDefault)) {
+      $onlyDefaultsApplied = false;
+      break;
+    }
+  }
+
+  $advancedSearch = $params->getSearchType() === 'advanced';
+?>
 <?php ob_start(); ?>
   <?php foreach ($checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
@@ -12,13 +39,14 @@
         ?>
         <?=$desc?>
         <?php if($removeLink): ?>
-          <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
         <?php endif; ?>
       </span>
     <?php endif ?>
   <?php endforeach; ?>
 
   <?php foreach ($filterList as $field => $data): ?>
+    <div class="title-value-pair">
       <?php if (is_callable([$params, 'isGeographicFilter']) && $params->isGeographicFilter($data)): ?>
         <span class="filter-value">
           <?php
@@ -32,63 +60,88 @@
       <?php else: ?>
         <div class="filter-title-group">
           <span class="filters-title"><?=$this->transEsc($field)?>:</span>
-        <?php foreach ($data as $index => $value): ?>
-        <?php
-          $operatorLabel = '';
-          $operatorClass = "filters-" . $this->escapeHtmlAttr(strtolower($value['operator']));
-          $removeLink = isset($urlQuery) ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator']) : '';
-          $desc = $this->escapeHtml($value['displayText']);
-          $ariaLabel = $this->translate('Remove filter') . ' ' . $desc;
-
-          if ($value['operator'] === 'NOT') {
-            $operatorLabel = $this->transEsc('NOT');
-          } elseif ($value['operator'] === 'OR' && $index > 0) {
-            $operatorLabel = $this->transEsc('OR');
-          }
-
-          $isOnlineFacet = ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean']));
-        ?>
-          <?php if ($index !== 0 || $operatorLabel === 'NOT'): ?>
-            <span class="filters-term <?= $operatorClass ?>"><?= $operatorLabel ?></span>
+          <?php if (count($data) > 3): ?>
+            <div class="search-filter-dropdown dropdown">
+              <?php $dropdown = true; ?>
+              <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
+              <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-toggle-<?=$safeId?>">
+          <?php else: ?>
+            <?php $dropdown = false; ?>
           <?php endif; ?>
-          <span class="filter-value <?= $operatorClass ?>">
-            <span class="filter-text">
-              <?php // Always handle online_boolean and free_online_boolean even if not configured ?>
-              <?php if ($isOnlineFacet): ?>
-                <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
-              <?php else: ?>
-                <?=$desc?>
+          <?php foreach ($data as $index => $value): ?>
+            <?php if ($dropdown): ?>
+              <li>
+            <?php endif; ?>
+            <?php
+              switch ($value['operator']) {
+              case 'NOT':
+                $join = $this->transEsc('NOT');
+                break;
+              case 'OR':
+                $join = $this->transEsc('OR');
+                break;
+              case 'AND':
+                $join = $this->transEsc('AND');
+                break;
+              default:
+                $join = '';
+              }
+              $operatorClass = $this->escapeHtmlAttr(strtolower($value['operator']));
+
+              $isOnlineFacet = ('unrecognized_facet_label' === $field && in_array($value['field'], ['online_boolean', 'free_online_boolean']));
+              $desc = $this->escapeHtml($value['displayText']);
+            ?>
+            <span class="filters-term filters-<?=$operatorClass?>">
+              <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
+            </span>
+            <span class="filter-value filters-<?=$operatorClass?>">
+              <span class="filter-text">
+                <?php // Always handle online_boolean and free_online_boolean even if not configured ?>
+                <?php if ($isOnlineFacet): ?>
+                  <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
+                <?php else: ?>
+                  <?=$desc?>
+                <?php endif; ?>
+              </span>
+              <?php if (isset($this->urlQuery)): ?>
+                <?php $removeLink = $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])?>
+                <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
               <?php endif; ?>
             </span>
-            <?php if($removeLink): ?>
-              <a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            <?php if ($dropdown): ?>
+              </li>
             <?php endif; ?>
-          </span>
-          <?php if ($index === 0): ?>
+          <?php endforeach; ?>
+          <?php if ($dropdown): ?>
+              </ul>
             </div>
           <?php endif; ?>
-        <?php endforeach; ?>
+        </div>
         <div class="clearfix"></div>
       <?php endif; ?>
-
+    </div>
   <?php endforeach; ?>
 <?php $filters = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
-<div class="finna-filters">
+<div class="active-filters finna-filters">
   <?php if (!isset($isCollectionTab) || !$isCollectionTab): ?>
     <?php $defaultFilterState = $hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+    <?php
+      $resetLink = !$onlyDefaultsApplied && isset($urlQuery)
+        ? $urlQuery->removeAllFilters()->resetDefaultFilters() : false;
+    ?>
     <div class="filter-options">
       <button type="button" class="btn-unstyled filters-toggle visible-xs visible-sm">
         <?=$this->transEsc("show_filters")?>
         <span class="active-filter-count">(<?=$filterCount?>)</span><i class="fa fa-arrow-down"></i>
       </button>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"<?=$defaultFilterState?> id="filter-checkbox" class="searchFormKeepFilters"/>
-          <?=$this->transEsc("basic_search_keep_filters")?>
-        </label>
-      </div>
+      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+        <a class="btn btn-default reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
   <div class="filters">

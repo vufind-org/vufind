@@ -169,39 +169,6 @@ finna.record = (function finnaRecord() {
     });
   }
 
-  function initRecordAccordion() {
-    $('.record-accordions .accordion-toggle').click(function accordionClicked(e) {
-      return _toggleAccordion($(e.target).closest('.accordion'));
-    });
-    if ($('.mobile-toolbar').length > 0 && $('.accordion-holdings').length > 0) {
-      $('.mobile-toolbar .library-link li').removeClass('hidden');
-      $('.mobile-toolbar .library-link li').click(function onLinkClick(e) {
-        e.stopPropagation();
-        $('html, body').animate({scrollTop: $('#tabnav').offset().top - accordionTitleHeight}, 150);
-        _toggleAccordion($('.accordion-holdings'));
-      });
-    }
-  }
-
-  function applyRecordAccordionHash(callback) {
-    var newTab = typeof window.location.hash !== 'undefined'
-      ? window.location.hash.toLowerCase() : '';
-
-    // Open tab in url hash
-    var $tab = $("a[data-tab='" + newTab.substr(1) + "']");
-    var accordion = (newTab.length <= 1 || newTab === '#tabnav' || $tab.length === 0)
-      ? $('.record-accordions .accordion.initiallyActive')
-      : $tab.closest('.accordion');
-    if (accordion.length > 0) {
-      //onhashchange is an object, so we avoid that later
-      if (typeof callback === 'function') {
-        callback(accordion);
-      } else {
-        _toggleAccordion(accordion, true);
-      }
-    }
-  }
-
   // The accordion has a delicate relationship with the tabs. Handle with care!
   function _toggleAccordion(accordion, _initialLoad) {
     var initialLoad = typeof _initialLoad === 'undefined' ? false : _initialLoad;
@@ -236,6 +203,39 @@ finna.record = (function finnaRecord() {
       }
     }
     return false;
+  }
+
+  function initRecordAccordion() {
+    $('.record-accordions .accordion-toggle').click(function accordionClicked(e) {
+      return _toggleAccordion($(e.target).closest('.accordion'));
+    });
+    if ($('.mobile-toolbar').length > 0 && $('.accordion-holdings').length > 0) {
+      $('.mobile-toolbar .library-link li').removeClass('hidden');
+      $('.mobile-toolbar .library-link li').click(function onLinkClick(e) {
+        e.stopPropagation();
+        $('html, body').animate({scrollTop: $('#tabnav').offset().top - accordionTitleHeight}, 150);
+        _toggleAccordion($('.accordion-holdings'));
+      });
+    }
+  }
+
+  function applyRecordAccordionHash(callback) {
+    var newTab = typeof window.location.hash !== 'undefined'
+      ? window.location.hash.toLowerCase() : '';
+
+    // Open tab in url hash
+    var $tab = $("a[data-tab='" + newTab.substr(1) + "']");
+    var accordion = (newTab.length <= 1 || newTab === '#tabnav' || $tab.length === 0)
+      ? $('.record-accordions .accordion.initiallyActive')
+      : $tab.closest('.accordion');
+    if (accordion.length > 0) {
+      //onhashchange is an object, so we avoid that later
+      if (typeof callback === 'function') {
+        callback(accordion);
+      } else {
+        _toggleAccordion(accordion, true);
+      }
+    }
   }
 
   //Toggle accordion at the start so the accordions work properly

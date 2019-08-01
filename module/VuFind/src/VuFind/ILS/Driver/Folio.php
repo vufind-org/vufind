@@ -331,12 +331,15 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for holding information.
      *
-     * @param string $bibId  Bib-level id
-     * @param array  $patron Patron login information from $this->patronLogin
+     * @param string $bibId   Bib-level id
+     * @param array  $patron  Patron login information from $this->patronLogin
+     * @param array  $options Extra options (not currently used)
      *
      * @return array An array of associative holding arrays
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($bibId, array $patron = null)
+    public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $instance = $this->getInstance($bibId);
         $query = ['query' => '(instanceId="' . $instance->id . '")'];
@@ -373,7 +376,7 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'notes' => $item->notes ?? [],
-                    'callnumber' => $holding->callNumber,
+                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
                     'addLink' => true

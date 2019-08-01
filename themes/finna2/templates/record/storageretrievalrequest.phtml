@@ -12,7 +12,7 @@
 <p class="helptext"><?=$this->helpText?></p>
 <?php endif; ?>
 
-<form name="placeStorageRetrievalRequest" class="form-storage-retrieval-request" method="post">
+<form name="placeStorageRetrievalRequest" class="form-storage-retrieval-request" method="post" data-clear-account-cache="storageRetrievalRequests">
   <?=$this->flashmessages()?>
   <?php if (in_array("item-issue", $this->extraFields)): ?>
     <div class="form-group controls">

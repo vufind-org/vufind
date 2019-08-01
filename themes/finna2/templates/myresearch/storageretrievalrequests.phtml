@@ -36,7 +36,7 @@
       <?php endif; ?>
       <?php if (!empty($this->recordList)): ?>
         <?php if ($this->cancelForm): ?>
-        <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest">
+        <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest"  data-clear-account-cache="storageRetrievalRequests">
             <div class="toolbar">
               <div>
                 <input type="hidden" id="submitType" name="cancelSelected" value="1"/>

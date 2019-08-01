@@ -8,6 +8,11 @@
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
+
+<a class="search-filter-toggle visible-xs" href="#account-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Profile')?></h2>
   <?=$this->flashmessages();?>
@@ -21,22 +26,29 @@
         $this->transEsc('Email') => 'email',
       ]
     )?>
-    <?php if (count($this->pickup ?? []) > 1): // Skip form if only one location: ?>
-      <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
-      <?php
-        $selected = (strlen($this->profile['home_library'] ?? '') > 0)
-            ? $this->profile['home_library'] : $this->defaultPickupLocation
-      ?>
-      <td>
-        <form id="profile_form" class="form-inline" method="post">
-          <select id="home_library" name="home_library" class="form-control">
-            <?php foreach ($this->pickup as $lib): ?>
-              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
-            <?php endforeach; ?>
-          </select>
-          <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
-        </form>
-      </td>
+    <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
+    <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
+      <tr>
+        <th><?=$this->transEsc('Preferred Library')?>:</th>
+        <td>
+          <?php if (count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
+            <?php
+              $selected = (strlen($this->profile['home_library'] ?? '') > 0)
+                ? $this->profile['home_library'] : $this->defaultPickupLocation
+            ?>
+            <form id="profile_form" class="form-inline" method="post">
+              <select id="home_library" name="home_library" class="form-control">
+                <?php foreach ($this->pickup as $lib): ?>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
+                <?php endforeach; ?>
+              </select>
+              <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
+            </form>
+          <?php else: // case 2: set home library disallowed, but default provided by ILS ?>
+            <?=$this->transEsc('location_' . $this->preferredLibraryDisplay, null, $this->preferredLibraryDisplay)?>
+          <?php endif; ?>
+        </td>
+      </tr>
     <?php endif; ?>
   </table>
 
@@ -82,6 +94,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
 </div>

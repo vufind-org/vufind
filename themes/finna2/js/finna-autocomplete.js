@@ -27,7 +27,7 @@ finna.autocomplete = (function finnaAutocomplete() {
             q: query,
             method: 'getACSuggestions',
             searcher: searcher.searcher
-          }
+          };
 
           var form = $(op).closest('.searchForm');
           var hiddenFilters = [];

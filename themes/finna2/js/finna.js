@@ -1,4 +1,5 @@
-/*global finna, finnaCustomInit */
+/*global finnaCustomInit */
+/*exported finna */
 var finna = (function finnaModule() {
 
   var my = {

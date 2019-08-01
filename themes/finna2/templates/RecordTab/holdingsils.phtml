@@ -80,7 +80,7 @@
       <div class="clearfix"></div>
     <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true'])])?>
       </div>
     <?php endif; ?>
   <?php endif; ?>
@@ -134,15 +134,15 @@
   <div class="headers">
     <?php $currentSource = $this->driver->tryMethod('getDataSource'); ?>
     <?php $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+    <?php $recordSourceId = $this->driver->getSourceIdentifier(); ?>
     <div class="dedup-information">
       <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
       <?php if ($mergedData && count($mergedData['records']) > 1): ?>
         <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
           <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
           <?php foreach ($mergedData['records'] as $current): ?>
-            <?php // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
             <?php if ($currentSource != $current['source']): ?>
-              <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
+              <option value="<?=$this->recordLink()->getUrl($recordSourceId . '|' . $current['id']) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
             <?php endif; ?>
           <?php endforeach; ?>
         </select>
@@ -432,6 +432,10 @@
   </div>
 <?php endif; ?>
 </div>
+
+<?php if ($paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+  <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
+<?php endif; ?>
 
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>

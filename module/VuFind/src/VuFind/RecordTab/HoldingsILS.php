@@ -55,16 +55,28 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
+     * Whether the holdings tab should be hidden when empty or not.
+     *
+     * @var bool
+     */
+    protected $hideWhenEmpty;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog  ILS connection to use to check
-     * for holdings before displaying the tab; set to null if no check is needed
-     * @param string                      $template Holdings template to use
+     * @param \VuFind\ILS\Connection|bool $catalog       ILS connection to use to
+     * check for holdings before displaying the tab; may be set to null if no check
+     * is needed.
+     * @param string                      $template      Holdings template to use
+     * @param bool                        $hideWhenEmpty Whether the
+     * holdings tab should be hidden when empty or not
      */
-    public function __construct(Connection $catalog = null, $template = null)
-    {
+    public function __construct(Connection $catalog = null, $template = null,
+        $hideWhenEmpty = false
+    ) {
         $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
+        $this->hideWhenEmpty = $hideWhenEmpty;
     }
 
     /**
@@ -104,10 +116,8 @@ class HoldingsILS extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->catalog) {
-            return $this->catalog->hasHoldings($this->driver->getUniqueID());
-        }
-        return true;
+        return ($this->catalog && $this->hideWhenEmpty)
+            ? $this->catalog->hasHoldings($this->driver->getUniqueID()) : true;
     }
 
     /**
@@ -118,5 +128,34 @@ class HoldingsILS extends AbstractBase
     public function getTemplate()
     {
         return $this->template;
+    }
+
+    /**
+     * Getting a paginator for the items list.
+     *
+     * @param int $totalItemCount Total count of items for a bib record
+     * @param int $page           Currently selected page of the items paginator
+     * @param int $itemLimit      Max. no of items per page
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function getPaginator($totalItemCount, $page, $itemLimit)
+    {
+        // Return if a paginator is not needed or not supported ($itemLimit = null)
+        if (!$itemLimit || $totalItemCount < $itemLimit) {
+            return;
+        }
+
+        // Create the paginator
+        $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
+        $paginator = new \Zend\Paginator\Paginator($nullAdapter);
+
+        // Some settings for the paginator
+        $paginator
+            ->setCurrentPageNumber($page)
+            ->setItemCountPerPage($itemLimit)
+            ->setPageRange(10);
+
+        return $paginator;
     }
 }

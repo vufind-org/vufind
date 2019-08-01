@@ -63,13 +63,16 @@
                 });
             } else if (type == 'handler') {
                 var handler = item.data('handler');
-                var form = input.closest('form');
                 form.find('input[name=type]').val(handler);
             } else {
                 input.val(value);
             }
             hide();
             input.trigger('autocomplete:select', {item: item, value: value, eventType: eventType});
+        }
+
+        function getPreserveFiltersMode(input) {
+            return $(input).closest('form').find('.applied-filter[name=dfApplied]').is(':checked');
         }
 
         function createList(data, input) {
@@ -105,10 +108,10 @@
                     .html(content);
 
                 if ("handler" in data[i]) {
-                    item.attr('data-handler', data[i]['handler']);
-                    item.attr('data-title', VuFind.translate(data[i]['handler']));
+                    item.attr('data-handler', data[i].handler);
+                    item.attr('data-title', VuFind.translate(data[i].handler));
                 }
-                var type = data[i]['type'];
+                var type = data[i].type;
                 if (type == 'phrase') {
                     item.attr('data-title', VuFind.translate('autocomplete_phrase'));
                     var query = $('.searchForm_lookfor').val().trim();
@@ -116,7 +119,7 @@
                         item.hide();
                     }
                 } else if (type == 'facet' || type == 'filter') {
-                    item.attr('data-filters', data[i]['filters']);
+                    item.attr('data-filters', data[i].filters);
                 }
 
                 if (typeof data[i].description !== 'undefined') {
@@ -154,81 +157,19 @@
             align(input, $.fn.autocompleteFinna.element);
         }
 
-        function search(input, element) {
-            if (searchTimer) { clearInterval(searchTimer); }
-            if (input.val().length >= options.minLength) {
-                var ajaxDelay = $.fn.autocompleteFinna.options.ajaxDelay;
-                if (ajaxDelay < 1500) {
-                    ajaxDelay = 1500;
-                }
-                searchTimer = setInterval(
-                    function() {
-                        if (xhr && (xhr === true || xhr.state() === 'pending')) {
-                            return;
-                        }
-                        clearInterval(searchTimer);
-
-                        element.html('<i class="item loading">'+options.loadingString+'</i>');
-                        show();
-                        align(input, $.fn.autocompleteFinna.element);
-
-                        var term = [];
-                        term.push(input.val());
-                        term.push(getSearchHandler(input));
-                        term.push(getPreserveFiltersMode(input) ? "1" : "0");
-                        term.push(getPreserveFiltersMode(input) ? "1" : "0");
-                        term = term.join('###');
-                        var cid = input.data('cache-id');
-                        if (options.cache && typeof $.fn.autocompleteFinna.cache[cid][term] !== "undefined") {
-                            if ($.fn.autocompleteFinna.cache[cid][term].length === 0) {
-                                hide();
-                            } else {
-                                createList($.fn.autocompleteFinna.cache[cid][term], input, element);
-                            }
-                        } else if (typeof options.handler !== "undefined") {
-                            xhr = true;
-                            options.handler(input.val(), function(data) {
-                                if (data.length === 0 && options.suggestions) {
-                                    hide();
-                                } else {
-                                    var searcher = extractClassParams(input);
-                                    var filters = handlers = phrase = null;
-                                    if (!("onlySuggestions" in searcher) || searcher['onlySuggestions'] != '1') {
-                                        filters = "filters" in searcher ? searcher['filters'] : null;
-                                    }
-                                    handlers = "handlers" in searcher ? searcher['handlers'] : null;
-                                    phrase = "phrase" in searcher ? searcher['phrase'] : null;
-
-                                    data = parseResponse(data, filters, handlers, phrase);
-                                    createList(data, input, element);
-                                }
-                                $.fn.autocompleteFinna.cache[cid][term] = data;
-                            });
-                        } else {
-                            console.error('handler function not provided for autocomplete');
-                        }
-                        input.data('selected', -1);
-                    },
-                    ajaxDelay
-                );
-            } else {
-                hide();
-            }
-        }
-
         var parseResponse = function (data, filters, handlers, phraseSearch) {
-            var datums = suggestions = [];
+            var datums = [];
             if (data.length) {
                 // Suggestions
                 if (typeof data[0] === 'string') {
                     // Basic suggestions
-                    suggestions = $.map(data, function(obj, i) {
+                    $.map(data, function(obj, i) {
                         datums.push({label: obj, css: 'suggestion', type: 'suggestion'});
                         return obj;
                     });
                 } else {
                     // Extended suggestions
-                    suggestions = $.map(data[0], function(obj, i) {
+                    $.map(data[0], function(obj, i) {
                         datums.push({label: obj, css: 'suggestion', type: 'suggestion'});
                         return obj;
                     });
@@ -285,10 +226,6 @@
             return datums;
         };
 
-        function getPreserveFiltersMode(input) {
-            return $(input).closest('form').find('.applied-filter[name=dfApplied]').is(':checked');
-        };
-
         function getSearchHandler(input) {
             var form = $(input).closest('form');
             var handler = form.find('input[name=type]').not('.applied-filter');
@@ -296,7 +233,69 @@
                 return handler.val();
             }
             return form.find('.applied-filter[name=type]').val();
-        };
+        }
+
+        function search(input, element) {
+            if (searchTimer) { clearInterval(searchTimer); }
+            if (input.val().length >= options.minLength) {
+                var ajaxDelay = $.fn.autocompleteFinna.options.ajaxDelay;
+                if (ajaxDelay < 1500) {
+                    ajaxDelay = 1500;
+                }
+                searchTimer = setInterval(
+                    function() {
+                        if (xhr && (xhr === true || xhr.state() === 'pending')) {
+                            return;
+                        }
+                        clearInterval(searchTimer);
+
+                        element.html('<i class="item loading">'+options.loadingString+'</i>');
+                        show();
+                        align(input, $.fn.autocompleteFinna.element);
+
+                        var term = [];
+                        term.push(input.val());
+                        term.push(getSearchHandler(input));
+                        term.push(getPreserveFiltersMode(input) ? "1" : "0");
+                        term.push(getPreserveFiltersMode(input) ? "1" : "0");
+                        term = term.join('###');
+                        var cid = input.data('cache-id');
+                        if (options.cache && typeof $.fn.autocompleteFinna.cache[cid][term] !== "undefined") {
+                            if ($.fn.autocompleteFinna.cache[cid][term].length === 0) {
+                                hide();
+                            } else {
+                                createList($.fn.autocompleteFinna.cache[cid][term], input, element);
+                            }
+                        } else if (typeof options.handler !== "undefined") {
+                            xhr = true;
+                            options.handler(input.val(), function(data) {
+                                if (data.length === 0 && options.suggestions) {
+                                    hide();
+                                } else {
+                                    var searcher = extractClassParams(input);
+                                    var filters = null;
+                                    if (!("onlySuggestions" in searcher) || searcher.onlySuggestions != '1') {
+                                        filters = "filters" in searcher ? searcher.filters : null;
+                                    }
+                                    var handlers = "handlers" in searcher ? searcher.handlers : null;
+                                    var phrase = "phrase" in searcher ? searcher.phrase : null;
+
+                                    data = parseResponse(data, filters, handlers, phrase);
+                                    createList(data, input, element);
+                                }
+                                $.fn.autocompleteFinna.cache[cid][term] = data;
+                            });
+                        } else {
+                            console.error('handler function not provided for autocomplete');
+                        }
+                        input.data('selected', -1);
+                    },
+                    ajaxDelay
+                );
+            } else {
+                hide();
+            }
+        }
 
         function updateAutocompleteTop(input) {
             autocompleteTop = input.offset().top + input.outerHeight();

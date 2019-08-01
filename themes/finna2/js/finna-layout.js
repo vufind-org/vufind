@@ -370,7 +370,7 @@ finna.layout = (function finnaLayout() {
     });
 
     $('.searchForm_lookfor').bind('autocomplete:select', function onAutocompleteSelect() {
-      $('.navbar-form').submit()
+      $('.navbar-form').submit();
     });
 
     $('.select-type').on('click', function onClickSelectType(event) {
@@ -431,9 +431,18 @@ finna.layout = (function finnaLayout() {
     }
   }
 
-  function initHierarchicalFacet(treeNode, inSidebar) {
-    addJSTreeListener(treeNode);
-    initFacetTree(treeNode, inSidebar);
+  function initBuildingFilter() {
+    $('#building_filter').keyup(function onKeyUpFilter() {
+      var valThis = this.value.toLowerCase();
+      $('#facet_building>ul>li>a .text').each(function doBuildingSearch() {
+        var text = $(this).text().toLowerCase();
+        if (text.indexOf(valThis) !== -1) {
+          $(this).closest('li').show();
+        } else {
+          $(this).closest('li').hide();
+        }
+      });
+    });
   }
 
   function addJSTreeListener(treeNode) {
@@ -455,6 +464,11 @@ finna.layout = (function finnaLayout() {
         tree.jstree('open_node', this, null, false);
       });
     });
+  }
+
+  function initHierarchicalFacet(treeNode, inSidebar) {
+    addJSTreeListener(treeNode);
+    initFacetTree(treeNode, inSidebar);
   }
 
   function initJumpMenus(_holder) {
@@ -562,20 +576,6 @@ finna.layout = (function finnaLayout() {
     }
   }
 
-  function initBuildingFilter() {
-    $('#building_filter').keyup(function onKeyUpFilter() {
-      var valThis = this.value.toLowerCase();
-      $('#facet_building>ul>li>a .text').each(function doBuildingSearch() {
-        var text = $(this).text().toLowerCase();
-        if (text.indexOf(valThis) !== -1) {
-          $(this).closest('li').show();
-        } else {
-          $(this).closest('li').hide();
-        }
-      });
-    });
-  }
-
   function initLightboxLogin() {
     if (!document.addEventListener) {
       return;
@@ -619,26 +619,6 @@ finna.layout = (function finnaLayout() {
     return masonryInitialized;
   }
 
-  function initOrganisationPageLinks() {
-    $('.organisation-page-link').not('.done').map(function setupOrganisationPageLinks() {
-      $(this).one('inview', function onInViewLink() {
-        var holder = $(this);
-        var organisationId = $(this).data('organisation');
-        var organisationName = $(this).data('organisationName');
-        var organisationSector = $(this).data('organisationSector')
-        var organisation = {'id': organisationId, 'sector': organisationSector}
-        getOrganisationPageLink(organisation, organisationName, true, function organisationPageCallback(response) {
-          holder.toggleClass('done', true);
-          if (response) {
-            $.each(response, function handleLinks(id, item) {
-              holder.html(item).closest('li.record-organisation').toggleClass('organisation-page-link-visible', true);
-            });
-          }
-        });
-      });
-    });
-  }
-
   function getOrganisationPageLink(organisation, organisationName, link, callback) {
     var params = {
       url: VuFind.path + '/AJAX/JSON?method=getOrganisationInfo',
@@ -652,7 +632,7 @@ finna.layout = (function finnaLayout() {
       }
     };
     if (organisationName) {
-      params.data.parentName = new String(organisationName);
+      params.data.parentName = String(organisationName);
     }
     $.ajax(params)
       .done(function onGetOrganisationInfoDone(response) {
@@ -661,6 +641,26 @@ finna.layout = (function finnaLayout() {
       .fail(function onGetOrganisationInfoFail() {
         callback(false);
       });
+  }
+
+  function initOrganisationPageLinks() {
+    $('.organisation-page-link').not('.done').map(function setupOrganisationPageLinks() {
+      $(this).one('inview', function onInViewLink() {
+        var holder = $(this);
+        var organisationId = $(this).data('organisation');
+        var organisationName = $(this).data('organisationName');
+        var organisationSector = $(this).data('organisationSector');
+        var organisation = {'id': organisationId, 'sector': organisationSector};
+        getOrganisationPageLink(organisation, organisationName, true, function organisationPageCallback(response) {
+          holder.toggleClass('done', true);
+          if (response) {
+            $.each(response, function handleLinks(id, item) {
+              holder.html(item).closest('li.record-organisation').toggleClass('organisation-page-link-visible', true);
+            });
+          }
+        });
+      });
+    });
   }
 
   function initOrganisationInfoWidgets() {
@@ -781,14 +781,6 @@ finna.layout = (function finnaLayout() {
     }
   }
 
-  function _activateLoginTab(tabId) {
-    var $top = $('.login-tabs');
-    $top.find('.tab-pane.active').removeClass('active');
-    $top.find('li.' + tabId).tab('show');
-    $top.find('.' + tabId + '-tab').addClass('active');
-    _toggleLoginAccordion(tabId);
-  }
-
   // The accordion has a delicate relationship with the tabs. Handle with care!
   function _toggleLoginAccordion(tabId) {
     var $accordionHeading = $('.login-accordion .accordion-heading a[data-tab="' + tabId + '"]').closest('.accordion-heading');
@@ -810,6 +802,14 @@ finna.layout = (function finnaLayout() {
       $loginTabs.find('.tab-pane.active').removeClass('active');
       $loginTabs.find('.' + tabId + '-tab').addClass('active');
     }
+  }
+
+  function _activateLoginTab(tabId) {
+    var $top = $('.login-tabs');
+    $top.find('.tab-pane.active').removeClass('active');
+    $top.find('li.' + tabId).tab('show');
+    $top.find('.' + tabId + '-tab').addClass('active');
+    _toggleLoginAccordion(tabId);
   }
 
   function initLoginTabs() {

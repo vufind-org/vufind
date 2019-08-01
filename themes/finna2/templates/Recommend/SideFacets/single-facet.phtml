@@ -47,7 +47,7 @@
   <?php endif; ?>
 
   <?php if ($this->exclude && !$this->facet['isApplied']): ?>
-    <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
+    <?php $excludeURL = $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
     <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
   <?php endif; ?>
 

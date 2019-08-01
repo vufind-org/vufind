@@ -77,14 +77,14 @@
       </div>
 
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link" target="_blank">
+        <a href="<?= $this->recordLink()->getUrl($this->driver) ?>#html" class="icon html fulltext _record_link" target="_blank">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
       <?php endif; ?>
 
       <?php if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver) . '/PDF'; ?>" class="icon pdf fulltext" target="_blank">
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'PDF'); ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <?php endif; ?>
@@ -126,7 +126,7 @@
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
-            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
           </div>

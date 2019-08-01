@@ -28,7 +28,7 @@
   <property name="solr_version" value="7.3.1" />
   <property name="phpdoc_version" value="2.9.0" />
 
-  <property name="version" value="5.1" />
+  <property name="version" value="6.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -122,14 +122,6 @@
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
   </target>
 
-  <!-- JSHint -->
-  <target name="jshint">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
-  </target>
-  <target name="jshint-report">
-    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
-  </target>
-
   <!-- Finna ESLint -->
   <target name="eslint-finna">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js" escape="false" checkreturn="true" passthru="true" />
@@ -142,6 +134,20 @@
   <target name="eslint-finna-report">
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna.xml" escape="false" />
     <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/finna2/js/*.js --format checkstyle -o ${builddir}/reports/eslint-finna2.xml" escape="false" />
+  </target>
+
+  <!-- JSHint -->
+  <target name="jshint">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor ${srcdir}/themes" checkreturn="true" passthru="true" />
+  </target>
+  <target name="jshint-report">
+    <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+  </target>
+
+  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <target name="checkLessToSass">
+    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
   </target>
 
   <!-- PHP API Documentation -->
@@ -297,7 +303,9 @@
         <!-- build database -->
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
         <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
@@ -365,6 +373,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>

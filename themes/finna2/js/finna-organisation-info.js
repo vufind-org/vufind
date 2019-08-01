@@ -23,6 +23,42 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
       });
   }
 
+  function getCachedDetails(id) {
+    if (typeof organisationList[id].details !== 'undefined') {
+      return organisationList[id].details;
+    }
+    return null;
+  }
+
+  function getField(obj, field, organisationId) {
+    var res = finna.common.getField(obj, field);
+    if (res !== null) {
+      return res;
+    }
+    if (organisationId) {
+      var cache = getCachedDetails(organisationId);
+      if (cache) {
+        if (typeof cache[field] != 'undefined') {
+          return cache[field];
+        }
+      }
+    }
+    return null;
+  }
+
+  function cacheSchedules(id, data) {
+    var schedules = finna.common.getField(data, 'openTimes');
+    if (schedules) {
+      organisationList[id].openTimes = schedules;
+      organisationList[id].details.openTimes = schedules;
+    }
+    var scheduleDesc = finna.common.getField(data, 'scheduleDescriptions');
+    if (scheduleDesc) {
+      organisationList[id].details.scheduleDescriptions = scheduleDesc;
+      organisationList[id].scheduleDescriptions = scheduleDesc;
+    }
+  }
+
   function getOrganisations(target, parent, buildings, callbackParams, callback) {
     if (typeof parent === 'undefined') {
       return;
@@ -97,6 +133,13 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
     return details;
   }
 
+  function cacheDetails(id, details) {
+    if (!('openTimes' in details) && 'openTimes' in organisationList[id]) {
+      details.openTimes = organisationList[id].openTimes;
+    }
+    organisationList[id].details = details;
+  }
+
   function getSchedules(target, parent, id, periodStart, dir, fullDetails, allServices, callback) {
     var params = {
       target: target, action: 'details', id: id,
@@ -133,49 +176,6 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
 
       callback(result);
     });
-  }
-
-  function getField(obj, field, organisationId) {
-    var res = finna.common.getField(obj, field);
-    if (res !== null) {
-      return res;
-    }
-    if (organisationId) {
-      var cache = getCachedDetails(organisationId);
-      if (cache) {
-        if (typeof cache[field] != 'undefined') {
-          return cache[field];
-        }
-      }
-    }
-    return null;
-  }
-
-  function getCachedDetails(id) {
-    if (typeof organisationList[id].details !== 'undefined') {
-      return organisationList[id].details;
-    }
-    return null;
-  }
-
-  function cacheDetails(id, details) {
-    if (!('openTimes' in details) && 'openTimes' in organisationList[id]) {
-      details.openTimes = organisationList[id].openTimes;
-    }
-    organisationList[id].details = details;
-  }
-
-  function cacheSchedules(id, data) {
-    var schedules = finna.common.getField(data, 'openTimes');
-    if (schedules) {
-      organisationList[id].openTimes = schedules;
-      organisationList[id].details.openTimes = schedules;
-    }
-    var scheduleDesc = finna.common.getField(data, 'scheduleDescriptions');
-    if (scheduleDesc) {
-      organisationList[id].details.scheduleDescriptions = scheduleDesc;
-      organisationList[id].scheduleDescriptions = scheduleDesc;
-    }
   }
 
   var my = {

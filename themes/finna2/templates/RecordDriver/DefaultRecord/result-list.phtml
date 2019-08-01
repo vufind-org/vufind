@@ -81,23 +81,21 @@ if ($img):
               <div class="truncate-field" data-rows="1">
                 <?=$this->transEsc('Published in')?>
                 <?php
-                  $parentSource = $this->driver->getSourceIdentifier();
-                  $parentId = $this->driver->getHierarchyParentId();
+                  $containerSource = $this->driver->getSourceIdentifier();
+                  $containerID = $this->driver->getContainerRecordID();
                   $hostRecords = $this->driver->tryMethod('getHostRecords');
                 ?>
                 <?php if ($hostRecords): ?>
                   <?php foreach ($hostRecords as $i => $hostRecord): ?>
                     <?=$i > 0 ? '<br/>' : ''?>
                     <?php if ($hostRecord['id'] || $hostRecord['title']): ?>
-                      <?php // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-                      <?php $link = $hostRecord['id'] ? $this->escapeHtmlAttr($this->url('record') . urlencode($hostRecord['id'])) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
+                      <?php $link = $hostRecord['id'] ? $this->recordLink()->getUrl($hostRecord['sourceId'] . '|' . $hostRecord['id']) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
                       <a href="<?=$link?>"><?=$hostRecord['title']?></a>
                     <?php endif; ?>
                     <?=$this->escapeHtml($hostRecord['reference']); ?>
                   <?php endforeach; ?>
                 <?php else: ?>
-                  <?php // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-                  <?php $link = $containerID ? $this->escapeHtmlAttr($this->url('record') . urlencode($containerID)) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
+                  <?php $link = $containerID ? $this->recordLink()->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
                   <a href="<?=$link?>"><?=$this->escapeHtml($containerTitle)?></a>
                   <?php $ref = $this->driver->getContainerReference(); ?>
                   <?php if (!empty($ref)): ?>
@@ -145,7 +143,7 @@ if ($img):
         <?php if (!$this->driver->isCollection()): ?>
           <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
             <?php if (!empty($snippet['caption'])): ?>
-              <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
+              <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
             <?php endif; ?>
             <?php if (!empty($snippet['snippet'])): ?>
               <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
@@ -175,7 +173,7 @@ if ($img):
             <div class="hierarchyTreeLink">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
               <i class="fa fa-sitemap" aria-hidden="true"></i>
-              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
                   <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
               </a>
             </div>

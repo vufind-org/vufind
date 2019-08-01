@@ -11,66 +11,80 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
   var consortiumInfo = false;
   var consortium = false;
 
-  function loadOrganisationList(buildings, orgId) {
-    service.getOrganisations('page', parent, buildings, {id: orgId}, function onGetOrganisation(response, params) {
-      if (response) {
-        var id = params.id;
-        holder.find('.loading').toggleClass('loading', false);
-
-        var cnt = 0;
-        $.each(response.list, function countItem(ind, obj) {
-          organisationList[obj.id] = obj;
-          if (obj.type === 'library' || obj.type === 'other'
-            || obj.type === 'museum') {
-            cnt++;
-          }
-        });
-
-        infoWidget.organisationListLoaded(response);
-        if (cnt > 0) {
-          initMap();
-          holder.find('.office-quick-information').show();
-
-          // if theres only one service point, hide searchbox and ignore initSearch
-          if (cnt === 1) {
-            holder.find('.office-search .searchbox-office,.show-all').hide();
-            id = Object.keys(organisationList)[0];
-          } else {
-            // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
-            initSearch();
-          }
-          var desc = VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt);
-          holder.find('.ui-autocomplete-input')
-            .attr('placeholder', desc)
-            .attr('aria-label', desc)
-            .focus().blur();
-
-          if (typeof id != 'undefined' && id) {
-            updateSelectedOrganisation(id);
-          }
-        } else {
-          holder.find('.map-ui').hide();
-        }
-
-        updateConsortiumNotification(response);
-        if (consortiumInfo) {
-          if (cnt > 0) {
-            finna.organisationInfoPageConsortium.enableConsortiumNaviItem('service');
-          }
-          finna.organisationInfoPageConsortium.updateConsortiumInfo(response, organisationList);
-          finna.organisationInfoPageConsortium.initConsortiumNavi();
-        }
-        updateDefaultServicePoint(response);
-        updateURL = true;
-      } else {
-        err();
-      }
-    });
-  }
-
   function err() {
     holder.find('.no-information').removeClass('hidden');
     holder.find('.organisation-info-page').html('');
+  }
+
+  function updateWindowHash(hash) {
+    // Create a fake hidden div with id=hash and absolute position
+    // so that window scroll position is preserved when the hash is updated below.
+    holder.find('div.hash').remove();
+    $('<div/>')
+      .css({
+        position: 'absolute',
+        visibility: 'hidden',
+        top: $(document).scrollTop() + 'px'
+      })
+      .addClass('hash')
+      .attr( 'id', hash )
+      .appendTo(holder);
+
+    if (hash === window.location.hash) {
+      // Set hash first to empty value, so that onhashchange is triggered when
+      // the same menu item is re-selected.
+      window.location.hash = '';
+    }
+    window.location.hash = hash;
+  }
+
+  function updateConsortiumNotification(data) {
+    if ('consortium' in data) {
+      if ('finna' in data.consortium && 'notification' in data.consortium.finna) {
+        holder.find('.consortium-notification')
+          .html(data.consortium.finna.notification).removeClass('hide');
+      }
+    }
+  }
+
+  function updateDefaultServicePoint(data) {
+    if ('consortium' in data) {
+      if ('finna' in data.consortium
+          && 'service_point' in data.consortium.finna
+          && data.consortium.finna.service_point !== null
+          && window.location.hash === ''
+      ) {
+        window.location.hash = data.consortium.finna.service_point;
+      }
+    }
+  }
+
+  function setOfficeInformationLoader(mode) {
+    holder.find('.office-information-loader').toggle(mode);
+  }
+
+  function updateSelectedOrganisation(id) {
+    setOfficeInformationLoader(true);
+    holder.find('.error, .info-element').hide();
+    infoWidget.showDetails(id, '', true);
+    $('#office-search').val('');
+
+    var notification = holder.find('.office-search-notifications .notification');
+    if (id in organisationList) {
+      var data = organisationList[id];
+      map.hideMarker();
+      if ('address' in data && 'coordinates' in data.address) {
+        map.selectMarker(id);
+        notification.hide();
+      } else {
+        map.reset();
+        notification.show().delay(2000).fadeOut(500);
+        setOfficeInformationLoader(false);
+      }
+      return;
+    } else {
+      setOfficeInformationLoader(false);
+    }
   }
 
   function initMap() {
@@ -194,79 +208,65 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     });
   }
 
-  function updateWindowHash(hash) {
-    // Create a fake hidden div with id=hash and absolute position
-    // so that window scroll position is preserved when the hash is updated below.
-    holder.find('div.hash').remove();
-    $('<div/>')
-      .css({
-        position: 'absolute',
-        visibility: 'hidden',
-        top: $(document).scrollTop() + 'px'
-      })
-      .addClass('hash')
-      .attr( 'id', hash )
-      .appendTo(holder);
+  function loadOrganisationList(buildings, orgId) {
+    service.getOrganisations('page', parent, buildings, {id: orgId}, function onGetOrganisation(response, params) {
+      if (response) {
+        var id = params.id;
+        holder.find('.loading').toggleClass('loading', false);
 
-    if (hash === window.location.hash) {
-      // Set hash first to empty value, so that onhashchange is triggered when
-      // the same menu item is re-selected.
-      window.location.hash = '';
-    }
-    window.location.hash = hash;
+        var cnt = 0;
+        $.each(response.list, function countItem(ind, obj) {
+          organisationList[obj.id] = obj;
+          if (obj.type === 'library' || obj.type === 'other'
+            || obj.type === 'museum') {
+            cnt++;
+          }
+        });
+
+        infoWidget.organisationListLoaded(response);
+        if (cnt > 0) {
+          initMap();
+          holder.find('.office-quick-information').show();
+
+          // if theres only one service point, hide searchbox and ignore initSearch
+          if (cnt === 1) {
+            holder.find('.office-search .searchbox-office,.show-all').hide();
+            id = Object.keys(organisationList)[0];
+          } else {
+            // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
+            initSearch();
+          }
+          var desc = VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt);
+          holder.find('.ui-autocomplete-input')
+            .attr('placeholder', desc)
+            .attr('aria-label', desc)
+            .focus().blur();
+
+          if (typeof id != 'undefined' && id) {
+            updateSelectedOrganisation(id);
+          }
+        } else {
+          holder.find('.map-ui').hide();
+        }
+
+        updateConsortiumNotification(response);
+        if (consortiumInfo) {
+          if (cnt > 0) {
+            finna.organisationInfoPageConsortium.enableConsortiumNaviItem('service');
+          }
+          finna.organisationInfoPageConsortium.updateConsortiumInfo(response, organisationList);
+          finna.organisationInfoPageConsortium.initConsortiumNavi();
+        }
+        updateDefaultServicePoint(response);
+        updateURL = true;
+      } else {
+        err();
+      }
+    });
   }
 
   function hideMapMarker() {
     holder.find('#marker-tooltip').hide();
-  }
-
-  function updateConsortiumNotification(data) {
-    if ('consortium' in data) {
-      if ('finna' in data.consortium && 'notification' in data.consortium.finna) {
-        holder.find('.consortium-notification')
-          .html(data.consortium.finna.notification).removeClass('hide');
-      }
-    }
-  }
-
-  function updateDefaultServicePoint(data) {
-    if ('consortium' in data) {
-      if ('finna' in data.consortium
-          && 'service_point' in data.consortium.finna
-          && data.consortium.finna.service_point !== null
-          && window.location.hash === ''
-      ) {
-        window.location.hash = data.consortium.finna.service_point;
-      }
-    }
-  }
-
-  function setOfficeInformationLoader(mode) {
-    holder.find('.office-information-loader').toggle(mode);
-  }
-
-  function updateSelectedOrganisation(id) {
-    setOfficeInformationLoader(true);
-    holder.find('.error, .info-element').hide();
-    infoWidget.showDetails(id, '', true);
-    $('#office-search').val('');
-
-    var notification = holder.find('.office-search-notifications .notification');
-    if (id in organisationList) {
-      var data = organisationList[id];
-      map.hideMarker();
-      if ('address' in data && 'coordinates' in data.address) {
-        map.selectMarker(id);
-        notification.hide();
-      } else {
-        map.reset();
-        notification.show().delay(2000).fadeOut(500);
-        setOfficeInformationLoader(false);
-      }
-      return;
-    } else {
-      setOfficeInformationLoader(false);
-    }
   }
 
   function updateGeneralInfo(data, rssAvailable) {
