@@ -538,6 +538,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getHostRecords()
     {
         $result = [];
+        $sourceId = $this->getSourceIdentifier();
         $fields = $this->getMarcRecord()->getFields('773');
 
         if (!empty($this->fields['hierarchy_parent_id'])
@@ -554,6 +555,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 }
                 $result[] = [
                     'id' => $parentId,
+                    'sourceId' => $sourceId,
                     'title' => $title,
                     'reference' => '',
                     'publishingInfo' => ''
@@ -605,6 +607,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
             $result[] = [
                 'id' => $id,
+                'sourceId' => $sourceId,
                 'title' => $title,
                 'reference' => $reference,
                 'publishingInfo' => $publishingInfo

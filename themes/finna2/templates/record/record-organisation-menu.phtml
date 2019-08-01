@@ -39,8 +39,7 @@
         <div class="truncate-field other-organisation-links" data-rows="5">
         <?php foreach ($mergedData['records'] as $current): ?>
           <?php if ($current['source'] != $currentSource) : ?>
-          <?php // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-          <a href="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" title="<?=$this->escapeHtmlAttr($this->translate("source_{$current['source']}", null, $current['source'])) ?>">
+          <a href="<?=$this->recordLink()->getUrl($current['id']) ?>" title="<?=$this->escapeHtmlAttr($this->translate("source_{$current['source']}", null, $current['source'])) ?>">
             <?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?>
           </a>
           <?php endif; ?>
