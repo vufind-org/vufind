@@ -30,6 +30,41 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get life & death for display
+     *
+     * @return string
+     */
+    function getAuthorityLifeDates(&$driver) {
+        $display = '';
+
+        $birth = $driver->getBirthDateOrYear();
+        if ($birth != '') {
+            $display .= ' *';
+            $display .= $birth;
+        }
+        $death = $driver->getDeathDateOrYear();
+        if ($death != '') {
+            $display .= '-';
+            $display .= $death;
+            $display .= '†';
+        }
+
+        return $display;
+    }
+
+    function getAuthorityProfessions(&$driver) {
+        // Professions
+        $professions = $driver->getProfessions();
+        $professions_display = '';
+        foreach ($professions as $profession) {
+            if ($professions_display != '')
+                $professions_display .= '/';
+            $professions_display .= $profession['title'];
+        }
+        return $professions_display;
+    }
+
+    /**
      * Get TueFind configuration from INI file.
      *
      * @param string $id Config file id, default 'tuefind'

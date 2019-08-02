@@ -6,15 +6,9 @@
     <div class="col-sm-8">
         <?php
         // Professions
-        $professions = $this->driver->getProfessions();
-        $professions_display = '';
-        foreach ($professions as $profession) {
-            if ($professions_display != '')
-                $professions_display .= '/';
-            $professions_display .= $profession['title'];
-        }
-        if (count($professions) > 0) {
-            ?><p><?=$professions_display?></p><?php
+        $professions = $this->tuefind()->getAuthorityProfessions($this->driver);
+        if ($professions != '') {
+            ?><p><?=$professions?></p><?php
         }
 
         // Internal search
