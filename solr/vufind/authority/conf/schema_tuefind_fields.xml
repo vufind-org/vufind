@@ -2,4 +2,5 @@
 <fields>
     <!-- COMMON fields -->
     <field name="beacons" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gnd" type="string" indexed="true" stored="true"/>
 </fields>
