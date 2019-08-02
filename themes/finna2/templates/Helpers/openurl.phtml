@@ -1,7 +1,6 @@
 <!-- START of: finna - Helpers/openurl.phtml -->
 <?php if (!empty($this->resolverUrl) && strncmp($this->resolverUrl, '?', 1) !== 0): ?>
   <?php
-    echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
     $classes = '';
     if ($this->openUrlEmbed) {
       $classes = "fulltext";
