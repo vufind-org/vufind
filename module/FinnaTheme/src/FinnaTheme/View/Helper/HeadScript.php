@@ -27,8 +27,6 @@
  */
 namespace FinnaTheme\View\Helper;
 
-use VuFindTheme\ThemeInfo;
-
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
@@ -43,7 +41,8 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     /**
      * Retrieve string representation
      *
-     * @param  string|int $indent Amount of whitespaces or string to use for indention
+     * @param string|int $indent Amount of whitespaces or string to use for indention
+     *
      * @return string
      */
     public function toString($indent = null)

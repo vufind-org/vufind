@@ -41,7 +41,8 @@ class InlineScript extends \VuFindTheme\View\Helper\InlineScript
     /**
      * Retrieve string representation
      *
-     * @param  string|int $indent Amount of whitespaces or string to use for indention
+     * @param string|int $indent Amount of whitespaces or string to use for indention
+     *
      * @return string
      */
     public function toString($indent = null)
