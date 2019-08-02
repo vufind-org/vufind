@@ -24,6 +24,39 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
         return $beacon_references;
     }
 
+    protected function getLifeDates() {
+        $fields = $this->getMarcRecord()->getFields('548');
+        foreach ($fields as $field) {
+            $typeSubfield = $field->getSubfield('4');
+            if ($typeSubfield !== false && $typeSubfield->getData() == 'datx') {
+                if (preg_match('"^(\d{1,2}\.\d{1,2}\.\d{1,4})-(\d{1,2}\.\d{1,2}\.\d{1,4})$"', $field->getSubfield('a')->getData(), $hits)) {
+                    return ['birth' => $hits[1], 'death' => $hits[2]];
+                }
+            }
+        }
+    }
+
+    /**
+     * Get birth date or year if date is not set
+     * @return string
+     */
+    public function getBirthDateOrYear() {
+        return $this->getBirthDate() ?? $this->getBirthYear();
+    }
+
+    /**
+     * Get exact birth date
+     * @return string
+     */
+    public function getBirthDate() {
+        $lifeDates = $this->getLifeDates();
+        return $lifeDates['birth'] ?? null;
+    }
+
+    /**
+     * Get birth year
+     * @return string
+     */
     public function getBirthYear() {
         $pattern = '"^(\d+)(-?)(\d+)?$"';
         $values = $this->getFieldArray('100', ['d']);
@@ -33,6 +66,27 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
         }
     }
 
+    /**
+     * Get death date or year if date is not set
+     * @return string
+     */
+    public function getDeathDateOrYear() {
+        return $this->getDeathDate() ?? $this->getDeathYear();
+    }
+
+    /**
+     * Get exact death date
+     * @return string
+     */
+    public function getDeathDate() {
+        $lifeDates = $this->getLifeDates();
+        return $lifeDates['death'] ?? null;
+    }
+
+    /**
+     * Get death year
+     * @return string
+     */
     public function getDeathYear() {
         $pattern = '"^(\d+)(-?)(\d+)?$"';
         $values = $this->getFieldArray('100', ['d']);
