@@ -1,6 +1,6 @@
 <?php
 /**
- * Inline script view helper (extended for VuFind's theme system)
+ * Head script view helper (extended for VuFind's theme system)
  *
  * PHP version 7
  *
@@ -23,20 +23,22 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace FinnaTheme\View\Helper;
 
+use VuFindTheme\ThemeInfo;
+
 /**
- * Inline script view helper (extended for VuFind's theme system)
+ * Head script view helper (extended for VuFind's theme system)
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class InlineScript extends \VuFindTheme\View\Helper\InlineScript
+class HeadScript extends \VuFindTheme\View\Helper\HeadScript
 {
     /**
      * Retrieve string representation

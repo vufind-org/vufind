@@ -79,4 +79,27 @@ class Module
             realpath(APPLICATION_PATH . '/themes'), 'bootprint3'
         );
     }
+
+    /**
+     * Get view helper configuration.
+     *
+     * @return array
+     */
+    public function getViewHelperConfig()
+    {
+        return [
+            'factories' => [
+                View\Helper\HeadScript::class =>
+                    \VuFindTheme\View\Helper\PipelineInjectorFactory::class,
+                View\Helper\InlineScript::class =>
+                    \VuFindTheme\View\Helper\PipelineInjectorFactory::class,
+            ],
+            'aliases' => [
+                \VuFindTheme\View\Helper\HeadScript::class
+                    => View\Helper\HeadScript::class,
+                \VuFindTheme\View\Helper\InlineScript::class =>
+                    View\Helper\InlineScript::class,
+            ],
+        ];
+    }
 }
