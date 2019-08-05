@@ -28,12 +28,19 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected $es; // Elasticsearch interface
     protected $logger;
     protected $configLoader;
+    protected $maxSnippets = 5;
     const FIELD = 'full_text';
     const DOCUMENT_ID = 'id';
     const highlightStartTag = '<span class="highlight">';
     const highlightEndTag = '</span>';
     const fulltextsnippetIni = 'fulltextsnippet';
-    const MAX_SNIPPETS = 5;
+    const MAX_SNIPPETS_DEFAULT = 3;
+    const MAX_SNIPPETS_VERBOSE = 1000;
+    const PHRASE_LIMIT = 10000000;
+    const FRAGMENT_SIZE_DEFAULT = 300;
+    const FRAGMENT_SIZE_VERBOSE = 700;
+    const ORDER_DEFAULT = 'none';
+    const ORDER_VERBOSE = 'score';
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
@@ -54,9 +61,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected function getFulltext($doc_id, $search_query, $verbose) {
         // Is this an ordinary query or a phrase query (surrounded by quotes) ?
         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
+        $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
         $params = [
              'index' => $this->index,
-             'type' => '_doc',
              'body' => [
                  '_source' => false,
                  'size' => '100',
@@ -71,14 +78,16 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'highlight' => [
                      'fields' => [
                           self::FIELD => [
-                               'fragment_size' => $verbose ? '700' : '300',
-                               'phrase_limit' => '3'
+                               'type' => 'unified',
+                               'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
+                               'phrase_limit' => self::PHRASE_LIMIT,
+                               'number_of_fragments' => $this->maxSnippets,
+                               'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
                            ]
                       ]
                  ]
              ]
         ];
-
         $response = $this->es->search($params);
         return $this->extractSnippets($response);
     }
@@ -101,14 +110,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             return false;
 
         $snippets = [];
-        if (count($hits) > self::MAX_SNIPPETS)
-            $hits = array_slice($hits, 0, self::MAX_SNIPPETS);
+        if (count($hits) > $this->maxSnippets)
+            $hits = array_slice($hits, 0, $this->maxSnippets);
         error_log("HITS:" . count($hits));
         foreach ($hits as $hit) {
             if (array_key_exists('highlight', $hit))
                 $highlight_results = $hit['highlight'][self::FIELD];
-            if (count($highlight_results) > self::MAX_SNIPPETS);
-                $highlight_results = array_slice($highlight_results, 0, self::MAX_SNIPPETS);
+            if (count($highlight_results) > $this->maxSnippets);
+                $highlight_results = array_slice($highlight_results, 0, $this->maxSnippets);
             foreach ($highlight_results as $highlight_result) {
                 array_push($snippets, $highlight_result);
             }
