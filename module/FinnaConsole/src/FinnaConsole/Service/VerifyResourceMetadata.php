@@ -89,17 +89,24 @@ class VerifyResourceMetadata extends AbstractService
     /**
      * Run service.
      *
-     * @param array $arguments Command line arguments.
+     * @param array   $arguments Command line arguments
+     * @param Request $request   Full request
      *
      * @return boolean success
      */
-    public function run($arguments)
+    public function run($arguments, \Zend\Stdlib\RequestInterface $request)
     {
         $this->msg('Resource metadata verification started');
         $count = $fixed = 0;
-        $resources = $this->resourceTable->findMissingMetadata();
+        $index = $request->getParam('index');
+        $callback = function ($select) use ($index) {
+            if ($index) {
+                $select->where->equalTo('source', $index);
+            }
+        };
+        $resources = $this->resourceTable->select($callback);
         if (!$resources) {
-            $this->msg('No resources with missing metadata found');
+            $this->msg('No resources found');
             return true;
         }
 
@@ -109,8 +116,12 @@ class VerifyResourceMetadata extends AbstractService
             try {
                 $driver = $this->recordLoader
                     ->load($resource->record_id, $resource->source);
-                $resource->assignMetadata($driver, $this->dateConverter)->save();
-                ++$fixed;
+                $original = clone $resource;
+                $resource->assignMetadata($driver, $this->dateConverter);
+                if ($original != $resource) {
+                    $resource->save();
+                    ++$fixed;
+                }
             } catch (\Exception $e) {
                 $this->msg(
                     'Unable to load metadata for record '
@@ -126,13 +137,13 @@ class VerifyResourceMetadata extends AbstractService
             }
             ++$count;
             if ($count % 1000 == 0) {
-                $this->msg("$count resources checked, $fixed fixed");
+                $this->msg("$count resources processed, $fixed fixed");
             }
         }
 
         $this->msg(
-            "Resource metadata verification completed with $count resources checked,"
-            . " $fixed fixed"
+            "Resource metadata verification completed with $count resources"
+            . " processed, $fixed fixed"
         );
         return true;
     }

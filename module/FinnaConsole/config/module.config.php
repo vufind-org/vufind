@@ -37,7 +37,7 @@ $routes = [
     'util/scheduled_alerts' => 'util scheduled_alerts <view_base_directory> <VuFind_local_configuration_directory>',
     'util/update_search_hashes' => 'util update_search_hashes Y',
     'util/verify_record_links' => 'util verify_record_links',
-    'util/verify_resource_metadata' => 'util verify_resource_metadata'
+    'util/verify_resource_metadata' => 'util verify_resource_metadata [--index=]'
 ];
 
 $routeGenerator = new \VuFindConsole\Route\RouteGenerator();
