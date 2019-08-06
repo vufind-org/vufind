@@ -49,6 +49,78 @@ $panelId = 0;
 $panelClass = "panel-default";
 $panelWidth = "col-md-6";
 ?>
+<div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-desktop"></i> IxTheo Open Journals <div class="new">neu</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der Fachinformationsdienst (FID) Theologie unterstützt und fördert Open-Access-Zeitschriften<br/>
+                        <a href="/OpenJournals" data-lightbox>Liste der IxTheo Open Journals</a>
+                    </p>
+                    <div class="read-more-target">
+                        <p></p>
+                        <p>
+                            <ul>
+                                <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC)</a></li>
+                                <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS)</a></li>
+                                <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review</a></li>
+                                <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG)</a></li>
+                            </ul>
+                        </p>
+                        <p>
+                            Wir bieten Herausgeber*innen mit der Plattform „IxTheo Open Journals“ die Möglichkeit ihre theologisch-wissenschaftlichen Zeitschriften oder Reihen dauerhaft Open Access zu hosten.<br/>
+                            Neben der Gründung neuer OA-Zeitschriften begleiten wir auch die Transformation bisher gedruckter Zeitschriften zu Open Access. Wir stellen dafür das Publikationsmanagementsystem Open Journal Systems (OJS) zur Verfügung, mit dem die Verwaltung des gesamten redaktionellen Prozesses bis hin zur Publikation bewerkstelligt werden kann.
+                        </p>
+                        <p>
+                            Folgende Vorteile bietet die Zusammenarbeit mit „IxTheo Open Journals“:
+                            <ul>
+                                <li>der FID Theologie / Universitätsbibliothek Tübingen stellt die Software OJS kostenlos zur Verfügung, richtet Ihre Zeitschrift bzw. Reihe ein, bietet Schulung und fortlaufenden Support an</li>
+                                <li>mit OJS können alle Arbeitsschritte von der Einreichung der Aufsätze, über Peer-Review bis hin zur Publikation mit einem System umgesetzt werden</li>
+                                <li>Layout und Design einer OJS-Zeitschrift sind individuell anpassbar</li>
+                                <li>alle Zeitschriftenaufsätze erhalten einen persistent identifier (DOI), der eine dauerhafte Auffindbarkeit garantiert</li>
+                                <li>alle Zeitschriftenaufsätze werden in IxTheo nachgewiesen</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Dieses Angebot steht allen Herausgeber*innen von Zeitschriften und Reihen zur Verfügung. Bei Interesse wenden Sie sich bitte an das <a href="mailto:ixtheo@ub.uni-tuebingen.de">IxTheo-Team</a>.
+                        </p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-puzzle-piece"></i> IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> Kooperation <div class="new">neu</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der Fachinformationsdienst (FID) Theologie kooperiert mit der Katholisch-Theologischen Fakultät in Innsbruck (Österreich) bei der Erstellung einer Fachbibliographie für Bibelwissenschaften und für das Kirchenrecht.</p>
+                    <div class="read-more-target">
+                        <p>Die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> wurden vollständig in den IxTheo migriert. Mehr als 200.000 sehr gut erschlossene Daten bereichern nun den Nachweis bibelwissenschaftlicher Literatur in IxTheo/BILDI. Ein eigenständiger Zugang für die bibelwissenschaftliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von BILDI und IxTheo verantwortet.</p>
+                        <p>Ebenso wurden die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a> vollständig in den IxTheo migriert. Mehr als 34.000 sehr gut erschlossene Daten bereichern nun den Nachweis kirchenrechtlicher Literatur in IxTheo/KALDI. Ein eigenständiger Zugang für die kirchenrechtliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von KALDI, DaKaR (Münster) und IxTheo verantwortet.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"><hr></div>
 <div class="col-md-6" style="text-align:justify;">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -81,7 +153,7 @@ $panelWidth = "col-md-6";
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA) <div class="new">neu</div>
+                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA)
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">

@@ -45,6 +45,75 @@ $panelId = 0;
 $panelClass = "panel-default";
 $panelWidth = "col-md-6";
 ?>
+<div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-desktop"></i> IxTheo Open Journals <div class="new">Novità</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>IxTheo supporta la pubblicazione di riviste scientifiche Open Access.<br/>
+                        <a href="/OpenJournals" data-lightbox>Lista dei IxTheo Open Journals</a><br/><br/>
+                    </p>
+                    <div class="read-more-target">
+                        <p></p>
+                        <p>
+                            <ul>
+                                <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC)</a></li>
+                                <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS)</a></li>
+                                <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review</a></li>
+                                <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG)</a></li>
+                            </ul>
+                        </p>
+                        <p>
+                            Mediante la piattaforma „IxTheo Open Journals“ offriamo ai curatori editoriali di riviste o collane teologiche un servizio completo per la gestione di tutti gli aspetti della redazione e la pubblicazione di un periodico scientifico: dalla costruzione del sito web con possibilità di scelta e personalizzazione dell’aspetto grafico, passando per il workflow di gestione degli articoli e la revisione in Peer Review.
+                        </p>
+                        <p>
+                            La nostra piattaforma offre inoltre i seguenti vantaggi:
+                            <ul>
+                                <li>La biblioteca dell’Università di Tubinga mette non solo a disposizione il software Open Journal System (OJS), bensì si occupa d’istruire i futuri fruitori del suo funzionamento mediante un breve corso formativo gratuito</li>
+                                <li>Tutti gli articoli sono provvisti di un indicatore digitale persistente (DOI) che ne garantisce l’immediata rintracciabilità on-line</li>
+                                <li>Gli articoli sono indicizzati in IxTheo e godono così della massima visibilità internazionale</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Il servizio è disponibile gratuitamente. In caso d’interesse o domande, contattate <a href="mailto:ixtheo@ub.uni-tuebingen.de">IxTheo Team</a>.
+                        </p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-puzzle-piece"></i> Cooperazione IxTheo-<a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a> <div class="new">Novità</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>IxTheo ha avviato una cooperazione con la Facoltà di Teologia cattolica dell’Università di Innsbruck (Austria) con l’obbiettivo di dar vita ad una bibliografia specializzata in Scienze bibliche e Diritto canonico.</p>
+                    <div class="read-more-target">
+                        <p>Più di 200.000 metadati di <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> e 34.000 di <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a> relativi letteratura scientifica altamente specalizzata sono stati esportati in IxTheo. </p>
+                        <p>Entro la fine del 2019 saranno messe a disposizione su questo sito due sezioni dedicate alle Scienze bibliche ed il Diritto canonico che saranno gestite paritariamente da IxTheo, BILDI, KALDI e DaKar (Münster).</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"><hr></div>
 <div class="col-md-6" style="text-align:justify;">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -71,7 +140,7 @@ $panelWidth = "col-md-6";
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA) <div class="new">Novità</div>
+                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA)
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse ">
