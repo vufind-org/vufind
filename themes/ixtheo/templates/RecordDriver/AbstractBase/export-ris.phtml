@@ -69,6 +69,12 @@ $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
         echo 'T3  - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
+        // If we do not have a volume yet, derive it from here
+        if (empty($volume)) {
+            $volume =  $current['number'];
+            if (!empty($volume))
+                echo 'VL  - ' . "$volume\r\n";
+        }
     }
 }
 
