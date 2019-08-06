@@ -28,10 +28,10 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
         // TODO: Bei Erweiterter Suche wird eine andere Query-Klasse genutzt.
         // Diese muss anders behandelt werden, da sie aus vielen Sub-Queries
         // besteht. Vorerst werden die Ixtheo-Bereichssuchen nur bei der Standardsuche angewendet
+        if (is_a($query, 'VuFindSearch\Query\QueryGroup'))
+            return parent::build($query);
         $handler = $query->getHandler();
-        if (is_a($query, 'VuFindSearch\Query\QueryGroup') || ($handler !== self::BIBLE_RANGE_HANDLER
-                                                              && $handler !== self::CANONES_RANGE_HANDLER
-                                                              && $handler !== self::TIME_RANGE_HANDLER))
+        if ($handler !== self::BIBLE_RANGE_HANDLER && $handler !== self::CANONES_RANGE_HANDLER && $handler !== self::TIME_RANGE_HANDLER)
             return parent::build($query);
         $queryString = $query->getString();
         $newQuery = $this->getManipulatedQueryString($handler, $query);
