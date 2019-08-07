@@ -147,21 +147,18 @@ class AbstractSolrSearch extends AbstractSearch
             if (in_array($facet, $hierarchicalFacets)) {
                 $tmpList = $list['list'];
 
-                $sort = $hierarchicalFacetsSortOptions['*'] ?? 'top';
-                $sort = $hierarchicalFacetsSortOptions[$facet] ?? $sort;
+                $sort = $hierarchicalFacetsSortOptions[$facet]
+                    ?? $hierarchicalFacetsSortOptions['*'] ?? 'count';
                 switch ($sort) {
                 case 'count':
-                    $sort = null;
+                    // Do nothing; count order is Solr's default behavior.
                     break;
                 case 'all':
-                    $sort = false;
+                    $facetHelper->sortFacetList($tmpList, false);
                     break;
                 case 'top':
                 default:
-                    $sort = true;
-                }
-                if ($sort !== null) {
-                    $facetHelper->sortFacetList($tmpList, $sort);
+                    $facetHelper->sortFacetList($tmpList, true);
                 }
                 $tmpList = $facetHelper->buildFacetArray(
                     $facet,
@@ -218,8 +215,16 @@ class AbstractSolrSearch extends AbstractSearch
     protected function getHierarchicalFacetsSortOptions($config)
     {
         $facetConfig = $this->getConfig($config);
-        return isset($facetConfig->Advanced_Settings->hierarchical_facet_sort)
-            ? $facetConfig->Advanced_Settings->hierarchical_facet_sort->toArray()
+        $baseConfig
+            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
+        $advancedConfig
+            = isset($facetConfig->Advanced_Settings->hierarchicalFacetSortOptions)
+            ? $facetConfig->Advanced_Settings->hierarchicalFacetSortOptions
+                ->toArray()
+            : [];
+
+        return array_merge($baseConfig, $advancedConfig);
     }
 }
