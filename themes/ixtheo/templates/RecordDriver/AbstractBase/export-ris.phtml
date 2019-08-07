@@ -66,9 +66,30 @@ if (!empty($volume)) {
 
 
 $series = $this->driver->tryMethod('getSeries');
-if (is_array($series)) {
+if (is_array($series) && !empty($series)) {
     foreach ($series as $current) {
         echo 'T3  - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
+        // If we do not have a volume yet, derive it from here
+        if (empty($volume)) {
+            $volume =  $current['number'];
+            if (!empty($volume))
+                echo 'VL  - ' . "$volume\r\n";
+        }
+    }
+} else {
+    // Possibly our superior work is part of a series again, check this
+    $superior_record = $this->driver->tryMethod('getSuperiorRecord');
+    if (isset($superior_record)) {
+        $superior_series = $superior_record->tryMethod('getSeries');
+        if (is_array($superior_series)) {
+            foreach ($superior_series as $current) {
+                echo 'T3 - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
+                $volume =  $current['number'];
+                if (!empty($volume))
+                    echo 'SV - ' . "$volume\r\n";
+            }
+
+        }
     }
 }
 
