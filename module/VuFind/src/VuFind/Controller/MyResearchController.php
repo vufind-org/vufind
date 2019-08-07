@@ -57,17 +57,6 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Are we currently in a lightbox context?
-     *
-     * @return bool
-     */
-    protected function inLightbox()
-    {
-        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
-            || 'layout/lightbox' == $this->layout()->getTemplate();
-    }
-
-    /**
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
      * in the lightbox without actually rendering content.
      *
