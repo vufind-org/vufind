@@ -19,7 +19,7 @@
 <div class="feedback-content">
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
-    <?php if (!$this->lightbox): ?>
+    <?php if ($this->layout()->getTemplate() !== 'layout/lightbox'): ?>
       <h1><?=$title?></h1>
     <?php else: ?>
       <h2><?=$title?></h2>
