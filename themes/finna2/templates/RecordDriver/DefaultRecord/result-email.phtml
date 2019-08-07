@@ -11,6 +11,7 @@
   $formats = $this->driver->getFormats();
   $format = end($formats);
   $url = $this->recordLink()->getUrl($this->driver);
+  $organisation = $this->organisationDisplayName($this->driver);
 
   // NOTE: use $info['baseUrl'] instead of serverUrl view helper when this template is
   // rendered by scheduled alerts console action.
@@ -20,6 +21,9 @@
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
 <?php if (!empty($authors)): ?>
 <?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+<?php endif; ?>
+<?php if (!empty($organisation)): ?>
+<?= PHP_EOL . $this->translate('Organisation') . ': ' . $organisation; ?>
 <?php endif; ?>
 <?php if (!empty($publicationDate)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $publicationDate[0]; ?>
