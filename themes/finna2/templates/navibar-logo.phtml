@@ -1,5 +1,5 @@
 <!-- START of: finna - navibar-logo.phtml -->
-<?php if (($srcUrl = $this->imageSrc('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('finna-logo'))): ?>
+<?php if (($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo'))): ?>
   <span class="sr-only"><?=$this->transEsc('Home');?></span>
   <img src="<?=$srcUrl; ?>" alt="Site Logo" class="navbar-logo" aria-hidden="true" />
 <?php else: ?>

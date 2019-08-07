@@ -1,6 +1,6 @@
 <!-- START of: finna - search/logosection.phtml -->
 <?php /*
-<? if (($srcUrl = $this->imageSrc('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('finna-logo'))): ?>
+<? if (($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo'))): ?>
   <a href="<?=$this->url('home');?>"><span class="sr-only"><?=$this->transEsc('Home');?></span>
     <img src="<?=$srcUrl; ?>" alt="Logo" />
   </a>

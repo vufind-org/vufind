@@ -16,10 +16,10 @@
       <div class="popup-canvas paginator-canvas">
         <div class="popup-nonzoom non-zoomable">
           <div class="iconlabel"></div>
-          <img src="<?=$this->url('cover-unavailable')?>" alt="" />
+          <img src="<?= $this->imageSrc()->getDataPixel() ?>" alt="" />
         </div>
         <div class="leaflet-map-image image-wrapper">
-          <img src="<?=$this->url('cover-unavailable')?>" alt="" />
+          <img src="<?=$this->imageSrc()->getDataPixel()?>" alt="" />
           <div class="imagepopup-zoom-container">
             <div class="zoom-in zoom-button"><i class="fa fa-zoom-in" aria-hidden="true"></i></div>
             <div class="zoom-out zoom-button"><i class="fa fa-zoom-out" aria-hidden="true"></i></div>

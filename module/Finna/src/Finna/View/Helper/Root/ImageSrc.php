@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -34,11 +35,27 @@ namespace Finna\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class ImageSrc extends ThemeSrc
 {
+    /**
+     * Backwards-compatible __invoke that returns self or calls getSourceAddress
+     *
+     * @param string $arg Image filename without extension
+     *
+     * @return mixed
+     */
+    public function __invoke($arg = null)
+    {
+        if (null !== $arg) {
+            return $this->getSourceAddress($arg);
+        }
+        return $this;
+    }
+
     /**
      * Return image source address. First check if svg image is found and
      * if not, check for png image.
@@ -47,7 +64,7 @@ class ImageSrc extends ThemeSrc
      *
      * @return string
      */
-    public function __invoke($source)
+    public function getSourceAddress($source)
     {
         $variations = [
             'images/' . $source . '.svg',
@@ -63,5 +80,16 @@ class ImageSrc extends ThemeSrc
         }
 
         return '';
+    }
+
+    /**
+     * Returns data string to generate a pixel placeholder used for lazyloading
+     *
+     * @return string
+     */
+    public function getDataPixel()
+    {
+        return 'data:image/gif;base64,' .
+            'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
 }
