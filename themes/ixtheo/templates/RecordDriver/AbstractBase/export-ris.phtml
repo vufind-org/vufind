@@ -1,6 +1,6 @@
 <?
 // TODO: fold this logic into record driver methods at some point:
-function PrintSuperiorSeries($superior_record) {
+function printSuperiorSeries($superior_record) {
      $superior_series = $superior_record->tryMethod('getSeries');
      if (is_array($superior_series)) {
          foreach ($superior_series as $current) {
@@ -124,13 +124,13 @@ if (is_array($series) && !empty($series)) {
     // Possibly our superior work is part of a series again, check this
     $superior_record = $this->driver->tryMethod('getSuperiorRecord');
     if (isset($superior_record)) {
-        if (PrintSuperiorSeries($superior_record))
+        if (printSuperiorSeries($superior_record))
             ;
         // Try the next level of superior work
         else {
             $superior_of_superior = $superior_record->driver->tryMethod('getSuperiorRecord');
             if (isset($superior_of_superior))
-                PrintSuperiorSeries($superior_of_superior);
+                printSuperiorSeries($superior_of_superior);
         }
     }
 }
