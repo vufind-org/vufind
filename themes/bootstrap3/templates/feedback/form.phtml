@@ -22,7 +22,7 @@
 <?php endif; ?>
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
-    <?php if ($this->layout()->getTemplate() !== 'layout/lightbox'): ?>
+    <?php if (!$lightbox): ?>
       <h1><?=$title?></h1>
     <?php else: ?>
       <h2><?=$title?></h2>
