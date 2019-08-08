@@ -131,3 +131,35 @@ forms:
           - Yes
           - No
 
+  # Record feedback form
+  FeedbackRecord:
+    allowLocalOverride: true
+    title: Send feedback on record
+    enabled: true
+    useCaptcha: false
+    #sendMethod: "database"
+    
+    onlyForLoggedUsers: false
+    emailSubject: "Palautetta Finnasta tietueesta: %%record%%"
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+    senderInfoHelp: feedback_info
+    hideSenderInfo: true
+    help:
+      pre: feedback_record_instructions_html
+
+    fields:
+      - name: category
+        type: select
+        options:
+          - feedback_category_general
+          - feedback_category_accessibility
+        label: Subject
+      - name: from
+        type: email
+        label: email_from
+        required: true
+      - name: message
+        type: textarea
+        label: feedback_message
+        required: true

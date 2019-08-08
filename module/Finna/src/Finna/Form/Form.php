@@ -88,6 +88,20 @@ class Form extends \VuFind\Form\Form
     protected $userRoles;
 
     /**
+     * View helper manager
+     *
+     * @var \Zend\View\HelperPluginManager
+     */
+    protected $viewHelperManager = null;
+
+    /**
+     * Record driver
+     *
+     * @var \VuFind\RecordDriver\AbstractRecordDriver
+     */
+    protected $record;
+
+    /**
      * Set form id
      *
      * @param string $formId Form id
@@ -99,6 +113,7 @@ class Form extends \VuFind\Form\Form
     {
         $this->formId = $formId;
         parent::setFormId($formId);
+        $this->setName($formId);
     }
 
     /**
@@ -140,6 +155,30 @@ class Form extends \VuFind\Form\Form
     }
 
     /**
+     * Set view helper manager
+     *
+     * @param \Zend\View\HelperPluginManager $viewHelperManager manager
+     *
+     * @return void
+     */
+    public function setViewHelperManager($viewHelperManager)
+    {
+        $this->viewHelperManager = $viewHelperManager;
+    }
+
+    /**
+     * Set record driver
+     *
+     * @param \VuFind\RecordDriver\AbstractRecordDriver $record Record
+     *
+     * @return void
+     */
+    public function setRecord($record)
+    {
+        $this->record = $record;
+    }
+
+    /**
      * Return form recipient.
      *
      * @return array with name, email or null if not configured
@@ -163,10 +202,20 @@ class Form extends \VuFind\Form\Form
     {
         $help = parent::getHelp();
 
+        if (!$this->viewHelperManager) {
+            throw new \Exception('ViewHelperManager not defined');
+        }
+
+        $transEsc = $this->viewHelperManager->get('transEsc');
+        $translationEmpty = $this->viewHelperManager->get('translationEmpty');
+        $organisationDisplayName
+            = $this->viewHelperManager->get('organisationDisplayName');
+
         // Help text from configuration
         $pre = isset($this->formConfig['help']['pre'])
+            && !$translationEmpty->__invoke($this->formConfig['help']['pre'])
             ? $this->translate($this->formConfig['help']['pre'])
-            : '';
+            : null;
 
         // 'feedback_instructions_html' translation
         if ($this->formId === 'FeedbackSite') {
@@ -181,7 +230,29 @@ class Form extends \VuFind\Form\Form
             }
         }
 
-        if ($this->institution) {
+        if ($this->formId === 'FeedbackRecord') {
+            // Append receiver info after general record feedback instructions
+            // (translation key for this is defined in FeedbackForms.yaml)
+            if (!$translationEmpty->__invoke('feedback_recipient_info_record')) {
+                if (!empty($pre)) {
+                    $pre .= '<br><br>';
+                }
+                $pre .= $transEsc(
+                    'feedback_recipient_info_record',
+                    ['%%institution%%'
+                         => $organisationDisplayName->__invoke($this->record, true)]
+                );
+            }
+            $datasourceKey = 'feedback_recipient_info_record_'
+                . $this->record->getDataSource() . '_html';
+            if (!$translationEmpty($datasourceKey)) {
+                if (!empty($pre)) {
+                    $pre .= '<br>';
+                }
+                $pre .= '<span class="datasource-info">'
+                    . $this->translate($datasourceKey) . '</span>';
+            }
+        } elseif ($this->institution) {
             // Receiver info
             $institution = $this->institution;
             $institutionName = $this->translate(
@@ -225,7 +296,21 @@ class Form extends \VuFind\Form\Form
      */
     public function formatEmailMessage(array $requestParams = [])
     {
+        if ($this->formId === 'FeedbackRecord') {
+            foreach (['record', 'record_id'] as $key) {
+                unset($requestParams[$key]);
+            }
+        }
+
         list($params, $tpl) = parent::formatEmailMessage($requestParams);
+
+        $params = array_filter(
+            $params,
+            function ($param) {
+                return !empty($param['label']) || !empty($param['value']);
+            }
+        );
+        reset($params);
 
         // Append user logged status and permissions
         $loginMethod = $this->user ?
@@ -259,13 +344,29 @@ class Form extends \VuFind\Form\Form
     }
 
     /**
+     * Get form element class.
+     *
+     * @param string $type Element type
+     *
+     * @return string|null
+     */
+    protected function getFormElementClass($type)
+    {
+        if ($type === 'hidden') {
+            return '\Zend\Form\Element\Hidden';
+        }
+
+        return parent::getFormElementClass($type);
+    }
+
+    /**
      * Get form element/field names
      *
      * @return array
      */
     public function getFormFields()
     {
-        $elements = parent::getFormElements($this->getFormConfig($this->formId));
+        $elements = $this->getFormElements($this->getFormConfig($this->formId));
         $fields = [];
         foreach ($elements as $el) {
             if ($el['type'] === 'submit') {
@@ -275,6 +376,28 @@ class Form extends \VuFind\Form\Form
         }
 
         return $fields;
+    }
+
+    /**
+     * Get form elements
+     *
+     * @param array $config Form configuration
+     *
+     * @return array
+     */
+    protected function getFormElements($config)
+    {
+        $elements = parent::getFormElements($config);
+
+        if ($this->formId === 'FeedbackRecord') {
+            // Add hidden fields for record data
+            foreach (['record_id', 'record', 'record_info'] as $key) {
+                $elements[$key]
+                    = ['type' => 'hidden', 'name' => $key, 'value' => null];
+            }
+        }
+
+        return $elements;
     }
 
     /**

@@ -27,8 +27,6 @@
  */
 namespace Finna\Controller;
 
-use Zend\Mail as Mail;
-
 /**
  * Record Controller
  *
@@ -51,97 +49,24 @@ class RecordController extends \VuFind\Controller\RecordController
      */
     public function feedbackAction()
     {
-        $view = $this->createViewModel();
+        $driver = $this->loadRecord();
+        $recordPlugin = $this->getViewRenderer()->plugin('record');
 
-        if ($this->formWasSubmitted('submitFeedback')) {
-            $flashMsg = $this->flashMessenger();
+        $data = [
+           'record' => $driver->getBreadcrumb(),
+           'record_info' => $recordPlugin($driver)->getEmail()
+        ];
 
-            $message = $this->params()->fromPost('feedback_message');
-            $replyToEmail = $this->params()->fromPost('from');
-            $validator = new \Zend\Validator\EmailAddress();
-            if (!$validator->isValid($replyToEmail)) {
-                $flashMsg->setNamespace('error')
-                    ->addMessage('Email address is invalid');
-                return $view;
-            }
-
-            $driver = $this->loadRecord();
-            $dataSource = $driver->getDataSource();
-            $dataSources = $this->serviceLocator
-                ->get(\VuFind\Config\PluginManager::class)->get('datasources');
-
-            $inst = $dataSources->$dataSource ?? null;
-            $recipientEmail = isset($inst->feedbackEmail) ?
-                $inst->feedbackEmail : null;
-            if ($recipientEmail == null) {
-                throw new \Exception(
-                    'Feedback Module Error:'
-                    . 'Recipient Email Unset (see datasources.ini)'
-                );
-            }
-
-            $config = $this->getConfig();
-            $feedback = isset($config->Feedback) ? $config->Feedback : null;
-            $senderEmail = isset($feedback->sender_email)
-                ? $feedback->sender_email : 'noreply@vufind.org';
-            $senderName = isset($feedback->sender_name)
-                ? $feedback->sender_name : 'VuFind Feedback';
-
-            $emailSubject = $this->translate(
-                'feedback_on_record',
-                ['%%record%%' => $driver->getBreadcrumb()]
-            );
-            $serverUrl = $this->getRequest()->getServer('REQUEST_SCHEME');
-            $serverUrl .= '://' . $this->getRequest()->getServer('HTTP_HOST');
-
-            $emailMessage = "\n" . $this->translate('This email was sent from');
-            $emailMessage .= ": " . $replyToEmail . "\n";
-            $emailMessage .=
-                "------------------------------------------------------------\n";
-            // Use the record plugin to render the template for the correct driver
-            $recordPlugin = $this->getViewRenderer()->plugin('record');
-            $emailMessage .= $recordPlugin($driver)->getEmail();
-            $emailMessage .=
-                "\n\n------------------------------------------------------------\n";
-            if (!empty($message)) {
-                $emailMessage .= "\n" . $this
-                    ->translate('Message From Sender') . ":\n";
-                $emailMessage .= "\n" . $message . "\n\n";
-            }
-
-            // This sets up the email to be sent
-            $mail = new Mail\Message();
-            $mail->setEncoding('UTF-8');
-            $mail->setBody($emailMessage);
-            $mail->setFrom($senderEmail, $senderName);
-            $mail->setReplyTo($replyToEmail);
-            $mail->addTo($recipientEmail);
-            try {
-                $mail->setSubject($emailSubject);
-            } catch (\Exception $e) {
-                // Uhh.. PHP bug https://bugs.php.net/bug.php?id=53891 causes trouble
-                // when trying to encode a subject containing non-ascii characters.
-                // Try to convert the subject to ascii..
-                // TODO: Remove this when PHP works properly..
-                $emailSubject = iconv('UTF-8', 'ascii//TRANSLIT', $emailSubject);
-                $mail->setSubject($emailSubject);
-            }
-            $headers = $mail->getHeaders();
-            $headers->removeHeader('Content-Type');
-            $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
-
-            $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->getTransport()
-                ->send($mail);
-
-            $flashMsg->addSuccessMessage('Thank you for your feedback.');
-            if ($this->getRequest()->getQuery('layout', 'no') !== 'lightbox'
-                || 'layout/lightbox' != $this->layout()->getTemplate()
-            ) {
-                $this->redirectToRecord('');
-            }
-        }
-
-        return $view;
+        return $this->redirect()->toRoute(
+            'feedback-form',
+            ['id' => 'FeedbackRecord'],
+            ['query' => [
+                'data' => $data,
+                'layout' => $this->getRequest()->getQuery('layout', false),
+                'record_id'
+                => $driver->getSourceIdentifier() . '|' . $driver->getUniqueID()
+            ]]
+        );
     }
 
     /**

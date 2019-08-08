@@ -72,6 +72,7 @@ class FormFactory extends \VuFind\Form\FormFactory
                 ->getActivePermissions();
             $form->setUser($user, $roles);
         }
+        $form->setViewHelperManager($container->get('ViewHelperManager'));
         return $form;
     }
 }
