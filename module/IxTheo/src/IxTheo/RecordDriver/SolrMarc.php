@@ -48,8 +48,8 @@ class SolrMarc extends SolrDefault
         return $this->searchService->search('Solr', $query, 0, 0)->getTotal();
     }
 
-    public function getEnclosedTitles() {
-        return $this->getFieldsArray([['249', ['a']], ['505', ['t']]], false);
+    public function getEnclosedTitlesWithAuthors() {
+        return $this->getFieldsArray([['249', ['a', 'v']], ['505', ['t','r']]], true, "|");
     }
 
     public function getKeyWordChains()
