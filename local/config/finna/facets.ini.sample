@@ -206,6 +206,7 @@ special_facets   = "daterange"
 translated_facets[] = institution
 translated_facets[] = building
 translated_facets[] = building_sub_str_mv:department
+translated_facets[] = collection:collection
 translated_facets[] = format
 translated_facets[] = language
 translated_facets[] = genre_facet
