@@ -40,9 +40,11 @@ use Zend\Http\Headers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \Zend\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
     use CacheTrait;
 
     /**
@@ -131,6 +133,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $result = null;
         $statusCode = null;
         $returnValue = null;
+        $startTime = microtime(true);
 
         try {
             // Set API key if it is not already available in the GET params
@@ -173,27 +176,48 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Execute HTTP call
             $result = $client->send();
         } catch (\Exception $e) {
+            $this->logError("$method request for $url failed: " . $e->getMessage());
             throw new ILSException($e->getMessage());
         }
+
+        $duration = round(microtime(true) - $startTime, 4);
+        $urlParams = $client->getRequest()->getQuery()->toString();
+        $code = $result->getStatusCode();
+        $this->debug(
+            "[$duration] $method request for $url?$urlParams results ($code):\n"
+            . $result->getBody()
+        );
 
         // Get the HTTP status code
         $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
+            $this->logError(
+                "$method request for $url failed, HTTP error code: $statusCode"
+            );
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
         $answer = $result->getBody();
         $answer = str_replace('xmlns=', 'ns=', $answer);
-        $xml = simplexml_load_string($answer);
-
+        try {
+            $xml = simplexml_load_string($answer);
+        } catch (\Exception $e) {
+            $this->logError(
+                "Could not parse response for $method request for $url: "
+                . $e->getMessage() . ". Response was:\n"
+                . $result->getHeaders()->toString()
+                . "\n\n$answer"
+            );
+            throw new ILSException($e->getMessage());
+        }
         if ($result->isSuccess()) {
             if (!$xml && $result->isServerError()) {
-                throw new ILSException(
-                    'XML is not valid or HTTP error, URL: ' . $url .
-                    ', HTTP status code: ' . $statusCode, $statusCode
-                );
+                $error = 'XML is not valid or HTTP error, URL: ' . $url .
+                    ', HTTP status code: ' . $statusCode;
+                $this->logError($error);
+                throw new ILSException($error, $statusCode);
             }
             $returnValue = $xml;
         } else {
@@ -205,8 +229,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $result->getBody() . '. HTTP status code: ' . $statusCode
             );
             throw new ILSException(
-                'Alma error message: ' . $almaErrorMsg . ' | HTTP error code: ' .
-                $statusCode, $statusCode
+                "Alma error message for $method request for $url: "
+                . $almaErrorMsg . ' | HTTP error code: '
+                . $statusCode,
+                $statusCode
             );
         }
 
