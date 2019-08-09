@@ -143,8 +143,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         try {
             // Set API key if it is not already available in the GET params
-            if (!isset($paramsGet['apiKey'])) {
-                $paramsGet['apiKey'] = $this->apiKey;
+            if (!isset($paramsGet['apikey'])) {
+                $paramsGet['apikey'] = $this->apiKey;
             }
 
             // Create the API URL
