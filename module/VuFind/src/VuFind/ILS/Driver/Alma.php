@@ -277,7 +277,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Correct copy count in case of paging
         $copyCount = $options['offset'] ?? 0;
-        $username = $patron['cat_username'] ?? null;
+        $patronId = $patron['id'] ?? null;
 
         // Paging parameters for paginated API call. The "limit" tells the API how
         // many items the call should return at once (e. g. 10). The "offset" defines
@@ -325,12 +325,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
 
                 // Calculate request options if a user is logged-in
-                if ($username) {
+                if ($patronId) {
                     // Call the request-options API for the logged-in user
                     $requestOptionsPath = '/bibs/' . urlencode($id)
                        . '/holdings/' . urlencode($holdingId) . '/items/'
                        . urlencode($itemId) . '/request-options?user_id='
-                       . urlencode($username);
+                       . urlencode($patronId);
 
                     // Make the API request
                     $requestOptions = $this->makeRequest($requestOptionsPath);
@@ -415,14 +415,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getAccountBlocks($patron)
     {
-        $patronId = $patron['cat_username'];
+        $patronId = $patron['id'];
         $cacheId = 'alma|user|' . $patronId . '|blocks';
         $cachedBlocks = $this->getCachedData($cacheId);
         if ($cachedBlocks !== null) {
             return $cachedBlocks;
         }
 
-        $xml = $this->makeRequest('/users/' . $patron['cat_username']);
+        $xml = $this->makeRequest('/users/' . $patronId);
         if ($xml == null || empty($xml)) {
             return false;
         }
@@ -677,7 +677,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyProfile($patron)
     {
-        $patronId = $patron['cat_username'];
+        $patronId = $patron['id'];
         $xml = $this->makeRequest('/users/' . $patronId);
         if (empty($xml)) {
             return [];
@@ -745,7 +745,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyFines($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['cat_username'] . '/fees'
+            '/users/' . $patron['id'] . '/fees'
         );
         $fineList = [];
         foreach ($xml as $fee) {
@@ -779,7 +779,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyHolds($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['cat_username'] . '/requests',
+            '/users/' . $patron['id'] . '/requests',
             ['request_type' => 'HOLD']
         );
         $holdList = [];
@@ -843,7 +843,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function cancelHolds($cancelDetails)
     {
         $returnArray = [];
-        $patronId = $cancelDetails['patron']['cat_username'];
+        $patronId = $cancelDetails['patron']['id'];
         $count = 0;
 
         foreach ($cancelDetails['details'] as $requestId) {
@@ -927,7 +927,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyStorageRetrievalRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['cat_username'] . '/requests',
+            '/users/' . $patron['id'] . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -967,7 +967,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyILLRequests($patron)
     {
         $xml = $this->makeRequest(
-            '/users/' . $patron['cat_username'] . '/requests',
+            '/users/' . $patron['id'] . '/requests',
             ['request_type' => 'MOVE']
         );
         $holdList = [];
@@ -1008,11 +1008,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Defining the return value
         $returnArray = [];
 
-        // Get the patrons user name
-        $patronUserName = $patron['cat_username'];
+        // Get the patron id
+        $patronId = $patron['id'];
 
         // Create a timestamp for calculating the due / overdue status
-        $nowTS = mktime();
+        $nowTS = time();
 
         // Create parameters for the API call
         // INFO: "order_by" does not seem to work as expected!
@@ -1026,7 +1026,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Get user loans from Alma API
         $apiResult = $this->makeRequest(
-            '/users/' . $patronUserName . '/loans/',
+            '/users/' . $patronId . '/loans',
             $params
         );
 
@@ -1109,7 +1109,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function renewMyItems($renewDetails)
     {
         $returnArray = [];
-        $patronUserName = $renewDetails['patron']['cat_username'];
+        $patronId = $renewDetails['patron']['id'];
 
         foreach ($renewDetails['details'] as $loanId) {
             // Create an empty array that holds the information for a renewal
@@ -1118,7 +1118,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             try {
                 // POST the renewals to Alma
                 $apiResult = $this->makeRequest(
-                    '/users/' . $patronUserName . '/loans/' . $loanId . '/?op=renew',
+                    '/users/' . $patronId . '/loans/' . $loanId . '/?op=renew',
                     [],
                     [],
                     'POST'
@@ -1302,7 +1302,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $mmsId = $holdDetails['id'];
         $holId = $holdDetails['holding_id'];
         $itmId = $holdDetails['item_id'];
-        $patronCatUsername = $holdDetails['patron']['cat_username'];
+        $patronId = $holdDetails['patron']['id'];
         $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
         $comment = $holdDetails['comment'] ?? null;
         $requiredBy = (isset($holdDetails['requiredBy']))
@@ -1337,7 +1337,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $client = $this->httpService->createClient(
                 $this->baseUrl . '/bibs/' . urlencode($mmsId)
                 . '/requests?apiKey=' . urlencode($this->apiKey)
-                . '&user_id=' . urlencode($patronCatUsername)
+                . '&user_id=' . urlencode($patronId)
                 . '&format=json'
             );
         } else {
@@ -1347,7 +1347,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 . '/holdings/' . urlencode($holId)
                 . '/items/' . urlencode($itmId)
                 . '/requests?apiKey=' . urlencode($this->apiKey)
-                . '&user_id=' . urlencode($patronCatUsername)
+                . '&user_id=' . urlencode($patronId)
                 . '&format=json'
             );
         }
