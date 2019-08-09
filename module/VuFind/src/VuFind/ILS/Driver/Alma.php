@@ -749,11 +749,17 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $fineList = [];
         foreach ($xml as $fee) {
+            $created = (string)$fee->creation_time;
             $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"   => (string)$fee->type,
+                "title"   => (string)($fee->title ?? ''),
                 "amount"   => $fee->original_amount * 100,
                 "balance"  => $fee->balance * 100,
+                "createdate" => $this->dateConverter->convert(
+                    'Y-m-d H:i',
+                    'm-d-Y',
+                    $created
+                ),
                 "checkout" => $this->dateConverter->convert(
                     'Y-m-d H:i',
                     'm-d-Y',
