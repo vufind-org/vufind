@@ -110,13 +110,17 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Make an HTTP request against Alma
      *
-     * @param string        $path       Path to retrieve from API (excluding base
-     *                                  URL/API key)
-     * @param array         $paramsGet  Additional GET params
-     * @param array         $paramsPost Additional POST params
-     * @param string        $method     GET or POST. Default is GET.
-     * @param string        $rawBody    Request body.
-     * @param Headers|array $headers    Add headers to the call.
+     * @param string        $path          Path to retrieve from API (excluding base
+     *                                     URL/API key)
+     * @param array         $paramsGet     Additional GET params
+     * @param array         $paramsPost    Additional POST params
+     * @param string        $method        GET or POST. Default is GET.
+     * @param string        $rawBody       Request body.
+     * @param Headers|array $headers       Add headers to the call.
+     * @param array         $allowedErrors HTTP status codes that are not treated as
+     *                                     API errors.
+     * @param bool          $returnStatus  Whether to return HTTP status in addition
+     *                                     to the response.
      *
      * @throws ILSException
      * @return NULL|SimpleXMLElement
@@ -127,7 +131,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $paramsPost = [],
         $method = 'GET',
         $rawBody = null,
-        $headers = null
+        $headers = null,
+        $allowedErrors = [],
+        $returnStatus = false
     ) {
         // Set some variables
         $result = null;
@@ -150,17 +156,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set method
             $client->setMethod($method);
 
-            // Set other GET parameters
-            if ($method == 'GET') {
-                $client->setParameterGet($paramsGet);
-            } else {
-                // Always set API key as GET parameter
-                $client->setParameterGet(['apiKey' => $paramsGet['apiKey']]);
-
-                // Set POST parameters
-                if ($method == 'POST') {
-                    $client->setParameterPost($paramsPost);
-                }
+            // Set other GET parameters (apikey and other URL parameters are used
+            // also with e.g. POST requests)
+            $client->setParameterGet($paramsGet);
+            // Set POST parameters
+            if ($method == 'POST') {
+                $client->setParameterPost($paramsPost);
             }
 
             // Set body if applicable
@@ -212,7 +213,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             );
             throw new ILSException($e->getMessage());
         }
-        if ($result->isSuccess()) {
+        if ($result->isSuccess() || in_array($statusCode, $allowedErrors)) {
             if (!$xml && $result->isServerError()) {
                 $error = 'XML is not valid or HTTP error, URL: ' . $url .
                     ', HTTP status code: ' . $statusCode;
@@ -236,7 +237,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             );
         }
 
-        return $returnValue;
+        return $returnStatus ? [$returnValue, $statusCode] : $returnValue;
     }
 
     /**
@@ -489,7 +490,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function createAlmaUser($formParams)
     {
-
         // Get config for creating new Alma users from Alma.ini
         $newUserConfig = $this->config['NewUser'];
 
@@ -615,22 +615,52 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function patronLogin($barcode, $password)
     {
-        // Create array of get parameters for API call
-        $getParams = [
-            'user_id_type' => 'all_unique',
-            'view' => 'brief',
-            'expand' => 'none'
-        ];
-
-        // Check for patron in Alma
-        $response = $this->makeRequest('/users/' . urlencode($barcode), $getParams);
-
-        // Test once we have access
-        if ($response != null) {
-            return [
-                'cat_username' => trim($barcode),
-                'cat_password' => trim($password)
+        $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'vufind';
+        if ('password' === $loginMethod) {
+            // Create parameters for API call
+            $getParams = [
+                'user_id_type' => 'all_unique',
+                'op' => 'auth',
+                'password' => $password
             ];
+
+            // Try to authenticate the user with Alma
+            list($response, $status) = $this->makeRequest(
+                '/users/' . urlencode($barcode),
+                $getParams,
+                [],
+                'POST',
+                null,
+                null,
+                [400],
+                true
+            );
+            if (400 === $status) {
+                return null;
+            }
+        }
+
+        if ('password' === $loginMethod || 'vufind' === $loginMethod) {
+            // Create parameters for API call
+            $getParams = [
+                'user_id_type' => 'all_unique',
+                'view' => 'brief',
+                'expand' => 'none'
+            ];
+
+            // Check for patron in Alma
+            $response = $this->makeRequest(
+                '/users/' . urlencode($barcode),
+                $getParams
+            );
+
+            if ($response !== null) {
+                return [
+                    'id' => (string)$response->primary_id,
+                    'cat_username' => trim($barcode),
+                    'cat_password' => trim($password)
+                ];
+            }
         }
 
         return null;
