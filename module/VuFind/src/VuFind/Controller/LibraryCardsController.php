@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -99,6 +99,13 @@ class LibraryCardsController extends AbstractBase
             return $this->forceLogin();
         }
 
+        // Process email authentication:
+        if ($this->params()->fromQuery('auth_method') === 'Email'
+            && ($hash = $this->params()->fromQuery('hash'))
+        ) {
+            return $this->processEmailLink($user, $hash);
+        }
+
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {
             if ($redirect = $this->processEditLibraryCard($user)) {
@@ -113,6 +120,8 @@ class LibraryCardsController extends AbstractBase
         $username = $card->cat_username;
         $targets = null;
         $defaultTarget = null;
+        $loginMethod = null;
+        $loginMethods = [];
         // Connect to the ILS and check if multiple target support is available:
         $catalog = $this->getILS();
         if ($catalog->checkCapability('getLoginDrivers')) {
@@ -121,6 +130,11 @@ class LibraryCardsController extends AbstractBase
             if (strstr($username, '.')) {
                 list($target, $username) = explode('.', $username, 2);
             }
+            foreach ($targets as $t) {
+                $loginMethods[$t] = $this->getILSLoginMethod($t);
+            }
+        } else {
+            $loginMethod = $this->getILSLoginMethod();
         }
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
         $username = $this->params()->fromPost('username', $username);
@@ -134,7 +148,9 @@ class LibraryCardsController extends AbstractBase
                 'target' => $target ? $target : $defaultTarget,
                 'username' => $username,
                 'targets' => $targets,
-                'defaultTarget' => $defaultTarget
+                'defaultTarget' => $defaultTarget,
+                'loginMethod' => $loginMethod,
+                'loginMethods' => $loginMethods
             ]
         );
     }
@@ -266,12 +282,28 @@ class LibraryCardsController extends AbstractBase
         $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
+            $loginMethod = $this->getILSLoginMethod($target);
             $catalog = $this->getILS();
             $patron = $catalog->patronLogin($username, $password);
-            if (!$patron) {
+            if ('password' === $loginMethod && !$patron) {
                 $this->flashMessenger()
                     ->addMessage('authentication_error_invalid', 'error');
                 return false;
+            }
+            if ('email' === $loginMethod) {
+                if ($patron) {
+                    $info = $patron;
+                    $info['cardID'] = $id;
+                    $info['cardName'] = $cardName;
+                    $emailAuthenticator = $this->serviceLocator
+                        ->get(\VuFind\Auth\EmailAuthenticator::class);
+                    $emailAuthenticator->sendAuthenticationLink(
+                        $info['email'], $info, 'editLibraryCard'
+                    );
+                }
+                // Don't reveal the result
+                $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
+                return $this->redirect()->toRoute('librarycards-home');
             }
         }
 
@@ -285,5 +317,49 @@ class LibraryCardsController extends AbstractBase
         }
 
         return $this->redirect()->toRoute('librarycards-home');
+    }
+
+    /**
+     * Process library card addition via an email link
+     *
+     * @param User   $user User object
+     * @param string $hash Hash
+     *
+     * @return \Zend\Http\Response Response object
+     */
+    protected function processEmailLink($user, $hash)
+    {
+        $emailAuthenticator = $this->serviceLocator
+            ->get(\VuFind\Auth\EmailAuthenticator::class);
+        try {
+            $info = $emailAuthenticator->authenticate($hash);
+            $user->saveLibraryCard(
+                'NEW' === $info['cardID'] ? null : $info['cardID'],
+                $info['cardName'],
+                $info['cat_username'],
+                ' '
+            );
+        } catch (\VuFind\Exception\Auth $e) {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+        } catch (\VuFind\Exception\LibraryCard $e) {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+        }
+
+        return $this->redirect()->toRoute('librarycards-home');
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return string
+     */
+    protected function getILSLoginMethod($target = '')
+    {
+        $config = $this->getILS()->checkFunction(
+            'patronLogin', ['cat_username' => "$target.login"]
+        );
+        return $config['loginMethod'] ?? 'password';
     }
 }

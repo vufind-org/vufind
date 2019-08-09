@@ -58,17 +58,27 @@ class ILS extends AbstractBase
     protected $catalog = null;
 
     /**
-     * Set the ILS connection for this object.
+     * Email Authenticator
+     *
+     * @var EmailAuthenticator
+     */
+    protected $emailAuthenticator;
+
+    /**
+     * Constructor
      *
      * @param \VuFind\ILS\Connection    $connection    ILS connection to set
      * @param \VuFind\ILS\Authenticator $authenticator ILS authenticator
+     * @param EmailAuthenticator        $emailAuth     Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator
+        \VuFind\Auth\ILSAuthenticator $authenticator,
+        EmailAuthenticator $emailAuth
     ) {
         $this->setCatalog($connection);
         $this->authenticator = $authenticator;
+        $this->emailAuthenticator = $emailAuth;
     }
 
     /**
@@ -105,9 +115,10 @@ class ILS extends AbstractBase
      */
     public function authenticate($request)
     {
+        $loginMethod = $this->getILSLoginMethod();
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || $password == '') {
+        if ($username == '' || ('password' === $loginMethod && $password == '')) {
             throw new AuthException('authentication_error_blank');
         }
 
@@ -122,6 +133,14 @@ class ILS extends AbstractBase
         }
 
         // Did the patron successfully log in?
+        if ('email' === $loginMethod) {
+            if ($patron) {
+                $this->emailAuthenticator
+                    ->sendAuthenticationLink($patron['email'], $patron);
+            }
+            // Don't reveal the result
+            throw new AuthException('email_login_link_sent');
+        }
         if ($patron) {
             return $this->processILSUser($patron);
         }
@@ -206,6 +225,21 @@ class ILS extends AbstractBase
         $user = $this->getUserTable()->getByUsername($username);
         $user->saveCredentials($patron['cat_username'], $params['password']);
         return $user;
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return string
+     */
+    public function getILSLoginMethod($target = '')
+    {
+        $config = $this->getCatalog()->checkFunction(
+            'patronLogin', ['cat_username' => "$target.login"]
+        );
+        return $config['loginMethod'] ?? 'password';
     }
 
     /**

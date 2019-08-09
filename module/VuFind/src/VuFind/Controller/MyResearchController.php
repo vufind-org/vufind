@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -90,6 +91,10 @@ class MyResearchController extends AbstractBase
     protected function processAuthenticationException(AuthException $e)
     {
         $msg = $e->getMessage();
+        if ($e instanceof AuthInProgressException) {
+            $this->flashMessenger()->addSuccessMessage($msg);
+            return;
+        }
         if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendFirstVerificationEmail($e->user);
             if ($msg == 'authentication_error_email_not_verified_html') {
@@ -184,6 +189,8 @@ class MyResearchController extends AbstractBase
                     }
                 }
             } catch (AuthException $e) {
+                $this->processAuthenticationException($e);
+            } catch (AuthInProgressException $e) {
                 $this->processAuthenticationException($e);
             }
         }

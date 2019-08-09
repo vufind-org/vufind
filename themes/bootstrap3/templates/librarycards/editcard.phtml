@@ -1,6 +1,6 @@
 <?php
   // Set up page title:
-  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : 'Edit Library Card';
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
@@ -30,7 +30,12 @@
   </div>
   <?php endif; ?>
   <div class="form-group">
-    <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <?php if (null === $loginMethod || 'password' === $loginMethod): ?>
+      <label class="control-label password-login" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <?php endif; ?>
+    <?php if (null === $loginMethod || 'email' === $loginMethod): ?>
+      <label class="control-label email-login<?php if (null === $loginMethod): ?> hidden<?php endif; ?>" for="login_username"><?=$this->transEsc('Email')?>:</label>
+    <?php endif; ?>
     <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
   </div>
   <div class="form-group">
@@ -41,3 +46,15 @@
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
   </div>
 </form>
+
+<?php
+  if (null !== $targets) {
+    $methods = json_encode($this->loginMethods);
+    $script = <<<EOT
+    VuFind.initMultiILSLoginFields($methods, '');
+EOT;
+
+    // Inline the script for lightbox compatibility
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  }
+?>

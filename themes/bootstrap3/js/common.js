@@ -83,6 +83,23 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var initMultiILSLoginFields = function initMultiILSLoginFields(loginMethods, topClass) {
+    $('#login_target').change(function onChangeLoginTarget() {
+      var target = $('#login_target').val();
+      var $usernameGroup = $('#login_' + (topClass ? topClass + '_' : '') + 'username').closest('.form-group');
+      var $password = $('#login_' + (topClass ? topClass + '_' : '') + 'password');
+      if (loginMethods[target] === 'email') {
+        $usernameGroup.find('label.password-login').addClass('hidden');
+        $usernameGroup.find('label.email-login').removeClass('hidden');
+        $password.closest('.form-group').addClass('hidden');
+      } else {
+        $usernameGroup.find('label.password-login').removeClass('hidden');
+        $usernameGroup.find('label.email-login').addClass('hidden');
+        $password.closest('.form-group').removeClass('hidden');
+      }
+    }).change();
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -94,7 +111,8 @@ var VuFind = (function VuFind() {
     listen: listen,
     refreshPage: refreshPage,
     register: register,
-    translate: translate
+    translate: translate,
+    initMultiILSLoginFields: initMultiILSLoginFields
   };
 })();
 

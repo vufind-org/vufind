@@ -326,6 +326,7 @@ $config = [
         'factories' => [
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

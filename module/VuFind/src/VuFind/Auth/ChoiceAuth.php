@@ -340,7 +340,9 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
 
-        if (!in_array($this->strategy, $this->strategies)) {
+        if ('Email' !== $this->strategy
+            && !in_array($this->strategy, $this->strategies)
+        ) {
             throw new InvalidArgumentException("Illegal setting: {$this->strategy}");
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
