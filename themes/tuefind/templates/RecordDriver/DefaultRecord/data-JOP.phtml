@@ -11,7 +11,7 @@
 <?php endif; ?>
 <?php foreach ($issns_and_titles as $issn => $title): ?>
     <?php ++$i ?>
-    <?php if ($title == '') $title = 'ISSN: ' . $issn ?>
+    <?php if ($title == '') $title = '(ISSN: ' . $issn . ')' ?>
     <?php $jop_place_holder_id = "jop_place_holder_" . $i ?>
     <?php $jop_icons_id = "jop_icons_" . $i ?>
 
@@ -75,8 +75,8 @@
             <a href="<?= $url_html ?>" target="_blank">
                 <?= $part_img ?>
             </a>
+            <div style="color:grey" id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
         </div>
-        <div style="color:grey" id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
         <script>
             TueFind.GetJOPInformation('<?= $jop_place_holder_id ?>', '<?= $jop_icons_id ?>',
                     '<?= $url_ajax_proxy ?>', '<?= $url_html ?>', '<?= $part_img ?>',
