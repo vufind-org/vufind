@@ -101,7 +101,7 @@ var TueFind = {
     },
 
     GetJOPInformation: function(jop_place_holder_id, jop_icons_id, url_ajax_proxy, url_html, part_img,
-                                 available_online_text, check_availability_text, title) {
+                                 available_online_text, check_availability_text) {
         // service documentation, see http://www.zeitschriftendatenbank.de/fileadmin/user_upload/ZDB/pdf/services/JOP_Dokumentation_XML-Dienst.pdf
         $.ajax({
             type: "GET",
@@ -115,7 +115,7 @@ var TueFind = {
                     $(xml).find('Result').each(function (index, value) {
                         var state = $(this).attr("state");
                         if (state >= 0 && state <= 3) {
-                            $('#' + jop_icons_id).removeAttr("style").append('<span>' + title + '</span>');
+                            $('#' + jop_icons_id).removeAttr("style");
                             var accessURL = $(value).find('AccessURL').first().text();
                             if (accessURL) {
                                 if (filter[accessURL] != 1) {
@@ -141,7 +141,7 @@ var TueFind = {
                         } else if (state == 4 || state == 10) {
                             if (replacement == "") {
                                 replacement = '<a href="' + url_html + '" target="_blank">' +
-                                        part_img + check_availability_text + '</a>' + '<span>' + title + '</span>';
+                                              part_img + check_availability_text + '</a>';
                                 // We get an 1x1 pixel gif from JOP that can be seen as an empty line
                                 // => remove it
                                 $("#" + jop_icons_id).remove();
