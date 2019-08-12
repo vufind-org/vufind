@@ -113,10 +113,10 @@ var TueFind = {
                     var filter = [];
 
                     $(xml).find('Result').each(function (index, value) {
-                        var state = $(this).attr("state");
+                        let state = $(this).attr("state");
                         if (state >= 0 && state <= 3) {
                             $('#' + jop_icons_id).removeAttr("style");
-                            var accessURL = $(value).find('AccessURL').first().text();
+                            let accessURL = $(value).find('AccessURL').first().text();
                             if (accessURL) {
                                 if (filter[accessURL] != 1) {
                                     if (replacement)
@@ -126,9 +126,9 @@ var TueFind = {
                                     filter[accessURL] = 1;
                                 }
                             } else {  // Hopefully available in print!
-                                var location = $(value).find('Location').first().text();
-                                var call_number = $(value).find('Signature').first().text();
-                                var label = location;
+                                let location = $(value).find('Location').first().text();
+                                let call_number = $(value).find('Signature').first().text();
+                                let label = location;
                                 if (call_number)
                                     label += " (" + call_number + ")";
                                 if (filter[label] != 1) {
