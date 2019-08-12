@@ -149,6 +149,52 @@ class MailerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test sending an email using an explicitly set reply-to address.
+     *
+     * @return void
+     */
+    public function testSendWithReplyTo()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
+                && '<me@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('me@example.com');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
+    }
+
+    /**
+     * Test sending an email using a from address override
+     * and an explicitly set reply-to address.
+     *
+     * @return void
+     */
+    public function testSendWithFromOverrideAndReplyTo()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
+                && 'me <no-reply@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('me@example.com');
+        $mailer = new Mailer($transport);
+        $mailer->setFromAddressOverride('no-reply@example.com');
+        $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
+    }
+
+    /**
      * Test bad to address.
      *
      * @return void
