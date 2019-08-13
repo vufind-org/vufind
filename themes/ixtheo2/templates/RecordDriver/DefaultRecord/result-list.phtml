@@ -59,7 +59,8 @@
                 ?></a>
                 <?php foreach ($otherAuthorsAndRoles as $author_and_role): ?>
                   <?php $author_and_role_splitted = preg_split('/\$/', $author_and_role) ?>
-                  <?php if ($author_and_role_splitted[0] == preg_replace('/(\s*)(\d+)(\s*)-?(\d*)(\s*)/', '',  $author)): ?>
+		  <?php if ($author_and_role_splitted[0] == preg_replace('/(\s*)(\d+)(\s*)-?(\d*)(\s*)/', '',  $author)
+                            && $author_and_role_splitted[1] != ''): ?>
                     <?php echo '(' . $this->transEsc('CreatorRoles::' . $author_and_role_splitted[1]) . ')' ?>
                   <?php endif; ?>
                 <?php endforeach ?>
