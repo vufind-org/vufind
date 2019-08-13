@@ -1,6 +1,6 @@
 <?php foreach ($this->driver->getReverseReferences() as $title_or_ppn => $supplementary_information): ?>
   <?php if (count($supplementary_information) == 1): ?>
-      <a href="<?=$title?>"><?=$this->escapeHtml($title_or_ppn)?></a>
+      <a href="<?=$title_or_ppn?>"><?=$this->escapeHtml($supplementary_information[1])?></a>
   <?php else: ?>
     <?php $linked_ppn = $supplementary_information[1]; ?>
     <?php if (empty($supplementary_information[0])): $reviewer = ''; else: $reviewer = " (".$this->escapeHtml($supplementary_information[0]) . ')'; endif; ?>
