@@ -1,10 +1,14 @@
-<?php foreach ($this->driver->getReviewedRecords() as $title => $title_properties): ?>
-  <?php $linked_ppn = $title_properties[1]; ?>
-  <?php if (empty($title_properties[0])): $reviewer = ""; else: $reviewer = " (".$this->escapeHtml($title_properties[0]).")"; endif; ?>
-  <?php if ($linked_ppn != "000000000"): ?>
-    <a href="<?=$linked_ppn?>"><?=$this->escapeHtml($title) . $reviewer?></a>
+<?php foreach ($this->driver->getReverseReferences() as $title => $supplementary_information): ?>
+  <?php if (count($supplementary_information) == 1): ?>
+      <a href="<?=$title?>"><?=$this->escapeHtml($title_or_ppn)?></a>
   <?php else: ?>
-    <?=$this->escapeHtml($title) . $reviewer?>
+    <?php $linked_ppn = $supplementary_information[1]; ?>
+    <?php if (empty($supplementary_information[0])): $reviewer = ""; else: $reviewer = " (".$this->escapeHtml($supplementary_information[0]).")"; endif; ?>
+    <?php if ($linked_ppn != "000000000"): ?>
+      <a href="<?=$linked_ppn?>"><?=$this->escapeHtml($title_or_ppn) . $reviewer?></a>
+    <?php else: ?>
+      <?=$this->escapeHtml($title_or_ppn) . $reviewer?>
+    <?php endif; ?>
   <?php endif; ?>
   <br/>
 <?php endforeach; ?>

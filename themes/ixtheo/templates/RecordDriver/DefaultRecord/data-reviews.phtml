@@ -1,4 +1,4 @@
-<?php foreach ($this->driver->getReviews() as $id => $title_properties): ?>
+<?php foreach ($this->driver->getReferences() as $id => $title_properties): ?>
   <a href="<?=$id?>"><?=$this->escapeHtml($title_properties[1])?><?=$title_properties[0] == '' ? '' : ' (' . $this->escapeHtml($title_properties[0]) . ')'?></a>
   <br/>
 <?php endforeach; ?>
