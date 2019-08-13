@@ -121,7 +121,7 @@ var TueFind = {
                                 if (filter[accessURL] != 1) {
                                     if (replacement)
                                         replacement += '<br/>';
-                                    replacement += '<a href="' + accessURL + '">'
+                                    replacement += '<a href="' + accessURL + '"><i class="fa fa-external-link"></i> '
                                             + available_online_text + '.</a>';
                                     filter[accessURL] = 1;
                                 }
@@ -140,7 +140,7 @@ var TueFind = {
                             }
                         } else if (state == 4 || state == 10) {
                             if (replacement == "") {
-                                replacement = '<a href="' + url_html + '" target="_blank">' +
+                                replacement = '<a href="' + url_html + '" target="_blank"><i class="fa fa-external-link"></i> ' +
                                               part_img + check_availability_text + '</a>';
                                 // We get an 1x1 pixel gif from JOP that can be seen as an empty line
                                 // => remove it

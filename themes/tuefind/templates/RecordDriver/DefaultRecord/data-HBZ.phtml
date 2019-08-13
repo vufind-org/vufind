@@ -1,5 +1,5 @@
 <?php $isbns = $this->driver->getISBNs(); if (count($isbns) == 1): ?>
-  <a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>">HBZ Gateway</a>
+  <a href="http://openurlgw.hbz-nrw.de/gw?isbn=<?=$isbns[0]?>"><i class="fa fa-external-link"></i> HBZ Gateway</a>
 <?php else: ?>
-  <a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getUnmergedPrintTitle())?>" target="_blank" >HBZ Gateway</a>
+  <a href="http://openurlgw.hbz-nrw.de/gw?title=<?=urlencode($this->driver->getUnmergedPrintTitle())?>" target="_blank" ><i class="fa fa-external-link"></i> HBZ Gateway</a>
 <?php endif; ?>
