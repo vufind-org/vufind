@@ -190,7 +190,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         $retval = [];
         if (isset($this->fields['reverse_references']) && !empty($this->fields['reverse_references'])) {
             foreach ($this->fields['reverse_references'] as $reverse_reference) {
-                $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
+                $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $reverse_reference), 3);
                 if (count($a) == 3) {
                     // $retval[$title] = [$reviewer, $parentId];
                     $retval[$a[2]] = [$a[1], $a[0]];
