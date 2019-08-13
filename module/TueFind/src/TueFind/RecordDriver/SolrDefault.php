@@ -185,31 +185,37 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['id'] : '';
     }
 
-    public function getReviewedRecords()
+    public function getReverseReferences()
     {
         $retval = [];
-        if (isset($this->fields['reviewed_records']) && !empty($this->fields['reviewed_records'])) {
-            foreach ($this->fields['reviewed_records'] as $review) {
+        if (isset($this->fields['reverse_references']) && !empty($this->fields['reverse_references'])) {
+            foreach ($this->fields['reverse_references'] as $reverse_reference) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
                 if (count($a) == 3) {
                     // $retval[$title] = [$reviewer, $parentId];
                     $retval[$a[2]] = [$a[1], $a[0]];
-                }
+                } elseif (count($a) == 2) {
+		    // PPN = [label]
+		    $retval[$a[0]] = [$a[1]];
+		}
             }
         }
         ksort($retval);
         return $retval;
     }
 
-    public function getReviews()
+    public function getReferences()
     {
         $retval = [];
-        if (isset($this->fields['reviews']) && !empty($this->fields['reviews'])) {
-            foreach ($this->fields['reviews'] as $review) {
+        if (isset($this->fields['references']) && !empty($this->fields['references'])) {
+            foreach ($this->fields['references'] as $review) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
                 if (count($a) == 3) {
                     // $retval[$parentId] = [$reviewer, $title];
                     $retval[$a[0]] = [$a[1], $a[2]];
+                } elseif (count($a) == 2) {
+		    // PPN = [label]
+		    $retval[$a[0]] = [$a[1]];
                 }
             }
         }
