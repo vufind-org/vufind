@@ -200,7 +200,7 @@ class SolrMarc extends SolrDefault
             $fields = $this->getMarcRecord()->getFields($tag);
             foreach ($fields as $field) {
                 $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
-                foreach($subfields_w as $subfield_w) {
+                foreach ($subfields_w as $subfield_w) {
                     if (preg_match('/^' . preg_quote(self::ISIL_PREFIX_K10PLUS, '/') . '(.*)/', $subfield_w, $ppn)) {
                         $subfield_k = $field->getSubfield('k');
                         if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
@@ -243,7 +243,7 @@ class SolrMarc extends SolrDefault
 
     protected function getFirstK10PlusPPNFromSubfieldW($field) {
         $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
-        foreach($subfields_w as $subfield_w) {
+        foreach ($subfields_w as $subfield_w) {
             if (preg_match('/^' . preg_quote(self::ISIL_PREFIX_K10PLUS, '/') . '(.*)/', $subfield_w, $match_ppn)) {
                 return $match_ppn[1];
             }
@@ -266,10 +266,7 @@ class SolrMarc extends SolrDefault
             $references[] = ['id' => $link_ppn, 'description' => $description];
         }
 
-        $otherReferences = $this->getOtherReferences();
-        $references = array_merge($references, $otherReferences);
-
-        return $references;
+        return array_merge($references, $this->getOtherReferences());
     }
 
 
@@ -295,7 +292,8 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('787');
         foreach ($fields as $field) {
             $iSubfield = $field->getSubfield('i');
-            if ($iSubfield == null) continue;
+            if ($iSubfield == null)
+                continue;
 
             $aSubfield = $field->getSubfield('a');
             $dSubfield = $field->getSubfield('d');
@@ -379,20 +377,20 @@ class SolrMarc extends SolrDefault
                 $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
                 $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
                 $issns_and_titles[$this->cleanISSN($subfield_a)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
-             }
+            }
         }
         $_029fields = $this->getMarcRecord()->getFields('029');
         foreach ($_029fields as $_029field) {
             if ($_029field->getIndicator('1') == 'x') {
                 switch ($_029field->getIndicator('2')) {
                     case 'c':
-                         $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
-                         $issn = $this->cleanISSN($subfield_a);
-                         if (!array_key_exists($issn, $issns_and_titles))
-                             $issns_and_titles[$issn] = '';
-                         break;
+                        $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                        $issn = $this->cleanISSN($subfield_a);
+                        if (!array_key_exists($issn, $issns_and_titles))
+                            $issns_and_titles[$issn] = '';
+                        break;
                     default:
-                         break;
+                        break;
                 }
             }
         }
