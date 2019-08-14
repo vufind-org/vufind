@@ -265,6 +265,10 @@ class SolrMarc extends SolrDefault
             $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             $references[] = ['id' => $link_ppn, 'description' => $description];
         }
+
+        $otherReferences = $this->getOtherReferences();
+        $references = array_merge($references, $otherReferences);
+
         return $references;
     }
 
@@ -334,7 +338,7 @@ class SolrMarc extends SolrDefault
             } else {
                 $resultType = 'other';
                 if (!isset($references[$resultType])) $references[$resultType] = [];
-                $references[$resultType][] = ['id' => $referencedId, 'type' => $type];
+                $references[$resultType][] = ['id' => $referencedId, 'description' => $type];
             }
         }
 
@@ -349,7 +353,7 @@ class SolrMarc extends SolrDefault
         return $this->getReferencesFrom787()['reviewed_records'] ?? [];
     }
 
-    public function getOtherReferences(): array {
+    protected function getOtherReferences(): array {
         return $this->getReferencesFrom787()['other'] ?? [];
     }
 

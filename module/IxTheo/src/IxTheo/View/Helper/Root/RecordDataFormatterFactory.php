@@ -68,10 +68,6 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec->setTemplateLine(
             'Reviewed', 'getReviewedRecords', 'data-reviewed_records.phtml'
         );
-        // Other References (IxTheo-specific)
-        $spec->setTemplateLine(
-            'Other references', 'getOtherReferences', 'data-other_references.phtml'
-        );
         // Enclosed Titles (IxTheo-specific)
         $spec->setTemplateLine(
             'Enclosed titles', 'getEnclosedTitlesWithAuthors', 'data-enclosed_titles.phtml'
