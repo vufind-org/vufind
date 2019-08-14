@@ -235,11 +235,19 @@
   <?php endif; ?>
 
   <!-- custom ixtheo fields -->
-  <?php $reference = $this->driver->getReferenceInformation() ?>
-  <?php if (!empty($reference)): ?>
+  <?php $references = $this->driver->getReferenceInformation() ?>
+  <?php if (!empty($references)): ?>
        <tr>
           <th><?=$this->transEsc('Reference')?>: </th>
-          <td><?=$reference?>
+          <td>
+            <?php foreach($references as $reference): ?>
+              <?php if (!empty($reference['id'])): ?>
+                <a href="<?=$this->recordLink()->getUrl($reference['id'])?>"><?=$reference['description']?></a>
+              <?php else: ?>
+                <?=$reference['description']?>
+              <?php endif; ?>
+              <br>
+            <?php endforeach; ?>
           </td>
         </tr>
   <?php endif; ?>
@@ -248,7 +256,15 @@
   <?php if (!empty($contains)): ?>
        <tr>
           <th><?=$this->transEsc('Contains')?>: </th>
-          <td><?=$contains?>
+          <td>
+            <?php foreach($contains as $contain): ?>
+              <?php if (!empty($contain['id'])): ?>
+                <a href="<?=$this->recordLink()->getUrl($contain['id'])?>"><?=$contain['description']?></a>
+              <?php else: ?>
+                <?=$contain['description']?>
+              <?php endif; ?>
+              <br>
+            <?php endforeach; ?>
           </td>
         </tr>
   <?php endif; ?>
