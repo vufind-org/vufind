@@ -52,18 +52,18 @@ class SolrMarc extends SolrDefault
         $matches = [];
 	$first_subfield_contents = null;
 	foreach ($this->getMarcRecord()->getFields($field_tag) as $field) {
-	    foreach ($field->getSubfields() as $subfield) {
-	        $subfield_code = $subfield->getCode();
+            foreach ($field->getSubfields() as $subfield) {
+                $subfield_code = $subfield->getCode();
 	        if ($subfield_code = $first_subfield_code) {
                     if ($first_subfield_contents != null)
                         $matches[] = $first_subfield_contents . '|';
                     $first_subfield_contents = $subfield->getData();
-		} elseif ($subfield_code == $second_subfield_code) {
+                } elseif ($subfield_code == $second_subfield_code) {
                     if ($first_subfield_contents != null) {
                         $matches[] = $first_subfield_contents . '|' . $subfield->getData();
                         $first_subfield_contents = null;
                     }
-		}
+                }
 	    }
 	}
 
@@ -72,7 +72,6 @@ class SolrMarc extends SolrDefault
 
     public function getEnclosedTitlesWithAuthors() {
         return array_merge($this->getSubfieldPairs('249', 'a', 'v'), $this->getSubfieldPairs('505', 't','r'));
-        //return $this->getFieldsArray([['249', ['a', 'v']], ['505', ['t','r']]], true, "|");
     }
 
     public function getKeyWordChains()
