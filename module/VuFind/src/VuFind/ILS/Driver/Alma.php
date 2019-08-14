@@ -753,16 +753,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $checkout = (string)$fee->status_time;
             $fineList[] = [
                 "title"   => (string)($fee->title ?? ''),
-                "amount"   => $fee->original_amount * 100,
-                "balance"  => $fee->balance * 100,
-                "createdate" => $this->dateConverter->convert(
-                    'Y-m-d H:i',
-                    'm-d-Y',
+                "amount"   => round(floatval($fee->original_amount) * 100),
+                "balance"  => round(floatval($fee->balance) * 100),
+                "createdate" => $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d\TH:i:s.???T',
                     $created
                 ),
-                "checkout" => $this->dateConverter->convert(
-                    'Y-m-d H:i',
-                    'm-d-Y',
+                "checkout" => $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d\TH:i:s.???T',
                     $checkout
                 ),
                 "fine"     => (string)$fee->type['desc']
