@@ -1313,7 +1313,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Create HTTP client with Alma API URL for title level requests
             $client = $this->httpService->createClient(
                 $this->baseUrl . '/bibs/' . urlencode($mmsId)
-                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '/requests?apikey=' . urlencode($this->apiKey)
                 . '&user_id=' . urlencode($patronCatUsername)
                 . '&format=json'
             );
@@ -1323,7 +1323,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $this->baseUrl . '/bibs/' . urlencode($mmsId)
                 . '/holdings/' . urlencode($holId)
                 . '/items/' . urlencode($itmId)
-                . '/requests?apiKey=' . urlencode($this->apiKey)
+                . '/requests?apikey=' . urlencode($this->apiKey)
                 . '&user_id=' . urlencode($patronCatUsername)
                 . '&format=json'
             );
@@ -1363,6 +1363,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
+                ?? 'hold_error_fail'
         ];
     }
 
