@@ -302,15 +302,15 @@ class SolrMarc extends SolrDefault
             $tSubfield = $field->getSubfield('t');
 
             $title = $tSubfield->getData() ?? $aSubfield->getData();
-            if ($dSubfield !== null) $title .= ' (' . $dSubfield->getData() . ')';
+            if ($dSubfield != null) $title .= ' (' . $dSubfield->getData() . ')';
 
-            $referencedId = '000000000';
+            $referencedId = null;
             $ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             if (!empty($ppn))
                 $referencedId = $ppn;
 
             $type = $iSubfield->getData();
-            if (preg_match('"^Rezension(:)?$"i', $type)) {
+            if (preg_match('"^(Rezension|Rezensiert in)(:)?$"i', $type)) {
                 $resultType = 'reviewed_record';
                 if (!isset($references[$resultType])) $references[$resultType] = [];
                 $reviewer = $aSubfield->getData() ?? '';
@@ -338,7 +338,7 @@ class SolrMarc extends SolrDefault
             } else {
                 $resultType = 'other';
                 if (!isset($references[$resultType])) $references[$resultType] = [];
-                $references[$resultType][] = ['id' => $referencedId, 'description' => $type];
+                $references[$resultType][] = ['id' => $referencedId, 'description' => $type . ' "' . $title . '"'];
             }
         }
 
@@ -350,7 +350,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function getReviewedRecords(): array {
-        return $this->getReferencesFrom787()['reviewed_records'] ?? [];
+        return $this->getReferencesFrom787()['reviewed_record'] ?? [];
     }
 
     protected function getOtherReferences(): array {
