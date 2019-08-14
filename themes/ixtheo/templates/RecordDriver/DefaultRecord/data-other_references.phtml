@@ -1,4 +1,4 @@
-<?php foreach ($data as $id => $supplementary_information): ?>
-  <a href="<?=$this->recordLink()->getUrl($title_or_ppn)?>"><?=$this->escapeHtml($supplementary_information[0])?></a>
+<?php foreach ($data as $reference): ?>
+  <a href="<?=$this->recordLink()->getUrl($reference['id'])?>"><?=$this->transEsc($reference['type'])?></a>
   <br/>
 <?php endforeach; ?>

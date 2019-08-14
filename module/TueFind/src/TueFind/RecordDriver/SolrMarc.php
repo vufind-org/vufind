@@ -289,6 +289,79 @@ class SolrMarc extends SolrDefault
     }
 
 
+    protected function getReferencesFrom787(): array {
+        $references = [];
+
+        $fields = $this->getMarcRecord()->getFields('787');
+        foreach ($fields as $field) {
+            $iSubfield = $field->getSubfield('i');
+            if ($iSubfield == null) continue;
+
+            $aSubfield = $field->getSubfield('a');
+            $dSubfield = $field->getSubfield('d');
+            $tSubfield = $field->getSubfield('t');
+
+            $title = $tSubfield->getData() ?? $aSubfield->getData();
+            if ($dSubfield !== null) $title .= ' (' . $dSubfield->getData() . ')';
+
+            $referencedId = '000000000';
+            $wSubfields = $field->getSubfields('w');
+            foreach ($wSubfields as $wSubfield) {
+                if (preg_match('"^\(DE-627\)(.+)$"', $wSubfield->getData(), $hits)) {
+                    $referencedId = $hits[1];
+                    break;
+                }
+            }
+
+            $type = $iSubfield->getData();
+            if (preg_match('"^Rezension(:)?$"i', $type)) {
+                $resultType = 'reviewed_record';
+                if (!isset($references[$resultType])) $references[$resultType] = [];
+                $reviewer = $aSubfield->getData() ?? '';
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'reviewer' => $reviewer,
+                                              'title' => $title];
+            } else if (preg_match('"^Rezension von$"i', $type)) {
+                $resultType = 'review';
+                if (!isset($references[$resultType])) $references[$resultType] = [];
+                $reviewer = '';
+                $reviewerFields = $this->getMarcRecord()->getFields('100');
+                foreach ($reviewerFields as $reviewerField) {
+                    $a100Subfields = $reviewerField->getSubfields('a');
+                    foreach ($a100Subfields as $a100Subfield) {
+                        $a100 = $a100Subfield->getData();
+                        if ($a100 != '') {
+                            $reviewer = $a100;
+                            break 2;
+                        }
+                    }
+                }
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'reviewer' => $reviewer,
+                                              'title' => $title];
+            } else {
+                $resultType = 'other';
+                if (!isset($references[$resultType])) $references[$resultType] = [];
+                $references[$resultType][] = ['id' => $referencedId, 'type' => $resultType];
+            }
+        }
+
+        return $references;
+    }
+
+    public function getReviews(): array {
+        return $this->getReferencesFrom787()['review'] ?? [];
+    }
+
+    public function getReviewedRecords(): array {
+        return $this->getReferencesFrom787()['reviewed_records'] ?? [];
+    }
+
+    public function getOtherReferences(): array {
+        return $this->getReferencesFrom787()['other'] ?? [];
+    }
+
+
     public function cleanISSN($issn) {
         if ($pos = strpos($issn, ' ')) {
             $issn = substr($issn, 0, $pos);

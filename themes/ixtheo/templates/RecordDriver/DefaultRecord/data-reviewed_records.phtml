@@ -1,10 +1,10 @@
-<?php foreach ($data as $title_or_ppn => $supplementary_information): ?>
-  <?php $linked_ppn = $supplementary_information[1]; ?>
-  <?php if (empty($supplementary_information[0])): $reviewer = ''; else: $reviewer = ' ('.$this->escapeHtml($supplementary_information[0]) . ')'; endif; ?>
+<?php foreach ($data as $reviewed): ?>
+  <?php $linked_ppn = $reviewed['id']; ?>
+  <?php if (empty($reviewed['reviewer'])): $reviewer = ''; else: $reviewer = ' ('.$this->escapeHtml($reviewed['reviewer']) . ')'; endif; ?>
   <?php if ($linked_ppn != '000000000'): ?>
-    <a href="<?=$this->recordLink()->getUrl($linked_ppn)?>"><?=$this->escapeHtml($title_or_ppn) . $reviewer?></a>
+    <a href="<?=$this->recordLink()->getUrl($linked_ppn)?>"><?=$this->escapeHtml($reviewed['title']) . $reviewer?></a>
   <?php else: ?>
-    <?=$this->escapeHtml($title_or_ppn) . $reviewer?>
+    <?=$this->escapeHtml($reviewed['title']) . $reviewer?>
   <?php endif; ?>
   <br/>
 <?php endforeach; ?>
