@@ -65,6 +65,8 @@ class SolrMarc extends SolrDefault
                     }
                 }
             }
+	    if ($first_subfield_contents == null)
+                $matches[] = $first_subfield_contents . '|';
         }
 
         return $matches;
