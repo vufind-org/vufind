@@ -189,10 +189,10 @@ VuFind.register('lightbox', function Lightbox() {
         if (jq_xhr.status === 205) {
           VuFind.refreshPage();
           return;
-        }
-        if (jq_xhr.status === 204) {
+        } else if (jq_xhr.status === 204) {
           // No content, close lightbox
           close();
+          return;
         }
         render(content);
       })
