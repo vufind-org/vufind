@@ -1,0 +1,4 @@
+<?php foreach ($data as $id => $supplementary_information): ?>
+  <a href="<?=$this->recordLink()->getUrl($id)?>"><?=$this->escapeHtml($supplementary_information[1])?><?=$supplementary_information[0] == '' ? '' : ' (' . $this->escapeHtml($supplementary_information[0]) . ')'?></a>
+  <br/>
+<?php endforeach; ?>

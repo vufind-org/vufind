@@ -185,44 +185,74 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['id'] : '';
     }
 
-    public function getReverseReferences()
-    {
+    public function getReviews(): array {
         $retval = [];
-        if (isset($this->fields['reverse_references']) && !empty($this->fields['reverse_references'])) {
-            foreach ($this->fields['reverse_references'] as $reverse_reference) {
-                $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $reverse_reference), 3);
-                if (count($a) == 3) {
-                    // $retval[$title] = [$reviewer, $parentId];
-                    $retval[$a[2]] = [$a[1], $a[0]];
-                } elseif (count($a) == 2) {
-		    // PPN = [label]
-		    $retval[$a[0]] = [$a[1]];
-		}
-            }
+
+        $references = $this->getReferenceParts('references', 3);
+        foreach ($references as $reference) {
+            // $retval[$parentId] = [$reviewer, $title];
+            $retval[$reference[0]] = [$reference[1], $reference[2]];
         }
+
+        return $retval;
+    }
+
+    public function getReviewedRecords(): array {
+        $retval = [];
+
+        $references = $this->getReferenceParts('reverse_references', 3);
+        foreach ($references as $reference) {
+            // $retval[$title] = [$reviewer, $parentId];
+            $retval[$reference[2]] = [$reference[1], $reference[0]];
+        }
+
         ksort($retval);
         return $retval;
     }
 
-    public function getReferences()
-    {
+    public function getOtherReferences(): array {
         $retval = [];
-        if (isset($this->fields['references']) && !empty($this->fields['references'])) {
-            foreach ($this->fields['references'] as $review) {
-                $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $review), 3);
-                if (count($a) == 3) {
-                    // $retval[$parentId] = [$reviewer, $title];
-                    $retval[$a[0]] = [$a[1], $a[2]];
-                } elseif (count($a) == 2) {
-		    // PPN = [label]
-		    $retval[$a[0]] = [$a[1]];
-                }
+
+        $referenceFields = ['references', 'reverse_references'];
+        foreach ($referenceFields as $referenceField) {
+            $references = $this->getReferenceParts($referenceField, 2);
+            foreach ($references as $reference) {
+                // PPN = [label]
+                $retval[$a[0]] = [$a[1]];
             }
         }
+
         return $retval;
     }
 
-    private function isOpenAccess(): bool
+    /**
+     * Return an array of arrays with splitted parts for the given reference field.
+     * If exactPartCount is set, only return items whose part count is equal to this value.
+     * (3 = Review / Reviewed, 2 = Other).
+     *
+     * @param string $referenceField
+     * @param int $exactPartCount
+     *
+     * @return array
+     */
+    protected function getReferenceParts(string $referenceField, int $exactPartCount=null): array {
+        $returnValues = [];
+
+        if (isset($this->fields[$referenceField]) && !empty($this->fields[$referenceField])) {
+            $delimiter = chr(0x1F);
+            $delimiterEntity = "#31;";
+            foreach ($this->fields[$referenceField] as $fieldContent) {
+                $referenceParts = explode($delimiter, str_replace($delimiterEntity, $delimiter, $fieldContent), 3);
+                if ($exactPartCount === null || count($referenceParts) === $exactPartCount) {
+                    $returnValues[] = $referenceParts;
+                }
+            }
+        }
+
+        return $returnValues;
+    }
+
+    public function isOpenAccess(): bool
     {
         return isset($this->fields['is_open_access']) && ($this->fields['is_open_access'] == 'open-access');
     }
