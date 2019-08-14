@@ -50,11 +50,11 @@ class SolrMarc extends SolrDefault
 
     private function getSubfieldPairs($field_tag, $first_subfield_code, $second_subfield_code) {
         $matches = [];
-	$first_subfield_contents = null;
-	foreach ($this->getMarcRecord()->getFields($field_tag) as $field) {
+        $first_subfield_contents = null;
+        foreach ($this->getMarcRecord()->getFields($field_tag) as $field) {
             foreach ($field->getSubfields() as $subfield) {
                 $subfield_code = $subfield->getCode();
-	        if ($subfield_code = $first_subfield_code) {
+                if ($subfield_code = $first_subfield_code) {
                     if ($first_subfield_contents != null)
                         $matches[] = $first_subfield_contents . '|';
                     $first_subfield_contents = $subfield->getData();
