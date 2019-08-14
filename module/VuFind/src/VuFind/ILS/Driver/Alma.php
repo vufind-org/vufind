@@ -1001,13 +1001,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Get transactions of the current patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
-     * @return string[]    Transaction information as array or empty array if the
-     *                  patron has no transactions.
+     * @return array Transaction information as array.
      *
      * @author Michael Birkner
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
         // Defining the return value
         $returnArray = [];
@@ -1018,13 +1018,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Create a timestamp for calculating the due / overdue status
         $nowTS = time();
 
-        // Create parameters for the API call
-        // INFO: "order_by" does not seem to work as expected!
-        //       This is an Alma API problem.
+        $sort = explode(
+            ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+        );
+        if ($sort[0] == 'checkout') {
+            $sortKey = 'loan_date';
+        } elseif ($sort[0] == 'title') {
+            $sortKey = 'title';
+        } else {
+            $sortKey = 'due_date';
+        }
+        $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'DESC' : 'ASC';
+
+        $pageSize = $params['limit'] ?? 50;
         $params = [
-            'limit' => '100',
-            'order_by' => 'due_date',
-            'direction' => 'DESC',
+            'limit' => $pageSize,
+            'offset' => isset($params['page'])
+                ? ($params['page'] - 1) * $pageSize : 0,
+            'order_by' => $sortKey,
+            'direction' => $direction,
             'expand' => 'renewable'
         ];
 
@@ -1035,7 +1047,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         // If there is an API result, process it
+        $totalCount = 0;
         if ($apiResult) {
+            $totalCount = $apiResult->attributes()->total_record_count;
             // Iterate over all item loans
             foreach ($apiResult->item_loan as $itemLoan) {
                 $loan['duedate'] = $this->parseDate(
@@ -1080,7 +1094,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
 
-        return $returnArray;
+        return [
+            'count' => $totalCount,
+            'records' => $returnArray
+        ];
     }
 
     /**
@@ -1279,6 +1296,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     ?? 10
                     ?: 10;
             }
+        } elseif ('getMyTransactions' === $function) {
+            $functionConfig = [
+                'max_results' => 100,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc',
+                    'title asc' => 'sort_title'
+                ],
+                'default_sort' => 'due asc'
+            ];
         } else {
             $functionConfig = false;
         }
