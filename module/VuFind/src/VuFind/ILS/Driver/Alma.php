@@ -1418,8 +1418,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-        if (strpos($date, 'Z', (strlen($date) - 1))) {
-            $date = preg_replace('/Z{1}$/', '', $date);
+        if (strpos($date, 'T') === false && substr($date, -1) === 'Z') {
+            $date = substr($date, 0, -1);
         }
 
         $compactDate = "/^[0-9]{8}$/"; // e. g. 20120725
@@ -1427,7 +1427,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $euro = "/^[0-9]+\/[0-9]+\/[0-9]{4}$/"; // e. g. 13/7/2012
         $euroPad = "/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/"; // e. g. 13/07/2012
         $datestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"; // e. g. 2012-07-13
-        $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$/";
+        $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/";
         // e. g. 2017-07-09T18:00:00
 
         if ($date == null || $date == '') {
@@ -1442,11 +1442,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return $this->dateConverter->convertToDisplayDate('d/m/y', $date);
         } elseif (preg_match($datestamp, $date) === 1) {
             return $this->dateConverter->convertToDisplayDate('Y-m-d', $date);
-        } elseif (preg_match($timestamp, substr($date, 0, 19)) === 1) {
+        } elseif (preg_match($timestamp, $date) === 1) {
             if ($withTime) {
                 return $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s',
-                    substr($date, 0, 19)
+                    'Y-m-d\TH:i:sT',
+                    $date
                 );
             } else {
                 return $this->dateConverter->convertToDisplayDate(
