@@ -1,0 +1,4 @@
+<?php foreach ($data as $review): ?>
+  <a href="<?=$this->recordLink()->getUrl($review['id'])?>"><?=$this->escapeHtml($review['title'])?><?=$review['reviewer'] == '' ? '' : ' (' . $this->escapeHtml($review['reviewer']) . ')'?></a>
+  <br/>
+<?php endforeach; ?>

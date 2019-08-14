@@ -114,7 +114,7 @@ class SolrMarc extends SolrDefault
 
 
     public function isAvailableInTubingenUniversityLibrary() {
-        $ita_fields = $this->getMarcRecord()->getFields("ITA");
+        $ita_fields = $this->getMarcRecord()->getFields('ITA');
         return (count($ita_fields) > 0);
     }
 
@@ -136,12 +136,12 @@ class SolrMarc extends SolrDefault
     }
 
     public function isArticleCollection() {
-        $aco_fields = $this->getMarcRecord()->getFields("ACO");
+        $aco_fields = $this->getMarcRecord()->getFields('ACO');
         return (count($aco_fields) > 0);
     }
 
     public function isPrintedWork() {
-        $fields = $this->getMarcRecord()->getFields("007");
+        $fields = $this->getMarcRecord()->getFields('007');
         foreach ($fields as $field) {
             if ($field->getData()[0] == 't')
                 return true;
@@ -150,7 +150,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function isSubscriptionBundle() {
-        return ($this->isSuperiorWork() && in_array("Subscription Bundle", $this->getFormats()));
+        return ($this->isSuperiorWork() && in_array('Subscription Bundle', $this->getFormats()));
     }
 
     public function isRealSuperiorWork() {
@@ -162,11 +162,11 @@ class SolrMarc extends SolrDefault
     }
 
     public function suppressDisplayByFormat() {
-        if (in_array("Weblog", $this->getFormats()))
+        if (in_array('Weblog', $this->getFormats()))
             return true;
-        if (in_array("Subscription Bundle", $this->getFormats()))
+        if (in_array('Subscription Bundle', $this->getFormats()))
             return true;
-        if (in_array("Literary Remains", $this->getFormats()))
+        if (in_array('Literary Remains', $this->getFormats()))
             return true;
         return false;
     }
@@ -187,7 +187,7 @@ class SolrMarc extends SolrDefault
 
     public function showPDA() {
         $formats = $this->getFormats();
-        return (!empty($formats) && (in_array("Book", $formats)) && $this->isPotentiallyPDA());
+        return (!empty($formats) && (in_array('Book', $formats)) && $this->isPotentiallyPDA());
     }
 
     public function showSubito() {
@@ -196,18 +196,18 @@ class SolrMarc extends SolrDefault
 
     public function getParallelEditionPPNs() {
         $parallel_ppns_and_type = [];
-        foreach (["775", "776"] as $tag) {
-             $fields = $this->getMarcRecord()->getFields($tag);
-             foreach ($fields as $field) {
-                 $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
-                 foreach($subfields_w as $subfield_w) {
-                     if (preg_match("/^" . preg_quote(self::ISIL_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $ppn)) {
-                         $subfield_k = $field->getSubfield('k');
-                         if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
-                             array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
-                     }
-                 }
-             }
+        foreach (['775', '776'] as $tag) {
+            $fields = $this->getMarcRecord()->getFields($tag);
+            foreach ($fields as $field) {
+                $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
+                foreach ($subfields_w as $subfield_w) {
+                    if (preg_match('/^' . preg_quote(self::ISIL_PREFIX_K10PLUS, '/') . '(.*)/', $subfield_w, $ppn)) {
+                        $subfield_k = $field->getSubfield('k');
+                        if ($subfield_k !== false && $subfield_k->getData() !== 'dangling')
+                            array_push($parallel_ppns_and_type, [ $ppn[1], $subfield_k->getData() ]);
+                    }
+                }
+            }
         }
         return $parallel_ppns_and_type;
     }
@@ -215,7 +215,7 @@ class SolrMarc extends SolrDefault
 
     public function getUnlinkedParallelEditions() {
         $parallel_editions = [];
-        foreach (["775", "776"] as $tag) {
+        foreach (['775', '776'] as $tag) {
             $fields = $this->getMarcRecord()->getFields($tag);
             foreach ($fields as $field) {
                 # If $w exists this is handled by getParallelEditionPPNs
@@ -223,14 +223,14 @@ class SolrMarc extends SolrDefault
                 if (!empty($subfield_w))
                     continue;
 
-                $parallel_edition = "";
+                $parallel_edition = '';
                 $subfield_i = $field->getSubfield('i');
                 # If $i is not given we will not have a proper key for processing
                 if (empty($subfield_i))
                     continue;
                 $subfield_a = $field->getSubfield('a');
                 if (!empty($subfield_a))
-                    $parallel_edition .= $subfield_a->getData() . ": ";
+                    $parallel_edition .= $subfield_a->getData() . ': ';
                 $further_subfields = $this->getSubfieldArray($field, ['t','d','h','g','o','u','z'], false);
                 $parallel_edition .= implode('. - ', $further_subfields);
                 $description = \TueFind\Utility::normalizeGermanParallelDescriptions($subfield_i->getData());
@@ -241,51 +241,122 @@ class SolrMarc extends SolrDefault
     }
 
 
-    protected function getFirstK10PlusPPNFromSubfieldW(&$field, &$ppn) {
-        $ppn = [];
+    protected function getFirstK10PlusPPNFromSubfieldW($field) {
         $subfields_w = $this->getSubfieldArray($field, ['w'], false /* do not concatenate entries */);
-        foreach($subfields_w as $subfield_w) {
-             if (preg_match("/^" . preg_quote(self::ISIL_PREFIX_K10PLUS) . "(.*)/", $subfield_w, $match_ppn)) {
-                 $ppn[0] = $match_ppn[1];
-                 return;
-             }
+        foreach ($subfields_w as $subfield_w) {
+            if (preg_match('/^' . preg_quote(self::ISIL_PREFIX_K10PLUS, '/') . '(.*)/', $subfield_w, $match_ppn)) {
+                return $match_ppn[1];
+            }
         }
     }
 
 
-    public function getReferenceInformation() {
-        $reference = [];
-        $fields = $this->getMarcRecord()->getFields("770");
+    public function getReferenceInformation(): array {
+        $references = [];
+        $fields = $this->getMarcRecord()->getFields('770');
         foreach ($fields as $field) {
             $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
-            $field->getSubfield('a') ? array_push($reference, $field->getSubfield('a')->getData()) : '';
-            $field->getSubfield('d') ? array_push($reference, $field->getSubfield('d')->getData()) : '';
-            $field->getSubfield('h') ? array_push($reference, $field->getSubfield('h')->getData()) : '';
-            $field->getSubfield('t') ? array_push($reference, $field->getSubfield('t')->getData()) : '';
-            $this->getFirstK10PlusPPNFromSubfieldW($field, $link_ppn);
-            $reference_description = $opening . ": " .  implode(", " , array_filter($reference) /*skip empty elements */);
-            if (!empty($link_ppn))
-                return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $reference_description . "</>";
-            else
-                return $reference_description;
+            $titles = [];
+            $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
+            $field->getSubfield('d') ? $titles[] = $field->getSubfield('d')->getData() : '';
+            $field->getSubfield('h') ? $titles[] = $field->getSubfield('h')->getData() : '';
+            $field->getSubfield('t') ? $titles[] = $field->getSubfield('t')->getData() : '';
+            $description = $opening . ': ' .  implode(', ' , array_filter($titles) /*skip empty elements */);
+            $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
+            $references[] = ['id' => $link_ppn, 'description' => $description];
         }
+
+        return array_merge($references, $this->getOtherReferences());
     }
 
 
-    public function getContainsInformation() {
+    public function getContainsInformation(): array {
         $contains = [];
-        $fields = $this->getMarcRecord()->getFields("772");
+        $fields = $this->getMarcRecord()->getFields('772');
         foreach ($fields as $field) {
-              $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
-              $field->getSubfield('a') ? array_push($contains, $field->getSubfield('a')->getData()) : '';
-              $field->getSubfield('t') ? array_push($contains, $field->getSubfield('t')->getData()) : '';
-              $contains_description = $opening . ": " .  implode(", ", array_filter($contains) /*skip empty elements */);
-              $this->getFirstK10PlusPPNFromSubfieldW($field, $link_ppn);
-              if (!empty($link_ppn))
-                  return "<a href=/Record/" . $link_ppn[0] . " target=\"_blank\">" . $contains_description . "</>";
-              else
-                  return $contains_description;
+            $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
+            $titles = [];
+            $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
+            $field->getSubfield('t') ? $titles[] = $field->getSubfield('t')->getData() : '';
+            $description = $opening . ': ' .  implode(', ', array_filter($titles) /*skip empty elements */);
+            $link_ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
+            $contains[] = ['id' => $link_ppn, 'description' => $description];
         }
+        return $contains;
+    }
+
+
+    protected function getReferencesFrom787(): array {
+        $references = [];
+
+        $fields = $this->getMarcRecord()->getFields('787');
+        foreach ($fields as $field) {
+            $iSubfield = $field->getSubfield('i');
+            if ($iSubfield == null)
+                continue;
+
+            $aSubfield = $field->getSubfield('a');
+            $dSubfield = $field->getSubfield('d');
+            $tSubfield = $field->getSubfield('t');
+
+            $title = $tSubfield->getData() ?? $aSubfield->getData();
+            if ($dSubfield != null)
+                $title .= ' (' . $dSubfield->getData() . ')';
+
+            $referencedId = null;
+            $ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
+            if (!empty($ppn))
+                $referencedId = $ppn;
+
+            $type = $iSubfield->getData();
+            if (preg_match('"^(Rezension|Rezensiert in)(:)?$"i', $type)) {
+                $resultType = 'reviewed_record';
+                if (!isset($references[$resultType]))
+                    $references[$resultType] = [];
+                $reviewer = $aSubfield->getData() ?? '';
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'reviewer' => $reviewer,
+                                              'title' => $title];
+            } else if (preg_match('"^Rezension von$"i', $type)) {
+                $resultType = 'review';
+                if (!isset($references[$resultType]))
+                    $references[$resultType] = [];
+                $reviewer = '';
+                $reviewerFields = $this->getMarcRecord()->getFields('100');
+                foreach ($reviewerFields as $reviewerField) {
+                    $a100Subfields = $reviewerField->getSubfields('a');
+                    foreach ($a100Subfields as $a100Subfield) {
+                        $a100 = $a100Subfield->getData();
+                        if ($a100 != '') {
+                            $reviewer = $a100;
+                            break 2;
+                        }
+                    }
+                }
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'reviewer' => $reviewer,
+                                              'title' => $title];
+            } else {
+                $resultType = 'other';
+                if (!isset($references[$resultType]))
+                    $references[$resultType] = [];
+                $references[$resultType][] = ['id' => $referencedId, 'description' => $type . ' "' . $title . '"'];
+            }
+        }
+
+        return $references;
+    }
+
+    public function getReviews(): array {
+        return $this->getReferencesFrom787()['review'] ?? [];
+    }
+
+    public function getReviewedRecords(): array {
+        return $this->getReferencesFrom787()['reviewed_record'] ?? [];
+    }
+
+    protected function getOtherReferences(): array {
+        return $this->getReferencesFrom787()['other'] ?? [];
     }
 
 
@@ -299,27 +370,27 @@ class SolrMarc extends SolrDefault
 
     public function getJOPISSNsAndTitles() {
         $issns_and_titles = [];
-        $_022fields = $this->getMarcRecord()->getFields("022");
+        $_022fields = $this->getMarcRecord()->getFields('022');
         foreach ($_022fields as $_022field) {
              $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
                 $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
                 $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
                 $issns_and_titles[$this->cleanISSN($subfield_a)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
-             }
+            }
         }
-        $_029fields = $this->getMarcRecord()->getFields("029");
+        $_029fields = $this->getMarcRecord()->getFields('029');
         foreach ($_029fields as $_029field) {
             if ($_029field->getIndicator('1') == 'x') {
                 switch ($_029field->getIndicator('2')) {
                     case 'c':
-                         $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
-                         $issn = $this->cleanISSN($subfield_a);
-                         if (!array_key_exists($issn, $issns_and_titles))
-                             $issns_and_titles[$issn] = '';
-                         break;
+                        $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                        $issn = $this->cleanISSN($subfield_a);
+                        if (!array_key_exists($issn, $issns_and_titles))
+                            $issns_and_titles[$issn] = '';
+                        break;
                     default:
-                         break;
+                        break;
                 }
             }
         }
@@ -327,7 +398,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function getSuperiorFrom773a() {
-        $_773_fields = $this->getMarcRecord()->getFields("773");
+        $_773_fields = $this->getMarcRecord()->getFields('773');
         foreach ($_773_fields as $_773_field) {
             $subfield_a = $_773_field->getSubfield('a') ? $_773_field->getSubfield('a')->getData() : '';
             if (!empty($subfield_a))

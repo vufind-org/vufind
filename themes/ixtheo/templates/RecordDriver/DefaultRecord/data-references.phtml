@@ -1,8 +1,0 @@
-<?php foreach ($this->driver->getReferences() as $id => $supplementary_information): ?>
-  <?php if (count($supplementary_information) == 1): ?>
-    <a href="<?=$this->recordLink()->getUrl($id)?>"><?=$this->escapeHtml($supplementary_information[0])?></a>
-  <?php else: ?>
-    <a href="<?=$this->recordLink()->getUrl($id)?>"><?=$this->escapeHtml($supplementary_information[1])?><?=$supplementary_information[0] == '' ? '' : ' (' . $this->escapeHtml($supplementary_information[0]) . ')'?></a>
-  <?php endif; ?>
-  <br/>
-<?php endforeach; ?>
