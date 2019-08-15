@@ -119,9 +119,9 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
     if (zipcode) {
       address += ', ' + zipcode;
     }
-    var city = getField(data.address, 'city');
-    if (city) {
-      address += ' ' + city;
+    var area = getField(data.address, 'area');
+    if (area) {
+      address += ' ' + area;
     }
 
     details.address = address;

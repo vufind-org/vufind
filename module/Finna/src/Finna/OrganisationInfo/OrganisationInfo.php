@@ -787,7 +787,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
             if (!empty($item['address'])) {
                 $address = [];
-                foreach (['street', 'zipcode', 'city'] as $addressField) {
+                foreach (['street', 'zipcode', 'city', 'area'] as $addressField) {
                     $address[$addressField]
                         = $this->getField($item['address'], $addressField);
                 }
