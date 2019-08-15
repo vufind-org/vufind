@@ -1,0 +1,8 @@
+<?php foreach ($data as $reference): ?>
+  <?php if (!empty($reference['id'])): ?>
+    <a href="<?=$this->recordLink()->getUrl($reference['id'])?>"><?=$reference['description']?></a>
+  <?php else: ?>
+    <?=$reference['description']?>
+  <?php endif; ?>
+  <br>
+<?php endforeach; ?>

@@ -1,0 +1,5 @@
+<?php foreach ($types_and_persistent_identifiers as $type => $persistent_identifiers): ?>
+  <?php foreach ($persistent_identifiers as $persistent_identifier): ?>
+    <?=$type . ' &quot;' . $persistent_identifier . '&quot;'?><br/>
+  <?php endforeach; ?>
+<?php endforeach; ?>

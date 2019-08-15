@@ -1,0 +1,8 @@
+<?php foreach ($data as $containedTitle): ?>
+  <?php if (!empty($containedTitle['id'])): ?>
+    <a href="<?=$this->recordLink()->getUrl($containedTitle['id'])?>"><?=$containedTitle['description']?></a>
+  <?php else: ?>
+    <?=$containedTitle['description']?>
+  <?php endif; ?>
+  <br>
+<?php endforeach; ?>

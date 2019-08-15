@@ -98,4 +98,36 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
 
         return $spec->getArray();
     }
+
+    public function getDefaultDescriptionSpecs()
+    {
+        $spec = new SpecBuilder();
+        $spec->setTemplateLine('Summary', true, 'data-summary.phtml');
+        $spec->setLine('Published', 'getDateSpan');
+        $spec->setLine('Item Description', 'getGeneralNotes');
+        $spec->setLine('Physical Description', 'getPhysicalDescriptions');
+        $spec->setLine('Publication Frequency', 'getPublicationFrequency');
+        $spec->setLine('Playing Time', 'getPlayingTimes');
+        $spec->setLine('Format', 'getSystemDetails');
+        $spec->setLine('Audience', 'getTargetAudienceNotes');
+        $spec->setLine('Awards', 'getAwards');
+        $spec->setLine('Production Credits', 'getProductionCredits');
+        $spec->setLine('Bibliography', 'getBibliographyNotes');
+        // Clean ISBN (IxTheo-specific)
+        $spec->setLine('ISBN', 'getCleanISBN');
+        $spec->setLine('ISSN', 'getISSNs');
+        $spec->setLine('DOI', 'getCleanDOI');
+        $spec->setLine('Related Items', 'getRelationshipNotes');
+        $spec->setLine('Access', 'getAccessRestrictions');
+        $spec->setLine('Finding Aid', 'getFindingAids');
+        $spec->setLine('Publication_Place', 'getHierarchicalPlaceNames');
+        $spec->setTemplateLine('Author Notes', true, 'data-authorNotes.phtml');
+        // References (IxTheo-specific)
+        $spec->setTemplateLine('Reference', 'getReferenceInformation', 'data-references.phtml');
+        // Contains (IxTheo-specific)
+        $spec->setTemplateLine('Contains', 'getContainsInformation', 'data-contains.phtml');
+        // Persistent identifiers (IxTheo-specific)
+        $spec->setTemplateLine('Persistent identifiers', 'getTypesAndPersistentIdentifiers', 'data-persistent_identifiers.phtml');
+        return $spec->getArray();
+    }
 }
