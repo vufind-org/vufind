@@ -399,30 +399,6 @@
       padding: 0 10px;
     }
   }
-  .multiselect-container {
-    background-color: @well-bg;
-    padding: 0;
-    li {
-      background: white;
-      &:first-child {
-        background-color: @well-bg;
-      }
-    }
-    .multiselect-clear-filter {
-      margin-left: 0;
-      &, &:hover {
-        background-color: @well-bg;
-        border-color: @well-bg;
-        color: @text-color;
-      }
-    }
-    .input-group {
-      width: 100%;
-      .form-control {
-        width: 100%;
-      }
-    }
-  }
   .label-block,
   .label-style {
     &:extend(label);
@@ -433,18 +409,83 @@
   .facet-container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
   }
   .facet {
-    width: 25%;
     margin-bottom: 10px;
-    @media (max-width: @screen-xs-max) {
-      width: 33.3%;
+    @media (min-width: @screen-xs-min) {
+      width: 45%;
     }
     @media (max-width: @screen-xxs-max) {
-      width: 50%;
+      width: 100%;
     }
     label {
       margin-bottom: 10px;
+    }
+    .finna-multiselect.search {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+    }
+    .finna-multiselect.clear {
+      padding: 2px 0;
+    }
+    .finna-multiselect.done {
+      height: 200px;
+      background-color: white;
+      overflow-y: scroll;
+      border: 1px solid lightgray;
+      border-radius: 0 0 4px 4px;
+      margin: 0;
+      border-top: none;
+      position: relative;
+
+      .option {
+        &.option-parent {
+          background-color: white;
+          z-index: 1;
+        }
+        padding: 2px 0;
+        position: relative;
+        user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        .value:before {
+            content: '\f096';
+            font-family: 'FontAwesome';
+            margin: 0px 4px;
+            font-weight: initial;
+            display: inline-block;
+            width: 12px;
+            font-size: 16px;
+        }
+        &[aria-selected="true"] .value:before {
+          content: '\f046';
+        }
+        &.active {
+          background-color: lightgray;
+        }
+
+        .hierarchy-line {
+          display: inline-block;
+          position: absolute;
+          z-index: 0;
+          border-bottom: 2px solid lightgray;
+          border-left: 2px solid lightgray;
+          height: 100%;
+          left: 4px;
+          top: -50%;
+
+          .generate-hierarchy(6);
+          .generate-hierarchy(@n, @i: 1) when (@i =< @n) {
+            &.child-width-@{i} {
+              width: (@i * 13px);
+            }
+            .generate-hierarchy(@n, (@i + 1));
+          }
+        }
+      }
     }
   }
   .option-container {

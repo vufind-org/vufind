@@ -31,36 +31,7 @@
         <legend class="sr-only"><?=$this->transEsc('Limit To')?></legend>
         <div class="facet-container">
           <?php foreach ($this->facetList as $field => $list): ?>
-            <div class="facet">
-              <div class="solr-adv-filter <?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>-container">
-                <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-                <select class="form-control multi-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]"  multiple="multiple" >
-                  <?php if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
-                    <?php foreach ($list['list'] as $value): ?>
-                      <?php $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
-                      <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
-                    <?php endforeach; ?>
-                  <?php else: ?>
-                    <?php
-                      // Sort the current facet list alphabetically; we'll use this data
-                      // along with the foreach below to display facet options in the
-                      // correct order.
-                      $sorted = [];
-                      foreach ($list['list'] as $i => $value) {
-                        if (!empty($value['displayText'])) {
-                          $sorted[$i] = $value['displayText'];
-                        }
-                      }
-                      natcasesort($sorted);
-                    ?>
-                    <?php foreach ($sorted as $i => $display): ?>
-                      <?php $value = $list['list'][$i]; ?>
-                      <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
-                    <?php endforeach; ?>
-                  <?php endif; ?>
-                </select>
-              </div>
-            </div>
+            <?= $this->render('search/advanced/multiselect.phtml', ['field' => $field, 'list' => $list, 'hierarchicalFacets' => $this->hierarchicalFacets]); ?>
           <?php endforeach; ?>
         </div>
         <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_facets')?></p></div>

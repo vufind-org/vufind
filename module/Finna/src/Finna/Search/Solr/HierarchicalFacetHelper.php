@@ -240,4 +240,40 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
         $params['filter'] = $newFilters;
         return $urlParts[0] . '?' . htmlspecialchars(http_build_query($params));
     }
+
+    /**
+     * Flatten a hierarchical facet list to a simple array
+     *
+     * @param array $facetList Facet list
+     *
+     * @return array Simple array of facets
+     */
+    public function flattenFacetHierarchy($facetList)
+    {
+        $results = [];
+        $count = count($facetList);
+        $i = 0;
+        foreach ($facetList as $facetItem) {
+            $tmpFacet = $facetItem;
+            $children = !empty($tmpFacet['children'])
+                ? $tmpFacet['children']
+                : [];
+            if ($children && $tmpFacet['level'] === '0') {
+                $tmpFacet['opt_group_start'] = true;
+            }
+            unset($tmpFacet['children']);
+            if (++$i === $count && ($tmpFacet['level'] !== '0' && !$children)) {
+                $tmpFacet['opt_group_end'] = true;
+                $i = 0;
+            }
+            $results[] = $tmpFacet;
+            if ($children) {
+                $results = array_merge(
+                    $results, $this->flattenFacetHierarchy($children)
+                );
+            }
+        }
+
+        return $results;
+    }
 }
