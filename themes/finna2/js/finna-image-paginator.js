@@ -19,8 +19,6 @@ finna.imagePaginator = (function imagePaginator() {
     recordType: 'default-type'
   };
 
-  /* Initializer functions */
-
   /**
    * Initializer function
    *
@@ -68,12 +66,12 @@ finna.imagePaginator = (function imagePaginator() {
 
   /**
    * Function to create a new paginator with given images object and settings object
-   *
-   * @param {object} images
-   * @param {object} settings
+   * 
+   * @param {object} images 
+   * @param {object} settings 
    */
   function initPaginator(images, settings) {
-    if (!settings.enableImageZoom) {
+    if (settings.recordType !== 'marc') {
       settings.imagesOnPopup = 4;
     }
     var paginator = new FinnaPaginator(images, $('.recordcover-holder.paginate'), settings);
@@ -276,7 +274,7 @@ finna.imagePaginator = (function imagePaginator() {
       _.nonZoomableHolder.find('img').replaceWith($(this));
     };
 
-    setCanvasContent('nonZoomable');
+    setCanvasContent('nonzoomable');
     _.setCurrentVisuals();
     _.setPagerInfo(true);
     _.loadImageInformation();
@@ -832,8 +830,8 @@ finna.imagePaginator = (function imagePaginator() {
 
           var previousRecord = $(previousRecordButton).clone();
           var nextRecord = $(nextRecordButton).clone();
-
-          mfpContainer.find('.mfp-content').addClass('loaded');
+          
+          mfpContainer.find('.mfp-content').addClass('loaded ' + _.settings.recordType);
           mfpContainer.append(previousRecord, nextRecord);
 
           previousRecord.off('click').click(function loadNextPaginator(e){
