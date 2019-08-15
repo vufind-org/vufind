@@ -376,7 +376,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
-        return [
+        $result = [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
@@ -396,8 +396,27 @@ class Demo extends AbstractBase
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
-            'services'     => $status == 'Available' ? $this->getFakeServices() : []
+            'services'     => $status == 'Available' ? $this->getFakeServices() : [],
+            'type'         => 'physical'
         ];
+
+        switch (rand(1, 5)) {
+        case 1:
+            $result['location'] = 'Digital copy available';
+            $result['locationhref'] = 'http://digital';
+            $result['type'] = 'digital';
+            $result['availability'] = true;
+            $result['status'] = '';
+            break;
+        case 2:
+            $result['location'] = 'Electronic Journals';
+            $result['locationhref'] = 'http://electronic';
+            $result['type'] = 'electronic';
+            $result['availability'] = true;
+            $result['status'] = 'Available from ' . rand(2010, 2019);
+        }
+
+        return $result;
     }
 
     /**
@@ -702,10 +721,24 @@ class Demo extends AbstractBase
             );
         }
 
+        // Digital and electronic
+        $statuses = $this->getStatus($id);
+        $digital = [];
+        $electronic = [];
+        foreach ($statuses as $item) {
+            if ('digital' === $item['type']) {
+                $digital[] = $item;
+            } elseif ('electronic' === $item['type']) {
+                $electronic[] = $item;
+            }
+        }
+
         // Send back final value:
         return [
             'total' => count($status),
             'holdings' => $slice ?: $status,
+            'digital_holdings' => $digital,
+            'electronic_holdings' => $electronic
         ];
     }
 

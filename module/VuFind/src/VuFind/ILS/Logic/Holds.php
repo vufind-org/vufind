@@ -234,7 +234,9 @@ class Holds
             'total' => $result['total'],
             'page' => $result['page'],
             'itemLimit' => $result['itemLimit'],
-            'holdings' => $this->formatHoldings($holdings)
+            'holdings' => $this->formatHoldings($holdings),
+            'digital_holdings' => $result['digital_holdings'] ?? [],
+            'electronic_holdings' => $result['electronic_holdings'] ?? [],
         ];
     }
 
