@@ -1,8 +1,8 @@
-<?php foreach ($data as $contain): ?>
-  <?php if (!empty($contain['id'])): ?>
-    <a href="<?=$this->recordLink()->getUrl($contain['id'])?>"><?=$contain['description']?></a>
+<?php foreach ($data as $containedTitle): ?>
+  <?php if (!empty($containedTitle['id'])): ?>
+    <a href="<?=$this->recordLink()->getUrl($containedTitle['id'])?>"><?=$containedTitle['description']?></a>
   <?php else: ?>
-    <?=$contain['description']?>
+    <?=$containedTitle['description']?>
   <?php endif; ?>
   <br>
 <?php endforeach; ?>
