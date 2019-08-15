@@ -54,12 +54,12 @@
 #     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select|radio)
+#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox)
 #     help (string)      Element help text (translation key).
 #                        To include HTML formatting, use a translation key ending
 #                        in '_html' here, and define markup in the language files.
 #     
-#     And for select and radio elements:
+#     And for checkbox, select and radio elements:
 # 
 #     options (array) List of select values (translation keys)
 #
