@@ -25,15 +25,42 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
     }
 
     protected function getLifeDates() {
+        $lifeDates = ['birth' => null, 'death' => null];
+
         $fields = $this->getMarcRecord()->getFields('548');
         foreach ($fields as $field) {
             $typeSubfield = $field->getSubfield('4');
             if ($typeSubfield !== false && $typeSubfield->getData() == 'datx') {
                 if (preg_match('"^(\d{1,2}\.\d{1,2}\.\d{1,4})-(\d{1,2}\.\d{1,2}\.\d{1,4})$"', $field->getSubfield('a')->getData(), $hits)) {
-                    return ['birth' => $hits[1], 'death' => $hits[2]];
+                    $lifeDates['birth'] = $hits[1];
+                    $lifeDates['death'] = $hits[2];
+                    break;
                 }
             }
         }
+
+        return $lifeDates;
+    }
+
+    protected function getLifePlaces() {
+        $lifePlaces = ['birth' => null, 'death' => null];
+
+        $fields = $this->getMarcRecord()->getFields('551');
+        foreach ($fields as $field) {
+            $typeSubfield = $field->getSubfield('4');
+            if ($typeSubfield !== false) {
+                switch($typeSubfield->getData()) {
+                case 'ortg':
+                    $lifePlaces['birth'] = $field->getSubfield('a')->getData() ?? null;
+                    break;
+                case 'orts':
+                    $lifePlaces['death'] = $field->getSubfield('a')->getData() ?? null;
+                    break;
+                }
+
+            }
+        }
+        return $lifePlaces;
     }
 
     /**
@@ -51,6 +78,14 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
     public function getBirthDate() {
         $lifeDates = $this->getLifeDates();
         return $lifeDates['birth'] ?? null;
+    }
+
+    /**
+     * Get birth place
+     * @return string
+     */
+    public function getBirthPlace() {
+        return $this->getLifePlaces()['death'] ?? null;
     }
 
     /**
@@ -81,6 +116,14 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
     public function getDeathDate() {
         $lifeDates = $this->getLifeDates();
         return $lifeDates['death'] ?? null;
+    }
+
+    /**
+     * Get death place
+     * @return string
+     */
+    public function getDeathPlace() {
+        return $this->getLifePlaces()['death'] ?? null;
     }
 
     /**

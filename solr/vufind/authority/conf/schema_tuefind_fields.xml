@@ -3,5 +3,7 @@
     <!-- COMMON fields -->
     <field name="gnd" type="string" indexed="true" stored="true"/>
     <field name="literary_remains" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="orcid" type="string" indexed="true" stored="true"/>
     <field name="type" type="string" indexed="true" stored="true"/>
+    <field name="viaf" type="string" indexed="true" stored="true"/>
 </fields>
