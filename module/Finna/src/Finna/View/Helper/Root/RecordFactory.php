@@ -63,7 +63,8 @@ class RecordFactory implements FactoryInterface
         }
         $helper = new Record(
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Record\Loader::class)
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get('ViewHelperManager')->get('recordImage')
         );
         if ('cli' !== php_sapi_name()) {
             $helper->setCoverRouter(

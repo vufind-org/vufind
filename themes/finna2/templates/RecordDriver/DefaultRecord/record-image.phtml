@@ -13,26 +13,28 @@
     <?php foreach ($images as $image): ?>
       <?php ++$ind; ?>
       <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
-        <div class="image-link">
-          <?php
-            $recordImage = $this->recordImage($this->record($this->driver));
-            $originalImage = $recordImage->getMasterImage($ind);
-            $formats = $this->driver->tryMethod('getFormats');
-            $translatedFormat = $this->transEsc(end($formats));
-            $rights = $image['rights'];
-          ?>
-          <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
-          <div class="open-link">
-            <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>">
-              <i aria-hidden="true" class="fa fa-download"></i>
-              <span><?=$this->transEsc('Download the image') ?></span>
-            </a>
-            <span class="image-dimensions"></span>
+        <?php
+          $recordImage = $this->recordImage($this->record($this->driver));
+          $originalImage = $recordImage->getMasterImage($ind);
+          $formats = $this->driver->tryMethod('getFormats');
+          $translatedFormat = $this->transEsc(end($formats));
+          $rights = $image['rights'];
+        ?>
+        <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
+          <div class="image-link">
+            <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
+              <div class="open-link">
+                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>">
+                  <i aria-hidden="true" class="fa fa-download"></i>
+                  <span><?=$this->transEsc('Download the image') ?></span>
+                </a>
+                <span class="image-dimensions"></span>
+              </div>
+            <?php endif ?>
           </div>
-          <?php endif ?>
-        </div>
-        <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-          <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
+          <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+            <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
+          <?php endif; ?>
         <?php endif; ?>
         <div class="access-rights">
           <?php if (!empty($rights)): ?>

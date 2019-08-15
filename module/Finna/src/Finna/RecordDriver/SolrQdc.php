@@ -100,15 +100,18 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
      *   - description Human readable description (array)
      *   - link        Link to copyright info
      *
-     * @param string $language Language for copyright information
+     * @param string $language   Language for copyright information
+     * @param bool   $includePdf Whether to include first PDF file when no image
+     * links are found
      *
      * @return mixed
      */
-    public function getAllImages($language = 'fi')
+    public function getAllImages($language = 'fi', $includePdf = true)
     {
         $result = [];
         $urls = [];
         $rights = [];
+        $pdf = false;
         foreach ($this->getSimpleXML()->file as $node) {
             $attributes = $node->attributes();
             $size = $attributes->bundle == 'THUMBNAIL' ? 'small' : 'large';
@@ -127,6 +130,31 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             $urls[$size] = $url;
         }
 
+        // Attempt to find a PDF file to be converted to a coverimage
+        if ($includePdf && empty($urls)) {
+            foreach ($this->getSimpleXML()->file as $node) {
+                $attributes = $node->attributes();
+                if ((string)$attributes->bundle !== 'ORIGINAL') {
+                    continue;
+                }
+                $mimes = ['application/pdf'];
+                if (isset($attributes->type)) {
+                    if (!in_array($attributes->type, $mimes)) {
+                        continue;
+                    }
+                }
+                $url = isset($attributes->href)
+                    ? (string)$attributes->href : (string)$node;
+
+                if (!preg_match('/\.(pdf)$/i', $url)) {
+                    continue;
+                }
+                $urls['small'] = $urls['large'] = $url;
+                $pdf = true;
+                break;
+            }
+        }
+
         $xml = $this->getSimpleXML();
         $rights['copyright'] = !empty($xml->rights) ? (string)$xml->rights : '';
         $rights['link'] = $this->getRightsLink(
@@ -142,7 +170,8 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             $result[] = [
                 'urls' => $urls,
                 'description' => '',
-                'rights' => $rights
+                'rights' => $rights,
+                'pdf' => $pdf
             ];
         }
         return $result;

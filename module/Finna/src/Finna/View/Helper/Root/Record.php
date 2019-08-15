@@ -58,16 +58,27 @@ class Record extends \VuFind\View\Helper\Root\Record
     protected $renderedUrls = [];
 
     /**
+     * Record image helper
+     *
+     * @var \Finna\View\Helper\Root\RecordImage
+     */
+    protected $recordImageHelper;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config   $config VuFind configuration
-     * @param \VuFind\Record\Loader $loader Record loader
+     * @param \Zend\Config\Config                 $config      VuFind configuration
+     * @param \VuFind\Record\Loader               $loader      Record loader
+     * @param \Finna\View\Helper\Root\RecordImage $recordImage Record image helper
      */
-    public function __construct(\Zend\Config\Config $config,
-        \VuFind\Record\Loader $loader
+    public function __construct(
+        \Zend\Config\Config $config,
+        \VuFind\Record\Loader $loader,
+        \Finna\View\Helper\Root\RecordImage $recordImage
     ) {
         parent::__construct($config);
         $this->loader = $loader;
+        $this->recordImageHelper = $recordImage;
     }
 
     /**
@@ -280,19 +291,39 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Allow record image to be downloaded?
+     * If record image is converted from PDF, downloading is allowed only
+     * for configured record formats.
+     *
+     * @return boolean
+     */
+    public function allowRecordImageDownload()
+    {
+        $master = $this->recordImageHelper->getMasterImageWithInfo(0);
+        if (!$master['pdf']) {
+            return true;
+        }
+        $formats = $this->config->Content->pdfCoverImageDownload ?? '';
+        $formats = explode(',', $formats);
+        return array_intersect($formats, $this->driver->getFormats());
+    }
+
+    /**
      * Return an array of all record images in all sizes
      *
      * @param string $language   Language for description and rights
      * @param bool   $thumbnails Whether to include thumbnail links if no image links
      * are found
+     * @param bool   $includePdf Whether to include first PDF file when no image
+     * links are found
      *
      * @return array
      */
-    public function getAllImages($language, $thumbnails = true)
+    public function getAllImages($language, $thumbnails = true, $includePdf = true)
     {
         $sizes = ['small', 'medium', 'large', 'master'];
         $recordId = $this->driver->getUniqueID();
-        $images = $this->driver->tryMethod('getAllImages', [$language]);
+        $images = $this->driver->tryMethod('getAllImages', [$language, $includePdf]);
         if (null === $images) {
             $images = [];
         }
@@ -336,13 +367,15 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Return number of record images.
      *
-     * @param string $size Size of requested image
+     * @param string $size       Size of requested image
+     * @param bool   $includePdf Whether to include first PDF file when no image
+     * links are found
      *
      * @return int
      */
-    public function getNumOfRecordImages($size)
+    public function getNumOfRecordImages($size, $includePdf = true)
     {
-        $images = $this->driver->trymethod('getAllImages', ['']);
+        $images = $this->driver->trymethod('getAllImages', ['', $includePdf]);
         return count($images);
     }
 

@@ -11,7 +11,8 @@
   ?>
   <?php foreach ($images as $img): ?>
     <?php
-      $originalImage = $recordImage->getMasterImage($ind);
+      $originalImageData = $recordImage->getMasterImageWithInfo($ind);
+      $originalImage = $originalImageData['url'] ?? false;
       $desc = isset($img['description']) && !empty($img['description']) ? $img['description'] : $this->transEsc('Cover Image');
       $obj = [
         'small' => $img['urls']['small'],
@@ -30,7 +31,7 @@
       <div class="recordcover-container">
         <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <div class="paginator-info"><span class="image-index"></span></div>
         </a>
         <a class="hidden-trigger" href="#" style="display: none;">

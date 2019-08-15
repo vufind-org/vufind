@@ -76,7 +76,7 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
         $recordHelper = $this->helperManager->get('record');
         $translate = $this->helperManager->get('translate');
         $images = $imageHelper($recordHelper($record))->getAllImagesAsCoverLinks(
-            $lang, [], false
+            $lang, [], false, false
         );
         foreach ($images as &$image) {
             if (empty($image['rights'])) {
@@ -133,14 +133,17 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
         $imageHelper = $this->helperManager->get('recordImage');
         $recordHelper = $this->helperManager->get('record');
         $serverUrlHelper = $this->helperManager->get('serverUrl');
-        for ($i = 0; $i < $recordHelper($record)->getNumOfRecordImages('large');
-            $i++
+        for ($i = 0;
+             $i < $recordHelper($record)->getNumOfRecordImages('large', false);
+             $i++
         ) {
             $images[] = $serverUrlHelper()
-                . $imageHelper($recordHelper($record))->getLargeImage($i);
+                . $imageHelper($recordHelper($record))
+                    ->getLargeImage($i, [], false, false);
         }
         if (empty($images) && $record->getCleanISBN()) {
-            $url = $imageHelper($recordHelper($record))->getLargeImage(0, [], true);
+            $url = $imageHelper($recordHelper($record))
+                ->getLargeImage(0, [], true, false);
             if ($url) {
                 $images[] = $url;
             }

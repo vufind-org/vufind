@@ -351,24 +351,16 @@ class Loader extends \VuFind\Cover\Loader
      */
     protected function processImageURL($url, $cache = true)
     {
+        // We can't proceed if we don't have image conversion functions:
+        if (!is_callable('imagecreatefromstring')) {
+            return false;
+        }
+
         $url = str_replace(
             [' ', 'ä','ö','å','Ä','Ö','Å'],
             ['%20','%C3%A4','%C3%B6','%C3%A5','%C3%84','%C3%96','%C3%85'],
             trim($url)
         );
-
-        // Attempt to pull down the image:
-        $result = $this->httpService->createClient($url)->send();
-        if (!$result->isSuccess()) {
-            $this->debug("Failed to retrieve image from $url");
-            return false;
-        }
-
-        $image = $result->getBody();
-
-        if ('' == $image) {
-            return false;
-        }
 
         // Figure out file paths -- $tempFile will be used to store the
         // image for analysis.  $finalFile will be used for long-term storage if
@@ -376,15 +368,51 @@ class Loader extends \VuFind\Cover\Loader
         $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
         $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
 
-        // Write image data to disk:
-        if (!@file_put_contents($tempFile, $image)) {
-            throw new \Exception("Unable to write to image directory.");
-        }
-
-        // We can't proceed if we don't have image conversion functions:
-        if (!is_callable('imagecreatefromstring')) {
+        $pdfFile = preg_match('/\.pdf$/i', $url);
+        $convertPdf = $this->config->Content->convertPdfToCoverImage ?? false;
+        if ($pdfFile && !$convertPdf) {
             return false;
         }
+
+        // Attempt to pull down the image:
+        $client = $this->httpService->createClient($url);
+        $client->setStream($tempFile);
+        $result = $client->send();
+
+        if (!$result->isSuccess()) {
+            $this->debug("Failed to retrieve image from $url");
+            return false;
+        }
+        if (!$result->getContentLength()) {
+            return false;
+        }
+
+        if (preg_match('/\.pdf$/i', $url)) {
+            // Convert pdf to jpg
+            try {
+                $im = new \Imagick();
+                $im->setResolution(150, 150);
+                // Read first page from pdf
+                if (true !== $im->readimage("{$tempFile}[0]")) {
+                    $this->debug(
+                        'Error reading pdf for jpg conversion: ' . $tempFile
+                    );
+                    return false;
+                }
+                $im = $im->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+                $im->setFormat('jpg');
+                $im->writeImage($tempFile);
+                $im->clear();
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during conversion from pdf to jpg'
+                    . ': ' . $e->getMessage()
+                );
+                return false;
+            }
+        }
+
+        $image = file_get_contents($tempFile);
 
         // Try to create a GD image and rewrite as JPEG, fail if we can't:
         if (!($imageGD = @imagecreatefromstring($image))) {
