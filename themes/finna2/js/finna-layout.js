@@ -741,6 +741,7 @@ finna.layout = (function finnaLayout() {
   function initFiltersToggle () {
     if ($(window).width() <= 991) {
       $('.finna-filters .filters').addClass('hidden');
+      $('.finna-filters .filters-toggle .toggle-text').html(VuFind.translate('show_filters'));
     }
 
     $(window).resize(function checkFiltersEnabled(){
@@ -749,15 +750,20 @@ finna.layout = (function finnaLayout() {
       }
     });
 
-    $('.filters-toggle').click(function filterToggleClicked(e) {
-      var finnaFilters = $(e.target).closest('.finna-filters');
-      var filters = finnaFilters.find('.filters');
+    $('.filters-toggle').click(function filterToggleClicked() {
+      var button = $(this);
+      var filters = button.closest('.finna-filters').find('.filters');
+      
+      function setState(setHidden, arrowClass, text) {
+        filters.toggleClass('hidden', setHidden);
+        button.find('.fa').attr('class', arrowClass);
+        button.find('.toggle-text').html(VuFind.translate(text));
+      }
+
       if (filters.hasClass('hidden')) {
-        filters.removeClass('hidden');
-        finnaFilters.find('.fa-arrow-down').removeClass('fa-arrow-down').addClass('fa-arrow-up');
+        setState(false, 'fa fa-arrow-up', 'hide_filters');
       } else {
-        filters.addClass('hidden');
-        finnaFilters.find('.fa-arrow-up').removeClass('fa-arrow-up').addClass('fa-arrow-down');
+        setState(true, 'fa fa-arrow-down', 'show_filters');
       }
     });
   }

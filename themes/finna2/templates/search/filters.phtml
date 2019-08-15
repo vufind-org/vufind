@@ -120,7 +120,6 @@
             </div>
           <?php endif; ?>
         </div>
-        <div class="clearfix"></div>
       <?php endif; ?>
     </div>
   <?php endforeach; ?>
@@ -136,7 +135,7 @@
     ?>
     <div class="filter-options">
       <button type="button" class="btn-unstyled filters-toggle visible-xs visible-sm">
-        <?=$this->transEsc("show_filters")?>
+        <span class="toggle-text"><?=$this->transEsc("show_filters")?></span>
         <span class="active-filter-count">(<?=$filterCount?>)</span><i class="fa fa-arrow-down"></i>
       </button>
       <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
@@ -147,6 +146,5 @@
   <div class="filters">
     <?=$filters ?>
   </div>
-  <div class="clearfix"></div>
 </div>
 <!-- END of: finna - search/filters.phtml -->
