@@ -412,7 +412,7 @@ $config = [
                     'Finna\Db\Row\Transaction' => 'VuFind\Db\Row\RowGatewayFactory',
                     'Finna\Db\Row\User' => 'VuFind\Db\Row\UserFactory',
                     'Finna\Db\Row\UserCard' => 'Finna\Db\Row\UserCardFactory',
-                    'Finna\Db\Row\UserList' => 'VuFind\Db\Row\RowGatewayFactory',
+                    'Finna\Db\Row\UserList' => 'VuFind\Db\Row\UserListFactory'
                 ],
                 'aliases' => [
                     'VuFind\Db\Row\PrivateUser' => 'Finna\Db\Row\PrivateUser',
