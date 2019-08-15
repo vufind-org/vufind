@@ -136,7 +136,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
             return false;
         }
 
-        $language   = $this->translator->getLocale();
+        $language = $this->translator->getLocale();
 
         $url = $result->url;
         if (isset($url[$language])) {
@@ -178,6 +178,28 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
         }
 
         return $img ? $img->getAttribute('src') : null;
+    }
+
+    /**
+     * Check for a local file and create a timestamped link if found
+     *
+     * @param string $url url
+     *
+     * @return mixed null|string
+     */
+    protected function checkLocalFile($url)
+    {
+        $urlParts = parse_url($url);
+        $imgLink = null;
+        if (empty($urlParts['host'])) {
+            $file = preg_replace(
+                '/^\/?themes\/[^\/]+\/images\//',
+                '',
+                $url
+            );
+            $imgLink = $this->imageLinkHelper->__invoke($file);
+        }
+        return $imgLink;
     }
 
     /**
@@ -251,6 +273,8 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
 
         $itemsCnt = isset($config->items) ? $config->items : null;
         $elements = isset($config->content) ? $config->content : [];
+        $allowXcal = $elements['xcal'] ?? true;
+        $timeRegex = '/^(.*?)([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/';
 
         $channel = null;
 
@@ -361,6 +385,21 @@ EOT;
             'html' => '//item/content:encoded'
         ];
 
+        $xcalContent = [
+            'dtstart',
+            'dtend',
+            'location',
+            'featured',
+            'content',
+            'organizer',
+            'location-address',
+            'location-city',
+            'organizer-url',
+            'url',
+            'cost',
+            'categories'
+        ];
+
         $items = [];
         $cnt = 0;
         $xpath = null;
@@ -388,22 +427,9 @@ EOT;
                             }
                         }
                         if (!empty($value['url'])) {
-                            // Check for a local file and create timestamped link if
-                            // found
-                            $urlParts = parse_url($value['url']);
-                            if (empty($urlParts['host'])) {
-                                $file = preg_replace(
-                                    '/^\/?themes\/[^\/]+\/images\//',
-                                    '',
-                                    $value['url']
-                                );
-
-                                $imgLink = call_user_func(
-                                    $this->imageLinkHelper, $file
-                                );
-                                if (null !== $imgLink) {
-                                    $value['url'] = $imgLink;
-                                }
+                            $imgLink = $this->checkLocalFile($value['url']);
+                            if (null !== $imgLink) {
+                                $value['url'] = $imgLink;
                             }
                         }
                     } elseif ($setting == 'date') {
@@ -445,6 +471,44 @@ EOT;
                         $data[$setting] = $value;
                     }
                 }
+            }
+            if ($xcalContent && $allowXcal) {
+                $xpathItem = $xpath->query('//item')->item($cnt);
+                foreach ($xcalContent as $setting) {
+                    $xcal = $xpath
+                        ->query('.//*[local-name()="' . $setting . '"]', $xpathItem)
+                        ->item(0)->nodeValue;
+                    if (!empty($xcal)) {
+                        if ($setting === 'featured') {
+                            if (!empty($imgLink = $this->extractImage($xcal))) {
+                                if ($localFile = $this->checkLocalFile($imgLink)) {
+                                    $imgLink = $localFile;
+                                }
+                                $data['xcal']['featured'] = $imgLink;
+                                if ($elements['image'] != 0
+                                    || !isset($elements['image'])
+                                ) {
+                                    $data['image']['url'] = $imgLink;
+                                }
+                            }
+                        } else {
+                            $data['xcal'][$setting] = htmlspecialchars($xcal);
+                        }
+                    }
+                }
+            }
+            //Format start/end date and time for xcal events
+            if (isset($data['xcal']['dtstart']) && isset($data['xcal']['dtend'])) {
+                $dateStart = new \DateTime($data['xcal']['dtstart']);
+                $dateEnd = new \DateTime($data['xcal']['dtend']);
+                if (preg_match($timeRegex, $data['xcal']['dtstart']) === 1) {
+                    $data['xcal']['startTime'] = $dateStart->format('H:i');
+                }
+                if (preg_match($timeRegex, $data['xcal']['dtend']) === 1) {
+                    $data['xcal']['endTime'] = $dateEnd->format('H:i');
+                }
+                $data['xcal']['startDate'] = $dateStart->format($fullDateFormat);
+                $data['xcal']['endDate'] = $dateEnd->format($fullDateFormat);
             }
 
             // Make sure that we have something to display

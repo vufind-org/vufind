@@ -45,7 +45,18 @@
               <?php if (isset($item['title'])): ?>
                 <p class="carousel-hover-title"><?= $this->truncate($item['title'], 70); ?></p>
               <?php endif; ?>
-              <p><?= $item['text']; ?></p>
+              <div class="text">
+                <?php if (isset($item['xcal']['startDate'])): ?>
+                  <p class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date'); ?>"></i> <?= $item['xcal']['startDate']; ?><?php if (isset($item['xcal']['endDate']) && $item['xcal']['startDate'] !== $item['xcal']['endDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate'] ?><?php endif; ?></p>
+                <?php endif; ?>
+                <?php if (isset($item['xcal']['startTime']) && $item['xcal']['startDate'] === $item['xcal']['endDate']): ?>
+                  <p class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time'); ?>"></i> <?= $item['xcal']['startTime']; ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?></p>
+                <?php endif; ?>
+                <?php if (isset($item['xcal']['location'])): ?>
+                  <p class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location'); ?>"></i> <?= $item['xcal']['location']; ?></p>
+                <?php endif; ?>
+                <p><?= $item['text']; ?></p>
+              </div>
               <?php if ($clickableLink): ?>
                 <span class="carousel-description"><?= $linkText ?></span>
               <?php endif; ?>

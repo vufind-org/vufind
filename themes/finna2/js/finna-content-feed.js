@@ -37,6 +37,27 @@ finna.contentFeed = (function finnaContentFeed() {
               container.find('.date span').text(item.contentDate);
               container.find('.date').css('display', 'inline-block');
             }
+            if (typeof item.xcal != 'undefined') {
+              $.each(item.xcal, function addXcal(key, value) {
+                var field = container.find('.xcal-' + key);
+                if (key === 'organizer-url') {
+                  field.find('xcal-value').attr('href', value);
+                } else if (key === 'featured') {
+                  container.find('.xcal-featured').attr('src', value);
+                } else if (key === 'endDate' && value === item.xcal.startDate) {
+                  return true;
+                } else if ((key === 'startTime' || key === 'endTime') && item.xcal.startDate !== item.xcal.endDate) {
+                  return true;
+                } else if (key === 'startDate' || key === 'startTime' || key === 'endDate' || key === 'endTime') {
+                  field.find('.xcal-value .xcal-' + key).append(value);
+                  field.find('.xcal-value .xcal-' + key).removeClass('hidden');
+                  field.removeClass('hidden');
+                  return true;
+                }
+                field.find('.xcal-value').text(value);
+                field.removeClass('hidden');
+              });
+            }
           } else {
             var err = $('<div/>').addClass('alert alert-danger');
             err.append($('<p/>').text(VuFind.translate('rss_article_not_found')));

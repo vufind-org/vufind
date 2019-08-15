@@ -114,7 +114,18 @@
             
             word-break: break-word;
             word-wrap: break-word;
-        }   
+        }
+        p.xcal {
+            padding: 0px;
+            i {
+                padding: 0px;
+                padding-right: 5px;
+                padding-top: 3px;
+            }
+        }
+        .text {
+            padding-top: 5px;
+        }
         span.carousel-description {
             position: absolute;
             text-decoration: underline;
@@ -303,6 +314,16 @@
         }
     }
 
+    .xcal {
+        padding-bottom: 0px;
+        display: block;
+        margin-bottom: 0px;
+        color: @gray;
+        i {
+            padding-right: 5px;
+        }
+    }
+
     &.with-image {
         li {
           clear: both;  
@@ -327,6 +348,12 @@
         }  
         .text {
             padding-bottom: 15px;
+        }
+        p {
+            &.xcal {
+                float: right;
+                width: 55%
+            }
         }
         .more-link {
             display: block;
@@ -401,7 +428,6 @@
     }
 }
 
-
 // rss-feed on organisation page
 .organisation-info-page .feed-container.info-element {
     .list-feed {
@@ -413,4 +439,17 @@
 // Feed tabs
 .feed-tabs {
     margin-top: 20px;
+}
+
+// xCal fields
+.xcal-fields {
+    margin-bottom: 20px;
+   .xcal-value {
+       float: right;
+       width: 70%;
+   }
+   div {
+       display: inline-block;
+       width: 100%;
+   }
 }
