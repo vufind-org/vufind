@@ -4,54 +4,44 @@
 <h1><?=$this->driver->getTitle()?></h1>
 <div class="row">
     <div class="col-sm-8">
-        <?php
-        // Professions
-        $professions = $this->tuefind()->getAuthorityProfessions($this->driver);
-        if ($professions != '') {
-            ?><p><?=$professions?></p><?php
-        }
+        <?php $professions = $this->tuefind()->getAuthorityProfessions($this->driver);?>
+        <?php if ($professions != ''): ?>
+            <p><?=$professions?></p>
+        <?php endif; ?>
 
-        // Internal search
-        ?>
         <p>
             <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
         </p>
 
+        <?php $locations = $this->driver->getLocations(); ?>
+        <?php if (count($locations) > 0): ?>
+            <p>
+                Locations:<br/>
+                <ul>
+                    <?php foreach ($locations as $location): ?>
+                        <li><?=$location['type'] . ': ' . $location['name']?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </p>
+        <?php endif; ?>
+
         <?php
-        // Locations
-        $locations = $this->driver->getLocations();
-        if (count($locations) > 0) {
-            ?>
-                <p>
-                    Locations:<br/>
-                    <ul>
-                    <?php
-                    foreach ($locations as $location) {
-                        ?><li><?=$location['type'] . ': ' . $location['name']?></li><?php
-                    }
-                    ?>
-                    </ul>
-                </p>
-            <?php
-        }
+            // Other databases
+            $links = [];
+            $gnd_number = $this->driver->getGNDNumber();
+            if ($gnd_number != null) {
+                $links['Entity Facts'] = 'http://www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
+                $links['OGND'] = 'http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
+            }
+            $orcid = $this->driver->getORCID();
+            if ($orcid != null)
+                $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
+            $viaf = $this->driver->getVIAF();
+            if ($viaf != null)
+                $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
 
-        // Other databases
-        $links = [];
-        $gnd_number = $this->driver->getGNDNumber();
-        if ($gnd_number != null) {
-            $links['Entity Facts'] = 'http://www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
-            $links['OGND'] = 'http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
-        }
-        $orcid = $this->driver->getORCID();
-        if ($orcid != null)
-            $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
-        $viaf = $this->driver->getVIAF();
-        if ($viaf != null)
-            $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
-
-        ksort($links);
+            ksort($links);
         ?>
-
         <?php if (count($links) > 0): ?>
             <p>
                 Other databases:
@@ -64,24 +54,17 @@
             </p>
         <?php endif; ?>
 
-        <?php
-        // BEACON references
-        $beacon_references = $this->driver->getBeaconReferences();
-        if (count($beacon_references) > 0) {
-            ?>
+        <?php $beacon_references = $this->driver->getBeaconReferences(); ?>
+        <?php if (count($beacon_references) > 0): ?>
             <p>
                 BEACON References:<br/>
                 <ul>
-                <?php
-                foreach ($beacon_references as $beacon_reference) {
-                    ?><li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li><?
-                }
-                ?>
+                    <?php foreach ($beacon_references as $beacon_reference): ?>
+                        <li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </p>
-            <?php
-        }
-        ?>
+        <?php endif; ?>
     </div>
     <div class="col-sm-4">
         <?php
