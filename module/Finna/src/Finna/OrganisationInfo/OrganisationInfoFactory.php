@@ -68,7 +68,8 @@ class OrganisationInfoFactory implements FactoryInterface
             $container->get(\VuFind\Config\PluginManager::class)
                 ->get('OrganisationInfo'),
             $container->get(\VuFind\Cache\Manager::class),
-            $container->get('ViewRenderer')
+            $container->get('ViewRenderer'),
+            $container->get(\VuFind\Date\Converter::class)
         );
     }
 }

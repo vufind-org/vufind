@@ -186,6 +186,10 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
                             'API request failed, message: ' . $response['message']
                         );
                     }
+                    if (empty($response['records'][0])) {
+                        // No records found, unable do determine sector
+                        continue;
+                    }
                     $sector = $response['records'][0]['sectors'][0]['value'];
                     $sectors[$parent['id']] = $sector;
                     $cache->setItem($cacheKey, $sectors);
@@ -203,11 +207,12 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
                     $parent['id'], $reqParams, $buildings, $action
                 );
             } catch (\Exception $e) {
-                $response = $this->handleError(
+                $this->handleError(
                     'getOrganisationInfo: '
                     . "error reading organisation info (parent $parent)",
                     $e->getMessage()
                 );
+                continue;
             }
             if ($response) {
                 if ('lookup' === $action) {
