@@ -1,0 +1,9 @@
+<!-- START of: finna - Helpers/OnlinePayment/TurkuPayment.phtml -->
+<div class="online-payment-area">
+  <form id="paytrail-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox>
+    <input name="transactionId" type="hidden" value="<?=$this->transactionId?>">
+    <input type="submit" name="pay" class="btn btn-primary btn-lg" value="<?=$this->transEsc('online_payment_go_to_pay', ['%%amount%%' => $this->safeMoneyFormat($this->amount / 100.00)])?>" />
+  </form>
+</div>
+<img src="<?=$this->imageLink('online-payment-vaski.png')?>" id="vaski-logo" alt="vaskilogo" />
+<!-- END of: finna - Helpers/OnlinePayment/TurkuPayment.phtml -->

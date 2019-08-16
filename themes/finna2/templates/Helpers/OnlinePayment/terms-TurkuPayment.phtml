@@ -1,0 +1,24 @@
+<!-- START of: finna - Helpers/OnlinePayment/terms-TurkuPayment.phtml -->
+<h2><?=$this->transEsc('online_payment_go_to_pay', ['%%amount%%' => ''])?></h2>
+<form id="paytrail-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox-ignore>
+  <img src="<?=$this->imageLink('online-payment-vaski.png')?>" id="vaski-logo" alt="vaskilogo" />
+  <div class="terms-of-service terms-of-service-text">
+    <div class="terms-of-service-info-box">
+      <?= $this->translate('online_payment_terms_TurkuPayment_html', ['%%paymentHandler%%' => $paymentHandler]) ?>
+    </div>
+  </div>
+  <input name="transactionId" type="hidden" value="<?=$this->transactionId?>">
+  <?php // Need a hidden input for lightbox compatibility ?>
+  <input name="pay-confirm" type="hidden" value="1">
+  <input type="submit" name="reset" class="btn btn-primary" data-dismiss="modal" value="<?=$this->transEsc('online_payment_cancel'); ?>"/>
+  <input type="submit" name="pay-confirm" class="btn btn-primary" value="<?=$this->transEsc('online_payment_accept_terms')?>" />
+</form>
+
+<script>
+$(document).ready(function() {
+  $('.online-payment-form').on('submit', function() {
+    $(this).find('input[type=submit]').prop('disabled', 'disabled');
+  });
+});
+</script>
+<!-- END of: finna - Helpers/OnlinePayment/terms-TurkuPayment.phtml -->
