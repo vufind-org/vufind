@@ -32,23 +32,39 @@
                     ?>
                     </ul>
                 </p>
-            <?
-        }
-
-        // Other databases
-        $gnd_number = $this->driver->getGNDNumber();
-        if ($gnd_number != null) {
-            ?>
-                <p>
-                    Other databases:
-                    <ul>
-                        <li><a target="_blank" href="http://www.deutsche-digitale-bibliothek.de/entity/<?=urlencode($gnd_number)?>">Entity Facts</a></li>
-                        <li><a target="_blank" href="http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=<?=urlencode($gnd_number)?>">OGND</a></li>
-                    </ul>
-                </p>
             <?php
         }
 
+        // Other databases
+        $links = [];
+        $gnd_number = $this->driver->getGNDNumber();
+        if ($gnd_number != null) {
+            $links['Entity Facts'] = 'http://www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
+            $links['OGND'] = 'http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
+        }
+        $orcid = $this->driver->getORCID();
+        if ($orcid != null)
+            $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
+        $viaf = $this->driver->getVIAF();
+        if ($viaf != null)
+            $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
+
+        ksort($links);
+        ?>
+
+        <?php if (count($links) > 0): ?>
+            <p>
+                Other databases:
+                <ul>
+                    <?php foreach ($links as $label => $url): ?>
+                        <li><a target="_blank" href="<?=$url?>"><?=$label?></a></li>
+                    <?php endforeach; ?>
+
+                </ul>
+            </p>
+        <?php endif; ?>
+
+        <?php
         // BEACON references
         $beacon_references = $this->driver->getBeaconReferences();
         if (count($beacon_references) > 0) {

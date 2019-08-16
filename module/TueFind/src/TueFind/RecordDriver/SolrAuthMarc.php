@@ -2,7 +2,7 @@
 
 namespace TueFind\RecordDriver;
 
-class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc {
+class SolrAuthMarc extends SolrAuthDefault {
 
     /**
      * Get List of all beacon references.
