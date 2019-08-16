@@ -341,9 +341,19 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
           var staffTimes;
           if (staffSchedule) {
             staffTimes = timeOpen.find('.staff-times');
-            staffTimes.find('.opens').text(staffSchedule.opens);
-            staffTimes.find('.closes').text(staffSchedule.closes);
+            var shift;
+            staffTimes.find('.shift').remove();
             staffTimes.removeClass('hide');
+            for (var i = 1; i < obj.times.length; i++) {
+              staffSchedule = obj.times[i];
+              shift = staffTimes.find('.shift-template').clone().addClass('shift').removeClass('shift-template hide');
+              shift.find('.opens').text(staffSchedule.opens);
+              shift.find('.closes').text(staffSchedule.closes);
+              if (i > 1) {
+                shift.prepend(', ');
+              }
+              staffTimes.find('.shift-template').before(shift);
+            }
           } else {
             staffTimes = timeOpen.find('.staff-times');
             staffTimes.addClass('hide');
