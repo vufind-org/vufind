@@ -441,6 +441,56 @@
     margin-top: 20px;
 }
 
+// Grid styling
+.feed-grid {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    .grid-item {
+        flex-basis: 30%;
+        max-height: 125px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        @media (max-width: @screen-sm-max) {
+            flex-basis: 50%;
+        }
+        @media (max-width: @screen-xs-max) {
+            flex-basis: 100%;
+        }
+        .grid-info {
+            color: @text-color;
+            .title {
+                font-weight: 700;
+                color: @link-color;
+            }
+            .xcal {
+                i {
+                    padding-right: 5px;
+                }
+            }
+        }
+    }
+    &.with-image {
+        .grid-item {
+            .grid-info {
+                width: 55%;
+            }
+        }
+        .grid-image {
+            width: 40%;
+        }
+        img {
+            max-height: 100%;
+            float: right;
+        }
+        .grid-link {
+            display: flex;
+            justify-content: space-between;
+            height: 100%;
+        }
+    }
+}
+
 // xCal fields
 .xcal-fields {
     margin-bottom: 20px;

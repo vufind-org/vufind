@@ -1,0 +1,50 @@
+<!-- START of: finna - ajax/feed-grid.phtml -->
+<div class="feed-grid<?= $this->images ? ' with-image' : ''; ?>">
+  <?php
+    $itemCount = 0;
+  ?>
+  <?php foreach($items as $item): ?>
+    <?php
+      $linkElement = [
+      'href' => $item['link'],
+      ];
+      if ($this->linkTarget) {
+        $linkElement['target'] = $this->linkTarget;
+      }
+      if ($item['modal']) {
+        $linkElement['data-lightbox'] = '';
+        $linkElement['data-lightbox-title'] = $item['title'];
+      }
+    ?>
+    <div class="grid-item <?= isset($this->visualItems) ? ($itemCount++ >= $this->visualItems ? 'hidden truncate' : '') : ''; ?> ">
+      <a class="grid-link" <?= $this->htmlElement()->getAttributes($linkElement);?>>
+        <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
+          <span class="grid-image">
+            <img src="<?= $item['image']['url']; ?>" alt="" />
+          </span>
+        <?php endif; ?>
+        <span class="grid-info">
+          <?php if (isset($item['dateFull'])): ?>
+            <div><?= $item['dateFull'] ?></div>
+          <?php endif; ?>
+          <?php if (isset($item['xcal']['startDate'])): ?>
+            <div class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date') ?>"></i><?= $item['xcal']['startDate']; ?><?php if (isset($item['xcal']['endDate']) && $item['xcal']['endDate'] !== $item['xcal']['startDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate']; endif; ?></div>
+          <?php endif; ?>
+          <?php if (isset($item['xcal']['startTime'])): ?>
+            <div class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time') ?>"></i><?= $item['xcal']['startTime'] ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?></div>
+          <?php endif; ?>
+          <?php if (isset($item['xcal']['location'])): ?>
+            <div class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location') ?>"></i><?= $item['xcal']['location'] ?></div>
+          <?php endif; ?>
+          <div class="title"><?= $this->truncate($item['title'], 40); ?></div>
+          <?php if (isset($item['text'])): ?>
+            <div class="feed-text"><?= $this->truncate($item['text'], 80); ?></div>
+          <?php endif; ?>
+        </span>
+      </a>
+    </div>
+  <?php endforeach; ?>
+</div>
+<button class="btn btn-primary show-more-feeds hidden"><?= $this->translate('show_more') ?></button>
+<button class="btn btn-primary show-less-feeds hidden"><?= $this->translate('show_less') ?></button>
+<!-- END of: finna - ajax/feed-grid.phtml -->
