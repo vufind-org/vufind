@@ -1038,6 +1038,64 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $locations = [];
+        $section = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
+            ? 'StorageRetrievalRequests' : 'Holds';
+        $excluded = isset($this->config[$section]['excludePickupLocations'])
+            ? explode(':', $this->config[$section]['excludePickupLocations']) : [];
+        $included = null;
+
+        if (!empty($this->config['Catalog']['availabilitySupportsPickupLocations'])
+        ) {
+            $included = [];
+            $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
+                ? $holdDetails['level'] : 'copy';
+            $bibId = $holdDetails['id'];
+            $itemId = $holdDetails['item_id'] ?? false;
+            if ('copy' === $level && false === $itemId) {
+                return [];
+            }
+            // Collect branch codes that are to be included
+            if ('copy' === $level) {
+                $result = $this->makeRequest(
+                    ['v1', 'availability', 'item', 'hold'],
+                    [
+                        'itemnumber' => $itemId,
+                        'borrowernumber' => (int)$patron['id'],
+                        'query_pickup_locations' => 1
+                    ],
+                    'GET',
+                    $patron
+                );
+                if (empty($result)) {
+                    return [];
+                }
+                $pickupLocs
+                    = $result[0]['availability']['notes']['Item::PickupLocations']
+                    ?? [];
+            } else {
+                $result = $this->makeRequest(
+                    ['v1', 'availability', 'biblio', 'hold'],
+                    [
+                        'biblionumber' => $bibId,
+                        'borrowernumber' => (int)$patron['id'],
+                        'query_pickup_locations' => 1
+                    ],
+                    'GET',
+                    $patron
+                );
+                if (empty($result)) {
+                    return [];
+                }
+                $pickupLocs
+                    = $result[0]['availability']['notes']['Biblio::PickupLocations']
+                    ?? [];
+            }
+            foreach ($pickupLocs['to_libraries'] ?? [] as $code) {
+                $included[] = $code;
+            }
+        }
+
         $result = $this->makeRequest(
             ['v1', 'libraries'],
             false,
@@ -1047,19 +1105,16 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if (empty($result)) {
             return [];
         }
-        $section = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
-            ? 'StorageRetrievalRequests' : 'Holds';
-        $locations = [];
-        $excluded = isset($this->config[$section]['excludePickupLocations'])
-            ? explode(':', $this->config[$section]['excludePickupLocations']) : [];
         foreach ($result as $location) {
-            if (!$location['pickup_location']
-                || in_array($location['branchcode'], $excluded)
+            $code = $location['branchcode'];
+            if ((null === $included && !$location['pickup_location'])
+                || in_array($code, $excluded)
+                || (null !== $included && !in_array($code, $included))
             ) {
                 continue;
             }
             $locations[] = [
-                'locationID' => $location['branchcode'],
+                'locationID' => $code,
                 'locationDisplay' => $location['branchname']
             ];
         }

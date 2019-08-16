@@ -10,6 +10,9 @@ id = "outi"
 host = "http://koha-server/api"
 ; Whether the "paged" API endpoint is available for loans. Default is false.
 ;checkoutsSupportPaging = true
+; Whether the availability API endpoint supports returning pickup locations.
+; Default is false.
+;availabilitySupportsPickupLocations = true
 
 [Holds]
 ; defaultRequiredDate - A colon-separated list used to set the default "not required
