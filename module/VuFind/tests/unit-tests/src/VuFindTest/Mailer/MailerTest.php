@@ -172,7 +172,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
 
     /**
      * Test sending an email using a from address override
-     ; and an explicitly set reply-to address.
+     * and an explicitly set reply-to address.
      *
      * @return void
      */
