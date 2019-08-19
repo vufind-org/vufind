@@ -64,7 +64,6 @@ class FeedbackController extends AbstractBase
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
         $view->useRecaptcha
             = $this->recaptcha()->active('feedback') && $form->useCaptcha();
-        $view->inLightbox = $this->inLightBox();
 
         $params = $this->params();
         $form->setData($params->fromPost());

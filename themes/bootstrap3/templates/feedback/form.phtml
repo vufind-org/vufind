@@ -16,12 +16,12 @@
   $helpPre = isset($help['pre']) ? $this->translate($help['pre']) : null;
   $helpPost = isset($help['post']) ? $this->translate($help['post']) : null;
 ?>
-<?php if (!$inLightbox): ?>
+<?php if (!$this->inLightbox): ?>
 <div class="feedback-content">
 <?php endif; ?>
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
-    <?php if (!$inLightbox): ?>
+    <?php if (!$this->inLightbox): ?>
       <h1><?=$title?></h1>
     <?php else: ?>
       <h2><?=$title?></h2>
@@ -102,6 +102,6 @@
   <?php endforeach ?>
   <?= $this->form()->closeTag() ?>
   <?php endif ?>
-<?php if (!$inLightbox): ?>
+<?php if (!$this->inLightbox): ?>
 </div>
 <?php endif; ?>
