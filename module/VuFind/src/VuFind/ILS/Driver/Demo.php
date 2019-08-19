@@ -404,7 +404,7 @@ class Demo extends AbstractBase
         case 1:
             $result['location'] = 'Digital copy available';
             $result['locationhref'] = 'http://digital';
-            $result['type'] = 'digital';
+            $result['type'] = 'electronic';
             $result['availability'] = true;
             $result['status'] = '';
             break;
@@ -721,14 +721,11 @@ class Demo extends AbstractBase
             );
         }
 
-        // Digital and electronic
+        // Electronic holdings:
         $statuses = $this->getStatus($id);
-        $digital = [];
         $electronic = [];
         foreach ($statuses as $item) {
-            if ('digital' === $item['type']) {
-                $digital[] = $item;
-            } elseif ('electronic' === $item['type']) {
+            if ('electronic' === $item['type']) {
                 $electronic[] = $item;
             }
         }
@@ -737,7 +734,6 @@ class Demo extends AbstractBase
         return [
             'total' => count($status),
             'holdings' => $slice ?: $status,
-            'digital_holdings' => $digital,
             'electronic_holdings' => $electronic
         ];
     }

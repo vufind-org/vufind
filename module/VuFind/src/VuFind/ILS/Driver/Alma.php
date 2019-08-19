@@ -369,18 +369,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 unset($types[$key]);
             }
             $statuses = $this->getStatusesForInventoryTypes((array)$id, $types);
-            $digital = [];
             $electronic = [];
             foreach ($statuses as $record) {
                 foreach ($record as $status) {
-                    if ('digital' === $status['type']) {
-                        $digital[] = $status;
-                    } else {
-                        $electronic[] = $status;
-                    }
+                    $electronic[] = $status;
                 }
             }
-            $results['digital_holdings'] = $digital;
             $results['electronic_holdings'] = $electronic;
         }
 
