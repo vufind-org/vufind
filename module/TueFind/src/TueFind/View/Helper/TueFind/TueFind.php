@@ -313,4 +313,48 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $config = $this->container->get('VuFind\Config')->get('config');
         return !empty($config->Authentication->account_deletion);
     }
+
+
+    function printSuperiorSeries($superior_record) {
+        $superior_series = $superior_record->tryMethod('getSeries');
+        if (is_array($superior_series)) {
+            foreach ($superior_series as $current) {
+                echo 'T3 - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
+                $volume =  $current['number'];
+                if (!empty($volume))
+                    echo 'SV - ' . "$volume\r\n";
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    function printPublicationInformation($pubPlaces, $pubDates, $pubNames) {
+        if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames) &&
+            !(empty($pubPlaces) && empty($pubDates) && empty($pubNames))) {
+             $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+             // if we have pub dates but no other details, we still want to export the year:
+             if ($total == 0 && count($pubDates) > 0) {
+                 $total = 1;
+             }
+             for ($i = 0; $i < $total; $i++) {
+                 if (isset($pubPlaces[$i])) {
+                     echo "CY  - " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\r\n";
+                 }
+                 if (isset($pubNames[$i])) {
+                     echo "PB  - " . rtrim($pubNames[$i], ", ") . "\r\n";
+                 }
+                 $date = trim($pubDates[$i], '[]. ');
+                 if (strlen($date) > 4) {
+                     $date = $this->dateTime()->extractYear($date);
+                 }
+                 if ($date) {
+                     echo 'PY  - ' . "$date\r\n";
+                 }
+             }
+             return true;
+         }
+         return false;
+    }
 }
