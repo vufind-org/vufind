@@ -95,15 +95,28 @@ class Alma extends AbstractBase
         }
 
         foreach ($xml->context_services->children() as $service) {
-            $record = [
-                'title' => $this->getKeyWithId($service, 'package_public_name'),
-                'href' => (string)$service->resolution_url,
-                'service_type' => (string)$service->attributes()->service_type,
-            ];
+            $serviceType = $this->mapServiceType(
+                (string)$service->attributes()->service_type
+            );
+            if (!$serviceType) {
+                continue;
+            }
+            if ('getWebService' === $serviceType) {
+                $title = $this->getKeyWithId($service, 'public_name');
+                $href = $this->getKeyWithId($service, 'url');
+                $access = '';
+            } else {
+                $title = $this->getKeyWithId($service, 'package_public_name');
+                $href = (string)$service->resolution_url;
+                $access = $this->getKeyWithId($service, 'Is_free')
+                    ? 'open' : 'limited';
+            }
             if ($coverage = $this->getKeyWithId($service, 'Availability')) {
                 $coverage = trim(str_replace('<br>', ' ', $coverage));
-                $record['coverage'] = $coverage;
             }
+
+            $record = compact('title', 'coverage', 'access', 'href');
+            $record['service_type'] = $serviceType;
             $records[] = $record;
         }
         return $records;
@@ -125,5 +138,23 @@ class Alma extends AbstractBase
             }
         }
         return '';
+    }
+
+    /**
+     * Map Alma service types to VuFind. Returns an empty string for an unmapped
+     * value.
+     *
+     * @param string $serviceType Alma service type
+     *
+     * @return string
+     */
+    protected function mapServiceType($serviceType)
+    {
+        $map = [
+            'getFullTxt' => 'getFullTxt',
+            'getHolding' => 'getHolding',
+            'GeneralElectronicService' => 'getWebService'
+        ];
+        return $map[$serviceType] ?? '';
     }
 }
