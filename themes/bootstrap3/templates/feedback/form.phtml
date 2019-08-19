@@ -15,14 +15,13 @@
   $helpPre = $helpPost = null;
   $helpPre = isset($help['pre']) ? $this->translate($help['pre']) : null;
   $helpPost = isset($help['post']) ? $this->translate($help['post']) : null;
-  $lightbox = $this->layout()->getTemplate() === 'layout/lightbox';
 ?>
-<?php if (!$lightbox): ?>
+<?php if (!$inLightbox): ?>
 <div class="feedback-content">
 <?php endif; ?>
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
-    <?php if (!$lightbox): ?>
+    <?php if (!$inLightbox): ?>
       <h1><?=$title?></h1>
     <?php else: ?>
       <h2><?=$title?></h2>
@@ -103,6 +102,6 @@
   <?php endforeach ?>
   <?= $this->form()->closeTag() ?>
   <?php endif ?>
-<?php if (!$lightbox): ?>
+<?php if (!$inLightbox): ?>
 </div>
 <?php endif; ?>

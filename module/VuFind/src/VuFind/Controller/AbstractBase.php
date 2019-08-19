@@ -679,4 +679,15 @@ class AbstractBase extends AbstractActionController
     {
         return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
     }
+
+    /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
+    }
 }
