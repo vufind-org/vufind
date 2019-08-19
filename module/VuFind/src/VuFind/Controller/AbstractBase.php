@@ -686,7 +686,10 @@ class AbstractBase extends AbstractActionController
      */
     protected function inLightbox()
     {
-        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+        return
+            $this->params()->fromPost(
+                'layout', $this->params()->fromQuery('layout', false)
+            ) === 'lightbox'
             || 'layout/lightbox' == $this->layout()->getTemplate();
     }
 }
