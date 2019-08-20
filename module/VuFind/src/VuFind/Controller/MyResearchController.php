@@ -329,7 +329,9 @@ class MyResearchController extends AbstractBase
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
-            return $this->redirect()->toUrl($si);
+            if (is_string($si)) {
+                return $this->redirect()->toUrl($si);
+            }
         }
         return $this->forwardTo('MyResearch', 'Login');
     }
@@ -1456,7 +1458,7 @@ class MyResearchController extends AbstractBase
 
     /**
      * Convenience method to get a session initiator URL. Returns false if not
-     * applicable.
+     * applicable or true if no redirect is needed (internal session initiation).
      *
      * @return string|bool
      */

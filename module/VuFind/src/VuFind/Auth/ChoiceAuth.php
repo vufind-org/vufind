@@ -264,7 +264,9 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate).  Returns false when no session initiator is needed or
+     * true if session initiator is built-in and form processing needs to be
+     * bypassed.
      *
      * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).
