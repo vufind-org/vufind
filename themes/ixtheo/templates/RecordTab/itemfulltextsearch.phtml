@@ -4,7 +4,7 @@
 <form class="searchForm form-horizontal" name="ItemFulltextSearchForm" autocomplete="off" 
       onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;, &quot;<?=$this->driver->getUniqueID()?>&quot;, this.searchForm_fulltext.value, true); return false; /*Prevent refresh of entire page even on first load*/">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
-      <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="Search the fulltext of this item"/>
+  <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
       <div class="input-group-btn">
           <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i></button>
       </div>
