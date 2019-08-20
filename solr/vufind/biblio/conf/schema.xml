@@ -129,7 +129,7 @@
    <field name="title_short" type="text" indexed="true" stored="true"/>
    <field name="title_full" type="text" indexed="true" stored="true"/>
    <field name="title_full_unstemmed" type="textProper" indexed="true" stored="true"/>
-   <field name="title_fullStr" type="string" indexed="true" stored="true"/>
+   <field name="title_fullStr" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="title_auth" type="text" indexed="true" stored="true"/>
    <field name="physical" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="publisher" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -242,6 +242,7 @@
  <copyField source="topic"    dest="spellingShingle"/>
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
+ <copyField source="title_alt" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
  <copyField source="author" dest="author_facet"/>
  <copyField source="author2" dest="author_facet"/>
