@@ -1,0 +1,34 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('import_favorites_from_list'));
+?>
+<h2><?=$this->translate("import_favorites_from_list") ?></h2>
+<form class="form-record-save" method="post" action="<?=$this->url('list-save', ['id' => $this->listId])?>" name="cloneList" data-lightbox-onclose="checkSaveStatusesCallback">
+  <input type="hidden" name="submit" value="1" />
+  <input type="hidden" name="list" value="<?=$this->listId ?>" />
+  <?php $showLists = (!empty($this->lists)); ?>
+
+  <div class="form-group">
+    <?php if ($showLists): ?>
+      <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+    <?php endif; ?>
+    <?php if ($showLists): ?>
+      <select class="form-control" id="save_list" name="list">
+      <?php if ($this->lists): ?>
+        <?php foreach ($this->lists as $list): ?>
+          <option value="<?=$list['id'] ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <option value=""><?=$this->transEsc('My Favorites') ?></option>
+      <?php endif; ?>
+      </select>
+    <?php endif; ?>
+    <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) ?>"><?=$this->transEsc('or create a new list'); ?></a>
+  </div>
+
+  <?php if ($showLists): ?>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  <?php endif; ?>
+</form>

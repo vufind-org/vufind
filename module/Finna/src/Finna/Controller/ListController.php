@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -32,11 +33,12 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use Zend\Stdlib\Parameters;
 
 /**
- * Controller for the user account area.
+ * Controller for the public favorite lists.
  *
  * @category VuFind
  * @package  Controller
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -114,6 +116,103 @@ class ListController extends \Finna\Controller\MyResearchController
         } catch (ListPermissionException $e) {
             return $this->createNoAccessView();
         }
+    }
+
+    /**
+     * Save action - Allows the save template to appear,
+     *   passes containingLists & nonContainingLists
+     *
+     * @return mixed
+     */
+    public function saveAction()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new ForbiddenException('Lists disabled');
+        }
+
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
+        }
+        $listId = $this->params()->fromRoute('id');
+        if ($listId === null) {
+            return $this->notFoundAction();
+        }
+        try {
+            $list = $this->getTable('UserList')->getExisting($listId);
+            if (!$list->isPublic()) {
+                return $this->createNoAccessView();
+            }
+        } catch (RecordMissingException $e) {
+            return $this->notFoundAction();
+        }
+
+        // Retrieve user object and force login if necessary:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $records = $runner->run(
+            ['id' => $listId],
+            'Favorites',
+            $runner
+        )->getResults();
+
+        $this->setFollowupUrlToReferer();
+
+        // Process form submission:
+        if ($this->formWasSubmitted('submit')) {
+            $this->processSave($user, $records);
+            if ($this->params()->fromQuery('layout', 'false') == 'lightbox') {
+                return $this->getResponse()->setStatusCode(204);
+            }
+            // redirect to followup url saved in saveAction
+            if ($url = $this->getFollowupUrl()) {
+                $this->clearFollowupUrl();
+                return $this->redirect()->toUrl($url);
+            }
+            // No followup info found?  Send back to list view:
+            return $this->redirect()->toRoute('list-page', ['lid' => $sourceListId]);
+        }
+        $view = $this->createViewModel(
+            [
+                'listId' => $listId,
+                'lists' => $user->getLists(),
+                'records' => $records,
+            ]
+        );
+        $view->setTemplate('list/save');
+        return $view;
+    }
+
+    /**
+     * ProcessSave -- store the results of the Save action.
+     *
+     * @param VuFind\Db\Row\User $user    User
+     * @param array              $records Records to be saved in userlist
+     *
+     * @return void
+     */
+    protected function processSave($user, array $records): void
+    {
+        // Perform the save operation:
+        $post = $this->getRequest()->getPost()->toArray();
+        $favorites = $this->serviceLocator
+            ->get(\VuFind\Favorites\FavoritesService::class);
+        $results = $favorites->saveMany($post, $user, $records);
+
+        // Display a success status message:
+        $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
+        $message = [
+            'html' => true,
+            'msg' => $this->translate('bulk_save_success') . '. '
+            . '<a href="' . $listUrl . '" class="gotolist">'
+            . $this->translate('go_to_list') . '</a>.'
+        ];
+        $this->flashMessenger()->addMessage($message, 'success');
     }
 
     /**

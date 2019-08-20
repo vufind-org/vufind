@@ -320,6 +320,23 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Send user's saved favorites from a particular list to the edit view
+     *
+     * @return mixed
+     */
+    public function editlistAction()
+    {
+        $view = parent::editlistAction();
+        if ($view instanceof \Zend\Http\PhpEnvironment\Response
+            && !empty($url = $this->getFollowupUrl())
+        ) {
+            return $this->redirect()->toUrl($url);
+        }
+        $this->setFollowupUrlToReferer();
+        return $view;
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the view
      *
      * @return mixed

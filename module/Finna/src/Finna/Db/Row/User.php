@@ -23,6 +23,7 @@
  * @package  Db_Row
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -102,5 +103,48 @@ class User extends \VuFind\Db\Row\User
     {
         $this->finna_language = $language;
         $this->save();
+    }
+
+    /**
+     * Add/update a resource in the user's account.
+     *
+     * @param array                   $resources       The resources to add/update
+     * @param \VuFind\Db\Row\UserList $list            The list to store the resource
+     * in.
+     * @param array                   $tagArray        An array of tags to associate
+     * with the resource.
+     * @param string                  $notes           User notes about the resource.
+     * @param bool                    $replaceExisting Whether to replace all
+     * existing tags (true) or append to the existing list (false).
+     *
+     * @return void
+     */
+    public function saveResources(
+        array $resources,
+        \VuFind\Db\Row\UserList $list,
+        array $tagArray,
+        string $notes,
+        bool $replaceExisting = true
+    ) {
+        // Create the resource link if it doesn't exist and update the notes in any
+        // case:
+        $linkTable = $this->getDbTable('UserResource');
+        foreach ($resources as $resource) {
+            $linkTable->createOrUpdateLink(
+                $resource->id,
+                $this->id,
+                $list->id,
+                $notes
+            );
+            // If we're replacing existing tags, delete the old ones before adding
+            // the new ones:
+            if ($replaceExisting) {
+                $resource->deleteTags($this, $list->id);
+            }
+            // Add the new tags:
+            foreach ($tagArray as $tag) {
+                $resource->addTag($tag, $this, $list->id);
+            }
+        }
     }
 }

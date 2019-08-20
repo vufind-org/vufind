@@ -28,10 +28,15 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     </div>
 </div>
 <div class="search-controls">
-    <div class="control-container text-right hidden-print">
+    <div class="control-container text-right hidden-print mylist-controls">
+      <div>
         <?=$this->render('search/controls/view.phtml')?>
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/limit.phtml')?>
+      </div>
+      <div>
+        <a class="btn btn-primary btn-sm btn-block" data-lightbox role="button" href="<?= $this->url('list-save', [ 'id' => $list->id ]) ?>"><?=$this->transEsc('import_favorites_from_list')?></a>
+      </div>
     </div>
     <div class="pagination-container">
         <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results]) ?>
