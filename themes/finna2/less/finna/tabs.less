@@ -34,61 +34,49 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-bottom: 1px;
       cursor: pointer;
+      border-top: 4px solid transparent;
+      border-bottom: 1px solid transparent;
+      border-left: 1px solid transparent;
+      border-right: 1px solid transparent;
       @media (max-width: @screen-sm) {
         &:not(.many-tabs) {
           flex-basis: 50%;
         }
       }
-
-      > a {
-        background-color: @main-tabs-background-color;
-        padding: 10px 5px;
-        margin-bottom: 0;
-        border: 0;
-        border-radius: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: @main-tabs-text-color;
-        transition: none;
-        margin-top: 0;
-        display: flex ;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        width: 100%;
-        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-          word-break: break-word;
-        }
-      }
-
-      >button {
-        opacity: 1;
-        color: @main-tabs-active-color;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: inherit;
-        background-color: transparent;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
-        height: 100%;
-        z-index: 200;
-        i {
-          cursor: pointer;
-        }
-      }
-
       &.active {
         border-top: 4px solid @main-tabs-active-color;
         border-left: 1px solid @main-tabs-border-color;
         border-right: 1px solid @main-tabs-border-color;
         border-bottom: 1px solid @body-bg;
-
         a:hover {
           border: none;
+        }
+      }
+      > a {
+        background-color: @main-tabs-background-color;
+        padding: 10px 5px;
+        margin-bottom: 0;
+        border: 0;
+        font-size: 1em;
+        font-weight: 600;
+        color: @main-tabs-text-color;
+        transition: none;
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+          word-break: break-word;
+        }
+      }
+      >button {
+        opacity: 1;
+        padding-left: 0;
+        color: @main-tabs-active-color;
+        position: inherit;
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        i {
+          cursor: pointer;
         }
       }
     }
