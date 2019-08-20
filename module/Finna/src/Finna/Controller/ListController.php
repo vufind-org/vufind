@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -169,7 +169,7 @@ class ListController extends \Finna\Controller\MyResearchController
             if ($this->params()->fromQuery('layout', 'false') == 'lightbox') {
                 return $this->getResponse()->setStatusCode(204);
             }
-            // redirect to followup url saved in saveAction
+            // redirect to previously stored followup
             if ($url = $this->getFollowupUrl()) {
                 $this->clearFollowupUrl();
                 return $this->redirect()->toUrl($url);
