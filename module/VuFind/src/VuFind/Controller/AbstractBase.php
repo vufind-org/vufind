@@ -132,7 +132,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        if ($this->inLightBox()) {
+        if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
