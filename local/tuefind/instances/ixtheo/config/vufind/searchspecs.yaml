@@ -370,6 +370,20 @@ Series:
       - [and, 50]
       - [or, ~]
 
+FulltextOnly:
+  DismaxFields:
+    - fulltext_unstemmed^750
+    - fulltext^750
+  QueryFields:
+    fulltext_unstemmed:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
 AllFields:
   DismaxFields:
     - title_short^750
@@ -513,6 +527,8 @@ AuthorBrowse:
 TitleBrowse:
   QueryFields:
     title_full:
+      - [onephrase, ~]
+    title_alt:
       - [onephrase, ~]
 
 DeweyBrowse:
