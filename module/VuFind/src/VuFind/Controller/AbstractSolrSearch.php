@@ -125,12 +125,12 @@ class AbstractSolrSearch extends AbstractSearch
      *
      * @param array  $facetList                     The advanced facet values
      * @param object $searchObject                  Saved search object
-     *                                              (false if none)
+     * (false if none)
      * @param array  $hierarchicalFacets            Hierarchical facet list (if any)
      * @param array  $hierarchicalFacetsSortOptions Hierarchical facet sort options
-     *                                              (if any)
+     * (if any)
      *
-     * @return array               Sorted facets, with selected values flagged.
+     * @return array Sorted facets, with selected values flagged.
      */
     protected function processAdvancedFacets($facetList, $searchObject = false,
         $hierarchicalFacets = [], $hierarchicalFacetsSortOptions = []
