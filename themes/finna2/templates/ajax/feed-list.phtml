@@ -14,10 +14,9 @@
       <?php if (!isset($this->linkText) && isset($item['link'])):?>
       <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']) . ($this->feedUrl ? '?feedUrl=' . $this->escapeHtmlAttr(urlencode($this->feedUrl)) : '')?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?> data-feed="<?=$this->escapeHtmlAttr($this->feedUrl)?>"><?php endif; ?>
         <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
-        <img src="<?= $item['image']['url']; ?>" alt="" />
+          <img src="<?= $item['image']['url']; ?>" alt="" />
         <?php endif; ?>
         <span class="title"><?= $item['title']; ?></span>
-        <?php if (!isset($this->linkText) && isset($item['link'])):?>
           <?php if (isset($item['xcal']['startDate'])): ?>
             <p class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date'); ?>"></i><?= $item['xcal']['startDate']; ?><?php if ($item['xcal']['startDate'] !== $item['xcal']['endDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate'] ?><?php endif;?></p>
             <?php if (isset($item['xcal']['startTime']) && $item['xcal']['endDate'] === $item['xcal']['startDate']): ?>
@@ -28,7 +27,7 @@
           <p class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location'); ?>"></i><?= $item['xcal']['location']; ?></p>
         <?php endif; ?>
         <?php if (isset($item['text'])): ?><span class="text"><?= $item['text']; ?></span><?php endif; ?>
-      </a><?php endif; ?>
+        <?php if (!isset($this->linkText) && isset($item['link'])):?></a><?php endif; ?>
     </li>
     <?php endforeach; ?>
 
