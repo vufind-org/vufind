@@ -45,7 +45,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @var array
      */
-    protected $links;
+    protected $links = [];
 
     /**
      * Configuration loader
