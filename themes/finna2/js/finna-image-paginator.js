@@ -148,8 +148,6 @@ finna.imagePaginator = (function imagePaginator() {
     _.rightBrowseBtn.off('click').click(function browseRight() {
       _.onBrowseButton(1);
     });
-    _.toggleBrowseButtons(isPopup);
-    _.setBrowseButtons();
     if (_.images.length < 2) {
       covers.hide();
       _.pagerInfo.hide();
@@ -161,23 +159,20 @@ finna.imagePaginator = (function imagePaginator() {
   };
 
   /**
-   * Function to display browse buttons when necessary
-   */
-  FinnaPaginator.prototype.toggleBrowseButtons = function toggleBrowseButtons(isPopup) {
-    var _ = this;
-    var state = _.isList === false || (typeof isPopup !== 'undefined' && isPopup === true);
-
-    _.leftBrowseBtn.toggle(state);
-    _.rightBrowseBtn.toggle(state);
-  };
-
-  /**
    * Function to set browse button states
    */
-  FinnaPaginator.prototype.setBrowseButtons = function setBrowseButtons() {
+  FinnaPaginator.prototype.setBrowseButtons = function setBrowseButtons(isList) {
     var _ = this;
-    _.leftBrowseBtn.prop('disabled', _.openImageIndex < 1);
-    _.rightBrowseBtn.prop('disabled', _.openImageIndex >= _.images.length - 1);
+
+    var state = typeof isList !== "undefined" && isList !== false;
+
+    if (state) {
+      _.leftBrowseBtn.prop('disabled', true);
+      _.rightBrowseBtn.prop('disabled', true);
+    } else {
+      _.leftBrowseBtn.prop('disabled', _.openImageIndex < 1);
+      _.rightBrowseBtn.prop('disabled', _.openImageIndex >= _.images.length - 1);
+    }
   };
 
   /**
@@ -309,10 +304,10 @@ finna.imagePaginator = (function imagePaginator() {
     };
 
     setCanvasContent('nonzoomable');
-    _.setBrowseButtons();
     _.setCurrentVisuals();
     _.setPagerInfo(true);
     _.loadImageInformation();
+    _.setBrowseButtons();
   };
 
   /**
@@ -332,7 +327,6 @@ finna.imagePaginator = (function imagePaginator() {
     _.setZoomButtons();
     _.setPagerInfo(true);
     _.setCurrentVisuals();
-    _.setBrowseButtons();
 
     _.leafletHolder.eachLayer(function removeLayers(layer) {
       _.leafletHolder.removeLayer(layer);
@@ -409,6 +403,7 @@ finna.imagePaginator = (function imagePaginator() {
       }
       found.click();
     }
+    _.setBrowseButtons();
   };
 
   /**
@@ -496,7 +491,6 @@ finna.imagePaginator = (function imagePaginator() {
     var _ = this;
     var covers = _.root.find('.recordcovers').clone(true);
     _.setReferences(covers, isPopup);
-    _.setBrowseButtons();
 
     if (_.isList) {
       covers.removeClass('mini-paginator');
@@ -856,7 +850,7 @@ finna.imagePaginator = (function imagePaginator() {
     var _ = this;
     _.changeTriggerImage(imagePopup);
     _.openImageIndex = imagePopup.attr('index');
-    _.setBrowseButtons();
+    _.setBrowseButtons(_.isList);
     _.setPagerInfo(false);
     _.setCurrentVisuals();
     var modal = $('#imagepopup-modal').find('.imagepopup-holder').clone();
@@ -918,6 +912,7 @@ finna.imagePaginator = (function imagePaginator() {
           _.openImageIndex = null;
           foundImage.click();
           _.checkRecordButtons();
+          _.setBrowseButtons();
         },
         close: function onPopupClose() {
           var covers = _.root.find('.recordcovers');

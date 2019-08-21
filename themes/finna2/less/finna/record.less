@@ -144,24 +144,26 @@
 
 .next-image {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 20px);
   z-index: 500;
   appearance: none;
   -webkit-appearance: none;
   border: none;
-  background-color: rgba(211, 211, 211, 0.644);
-  font-size: 40px;
-  line-height: 40px;
-  border-radius: 4px;
-  padding: 0;
+  background-color: rgba(138, 138, 138, 0.5);
+  .paginator-canvas & {
+    background-color: rgba(138, 138, 138, 0.9);
+  }
+  font-size: 22px;
+  border-radius: 2px;
+  padding: 0 4px;
   color: white;
   margin: 0 4px;
+  height: 40px;
   &:disabled {
     display: none;
   }
   .fa {
-    text-shadow: 1px 1px 1px black;
-    -webkit-text-stroke: black;
+    text-shadow: 1px 1px 2px #555;
     cursor: pointer;
   }
   &.left {
