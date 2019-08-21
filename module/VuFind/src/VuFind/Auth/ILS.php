@@ -139,7 +139,7 @@ class ILS extends AbstractBase
                     ->sendAuthenticationLink($patron['email'], $patron);
             }
             // Don't reveal the result
-            throw new AuthException('email_login_link_sent');
+            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
         }
         if ($patron) {
             return $this->processILSUser($patron);
