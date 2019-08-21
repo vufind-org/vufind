@@ -143,8 +143,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = isset($config->Authentication->method)
-            ? $config->Authentication->method : 'Database';
+        $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
         $this->setAuthMethod($method);              // load it
     }
@@ -206,11 +205,8 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsRecovery($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
-            return isset($this->config->Authentication->recover_password)
-                && $this->config->Authentication->recover_password;
-        }
-        return false;
+        return ($this->config->Authentication->recover_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordRecovery();
     }
 
     /**
@@ -223,12 +219,8 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if (isset($this->config->Authentication->change_password)
-            && $this->config->Authentication->change_password
-        ) {
-            return $this->getAuth($authMethod)->supportsPasswordChange();
-        }
-        return false;
+        return ($this->config->Authentication->change_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordChange();
     }
 
     /**
@@ -357,9 +349,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function loginEnabled()
     {
         // Assume login is enabled unless explicitly turned off:
-        return isset($this->config->Authentication->hideLogin)
-            ? !$this->config->Authentication->hideLogin
-            : true;
+        return !($this->config->Authentication->hideLogin ?? false);
     }
 
     /**
@@ -507,8 +497,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function inPrivacyMode()
     {
-        return isset($this->config->Authentication->privacy)
-            && $this->config->Authentication->privacy;
+        return $this->config->Authentication->privacy ?? false;
     }
 
     /**

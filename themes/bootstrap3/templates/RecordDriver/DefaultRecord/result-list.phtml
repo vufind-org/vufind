@@ -65,7 +65,7 @@
       <?php if(!$this->driver->isCollection()): ?>
         <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
           <?php if (!empty($snippet['caption'])): ?>
-            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
+            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
           <?php endif; ?>
           <?php if (!empty($snippet['snippet'])): ?>
             <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
