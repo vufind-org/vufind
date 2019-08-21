@@ -14,6 +14,7 @@
   <div class="imagepopup-holder" aria-hidden="true">
     <div class="imagepopup-container">
       <div class="popup-canvas paginator-canvas">
+        <button class="next-image left" type="button"><i class="fa fa-handle-left"></i></button>
         <div class="popup-nonzoom non-zoomable">
           <div class="iconlabel"></div>
           <img src="<?= $this->imageSrc()->getDataPixel() ?>" alt="" />
@@ -29,6 +30,7 @@
           </div>
         </div>
         <div class="popup-video video-popup"><video class="video-js vjs-big-play-centered" controls></video></div>
+        <button class="next-image right" type="button"><i class="fa fa-handle-right"></i></button>
       </div>
       <div class="finna-image-pagination">
       </div>
