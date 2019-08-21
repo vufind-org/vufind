@@ -567,6 +567,16 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
+        // Always support auth_method=Email
+        $authMethod = trim(
+            $request->getPost()->get(
+                'auth_method', $request->getQuery()->get('auth_method')
+            )
+        );
+        if ('Email' === $authMethod) {
+            $this->setAuthMethod('Email');
+        }
+
         // Allow the auth module to inspect the request (used by ChoiceAuth,
         // for example):
         $this->getAuth()->preLoginCheck($request);
