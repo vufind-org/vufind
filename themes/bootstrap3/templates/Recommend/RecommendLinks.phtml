@@ -1,6 +1,4 @@
-<?php
-  $links = $this->recommend->getLinks();
-?>
+<?php $links = $this->recommend->getLinks(); ?>
 <?php if (count($links) > 0) :?>
   <div class="alert alert-info">
     <?=$this->transEsc('recommend_links_text')?>
