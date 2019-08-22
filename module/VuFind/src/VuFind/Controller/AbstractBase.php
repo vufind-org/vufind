@@ -108,7 +108,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Getter for access permission.
      *
-     * @return string
+     * @return string|bool
      */
     public function getAccessPermission()
     {
@@ -118,14 +118,14 @@ class AbstractBase extends AbstractActionController
     /**
      * Getter for access permission.
      *
-     * @param string $ap Permission to require for access to the controller (null
+     * @param string $ap Permission to require for access to the controller (false
      * for no requirement)
      *
      * @return void
      */
     public function setAccessPermission($ap)
     {
-        $this->accessPermission = empty($ap) ? null : $ap;
+        $this->accessPermission = empty($ap) ? false : $ap;
     }
 
     /**
