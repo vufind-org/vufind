@@ -54,7 +54,7 @@ class AbstractBaseFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('permissionBehavior');
         $permissions = $config->global->controllerAccess ?? [];
-        $setPermission = false;
+        $permissionAlreadySet = false;
 
         if (!empty($permissions)) {
             // Iterate through parent classes until we find the most specific
@@ -63,7 +63,7 @@ class AbstractBaseFactory implements FactoryInterface
             do {
                 if (isset($permissions[$class])) {
                     $controller->setAccessPermission($permissions[$class]);
-                    $setPermission = true;
+                    $permissionAlreadySet = true;
                     break;
                 }
                 $class = get_parent_class($class);
@@ -72,7 +72,7 @@ class AbstractBaseFactory implements FactoryInterface
             // If the class does not internally define a permission, and we
             // did not find a configured override permission, apply the default:
             if (isset($permissions['*'])
-                && !$setPermission
+                && !$permissionAlreadySet
                 // Special case: don't create infinite redirects by blocking
                 // MyResearchController by default:
                 && !($controller instanceof MyResearchController)
