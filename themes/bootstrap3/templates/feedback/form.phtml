@@ -16,16 +16,11 @@
   $helpPre = isset($help['pre']) ? $this->translate($help['pre']) : null;
   $helpPost = isset($help['post']) ? $this->translate($help['post']) : null;
 ?>
-<?php if (!$this->inLightbox): ?>
-<div class="feedback-content">
-<?php endif; ?>
+<?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
-    <?php if (!$this->inLightbox): ?>
-      <h1><?=$title?></h1>
-    <?php else: ?>
-      <h2><?=$title?></h2>
-    <?php endif; ?>
+    <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
+    <<?=$headTag?>><?=$title?></<?=$headTag?>>
   <?php endif; ?>
   <?=$this->flashmessages()?>
 
@@ -33,7 +28,7 @@
      <div class="form-group">
        <p><?=$this->translate('feedback_login_required')?></p>
        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true" data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($formUrl) ?>'"></i> <?=$this->transEsc("Login") ?></a>
-    </div>
+    </div>  
   <?php else: ?>
     <?= $this->form()->openTag($form); ?>
     <?php if ($helpPre): ?>
@@ -102,6 +97,4 @@
   <?php endforeach ?>
   <?= $this->form()->closeTag() ?>
   <?php endif ?>
-<?php if (!$this->inLightbox): ?>
-</div>
-<?php endif; ?>
+<?php if (!$this->inLightbox): ?></div><?php endif; ?>
