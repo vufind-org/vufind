@@ -27,6 +27,7 @@
           <?php if (isset($item['dateFull'])): ?>
             <div><?= $item['dateFull'] ?></div>
           <?php endif; ?>
+          <div class="title"><?= $this->truncate($item['title'], 40); ?></div>
           <?php if (isset($item['xcal']['startDate'])): ?>
             <div class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date') ?>"></i><?= $item['xcal']['startDate']; ?><?php if (isset($item['xcal']['endDate']) && $item['xcal']['endDate'] !== $item['xcal']['startDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate']; endif; ?></div>
           <?php endif; ?>
@@ -36,7 +37,6 @@
           <?php if (isset($item['xcal']['location'])): ?>
             <div class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location') ?>"></i><?= $item['xcal']['location'] ?></div>
           <?php endif; ?>
-          <div class="title"><?= $this->truncate($item['title'], 40); ?></div>
           <?php if (isset($item['text'])): ?>
             <div class="feed-text"><?= $this->truncate($item['text'], 80); ?></div>
           <?php endif; ?>
