@@ -51,11 +51,12 @@ class AbstractBase extends AbstractActionController
 {
     /**
      * Permission that must be granted to access this module (false for no
-     * restriction)
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
      *
      * @var string|bool
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through
