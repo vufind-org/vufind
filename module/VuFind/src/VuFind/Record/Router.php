@@ -144,8 +144,16 @@ class Router
         $routeBase = ($source == DEFAULT_SEARCH_BACKEND)
             ? 'record' : strtolower($source . 'record');
 
+        // Disable path normalization since it can unencode e.g. encoded slashes in
+        // record id's
+        $options = [
+            'normalize_path' => false
+        ];
+
         return [
-            'params' => $params, 'route' => $routeBase . $routeSuffix
+            'params' => $params,
+            'route' => $routeBase . $routeSuffix,
+            'options' => $options
         ];
     }
 

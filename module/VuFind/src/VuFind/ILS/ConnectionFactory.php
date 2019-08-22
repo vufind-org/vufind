@@ -62,10 +62,12 @@ class ConnectionFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $request = $container->get('Request');
         $catalog = new $requestedName(
             $configManager->get('config')->Catalog,
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)
+            $container->get(\VuFind\Config\PluginManager::class),
+            $request instanceof \Zend\Http\Request ? $request : null
         );
         return $catalog->setHoldConfig(
             $container->get(\VuFind\ILS\HoldSettings::class)

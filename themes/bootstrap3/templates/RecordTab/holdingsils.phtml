@@ -118,7 +118,9 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-
+<?php if ($paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+  <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
+<?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>
   <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>

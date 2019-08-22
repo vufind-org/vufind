@@ -28,7 +28,7 @@
   <property name="solr_version" value="7.3.1" />
   <property name="phpdoc_version" value="2.9.0" />
 
-  <property name="version" value="5.1.1" />
+  <property name="version" value="6.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -128,6 +128,12 @@
   </target>
   <target name="jshint-report">
     <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+  </target>
+
+  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <target name="checkLessToSass">
+    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
   </target>
 
   <!-- PHP API Documentation -->
