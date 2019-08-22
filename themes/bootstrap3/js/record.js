@@ -134,6 +134,28 @@ function registerAjaxCommentRecord(_context) {
   return false;
 }
 
+// Forward declaration
+var ajaxLoadTab = function ajaxLoadTabForward() {
+};
+
+function handleAjaxTabLinks(_context) {
+  var context = typeof _context === "undefined" ? document : _context;
+  // Form submission
+  $(context).find('a').each(function handleLink() {
+    var $a = $(this);
+    var href = $a.attr('href');
+    if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
+      $a.unbind('click').click(function linkClick() {
+        var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
+        var $tab = $('.' + tabid + '-tab');
+        $tab.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+        ajaxLoadTab($tab, '', false, href);
+        return false;
+      });
+    }
+  });
+}
+
 function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
@@ -141,6 +163,8 @@ function registerTabEvents() {
   recaptchaOnLoad();
 
   setUpCheckRequest();
+
+  handleAjaxTabLinks();
 
   VuFind.lightbox.bind('.tab-pane.active');
 }
@@ -154,12 +178,21 @@ function removeHashFromLocation() {
   }
 }
 
-function ajaxLoadTab($newTab, tabid, setHash) {
+ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   // Request the tab via AJAX:
+  var url = '';
+  var postData = {};
+  // If tabUrl is defined, it overrides base URL and tabid
+  if (typeof tabUrl !== 'undefined') {
+    url = tabUrl;
+  } else {
+    url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
+    postData.tab = tabid;
+  }
   $.ajax({
-    url: VuFind.path + getUrlRoot(document.URL) + '/AjaxTab',
+    url: url,
     type: 'POST',
-    data: {tab: tabid}
+    data: postData
   })
     .always(function ajaxLoadTabDone(data) {
       if (typeof data === 'object') {
@@ -179,7 +212,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
       setupJumpMenus($newTab);
     });
   return false;
-}
+};
 
 function refreshTagList(_target, _loggedin) {
   var loggedin = !!_loggedin || userIsLoggedIn;
