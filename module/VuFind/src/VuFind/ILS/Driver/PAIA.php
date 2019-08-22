@@ -707,11 +707,12 @@ class PAIA extends DAIA
      */
     public function getMyHolds($patron)
     {
-        // filters for getMyHolds are:
+        // filters for getMyHolds are by default configuration:
         // status = 1 - reserved (the document is not accessible for the patron yet,
         //              but it will be)
         //          4 - provided (the document is ready to be used by the patron)
-        $filter = ['status' => [1, 4]];
+        $status = $this->config['Holds']['status'] ?? '1:4';
+        $filter = ['status' => explode(':', $status)];
         // get items-docs for given filters
         $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myHoldsMapping');
@@ -785,9 +786,10 @@ class PAIA extends DAIA
      */
     public function getMyTransactions($patron)
     {
-        // filters for getMyTransactions are:
+        // filters for getMyTransactions are by default configuration:
         // status = 3 - held (the document is on loan by the patron)
-        $filter = ['status' => [3]];
+        $status = $this->config['Transactions']['status'] ?? '3';
+        $filter = ['status' => explode(':', $status)];
         // get items-docs for given filters
         $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myTransactionsMapping');
@@ -805,9 +807,10 @@ class PAIA extends DAIA
      */
     public function getMyStorageRetrievalRequests($patron)
     {
-        // filters for getMyStorageRetrievalRequests are:
+        // filters for getMyStorageRetrievalRequests are by default configuration:
         // status = 2 - ordered (the document is ordered by the patron)
-        $filter = ['status' => [2]];
+        $status = $this->config['StorageRetrievalRequests']['status'] ?? '2';
+        $filter = ['status' => explode(':', $status)];
         // get items-docs for given filters
         $items = $this->paiaGetItems($patron, $filter);
         return $this->mapPaiaItems($items, 'myStorageRetrievalRequestsMapping');
