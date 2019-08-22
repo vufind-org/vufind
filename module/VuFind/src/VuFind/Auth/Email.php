@@ -68,11 +68,36 @@ class Email extends AbstractBase
      */
     public function authenticate($request)
     {
-        $patron
-            = $this->emailAuthenticator->authenticate($request->getQuery('hash'));
+        // This is a dual-mode method:
+        // First, try to find a user account with the provided email address and send
+        // a login link.
+        // Second, log the user in with the hash from the login link.
 
-        if ($patron) {
-            return $this->processUser($patron);
+        $email = trim($request->getPost()->get('username'));
+        $hash = $request->getQuery('hash');
+        if (!$email && !$hash) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        if (!$hash) {
+            // Validate the credentials:
+            $user = $this->getUserTable()->getByEmail($email, false);
+            if ($user) {
+                $loginData = [
+                    'vufind_id' => $user['id']
+                ];
+                $this->emailAuthenticator
+                    ->sendAuthenticationLink($user['email'], $loginData);
+            }
+            // Don't reveal the result
+            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
+        }
+
+        $loginData = $this->emailAuthenticator->authenticate($hash);
+        if (isset($loginData['vufind_id'])) {
+            return $this->getUserTable()->getById($loginData['vufind_id']);
+        } else {
+            return $this->processUser($loginData);
         }
 
         // If we got this far, we have a problem:
@@ -80,19 +105,19 @@ class Email extends AbstractBase
     }
 
     /**
-     * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed or
-     * true if session initiator is built-in and form processing needs to be
-     * bypassed.
+     * Whether this authentication method needs CSRF checking for the request.
      *
-     * @param string $target Full URL where external authentication method should
-     * send user after login (some drivers may override this).
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
      *
-     * @return bool|string
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getSessionInitiator($target)
+    public function needsCsrfCheck($request)
     {
-        return true;
+        // Disable CSRF if we get a hash in the request
+        return $request->getQuery('hash') ? false : true;
     }
 
     /**
@@ -117,7 +142,7 @@ class Email extends AbstractBase
             $user = $userTable->getByUsername($info['email']);
         }
 
-        // No need to store the ILS password in VuFind's main password field:
+        // No need to store a password in VuFind's main password field:
         $user->password = '';
 
         // Update user information based on received data:

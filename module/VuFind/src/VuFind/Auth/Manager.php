@@ -238,9 +238,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed or
-     * true if session initiator is built-in and form processing needs to be
-     * bypassed.
+     * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -582,7 +580,9 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->getAuth()->preLoginCheck($request);
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)) {
+        if (!$this->getAuth()->getSessionInitiator(null)
+            && $this->getAuth()->needsCsrfCheck($request)
+        ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
                 throw new AuthException('authentication_error_technical');

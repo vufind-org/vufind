@@ -122,6 +122,22 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Whether this authentication method needs CSRF checking for the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function needsCsrfCheck($request)
+    {
+        // Enabled by default
+        return true;
+    }
+
+    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -215,9 +231,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed or
-     * true if session initiator is built-in and form processing needs to be
-     * bypassed.
+     * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).

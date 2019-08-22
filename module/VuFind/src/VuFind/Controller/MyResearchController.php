@@ -329,9 +329,7 @@ class MyResearchController extends AbstractBase
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
-            if (is_string($si)) {
-                return $this->redirect()->toUrl($si);
-            }
+            return $this->redirect()->toUrl($si);
         }
         return $this->forwardTo('MyResearch', 'Login');
     }

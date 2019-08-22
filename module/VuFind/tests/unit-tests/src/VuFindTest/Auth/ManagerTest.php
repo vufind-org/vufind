@@ -564,6 +564,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $mockDb->expects($this->any())->method('needsCsrfCheck')
+            ->will($this->returnValue(true));
         $mockMulti = $this->getMockBuilder(\VuFind\Auth\MultiILS::class)
             ->disableOriginalConstructor()
             ->getMock();
