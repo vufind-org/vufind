@@ -1558,6 +1558,36 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * When a request to change a user's email address has been received, we should
+     * send a notification to the old email address for the user's information.
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendChangeNotificationEmail($user)
+    {
+        $config = $this->getConfig();
+        $renderer = $this->getViewRenderer();
+        // Custom template for emails (text-only)
+        $message = $renderer->render(
+            'Email/notify-email-change.phtml',
+            [
+                'library' => $config->Site->title,
+                'url' => $this->getServerUrl('home'),
+            ]
+        );
+        // If the user is setting up a new account, use the main email
+        // address; if they have a pending address change, use that.
+        $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+            $user->email,
+            $config->Site->email,
+            $this->translate('change_notification_email_subject'),
+            $message
+        );
+    }
+
+    /**
      * Send a verify email message.
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
@@ -1612,6 +1642,11 @@ class MyResearchController extends AbstractBase
                         ? 'verification_email_change_sent'
                         : 'verification_email_sent';
                     $this->flashMessenger()->addMessage($flashMessage, 'info');
+                    // If this is an email change, send a notification to the old
+                    // email address as well.
+                    if ($change) {
+                        $this->sendChangeNotificationEmail($user);
+                    }
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
