@@ -186,7 +186,11 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         if (!empty($this->fromAddressOverride)
             && $this->fromAddressOverride != $fromEmail
         ) {
-            $replyTo->add($fromEmail);
+            // Add the original from address as the reply-to address unless
+            // a reply-to address has been specified
+            if (count($replyTo) === 0) {
+                $replyTo->add($fromEmail);
+            }
             if (!($from instanceof Address)) {
                 $from = new Address($from);
             }

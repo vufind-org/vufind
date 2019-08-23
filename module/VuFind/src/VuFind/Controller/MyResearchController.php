@@ -50,6 +50,19 @@ use Zend\View\Model\ViewModel;
 class MyResearchController extends AbstractBase
 {
     /**
+     * Permission that must be granted to access this module (false for no
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
+     *
+     * For this controller, we default to false rather than null because
+     * we don't want a default setting to override the controller's accessibility
+     * and break the login process!
+     *
+     * @var string|bool
+     */
+    protected $accessPermission = false;
+
+    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
