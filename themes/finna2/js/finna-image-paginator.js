@@ -294,7 +294,7 @@ finna.imagePaginator = (function imagePaginator() {
     var img = new Image();
     img.src = image.data('largest');
     img.onload = function onLoad() {
-      if (this.naturalWidth && this.naturalWidth === 10 && this.naturalHeight === 10) {
+      if (this.naturalWidth && this.naturalWidth <= 10 && this.naturalHeight <= 10) {
         _.nonZoomableHolder.addClass('no-image');
         icon.show();
       } else if (_.nonZoomableHolder.hasClass('no-image')) {
@@ -535,7 +535,7 @@ finna.imagePaginator = (function imagePaginator() {
     img.one('load', function onLoadImage() {
       img.css('opacity', '');
       _.setDimensions();
-      if (this.naturalWidth && this.naturalWidth === 10 && this.naturalHeight === 10) {
+      if (this.naturalWidth && this.naturalWidth <= 10 && this.naturalHeight <= 10) {
         _.trigger.addClass('no-image');
         if (_.isList) {
           if (_.images.length < 2) {
