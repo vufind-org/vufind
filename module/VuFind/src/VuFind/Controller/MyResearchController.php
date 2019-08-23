@@ -1574,7 +1574,7 @@ class MyResearchController extends AbstractBase
      * When a request to change a user's email address has been received, we should
      * send a notification to the old email address for the user's information.
      *
-     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param \VuFind\Db\Row\User $user User object we're recovering
      *
      * @return void (sends email or adds error message)
      */
