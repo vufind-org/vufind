@@ -1575,6 +1575,7 @@ class MyResearchController extends AbstractBase
             [
                 'library' => $config->Site->title,
                 'url' => $this->getServerUrl('home'),
+                'email' => $config->Site->email,
             ]
         );
         // If the user is setting up a new account, use the main email
