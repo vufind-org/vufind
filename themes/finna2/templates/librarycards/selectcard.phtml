@@ -8,7 +8,7 @@
           <?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?>
         </a>
         <label id="select-card-label-dropdown"><?= $this->transEsc('Library Card') ?></label>
-        <?php if ($cards->count() > 1) : ?>
+        <?php if ($cards->count() > 1 || empty($this->user->cat_username)) : ?>
           <?php foreach ($cards as $card): ?>
             <?php
               $target = '';
