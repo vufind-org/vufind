@@ -108,19 +108,7 @@ class GetFacetData extends AbstractBase
             $facets = [];
         } else {
             $facetList = $facets[$facet]['data']['list'];
-
-            switch ($sort) {
-            case 'count':
-                // Do nothing; count order is Solr's default behavior.
-                break;
-            case 'all':
-                $this->facetHelper->sortFacetList($facetList, false);
-                break;
-            case 'top':
-            default:
-                $this->facetHelper->sortFacetList($facetList, true);
-            }
-
+            $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper->buildFacetArray(
                 $facet, $facetList, $results->getUrlQuery(), false
             );

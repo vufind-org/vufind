@@ -56,7 +56,7 @@ class AbstractSolrSearch extends AbstractSearch
         $view->hierarchicalFacets
             = $this->getHierarchicalFacets($view->options->getFacetsIni());
         $view->hierarchicalFacetsSortOptions
-            = $this->getHierarchicalFacetsSortOptions(
+            = $this->getAdvancedHierarchicalFacetsSortOptions(
                 $view->options->getFacetsIni()
             );
         $view->facetList = $this->processAdvancedFacets(
@@ -148,18 +148,9 @@ class AbstractSolrSearch extends AbstractSearch
                 $tmpList = $list['list'];
 
                 $sort = $hierarchicalFacetsSortOptions[$facet]
-                    ?? $hierarchicalFacetsSortOptions['*'] ?? 'count';
-                switch ($sort) {
-                case 'count':
-                    // Do nothing; count order is Solr's default behavior.
-                    break;
-                case 'all':
-                    $facetHelper->sortFacetList($tmpList, false);
-                    break;
-                case 'top':
-                default:
-                    $facetHelper->sortFacetList($tmpList, true);
-                }
+                    ?? $hierarchicalFacetsSortOptions['*'] ?? null;
+
+                $facetHelper->sortFacetList($tmpList, $sort);
                 $tmpList = $facetHelper->buildFacetArray(
                     $facet,
                     $tmpList
@@ -206,13 +197,13 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
-     * Get an array of hierarchical facet sort options
+     * Get an array of hierarchical facet sort options for Advanced search
      *
      * @param string $config Name of facet configuration file to load.
      *
      * @return array
      */
-    protected function getHierarchicalFacetsSortOptions($config)
+    protected function getAdvancedHierarchicalFacetsSortOptions($config)
     {
         $facetConfig = $this->getConfig($config);
         $baseConfig

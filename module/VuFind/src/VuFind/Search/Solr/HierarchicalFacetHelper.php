@@ -45,13 +45,31 @@ class HierarchicalFacetHelper
      * Helper method for building hierarchical facets:
      * Sort a facet list according to the given sort order
      *
-     * @param array $facetList Facet list returned from Solr
-     * @param bool  $topLevel  Whether to sort only top level
+     * @param array          $facetList Facet list returned from Solr
+     * @param boolean|string $order     Sort order:
+     * - true|top  sort top level alphabetically and the rest by count
+     * - false|all sort all levels alphabetically
+     * - count     sort all levels by count
      *
      * @return void
      */
-    public function sortFacetList(&$facetList, $topLevel)
+    public function sortFacetList(&$facetList, $order = null)
     {
+        $topLevel = $order ?? 'count';
+        if (is_string($topLevel)) {
+            switch ($topLevel) {
+            case 'top':
+                $topLevel = true;
+                break;
+            case 'all':
+                $topLevel = false;
+                break;
+            case '';
+            case 'count':
+                return;
+            }
+        }
+
         // Parse level from each facet value so that the sort function
         // can run faster
         foreach ($facetList as &$facetItem) {
