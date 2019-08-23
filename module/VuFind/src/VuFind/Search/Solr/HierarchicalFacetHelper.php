@@ -64,7 +64,7 @@ class HierarchicalFacetHelper
             case 'all':
                 $topLevel = false;
                 break;
-            case '';
+            case '':
             case 'count':
                 return;
             }
