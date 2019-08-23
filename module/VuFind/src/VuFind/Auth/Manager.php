@@ -174,6 +174,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     protected function makeAuth($method)
     {
         // If an illegal option was passed in, don't allow the object to load:
+        // We always support Email since other methods may delegate to it.
         if ('Email' !== $method && !in_array($method, $this->legalAuthOptions)) {
             throw new \Exception("Illegal authentication method: $method");
         }
@@ -565,13 +566,14 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
-        // Always support auth_method=Email
+        // Always support auth_method=Email with a hash since other methods may
+        // delegate to it.
         $authMethod = trim(
             $request->getPost()->get(
                 'auth_method', $request->getQuery()->get('auth_method')
             )
         );
-        if ('Email' === $authMethod) {
+        if ('Email' === $authMethod && $request->getQuery()->get('hash')) {
             $this->setAuthMethod('Email');
         }
 
