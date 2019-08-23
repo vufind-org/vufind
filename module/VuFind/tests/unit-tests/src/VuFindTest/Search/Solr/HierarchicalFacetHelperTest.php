@@ -128,16 +128,16 @@ class HierarchicalFacetHelperTest extends TestCase
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList);
-        $this->assertEquals($facetList[1]['value'], '0/Book/');
-        $this->assertEquals($facetList[0]['value'], '0/AV/');
+        $this->assertEquals($facetList[0]['value'], '0/Book/');
+        $this->assertEquals($facetList[1]['value'], '0/AV/');
         $this->assertEquals($facetList[2]['value'], '0/Audio/');
         $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
         $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
         $this->assertEquals($facetList[5]['value'], '1/Audio/Spoken/');
         $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
         $this->helper->sortFacetList($facetList, 'count');
-        $this->assertEquals($facetList[1]['value'], '0/Book/');
-        $this->assertEquals($facetList[0]['value'], '0/AV/');
+        $this->assertEquals($facetList[0]['value'], '0/Book/');
+        $this->assertEquals($facetList[1]['value'], '0/AV/');
         $this->assertEquals($facetList[2]['value'], '0/Audio/');
         $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
         $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
