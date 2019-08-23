@@ -51,11 +51,12 @@ class AbstractBase extends AbstractActionController
 {
     /**
      * Permission that must be granted to access this module (false for no
-     * restriction)
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
      *
      * @var string|bool
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through
@@ -103,6 +104,29 @@ class AbstractBase extends AbstractActionController
                 $e->setResponse($response);
             }
         }
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @return string|bool
+     */
+    public function getAccessPermission()
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @param string $ap Permission to require for access to the controller (false
+     * for no requirement)
+     *
+     * @return void
+     */
+    public function setAccessPermission($ap)
+    {
+        $this->accessPermission = empty($ap) ? false : $ap;
     }
 
     /**
