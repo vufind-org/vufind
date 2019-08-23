@@ -102,32 +102,32 @@
       </a>
       <ul id="myLoans" role="presentation" class="dropdown-menu subtabs collapse <?= $loansActive ? ' in' : ''?>">
         <li role="menuitem" class="menu-loans <?=$this->active == 'checkedout' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item" aria-current=<?= $this->active == 'checkedout' ? 'page' : false ?>>
+          <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item" aria-current="<?= $this->active == 'checkedout' ? 'page' : 'false' ?>">
             <?=$this->transEsc('Checked Out Items')?>
           </a>
         </li>
       <?php if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
         <li role="menuitem" class="menu-historic-loans <?=$this->active == 'historicLoans' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item" aria-current=<?= $this->active == 'historicLoans' ? 'page' : false ?>>
+          <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item" aria-current="<?= $this->active == 'historicLoans' ? 'page' : 'false' ?>">
             <?=$this->transEsc('Loan History')?>
           </a>
         </li>
       <?php endif; ?>
         <li role="menuitem" class="menu-holds <?=$this->active == 'holds' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item" aria-current=<?= $this->active == 'holds' ? 'page' : false ?>>
+          <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item" aria-current="<?= $this->active == 'holds' ? 'page' : 'false' ?>">
             <?=$this->transEsc('Holds and Recalls')?>
           </a>
         </li>
       <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
         <li role="menuitem" class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item" aria-current=<?= $this->active == 'storageRetrievalRequests' ? 'page' : false ?>>
+          <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item" aria-current="<?= $this->active == 'storageRetrievalRequests' ? 'page' : 'false' ?>">
             <?=$this->transEsc('Storage Retrieval Requests')?>
           </a>
         </li>
       <?php endif; ?>
       <?php if ($this->ils()->checkCapability('getMyILLRequests', $capabilityParams)): ?>
         <li role="menuitem" class="menu-ill-requests <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item" aria-current=<?= $this->active == 'ILLRequests' ? 'page' : false ?>>
+          <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item" aria-current="<?= $this->active == 'ILLRequests' ? 'page' : 'false' ?>">
             <?=$this->transEsc('Interlibrary Loan Requests')?>
           </a>
         </li>
@@ -135,13 +135,13 @@
       </ul>
     </li>
     <li class="menu-fines hidden-xs hidden-sm <?=$this->active == 'fines' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item" aria-current=<?= $this->active == 'fines' ? 'page' : false ?>>
+      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item" aria-current="<?= $this->active == 'fines' ? 'page' : 'false' ?>">
         <?=$this->transEsc('Fines')?>
       </a>
     </li>
     <?php if ($user && $user->libraryCardsEnabled()): ?>
       <li class="menu-library-cards hidden-xs hidden-sm<?=$this->active == 'librarycards' ? ' active' : ''?>" >
-        <a href="<?=$this->url('librarycards-home')?>" class="list-group-item" aria-current=<?= $this->active == 'librarycards' ? 'page' : false ?>>
+        <a href="<?=$this->url('librarycards-home')?>" class="list-group-item" aria-current="<?= $this->active == 'librarycards' ? 'page' : 'false' ?>">
           <?=$this->transEsc('Library Cards')?>
         </a>
       </li>
@@ -151,21 +151,21 @@
 <?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
   <?php if ($this->ils()->checkCapability('getMyProfile')): ?>
     <li class="menu-profile hidden-xs hidden-sm<?=$this->active == 'profile' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item" aria-current=<?= $this->active == 'profile' ? 'page' : false ?>>
+      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item" aria-current="<?= $this->active == 'profile' ? 'page' : 'false' ?>">
         <?=$this->transEsc('Profile')?>
       </a>
     </li>
   <?php endif; ?>
 <?php endif; ?>
 <li class="menu-history hidden-xs hidden-sm <?=$this->active == 'history' ? ' active' : ''?>">
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item" aria-current=<?= $this->active == 'history' ? 'page' : false ?>>
+  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item" aria-current="<?= $this->active == 'history' ? 'page' : 'false' ?>">
     <?=$this->transEsc('history_saved_searches')?>
   </a>
 </li>
 
 <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
   <li class="menu-favorites mylist-menu-favorites <?= $listOpen ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-favorites')?>" id="open-list" class="<?= !$listOpen ? 'collapsed ' : '' ?>list-group-item hidden-xs hidden-sm" aria-current=<?= $this->active == 'favorites' ? 'page' : false ?>>
+    <a href="<?=$this->url('myresearch-favorites')?>" id="open-list" class="<?= !$listOpen ? 'collapsed ' : '' ?>list-group-item hidden-xs hidden-sm" aria-current="<?= $this->active == 'favorites' ? 'page' : 'false' ?>">
       <?=$this->transEsc('Favorites')?>
       <i class="hidden fa fa-spinner fa-spin"></i>
       <span class="ajax-error hidden">
