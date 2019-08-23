@@ -1,6 +1,6 @@
 /* ------ Border radius changes ------ */
-$list-group-border-radius: 0 !default;
-$border-radius-large: 0 !default; // modal
+$list-group-border-radius: 0;
+$border-radius-large: 0; // modal
 
 /* ------ Common element changes ------ */
 .help-block {
@@ -99,8 +99,8 @@ select.form-control {
 
 .label { font-weight: 400; }
 
-$pagination-border: transparent !default;
-$pagination-hover-border: transparent !default;
+$pagination-border: transparent;
+$pagination-hover-border: transparent;
 .pagination {
   @include clearfix();
   display: table;
