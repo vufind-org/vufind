@@ -55,9 +55,13 @@ class HierarchicalFacetHelper
      */
     public function sortFacetList(&$facetList, $order = null)
     {
+        // We need a boolean flag indicating whether or not to sort only the top
+        // level of the hierarchy. If we received a string configuration option,
+        // we should set the flag accordingly (boolean values of $order are
+        // supported for backward compatibility).
         $topLevel = $order ?? 'count';
         if (is_string($topLevel)) {
-            switch ($topLevel) {
+            switch (strtolower(trim($topLevel))) {
             case 'top':
                 $topLevel = true;
                 break;
@@ -66,6 +70,10 @@ class HierarchicalFacetHelper
                 break;
             case '':
             case 'count':
+                // At present, we assume the incoming list is already sorted by
+                // count, so no further action is needed. If in future we need
+                // to support re-sorting an arbitrary list, rather than simply
+                // operating on raw Solr values, we may need to implement logic.
                 return;
             }
         }
