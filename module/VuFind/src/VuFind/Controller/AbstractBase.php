@@ -51,11 +51,12 @@ class AbstractBase extends AbstractActionController
 {
     /**
      * Permission that must be granted to access this module (false for no
-     * restriction)
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
      *
      * @var string|bool
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through
@@ -106,6 +107,29 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Getter for access permission.
+     *
+     * @return string|bool
+     */
+    public function getAccessPermission()
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @param string $ap Permission to require for access to the controller (false
+     * for no requirement)
+     *
+     * @return void
+     */
+    public function setAccessPermission($ap)
+    {
+        $this->accessPermission = empty($ap) ? false : $ap;
+    }
+
+    /**
      * Register the default events for this controller
      *
      * @return void
@@ -132,10 +156,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        $layout = $this->params()
-            ->fromPost('layout', $this->params()->fromQuery('layout', false));
-        if ('lightbox' === $layout) {
+        if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
+            $params['inLightbox'] = true;
         }
         return new ViewModel($params);
     }
@@ -678,5 +701,19 @@ class AbstractBase extends AbstractActionController
     protected function getRecordTabManager()
     {
         return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+    }
+
+    /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return
+            $this->params()->fromPost(
+                'layout', $this->params()->fromQuery('layout', false)
+            ) === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
     }
 }
