@@ -324,6 +324,20 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
+    }
+
+    /**
      * Proxy auth method; a helper function to be called like:
      *   return $this->proxyAuthMethod(METHOD, func_get_args());
      *
@@ -340,9 +354,7 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
 
-        if ('Email' !== $this->strategy
-            && !in_array($this->strategy, $this->strategies)
-        ) {
+        if (!in_array($this->strategy, $this->strategies)) {
             throw new InvalidArgumentException("Illegal setting: {$this->strategy}");
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);

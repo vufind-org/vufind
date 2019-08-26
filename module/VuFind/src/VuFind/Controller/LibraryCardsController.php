@@ -298,7 +298,10 @@ class LibraryCardsController extends AbstractBase
                     $emailAuthenticator = $this->serviceLocator
                         ->get(\VuFind\Auth\EmailAuthenticator::class);
                     $emailAuthenticator->sendAuthenticationLink(
-                        $info['email'], $info, 'editLibraryCard'
+                        $info['email'],
+                        $info,
+                        ['auth_method' => 'Email'],
+                        'editLibraryCard'
                     );
                 }
                 // Don't reveal the result

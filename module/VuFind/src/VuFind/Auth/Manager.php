@@ -566,20 +566,15 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
-        // Always support auth_method=Email with a hash since other methods may
-        // delegate to it.
-        $authMethod = trim(
-            $request->getPost()->get(
-                'auth_method', $request->getQuery()->get('auth_method')
-            )
-        );
-        if ('Email' === $authMethod && $request->getQuery()->get('hash')) {
-            $this->setAuthMethod('Email');
-        }
-
         // Allow the auth module to inspect the request (used by ChoiceAuth,
         // for example):
         $this->getAuth()->preLoginCheck($request);
+
+        // Check if the current auth method wants to delegate the request to another
+        // method:
+        if ($delegate = $this->getAuth()->getDelegateAuthMethod($request)) {
+            $this->setAuthMethod($delegate);
+        }
 
         // Validate CSRF for form-based authentication methods:
         if (!$this->getAuth()->getSessionInitiator(null)

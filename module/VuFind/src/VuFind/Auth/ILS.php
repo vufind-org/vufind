@@ -135,8 +135,9 @@ class ILS extends AbstractBase
         // Did the patron successfully log in?
         if ('email' === $loginMethod) {
             if ($patron) {
-                $this->emailAuthenticator
-                    ->sendAuthenticationLink($patron['email'], $patron);
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $patron['email'], $patron, ['auth_method' => 'ILS']
+                );
             }
             // Don't reveal the result
             throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
@@ -240,6 +241,19 @@ class ILS extends AbstractBase
             'patronLogin', ['cat_username' => "$target.login"]
         );
         return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        return $this->emailAuthenticator->isValidLoginRequest($request)
+            ? 'Email' : false;
     }
 
     /**

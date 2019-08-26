@@ -109,10 +109,7 @@ class Email extends AbstractBase
      *
      * @param \Zend\Http\PhpEnvironment\Request $request Request object.
      *
-     * @throws AuthException
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return bool
      */
     public function needsCsrfCheck($request)
     {

@@ -83,8 +83,9 @@ class MultiILS extends ILS
         // Did the patron successfully log in?
         if ('email' === $loginMethod) {
             if ($patron) {
-                $this->emailAuthenticator
-                    ->sendAuthenticationLink($patron['email'], $patron);
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $patron['email'], $patron, ['auth_method' => 'MultiILS']
+                );
             }
             // Don't reveal the result
             throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');

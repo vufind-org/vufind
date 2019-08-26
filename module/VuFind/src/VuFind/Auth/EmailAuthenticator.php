@@ -126,12 +126,13 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param string $email     Email address to send the link to
      * @param array  $data      Information from the authentication request (such as
      * user details)
+     * @param array  $urlParams Default parameters for the generated URL
      * @param string $linkRoute The route to use as the base url for the login link
      *
      * @return void
      */
     public function sendAuthenticationLink($email, $data,
-        $linkRoute = 'myresearch-home'
+        $urlParams, $linkRoute = 'myresearch-home'
     ) {
         $sessionContainer = $this->getSessionContainer();
 
@@ -160,10 +161,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
 
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
-        $urlParams = [
-            'auth_method' => 'Email',
-            'hash' => $hash
-        ];
+        $urlParams['hash'] = $hash;
         $viewParams = $linkData;
         $viewParams['url'] = $serverHelper(
             $urlHelper($linkRoute, [], ['query' => $urlParams])
@@ -205,6 +203,26 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         }
 
         return $linkData['data'];
+    }
+
+    /**
+     * Check if the given request is a valid login request
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return bool
+     */
+    public function isValidLoginRequest(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        $hash = $request->getPost()->get(
+            'hash',
+            $request->getQuery()->get('hash', '')
+        );
+        if ($hash) {
+            $sessionContainer = $this->getSessionContainer();
+            return isset($sessionContainer->requests[$hash]);
+        }
+        return false;
     }
 
     /**

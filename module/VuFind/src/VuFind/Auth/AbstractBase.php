@@ -126,8 +126,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @param \Zend\Http\PhpEnvironment\Request $request Request object.
      *
-     * @throws AuthException
-     * @return void
+     * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -135,6 +134,21 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         // Enabled by default
         return true;
+    }
+
+    /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        // No delegate by default
+        return false;
     }
 
     /**
