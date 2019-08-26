@@ -149,9 +149,6 @@ class FeedbackController extends AbstractBase
     ) {
         try {
             $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
-            if ($replyToEmail) {
-                $mailer->setFromAddressOverride('');
-            }
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
