@@ -292,15 +292,20 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('787');
         foreach ($fields as $field) {
             $iSubfield = $field->getSubfield('i');
-            if ($iSubfield == null)
+            if ($iSubfield == false)
                 continue;
 
             $aSubfield = $field->getSubfield('a');
             $dSubfield = $field->getSubfield('d');
             $tSubfield = $field->getSubfield('t');
 
-            $title = $tSubfield->getData() ?? $aSubfield->getData();
-            if ($dSubfield != null)
+            $title = '';
+            if ($tSubfield != false )
+                $title = $tSubfield->getData();
+            elseif ($aSubfield != false)
+                $title = $aSubfield->getData();
+
+            if ($dSubfield != false)
                 $title .= ' (' . $dSubfield->getData() . ')';
 
             $referencedId = null;
