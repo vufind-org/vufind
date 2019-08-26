@@ -315,7 +315,7 @@ class SolrMarc extends SolrDefault
 
             $type = $iSubfield->getData();
             if (preg_match('"^(Rezension|Rezensiert in)(:)?$"i', $type)) {
-                $resultType = 'reviewed_record';
+                $resultType = 'review';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
                 $reviewer = $aSubfield->getData() ?? '';
@@ -323,7 +323,7 @@ class SolrMarc extends SolrDefault
                                               'reviewer' => $reviewer,
                                               'title' => $title];
             } else if (preg_match('"^Rezension von$"i', $type)) {
-                $resultType = 'review';
+                $resultType = 'reviewed_record';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
                 $reviewer = '';
