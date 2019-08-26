@@ -1,6 +1,6 @@
 <h3><?=$this->transEsc('Electronic')?></h3>
 <table class="table table-striped">
-  <?php $i = 0; foreach ($this->holdings as $item): ?>
+  <?php foreach ($this->holdings as $item): ?>
     <tr>
       <td class="fullLocation">
         <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>

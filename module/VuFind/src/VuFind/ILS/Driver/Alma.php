@@ -1609,6 +1609,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $deliveryUrl
                         = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
                     $digitalItems = $record->getFields('AVD');
+                    if ($digitalItems && !$deliveryUrl) {
+                        $this->logWarning(
+                            'Digital items exist for ' . (string)$bib->mms_id
+                            . ', but digitalDeliveryUrl not set -- unable to'
+                            . ' generate links'
+                        );
+                    }
                     foreach ($digitalItems as $field) {
                         $item = $tmpl;
                         unset($item['callnumber']);
