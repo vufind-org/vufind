@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Channels controller factory.
@@ -39,7 +38,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ChannelsControllerFactory implements FactoryInterface
+class ChannelsControllerFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -62,6 +61,6 @@ class ChannelsControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $loader = $container->get(\VuFind\ChannelProvider\ChannelLoader::class);
-        return new $requestedName($loader);
+        return $this->applyPermissions($container, new $requestedName($loader));
     }
 }

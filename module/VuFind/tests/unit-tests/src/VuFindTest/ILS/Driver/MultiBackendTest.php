@@ -2458,6 +2458,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * @throws \VuFind\Exception\ILS
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getStatus($id)
     {
@@ -2474,6 +2476,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array of getStatus() return values on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getStatuses($ids)
     {
@@ -2488,13 +2492,16 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws \VuFind\Exception\ILS
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return [];
     }
@@ -2509,6 +2516,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

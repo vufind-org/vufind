@@ -364,7 +364,7 @@ class SideFacets extends AbstractFacets
         if (empty($this->collapsedFacets)) {
             return [];
         } elseif ($this->collapsedFacets == '*') {
-            return array_keys($this->getFacetSet());
+            return array_keys($this->mainFacets);
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
     }
@@ -410,39 +410,6 @@ class SideFacets extends AbstractFacets
 
         // No config found; use default behavior:
         return 'more';
-    }
-
-    /**
-     * Get the list of filters to display
-     *
-     * @param array $extraFilters Extra filters to add to the list.
-     *
-     * @return array
-     */
-    public function getVisibleFilters($extraFilters = [])
-    {
-        // Merge extras into main list:
-        $filterList = array_merge(
-            $this->results->getParams()->getFilterList(true), $extraFilters
-        );
-
-        // Filter out suppressed values:
-        $final = [];
-        foreach ($filterList as $field => $filters) {
-            $current = [];
-            foreach ($filters as $filter) {
-                if (!isset($filter['suppressDisplay'])
-                    || !$filter['suppressDisplay']
-                ) {
-                    $current[] = $filter;
-                }
-            }
-            if (!empty($current)) {
-                $final[$field] = $current;
-            }
-        }
-
-        return $final;
     }
 
     /**

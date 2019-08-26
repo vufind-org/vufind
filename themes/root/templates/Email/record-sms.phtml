@@ -6,6 +6,9 @@
     // we'll just show URL and title.  This prioritization is important,
     // since text messages can be short, and we want the most important stuff
     // at the top!
+    $recordUrl = $this->shortenUrl(
+        $this->serverUrl($this->recordLink()->getUrl($this->driver))
+    );
     if ($this->driver->supportsAjaxStatus()) {
         $holdings = $this->driver->getRealTimeHoldings();
 
@@ -46,9 +49,9 @@
             echo $this->translate('Location') . ': ' . trim($location) . "\n";
         }
         echo $this->driver->getBreadcrumb() . "\n";
-        echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+        echo $recordUrl . "\n";
     } else {
-        echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+        echo $recordUrl . "\n";
         echo $this->driver->getBreadcrumb() . "\n";
     }
 ?>

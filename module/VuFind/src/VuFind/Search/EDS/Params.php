@@ -65,11 +65,32 @@ class Params extends \VuFind\Search\Base\Params
         = ['Advanced_Facets', 'FacetsTop', 'Facets'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Is the request using this parameters objects for setup only?
      *
      * @var bool
      */
     public $isSetupOnly = false;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($options, $configLoader);
+        $this->addLimitersAsCheckboxFacets($options);
+        $this->addExpandersAsCheckboxFacets($options);
+    }
 
     /**
      * Pull the search parameters
@@ -159,28 +180,6 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
-    }
-
-    /**
-     * Return an array structure containing information about all current filters.
-     *
-     * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
-     * the list (to be used as a complement to getCheckboxFacets()).
-     *
-     * @return array                       Field, values and translation status
-     */
-    public function getFilterList($excludeCheckboxFilters = false)
-    {
-        $filters = parent::getFilterList($excludeCheckboxFilters);
-        $label = $this->getFacetLabel('SEARCHMODE');
-        if (isset($filters[$label])) {
-            foreach (array_keys($filters[$label]) as $i) {
-                $filters[$label][$i]['suppressDisplay'] = true;
-            }
-        }
-        return $filters;
     }
 
     /**

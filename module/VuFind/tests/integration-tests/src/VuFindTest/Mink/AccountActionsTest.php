@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -66,6 +68,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test changing a password.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testChangePassword()
@@ -75,25 +79,25 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
 
         // Create account
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Go to profile page:
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
 
         // Log back in
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // Now click change password button:
@@ -102,7 +106,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Change the password (but get the old password wrong)
         $this->fillInChangePasswordForm($page, 'bad', 'good');
-        $this->findCss($page, '#newpassword .btn.btn-primary')->click();
+        $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
             'Invalid login -- please try again.',
@@ -111,7 +115,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Change the password successfully:
         $this->fillInChangePasswordForm($page, 'test', 'good');
-        $this->findCss($page, '#newpassword .btn.btn-primary')->click();
+        $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
             'Your password has successfully been changed',
@@ -119,23 +123,23 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Log back in (using old credentials, which should now fail):
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
 
         // Now log in successfully:
         $this->fillInLoginForm($page, 'username1', 'good');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // One final log out (to confirm that log in really worked).
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
     }
 

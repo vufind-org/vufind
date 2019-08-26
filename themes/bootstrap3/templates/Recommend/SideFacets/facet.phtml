@@ -3,7 +3,6 @@
   $this->options = $options = $results->getOptions();
   $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
-  $collapsedFacets = $this->recommend->getCollapsedFacets();
   $rangeFacets = $this->recommend->getAllRangeFacets();
   $facet = $this->facet;
 ?>
@@ -30,7 +29,7 @@
         'allowExclude' => $this->recommend->excludeAllowed($facet),
         'title' => $facet,
         'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? '',
-        'collapsedFacets' => $collapsedFacets
+        'collapsedFacets' => $this->collapsedFacets
       ]
     ); ?>
     <noscript>
