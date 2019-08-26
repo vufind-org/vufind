@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2016-2018.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -128,6 +128,29 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Permanent renewal blocks
+     */
+    protected $permanentRenewalBlocks = [
+        'onsite_checkout',
+        'on_reserve',
+        'too_many'
+    ];
+
+    /**
+     * Whether to display home branch instead of holding branch
+     *
+     * @var bool
+     */
+    protected $useHomeBranch = false;
+
+    /**
+     * Whether to sort items by enumchron. Default is true.
+     *
+     * @var array
+     */
+    protected $sortItemsByEnumChron;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -179,6 +202,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->feeTypeMappings, $this->config['FeeTypeMappings']
             );
         }
+
+        $this->useHomeBranch = !empty($this->config['Holdings']['use_home_branch']);
+
+        $this->sortItemsByEnumChron
+            = $this->config['Holdings']['sort_by_enum_chron'] ?? true;
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -240,16 +268,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options
      *
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber, duedate,
-     * number, barcode.
+     * @throws \VuFind\Exception\ILS
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBiblio($id, $patron);
     }
@@ -328,6 +358,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function patronLogin($username, $password)
     {
+        if (empty($username) || empty($password)) {
+            return null;
+        }
         $patron = ['cat_username' => $username, 'cat_password' => $password];
 
         if ($this->sessionCache->patron != $username) {
@@ -431,24 +464,62 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
-        $result = $this->makeRequest(
-            ['v1', 'checkouts', 'expanded'],
-            ['borrowernumber' => $patron['id']],
-            'GET',
-            $patron
-        );
-        if (empty($result)) {
-            return [];
+        if (!empty($this->config['Catalog']['checkoutsSupportPaging'])) {
+            $sort = explode(
+                ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
+            );
+            if ($sort[0] == 'checkout') {
+                $sortKey = 'issuedate';
+            } elseif ($sort[0] == 'title') {
+                $sortKey = 'title';
+            } else {
+                $sortKey = 'date_due';
+            }
+            $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
+
+            $pageSize = $params['limit'] ?? 50;
+            $queryParams = [
+                'borrowernumber' => $patron['id'],
+                'sort' => $sortKey,
+                'order' => $direction,
+                'offset' => isset($params['page'])
+                    ? ($params['page'] - 1) * $pageSize : 0,
+                'limit' => $pageSize
+            ];
+            $result = $this->makeRequest(
+                ['v1', 'checkouts', 'expanded', 'paged'],
+                $queryParams,
+                'GET',
+                $patron
+            );
+        } else {
+            $records = $this->makeRequest(
+                ['v1', 'checkouts', 'expanded'],
+                ['borrowernumber' => $patron['id']],
+                'GET',
+                $patron
+            );
+            $result = [
+                'total' => count($records),
+                'records' => $records
+            ];
+        }
+        if (empty($result['records'])) {
+            return [
+                'count' => 0,
+                'records' => []
+            ];
         }
         $transactions = [];
-        foreach ($result as $entry) {
+        foreach ($result['records'] as $entry) {
             list($biblionumber, $title, $volume)
                 = $this->getCheckoutInformation($entry);
 
@@ -464,11 +535,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $renewable = $entry['renewable'];
+            $renewals = $entry['renewals'];
+            $renewLimit = $entry['max_renewals'];
             $message = '';
             if (!$renewable) {
                 $message = $this->mapRenewalBlockReason(
                     $entry['renewability_error']
                 );
+                $permanent = in_array(
+                    $entry['renewability_error'], $this->permanentRenewalBlocks
+                );
+                if ($permanent) {
+                    $renewals = null;
+                    $renewLimit = null;
+                }
             }
 
             $transaction = [
@@ -481,8 +561,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     'Y-m-d\TH:i:sP', $entry['date_due']
                 ),
                 'dueStatus' => $dueStatus,
-                'renew' => $entry['renewals'],
-                'renewLimit' => $entry['max_renewals'],
+                'renew' => $renewals,
+                'renewLimit' => $renewLimit,
                 'renewable' => $renewable,
                 'message' => $message
             ];
@@ -490,7 +570,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $transactions[] = $transaction;
         }
 
-        return $transactions;
+        return [
+            'count' => $result['total'],
+            'records' => $transactions
+        ];
     }
 
     /**
@@ -785,6 +868,63 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $locations = [];
+        $excluded = isset($this->config['Holds']['excludePickupLocations'])
+            ? explode(':', $this->config['Holds']['excludePickupLocations']) : [];
+        $included = null;
+
+        if (!empty($this->config['Catalog']['availabilitySupportsPickupLocations'])
+        ) {
+            $included = [];
+            $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
+                ? $holdDetails['level'] : 'copy';
+            $bibId = $holdDetails['id'];
+            $itemId = $holdDetails['item_id'] ?? false;
+            if ('copy' === $level && false === $itemId) {
+                return [];
+            }
+            // Collect branch codes that are to be included
+            if ('copy' === $level) {
+                $result = $this->makeRequest(
+                    ['v1', 'availability', 'item', 'hold'],
+                    [
+                        'itemnumber' => $itemId,
+                        'borrowernumber' => (int)$patron['id'],
+                        'query_pickup_locations' => 1
+                    ],
+                    'GET',
+                    $patron
+                );
+                if (empty($result)) {
+                    return [];
+                }
+                foreach ($result['availability']['notes']['Item::PickupLocations']
+                    as $code
+                ) {
+                    $included[] = $code;
+                }
+            } else {
+                $result = $this->makeRequest(
+                    ['v1', 'availability', 'biblio', 'hold'],
+                    [
+                        'biblionumber' => $bibId,
+                        'borrowernumber' => (int)$patron['id'],
+                        'query_pickup_locations' => 1
+                    ],
+                    'GET',
+                    $patron
+                );
+                if (empty($result)) {
+                    return [];
+                }
+                foreach ($result['availability']['notes']['Biblio::PickupLocations']
+                    as $code
+                ) {
+                    $included[] = $code;
+                }
+            }
+        }
+
         $result = $this->makeRequest(
             ['v1', 'libraries'],
             false,
@@ -794,17 +934,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (empty($result)) {
             return [];
         }
-        $locations = [];
-        $excluded = isset($this->config['Holds']['excludePickupLocations'])
-            ? explode(':', $this->config['Holds']['excludePickupLocations']) : [];
         foreach ($result as $location) {
-            if (!$location['pickup_location']
-                || in_array($location['branchcode'], $excluded)
+            $code = $location['branchcode'];
+            if ((null === $included && !$location['pickup_location'])
+                || in_array($code, $excluded)
+                || (null !== $included && !in_array($code, $included))
             ) {
                 continue;
             }
             $locations[] = [
-                'locationID' => $location['branchcode'],
+                'locationID' => $code,
                 'locationDisplay' => $location['branchname']
             ];
         }
@@ -1000,6 +1139,225 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all article requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return array        Array of the patron's storage retrieval requests.
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $result = $this->makeRequest(
+            ['v1', 'articlerequests'],
+            ['borrowernumber' => $patron['id']],
+            'GET',
+            $patron
+        );
+        if (empty($result['records'])) {
+            return [];
+        }
+        $requests = [];
+        foreach ($result['records'] as $entry) {
+            $bibId = $entry['biblionumber'] ?? null;
+            $itemId = $entry['itemnumber'] ?? null;
+            $title = '';
+            $volume = '';
+            $publicationYear = '';
+            if ($itemId) {
+                $item = $this->getItem($itemId);
+                $bibId = $item['biblionumber'];
+                $volume = $item['enumchron'];
+            }
+            if (!empty($bibId)) {
+                $bib = $this->getBibRecord($bibId);
+                $title = $bib['title'] ?? '';
+                if (!empty($bib['title_remainder'])) {
+                    $title .= ' ' . $bib['title_remainder'];
+                    $title = trim($title);
+                }
+            }
+            $requests[] = [
+                'id' => $bibId,
+                'item_id' => $entry['id'],
+                'location' => $entry['branchcode'],
+                'create' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d', $entry['created_on']
+                ),
+                'available' => $entry['status'] === 'COMPLETED',
+                'title' => $title,
+                'volume' => $volume,
+            ];
+        }
+        return $requests;
+    }
+
+    /**
+     * Get Cancel Storage Retrieval Request (article request) Details
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        return $details['item_id'];
+    }
+
+    /**
+     * Cancel Storage Retrieval Requests (article requests)
+     *
+     * Attempts to Cancel an article request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $response = [];
+
+        foreach ($details as $id) {
+            list($resultCode) = $this->makeRequest(
+                ['v1', 'articlerequests', $id], [], 'DELETE', $patron, true
+            );
+
+            if ($resultCode != 200) {
+                $response[$id] = [
+                    'success' => false,
+                    'status' => 'storage_retrieval_request_cancel_fail',
+                    'sysMessage' => false
+                ];
+            } else {
+                $response[$id] = [
+                    'success' => true,
+                    'status' => 'storage_retrieval_request_cancel_success'
+                ];
+                ++$count;
+            }
+        }
+        return ['count' => $count, 'items' => $response];
+    }
+
+    /**
+     * Check if storage retrieval request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        if (!isset($this->config['StorageRetrievalRequests'])
+            || $this->getPatronBlocks($patron)
+        ) {
+            return false;
+        }
+
+        $level = $data['level'] ?? 'copy';
+
+        if ('title' === $level) {
+            $result = $this->makeRequest(
+                ['v1', 'availability', 'biblio', 'articlerequest'],
+                ['biblionumber' => $id, 'borrowernumber' => $patron['id']],
+                'GET',
+                $patron
+            );
+        } else {
+            $result = $this->makeRequest(
+                ['v1', 'availability', 'item', 'articlerequest'],
+                [
+                    'itemnumber' => $data['item_id'],
+                    'borrowernumber' => $patron['id']
+                ],
+                'GET',
+                $patron
+            );
+        }
+        return !empty($result[0]['availability']['available']);
+    }
+
+    /**
+     * Place Storage Retrieval Request (Call Slip)
+     *
+     * Attempts to place a call slip request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        $patron = $details['patron'];
+        $level = $details['level'] ?? 'copy';
+        $pickUpLocation = $details['pickUpLocation'] ?? null;
+        $itemId = $details['item_id'] ?? false;
+        $comment = $details['comment'] ?? '';
+        $bibId = $details['id'];
+
+        if ('copy' === $level && empty($itemId)) {
+            throw new ILSException("Request level is 'copy', but item ID is empty");
+        }
+
+        // Make sure pickup location is valid
+        if (null !== $pickUpLocation
+            && !$this->pickUpLocationIsValid($pickUpLocation, $patron, $details)
+        ) {
+            return [
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+            ];
+        }
+
+        $request = [
+            'biblionumber' => (int)$bibId,
+            'borrowernumber' => (int)$patron['id'],
+            'branchcode' => $pickUpLocation,
+            'patron_notes' => $comment,
+        ];
+        if ($level == 'copy') {
+            $request['itemnumber'] = (int)$itemId;
+        }
+
+        $request['volume'] = $details['volume'] ?? '';
+        $request['issue'] = $details['issue'] ?? '';
+        $request['date'] = $details['year'] ?? '';
+
+        list($code, $result) = $this->makeRequest(
+            ['v1', 'articlerequests'],
+            json_encode($request),
+            'POST',
+            $patron,
+            true
+        );
+
+        if ($code >= 300) {
+            $message = $result['error'] ?? 'storage_retrieval_request_error_fail';
+            return [
+                'success' => false,
+                'sysMessage' => $message
+            ];
+        }
+        return [
+            'success' => true,
+            'status' => 'storage_retrieval_request_place_success'
+        ];
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -1124,8 +1482,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return false;
             }
+            $limit = $this->config['TransactionHistory']['max_page_size'] ?? 100;
             return [
-                'max_results' => 100,
+                'max_results' => $limit,
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
@@ -1136,7 +1495,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ],
                 'default_sort' => 'checkout desc'
             ];
+        } elseif ('getMyTransactions' === $function) {
+            if (empty($this->config['Catalog']['checkoutsSupportPaging'])) {
+                return [];
+            }
+            $limit = $this->config['Loans']['max_page_size'] ?? 100;
+            return [
+                'max_results' => $limit,
+                'sort' => [
+                    'checkout desc' => 'sort_checkout_date_desc',
+                    'checkout asc' => 'sort_checkout_date_asc',
+                    'due desc' => 'sort_due_date_desc',
+                    'due asc' => 'sort_due_date_asc',
+                    'title asc' => 'sort_title'
+                ],
+                'default_sort' => 'due asc'
+            ];
         }
+
         return isset($this->config[$function])
             ? $this->config[$function] : false;
     }
@@ -1234,7 +1610,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             // Renew authentication token as necessary
             if (null === $this->sessionCache->patronCookie) {
                 if (!$this->renewPatronCookie($patron)) {
-                    return null;
+                    return $returnCode ? [403, null] : null;
                 }
             }
         }
@@ -1412,12 +1788,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemStatusesForBiblio($id, $patron = null)
     {
-        $result = $this->makeRequest(
+        list($code, $result) = $this->makeRequest(
             ['v1', 'availability', 'biblio', 'search'],
             ['biblionumber' => $id],
             'GET',
-            $patron
+            $patron,
+            true
         );
+        if (404 === $code) {
+            return [];
+        }
+        if ($code !== 200) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
         if (empty($result[0]['item_availabilities'])) {
             return [];
         }
@@ -1464,6 +1848,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $entry['addLink'] = 'check';
             } else {
                 $entry['is_holdable'] = false;
+            }
+
+            if ($patron && $this->itemArticleRequestAllowed($item)) {
+                $entry['storageRetrievalRequest'] = 'auto';
+                $entry['addStorageRetrievalRequestLink'] = 'check';
             }
 
             $statuses[] = $entry;
@@ -1546,6 +1935,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         $statuses[] = !empty($reason['code'])
                             ? $reason['code'] : $status;
                     }
+                } elseif (strncmp($key, 'ItemType::', 10) == 0) {
+                    $status = substr($key, 10);
+                    switch ($status) {
+                    case 'NotForLoan':
+                        $statuses[] = 'On Reference Desk';
+                        break;
+                    }
                 }
             }
             if (empty($statuses)) {
@@ -1574,7 +1970,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function statusSortFunction($a, $b)
     {
         $result = strcmp($a['location'], $b['location']);
-        if ($result == 0) {
+
+        if (0 === $result && $this->sortItemsByEnumChron) {
+            $result = strnatcmp($a['number'], $b['number']);
+        }
+
+        if (0 === $result) {
             $result = $a['sort'] - $b['sort'];
         }
         return $result;
@@ -1594,6 +1995,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if an article request can be placed on the item
+     *
+     * @param array $item Item from Koha
+     *
+     * @return bool
+     */
+    protected function itemArticleRequestAllowed($item)
+    {
+        $unavail = $item['availability']['unavailabilities'] ?? [];
+        if (isset($unavail['ArticleRequest::NotAllowed'])) {
+            return false;
+        }
+        if (empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut'])
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -1655,9 +2077,19 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             );
             $blockReason = [];
             if (!empty($result['blocks'])) {
-                $blockReason[] = $this->translate('Borrowing Block Message');
+                $holdBlock = false;
+                $nonHoldBlock = false;
                 foreach ($result['blocks'] as $reason => $details) {
                     $params = [];
+                    if ($reason === 'Hold::MaximumHoldsReached') {
+                        $holdBlock = true;
+                        $params = [
+                            '%%blockCount%%' => $details['current_hold_count'],
+                            '%%blockLimit%%' => $details['max_holds_allowed']
+                        ];
+                    } else {
+                        $nonHoldBlock = true;
+                    }
                     if (($reason == 'Patron::Debt'
                         || $reason == 'Patron::DebtGuarantees')
                         && !empty($details['current_outstanding'])
@@ -1675,6 +2107,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         $reason = $translated;
                         $blockReason[] = $reason;
                     }
+                }
+                // Add the generic block message to the beginning if we have blocks
+                // other than hold block
+                if ($nonHoldBlock) {
+                    array_unshift(
+                        $blockReason, $this->translate('Borrowing Block Message')
+                    );
                 }
             }
             $this->putCachedData($cacheId, $blockReason);
@@ -1783,10 +2222,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemLocationName($item)
     {
-        $branchId = null !== $item['holdingbranch'] ? $item['holdingbranch']
-            : $item['homebranch'];
-        $name = $this->translate("location_$branchId");
-        if ($name === "location_$branchId") {
+        $branchId = (!$this->useHomeBranch && null !== $item['holdingbranch'])
+            ? $item['holdingbranch'] : $item['homebranch'];
+        $name = $this->translateLocation($branchId);
+        if ($name === $branchId) {
             $branches = $this->getCachedData('branches');
             if (null === $branches) {
                 $result = $this->makeRequest(
@@ -1801,6 +2240,27 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $name = $branches[$branchId] ?? $branchId;
         }
         return $name;
+    }
+
+    /**
+     * Translate location name
+     *
+     * @param string $location Location code
+     * @param string $default  Default value if translation is not available
+     *
+     * @return string
+     */
+    protected function translateLocation($location, $default = null)
+    {
+        if (empty($location)) {
+            return null !== $default ? $default : '';
+        }
+        $prefix = 'location_';
+        return $this->translate(
+            "$prefix$location",
+            null,
+            null !== $default ? $default : $location
+        );
     }
 
     /**
