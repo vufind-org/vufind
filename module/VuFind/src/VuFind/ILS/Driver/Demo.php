@@ -549,7 +549,7 @@ class Demo extends AbstractBase
         // when testing multiple accounts.
         $selectedPatron = empty($patron)
             ? (current(array_keys($this->session)) ?: 'default')
-            : $patron;
+            : md5($patron);
 
         // SessionContainer not defined yet? Build it now:
         if (!isset($this->session[$selectedPatron])) {
