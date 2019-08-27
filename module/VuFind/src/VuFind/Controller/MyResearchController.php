@@ -192,8 +192,6 @@ class MyResearchController extends AbstractBase
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
-            } catch (AuthInProgressException $e) {
-                $this->processAuthenticationException($e);
             }
         }
 
@@ -1458,7 +1456,7 @@ class MyResearchController extends AbstractBase
 
     /**
      * Convenience method to get a session initiator URL. Returns false if not
-     * applicable or true if no redirect is needed (internal session initiation).
+     * applicable.
      *
      * @return string|bool
      */
