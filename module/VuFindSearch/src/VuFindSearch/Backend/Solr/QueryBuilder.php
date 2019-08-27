@@ -144,6 +144,10 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
+            // CustomMunge for Dismax queries
+            if ($handler->hasDismax()) {
+                 $string = array_pop($handler->mungeValues($string, false));
+            }
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
@@ -357,6 +361,10 @@ class QueryBuilder implements QueryBuilderInterface
                 $component->getHandler(),
                 $searchString
             );
+            // CustomMunge for nested Dismax queries
+            if ($searchHandler->hasDismax()) {
+                $searchString = array_pop($searchHandler->mungeValues($searchString, false));
+            }
             if ($searchHandler && '' !== $searchString) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
