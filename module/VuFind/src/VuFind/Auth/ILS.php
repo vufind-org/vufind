@@ -74,7 +74,7 @@ class ILS extends AbstractBase
     public function __construct(
         \VuFind\ILS\Connection $connection,
         \VuFind\Auth\ILSAuthenticator $authenticator,
-        EmailAuthenticator $emailAuth
+        EmailAuthenticator $emailAuth = null
     ) {
         $this->setCatalog($connection);
         $this->authenticator = $authenticator;
@@ -134,6 +134,9 @@ class ILS extends AbstractBase
 
         // Did the patron successfully log in?
         if ('email' === $loginMethod) {
+            if (null === $this->emailAuthenticator) {
+                throw new \Exception('Email authenticator not set');
+            }
             if ($patron) {
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $patron['email'], $patron, ['auth_method' => 'ILS']
@@ -252,8 +255,9 @@ class ILS extends AbstractBase
      */
     public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
     {
-        return $this->emailAuthenticator->isValidLoginRequest($request)
-            ? 'Email' : false;
+        return (null !== $this->emailAuthenticator
+            && $this->emailAuthenticator->isValidLoginRequest($request))
+                ? 'Email' : false;
     }
 
     /**

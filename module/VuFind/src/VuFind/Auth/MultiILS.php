@@ -82,6 +82,9 @@ class MultiILS extends ILS
 
         // Did the patron successfully log in?
         if ('email' === $loginMethod) {
+            if (null === $this->emailAuthenticator) {
+                throw new \Exception('Email authenticator not set');
+            }
             if ($patron) {
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $patron['email'], $patron, ['auth_method' => 'MultiILS']
