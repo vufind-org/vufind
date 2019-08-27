@@ -253,6 +253,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'position' => 0,
                 'available' => false,
                 'create' => '11-15-2013',
+                'cancel_details' => '',
             ],
         1 =>
             [
@@ -275,6 +276,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'position' => 0,
                 'available' => false,
                 'create' => '12-22-2011',
+                'cancel_details' => '',
             ]
     ];
 
