@@ -1896,6 +1896,9 @@ class MyResearchController extends AbstractBase
             }
             // Return to account home
             return $this->redirect()->toRoute('myresearch-home');
+        } elseif ($this->getConfig()->Authentication->verify_email ?? false) {
+            $this->flashMessenger()
+                ->addMessage('change_email_verification_reminder', 'info');
         }
         if (!empty($user->pending_email)) {
             $url = $this->url()->fromRoute('myresearch-emailnotverified')
