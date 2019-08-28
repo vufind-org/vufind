@@ -118,6 +118,10 @@ class VerifyResourceMetadata extends AbstractService
                 $driver = $this->recordLoader
                     ->load($resource->record_id, $resource->source);
                 $original = clone $resource;
+                // Reset metadata first, otherwise assignMetadata doesn't do anything
+                $resource->title = '';
+                $resource->author = '';
+                $resource->year = '';
                 $resource->assignMetadata($driver, $this->dateConverter);
                 if ($original != $resource) {
                     $resource->save();
