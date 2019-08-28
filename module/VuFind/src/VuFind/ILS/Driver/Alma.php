@@ -1586,7 +1586,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $item['availability'] = strtolower($avail) === 'available';
                         $item['location'] = (string)$field->getSubfield('c')
                             ->getData();
-                        $item['type'] = 'physical';
                         $status[] = $item;
                     }
                     // Electronic
@@ -1602,7 +1601,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             $item['locationhref'] = $url;
                         }
                         $item['status'] = $field->getSubfield('s')->getData();
-                        $item['type'] = 'electronic';
                         $status[] = $item;
                     }
                     // Digital
@@ -1628,7 +1626,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                                 $deliveryUrl
                             );
                         }
-                        $item['type'] = 'digital';
                         $status[] = $item;
                     }
                 } else {
