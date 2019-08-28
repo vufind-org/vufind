@@ -399,9 +399,6 @@ class SearchHandler
                 case 'uppercase':
                     $mungeValues[$mungeName] = strtoupper($mungeValues[$mungeName]);
                     break;
-                case 'ucfirst':
-                    $mungeValues[$mungeName] = ucfirst($mungeValues[$mungeName]);
-                    break;
                 default:
                     throw new \InvalidArgumentException(
                         sprintf('Unknown munge operation: %s', $operation[0])
