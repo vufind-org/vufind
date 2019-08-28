@@ -112,6 +112,7 @@ class VerifyResourceMetadata extends AbstractService
 
         $count = 0;
         $fixed = 0;
+        $this->recordLoader->setCacheContext(\VuFind\Record\Cache::CONTEXT_FAVORITE);
         foreach ($resources as $resource) {
             try {
                 $driver = $this->recordLoader
