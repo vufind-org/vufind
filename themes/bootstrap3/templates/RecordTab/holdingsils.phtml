@@ -72,7 +72,7 @@
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
   <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
-  <?php if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+  <?php if ($holding['locationhref'] ?? false): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
   <?php else: ?>
     <?=$locationText?>
@@ -95,7 +95,7 @@
     </td>
   </tr>
   <?php endif; ?>
-  <?php if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+  <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
       <?php // Translation for summary is a special case for backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
@@ -105,7 +105,7 @@
         <?php endforeach; ?>
       </td>
     </tr>
-  <?php endforeach; endif; ?>
+  <?php endforeach; ?>
   <?php foreach ($holding['items'] as $row): ?>
     <?php
         try {
