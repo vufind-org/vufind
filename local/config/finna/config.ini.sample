@@ -676,8 +676,9 @@ coverimages     = NatLibFi,OpenLibrary
 ; The path is relative to the base of your theme directory.
 noCoverAvailableImage = images/noCover2.gif
 
-; Should PDF files be converted to cover images?
-convertPdfToCoverImage = false
+; URL of a service that is used to convert PDF files to jpg.
+; The service receives the URL of the pdf file as a GET parameter and outputs a jpg file.
+; convertPdfToCoverImageService = "http://127.0.0.1:9999"
 
 ; Comma separated list of record formats whose PDF converted record images may be downloaded.
 pdfCoverImageDownload = "0/Map/"
