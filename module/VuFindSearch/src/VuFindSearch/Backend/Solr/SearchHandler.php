@@ -393,6 +393,9 @@ class SearchHandler
                         $operation[1], $operation[2], $mungeValues[$mungeName]
                     );
                     break;
+                case 'ucfirst':
+                    $mungeValues[$mungeName] = ucfirst($mungeValues[$mungeName]);
+                    break;
                 case 'uppercase':
                     $mungeValues[$mungeName] = strtoupper($mungeValues[$mungeName]);
                     break;
