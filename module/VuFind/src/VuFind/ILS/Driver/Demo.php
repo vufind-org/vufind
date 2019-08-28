@@ -397,21 +397,20 @@ class Demo extends AbstractBase
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
             'services'     => $status == 'Available' ? $this->getFakeServices() : [],
-            'type'         => 'physical'
         ];
 
         switch (rand(1, 5)) {
         case 1:
             $result['location'] = 'Digital copy available';
             $result['locationhref'] = 'http://digital';
-            $result['type'] = 'electronic';
+            $result['__electronic__'] = true;
             $result['availability'] = true;
             $result['status'] = '';
             break;
         case 2:
             $result['location'] = 'Electronic Journals';
             $result['locationhref'] = 'http://electronic';
-            $result['type'] = 'electronic';
+            $result['__electronic__'] = true;
             $result['availability'] = true;
             $result['status'] = 'Available from ' . rand(2010, 2019);
         }
@@ -725,7 +724,9 @@ class Demo extends AbstractBase
         $statuses = $this->getStatus($id);
         $electronic = [];
         foreach ($statuses as $item) {
-            if ('electronic' === $item['type']) {
+            if ($item['__electronic__'] ?? false) {
+                // Don't expose internal __electronic__ flag upstream:
+                unset($item['__electronic__']);
                 $electronic[] = $item;
             }
         }
