@@ -146,8 +146,8 @@ class QueryBuilder implements QueryBuilderInterface
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             // CustomMunge for Dismax queries
             if ($handler->hasDismax()) {
-                 $mungeValues = $handler->mungeValues($string, false);
-                 $string = array_pop($mungeValues);
+                $mungeValues = $handler->mungeValues($string, false);
+                $string = array_pop($mungeValues);
             }
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
