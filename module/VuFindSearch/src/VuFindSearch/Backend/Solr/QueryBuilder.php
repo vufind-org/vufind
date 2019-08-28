@@ -146,7 +146,8 @@ class QueryBuilder implements QueryBuilderInterface
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             // CustomMunge for Dismax queries
             if ($handler->hasDismax()) {
-                 $string = array_pop($handler->mungeValues($string, false));
+                 $mungeValues = $handler->mungeValues($string, false);
+                 $string = array_pop($mungeValues);
             }
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -363,7 +364,8 @@ class QueryBuilder implements QueryBuilderInterface
             );
             // CustomMunge for nested Dismax queries
             if ($searchHandler->hasDismax()) {
-                $searchString = array_pop($searchHandler->mungeValues($searchString, false));
+                $mungeValues = $searchHandler->mungeValues($searchString, false);
+                $searchString = array_pop($mungeValues);
             }
             if ($searchHandler && '' !== $searchString) {
                 $searchString
