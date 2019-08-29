@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +25,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -38,6 +39,7 @@ namespace Finna\View\Helper\Root;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -63,6 +65,20 @@ class Record extends \VuFind\View\Helper\Root\Record
      * @var \Finna\View\Helper\Root\RecordImage
      */
     protected $recordImageHelper;
+
+    /**
+     * Image cache
+     *
+     * @var array
+     */
+    protected $cachedImages = [];
+
+    /**
+     * Cached id of old record
+     *
+     * @var string
+     */
+    protected $cachedId = null;
 
     /**
      * Constructor
@@ -321,8 +337,15 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getAllImages($language, $thumbnails = true, $includePdf = true)
     {
-        $sizes = ['small', 'medium', 'large', 'master'];
         $recordId = $this->driver->getUniqueID();
+
+        if ($this->cachedId === $recordId) {
+            return $this->cachedImages;
+        }
+
+        $this->cachedId = $recordId;
+
+        $sizes = ['small', 'medium', 'large', 'master'];
         $images = $this->driver->tryMethod('getAllImages', [$language, $includePdf]);
         if (null === $images) {
             $images = [];
@@ -361,7 +384,7 @@ class Record extends \VuFind\View\Helper\Root\Record
                 }
             }
         }
-        return $images;
+        return $this->cachedImages = $images;
     }
 
     /**
