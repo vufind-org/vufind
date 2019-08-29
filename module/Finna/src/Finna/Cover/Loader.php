@@ -392,11 +392,10 @@ class Loader extends \VuFind\Cover\Loader
             return false;
         }
 
-        if (!$result->getContentLength()) {
+        $image = file_get_contents($tempFile);
+        if (strlen($image) === 0) {
             return false;
         }
-
-        $image = file_get_contents($tempFile);
 
         // Try to create a GD image and rewrite as JPEG, fail if we can't:
         if (!($imageGD = @imagecreatefromstring($image))) {
