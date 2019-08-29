@@ -261,8 +261,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
-        $db = $pm->get('Database');
-        $db->expects($this->any())->method('supportsEmailChange')->will($this->returnValue(true));
         $config = ['Authentication' => ['change_email' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsEmailChange());
         $config = ['Authentication' => ['change_email' => false]];
