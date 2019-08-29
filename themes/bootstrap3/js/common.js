@@ -84,8 +84,8 @@ var VuFind = (function VuFind() {
   };
 
   var initMultiILSLoginFields = function initMultiILSLoginFields(loginMethods, topClass) {
-    $('#login_target').change(function onChangeLoginTarget() {
-      var target = $('#login_target').val();
+    $('#login_' + (topClass ? topClass + '_' : '') + 'target').change(function onChangeLoginTarget() {
+      var target = $(this).val();
       var $usernameGroup = $('#login_' + (topClass ? topClass + '_' : '') + 'username').closest('.form-group');
       var $password = $('#login_' + (topClass ? topClass + '_' : '') + 'password');
       if (loginMethods[target] === 'email') {
