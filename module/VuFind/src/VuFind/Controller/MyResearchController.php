@@ -982,9 +982,17 @@ class MyResearchController extends AbstractBase
     {
         if ($this->params()->fromQuery('reverify')) {
             $table = $this->getTable('User');
+            // Case 1: new user:
             $user = $table
                 ->getByUsername($this->getUserVerificationContainer()->user, false);
-            $this->sendVerificationEmail($user);
+            // Case 2: pending email change:
+            if (!$user) {
+                $user = $this->getUser();
+                if (!empty($user->pending_email)) {
+                    $change = true;
+                }
+            }
+            $this->sendVerificationEmail($user, $change ?? false);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
