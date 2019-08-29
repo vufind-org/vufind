@@ -705,6 +705,14 @@ class Demo extends AbstractBase
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
+        // Filter out electronic holdings from the normal holdings list:
+        $status = array_filter(
+            $status,
+            function ($a) {
+                return !($a['__electronic__'] ?? false);
+            }
+        );
+
         // Slice out a chunk if pagination is enabled.
         $slice = null;
         if ($options['itemLimit'] ?? null) {
