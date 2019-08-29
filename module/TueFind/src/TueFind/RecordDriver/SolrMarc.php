@@ -318,34 +318,35 @@ class SolrMarc extends SolrDefault
                 $resultType = 'review';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-                $reviewer = $aSubfield->getData() ?? '';
+                $author = $aSubfield->getData() ?? '';
                 $references[$resultType][] = ['id' => $referencedId,
-                                              'reviewer' => $reviewer,
-                                              'title' => $title];
+                                              'title' => $title,
+                                              'author' => $author];
             } else if (preg_match('"^Rezension von$"i', $type)) {
                 $resultType = 'reviewed_record';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-                $reviewer = '';
-                $reviewerFields = $this->getMarcRecord()->getFields('100');
-                foreach ($reviewerFields as $reviewerField) {
-                    $a100Subfields = $reviewerField->getSubfields('a');
+                $author = '';
+                $authorFields = $this->getMarcRecord()->getFields('100');
+                foreach ($authorFields as $authorField) {
+                    $a100Subfields = $authorField->getSubfields('a');
                     foreach ($a100Subfields as $a100Subfield) {
                         $a100 = $a100Subfield->getData();
                         if ($a100 != '') {
-                            $reviewer = $a100;
+                            $author = $a100;
                             break 2;
                         }
                     }
                 }
                 $references[$resultType][] = ['id' => $referencedId,
-                                              'reviewer' => $reviewer,
-                                              'title' => $title];
+                                              'title' => $title,
+                                              'author' => $author];
             } else {
                 $resultType = 'other';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-                $references[$resultType][] = ['id' => $referencedId, 'description' => $type . ' "' . $title . '"'];
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'description' => $type . ' "' . $title . '"'];
             }
         }
 

@@ -1,4 +1,10 @@
 <?php foreach ($data as $review): ?>
-  <a href="<?=$this->recordLink()->getUrl($review['id'])?>"><?=$this->escapeHtml($review['title'])?><?=$review['reviewer'] == '' ? '' : ' (' . $this->escapeHtml($review['reviewer']) . ')'?></a>
+  <?php $linked_ppn = $review['id']; ?>
+  <?php if (empty($review['reviewer'])): $author = ''; else: $author = ' ('.$this->escapeHtml($review['author']) . ')'; endif; ?>
+  <?php if ($linked_ppn != ''): ?>
+    <a href="<?=$this->recordLink()->getUrl($review['id'])?>"><?=$author?></a>
+  <?php else: ?>
+    <?=$this->escapeHtml($review['title']) . $author?>
+  <?php endif; ?>
   <br/>
 <?php endforeach; ?>
