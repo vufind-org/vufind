@@ -148,7 +148,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-     public function testChangeEmailDisabledByDefault()
+    public function testChangeEmailDisabledByDefault()
     {
         // Go to profile page:
         $session = $this->getMinkSession();
@@ -171,7 +171,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-     public function testChangeEmail()
+    public function testChangeEmail()
     {
         // Turn on email change option:
         $this->changeConfigs(
