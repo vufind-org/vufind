@@ -324,7 +324,6 @@ finna.imagePaginator = (function imagePaginator() {
     }
 
     setCanvasContent('leaflet');
-    _.setZoomButtons();
     _.setPagerInfo(true);
     _.setCurrentVisuals();
 
@@ -332,7 +331,7 @@ finna.imagePaginator = (function imagePaginator() {
       _.leafletHolder.removeLayer(layer);
     });
     _.leafletHolder.setMaxBounds(null);
-
+    _.leafletHolder.setMinZoom(1);
     var img = new Image();
     img.src = image.data('largest');
     timeOut = setTimeout(function onLoadStart() {
@@ -354,24 +353,7 @@ finna.imagePaginator = (function imagePaginator() {
 
       var h = this.naturalHeight;
       var w = this.naturalWidth;
-      var width = $('#leaflet-map-image').width();
-      var height = $('#leaflet-map-image').height();
-      var maxZoom = _.leafletHolder.getMaxZoom();
-      var minZoom = _.leafletHolder.getMinZoom();
-      var zoomLevel = 5.0;
-
-      if (w > width) {
-        zoomLevel = +w / +width;
-      }
-      if (h > height) {
-        zoomLevel += +h / +height;
-        zoomLevel /= 2;
-      }
-      if (zoomLevel > maxZoom) {
-        zoomLevel = maxZoom;
-      } else if (zoomLevel < minZoom) {
-        zoomLevel = 2;
-      }
+      var zoomLevel = 10;
 
       var bounds = new L.LatLngBounds(_.leafletHolder.unproject([0, h], zoomLevel), _.leafletHolder.unproject([w, 0], zoomLevel));
       _.leafletHolder.flyToBounds(bounds, {animate: false});
@@ -380,6 +362,8 @@ finna.imagePaginator = (function imagePaginator() {
       _.leafletLoader.removeClass('loading');
       _.leafletHolder.setMaxBounds(bounds);
       _.leafletStartBounds = bounds;
+      _.leafletHolder.setMinZoom(_.leafletHolder.getZoom());
+      _.setZoomButtons();
     };
   };
 
@@ -444,7 +428,7 @@ finna.imagePaginator = (function imagePaginator() {
 
     _.leafletHolder = L.map('leaflet-map-image', {
       minZoom: 1,
-      maxZoom: 10,
+      maxZoom: 20,
       center: [0, 0],
       zoomControl: false,
       zoom: 1,
