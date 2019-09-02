@@ -39,6 +39,12 @@
   overflow: visible;
 }
 
+@media (max-width: @screen-xs-max) {
+  .media-left, .media-right, .media-body {
+    display: block;
+  }
+}
+
 .popover {
   min-width: min(200px, @popover-max-width);
 }

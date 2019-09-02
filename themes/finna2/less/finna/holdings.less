@@ -38,9 +38,6 @@
 .groupCallnumber {
     color: @gray-light;
     display: inline;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     margin-left: 15px;
 }
 .branchInfo {
@@ -447,6 +444,9 @@
             }
             & .title-hold {
                 float: left;
+                a.btn {
+                    white-space: pre-wrap;
+                }
             }
         }
     }
