@@ -126,12 +126,11 @@ class SearchHandler
     }
 
     /**
-     * prepare a simple query string for a dismax query.
+     * Prepare a simple query string for a dismax query.
      *
      * @param string $search Search string
      *
      * @return string
-     *
      */
     public function prepareDismaxQueryString($search)
     {
@@ -423,9 +422,9 @@ class SearchHandler
     }
 
     /**
-     * custom munge search string of a dismax query.
+     * Custom munge search string of a dismax query.
      *
-     * @param string $search   Search string
+     * @param string $search Search string
      *
      * @return string
      */
