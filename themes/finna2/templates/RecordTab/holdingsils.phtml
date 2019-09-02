@@ -19,6 +19,9 @@
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
     if (!isset($holdings['holdings'])) {
         $holdings['holdings'] = [];
+        $holdings['total'] = 0;
+        $holdings['page'] = 1;
+        $holdings['itemLimit'] = 10;
     }
 
     $illRequestLink = false;
