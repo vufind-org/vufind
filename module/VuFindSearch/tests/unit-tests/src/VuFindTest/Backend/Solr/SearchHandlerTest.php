@@ -75,7 +75,7 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar'], ['mm', '100%']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => []];
+        $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => [], 'DismaxMunge' => []];
         $this->assertEquals($spec + $defaults, $hndl->toArray());
     }
 
