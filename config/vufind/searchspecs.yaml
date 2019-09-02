@@ -186,6 +186,13 @@ ISN:
     - issn
   DismaxHandler: edismax
 
+BasicClassification:
+  DismaxMunge:
+    - [ucfirst]
+  DismaxFields:
+    - bklname^1
+    - bklnumber^1
+
 Subject:
   DismaxFields:
     - topic_unstemmed^150

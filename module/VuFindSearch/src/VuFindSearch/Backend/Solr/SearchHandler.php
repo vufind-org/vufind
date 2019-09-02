@@ -53,7 +53,7 @@ class SearchHandler
      */
     protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
-        'DismaxParams', 'FilterQuery'
+        'DismaxParams', 'FilterQuery', 'DismaxMunge'
     ];
 
     /**
@@ -123,6 +123,19 @@ class SearchHandler
     public function createSimpleQueryString($search)
     {
         return $this->createQueryString($search, false);
+    }
+
+    /**
+     * prepare a simple query string for a dismax query.
+     *
+     * @param string $search Search string
+     *
+     * @return string
+     *
+     */
+    public function prepareDismaxQueryString($search)
+    {
+        return $this->dismaxMunge($search);
     }
 
     /**
@@ -410,6 +423,43 @@ class SearchHandler
     }
 
     /**
+     * custom munge search string of a dismax query.
+     *
+     * @param string $search   Search string
+     *
+     * @return string
+     */
+    protected function dismaxMunge($search)
+    {
+        foreach ($this->specs['DismaxMunge'] as $operation) {
+            switch ($operation[0]) {
+            case 'append':
+                $search .= $operation[1];
+                break;
+            case 'lowercase':
+                $search = strtolower($search);
+                break;
+            case 'preg_replace':
+                $search = preg_replace(
+                    $operation[1], $operation[2], $search
+                );
+                break;
+            case 'ucfirst':
+                $search = ucfirst($search);
+                break;
+            case 'uppercase':
+                $search = strtoupper($search);
+                break;
+            default:
+                throw new \InvalidArgumentException(
+                    sprintf('Unknown munge operation: %s', $operation[0])
+                );
+            }
+        }
+        return $search;
+    }
+
+    /**
      * Return query string for specified search string.
      *
      * If optional argument $advanced is true the search string contains
@@ -426,7 +476,9 @@ class SearchHandler
         // Extended Dismax available), let's build a Dismax subquery to avoid
         // some of the ugly side effects of our Lucene query generation logic.
         if (($this->hasExtendedDismax() || !$advanced) && $this->hasDismax()) {
-            $query = $this->dismaxSubquery($search);
+            $query = $this->dismaxSubquery(
+                $this->dismaxMunge($search)
+            );
         } else {
             $mungeRules  = $this->mungeRules();
             // Do not munge w/o rules

@@ -139,11 +139,13 @@ class QueryBuilder implements QueryBuilderInterface
             $finalQuery->setString($this->getNormalizedQueryString($query));
         }
         $string = $finalQuery->getString() ?: '*:*';
-
         // Highlighting is enabled if we have a field list set.
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
+            if ($handler->hasDismax()) {
+                $string = $handler->prepareDismaxQueryString($string);
+            }
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
