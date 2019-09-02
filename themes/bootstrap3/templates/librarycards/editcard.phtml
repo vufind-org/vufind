@@ -53,7 +53,7 @@
   if (null !== $targets) {
     $methods = json_encode($this->loginMethods);
     $script = <<<EOT
-    VuFind.initMultiILSLoginFields($methods, '');
+    setupMultiILSLoginFields($methods, '');
 EOT;
 
     // Inline the script for lightbox compatibility

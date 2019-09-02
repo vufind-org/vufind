@@ -26,7 +26,7 @@
   }
   $methods = json_encode($methods);
   $script = <<<EOT
-  VuFind.initMultiILSLoginFields($methods, '{$topClass}');
+  setupMultiILSLoginFields($methods, '{$topClass}');
 EOT;
 
   // Inline the script for lightbox compatibility

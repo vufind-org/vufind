@@ -1,5 +1,5 @@
 /*global Event, grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -83,23 +83,6 @@ var VuFind = (function VuFind() {
     }
   };
 
-  var initMultiILSLoginFields = function initMultiILSLoginFields(loginMethods, topClass) {
-    $('#login_' + (topClass ? topClass + '_' : '') + 'target').change(function onChangeLoginTarget() {
-      var target = $(this).val();
-      var $usernameGroup = $('#login_' + (topClass ? topClass + '_' : '') + 'username').closest('.form-group');
-      var $password = $('#login_' + (topClass ? topClass + '_' : '') + 'password');
-      if (loginMethods[target] === 'email') {
-        $usernameGroup.find('label.password-login').addClass('hidden');
-        $usernameGroup.find('label.email-login').removeClass('hidden');
-        $password.closest('.form-group').addClass('hidden');
-      } else {
-        $usernameGroup.find('label.password-login').removeClass('hidden');
-        $usernameGroup.find('label.email-login').addClass('hidden');
-        $password.closest('.form-group').removeClass('hidden');
-      }
-    }).change();
-  };
-
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -111,8 +94,7 @@ var VuFind = (function VuFind() {
     listen: listen,
     refreshPage: refreshPage,
     register: register,
-    translate: translate,
-    initMultiILSLoginFields: initMultiILSLoginFields
+    translate: translate
   };
 })();
 
@@ -371,6 +353,23 @@ function setupIeSupport() {
 function setupJumpMenus(_container) {
   var container = _container || $('body');
   container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+}
+
+function setupMultiILSLoginFields(loginMethods, topClass) {
+  $('#login_' + (topClass ? topClass + '_' : '') + 'target').change(function onChangeLoginTarget() {
+    var target = $(this).val();
+    var $usernameGroup = $('#login_' + (topClass ? topClass + '_' : '') + 'username').closest('.form-group');
+    var $password = $('#login_' + (topClass ? topClass + '_' : '') + 'password');
+    if (loginMethods[target] === 'email') {
+      $usernameGroup.find('label.password-login').addClass('hidden');
+      $usernameGroup.find('label.email-login').removeClass('hidden');
+      $password.closest('.form-group').addClass('hidden');
+    } else {
+      $usernameGroup.find('label.password-login').removeClass('hidden');
+      $usernameGroup.find('label.email-login').addClass('hidden');
+      $password.closest('.form-group').removeClass('hidden');
+    }
+  }).change();
 }
 
 $(document).ready(function commonDocReady() {
