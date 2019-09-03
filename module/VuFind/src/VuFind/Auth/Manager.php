@@ -143,8 +143,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = isset($config->Authentication->method)
-            ? $config->Authentication->method : 'Database';
+        $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
         $this->setAuthMethod($method);              // load it
     }
@@ -206,29 +205,35 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsRecovery($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
-            return isset($this->config->Authentication->recover_password)
-                && $this->config->Authentication->recover_password;
-        }
-        return false;
+        return ($this->config->Authentication->recover_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordRecovery();
+    }
+
+    /**
+     * Is email changing currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsEmailChange($authMethod = null)
+    {
+        return $this->config->Authentication->change_email ?? false;
     }
 
     /**
      * Is new passwords currently allowed?
      *
      * @param string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * the one in config file
      *
      * @return bool
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if (isset($this->config->Authentication->change_password)
-            && $this->config->Authentication->change_password
-        ) {
-            return $this->getAuth($authMethod)->supportsPasswordChange();
-        }
-        return false;
+        return ($this->config->Authentication->change_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordChange();
     }
 
     /**
@@ -357,9 +362,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function loginEnabled()
     {
         // Assume login is enabled unless explicitly turned off:
-        return isset($this->config->Authentication->hideLogin)
-            ? !$this->config->Authentication->hideLogin
-            : true;
+        return !($this->config->Authentication->hideLogin ?? false);
     }
 
     /**
@@ -507,8 +510,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function inPrivacyMode()
     {
-        return isset($this->config->Authentication->privacy)
-            && $this->config->Authentication->privacy;
+        return $this->config->Authentication->privacy ?? false;
     }
 
     /**
@@ -560,6 +562,30 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
+    }
+
+    /**
+     * Update a user's email from the request.
+     *
+     * @param UserRow $user  Object representing user being updated.
+     * @param string  $email New email address to set (must be pre-validated!).
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updateEmail(UserRow $user, $email)
+    {
+        // Depending on verification setting, either do a direct update or else
+        // put the new address into a pending state.
+        if ($this->config->Authentication->verify_email ?? false) {
+            $user->pending_email = $email;
+        } else {
+            $user->updateEmail($email, true);
+        }
+        $user->save();
+        $this->updateSession($user);
     }
 
     /**

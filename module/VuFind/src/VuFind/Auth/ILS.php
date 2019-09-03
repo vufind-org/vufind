@@ -241,10 +241,11 @@ class ILS extends AbstractBase
         $user->password = '';
 
         // Update user information based on ILS data:
-        $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
+        $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
             $user->$field = $info[$field] ?? ' ';
         }
+        $user->updateEmail($info['email']);
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(

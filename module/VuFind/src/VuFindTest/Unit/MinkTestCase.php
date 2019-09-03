@@ -244,6 +244,30 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Click on a CSS element.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout (in ms)
+     *
+     * @return mixed
+     */
+    protected function clickCss(Element $page, $selector, $timeout = 1000)
+    {
+        $result = $this->findCss($page, $selector, $timeout);
+        for ($tries = 0; $tries < 3; $tries++) {
+            try {
+                $result->click();
+                return $result;
+            } catch (\Exception $e) {
+                // Expected click didn't work... snooze and retry
+                $this->snooze();
+            }
+        }
+        throw $e ?? new \Exception('Unexpected state reached.');
+    }
+
+    /**
      * Set a value within an element selected via CSS; retry if set fails
      * due to browser bugs.
      *

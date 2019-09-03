@@ -29,8 +29,10 @@
  */
 namespace VuFind\Auth;
 
+use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\PhpEnvironment\Request;
 
@@ -67,7 +69,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -83,6 +85,9 @@ class Database extends AbstractBase
         if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
             throw new AuthException('authentication_error_invalid');
         }
+
+        // Verify email address:
+        $this->checkEmailVerified($user);
 
         // If we got this far, the login was successful:
         return $user;
@@ -106,7 +111,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function create($request)
     {
@@ -126,6 +131,9 @@ class Database extends AbstractBase
         $user = $this->createUserFromParams($params, $userTable);
         $user->save();
 
+        // Verify email address:
+        $this->checkEmailVerified($user);
+
         return $user;
     }
 
@@ -135,7 +143,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function updatePassword($request)
     {
@@ -188,6 +196,28 @@ class Database extends AbstractBase
         }
         // Password policy
         $this->validatePasswordAgainstPolicy($params['password']);
+    }
+
+    /**
+     * Check if the user's email address has been verified (if necessary) and
+     * throws exception if not.
+     *
+     * @param User $user User to check
+     *
+     * @return void
+     * @throws AuthEmailNotVerifiedException
+     */
+    protected function checkEmailVerified($user)
+    {
+        $config = $this->getConfig();
+        $verify_email = $config->Authentication->verify_email ?? false;
+        if ($verify_email && !$user->checkEmailVerified()) {
+            $exception = new AuthEmailNotVerifiedException(
+                'authentication_error_email_not_verified_html'
+            );
+            $exception->user = $user;
+            throw $exception;
+        }
     }
 
     /**
@@ -358,14 +388,14 @@ class Database extends AbstractBase
      * @param string[]  $params Parameters returned from collectParamsFromRequest()
      * @param UserTable $table  The VuFind user table
      *
-     * @return \VuFind\Db\Row\User A user row object
+     * @return User A user row object
      */
     protected function createUserFromParams($params, $table)
     {
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
+        $user->updateEmail($params['email'], true);
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $user->pass_hash = $bcrypt->create($params['password']);
