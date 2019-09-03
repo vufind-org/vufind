@@ -27,6 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
+
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -69,7 +70,7 @@ class OpenIDConnect extends AbstractBase implements
         $this->session = $container;
     }
 
-    /** 
+    /**
      * Get provider configuration
      *
      * @return object
@@ -83,7 +84,7 @@ class OpenIDConnect extends AbstractBase implements
                 $this->provider = json_decode(
                     $this->httpService->get($url)->getBody()
                 );
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 throw new AuthException(
                     "Cannot fetch provider configuration: " . $e->getMessage()
                 );
@@ -212,18 +213,18 @@ class OpenIDConnect extends AbstractBase implements
         if (in_array('client_secret_basic', $authMethods)) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
-                    $this->config->OpenIDConnect->client_id . ':' 
+                    $this->config->OpenIDConnect->client_id . ':'
                     . $this->config->OpenIDConnect->client_secret
                 )
-            ]; 
+            ];
             unset($params['client_secret']);
         }
 
         $response = $this->httpService->post(
-            $url, 
-            http_build_query($params, null, '&'), 
-            'application/x-www-form-urlencoded', 
-            null, 
+            $url,
+            http_build_query($params, null, '&'),
+            'application/x-www-form-urlencoded',
+            null,
             $headers
         );
         $json = json_decode($response->getBody());
@@ -252,7 +253,6 @@ class OpenIDConnect extends AbstractBase implements
         );
     }
 
-
     /**
      * Decode JSON Web Token
      *
@@ -268,4 +268,3 @@ class OpenIDConnect extends AbstractBase implements
         return json_decode(base64_decode($base64));
     }
 }
-
