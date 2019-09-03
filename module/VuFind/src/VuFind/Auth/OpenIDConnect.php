@@ -208,12 +208,8 @@ class OpenIDConnect extends AbstractBase implements
            'client_id' => $this->config->OpenIDConnect->client_id,
            'client_secret' => $this->config->OpenIDConnect->client_secret,
         ];
-        if (
-            in_array(
-                'client_secret_basic', 
-                $this->getProvider()->token_endpoint_auth_methods_supported
-            )
-        ) {
+        $authMethods = $this->getProvider()->token_endpoint_auth_methods_supported;
+        if (in_array('client_secret_basic', $authMethods)) {
             $headers = [
                 'Authorization: Basic ' . base64_encode(
                     $this->config->OpenIDConnect->client_id . ':' 
