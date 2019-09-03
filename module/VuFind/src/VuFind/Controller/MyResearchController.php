@@ -50,6 +50,19 @@ use Zend\View\Model\ViewModel;
 class MyResearchController extends AbstractBase
 {
     /**
+     * Permission that must be granted to access this module (false for no
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
+     *
+     * For this controller, we default to false rather than null because
+     * we don't want a default setting to override the controller's accessibility
+     * and break the login process!
+     *
+     * @var string|bool
+     */
+    protected $accessPermission = false;
+
+    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
@@ -969,9 +982,17 @@ class MyResearchController extends AbstractBase
     {
         if ($this->params()->fromQuery('reverify')) {
             $table = $this->getTable('User');
+            // Case 1: new user:
             $user = $table
                 ->getByUsername($this->getUserVerificationContainer()->user, false);
-            $this->sendVerificationEmail($user);
+            // Case 2: pending email change:
+            if (!$user) {
+                $user = $this->getUser();
+                if (!empty($user->pending_email)) {
+                    $change = true;
+                }
+            }
+            $this->sendVerificationEmail($user, $change ?? false);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
@@ -1558,13 +1579,46 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send a verify email message.
+     * When a request to change a user's email address has been received, we should
+     * send a notification to the old email address for the user's information.
      *
      * @param \VuFind\Db\Row\User $user User object we're recovering
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendVerificationEmail($user)
+    protected function sendChangeNotificationEmail($user)
+    {
+        $config = $this->getConfig();
+        $renderer = $this->getViewRenderer();
+        // Custom template for emails (text-only)
+        $message = $renderer->render(
+            'Email/notify-email-change.phtml',
+            [
+                'library' => $config->Site->title,
+                'url' => $this->getServerUrl('home'),
+                'email' => $config->Site->email,
+            ]
+        );
+        // If the user is setting up a new account, use the main email
+        // address; if they have a pending address change, use that.
+        $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+            $user->email,
+            $config->Site->email,
+            $this->translate('change_notification_email_subject'),
+            $message
+        );
+    }
+
+    /**
+     * Send a verify email message.
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param bool                $change Is the user changing their email (true)
+     * or setting up a new account (false).
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendVerificationEmail($user, $change = false)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1575,7 +1629,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($user->verify_hash);
             $recoveryInterval = $this->getConfig()->Authentication->recover_interval
                 ?? 60;
-            if (time() - $hashtime < $recoveryInterval) {
+            if (time() - $hashtime < $recoveryInterval && !$change) {
                 $this->flashMessenger()
                     ->addMessage('verification_too_soon', 'error');
             } else {
@@ -1596,14 +1650,25 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
+                    // If the user is setting up a new account, use the main email
+                    // address; if they have a pending address change, use that.
+                    $to = empty($user->pending_email)
+                        ? $user->email : $user->pending_email;
                     $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
-                        $user->email,
+                        $to,
                         $config->Site->email,
                         $this->translate('verification_email_subject'),
                         $message
                     );
-                    $this->flashMessenger()
-                        ->addMessage('verification_email_sent', 'info');
+                    $flashMessage = $change
+                        ? 'verification_email_change_sent'
+                        : 'verification_email_sent';
+                    $this->flashMessenger()->addMessage($flashMessage, 'info');
+                    // If this is an email change, send a notification to the old
+                    // email address as well.
+                    if ($change) {
+                        $this->sendChangeNotificationEmail($user);
+                    }
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
@@ -1678,6 +1743,11 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, store validation in DB and forward to login
                 if (null != $user) {
+                    // Apply pending email address change, if applicable:
+                    if (!empty($user->pending_email)) {
+                        $user->updateEmail($user->pending_email, true);
+                        $user->pending_email = '';
+                    }
                     $user->saveEmailVerified();
                     $this->setUpAuthenticationFromRequest();
 
@@ -1781,6 +1851,79 @@ class MyResearchController extends AbstractBase
         // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
         return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Handling submission of a new email for a user.
+     *
+     * @return view
+     */
+    public function changeEmailAction()
+    {
+        // Always check that we are logged in and function is enabled first:
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        if (!$this->getAuthManager()->supportsEmailChange()) {
+            $this->flashMessenger()->addMessage('change_email_disabled', 'error');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Display email
+        $user = $this->getUser();
+        $view->email = $user->email;
+        // Identification
+        $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
+        // Special case: form was submitted:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+            // Update email
+            $validator = new \Zend\Validator\EmailAddress();
+            $email = $this->params()->fromPost('email', '');
+            try {
+                if (!$validator->isValid($email)) {
+                    throw new AuthException('Email address is invalid');
+                }
+                $this->getAuthManager()->updateEmail($user, $email);
+                // If we have a pending change, we need to send a verification email:
+                if (!empty($user->pending_email)) {
+                    $this->sendVerificationEmail($user, true);
+                } else {
+                    $this->flashMessenger()
+                        ->addMessage('new_email_success', 'success');
+                }
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                return $view;
+            }
+            // Return to account home
+            return $this->redirect()->toRoute('myresearch-home');
+        } elseif ($this->getConfig()->Authentication->verify_email ?? false) {
+            $this->flashMessenger()
+                ->addMessage('change_email_verification_reminder', 'info');
+        }
+        if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute('myresearch-emailnotverified')
+                . '?reverify=true';
+            $this->flashMessenger()->addMessage(
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ],
+                'info'
+            );
+        }
+        return $view;
     }
 
     /**

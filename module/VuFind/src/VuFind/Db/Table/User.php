@@ -90,6 +90,9 @@ class User extends Gateway
         $row = $this->createRow();
         $row->username = $username;
         $row->created = date('Y-m-d H:i:s');
+        // Failing to initialize this here can cause Zend\Db errors in
+        // the VuFind\Auth\Shibboleth and VuFind\Auth\ILS integration tests.
+        $row->user_provided_email = 0;
         return $row;
     }
 

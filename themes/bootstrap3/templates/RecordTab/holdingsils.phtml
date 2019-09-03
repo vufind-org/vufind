@@ -12,7 +12,13 @@
     try {
         $holdings = $this->driver->getRealTimeHoldings();
     } catch (\VuFind\Exception\ILS $e) {
-        $holdings = ['holdings' => []];
+        $holdings = [
+          'holdings' => [],
+          'electronic_holdings' => [],
+          'total' => 0,
+          'page' => 0,
+          'itemLimit' => 0
+        ];
         $offlineMode = 'ils-offline';
     }
     // Set page title.
@@ -28,6 +34,7 @@
 <?php endif; ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+
 <?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
@@ -54,10 +61,18 @@
   <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
   <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
 <?php endif; ?>
+
+<?php if (!empty($holdings['electronic_holdings'])): ?>
+  <?=$this->context($this)->renderInContext(
+      'RecordTab/holdingsils/electronic.phtml',
+      ['holdings' => $holdings['electronic_holdings']]
+  );?>
+<?php endif; ?>
+
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
   <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
-  <?php if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+  <?php if ($holding['locationhref'] ?? false): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
   <?php else: ?>
     <?=$locationText?>
@@ -80,7 +95,7 @@
     </td>
   </tr>
   <?php endif; ?>
-  <?php if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+  <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
       <?php // Translation for summary is a special case for backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
@@ -90,7 +105,7 @@
         <?php endforeach; ?>
       </td>
     </tr>
-  <?php endforeach; endif; ?>
+  <?php endforeach; ?>
   <?php foreach ($holding['items'] as $row): ?>
     <?php
         try {

@@ -105,9 +105,17 @@ class FacetList implements ContentBlockInterface
      */
     protected function getHierarchicalFacetSortSettings($facetConfig)
     {
-        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+        $baseConfig
+            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
+        $homepageConfig
+            = isset($facetConfig->HomePage_Settings->hierarchicalFacetSortOptions)
+            ? $facetConfig->HomePage_Settings->hierarchicalFacetSortOptions
+                ->toArray()
+            : [];
+
+        return array_merge($baseConfig, $homepageConfig);
     }
 
     /**

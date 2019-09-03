@@ -156,6 +156,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set method
             $client->setMethod($method);
 
+            // Set timeout
+            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+            $client->setOptions(['timeout' => $timeout]);
+
             // Set other GET parameters (apikey and other URL parameters are used
             // also with e.g. POST requests)
             $client->setParameterGet($paramsGet);
@@ -385,6 +389,24 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'description' => $description ?? null
                 ];
             }
+        }
+
+        // Fetch also digital and/or electronic inventory if configured
+        $types = $this->getInventoryTypes();
+        if (in_array('d_avail', $types) || in_array('e_avail', $types)) {
+            // No need for physical items
+            $key = array_search('p_avail', $types);
+            if (false !== $key) {
+                unset($types[$key]);
+            }
+            $statuses = $this->getStatusesForInventoryTypes((array)$id, $types);
+            $electronic = [];
+            foreach ($statuses as $record) {
+                foreach ($record as $status) {
+                    $electronic[] = $status;
+                }
+            }
+            $results['electronic_holdings'] = $electronic;
         }
 
         return $results;
@@ -1202,60 +1224,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatuses($ids)
     {
-        $results = [];
-        $params = [
-            'mms_id' => implode(',', $ids),
-            'expand' => 'p_avail,e_avail,d_avail'
-        ];
-        if ($bibs = $this->makeRequest('/bibs', $params)) {
-            foreach ($bibs as $bib) {
-                $marc = new \File_MARCXML(
-                    $bib->record->asXML(),
-                    \File_MARCXML::SOURCE_STRING
-                );
-                $status = [];
-                $tmpl = [
-                    'id' => (string)$bib->mms_id,
-                    'source' => 'Solr',
-                    'callnumber' => isset($bib->isbn)
-                        ? (string)$bib->isbn
-                        : ''
-                ];
-                if ($record = $marc->next()) {
-                    // Physical
-                    $physicalItems = $record->getFields('AVA');
-                    foreach ($physicalItems as $field) {
-                        $avail = $field->getSubfield('e')->getData();
-                        $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = (string)$field->getSubfield('c')
-                            ->getData();
-                        $status[] = $item;
-                    }
-                    // Electronic
-                    $electronicItems = $record->getFields('AVE');
-                    foreach ($electronicItems as $field) {
-                        $avail = $field->getSubfield('e')->getData();
-                        $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        $status[] = $item;
-                    }
-                    // Digital
-                    $digitalItems = $record->getFields('AVD');
-                    foreach ($digitalItems as $field) {
-                        $avail = $field->getSubfield('e')->getData();
-                        $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        $status[] = $item;
-                    }
-                } else {
-                    // TODO: Throw error
-                    error_log('no record');
-                }
-                $results[] = $status;
-            }
-        }
-        return $results;
+        return $this->getStatusesForInventoryTypes($ids, $this->getInventoryTypes());
     }
 
     /**
@@ -1486,8 +1455,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $xml = $this->makeRequest('/courses/' . $courseID . '/reading-lists');
         $reserves = [];
         foreach ($xml as $list) {
+            $listId = $list->id;
             $listXML = $this->makeRequest(
-                "/courses/${$courseID}/reading-lists/${$list->id}/citations"
+                "/courses/${$courseID}/reading-lists/${$listId}/citations"
             );
             foreach ($listXML as $citation) {
                 $reserves[$citation->id] = $citation->metadata;
@@ -1547,6 +1517,129 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         } else {
             throw new \Exception("Invalid date: $date");
         }
+    }
+
+    /**
+     * Get the inventory types to be displayed. Possible values are:
+     * p_avail,e_avail,d_avail
+     *
+     * @return array
+     */
+    protected function getInventoryTypes()
+    {
+        $types = explode(
+            ':',
+            $this->config['Holdings']['inventoryTypes']
+                ?? 'physical:digital:electronic'
+        );
+
+        $result = [];
+        $map = [
+            'physical' => 'p_avail',
+            'digital' => 'd_avail',
+            'electronic' => 'e_avail'
+        ];
+        $types = array_flip($types);
+        foreach ($map as $src => $dest) {
+            if (isset($types[$src])) {
+                $result[] = $dest;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get Statuses for inventory types
+     *
+     * This is responsible for retrieving the status information for a
+     * collection of records with specified inventory types.
+     *
+     * @param array $ids   The array of record ids to retrieve the status for
+     * @param array $types Inventory types
+     *
+     * @return array An array of getStatus() return values on success.
+     */
+    protected function getStatusesForInventoryTypes($ids, $types)
+    {
+        $results = [];
+        $params = [
+            'mms_id' => implode(',', $ids),
+            'expand' => implode(',', $types)
+        ];
+        if ($bibs = $this->makeRequest('/bibs', $params)) {
+            foreach ($bibs as $bib) {
+                $marc = new \File_MARCXML(
+                    $bib->record->asXML(),
+                    \File_MARCXML::SOURCE_STRING
+                );
+                $status = [];
+                $tmpl = [
+                    'id' => (string)$bib->mms_id,
+                    'source' => 'Solr',
+                    'callnumber' => isset($bib->isbn)
+                        ? (string)$bib->isbn
+                        : ''
+                ];
+                if ($record = $marc->next()) {
+                    // Physical
+                    $physicalItems = $record->getFields('AVA');
+                    foreach ($physicalItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $item['location'] = (string)$field->getSubfield('c')
+                            ->getData();
+                        $status[] = $item;
+                    }
+                    // Electronic
+                    $electronicItems = $record->getFields('AVE');
+                    foreach ($electronicItems as $field) {
+                        $avail = $field->getSubfield('e')->getData();
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $item['location'] = $field->getSubfield('m')->getData();
+                        $item['location'] = $field->getSubfield('m')->getData();
+                        $url = $field->getSubfield('u')->getData();
+                        if (preg_match('/^https?:\/\//', $url)) {
+                            $item['locationhref'] = $url;
+                        }
+                        $item['status'] = $field->getSubfield('s')->getData();
+                        $status[] = $item;
+                    }
+                    // Digital
+                    $deliveryUrl
+                        = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
+                    $digitalItems = $record->getFields('AVD');
+                    if ($digitalItems && !$deliveryUrl) {
+                        $this->logWarning(
+                            'Digital items exist for ' . (string)$bib->mms_id
+                            . ', but digitalDeliveryUrl not set -- unable to'
+                            . ' generate links'
+                        );
+                    }
+                    foreach ($digitalItems as $field) {
+                        $item = $tmpl;
+                        unset($item['callnumber']);
+                        $item['availability'] = true;
+                        $item['location'] = $field->getSubfield('e')->getData();
+                        if ($deliveryUrl) {
+                            $item['locationhref'] = str_replace(
+                                '%%id%%',
+                                $field->getSubfield('b')->getData(),
+                                $deliveryUrl
+                            );
+                        }
+                        $status[] = $item;
+                    }
+                } else {
+                    // TODO: Throw error
+                    error_log('no record');
+                }
+                $results[(string)$bib->mms_id] = $status;
+            }
+        }
+        return $results;
     }
 
     // @codingStandardsIgnoreStart
