@@ -57,48 +57,17 @@ class MultiILS extends ILS
      */
     public function authenticate($request)
     {
-        $target = trim($request->getPost()->get('target'));
-        $loginMethod = $this->getILSLoginMethod($target);
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || ('password' === $loginMethod && $password == '')) {
-            throw new AuthException('authentication_error_blank');
-        }
+        $target = trim($request->getPost()->get('target'));
+        $loginMethod = $this->getILSLoginMethod($target);
 
         // We should have target either separately or already embedded into username
         if ($target) {
             $username = "$target.$username";
         }
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ('email' === $loginMethod) {
-            if (null === $this->emailAuthenticator) {
-                throw new \Exception('Email authenticator not set');
-            }
-            if ($patron) {
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $patron['email'], $patron, ['auth_method' => 'MultiILS']
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
-        }
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**

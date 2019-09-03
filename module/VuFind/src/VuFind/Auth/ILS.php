@@ -115,42 +115,11 @@ class ILS extends AbstractBase
      */
     public function authenticate($request)
     {
-        $loginMethod = $this->getILSLoginMethod();
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || ('password' === $loginMethod && $password == '')) {
-            throw new AuthException('authentication_error_blank');
-        }
+        $loginMethod = $this->getILSLoginMethod();
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ('email' === $loginMethod) {
-            if (null === $this->emailAuthenticator) {
-                throw new \Exception('Email authenticator not set');
-            }
-            if ($patron) {
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $patron['email'], $patron, ['auth_method' => 'ILS']
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
-        }
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**
@@ -258,6 +227,59 @@ class ILS extends AbstractBase
         return (null !== $this->emailAuthenticator
             && $this->emailAuthenticator->isValidLoginRequest($request))
                 ? 'Email' : false;
+    }
+
+    /**
+     * Handle the actual login with the ILS.
+     *
+     * @param string $username    User name
+     * @param string $password    Password
+     * @param string $loginMethod Login method
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User Processed User object.
+     */
+    protected function handleLogin($username, $password, $loginMethod)
+    {
+        if ($username == '' || ('password' === $loginMethod && $password == '')) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Connect to catalog:
+        try {
+            $patron = $this->getCatalog()->patronLogin($username, $password);
+        } catch (AuthException $e) {
+            // Pass Auth exceptions through
+            throw $e;
+        } catch (\Exception $e) {
+            throw new AuthException('authentication_error_technical');
+        }
+
+        // Did the patron successfully log in?
+        if ('email' === $loginMethod) {
+            if (null === $this->emailAuthenticator) {
+                throw new \Exception('Email authenticator not set');
+            }
+            if ($patron) {
+                $class = get_class($this);
+                if ($p = strrpos($class, '\\')) {
+                    $class = substr($class, $p + 1);
+                }
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $patron['email'],
+                    $patron,
+                    ['auth_method' => $class]
+                );
+            }
+            // Don't reveal the result
+            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
+        }
+        if ($patron) {
+            return $this->processILSUser($patron);
+        }
+
+        // If we got this far, we have a problem:
+        throw new AuthException('authentication_error_invalid');
     }
 
     /**
