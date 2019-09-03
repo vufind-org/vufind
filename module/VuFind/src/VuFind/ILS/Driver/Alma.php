@@ -156,6 +156,10 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set method
             $client->setMethod($method);
 
+            // Set timeout
+            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+            $client->setOptions(['timeout' => $timeout]);
+
             // Set other GET parameters (apikey and other URL parameters are used
             // also with e.g. POST requests)
             $client->setParameterGet($paramsGet);
