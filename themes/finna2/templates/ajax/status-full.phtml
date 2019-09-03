@@ -185,7 +185,11 @@ foreach ($this->statusItems as $item):
     <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?> clearfix">
       <div class="header">
         <?php if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><?php endif; ?>
-        <?=$currentLocation?>
+        <?php if ($item['locationhref'] ?? false): ?>
+          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$currentLocation?></a>
+        <?php else: ?>
+          <?=$currentLocation?>
+        <?php endif; ?>
         <?php if ($collapseBranches): ?>
           <span>
             <?php if (!empty($availableLocations[$item['location']])): ?>
@@ -206,7 +210,7 @@ foreach ($this->statusItems as $item):
     if (!empty($item['availability'])) {
       $classes = ['ok', 'success'];
     }
-    if (!$classes && !empty($item['use_unknown_message']) && $item['use_unknown_message']) {
+    if (!$classes && ($item['use_unknown_message'] ?? false)) {
       $classes = $onlyUnknownStatuses ? ['status-unknown-no-icon warning'] : ['status-unknown', 'warning'];
     }
     if (!$classes) {

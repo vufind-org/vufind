@@ -1,18 +1,18 @@
 <!-- START of: finna - Recommend/SideFacets/facet.phtml -->
-<?php $this->results = $results = $this->recommend->getResults(); ?>
-<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
-<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
-<?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
-<?php $geographicFacet = []; ?>
 <?php
+  $this->results = $results = $this->recommend->getResults();
+  $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
+  $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $geographicFacet = [];
   if (is_callable([$this->recommend, 'getGeographicFacet'])) {
     $geographicFacet = $this->recommend->getGeographicFacet();
   }
-?>
-<?php $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
-<?php $module = $this->layout()->templateDir; ?>
-<?php $title = $this->facet; $cluster = $this->cluster; ?>
-<?php
+  $newItemsFacets = $this->recommend->getNewItemsFacets();
+  $module = $this->layout()->templateDir;
+  $facet = $this->facet;
+  $cluster = $this->cluster;
+
   $plotFrom = null;
   $daterangeFacetField = null;
   if (null === $module || in_array($module, ['search', 'primo'])) {
@@ -22,14 +22,13 @@
     }
     $dateRangeFilter = $params->getDateRangeFilter();
   }
-?>
-<?php $sideFacetSet = $this->recommend->getFacetSet();
-$rangeFacets = $this->recommend->getAllRangeFacets(); ?>
-<?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
-<?php $facets_before_more = $this->recommend->getShowMoreSetting($title); ?>
-<?php $showMoreInLightbox = $this->recommend->getShowInLightboxSetting($title); ?>
-<?php $daterangeFacet = $title == $daterangeFacetField; ?>
-<?php
+  $sideFacetSet = $this->recommend->getFacetSet();
+  $rangeFacets = $this->recommend->getAllRangeFacets();
+  $allowExclude = $this->recommend->excludeAllowed($facet);
+  $facets_before_more = $this->recommend->getShowMoreSetting($facet);
+  $showMoreInLightbox = $this->recommend->getShowInLightboxSetting($facet);
+  $daterangeFacet = $facet == $daterangeFacetField;
+
   if ($daterangeFacet) {
     $fromVal = $toVal = $type = null;
     $queryHelper = $results->getUrlQuery();
@@ -54,8 +53,8 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
     }
   }
 ?>
-<?php if (isset($newItemsFacets[$title])): ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/new-item-facet.phtml', ['results' => $results, 'title' => $title, 'newItemsFacets' => $newItemsFacets, 'datePickerLang' => $datePickerLang]); ?>
+<?php if (isset($newItemsFacets[$facet])): ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/new-item-facet.phtml', ['results' => $results, 'title' => $facet, 'newItemsFacets' => $newItemsFacets, 'datePickerLang' => $datePickerLang]); ?>
 <?php elseif ($daterangeFacet): ?>
   <div class="list-group-item daterange">
     <?=$this->partial('Recommend/DateRangeVisAjax.phtml', [
@@ -69,42 +68,43 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
       'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
       'daterangeFacet' => $daterangeFacetField,
       'plotFrom' => $plotFrom,
-      'plotImmediately' => !in_array($title, $collapsedFacets) ? 'true' : 'false'
+      'plotImmediately' => !in_array($facet, $collapsedFacets) ? 'true' : 'false'
     ]);
     ?>
   </div>
-<?php elseif (isset($rangeFacets[$title])): ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-facet.phtml', ['results' => $results, 'title' => $title, 'facet' => $rangeFacets[$title]]); ?>
-<?php elseif ($title == 'usage_rights_str_mv'): ?>
+<?php elseif (isset($rangeFacets[$facet])): ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/range-facet.phtml', ['results' => $results, 'title' => $facet, 'facet' => $rangeFacets[$facet]]); ?>
+<?php elseif ($facet == 'usage_rights_str_mv'): ?>
   <?php $contextVars = [
       'options' => $options,
-      'allowExclude' => $this->recommend->excludeAllowed($title),
-      'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-      'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
+      'allowExclude' => $this->recommend->excludeAllowed($facet),
+      'facets_before_more' => $this->recommend->getShowMoreSetting($facet),
+      'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($facet),
       'results' => $results
   ]; ?>
-  <?=$this->context($this)->renderInContext('Recommend/SideFacets/usage-rights-facet.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $this->cluster])); ?>
+  <?=$this->context($this)->renderInContext('Recommend/SideFacets/usage-rights-facet.phtml', array_merge($contextVars, ['title' => $facet, 'cluster' => $this->cluster])); ?>
 <?php else: ?>
   <?php $contextVars = [
     'options' => $options,
-    'allowExclude' => $this->recommend->excludeAllowed($title),
-    'facets_before_more' => $this->recommend->getShowMoreSetting($title),
-    'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($title),
-    'title' => $title,
-    'sortOptions' => $hierarchicalFacetSortOptions[$title] ?? '',
+    'allowExclude' => $this->recommend->excludeAllowed($facet),
+    'facets_before_more' => $this->recommend->getShowMoreSetting($facet),
+    'showMoreInLightbox' => $this->recommend->getShowInLightboxSetting($facet),
+    'title' => $facet,
+    'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? '',
+    'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? $hierarchicalFacetSortOptions['*'] ?? null,
     'collapsedFacets' => $collapsedFacets,
     'results' => $results
   ]; ?>
-  <?php if (in_array($title, $hierarchicalFacets)): ?>
+  <?php if (in_array($facet, $hierarchicalFacets)): ?>
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet.phtml', $contextVars); ?>
-  <?php elseif ($title === 'geographic_facet' && isset($geographicFacet['map_selection']) && $geographicFacet['map_selection']): ?>
+  <?php elseif ($facet === 'geographic_facet' && isset($geographicFacet['map_selection']) && $geographicFacet['map_selection']): ?>
     <div class="geofacet-header">
       <h5 class="geofacet-title"><?=$this->translate('choose_from_list')?></h5>
     </div>
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/geographic-facet.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $facet, 'cluster' => $cluster])); ?>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/geographic-facet.phtml', array_merge($contextVars, ['title' => $facet, 'cluster' => $cluster])); ?>
   <?php else: ?>
-    <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $title, 'cluster' => $cluster])); ?>
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/cluster-list.phtml', array_merge($contextVars, ['title' => $facet, 'cluster' => $cluster])); ?>
   <?php endif; ?>
 <?php endif; ?>
 <!-- END of: finna - Recommend/SideFacets/facet.phtml -->
