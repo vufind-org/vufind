@@ -9,7 +9,7 @@
     <tr>
       <td class="fullLocation">
         <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
-        <?php if (isset($item['locationhref']) && $item['locationhref']): ?>
+        <?php if ($item['locationhref'] ?? false): ?>
           <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
         <?php else: ?>
           <?=$locationText?>
@@ -23,7 +23,7 @@
         <?php endif; ?>
       </td>
       <td class="fullAvailability">
-        <?php if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
+        <?php if ($item['use_unknown_message'] ?? false): ?>
           <span><?=$this->transEsc("status_unknown_message")?></span>
         <?php elseif ($item['availability']): ?>
           <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>

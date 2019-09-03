@@ -1034,6 +1034,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         return [
             'total' => $holdings['total'] ?? count($holdings),
             'holdings' => $holdings['holdings'] ?? $holdings,
+            'electronic_holdings' => $holdings['electronic_holdings'] ?? [],
             'page' => $finalOptions['page'],
             'itemLimit' => $finalOptions['itemLimit'],
         ];

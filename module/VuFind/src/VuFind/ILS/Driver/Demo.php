@@ -376,7 +376,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
-        return [
+        $result = [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
@@ -396,8 +396,26 @@ class Demo extends AbstractBase
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
-            'services'     => $status == 'Available' ? $this->getFakeServices() : []
+            'services'     => $status == 'Available' ? $this->getFakeServices() : [],
         ];
+
+        switch (rand(1, 5)) {
+        case 1:
+            $result['location'] = 'Digital copy available';
+            $result['locationhref'] = 'http://digital';
+            $result['__electronic__'] = true;
+            $result['availability'] = true;
+            $result['status'] = '';
+            break;
+        case 2:
+            $result['location'] = 'Electronic Journals';
+            $result['locationhref'] = 'http://electronic';
+            $result['__electronic__'] = true;
+            $result['availability'] = true;
+            $result['status'] = 'Available from ' . rand(2010, 2019);
+        }
+
+        return $result;
     }
 
     /**
@@ -687,6 +705,14 @@ class Demo extends AbstractBase
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
+        // Filter out electronic holdings from the normal holdings list:
+        $status = array_filter(
+            $status,
+            function ($a) {
+                return !($a['__electronic__'] ?? false);
+            }
+        );
+
         // Slice out a chunk if pagination is enabled.
         $slice = null;
         if ($options['itemLimit'] ?? null) {
@@ -702,10 +728,22 @@ class Demo extends AbstractBase
             );
         }
 
+        // Electronic holdings:
+        $statuses = $this->getStatus($id);
+        $electronic = [];
+        foreach ($statuses as $item) {
+            if ($item['__electronic__'] ?? false) {
+                // Don't expose internal __electronic__ flag upstream:
+                unset($item['__electronic__']);
+                $electronic[] = $item;
+            }
+        }
+
         // Send back final value:
         return [
             'total' => count($status),
             'holdings' => $slice ?: $status,
+            'electronic_holdings' => $electronic
         ];
     }
 
