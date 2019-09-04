@@ -245,7 +245,7 @@ class ILS extends AbstractBase
         foreach ($fields as $field) {
             $user->$field = $info[$field] ?? ' ';
         }
-        $user->updateEmail($info['email']);
+        $user->updateEmail($info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(
