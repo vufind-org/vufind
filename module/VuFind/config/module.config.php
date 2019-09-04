@@ -481,6 +481,8 @@ $config = [
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => [
+        // List of prefixes leading to simpler (non-default) inflection.
+        'template_injection' => ['VuFind/'],
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // PostgreSQL sequence mapping

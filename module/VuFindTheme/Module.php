@@ -27,6 +27,8 @@
  */
 namespace VuFindTheme;
 
+use Zend\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
+use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -64,7 +66,11 @@ class Module
     public function getServiceConfig()
     {
         return [
+            'aliases' => [
+                ZendInjectTemplateListener::class => InjectTemplateListener::class,
+            ],
             'factories' => [
+                InjectTemplateListener::class => InjectTemplateListenerFactory::class,
                 'VuFindTheme\MixinGenerator' =>
                     'VuFindTheme\Module::getMixinGenerator',
                 'VuFindTheme\Mobile' =>
