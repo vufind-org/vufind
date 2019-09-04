@@ -292,15 +292,20 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('787');
         foreach ($fields as $field) {
             $iSubfield = $field->getSubfield('i');
-            if ($iSubfield == null)
+            if ($iSubfield == false)
                 continue;
 
             $aSubfield = $field->getSubfield('a');
             $dSubfield = $field->getSubfield('d');
             $tSubfield = $field->getSubfield('t');
 
-            $title = $tSubfield->getData() ?? $aSubfield->getData();
-            if ($dSubfield != null)
+            $title = '';
+            if ($tSubfield != false )
+                $title = $tSubfield->getData();
+            elseif ($aSubfield != false)
+                $title = $aSubfield->getData();
+
+            if ($dSubfield != false)
                 $title .= ' (' . $dSubfield->getData() . ')';
 
             $referencedId = null;
@@ -310,37 +315,38 @@ class SolrMarc extends SolrDefault
 
             $type = $iSubfield->getData();
             if (preg_match('"^(Rezension|Rezensiert in)(:)?$"i', $type)) {
-                $resultType = 'reviewed_record';
-                if (!isset($references[$resultType]))
-                    $references[$resultType] = [];
-                $reviewer = $aSubfield->getData() ?? '';
-                $references[$resultType][] = ['id' => $referencedId,
-                                              'reviewer' => $reviewer,
-                                              'title' => $title];
-            } else if (preg_match('"^Rezension von$"i', $type)) {
                 $resultType = 'review';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-                $reviewer = '';
-                $reviewerFields = $this->getMarcRecord()->getFields('100');
-                foreach ($reviewerFields as $reviewerField) {
-                    $a100Subfields = $reviewerField->getSubfields('a');
+                $author = $aSubfield->getData() ?? '';
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'title' => $title,
+                                              'author' => $author];
+            } else if (preg_match('"^Rezension von$"i', $type)) {
+                $resultType = 'reviewed_record';
+                if (!isset($references[$resultType]))
+                    $references[$resultType] = [];
+                $author = '';
+                $authorFields = $this->getMarcRecord()->getFields('100');
+                foreach ($authorFields as $authorField) {
+                    $a100Subfields = $authorField->getSubfields('a');
                     foreach ($a100Subfields as $a100Subfield) {
                         $a100 = $a100Subfield->getData();
                         if ($a100 != '') {
-                            $reviewer = $a100;
+                            $author = $a100;
                             break 2;
                         }
                     }
                 }
                 $references[$resultType][] = ['id' => $referencedId,
-                                              'reviewer' => $reviewer,
-                                              'title' => $title];
+                                              'title' => $title,
+                                              'author' => $author];
             } else {
                 $resultType = 'other';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-                $references[$resultType][] = ['id' => $referencedId, 'description' => $type . ' "' . $title . '"'];
+                $references[$resultType][] = ['id' => $referencedId,
+                                              'description' => $type . ' "' . $title . '"'];
             }
         }
 
