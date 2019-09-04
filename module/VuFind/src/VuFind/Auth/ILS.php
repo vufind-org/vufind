@@ -210,7 +210,7 @@ class ILS extends AbstractBase
     public function getILSLoginMethod($target = '')
     {
         $config = $this->getCatalog()->checkFunction(
-            'patronLogin', ['cat_username' => "$target.login"]
+            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
     }

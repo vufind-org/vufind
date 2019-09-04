@@ -355,15 +355,18 @@ function setupJumpMenus(_container) {
   container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
 }
 
-function setupMultiILSLoginFields(loginMethods, topClass) {
-  $('#login_' + (topClass ? topClass + '_' : '') + 'target').change(function onChangeLoginTarget() {
+function setupMultiILSLoginFields(loginMethods, idPrefix) {
+  var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+  $(searchPrefix + 'target').change(function onChangeLoginTarget() {
     var target = $(this).val();
-    var $usernameGroup = $('#login_' + (topClass ? topClass + '_' : '') + 'username').closest('.form-group');
-    var $password = $('#login_' + (topClass ? topClass + '_' : '') + 'password');
+    var $usernameGroup = $(searchPrefix + 'username').closest('.form-group');
+    var $password = $(searchPrefix + 'password');
     if (loginMethods[target] === 'email') {
       $usernameGroup.find('label.password-login').addClass('hidden');
       $usernameGroup.find('label.email-login').removeClass('hidden');
       $password.closest('.form-group').addClass('hidden');
+      // Set password to a dummy value so that any checks for username+password work
+      $password.val('****');
     } else {
       $usernameGroup.find('label.password-login').removeClass('hidden');
       $usernameGroup.find('label.email-login').addClass('hidden');

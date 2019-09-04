@@ -549,13 +549,8 @@ class MyResearchController extends AbstractBase
      */
     public function catalogloginAction()
     {
-        // Connect to the ILS and check if multiple target support is available:
-        $targets = null;
-        $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $targets = $catalog->getLoginDrivers();
-        }
-        return $this->createViewModel(['targets' => $targets]);
+        $loginSettings = $this->getILSLoginSettings();
+        return $this->createViewModel($loginSettings);
     }
 
     /**

@@ -118,24 +118,13 @@ class LibraryCardsController extends AbstractBase
 
         $target = null;
         $username = $card->cat_username;
-        $targets = null;
-        $defaultTarget = null;
-        $loginMethod = null;
-        $loginMethods = [];
-        // Connect to the ILS and check if multiple target support is available:
-        $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $targets = $catalog->getLoginDrivers();
-            $defaultTarget = $catalog->getDefaultLoginDriver();
-            if (strstr($username, '.')) {
-                list($target, $username) = explode('.', $username, 2);
-            }
-            foreach ($targets as $t) {
-                $loginMethods[$t] = $this->getILSLoginMethod($t);
-            }
-        } else {
-            $loginMethod = $this->getILSLoginMethod();
+
+        $loginSettings = $this->getILSLoginSettings();
+        // Split target and username if multiple login targets are available:
+        if ($loginSettings['targets'] && strstr($username, '.')) {
+            list($target, $username) = explode('.', $username, 2);
         }
+
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
         $username = $this->params()->fromPost('username', $username);
         $target = $this->params()->fromPost('target', $target);
@@ -145,12 +134,12 @@ class LibraryCardsController extends AbstractBase
             [
                 'card' => $card,
                 'cardName' => $cardName,
-                'target' => $target ? $target : $defaultTarget,
+                'target' => $target ?: $loginSettings['defaultTarget'],
                 'username' => $username,
-                'targets' => $targets,
-                'defaultTarget' => $defaultTarget,
-                'loginMethod' => $loginMethod,
-                'loginMethods' => $loginMethods
+                'targets' => $loginSettings['targets'],
+                'defaultTarget' => $loginSettings['defaultTarget'],
+                'loginMethod' => $loginSettings['loginMethod'],
+                'loginMethods' => $loginSettings['loginMethods'],
             ]
         );
     }
@@ -349,20 +338,5 @@ class LibraryCardsController extends AbstractBase
         }
 
         return $this->redirect()->toRoute('librarycards-home');
-    }
-
-    /**
-     * What login method does the ILS use (password, email, vufind)
-     *
-     * @param string $target Login target (MultiILS only)
-     *
-     * @return string
-     */
-    protected function getILSLoginMethod($target = '')
-    {
-        $config = $this->getILS()->checkFunction(
-            'patronLogin', ['cat_username' => "$target.login"]
-        );
-        return $config['loginMethod'] ?? 'password';
     }
 }
