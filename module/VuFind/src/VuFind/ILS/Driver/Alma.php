@@ -1619,9 +1619,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $tmpl = [
                     'id' => (string)$bib->mms_id,
                     'source' => 'Solr',
-                    'callnumber' => isset($bib->isbn)
-                        ? (string)$bib->isbn
-                        : ''
+                    'callnumber' => (string)($bib->isbn ?? ''),
+                    'reserve' => 'N',
                 ];
                 if ($record = $marc->next()) {
                     // Physical
@@ -1640,7 +1639,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $avail = $field->getSubfield('e')->getData();
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $field->getSubfield('m')->getData();
                         $item['location'] = $field->getSubfield('m')->getData();
                         $url = $field->getSubfield('u')->getData();
                         if (preg_match('/^https?:\/\//', $url)) {
