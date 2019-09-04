@@ -21,9 +21,6 @@ if (isset($summary['total'])) {
 }
 
 foreach ($holdings as &$holding) {
-  $holding['location']
-     = $this->transEsc('location_' . $holding['location'], [], $holding['location']);
-
   if (!empty($holding['availability']) || empty($holding['use_unknown_message'])) {
     $onlyUnknownStatuses = false;
   }
@@ -185,10 +182,11 @@ foreach ($this->statusItems as $item):
     <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?> clearfix">
       <div class="header">
         <?php if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><?php endif; ?>
+        <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
-          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$currentLocation?></a>
+          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationText?></a>
         <?php else: ?>
-          <?=$currentLocation?>
+          <?=$locationText?>
         <?php endif; ?>
         <?php if ($collapseBranches): ?>
           <span>
