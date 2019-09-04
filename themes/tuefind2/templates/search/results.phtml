@@ -1,4 +1,4 @@
-<?
+<?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
@@ -60,54 +60,55 @@
 ?>
 
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-      <? foreach ($this->results->getRecommendations('top') as $current): ?>
-        <?=$this->recommend($current)?>
-      <? endforeach; ?>
-    <? endif; ?>
+  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
+      <?=$this->recommend($current, 'top', $index)?>
+    <?php endforeach; ?>
+  <?php endif; ?>
     <?=$this->flashmessages()?>
     <nav class="search-header hidden-print">
       <div class="search-stats">
-        <? if ($recordTotal > 0): ?>
+        <?php if ($recordTotal > 0): ?>
           <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
-        <? else: ?>
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+          <?=$this->transEsc('Refine Results') ?>
+        </a>
+        <?php else: ?>
           <h2><?=$this->transEsc('nohit_heading')?></h2>
-        <? endif; ?>
+        <?php endif; ?>
       </div>
 
-      <? if ($recordTotal > 0): ?>
+    <?php if ($recordTotal > 0): ?>
         <div class="search-controls">
           <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/view.phtml')?>
         </div>
-      <? endif; ?>
+    <?php endif; ?>
     </nav>
-    <? /* End Listing Options */ ?>
+  <?php /* End Listing Options */ ?>
 
-    <? if ($recordTotal < 1): ?>
-      <p>
-        <? if (isset($this->overrideEmptyMessage)): ?>
-          <?=$this->overrideEmptyMessage?>
-        <? else: ?>
-          <? $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
-          <?=$this->layout()->srmessage ?>
-        <? endif; ?>
-      </p>
-      <? if (isset($this->parseError)): ?>
-        <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
-      <? endif; ?>
-      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
-        <?=$this->recommend($current)?>
-      <? endforeach; ?>
-      <? if (!isset($this->skip_noresults_recommendation) || $this->skip_noresults_recommendation !== true): ?>
-        <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-          <? if (!in_array($current, $top)): ?>
-            <?=$this->recommend($current)?>
-          <? endif; ?>
-        <? endforeach; ?>
-      <? endif; ?>
-    <? else: ?>
+  <?php if ($recordTotal < 1): ?>
+    <p>
+      <?php if (isset($this->overrideEmptyMessage)): ?>
+        <?=$this->overrideEmptyMessage?>
+      <?php else: ?>
+        <?php $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
+        <?=$this->layout()->srmessage ?>
+      <?php endif; ?>
+    </p>
+    <?php if (isset($this->parseError)): ?>
+      <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+      <?php endif; ?>
+    <?php foreach (($top = $this->results->getRecommendations('top')) as $index => $current): ?>
+      <?=$this->recommend($current, 'top', $index)?>
+    <?php endforeach; ?>
+    <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
+      <?php if (!in_array($current, $top)): ?>
+        <?=$this->recommend($current, 'noresults', $index)?>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
     <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
     </form>
@@ -115,32 +116,32 @@
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
 
-      <div class="searchtools hidden-print">
-        <strong><?=$this->transEsc('Search Tools')?>:</strong>
-        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+    <div class="searchtools hidden-print">
+      <strong><?=$this->transEsc('Search Tools')?>:</strong>
+      <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+      &mdash;
+      <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
+        <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
+      </a>
+      <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
         &mdash;
-        <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
-          <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
-        </a>
-        <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-          &mdash;
-          <? if (is_numeric($this->results->getSearchId())): ?>
-            <? if ($this->results->isSavedSearch()): ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc('save_search_remove')?></a>
-            <? else: ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
-            <? endif; ?>
-          <? endif; ?>
-        <? endif; ?>
-      </div>
-    <? endif; ?>
+        <?php if (is_numeric($this->results->getSearchId())): ?>
+          <?php if ($this->results->isSavedSearch()): ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc('save_search_remove')?></a>
+          <?php else: ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
+          <?php endif; ?>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
   </div>
-  <? /* End Main Listing */ ?>
+<?php /* End Main Listing */ ?>
 
-  <? /* Narrow Search Options */ ?>
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <? foreach ($this->results->getRecommendations('side') as $current): ?>
-      <?=$this->recommend($current)?>
-    <? endforeach; ?>
+<?php /* Narrow Search Options */ ?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+  <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+    <?=$this->recommend($current, 'side', $index)?>
+  <?php endforeach; ?>
   </div>
-  <? /* End Narrow Search Options */ ?>
+<?php /* End Narrow Search Options */ ?>
