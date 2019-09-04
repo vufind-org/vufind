@@ -334,7 +334,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
     /**
      * Get dissertation note for the record.
-     * Use field 502 if available. If not use local field 509
+     * Use field 502 if available. If not, use local field 509 or 920.
      *
      * @return string dissertation notes
      */
@@ -342,7 +342,12 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $notes = $this->getFirstFieldValue('502', ['a', 'b', 'c']);
         if (!$notes) {
+            // 509 used in Voyager
             $notes = $this->getFirstFieldValue('509', ['a', 'b', 'c']);
+        }
+        if (!$notes) {
+            // 920 used in Alma
+            $notes = $this->getFirstFieldValue('920', ['a', 'b', 'c']);
         }
         return $notes;
     }
