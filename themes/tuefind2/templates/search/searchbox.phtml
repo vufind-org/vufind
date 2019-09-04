@@ -109,7 +109,9 @@
                             </div>
 
                             <?php if ($advSearch): ?>
-                                <?=$this->render('search/searchbox/pills');?>
+                                <?=$this->context($this)->renderInContext('search/searchbox/pills.phtml', ['searchId' => $this->searchId,
+                                                                                                           'hiddenFilterParams' => $hiddenFilterParams,
+                                                                                                           'advSearchUrl' => $this->url($advSearch)])?>
                             <?php endif; ?>
                             <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
                                 <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
