@@ -70,8 +70,8 @@
                             <?php if (!empty($tabs)): ?></div><?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <form class="searchForm" method="get" action="<?= $this->url($basicSearch) ?>"
-                              name="searchForm" autocomplete="off">
+                        <form class="searchForm" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
+                            <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
 
                             <div class="form-group row">
                                 <!-- Begin search input field -->
