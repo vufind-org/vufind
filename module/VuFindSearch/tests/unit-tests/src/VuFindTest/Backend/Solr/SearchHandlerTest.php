@@ -142,9 +142,9 @@ class SearchHandlerTest extends TestCase
         // fake munge rules based on a simplified version of default searchspecs.yaml
         $spec = [
             'DismaxMunge' => [
-                'uppercase',
-                'preg_replace', '/[ "]/', "",
-                'preg_replace', '/\*+$/', ""
+                ['uppercase'],
+                ['preg_replace', '/[ "]/', ""],
+                ['preg_replace', '/\*+$/', ""]
             ],
             'DismaxFields' => ['callnumber'],
             'DismaxHandler' => 'dismax'
