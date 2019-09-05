@@ -702,7 +702,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Create parameters for API call
         $getParams = [
             'user_id_type' => 'all_unique',
-            'view' => 'brief',
+            'view' => 'full',
             'expand' => 'none'
         ];
 
@@ -719,6 +719,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $patron['cat_password'] = trim($password);
             $patron['firstname'] = (string)$response->first_name ?? '';
             $patron['lastname'] = (string)$response->last_name ?? '';
+            $patron['email'] = $this->getPreferredEmail($response);
             return $patron;
         }
 
@@ -783,6 +784,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                                    ? (string)$contact->phones[0]->phone->phone_number
                                    : null;
             }
+            $profile['email'] = $this->getPreferredEmail($xml);
         }
 
         // Cache the user group code
@@ -1680,6 +1682,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $results;
+    }
+
+    /**
+     * Get the preferred email address for the user (or first one if no preferred one
+     * is found)
+     *
+     * @param SimpleXMLElement $user User data
+     *
+     * @return string|null
+     */
+    protected function getPreferredEmail($user)
+    {
+        if (!empty($user->contact_info->emails->email)) {
+            foreach ($user->contact_info->emails->email as $email) {
+                if ('true' === (string)$email['preferred']) {
+                    return isset($email->email_address)
+                        ? (string)$email->email_address : null;
+                }
+            }
+            $email = $user->contact_info->emails->email[0];
+            return isset($email->email_address)
+                ? (string)$email->email_address : null;
+        }
+        return null;
     }
 
     // @codingStandardsIgnoreStart
