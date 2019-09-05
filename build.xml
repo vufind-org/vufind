@@ -255,9 +255,6 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <!-- get dependencies -->
-    <phingcall target="composer" />
-
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 

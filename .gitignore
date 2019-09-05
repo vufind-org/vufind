@@ -1,16 +1,19 @@
 # GNU Emacs temporary files
-
-ChangeLog
 \#*
 .\#*
-.php_cs_cache
-TAGS
 *~
+
+.php_cs_cache
+.vagrant
+.vscode/*
 /downloads
 /solr/vendor
 /vendor
+ChangeLog
+TAGS
 composer.phar
 import/solrmarc.log*
+lessphp_*.list
 node_modules
 
 # OS Created Files
@@ -51,5 +54,3 @@ themes/custom/css/finna.css
 *.diff
 vufind.bat
 public/swagger-ui
-.vagrant
-lessphp_*.list

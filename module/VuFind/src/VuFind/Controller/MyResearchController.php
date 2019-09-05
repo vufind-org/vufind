@@ -322,7 +322,11 @@ class MyResearchController extends AbstractBase
                 : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        $this->setFollowupUrlToReferer();
+        // Set followup only if we're not in lightbox since it has the short-circuit
+        // for reloading current page:
+        if (!$this->inLightbox()) {
+            $this->setFollowupUrlToReferer();
+        }
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
