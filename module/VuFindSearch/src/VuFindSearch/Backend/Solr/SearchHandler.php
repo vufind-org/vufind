@@ -134,7 +134,10 @@ class SearchHandler
      */
     public function prepareDismaxQueryString($search)
     {
-        return $this->dismaxMunge($search);
+        if ($this->hasDismax()) {
+            return $this->dismaxMunge($search);
+        }
+        return $search;
     }
 
     /**
@@ -393,29 +396,7 @@ class SearchHandler
         foreach ($this->specs['CustomMunge'] as $mungeName => $mungeOps) {
             $mungeValues[$mungeName] = $search;
             foreach ($mungeOps as $operation) {
-                switch ($operation[0]) {
-                case 'append':
-                    $mungeValues[$mungeName] .= $operation[1];
-                    break;
-                case 'lowercase':
-                    $mungeValues[$mungeName] = strtolower($mungeValues[$mungeName]);
-                    break;
-                case 'preg_replace':
-                    $mungeValues[$mungeName] = preg_replace(
-                        $operation[1], $operation[2], $mungeValues[$mungeName]
-                    );
-                    break;
-                case 'ucfirst':
-                    $mungeValues[$mungeName] = ucfirst($mungeValues[$mungeName]);
-                    break;
-                case 'uppercase':
-                    $mungeValues[$mungeName] = strtoupper($mungeValues[$mungeName]);
-                    break;
-                default:
-                    throw new \InvalidArgumentException(
-                        sprintf('Unknown munge operation: %s', $operation[0])
-                    );
-                }
+                $mungeValues[$mungeName] = $this->customMunge($mungeValues[$mungeName], $operation);
             }
         }
         return $mungeValues;
@@ -424,38 +405,52 @@ class SearchHandler
     /**
      * Custom munge search string of a dismax query.
      *
-     * @param string $search Search string
+     * @param string $search searchstring
      *
      * @return string
      */
     protected function dismaxMunge($search)
     {
         foreach ($this->specs['DismaxMunge'] as $operation) {
-            switch ($operation[0]) {
-            case 'append':
-                $search .= $operation[1];
-                break;
-            case 'lowercase':
-                $search = strtolower($search);
-                break;
-            case 'preg_replace':
-                $search = preg_replace(
-                    $operation[1], $operation[2], $search
-                );
-                break;
-            case 'ucfirst':
-                $search = ucfirst($search);
-                break;
-            case 'uppercase':
-                $search = strtoupper($search);
-                break;
-            default:
-                throw new \InvalidArgumentException(
-                    sprintf('Unknown munge operation: %s', $operation[0])
-                );
-            }
+            $search = $this->customMunge($search, $operation);
         }
         return $search;
+    }
+
+    /**
+     * Custom munge search string of a dismax query.
+     *
+     * @param string $string string to munge
+     * @param array $operation munge operation
+     *
+     * @return string
+     */
+    protected function customMunge($string, $operation)
+    {
+        switch ($operation[0]) {
+        case 'append':
+            $string .= $operation[1];
+            break;
+        case 'lowercase':
+            $string = strtolower($string);
+            break;
+        case 'preg_replace':
+            $string = preg_replace(
+                $operation[1], $operation[2], $string
+            );
+        break;
+        case 'ucfirst':
+            $string = ucfirst($string);
+            break;
+        case 'uppercase':
+            $string = strtoupper($string);
+            break;
+        default:
+            throw new \InvalidArgumentException(
+                sprintf('Unknown munge operation: %s', $operation[0])
+            );
+        }
+        return $string;
     }
 
     /**

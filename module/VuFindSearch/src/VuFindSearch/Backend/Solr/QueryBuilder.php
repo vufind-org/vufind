@@ -143,9 +143,7 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
-            if ($handler->hasDismax()) {
-                $string = $handler->prepareDismaxQueryString($string);
-            }
+            $string = $handler->prepareDismaxQueryString($string);
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
