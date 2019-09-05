@@ -396,7 +396,8 @@ class SearchHandler
         foreach ($this->specs['CustomMunge'] as $mungeName => $mungeOps) {
             $mungeValues[$mungeName] = $search;
             foreach ($mungeOps as $operation) {
-                $mungeValues[$mungeName] = $this->customMunge($mungeValues[$mungeName], $operation);
+                $mungeValues[$mungeName]
+                    = $this->customMunge($mungeValues[$mungeName], $operation);
             }
         }
         return $mungeValues;
@@ -420,8 +421,8 @@ class SearchHandler
     /**
      * Custom munge search string of a dismax query.
      *
-     * @param string $string string to munge
-     * @param array $operation munge operation
+     * @param string $string    string to munge
+     * @param array  $operation munge operation
      *
      * @return string
      */
@@ -438,7 +439,7 @@ class SearchHandler
             $string = preg_replace(
                 $operation[1], $operation[2], $string
             );
-        break;
+            break;
         case 'ucfirst':
             $string = ucfirst($string);
             break;
