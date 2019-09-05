@@ -356,7 +356,10 @@ class AbstractBase extends AbstractActionController
             }
             try {
                 if ('email' === $this->getILSLoginMethod($target)) {
-                    $ilsAuth->sendEmailLoginLink($username);
+                    $routeMatch = $this->getEvent()->getRouteMatch();
+                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
+                        : 'myresearch-profile';
+                    $ilsAuth->sendEmailLoginLink($username, $routeName);
                     $this->flashMessenger()
                         ->addSuccessMessage('email_login_link_sent');
                 } else {
