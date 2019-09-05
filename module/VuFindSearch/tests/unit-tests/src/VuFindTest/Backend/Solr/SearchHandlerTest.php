@@ -131,4 +131,29 @@ class SearchHandlerTest extends TestCase
             $hndl->createSimpleQueryString('abc"123*')
         );
     }
+
+    /**
+     * Test dismax munge rules.
+     *
+     * @return void
+     */
+    public function testDismaxMunge()
+    {
+        // fake munge rules based on a simplified version of default searchspecs.yaml
+        $spec = [
+            'DismaxMunge' => [
+                'uppercase',
+                'preg_replace', '/[ "]/', "",
+                'preg_replace', '/\*+$/', ""
+            ],
+            'DismaxFields' => ['callnumber'],
+            'DismaxHandler' => 'dismax'
+        ];
+
+        $hndl = new SearchHandler($spec);
+        $this->assertEquals(
+            'callnumber:ABC123',
+            $hndl->dismaxMunge('abc"123*')
+        );
+    }
 }
