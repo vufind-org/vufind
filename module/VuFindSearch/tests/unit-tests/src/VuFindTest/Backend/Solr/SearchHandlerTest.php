@@ -152,7 +152,7 @@ class SearchHandlerTest extends TestCase
 
         $hndl = new SearchHandler($spec);
         $this->assertEquals(
-            'callnumber:ABC123',
+            'ABC123',
             $hndl->prepareDismaxQueryString('abc"123*')
         );
     }
