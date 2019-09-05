@@ -1686,11 +1686,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         $offset = 0;
         $limit = 50;
-        $fields = 'location,status,barcode,callNumber,fixedFields';
-        if ('m' !== ($bib['bibLevel']['code'] ?? null)) {
-            // Fetch varFields for volume information
-            $fields .= ',varFields';
-        }
+        $fields = 'location,status,barcode,callNumber,fixedFields,varFields';
         $statuses = [];
         $sort = 0;
         while (!isset($result) || $limit === $result['total']) {
