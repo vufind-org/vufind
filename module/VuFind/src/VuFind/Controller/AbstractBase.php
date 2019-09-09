@@ -459,6 +459,9 @@ class AbstractBase extends AbstractActionController
     public function getServerUrl($route = true)
     {
         $serverHelper = $this->getViewRenderer()->plugin('serverurl');
+        if ($this->getConfig()->Site->reverse_proxy) {
+            $serverHelper->setUseProxy(true);
+        }
         return $serverHelper(
             $route === true ? true : $this->url()->fromRoute($route)
         );
