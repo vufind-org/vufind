@@ -290,7 +290,7 @@ class Demo extends AbstractBase
             ? $this->config['Records']['query'] : '*:*';
         $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
-            throw new \Exception('Problem retrieving random record from $source.');
+            throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
         return [$record->getUniqueId(), $record->getTitle()];

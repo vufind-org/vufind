@@ -115,13 +115,14 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test changing a password.
+     * Test that the menu is absent when enableAjax is true and enableDropdown
+     * is false.
      *
      * @retryCallback tearDownAfterClass
      *
      * @return void
      */
-    public function testMenuOff()
+    public function testMenuOffAjaxNoDropdown()
     {
         // Create user
         $session = $this->getMinkSession();
@@ -147,7 +148,16 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(0, count($stati));
+    }
 
+    /**
+     * Test that the menu is absent when enableAjax is false and enableDropdown
+     * is false.
+     *
+     * @return void
+     */
+    public function testMenuOffNoAjaxNoDropdown()
+    {
         // Nothing on
         $this->changeConfigs(
             [
@@ -159,15 +169,23 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
+        $session = $this->login();
         $page = $session->getPage();
         $this->snooze();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(1, count($stati));
+    }
 
-        // Menu off, dropdown on
+    /**
+     * Test that the menu is absent when enableAjax is false and enableDropdown
+     * is true.
+     *
+     * @return void
+     */
+    public function testMenuOffNoAjaxDropdown()
+    {
         $this->changeConfigs(
             [
                 'config' => [
@@ -178,15 +196,23 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
+        $session = $this->login();
         $this->snooze();
         $page = $session->getPage();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(2, count($stati)); // one in menu, one in dropdown
+    }
 
-        // Reset all on
+    /**
+     * Test that the menu is absent when enableAjax is true and enableDropdown
+     * is true.
+     *
+     * @return void
+     */
+    public function testMenuOffAjaxDropdown()
+    {
         $this->changeConfigs(
             [
                 'config' => [
@@ -197,7 +223,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
+        $session = $this->login();
         $this->snooze();
         $page = $session->getPage();
         $menu = $page->findAll('css', '#login-dropdown');

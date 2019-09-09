@@ -513,7 +513,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function createAlmaUser($formParams)
     {
         // Get config for creating new Alma users from Alma.ini
-        $newUserConfig = $this->config['NewUser'];
+        $newUserConfig = $this->config['NewUser'] ?? [];
 
         // Check if config params are all set
         $configParams = [
@@ -521,24 +521,19 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             'accountType', 'status', 'emailType', 'idType'
         ];
         foreach ($configParams as $configParam) {
-            if (!isset($newUserConfig[$configParam])
-                || empty(trim($newUserConfig[$configParam]))
-            ) {
+            if (empty(trim($newUserConfig[$configParam] ?? ''))) {
                 $errorMessage = 'Configuration "' . $configParam . '" is not set ' .
-                                'in Alma.ini in the [NewUser] section!';
-                error_log('[ALMA]: ' . $errorMessage);
+                                'in Alma ini in the [NewUser] section!';
+                $this->logError($errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         }
 
         // Calculate expiry date based on config in Alma.ini
-        $dateNow = new \DateTime('now');
-        $expiryDate = null;
-        if (isset($newUserConfig['expiryDate'])
-            && !empty(trim($newUserConfig['expiryDate']))
-        ) {
+        $expiryDate = new \DateTime('now');
+        if (!empty(trim($newUserConfig['expiryDate'] ?? ''))) {
             try {
-                $expiryDate = $dateNow->add(
+                $expiryDate->add(
                     new \DateInterval($newUserConfig['expiryDate'])
                 );
             } catch (\Exception $exception) {
@@ -548,19 +543,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         } else {
-            $expiryDate = $dateNow->add(new \DateInterval('P1Y'));
+            $expiryDate->add(new \DateInterval('P1Y'));
         }
-        $expiryDateXml = ($expiryDate != null)
-                 ? '<expiry_date>' . $expiryDate->format('Y-m-d') . 'Z</expiry_date>'
-                 : '';
 
         // Calculate purge date based on config in Alma.ini
         $purgeDate = null;
-        if (isset($newUserConfig['purgeDate'])
-            && !empty(trim($newUserConfig['purgeDate']))
-        ) {
+        if (!empty(trim($newUserConfig['purgeDate'] ?? ''))) {
             try {
-                $purgeDate = $dateNow->add(
+                $purgeDate = new \DateTime('now');
+                $purgeDate->add(
                     new \DateInterval($newUserConfig['purgeDate'])
                 );
             } catch (\Exception $exception) {
@@ -570,45 +561,40 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         }
-        $purgeDateXml = ($purgeDate != null)
-                    ? '<purge_date>' . $purgeDate->format('Y-m-d') . 'Z</purge_date>'
-                    : '';
 
         // Create user XML for Alma API
-        $userXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-        . '<user>'
-        . '<record_type>' . $this->config['NewUser']['recordType'] . '</record_type>'
-        . '<first_name>' . $formParams['firstname'] . '</first_name>'
-        . '<last_name>' . $formParams['lastname'] . '</last_name>'
-        . '<user_group>' . $this->config['NewUser']['userGroup'] . '</user_group>'
-        . '<preferred_language>' . $this->config['NewUser']['preferredLanguage'] .
-          '</preferred_language>'
-        . $expiryDateXml
-        . $purgeDateXml
-        . '<account_type>' . $this->config['NewUser']['accountType'] .
-          '</account_type>'
-        . '<status>' . $this->config['NewUser']['status'] . '</status>'
-        . '<contact_info>'
-        . '<emails>'
-        . '<email preferred="true">'
-        . '<email_address>' . $formParams['email'] . '</email_address>'
-        . '<email_types>'
-        . '<email_type>' . $this->config['NewUser']['emailType'] . '</email_type>'
-        . '</email_types>'
-        . '</email>'
-        . '</emails>'
-        . '</contact_info>'
-        . '<user_identifiers>'
-        . '<user_identifier>'
-        . '<id_type>' . $this->config['NewUser']['idType'] . '</id_type>'
-        . '<value>' . $formParams['username'] . '</value>'
-        . '</user_identifier>'
-        . '</user_identifiers>'
-        . '</user>';
+        $xml = simplexml_load_string(
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . "\n\n<user/>"
+        );
+        $xml->addChild('record_type', $newUserConfig['recordType']);
+        $xml->addChild('first_name', $formParams['firstname']);
+        $xml->addChild('last_name', $formParams['lastname']);
+        $xml->addChild('user_group', $newUserConfig['userGroup']);
+        $xml->addChild(
+            'preferred_language', $newUserConfig['preferredLanguage']
+        );
+        $xml->addChild('account_type', $newUserConfig['accountType']);
+        $xml->addChild('status', $newUserConfig['status']);
+        $xml->addChild('expiry_date', $expiryDate->format('Y-m-d') . 'Z');
+        if (null !== $purgeDate) {
+            $xml->addChild('purge_date', $purgeDate->format('Y-m-d') . 'Z');
+        }
 
-        // Remove whitespaces from XML
-        $userXml = preg_replace("/\n/i", "", $userXml);
-        $userXml = preg_replace("/>\s*</i", "><", $userXml);
+        $contactInfo = $xml->addChild('contact_info');
+        $emails = $contactInfo->addChild('emails');
+        $email = $emails->addChild('email');
+        $email->addAttribute('preferred', 'true');
+        $email->addChild('email_address', $formParams['email']);
+        $emailTypes = $email->addChild('email_types');
+        $emailTypes->addChild('email_type', $newUserConfig['emailType']);
+
+        $userIdentifiers = $xml->addChild('user_identifiers');
+        $userIdentifier = $userIdentifiers->addChild('user_identifier');
+        $userIdentifier->addChild('id_type', $newUserConfig['idType']);
+        $userIdentifier->addChild('value', $formParams['username']);
+
+        $userXml = $xml->asXML();
 
         // Create user in Alma
         $almaAnswer = $this->makeRequest(
