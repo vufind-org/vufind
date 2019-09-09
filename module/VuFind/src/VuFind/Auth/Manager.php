@@ -596,6 +596,8 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * account credentials.
      *
      * @throws AuthException
+     * @throws \VuFind\Exception\PasswordSecurity
+     * @throws \VuFind\Exception\AuthInProgress
      * @return UserRow Object representing logged-in user.
      */
     public function login($request)
@@ -700,6 +702,22 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function validateCredentials($request)
     {
         return $this->getAuth()->validateCredentials($request);
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return array|false
+     */
+    public function getILSLoginMethod($target = '')
+    {
+        $auth = $this->getAuth();
+        if (is_callable([$auth, 'getILSLoginMethod'])) {
+            return $auth->getILSLoginMethod($target);
+        }
+        return false;
     }
 
     /**

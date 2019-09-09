@@ -616,15 +616,52 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string $barcode  The patrons barcode.
+     * @param string $username The patrons barcode or other username.
      * @param string $password The patrons password.
      *
      * @return string[]|NULL
      */
-    public function patronLogin($barcode, $password)
+    public function patronLogin($username, $password)
     {
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'vufind';
-        if ('password' === $loginMethod) {
+
+        $patron = [];
+        $patronId = $username;
+        if ('email' === $loginMethod) {
+            // Create parameters for API call
+            $getParams = [
+                'q' => 'email~' . $username
+            ];
+
+            // Try to find the user in Alma
+            $response = $this->makeRequest(
+                '/users/',
+                $getParams
+            );
+
+            foreach (($response->user ?? []) as $user) {
+                if ((string)$user->status !== 'ACTIVE') {
+                    continue;
+                }
+                if ($patron) {
+                    // More than one match, cannot log in by email
+                    $this->debug(
+                        "Email $username matches more than one user, cannot login"
+                    );
+                    return null;
+                }
+                $patron = [
+                    'id' => (string)$user->primary_id,
+                    'cat_username' => trim($username),
+                    'email' => trim($username)
+                ];
+            }
+            if (!$patron) {
+                return null;
+            }
+            // Use primary id in further queries
+            $patronId = $patron['id'];
+        } elseif ('password' === $loginMethod) {
             // Create parameters for API call
             $getParams = [
                 'user_id_type' => 'all_unique',
@@ -634,7 +671,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
             // Try to authenticate the user with Alma
             list($response, $status) = $this->makeRequest(
-                '/users/' . urlencode($barcode),
+                '/users/' . urlencode($username),
                 $getParams,
                 [],
                 'POST',
@@ -648,27 +685,28 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
 
-        if ('password' === $loginMethod || 'vufind' === $loginMethod) {
-            // Create parameters for API call
-            $getParams = [
-                'user_id_type' => 'all_unique',
-                'view' => 'brief',
-                'expand' => 'none'
-            ];
+        // Create parameters for API call
+        $getParams = [
+            'user_id_type' => 'all_unique',
+            'view' => 'full',
+            'expand' => 'none'
+        ];
 
-            // Check for patron in Alma
-            $response = $this->makeRequest(
-                '/users/' . urlencode($barcode),
-                $getParams
-            );
+        // Check for patron in Alma
+        $response = $this->makeRequest(
+            '/users/' . urlencode($patronId),
+            $getParams
+        );
 
-            if ($response !== null) {
-                return [
-                    'id' => (string)$response->primary_id,
-                    'cat_username' => trim($barcode),
-                    'cat_password' => trim($password)
-                ];
-            }
+        if ($response !== null) {
+            // We may already have some information, so just fill the gaps
+            $patron['id'] = (string)$response->primary_id;
+            $patron['cat_username'] = trim($username);
+            $patron['cat_password'] = trim($password);
+            $patron['firstname'] = (string)$response->first_name ?? '';
+            $patron['lastname'] = (string)$response->last_name ?? '';
+            $patron['email'] = $this->getPreferredEmail($response);
+            return $patron;
         }
 
         return null;
@@ -732,6 +770,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                                    ? (string)$contact->phones[0]->phone->phone_number
                                    : null;
             }
+            $profile['email'] = $this->getPreferredEmail($xml);
         }
 
         // Cache the user group code
@@ -1242,6 +1281,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getConfig($function, $params = null)
     {
+        if ($function == 'patronLogin') {
+            return [
+                'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind'
+            ];
+        }
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
 
@@ -1624,6 +1668,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $results;
+    }
+
+    /**
+     * Get the preferred email address for the user (or first one if no preferred one
+     * is found)
+     *
+     * @param SimpleXMLElement $user User data
+     *
+     * @return string|null
+     */
+    protected function getPreferredEmail($user)
+    {
+        if (!empty($user->contact_info->emails->email)) {
+            foreach ($user->contact_info->emails->email as $email) {
+                if ('true' === (string)$email['preferred']) {
+                    return isset($email->email_address)
+                        ? (string)$email->email_address : null;
+                }
+            }
+            $email = $user->contact_info->emails->email[0];
+            return isset($email->email_address)
+                ? (string)$email->email_address : null;
+        }
+        return null;
     }
 
     // @codingStandardsIgnoreStart

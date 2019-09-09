@@ -669,6 +669,24 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Patron login
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports patron login.
+     * It is currently assumed that all drivers do.
+     *
+     * @param array $functionConfig The patronLogin configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values for login; on failure, false.
+     */
+    protected function checkMethodpatronLogin($functionConfig, $params)
+    {
+        return $functionConfig;
+    }
+
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)
