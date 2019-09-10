@@ -115,6 +115,21 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Establish the fines in the session that will be used by various tests below...
+     *
+     * @return object
+     */
+    protected function setUpFinesEnvironment()
+    {
+        // Seed some fines
+        $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
+        $session = $this->getMinkSession();
+        $session->reload();
+        $this->snooze();
+        return $session->getPage();
+    }
+
+    /**
      * Test that the menu is absent when enableAjax is true and enableDropdown
      * is false.
      *
@@ -137,13 +152,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Seed some fines
-        $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
-
-        // enableAjax => true, enableDropdown => false
-        $session->reload();
-        $this->snooze();
-        $session = $this->getMinkSession();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
@@ -169,9 +178,9 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session = $this->login();
-        $page = $session->getPage();
+        $this->login();
         $this->snooze();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
@@ -196,9 +205,9 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session = $this->login();
+        $this->login();
         $this->snooze();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
@@ -223,9 +232,9 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session = $this->login();
+        $this->login();
         $this->snooze();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
