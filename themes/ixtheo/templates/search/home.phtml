@@ -2,8 +2,9 @@
   // Set page title.
   $this->headTitle($this->translate('IxTheo'));
 
-  // IxTheo: Searchbox will always be shown, so do not override it (Part 1)
-  // $this->layout()->searchbox = false;
+  // IxTheo: Searchbox will always be shown, but will be set unconditionally
+  // in the header file
+  $this->layout()->searchbox = false;
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {
@@ -13,6 +14,10 @@
   $this->layout()->breadcrumbs = false;
 ?>
 
-<!-- IxTheo: Searchbox will always be shown, so do not override it (Part 2) -->
+<!-- IxTheo: Searchbox will always be shown -->
+<div class="searchHomeContent">
+  <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
+</div>
 
 <?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>
