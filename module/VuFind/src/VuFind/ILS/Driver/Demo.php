@@ -290,7 +290,7 @@ class Demo extends AbstractBase
             ? $this->config['Records']['query'] : '*:*';
         $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
-            throw new \Exception('Problem retrieving random record from $source.');
+            throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
         return [$record->getUniqueId(), $record->getTitle()];
@@ -567,7 +567,7 @@ class Demo extends AbstractBase
         // when testing multiple accounts.
         $selectedPatron = empty($patron)
             ? (current(array_keys($this->session)) ?: 'default')
-            : $patron;
+            : md5($patron);
 
         // SessionContainer not defined yet? Build it now:
         if (!isset($this->session[$selectedPatron])) {
@@ -773,33 +773,42 @@ class Demo extends AbstractBase
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string $barcode  The patron barcode
+     * @param string $username The patron username
      * @param string $password The patron password
      *
      * @throws ILSException
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $password)
+    public function patronLogin($username, $password)
     {
         $this->checkIntermittentFailure();
+
+        $user = [
+            'id'           => trim($username),
+            'firstname'    => 'Lib',
+            'lastname'     => 'Rarian',
+            'cat_username' => trim($username),
+            'cat_password' => trim($password),
+            'email'        => 'Lib.Rarian@library.not',
+            'major'        => null,
+            'college'      => null
+        ];
+
+        $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
+        if ('email' === $loginMethod) {
+            $user['email'] = $username;
+            $user['cat_password'] = '';
+            return $user;
+        }
+
         if (isset($this->config['Users'])) {
-            if (!isset($this->config['Users'][$barcode])
-                || $password !== $this->config['Users'][$barcode]
+            if (!isset($this->config['Users'][$username])
+                || $password !== $this->config['Users'][$username]
             ) {
                 return null;
             }
         }
-        $user = [];
-
-        $user['id']           = trim($barcode);
-        $user['firstname']    = trim("Lib");
-        $user['lastname']     = trim("Rarian");
-        $user['cat_username'] = trim($barcode);
-        $user['cat_password'] = trim($password);
-        $user['email']        = trim("Lib.Rarian@library.not");
-        $user['major']        = null;
-        $user['college']      = null;
 
         return $user;
     }
@@ -2359,6 +2368,12 @@ class Demo extends AbstractBase
                     'title asc' => 'sort_title'
                 ],
                 'default_sort' => 'due asc'
+            ];
+        }
+        if ($function == 'patronLogin') {
+            return [
+                'loginMethod'
+                    => $this->config['Catalog']['loginMethod'] ?? 'password'
             ];
         }
 
