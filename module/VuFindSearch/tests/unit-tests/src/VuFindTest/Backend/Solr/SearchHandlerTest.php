@@ -137,7 +137,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testPrepareDismaxQueryString()
+    public function testPreprocessQueryString()
     {
         // fake munge rules based on a simplified version of default searchspecs.yaml
         $spec = [
@@ -153,7 +153,7 @@ class SearchHandlerTest extends TestCase
         $hndl = new SearchHandler($spec);
         $this->assertEquals(
             'ABC123',
-            $hndl->prepareDismaxQueryString('abc"123*')
+            $hndl->preprocessQueryString('abc"123*')
         );
     }
 }
