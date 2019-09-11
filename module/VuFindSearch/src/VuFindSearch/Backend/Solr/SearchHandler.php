@@ -132,7 +132,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function prepareDismaxQueryString($search)
+    public function preprocessQueryString($search)
     {
         if ($this->hasDismax()) {
             return $this->dismaxMunge($search);
