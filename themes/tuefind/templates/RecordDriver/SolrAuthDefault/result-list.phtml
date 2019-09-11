@@ -6,7 +6,8 @@
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
   $professions = $this->tuefind()->getAuthorityProfessions($this->driver);
-  $lifedates = $this->tuefind()->getAuthorityLifeDates($this->driver);
+  $birth = $this->tuefind()->getAuthorityBirth($this->driver);
+  $death = $this->tuefind()->getAuthorityDeath($this->driver);
 
   $resultItemLine = 0;
 ?>
@@ -16,9 +17,15 @@
       <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
-    <?php if ($lifedates != ''): ?>
+    <?php if ($birth != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        <?=$lifedates?>
+        <?=$birth?>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($death != ''): ?>
+      <div class="resultItemLine<?=++$resultItemLine?>">
+        <?=$death?>
       </div>
     <?php endif; ?>
 

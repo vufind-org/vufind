@@ -30,25 +30,42 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get life & death for display
+     * Get authority birth information for display
      *
      * @return string
      */
-    function getAuthorityLifeDates(&$driver) {
+    function getAuthorityBirth(&$driver) {
         $display = '';
 
-        $birth = $driver->getBirthDateOrYear();
-        if ($birth != '') {
-            $display .= ' *';
-            $display .= $birth;
-        }
-        $death = $driver->getDeathDateOrYear();
-        if ($death != '') {
-            $display .= '-';
-            $display .= $death;
-            $display .= '†';
+        $birthDate = $driver->getBirthDateOrYear();
+        if ($birthDate != '') {
+            $display .= '*';
+            $display .= $birthDate;
+            $birthPlace = $driver->getBirthPlace();
+            if ($birthPlace != null) {
+                $display .= '(' . $birthPlace . ')';
+            }
         }
 
+        return $display;
+    }
+
+    /**
+     * Get authority death information for display
+     *
+     * @return string
+     */
+    function getAuthorityDeath(&$driver) {
+        $display = '';
+        $deathDate = $driver->getDeathDateOrYear();
+        if ($deathDate != '') {
+            $display .= '&#x271D;';
+            $display .= $deathDate;
+            $deathPlace = $driver->getDeathPlace();
+            if ($deathPlace != null) {
+                $display .= '(' . $deathPlace . ')';
+            }
+        }
         return $display;
     }
 
@@ -314,7 +331,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         return !empty($config->Authentication->account_deletion);
     }
 
-
     function printSuperiorSeries($superior_record) {
         $superior_series = $superior_record->tryMethod('getSeries');
         if (is_array($superior_series)) {
@@ -328,7 +344,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
         return false;
     }
-
 
     function printPublicationInformation($pubPlaces, $pubDates, $pubNames) {
         if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames) &&
