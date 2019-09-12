@@ -39,12 +39,11 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
 
         $birthDate = $driver->getBirthDateOrYear();
         if ($birthDate != '') {
-            $display .= '*';
-            $display .= $birthDate;
+            $display .= $this->getView()->transEsc('Born: ');
+            $display .= '<span property="birthDate">' . $birthDate . '</span>';
             $birthPlace = $driver->getBirthPlace();
-            if ($birthPlace != null) {
-                $display .= '(' . $birthPlace . ')';
-            }
+            if ($birthPlace != null)
+                $display .= ', <span property="birthPlace">' . $birthPlace . '</span>';
         }
 
         return $display;
@@ -59,24 +58,28 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
-            $display .= '&#x271D;';
-            $display .= $deathDate;
+            $display .= $this->getView()->transEsc('Died: ');
+            $display .= '<span property="deathDate">' . $deathDate . '</span>';
             $deathPlace = $driver->getDeathPlace();
-            if ($deathPlace != null) {
-                $display .= '(' . $deathPlace . ')';
-            }
+            if ($deathPlace != null)
+                $display .= ', <span property="deathPlace">' . $deathPlace . '</span>';
         }
         return $display;
     }
 
+    function getAuthorityName(&$driver) {
+        $name = $driver->getTitle();
+        $name = trim(preg_replace('"\d+(-\d+)?"', '', $name));
+        return '<span property="name">' . $name . '</span>';
+    }
+
     function getAuthorityProfessions(&$driver) {
-        // Professions
         $professions = $driver->getProfessions();
         $professions_display = '';
         foreach ($professions as $profession) {
             if ($professions_display != '')
                 $professions_display .= '/';
-            $professions_display .= $profession['title'];
+            $professions_display .= '<span property="hasOccupation">' . $profession['title'] . '</span>';
         }
         return $professions_display;
     }
