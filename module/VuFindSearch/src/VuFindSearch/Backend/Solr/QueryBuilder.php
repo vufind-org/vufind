@@ -139,6 +139,7 @@ class QueryBuilder implements QueryBuilderInterface
             $finalQuery->setString($this->getNormalizedQueryString($query));
         }
         $string = $finalQuery->getString() ?: '*:*';
+
         // Highlighting is enabled if we have a field list set.
         $highlight = !empty($this->fieldsToHighlight);
 
