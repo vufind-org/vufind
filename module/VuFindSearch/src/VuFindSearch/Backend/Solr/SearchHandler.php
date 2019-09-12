@@ -126,7 +126,7 @@ class SearchHandler
     }
 
     /**
-     * Prepare a simple query string for a dismax query.
+     * Apply standard pre-processing to the query string.
      *
      * @param string $search Search string
      *
@@ -134,6 +134,7 @@ class SearchHandler
      */
     public function preprocessQueryString($search)
     {
+        // Apply Dismax munging, if required:
         if ($this->hasDismax()) {
             return $this->dismaxMunge($search);
         }
@@ -404,7 +405,7 @@ class SearchHandler
     }
 
     /**
-     * Custom munge search string of a dismax query.
+     * Apply custom search string munging to a Dismax query.
      *
      * @param string $search searchstring
      *
@@ -419,7 +420,7 @@ class SearchHandler
     }
 
     /**
-     * Custom munge search string of a dismax query.
+     * Apply a munge operation to a search string.
      *
      * @param string $string    string to munge
      * @param array  $operation munge operation
