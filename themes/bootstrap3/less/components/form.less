@@ -15,7 +15,36 @@ form {
         margin-left: 15px;
         margin-top: 5px;
     }
-    .form-group label.required::before {
+    .form-group label.required::before,
+    .form-group .radio-label.required::before,
+    {
         content: '* ';
+    }
+
+    input[type=checkbox],
+    input[type=radio] {
+        height: 1em;
+    }
+
+    .form-group.checkbox,
+    .form-group.radio {
+        margin-bottom: 15px;
+        label.control-label {
+            padding-left: 0;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        label {
+            display: table;
+            margin: 7px 0;
+            input {
+                width: auto;
+                margin-right: 10px;
+                margin-top: 3px;
+            }
+        }
+        .radio-label {
+            font-weight: 700;
+        }
     }
 }

@@ -63,11 +63,11 @@ class GetSideFacetsFactory implements \Zend\ServiceManager\Factory\FactoryInterf
             throw new \Exception('Unexpected options passed to factory.');
         }
         $result = new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Recommend\PluginManager'),
-            $container->get('VuFind\SearchRunner'),
-            $container->get('VuFind\Search\Solr\HierarchicalFacetHelper'),
-            $container->get('VuFind\Config\PluginManager')->get('facets'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Recommend\PluginManager::class),
+            $container->get(\VuFind\SearchRunner::class),
+            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('facets'),
             $container->get('ViewRenderer')
         );
         return $result;

@@ -45,6 +45,10 @@ class Folio extends AbstractAPI implements
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait {
+        logWarning as warning;
+        logError as error;
+    }
 
     /**
      * Authentication tenant (X-Okapi-Tenant)
@@ -104,6 +108,41 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Function that obscures and logs debug data
+     *
+     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
+     * @param string             $path        Request URL
+     * @param array              $params      Request parameters
+     * @param \Zend\Http\Headers $req_headers Headers object
+     *
+     * @return void
+     */
+    protected function debugRequest($method, $path, $params, $req_headers)
+    {
+        // Only log non-GET requests
+        if ($method == 'GET') {
+            return;
+        }
+        // remove passwords
+        $logParams = $params;
+        if (isset($logParams['password'])) {
+            unset($logParams['password']);
+        }
+        // truncate headers for token obscuring
+        $logHeaders = $req_headers->toArray();
+        if (isset($logHeaders['X-Okapi-Token'])) {
+            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+        }
+
+        $this->debug(
+            $method . ' request.' .
+            ' URL: ' . $path . '.' .
+            ' Params: ' . print_r($logParams, true) . '.' .
+            ' Headers: ' . print_r($logHeaders, true)
+        );
+    }
+
+    /**
      * (From AbstractAPI) Allow default corrections to all requests
      *
      * Add X-Okapi headers and Content-Type to every request
@@ -145,6 +184,10 @@ class Folio extends AbstractAPI implements
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
+        $this->debug(
+            'Token renewed. Tenant: ' . $auth['username'] .
+            ' Token: ' . substr($this->token, 0, 30) . '...'
+        );
     }
 
     /**
@@ -176,6 +219,9 @@ class Folio extends AbstractAPI implements
         $this->sessionCache = $factory($this->tenant);
         if ($this->sessionCache->folio_token ?? false) {
             $this->token = $this->sessionCache->folio_token;
+            $this->debug(
+                'Token taken from cache: ' . substr($this->token, 0, 30) . '...'
+            );
         }
         if ($this->token == null) {
             $this->renewTenantToken();
@@ -285,12 +331,15 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for holding information.
      *
-     * @param string $bibId  Bib-level id
-     * @param array  $patron Patron login information from $this->patronLogin
+     * @param string $bibId   Bib-level id
+     * @param array  $patron  Patron login information from $this->patronLogin
+     * @param array  $options Extra options (not currently used)
      *
      * @return array An array of associative holding arrays
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($bibId, array $patron = null)
+    public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $instance = $this->getInstance($bibId);
         $query = ['query' => '(instanceId="' . $instance->id . '")'];
@@ -327,7 +376,7 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'notes' => $item->notes ?? [],
-                    'callnumber' => $holding->callNumber,
+                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
                     'addLink' => true
@@ -375,6 +424,10 @@ class Folio extends AbstractAPI implements
             // Replace admin with user as tenant
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
                 ->getFieldValue();
+            $this->debug(
+                'User logged in. User: ' . $username . '.' .
+                ' Token: ' . substr($this->token, 0, 30) . '...'
+            );
             return [
                 'id' => $profile->id,
                 'username' => $username,

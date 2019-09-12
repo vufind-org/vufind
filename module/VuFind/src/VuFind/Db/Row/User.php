@@ -144,6 +144,23 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Save date/time when email address has been verified.
+     *
+     * @param string $datetime optional date/time to save.
+     *
+     * @return mixed           The output of the save method.
+     */
+    public function saveEmailVerified($datetime=null)
+    {
+        if ($datetime === null) {
+            $datetime = date('Y-m-d H:i:s');
+        }
+
+        $this->email_verified = $datetime;
+        return $this->save();
+    }
+
+    /**
      * This is a getter for the Catalog Password. It will return a plaintext version
      * of the password.
      *
@@ -225,6 +242,16 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $this->home_library = $homeLibrary;
         $this->updateLibraryCardEntry();
         return $this->save();
+    }
+
+    /**
+     * Check whether the email address has been verified yet.
+     *
+     * @return bool
+     */
+    public function checkEmailVerified()
+    {
+        return !empty($this->email_verified);
     }
 
     /**
@@ -651,6 +678,28 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
         $this->verify_hash = $hash . $time;
         return $this->save();
+    }
+
+    /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * the save() method.
+     *
+     * @param string $email        New email address
+     * @param bool   $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateEmail($email, $userProvided = false)
+    {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$this->user_provided_email)) {
+            $this->email = $email;
+            $this->user_provided_email = $userProvided ? 1 : 0;
+        }
     }
 
     /**

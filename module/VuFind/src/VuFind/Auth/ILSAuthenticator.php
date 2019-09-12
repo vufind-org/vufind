@@ -55,6 +55,13 @@ class ILSAuthenticator
     protected $catalog;
 
     /**
+     * Email authenticator
+     *
+     * @var EmailAuthenticator
+     */
+    protected $emailAuthenticator;
+
+    /**
      * Cache for ILS account information (keyed by username)
      *
      * @var array
@@ -64,13 +71,16 @@ class ILSAuthenticator
     /**
      * Constructor
      *
-     * @param Manager       $auth    Auth manager
-     * @param ILSConnection $catalog ILS connection
+     * @param Manager            $auth      Auth manager
+     * @param ILSConnection      $catalog   ILS connection
+     * @param EmailAuthenticator $emailAuth Email authenticator
      */
-    public function __construct(Manager $auth, ILSConnection $catalog)
-    {
+    public function __construct(Manager $auth, ILSConnection $catalog,
+        EmailAuthenticator $emailAuth = null
+    ) {
         $this->auth = $auth;
         $this->catalog = $catalog;
+        $this->emailAuthenticator = $emailAuth;
     }
 
     /**
@@ -146,15 +156,77 @@ class ILSAuthenticator
     {
         $result = $this->catalog->patronLogin($username, $password);
         if ($result) {
-            $user = $this->auth->isLoggedIn();
-            if ($user) {
-                $user->saveCredentials($username, $password);
-                $this->auth->updateSession($user);
-                // cache for future use
-                $this->ilsAccount[$username] = $result;
-            }
+            $this->updateUser($username, $password, $result);
             return $result;
         }
         return false;
+    }
+
+    /**
+     * Send email authentication link
+     *
+     * @param string $email Email address
+     * @param string $route Route for the login link
+     *
+     * @return void
+     */
+    public function sendEmailLoginLink($email, $route)
+    {
+        if (null === $this->emailAuthenticator) {
+            throw new \Exception('Email authenticator not set');
+        }
+
+        $patron = $this->catalog->patronLogin($email, '');
+        if ($patron) {
+            $this->emailAuthenticator->sendAuthenticationLink(
+                $patron['email'],
+                $patron,
+                ['auth_method' => 'ILS'],
+                $route
+            );
+        }
+    }
+
+    /**
+     * Process email login
+     *
+     * @param string $hash Login hash
+     *
+     * @return array|bool
+     * @throws ILSException
+     */
+    public function processEmailLoginHash($hash)
+    {
+        if (null === $this->emailAuthenticator) {
+            throw new \Exception('Email authenticator not set');
+        }
+
+        try {
+            $patron = $this->emailAuthenticator->authenticate($hash);
+        } catch (\Vufind\Exception\Auth $e) {
+            return false;
+        }
+        $this->updateUser($patron['cat_username'], '', $patron);
+        return $patron;
+    }
+
+    /**
+     * Update current user account with the patron information
+     *
+     * @param string $catUsername Catalog username
+     * @param string $catPassword Catalog password
+     * @param array  $patron      Patron
+     *
+     * @return void
+     */
+    protected function updateUser($catUsername, $catPassword, $patron)
+    {
+        $user = $this->auth->isLoggedIn();
+        if ($user) {
+            $user->saveCredentials($catUsername, $catPassword);
+            $this->auth->updateSession($user);
+            // cache for future use
+            $this->ilsAccount[$catUsername] = $patron;
+        }
     }
 }

@@ -238,7 +238,7 @@ class AlmaController extends AbstractBase
                 $user->username = $username;
                 $user->firstname = $firstname;
                 $user->lastname = $lastname;
-                $user->email = $email;
+                $user->updateEmail($email);
                 $user->cat_id = $primaryId;
                 $user->cat_username = $username;
 
@@ -372,7 +372,7 @@ class AlmaController extends AbstractBase
                     ]
                 );
                 // Send the email
-                $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+                $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
                     $user->email, $config->Site->email,
                     $this->translate(
                         'new_user_welcome_subject',

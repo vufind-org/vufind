@@ -84,6 +84,21 @@ CREATE INDEX search_user_id_idx ON search (user_id);
 CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table shortlinks
+--
+
+DROP TABLE IF EXISTS "shortlinks";
+
+CREATE TABLE shortlinks (
+id SERIAL,
+path text,
+created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (id)
+);
+
 
 -- --------------------------------------------------------
 
@@ -115,6 +130,9 @@ pass_hash varchar(60) DEFAULT NULL,
 firstname varchar(50) NOT NULL DEFAULT '',
 lastname varchar(50) NOT NULL DEFAULT '',
 email varchar(255) NOT NULL DEFAULT '',
+email_verified timestamp DEFAULT NULL,
+pending_email varchar(255) NOT NULL DEFAULT '',
+user_provided_email boolean NOT NULL DEFAULT '0',
 cat_id varchar(255) DEFAULT NULL,
 cat_username varchar(50) DEFAULT NULL,
 cat_password varchar(70) DEFAULT NULL,

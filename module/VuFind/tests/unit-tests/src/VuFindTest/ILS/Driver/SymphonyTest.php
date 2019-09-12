@@ -54,7 +54,7 @@ class SymphonyTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp()
     {
-        $loader = $this->getMockBuilder('VuFind\Record\Loader')
+        $loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()->getMock();
 
         $this->driver = new Symphony($loader);

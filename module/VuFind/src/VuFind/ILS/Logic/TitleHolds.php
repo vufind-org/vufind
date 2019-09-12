@@ -155,7 +155,7 @@ class TitleHolds
         static $holdings = [];
 
         if (!isset($holdings[$id])) {
-            $holdings[$id] = $this->catalog->getHolding($id);
+            $holdings[$id] = $this->catalog->getHolding($id)['holdings'];
         }
         return $holdings[$id];
     }

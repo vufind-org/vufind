@@ -35,9 +35,19 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
+    /**
+     * CSS selector for finding active filters
+     *
+     * @var string
+     */
+    protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
+
     /**
      * Standard setup method.
      *
@@ -64,6 +74,36 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Helper function for simple facet application test
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function facetApplyProcedure($page)
+    {
+        // Confirm that we have 9 results and no filters to begin with:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(0, count($items));
+
+        // Facet to Fiction (after making sure we picked the right link):
+        $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
+        $this->assertEquals('Fiction 7', $facetList->getText());
+        $facetList->click();
+        $this->snooze();
+
+        // Check that when the page reloads, we have fewer results and a filter:
+        $time = $this->findCss($page, '.search-query-time');
+        $stats = $this->findCss($page, '.search-stats');
+        $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(1, count($items));
+    }
+
+    /**
      * Helper function for facets lists
      *
      * @param \Behat\Mink\Element\Element $page            Mink page object
@@ -81,7 +121,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
             ->findAll('css', '#modal #facet-list-count .fa-times');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // more
-        $this->findCss($page, '#modal .js-facet-next-page')->click();
+        $this->clickCss($page, '#modal .js-facet-next-page');
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items));
@@ -102,7 +142,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
 
         // sort by title
-        $this->findCss($page, '[data-sort="index"]')->click();
+        $this->clickCss($page, '[data-sort="index"]');
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
         $this->assertEquals($limit, count($items)); // reset number of items
@@ -118,7 +158,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
             ->findAll('css', '#modal #facet-list-index .fa-times');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
         // sort by index again
-        $this->findCss($page, '[data-sort="count"]')->click();
+        $this->clickCss($page, '[data-sort="count"]');
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
@@ -131,6 +171,49 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         // apply US facet
         $weirdIDs->click();
         $this->snooze();
+    }
+
+    /**
+     * Test applying a facet to filter results (standard facet sidebar)
+     *
+     * @return void
+     */
+    public function testApplyFacet()
+    {
+        $page = $this->performSearch('building:weird_ids.mrc');
+
+        // Confirm that we are NOT using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(0, count($ajaxContainer));
+
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
+    }
+
+    /**
+     * Test applying a facet to filter results (deferred facet sidebar)
+     *
+     * @return void
+     */
+    public function testApplyFacetDeferred()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+
+        // Confirm that we ARE using the AJAX sidebar:
+        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
+        $this->assertEquals(1, count($ajaxContainer));
+
+        // Now run the body of the test procedure:
+        $this->facetApplyProcedure($page);
     }
 
     /**
@@ -157,10 +240,10 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore->click();
         $this->facetListProcedure($page, $limit);
         $genreMore->click();
-        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        $this->clickCss($page, '#modal .js-facet-item.active');
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -185,14 +268,14 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         // Open the geographic facet
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
-        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->clickCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]');
         $this->facetListProcedure($page, $limit);
         $genreMore->click();
-        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
-        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        $this->clickCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]');
+        $this->clickCss($page, '#modal .js-facet-item.active');
         // remove facet
         $this->snooze();
-        $this->assertNull($page->find('css', '.active-filters'));
+        $this->assertNull($page->find('css', $this->activeFilterSelector));
     }
 
     /**
@@ -219,7 +302,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->find('css', '.active-filters')));
+        $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));
     }
 
     /**
@@ -235,10 +318,12 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->executeScript("$('#j1_1.jstree-closed .jstree-icon').click();");
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
-        $this->findCss($page, '#j1_2 a')->click();
+        $this->clickCss($page, '#j1_2 a');
         $this->snooze();
-        $filter = $this->findCss($page, '.active-filters .facet');
-        $this->assertEquals('Clear Filter hierarchy: 1/level1a/level2a/', $filter->getText());
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $label = $this->findCss($page, '.filters .filters-title');
+        $this->assertEquals('hierarchy:', $label->getText());
+        $this->assertEquals('1/level1a/level2a/', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 
@@ -289,43 +374,165 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
         // Uncollapse format so we can check if it is still open after reload:
-        $this->findCss($page, '#side-panel-format .collapsed')->click();
+        $this->clickCss($page, '#side-panel-format .collapsed');
         // Uncollapse hierarchical facet so we can click it:
-        $this->findCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed')->click();
+        $this->clickCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed');
         $this->clickHierarchyFacet($page);
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that
         // it was not alread opened.
-        $this->findCss($page, '#side-panel-format .title')->click(); // off
+        $this->clickCss($page, '#side-panel-format .title'); // off
         $this->snooze(); // wait for animation
-        $this->findCss($page, '#side-panel-format .collapsed')->click(); // on
-        $this->findCss($page, '#side-panel-building .collapsed')->click(); // on
+        $this->clickCss($page, '#side-panel-format .collapsed'); // on
+        $this->clickCss($page, '#side-panel-building .collapsed'); // on
     }
 
     /**
-     * Test retrain current filters checkbox
+     * Assert that the filter used by these tests is still applied.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
      *
      * @return void
      */
-    public function testRetainFilters()
+    protected function assertFilterIsStillThere($page)
+    {
+        $filter = $this->findCss($page, $this->activeFilterSelector);
+        $this->assertEquals('weird_ids.mrc', $filter->getText());
+    }
+
+    /**
+     * Assert that no filters are applied.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoFilters($page)
+    {
+        $items = $page->findAll('css', $this->activeFilterSelector);
+        $this->assertEquals(0, count($items));
+    }
+
+    /**
+     * Assert that the "reset filters" button is not present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        $this->assertEquals(0, count($reset));
+    }
+
+    /**
+     * Test retain current filters default behavior
+     *
+     * @return void
+     */
+    public function testDefaultRetainFiltersBehavior()
     {
         $page = $this->getFilteredSearch();
-        $this->findCss($page, '.active-filters'); // Make sure we're filtered
-        // Perform search with retain
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->assertFilterIsStillThere($page);
+        // Re-click the search button and confirm that filters are still there
+        $this->clickCss($page, '#searchForm .btn.btn-primary');
         $this->snooze();
-        $this->findCss($page, '.active-filters');
-        // Perform search double click retain
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
+        $this->assertFilterIsStillThere($page);
+        // Click the "reset filters" button and confirm that filters are gone and
+        // that the button disappears when no longer needed.
+        $this->clickCss($page, '.reset-filters-btn');
         $this->snooze();
-        $this->findCss($page, '.active-filters');
-        // Perform search without retain
-        $this->findCss($page, '.searchFormKeepFilters')->click();
-        $this->findCss($page, '#searchForm .btn.btn-primary')->click();
-        $items = $page->findAll('css', '.active-filters');
-        $this->assertEquals(0, count($items));
+        $this->assertNoFilters($page);
+        $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
+     * Test that filters carry over to selected records and are retained
+     * from there.
+     *
+     * @return void
+     */
+    public function testFiltersOnRecord()
+    {
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Now click the first result:
+        $this->clickCss($page, '.result-body a.title');
+        $this->snooze();
+        // Confirm that filters are still visible:
+        $this->assertFilterIsStillThere($page);
+        // Re-click the search button...
+        $this->clickCss($page, '#searchForm .btn.btn-primary');
+        $this->snooze();
+        // Confirm that filter is STILL applied
+        $this->assertFilterIsStillThere($page);
+    }
+
+    /**
+     * Test "never retain filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testNeverRetainFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => ['retain_filters_by_default' => false]
+                ]
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
+        // Re-click the search button and confirm that filters go away
+        $this->clickCss($page, '#searchForm .btn.btn-primary');
+        $this->snooze();
+        $this->assertNoFilters($page);
+    }
+
+    /**
+     * Test resetting to a default filter state
+     *
+     * @return void
+     */
+    public function testDefaultFiltersWithResetButton()
+    {
+        // Unlike the other tests, which use $this->getFilteredSearch() to set up
+        // the weird_ids.mrc filter through a URL parameter, this test sets up the
+        // filter as a default through the configuration.
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => ['default_filters' => ['building:weird_ids.mrc']]
+                ]
+            ]
+        );
+
+        // Do a blank search to confirm that default filter is applied:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results');
+        $page = $session->getPage();
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+
+        // Confirm that the reset button is NOT present:
+        $this->assertNoResetFiltersButton($page);
+
+        // Now manually clear the filter:
+        $this->clickCss($page, '.search-filter-remove');
+        $this->snooze();
+
+        // Confirm that no filters are displayed:
+        $this->assertNoFilters($page);
+
+        // Now click the reset button to bring back the default:
+        $this->clickCss($page, '.reset-filters-btn');
+        $this->snooze();
+        $this->assertFilterIsStillThere($page);
+        $this->assertNoResetFiltersButton($page);
     }
 }

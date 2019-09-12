@@ -235,6 +235,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [];
+                $context['collapsedFacets'] = [];
                 $response[$facet]['html'] = $this->renderer->render(
                     'Recommend/SideFacets/facet.phtml',
                     $context

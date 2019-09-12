@@ -78,7 +78,7 @@ class RecordCollectionTest extends TestCase
             ]
         );
         for ($i = 0; $i < 5; $i++) {
-            $coll->add($this->createMock('VuFindSearch\Response\RecordInterface'));
+            $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
         $coll->rewind();
         $this->assertEquals(5, $coll->key());

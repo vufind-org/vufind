@@ -42,7 +42,7 @@ use Zend\Config\Config;
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test bulk options using legacy (deprecated) configuration.
+     * Test options using legacy (deprecated) configuration.
      *
      * @return void
      */
@@ -61,26 +61,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $export = $this->getExport($config);
-        $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
-    }
-
-    /**
-     * Test bulk options.
-     *
-     * @return void
-     */
-    public function testGetBulkOptions()
-    {
-        $config = [
-            'Export' => [
-                'foo' => 'record,bulk',
-                'bar' => 'record,bulk',
-                'baz' => 0,
-                'xyzzy' => 'record',
-            ],
-        ];
-        $export = $this->getExport($config);
-        $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
+        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
     }
 
     /**

@@ -64,22 +64,23 @@ class Factory implements FactoryInterface
         $settings = [
             'host' => $config->Mail->host, 'port' => $config->Mail->port
         ];
+        if (isset($config->Mail->name)) {
+            $settings['name'] = $config->Mail->name;
+        }
         if (isset($config->Mail->username) && isset($config->Mail->password)) {
             $settings['connection_class'] = 'login';
             $settings['connection_config'] = [
                 'username' => $config->Mail->username,
                 'password' => $config->Mail->password
             ];
+            // Set user defined secure connection if provided; otherwise set default
+            // secure connection based on configured port number.
             if (isset($config->Mail->secure)) {
-                // always set user defined secure connection
                 $settings['connection_config']['ssl'] = $config->Mail->secure;
-            } else {
-                // set default secure connection based on configured port
-                if ($settings['port'] == '587') {
-                    $settings['connection_config']['ssl'] = 'tls';
-                } elseif ($settings['port'] == '487') {
-                    $settings['connection_config']['ssl'] = 'ssl';
-                }
+            } elseif ($settings['port'] == '587') {
+                $settings['connection_config']['ssl'] = 'tls';
+            } elseif ($settings['port'] == '487') {
+                $settings['connection_config']['ssl'] = 'ssl';
             }
         }
         return new Smtp(new SmtpOptions($settings));
@@ -107,7 +108,8 @@ class Factory implements FactoryInterface
         }
 
         // Load configurations:
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
 
         // Create service:
         $class = new $requestedName($this->getTransport($config));

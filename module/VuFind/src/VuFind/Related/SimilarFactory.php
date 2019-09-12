@@ -61,6 +61,6 @@ class SimilarFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('VuFindSearch\Service'));
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

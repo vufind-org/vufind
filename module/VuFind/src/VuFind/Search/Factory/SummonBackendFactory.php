@@ -52,7 +52,7 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Zend\Log\LoggerInterface
      */
     protected $logger;
 
@@ -91,11 +91,12 @@ class SummonBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configReader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $this->config = $configReader->get('config');
         $this->summonConfig = $configReader->get('Summon');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -131,7 +132,7 @@ class SummonBackendFactory implements FactoryInterface
             ? $this->config->Summon->apiKey : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $timeout = isset($this->summonConfig->General->timeout)
             ? $this->summonConfig->General->timeout : 30;
@@ -150,7 +151,8 @@ class SummonBackendFactory implements FactoryInterface
      */
     protected function isAuthed()
     {
-        return $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        return $this->serviceLocator
+            ->get(\ZfcRbac\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
     }
 
@@ -177,7 +179,8 @@ class SummonBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $stripSnippets = !isset($this->summonConfig->General->snippets)
             || !$this->summonConfig->General->snippets;
         $callback = function ($data) use ($manager, $stripSnippets) {

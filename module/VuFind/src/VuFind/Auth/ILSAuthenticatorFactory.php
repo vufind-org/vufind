@@ -68,14 +68,15 @@ class ILSAuthenticatorFactory implements FactoryInterface
         // actually utilized.
         $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
             // Generate wrapped object:
-            $auth = $container->get('VuFind\Auth\Manager');
-            $catalog = $container->get('VuFind\ILS\Connection');
-            $wrapped = new $requestedName($auth, $catalog);
+            $auth = $container->get(\VuFind\Auth\Manager::class);
+            $catalog = $container->get(\VuFind\ILS\Connection::class);
+            $emailAuth = $container->get(\VuFind\Auth\EmailAuthenticator::class);
+            $wrapped = new $requestedName($auth, $catalog, $emailAuth);
 
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
         };
-        $cfg = $container->get('ProxyManager\Configuration');
+        $cfg = $container->get(\ProxyManager\Configuration::class);
         $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
         return $factory->createProxy($requestedName, $callback);
     }

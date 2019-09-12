@@ -40,6 +40,17 @@ namespace VuFind\Search\Search2;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = [
+        'Advanced_Facets', 'HomePage_Facets', 'ResultsTop', 'Results',
+        'ExtraFacetLabels'
+    ];
+
+    /**
      * Initialize facet settings for the advanced search screen.
      *
      * @return void

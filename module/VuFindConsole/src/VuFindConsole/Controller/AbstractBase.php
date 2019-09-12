@@ -117,7 +117,8 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config\PluginManager')->get($id);
+        return $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)->get($id);
     }
 
     /**
@@ -127,7 +128,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->serviceLocator->get('VuFind\ILS\Connection');
+        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -139,7 +140,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
+        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
             ->get($table);
     }
 }

@@ -50,13 +50,20 @@ class AbstractSolrSearch extends AbstractSearch
 
         // Set up facet information:
         $facets = $this->serviceLocator
-            ->get('VuFind\Search\FacetCache\PluginManager')
+            ->get(\VuFind\Search\FacetCache\PluginManager::class)
             ->get($this->searchClassId)
             ->getList('Advanced');
         $view->hierarchicalFacets
             = $this->getHierarchicalFacets($view->options->getFacetsIni());
+        $view->hierarchicalFacetsSortOptions
+            = $this->getAdvancedHierarchicalFacetsSortOptions(
+                $view->options->getFacetsIni()
+            );
         $view->facetList = $this->processAdvancedFacets(
-            $facets, $view->saved, $view->hierarchicalFacets
+            $facets,
+            $view->saved,
+            $view->hierarchicalFacets,
+            $view->hierarchicalFacetsSortOptions
         );
         $specialFacets = $this->parseSpecialFacetsSetting(
             $view->options->getSpecialAdvancedFacets()
@@ -116,27 +123,34 @@ class AbstractSolrSearch extends AbstractSearch
     /**
      * Process the facets to be used as limits on the Advanced Search screen.
      *
-     * @param array  $facetList          The advanced facet values
-     * @param object $searchObject       Saved search object (false if none)
-     * @param array  $hierarchicalFacets Hierarchical facet list (if any)
+     * @param array  $facetList                     The advanced facet values
+     * @param object $searchObject                  Saved search object
+     * (false if none)
+     * @param array  $hierarchicalFacets            Hierarchical facet list (if any)
+     * @param array  $hierarchicalFacetsSortOptions Hierarchical facet sort options
+     * (if any)
      *
-     * @return array               Sorted facets, with selected values flagged.
+     * @return array Sorted facets, with selected values flagged.
      */
     protected function processAdvancedFacets($facetList, $searchObject = false,
-        $hierarchicalFacets = []
+        $hierarchicalFacets = [], $hierarchicalFacetsSortOptions = []
     ) {
         // Process the facets
         $facetHelper = null;
         if (!empty($hierarchicalFacets)) {
             $facetHelper = $this->serviceLocator
-                ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
+                ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
         }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
                 $tmpList = $list['list'];
-                $facetHelper->sortFacetList($tmpList, true);
+
+                $sort = $hierarchicalFacetsSortOptions[$facet]
+                    ?? $hierarchicalFacetsSortOptions['*'] ?? 'top';
+
+                $facetHelper->sortFacetList($tmpList, $sort);
                 $tmpList = $facetHelper->buildFacetArray(
                     $facet,
                     $tmpList
@@ -180,5 +194,28 @@ class AbstractSolrSearch extends AbstractSearch
         return isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
+    }
+
+    /**
+     * Get an array of hierarchical facet sort options for Advanced search
+     *
+     * @param string $config Name of facet configuration file to load.
+     *
+     * @return array
+     */
+    protected function getAdvancedHierarchicalFacetsSortOptions($config)
+    {
+        $facetConfig = $this->getConfig($config);
+        $baseConfig
+            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
+            : [];
+        $advancedConfig
+            = isset($facetConfig->Advanced_Settings->hierarchicalFacetSortOptions)
+            ? $facetConfig->Advanced_Settings->hierarchicalFacetSortOptions
+                ->toArray()
+            : [];
+
+        return array_merge($baseConfig, $advancedConfig);
     }
 }

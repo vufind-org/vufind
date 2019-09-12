@@ -152,7 +152,7 @@ class UtilController extends AbstractBase
             && !empty($reserves)
         ) {
             // Setup Solr Connection
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
 
             // Delete existing records
             $solr->deleteAll('SolrReserves');
@@ -262,7 +262,7 @@ class UtilController extends AbstractBase
         $core = $this->getRequest()->getParam('core', 'Solr');
 
         // Commit and Optimize the Solr Index
-        $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
         $solr->commit($core);
         if ($optimize) {
             $solr->optimize($core);
@@ -278,9 +278,10 @@ class UtilController extends AbstractBase
     public function sitemapAction()
     {
         // Build sitemap and display appropriate warnings if needed:
-        $configLoader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configLoader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $generator = new Sitemap(
-            $this->serviceLocator->get('VuFind\Search\BackendManager'),
+            $this->serviceLocator->get(\VuFind\Search\BackendManager::class),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
         );
         $request = $this->getRequest();
@@ -398,7 +399,7 @@ class UtilController extends AbstractBase
                     . implode(', ', $ids)
                 );
             }
-            $writer = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $writer = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $writer->deleteRecords($index, $ids);
             if ($verbose) {
                 Console::writeLine('Delete operation completed.');
@@ -424,7 +425,8 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $recordTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
+        $recordTable = $this->serviceLocator
+            ->get(\VuFind\Db\Table\PluginManager::class)
             ->get('Record');
 
         $count = $recordTable->cleanup();
@@ -579,7 +581,7 @@ class UtilController extends AbstractBase
             }
         } else {
             // Default behavior: Get Suppressed Records and Delete from index
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $solr->deleteRecords($backend, $result);
             $solr->commit($backend);
             $solr->optimize($backend);
@@ -604,9 +606,9 @@ class UtilController extends AbstractBase
         }
         $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
-        $recordLoader = $this->serviceLocator->get('VuFind\Record\Loader');
+        $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $hierarchies = $this->serviceLocator
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr')
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
         if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
             $hierarchies['hierarchy_top_id']['data']['list'] = [];
@@ -665,7 +667,7 @@ class UtilController extends AbstractBase
     public function cssbuilderAction()
     {
         $compiler = new \VuFindTheme\LessCompiler(true);
-        $cacheManager = $this->serviceLocator->get('VuFind\Cache\Manager');
+        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
         $compiler->compile(array_unique($this->getRequest()->getParam('themes')));
@@ -824,7 +826,8 @@ class UtilController extends AbstractBase
         }
 
         // Now do the database rewrite:
-        $userTable = $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
+        $userTable = $this->serviceLocator
+            ->get(\VuFind\Db\Table\PluginManager::class)
             ->get('User');
         $users = $userTable->select(
             function ($select) {
@@ -850,6 +853,32 @@ class UtilController extends AbstractBase
 
         // If we got this far, all went well!
         Console::writeLine("\tFinished.");
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Lint a file of MARC records.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function lintmarcAction()
+    {
+        $request = $this->getRequest();
+        $filename = $request->getParam('filename');
+        $marc = substr($filename, -3) !== 'xml'
+            ? new File_MARC($filename) : new File_MARCXML($filename);
+        $linter = new \File_MARC_Lint();
+        $i = 0;
+        while ($record = $marc->next()) {
+            $i++;
+            $field001 = $record->getField('001');
+            $field001 = $field001 ? (string)$field001->getData() : 'undefined';
+            Console::writeLine("Checking record $i (001 = $field001)...");
+            $warnings = $linter->checkRecord($record);
+            if (count($warnings) > 0) {
+                Console::writeLine('Warnings: ' . implode("\n", $warnings));
+            }
+        }
         return $this->getSuccessResponse();
     }
 }

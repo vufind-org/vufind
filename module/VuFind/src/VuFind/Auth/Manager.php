@@ -143,8 +143,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = isset($config->Authentication->method)
-            ? $config->Authentication->method : 'Database';
+        $method = $config->Authentication->method ?? 'Database';
         $this->legalAuthOptions = [$method];   // mark it as legal
         $this->setAuthMethod($method);              // load it
     }
@@ -206,29 +205,35 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsRecovery($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
-            return isset($this->config->Authentication->recover_password)
-                && $this->config->Authentication->recover_password;
-        }
-        return false;
+        return ($this->config->Authentication->recover_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordRecovery();
+    }
+
+    /**
+     * Is email changing currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsEmailChange($authMethod = null)
+    {
+        return $this->config->Authentication->change_email ?? false;
     }
 
     /**
      * Is new passwords currently allowed?
      *
      * @param string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * the one in config file
      *
      * @return bool
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if (isset($this->config->Authentication->change_password)
-            && $this->config->Authentication->change_password
-        ) {
-            return $this->getAuth($authMethod)->supportsPasswordChange();
-        }
-        return false;
+        return ($this->config->Authentication->change_password ?? false)
+            && $this->getAuth($authMethod)->supportsPasswordChange();
     }
 
     /**
@@ -357,9 +362,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function loginEnabled()
     {
         // Assume login is enabled unless explicitly turned off:
-        return isset($this->config->Authentication->hideLogin)
-            ? !$this->config->Authentication->hideLogin
-            : true;
+        return !($this->config->Authentication->hideLogin ?? false);
     }
 
     /**
@@ -507,8 +510,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function inPrivacyMode()
     {
-        return isset($this->config->Authentication->privacy)
-            && $this->config->Authentication->privacy;
+        return $this->config->Authentication->privacy ?? false;
     }
 
     /**
@@ -563,6 +565,30 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Update a user's email from the request.
+     *
+     * @param UserRow $user  Object representing user being updated.
+     * @param string  $email New email address to set (must be pre-validated!).
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updateEmail(UserRow $user, $email)
+    {
+        // Depending on verification setting, either do a direct update or else
+        // put the new address into a pending state.
+        if ($this->config->Authentication->verify_email ?? false) {
+            $user->pending_email = $email;
+        } else {
+            $user->updateEmail($email, true);
+        }
+        $user->save();
+        $this->updateSession($user);
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
@@ -570,6 +596,8 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * account credentials.
      *
      * @throws AuthException
+     * @throws \VuFind\Exception\PasswordSecurity
+     * @throws \VuFind\Exception\AuthInProgress
      * @return UserRow Object representing logged-in user.
      */
     public function login($request)
@@ -578,8 +606,16 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         // for example):
         $this->getAuth()->preLoginCheck($request);
 
+        // Check if the current auth method wants to delegate the request to another
+        // method:
+        if ($delegate = $this->getAuth()->getDelegateAuthMethod($request)) {
+            $this->setAuthMethod($delegate, true);
+        }
+
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)) {
+        if (!$this->getAuth()->getSessionInitiator(null)
+            && $this->getAuth()->needsCsrfCheck($request)
+        ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
                 throw new AuthException('authentication_error_technical');
@@ -619,14 +655,21 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Setter
      *
-     * @param string $method The auth class to proxy
+     * @param string $method     The auth class to proxy
+     * @param bool   $forceLegal Whether to force the new method legal
      *
      * @return void
      */
-    public function setAuthMethod($method)
+    public function setAuthMethod($method, $forceLegal = false)
     {
         // Change the setting:
         $this->activeAuth = $method;
+
+        if ($forceLegal) {
+            if (!in_array($method, $this->legalAuthOptions)) {
+                $this->legalAuthOptions[] = $method;
+            }
+        }
 
         // If this method supports switching to a different method and we haven't
         // already initialized it, add those options to the whitelist. If the object
@@ -659,6 +702,22 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function validateCredentials($request)
     {
         return $this->getAuth()->validateCredentials($request);
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return array|false
+     */
+    public function getILSLoginMethod($target = '')
+    {
+        $auth = $this->getAuth();
+        if (is_callable([$auth, 'getILSLoginMethod'])) {
+            return $auth->getILSLoginMethod($target);
+        }
+        return false;
     }
 
     /**

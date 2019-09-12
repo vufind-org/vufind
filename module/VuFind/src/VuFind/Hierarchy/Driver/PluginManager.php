@@ -44,8 +44,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'default' => 'VuFind\Hierarchy\Driver\HierarchyDefault',
-        'flat' => 'VuFind\Hierarchy\Driver\HierarchyFlat',
+        'default' => HierarchyDefault::class,
+        'flat' => HierarchyFlat::class,
     ];
 
     /**
@@ -54,10 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Hierarchy\Driver\HierarchyDefault' =>
-            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
-        'VuFind\Hierarchy\Driver\HierarchyFlat' =>
-            'VuFind\Hierarchy\Driver\ConfigurationBasedFactory',
+        HierarchyDefault::class => ConfigurationBasedFactory::class,
+        HierarchyFlat::class => ConfigurationBasedFactory::class,
     ];
 
     /**
@@ -68,6 +66,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Hierarchy\Driver\AbstractBase';
+        return AbstractBase::class;
     }
 }

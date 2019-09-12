@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cart controller factory.
@@ -39,7 +38,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CartControllerFactory implements FactoryInterface
+class CartControllerFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -62,8 +61,11 @@ class CartControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new \Zend\Session\Container(
-            'cart_followup', $container->get('Zend\Session\SessionManager')
+            'cart_followup', $container->get(\Zend\Session\SessionManager::class)
         );
-        return new $requestedName($container, $session);
+        return $this->applyPermissions(
+            $container,
+            new $requestedName($container, $session)
+        );
     }
 }

@@ -75,7 +75,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
             $pluginManager  = $this->serviceLocator
-                ->get('Zend\Mvc\Controller\PluginManager');
+                ->get(\Zend\Mvc\Controller\PluginManager::class);
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');
         }

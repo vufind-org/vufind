@@ -62,8 +62,8 @@ class AbstractILSChannelProviderFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get('VuFindSearch\Service'),
-            $container->get('VuFind\ILS\Connection')
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\ILS\Connection::class)
         );
     }
 }

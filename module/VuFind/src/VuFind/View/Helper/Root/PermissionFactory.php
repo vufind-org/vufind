@@ -62,8 +62,8 @@ class PermissionFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Role\PermissionManager'),
-            $container->get('VuFind\Role\PermissionDeniedManager')
+            $container->get(\VuFind\Role\PermissionManager::class),
+            $container->get(\VuFind\Role\PermissionDeniedManager::class)
         );
     }
 }

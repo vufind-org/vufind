@@ -116,7 +116,7 @@ class CollectionsController extends AbstractBase
         $limit = $this->getBrowseLimit();
 
         // Load Solr data or die trying:
-        $db = $this->serviceLocator->get('VuFind\Search\BackendManager')
+        $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
         $result = $db->alphabeticBrowse($source, $from, $page, $limit);
 
@@ -174,7 +174,7 @@ class CollectionsController extends AbstractBase
         $browseField = "hierarchy_browse";
 
         $searchObject = $this->serviceLocator
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         foreach ($appliedFilters as $filter) {
             $searchObject->getParams()->addFilter($filter);
         }
@@ -337,7 +337,7 @@ class CollectionsController extends AbstractBase
     {
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
-        $searchService = $this->serviceLocator->get('VuFindSearch\Service');
+        $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
         $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
         return $result->getRecords();
     }

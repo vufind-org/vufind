@@ -135,7 +135,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     protected function getConfig($name)
     {
         return $this->factory->__invoke(
-            $this->createMock('Interop\Container\ContainerInterface'), $name
+            $this->createMock(\Interop\Container\ContainerInterface::class), $name
         );
     }
 

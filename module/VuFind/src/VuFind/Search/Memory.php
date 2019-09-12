@@ -155,18 +155,6 @@ class Memory
     }
 
     /**
-     * Deprecated alias for retrieveSearch, for legacy compatibility.
-     *
-     * @deprecated
-     *
-     * @return string|null
-     */
-    public function retrieve()
-    {
-        return $this->retrieveSearch();
-    }
-
-    /**
      * Retrieve a previous user parameter, if available. Return $default if
      * not found.
      *

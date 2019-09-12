@@ -53,7 +53,7 @@ class FilterFieldConversionListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
-        $mock = $this->createMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -86,7 +86,7 @@ class FilterFieldConversionListenerTest extends TestCase
             ['foo' => 'bar', 'baz' => 'boo']
         );
 
-        $backend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
+        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $event = new Event('pre', $backend, ['params' => $params]);
         $listener->onSearchPre($event);

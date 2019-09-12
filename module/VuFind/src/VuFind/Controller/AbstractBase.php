@@ -28,6 +28,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\MvcEvent;
@@ -51,11 +52,12 @@ class AbstractBase extends AbstractActionController
 {
     /**
      * Permission that must be granted to access this module (false for no
-     * restriction)
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
      *
      * @var string|bool
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through
@@ -106,6 +108,29 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Getter for access permission.
+     *
+     * @return string|bool
+     */
+    public function getAccessPermission()
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @param string $ap Permission to require for access to the controller (false
+     * for no requirement)
+     *
+     * @return void
+     */
+    public function setAccessPermission($ap)
+    {
+        $this->accessPermission = empty($ap) ? false : $ap;
+    }
+
+    /**
      * Register the default events for this controller
      *
      * @return void
@@ -132,10 +157,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        $layout = $this->params()
-            ->fromPost('layout', $this->params()->fromQuery('layout', false));
-        if ('lightbox' === $layout) {
+        if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
+            $params['inLightbox'] = true;
         }
         return new ViewModel($params);
     }
@@ -218,7 +242,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getAuthManager()
     {
-        return $this->serviceLocator->get('VuFind\Auth\Manager');
+        return $this->serviceLocator->get(\VuFind\Auth\Manager::class);
     }
 
     /**
@@ -231,7 +255,7 @@ class AbstractBase extends AbstractActionController
     protected function getAuthorizationService()
     {
         return $this->serviceLocator
-            ->get('ZfcRbac\Service\AuthorizationService');
+            ->get(\ZfcRbac\Service\AuthorizationService::class);
     }
 
     /**
@@ -241,7 +265,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getILSAuthenticator()
     {
-        return $this->serviceLocator->get('VuFind\Auth\ILSAuthenticator');
+        return $this->serviceLocator->get(\VuFind\Auth\ILSAuthenticator::class);
     }
 
     /**
@@ -331,14 +355,32 @@ class AbstractBase extends AbstractActionController
                 $username = "$target.$username";
             }
             try {
-                $patron = $ilsAuth->newCatalogLogin($username, $password);
+                if ('email' === $this->getILSLoginMethod($target)) {
+                    $routeMatch = $this->getEvent()->getRouteMatch();
+                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
+                        : 'myresearch-profile';
+                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $this->flashMessenger()
+                        ->addSuccessMessage('email_login_link_sent');
+                } else {
+                    $patron = $ilsAuth->newCatalogLogin($username, $password);
 
-                // If login failed, store a warning message:
-                if (!$patron) {
-                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                    // If login failed, store a warning message:
+                    if (!$patron) {
+                        $this->flashMessenger()
+                            ->addErrorMessage('Invalid Patron Login');
+                    }
                 }
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            }
+        } elseif ('ILS' === $this->params()->fromQuery('auth_method', false)
+            && ($hash = $this->params()->fromQuery('hash', false))
+        ) {
+            try {
+                $patron = $ilsAuth->processEmailLoginHash($hash);
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
@@ -368,7 +410,8 @@ class AbstractBase extends AbstractActionController
      */
     public function getConfig($id = 'config')
     {
-        return $this->serviceLocator->get('VuFind\Config\PluginManager')->get($id);
+        return $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+            ->get($id);
     }
 
     /**
@@ -378,7 +421,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getILS()
     {
-        return $this->serviceLocator->get('VuFind\ILS\Connection');
+        return $this->serviceLocator->get(\VuFind\ILS\Connection::class);
     }
 
     /**
@@ -388,7 +431,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordLoader()
     {
-        return $this->serviceLocator->get('VuFind\Record\Loader');
+        return $this->serviceLocator->get(\VuFind\Record\Loader::class);
     }
 
     /**
@@ -398,7 +441,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordCache()
     {
-        return $this->serviceLocator->get('VuFind\Record\Cache');
+        return $this->serviceLocator->get(\VuFind\Record\Cache::class);
     }
 
     /**
@@ -408,7 +451,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordRouter()
     {
-        return $this->serviceLocator->get('VuFind\Record\Router');
+        return $this->serviceLocator->get(\VuFind\Record\Router::class);
     }
 
     /**
@@ -420,7 +463,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getTable($table)
     {
-        return $this->serviceLocator->get('VuFind\Db\Table\PluginManager')
+        return $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
             ->get($table);
     }
 
@@ -531,7 +574,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function disableSessionWrites()
     {
-        $this->serviceLocator->get('VuFind\Session\Settings')->disableWrite();
+        $this->serviceLocator->get(\VuFind\Session\Settings::class)->disableWrite();
     }
 
     /**
@@ -541,7 +584,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getSearchMemory()
     {
-        return $this->serviceLocator->get('VuFind\Search\Memory');
+        return $this->serviceLocator->get(\VuFind\Search\Memory::class);
     }
 
     /**
@@ -551,7 +594,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function commentsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
     }
 
@@ -562,7 +606,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function listsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getListSetting() !== 'disabled';
     }
 
@@ -573,7 +618,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function tagsEnabled()
     {
-        $check = $this->serviceLocator->get('VuFind\Config\AccountCapabilities');
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getTagSetting() !== 'disabled';
     }
 
@@ -669,11 +715,64 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the tab configuration for this controller.
      *
+     * @return \VuFind\RecordTab\TabManager
+     */
+    protected function getRecordTabManager()
+    {
+        return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+    }
+
+    /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return
+            $this->params()->fromPost(
+                'layout', $this->params()->fromQuery('layout', false)
+            ) === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return string
+     */
+    protected function getILSLoginMethod($target = '')
+    {
+        $config = $this->getILS()->checkFunction(
+            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+        );
+        return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form
+     *
      * @return array
      */
-    protected function getRecordTabConfig()
+    protected function getILSLoginSettings()
     {
-        $cfg = $this->serviceLocator->get('Config');
-        return $cfg['vufind']['recorddriver_tabs'];
+        $targets = null;
+        $defaultTarget = null;
+        $loginMethod = null;
+        $loginMethods = [];
+        // Connect to the ILS and check if multiple target support is available:
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+            $defaultTarget = $catalog->getDefaultLoginDriver();
+            foreach ($targets as $t) {
+                $loginMethods[$t] = $this->getILSLoginMethod($t);
+            }
+        } else {
+            $loginMethod = $this->getILSLoginMethod();
+        }
+        return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
     }
 }

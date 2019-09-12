@@ -73,7 +73,7 @@ class ResultScrollerTest extends TestCase
      */
     public function testDisabled()
     {
-        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $plugin = new ResultScroller(new Container('test'), $mockManager, false);
         $results = $this->getMockResults();
@@ -349,7 +349,7 @@ class ResultScrollerTest extends TestCase
     protected function getMockResults($page = 1, $limit = 20, $total = 0,
         $firstLast = true, $sort = null
     ) {
-        $pm = $this->getMockBuilder('VuFind\Config\PluginManager')->disableOriginalConstructor()->getMock();
+        $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
         $config = new \Zend\Config\Config(
             $firstLast ? $this->getFirstLastConfig() : []
         );
@@ -361,9 +361,9 @@ class ResultScrollerTest extends TestCase
         if (null !== $sort) {
             $params->setSort($sort, true);
         }
-        $ss = $this->getMockBuilder('VuFindSearch\Service')
+        $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $rl = $this->getMockBuilder('VuFind\Record\Loader')
+        $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()->getMock();
         $results = new \VuFindTest\Search\TestHarness\Results(
             $params, $ss, $rl, $total
@@ -382,7 +382,7 @@ class ResultScrollerTest extends TestCase
      */
     protected function getMockResultScroller($results)
     {
-        $mockManager = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         return new ResultScrollerMock($mockManager, $results);
     }

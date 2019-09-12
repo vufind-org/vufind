@@ -61,9 +61,9 @@ class UserListFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $sessionManager = $container->get('Zend\Session\SessionManager');
+        $sessionManager = $container->get(\Zend\Session\SessionManager::class);
         $session = new \Zend\Session\Container('List', $sessionManager);
-        $capabilities = $container->get('VuFind\Config\AccountCapabilities');
+        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName($session, $capabilities->getListSetting());
     }
 }

@@ -62,7 +62,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager')
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }
 }
