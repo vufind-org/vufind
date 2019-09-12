@@ -2,21 +2,21 @@
     $this->layout()->breadcrumbs = false;
 ?>
 <div vocab="http://schema.org/">
-  <h1><?=$this->tuefind()->getAuthorityName($this->driver)?></h1>
+  <h1><?=$this->authority()->getName($this->driver)?></h1>
   <div class="row">
     <div class="col-sm-8">
       <p>
-        <?php $professions = $this->tuefind()->getAuthorityProfessions($this->driver);?>
+        <?php $professions = $this->authority()->getProfessions($this->driver);?>
         <?php if ($professions != ''): ?>
           <?=$professions?>
         <?php endif; ?>
 
-        <?php $birth = $this->tuefind()->getAuthorityBirth($this->driver); ?>
+        <?php $birth = $this->authority()->getBirth($this->driver); ?>
         <?php if ($birth != ''): ?>
           <br/><?=$birth?>
         <?php endif; ?>
 
-        <?php $death = $this->tuefind()->getAuthorityDeath($this->driver); ?>
+        <?php $death = $this->authority()->getDeath($this->driver); ?>
         <?php if ($death != ''): ?>
           <br/><?=$death?>
         <?php endif; ?>
@@ -25,6 +25,27 @@
       <p>
         <a href="<?=$this->url('search-results', [], ['query' => ['lookfor' => 'author_id:' . $this->driver->getUniqueID()]])?>">Show all titles</a>
       </p>
+    </div>
+    <div class="col-sm-4">
+      <?php
+        // Image (partially rendered by JS)
+        $imgUrl = '/wikidataproxy/load?search[]=';
+        $names = $this->driver->getNameAliases();
+        $encodedNames = [];
+        foreach ($names as $name) {
+            $encodedNames[] = urlencode($name);
+        }
+        $imgUrl .= implode('&search[]=', $encodedNames);
+        $params = ['birthYear' => $this->driver->getBirthYear(),
+                   'deathYear' => $this->driver->getDeathYear()];
+        foreach ($params as $key => $value) {
+          if ($value)
+            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+        }
+      ?>
+      <!-- onload didn't work, so we use a separate script snippet -->
+      <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
+      <script>TueFind.GetImagesFromWikidata();</script>
 
       <?php
         // External links
@@ -57,27 +78,7 @@
           </ul>
         </p>
       <?php endif; ?>
-    </div>
-    <div class="col-sm-4">
-      <?php
-        // Image (partially rendered by JS)
-        $imgUrl = '/wikidataproxy/load?search[]=';
-        $names = $this->driver->getNameAliases();
-        $encodedNames = [];
-        foreach ($names as $name) {
-            $encodedNames[] = urlencode($name);
-        }
-        $imgUrl .= implode('&search[]=', $encodedNames);
-        $params = ['birthYear' => $this->driver->getBirthYear(),
-                   'deathYear' => $this->driver->getDeathYear()];
-        foreach ($params as $key => $value) {
-          if ($value)
-            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
-        }
-        ?>
-        <!-- onload didn't work, so we use a separate script snippet -->
-        <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
-      <script>TueFind.GetImagesFromWikidata();</script>
+
     </div>
   </div>
   <br>

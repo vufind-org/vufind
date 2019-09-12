@@ -18,7 +18,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $this->container = $container;
     }
 
-
     /**
      * Check if a facet value is equal to '[Unassigned]' or its translation
      *
@@ -27,61 +26,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      */
     function isUnassigned($value) {
         return ($value == '[Unassigned]') || ($value == $this->translate('[Unassigned]'));
-    }
-
-    /**
-     * Get authority birth information for display
-     *
-     * @return string
-     */
-    function getAuthorityBirth(&$driver) {
-        $display = '';
-
-        $birthDate = $driver->getBirthDateOrYear();
-        if ($birthDate != '') {
-            $display .= $this->getView()->transEsc('Born: ');
-            $display .= '<span property="birthDate">' . $birthDate . '</span>';
-            $birthPlace = $driver->getBirthPlace();
-            if ($birthPlace != null)
-                $display .= ', <span property="birthPlace">' . $birthPlace . '</span>';
-        }
-
-        return $display;
-    }
-
-    /**
-     * Get authority death information for display
-     *
-     * @return string
-     */
-    function getAuthorityDeath(&$driver) {
-        $display = '';
-        $deathDate = $driver->getDeathDateOrYear();
-        if ($deathDate != '') {
-            $display .= $this->getView()->transEsc('Died: ');
-            $display .= '<span property="deathDate">' . $deathDate . '</span>';
-            $deathPlace = $driver->getDeathPlace();
-            if ($deathPlace != null)
-                $display .= ', <span property="deathPlace">' . $deathPlace . '</span>';
-        }
-        return $display;
-    }
-
-    function getAuthorityName(&$driver) {
-        $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+(-\d+)?"', '', $name));
-        return '<span property="name">' . $name . '</span>';
-    }
-
-    function getAuthorityProfessions(&$driver) {
-        $professions = $driver->getProfessions();
-        $professions_display = '';
-        foreach ($professions as $profession) {
-            if ($professions_display != '')
-                $professions_display .= '/';
-            $professions_display .= '<span property="hasOccupation">' . $profession['title'] . '</span>';
-        }
-        return $professions_display;
     }
 
     /**

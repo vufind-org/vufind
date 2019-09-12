@@ -5,10 +5,12 @@ return [
         'factories' => [
             'VuFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
             'TueFind\View\Helper\Root\HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
-            'TueFind\View\Helper\TueFind\TueFind' => 'TueFind\View\Helper\TueFind\Factory',
             'TueFind\View\Helper\Root\RecordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatterFactory',
+            'TueFind\View\Helper\TueFind\Authority' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'TueFind\View\Helper\TueFind\TueFind' => 'TueFind\View\Helper\TueFind\Factory',
         ],
         'aliases' => [
+            'authority' => 'TueFind\View\Helper\TueFind\Authority',
             'helptext' => 'TueFind\View\Helper\Root\HelpText',
             'helpText' => 'TueFind\View\Helper\Root\HelpText',
             'HelpText' => 'TueFind\View\Helper\Root\HelpText',
