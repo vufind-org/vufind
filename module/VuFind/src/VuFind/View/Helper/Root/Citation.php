@@ -88,14 +88,13 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     public function __invoke($driver)
     {
         // Build author list:
-        $authors = [];
-        $primary = $driver->tryMethod('getPrimaryAuthors');
-        if (empty($primary)) {
-            $primary = $driver->tryMethod('getCorporateAuthors');
+        $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        if (empty($authors)) {
+            $authors = (array)$driver->tryMethod('getCorporateAuthors');
         }
-        $secondary = $driver->tryMethod('getSecondaryAuthors');
+        $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
         if (is_array($secondary) && !empty($secondary)) {
-            $authors = array_unique(array_merge($primary, $secondary));
+            $authors = array_unique(array_merge($authors, $secondary));
         }
 
         // Get best available title details:
