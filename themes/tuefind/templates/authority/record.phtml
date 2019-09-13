@@ -21,10 +21,7 @@
           <br/><?=$death?>
         <?php endif; ?>
       </p>
-
-      <p>
-        <a href="<?=$this->url('search-results', [], ['query' => ['lookfor' => 'author_id:' . $this->driver->getUniqueID()]])?>">Show all titles</a>
-      </p>
+      <?=$this->context($this)->renderInContext('related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
     <div class="col-sm-4">
       <?php

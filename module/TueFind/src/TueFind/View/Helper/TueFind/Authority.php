@@ -2,6 +2,8 @@
 
 namespace TueFind\View\Helper\TueFind;
 
+use \TueFind\RecordDriver\SolrAuthMarc as AuthorityRecordDriver;
+
 /**
  * View Helper for TueFind, containing functions related to authority data + schema.org
  */
@@ -10,12 +12,18 @@ class Authority extends \Zend\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $searchService;
+
+    public function __construct(\VuFindSearch\Service $searchService) {
+        $this->searchService = $searchService;
+    }
+
     /**
      * Get authority birth information for display
      *
      * @return string
      */
-    function getBirth(&$driver) {
+    function getBirth(AuthorityRecordDriver &$driver) {
         $display = '';
 
         $birthDate = $driver->getBirthDateOrYear();
@@ -35,7 +43,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getDeath(&$driver) {
+    function getDeath(AuthorityRecordDriver &$driver) {
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
@@ -48,13 +56,13 @@ class Authority extends \Zend\View\Helper\AbstractHelper
         return $display;
     }
 
-    function getName(&$driver) {
+    function getName(AuthorityRecordDriver &$driver) {
         $name = $driver->getTitle();
         $name = trim(preg_replace('"\d+(-\d+)?"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
-    function getProfessions(&$driver) {
+    function getProfessions(AuthorityRecordDriver &$driver) {
         $professions = $driver->getProfessions();
         $professions_display = '';
         foreach ($professions as $profession) {
@@ -63,5 +71,18 @@ class Authority extends \Zend\View\Helper\AbstractHelper
             $professions_display .= '<span property="hasOccupation">' . $profession['title'] . '</span>';
         }
         return $professions_display;
+    }
+
+    /**
+     * Get titles of this authority to show in a preview box
+     */
+    function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10) {
+        // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
+        $identifier = 'Solr';
+        $response = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getUniqueID() . '"', 'AllFields'),
+                                                 $offset, $limit);
+
+        return $response;
     }
 }
