@@ -710,7 +710,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 foreach ($this->details['authors'] as $author) {
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
-                        $authorStr .= ' ' . $this->translate('and') . ' ' .
+                        $authorStr .= ', ' . $this->translate('and') . ' ' .
                             $this->reverseName($this->stripPunctuation($author));
                     } elseif ($i > 0) {
                         $authorStr .= ', ' .
