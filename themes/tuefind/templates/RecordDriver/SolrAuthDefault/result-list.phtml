@@ -5,9 +5,9 @@
   }
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
-  $professions = $this->tuefind()->getAuthorityProfessions($this->driver);
-  $birth = $this->tuefind()->getAuthorityBirth($this->driver);
-  $death = $this->tuefind()->getAuthorityDeath($this->driver);
+  $professions = $this->authority()->getProfessions($this->driver);
+  $birth = $this->authority()->getBirth($this->driver);
+  $death = $this->authority()->getDeath($this->driver);
 
   $resultItemLine = 0;
 ?>

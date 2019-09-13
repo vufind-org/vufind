@@ -18,7 +18,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $this->container = $container;
     }
 
-
     /**
      * Check if a facet value is equal to '[Unassigned]' or its translation
      *
@@ -27,58 +26,6 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      */
     function isUnassigned($value) {
         return ($value == '[Unassigned]') || ($value == $this->translate('[Unassigned]'));
-    }
-
-    /**
-     * Get authority birth information for display
-     *
-     * @return string
-     */
-    function getAuthorityBirth(&$driver) {
-        $display = '';
-
-        $birthDate = $driver->getBirthDateOrYear();
-        if ($birthDate != '') {
-            $display .= '*';
-            $display .= $birthDate;
-            $birthPlace = $driver->getBirthPlace();
-            if ($birthPlace != null) {
-                $display .= '(' . $birthPlace . ')';
-            }
-        }
-
-        return $display;
-    }
-
-    /**
-     * Get authority death information for display
-     *
-     * @return string
-     */
-    function getAuthorityDeath(&$driver) {
-        $display = '';
-        $deathDate = $driver->getDeathDateOrYear();
-        if ($deathDate != '') {
-            $display .= '&#x271D;';
-            $display .= $deathDate;
-            $deathPlace = $driver->getDeathPlace();
-            if ($deathPlace != null) {
-                $display .= '(' . $deathPlace . ')';
-            }
-        }
-        return $display;
-    }
-
-    function getAuthorityProfessions(&$driver) {
-        // Professions
-        $professions = $driver->getProfessions();
-        $professions_display = '';
-        foreach ($professions as $profession) {
-            if ($professions_display != '')
-                $professions_display .= '/';
-            $professions_display .= $profession['title'];
-        }
-        return $professions_display;
     }
 
     /**

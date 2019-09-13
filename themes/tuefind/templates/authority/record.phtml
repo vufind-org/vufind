@@ -1,133 +1,122 @@
 <?php
     $this->layout()->breadcrumbs = false;
 ?>
-<h1><?=$this->driver->getTitle()?></h1>
-<div class="row">
+<div vocab="http://schema.org/">
+  <h1><?=$this->authority()->getName($this->driver)?></h1>
+  <div class="row">
     <div class="col-sm-8">
-        <?php $professions = $this->tuefind()->getAuthorityProfessions($this->driver);?>
+      <p>
+        <?php $professions = $this->authority()->getProfessions($this->driver);?>
         <?php if ($professions != ''): ?>
-            <p><?=$professions?></p>
+          <?=$professions?>
         <?php endif; ?>
 
-        <p>
-            <a href="/Author/Home?author=<?=urlencode($this->driver->getTitle())?>">Show all titles</a>
-        </p>
-
-        <?php $locations = $this->driver->getLocations(); ?>
-        <?php if (count($locations) > 0): ?>
-            <p>
-                Locations:<br/>
-                <ul>
-                    <?php foreach ($locations as $location): ?>
-                        <li><?=$location['type'] . ': ' . $location['name']?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </p>
+        <?php $birth = $this->authority()->getBirth($this->driver); ?>
+        <?php if ($birth != ''): ?>
+          <br/><?=$birth?>
         <?php endif; ?>
 
-        <?php
-            // Other databases
-            $links = [];
-            $gnd_number = $this->driver->getGNDNumber();
-            if ($gnd_number != null) {
-                $links['Entity Facts'] = 'http://www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
-                $links['OGND'] = 'http://swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
-            }
-            $orcid = $this->driver->getORCID();
-            if ($orcid != null)
-                $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
-            $viaf = $this->driver->getVIAF();
-            if ($viaf != null)
-                $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
-
-            ksort($links);
-        ?>
-        <?php if (count($links) > 0): ?>
-            <p>
-                Other databases:
-                <ul>
-                    <?php foreach ($links as $label => $url): ?>
-                        <li><a target="_blank" href="<?=$url?>"><?=$label?></a></li>
-                    <?php endforeach; ?>
-
-                </ul>
-            </p>
+        <?php $death = $this->authority()->getDeath($this->driver); ?>
+        <?php if ($death != ''): ?>
+          <br/><?=$death?>
         <?php endif; ?>
-
-        <?php $beacon_references = $this->driver->getBeaconReferences(); ?>
-        <?php if (count($beacon_references) > 0): ?>
-            <p>
-                BEACON References:<br/>
-                <ul>
-                    <?php foreach ($beacon_references as $beacon_reference): ?>
-                        <li><a target="_blank" href="<?=$beacon_reference['url']?>"><?=htmlspecialchars($beacon_reference['title'])?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </p>
-        <?php endif; ?>
+      </p>
+      <?=$this->context($this)->renderInContext('related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
     <div class="col-sm-4">
-        <?php
-            // Image (partially rendered by JS)
-            $imgUrl = '/wikidataproxy/load?search[]=';
-            $names = $this->driver->getNameAliases();
-            $encodedNames = [];
-            foreach ($names as $name) {
-                $encodedNames[] = urlencode($name);
-            }
-            $imgUrl .= implode('&search[]=', $encodedNames);
-            $params = ['birthYear' => $this->driver->getBirthYear(),
-                       'deathYear' => $this->driver->getDeathYear()];
-            foreach ($params as $key => $value) {
-                if ($value)
-                    $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
-            }
-        ?>
-        <!-- onload didn't work, so we use a separate script snippet -->
-        <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
-        <script>TueFind.GetImagesFromWikidata();</script>
-    </div>
-</div>
+      <?php
+        // Image (partially rendered by JS)
+        $imgUrl = '/wikidataproxy/load?search[]=';
+        $names = $this->driver->getNameAliases();
+        $encodedNames = [];
+        foreach ($names as $name) {
+            $encodedNames[] = urlencode($name);
+        }
+        $imgUrl .= implode('&search[]=', $encodedNames);
+        $params = ['birthYear' => $this->driver->getBirthYear(),
+                   'deathYear' => $this->driver->getDeathYear()];
+        foreach ($params as $key => $value) {
+          if ($value)
+            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+        }
+      ?>
+      <!-- onload didn't work, so we use a separate script snippet -->
+      <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
+      <script>TueFind.GetImagesFromWikidata();</script>
 
-<br>
+      <?php
+        // External links
+        $links = [];
+        $gnd_number = $this->driver->getGNDNumber();
+        if ($gnd_number != null) {
+            $links['Entity Facts'] = '//www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
+            $links['OGND'] = '//swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
+        }
+        $orcid = $this->driver->getORCID();
+        if ($orcid != null)
+            $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
+        $viaf = $this->driver->getVIAF();
+        if ($viaf != null)
+            $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
 
-<?php
-  // the tab logic is taken from non-authority core record driver
-  // (authority records normally don't have tabs)
-  if (!isset($this->activeTab))
-      $this->activeTab = 'Details';
-?>
-<?php if (count($this->tabs) > 0): ?>
-  <div class="record-tabs">
-    <ul class="nav nav-tabs">
-      <?php foreach ($this->tabs as $tab => $obj): ?>
-        <?php // add current tab to breadcrumbs if applicable:
-          $desc = $obj->getDescription();
-          $tabName = preg_replace("/\W/", "-", strtolower($tab));
-          $tabClasses = [ 'record-tab', $tabName ];
-          if (0 === strcasecmp($this->activeTab, $tab)) {
-            if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-              $tabClasses[] = 'active';
-            }
-            $tabClasses[] = 'initiallyActive';
-            $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-            $activeTabObj = $obj;
-          }
-          if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-          if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
-        ?>
-        <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
-          <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-        </li>
-      <?php endforeach; ?>
-    </ul>
+        $beacon_references = $this->driver->getBeaconReferences();
+        foreach ($beacon_references as $beacon_reference)
+            $links[$beacon_reference['title']] = $beacon_reference['url'];
 
-    <div class="tab-content">
-      <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-        <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
-          <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-        </div>
+        ksort($links);
+      ?>
+      <?php if (count($links) > 0): ?>
+        <p>
+          External links:
+          <ul>
+            <?php foreach ($links as $label => $url): ?>
+              <li><a target="_blank" href="<?=$url?>"><i class="fa fa-external-link"></i> <?=$label?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        </p>
       <?php endif; ?>
+
     </div>
   </div>
-<?php endif; ?>
+  <br>
+  <?php
+    // the tab logic is taken from non-authority core record driver
+    // (authority records normally don't have tabs)
+    if (!isset($this->activeTab))
+      $this->activeTab = 'Details';
+  ?>
+  <?php if (count($this->tabs) > 0): ?>
+    <div class="record-tabs">
+      <ul class="nav nav-tabs">
+        <?php foreach ($this->tabs as $tab => $obj): ?>
+          <?php // add current tab to breadcrumbs if applicable:
+            $desc = $obj->getDescription();
+            $tabName = preg_replace("/\W/", "-", strtolower($tab));
+            $tabClasses = [ 'record-tab', $tabName ];
+            if (0 === strcasecmp($this->activeTab, $tab)) {
+              if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                $tabClasses[] = 'active';
+              }
+              $tabClasses[] = 'initiallyActive';
+              $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+              $activeTabObj = $obj;
+            }
+            if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
+            if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+          ?>
+          <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
+            <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+
+      <div class="tab-content">
+        <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  <?php endif; ?>
+</div>

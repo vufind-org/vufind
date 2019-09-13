@@ -85,7 +85,7 @@ class SolrAuthMarc extends SolrAuthDefault {
      * @return string
      */
     public function getBirthPlace() {
-        return $this->getLifePlaces()['death'] ?? null;
+        return $this->getLifePlaces()['birth'] ?? null;
     }
 
     /**
