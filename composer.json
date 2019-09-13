@@ -34,7 +34,7 @@
         "swagger-api/swagger-ui": "2.2.10",
         "vufind-org/vufindcode": "1.1.1",
         "vufind-org/vufinddate": "1.0.0",
-        "vufind-org/vufindharvest": "2.4.0",
+        "vufind-org/vufindharvest": "2.4.1",
         "vufind-org/vufindhttp": "2.2.0",
         "yajra/laravel-pdo-via-oci8": "1.4.0",
         "zendframework/zend-cache": "2.8.2",
