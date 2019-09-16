@@ -6,7 +6,7 @@
 ;    Relative URL: Search/Results?lookfor=finna&type=AllFields&view=rss&lng=fi
 ;    Local file:   themes/custom/templates/rss/feed.xml
 
-; type = "[list|carousel|carousel-vertical]"
+; type = "[list|carousel|carousel-vertical|grid]"
 
 ;; Optional settings:
 
@@ -14,7 +14,8 @@
 ; visualItems = <visualItems> Number of items to show in carousel/list. Only relevant if
 ; linkTo = "content-page" is set, to limit the number of items displayed in the
 ; carousel/list while displaying up to <items> items in the content page. If not set,
-; up to <items> items are displayed.
+; up to <items> items are displayed. In grid visualItems determines the amount of items
+; displayed before a "more" button. "More" button displays up to <items> items in the grid.
 ; title = "[rss|<translation-key>]" Feed title:
 ;    'rss' = Use <title> element from feed
 ;    '<translation-key>' = Use local translation
@@ -56,7 +57,7 @@
 ; Full date format on content page or modal
 ; fullDateFormat = "j.n.Y"
 
-; Content elements to hide (by default all elments are shown):
+; Content elements to hide (by default all elements are shown):
 
 ; content[title] = 0
 ; content[text] = 0
@@ -64,6 +65,7 @@
 ; content[image] = 0
 ; content[date] = 0
 ; content[contentDate] = 0
+; content[xcal] = 0
 
 ;; Optional list settings:
 

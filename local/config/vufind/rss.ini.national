@@ -6,7 +6,7 @@
 ;    Relative URL: Search/Results?lookfor=finna&type=AllFields&view=rss&lng=fi
 ;    Local file:   themes/custom/templates/rss/feed.xml
 
-; type = "[list|carousel|carousel-vertical]"
+; type = "[list|carousel|carousel-vertical|grid]"
 
 ;; Optional settings:
 
@@ -27,7 +27,7 @@
 ; linkText[touch] = = "<translation-key>"
 
 
-; Content elements to hide (by default all elments are shown):
+; Content elements to hide (by default all elements are shown):
 
 ; content[title] = 0
 ; content[text] = 0
