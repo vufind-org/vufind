@@ -1,21 +1,4 @@
 <style>
-    .read-more-state {
-        display: none;
-    }
-
-    .read-more-target {
-        opacity: 0;
-        max-height: 0;
-        font-size: 0;
-        transition: .25s ease;
-    }
-
-    .read-more-state:checked ~ .read-more-wrap .read-more-target {
-        opacity: 1;
-        font-size: inherit;
-        max-height: 999em;
-    }
-
     .read-more-state ~ .read-more-trigger:before {
         content: 'Show more';
     }
@@ -23,27 +6,11 @@
     .read-more-state:checked ~ .read-more-trigger:before {
         content: 'Show less';
     }
-
-    .read-more-trigger {
-        cursor: pointer;
-        display: inline-block;
-        padding: 0 .5em;
-        color: #666;
-        font-size: .9em;
-        line-height: 2;
-        border: 1px solid #ddd;
-        border-radius: .25em;
-    }
-
-    div.new {
-        float: right;
-        color: red;
-    }
 </style>
-<?
-$panelId = 0;
-$panelClass = "panel-default";
-$panelWidth = "col-md-6";
+<?php
+    $panelId = 0;
+    $panelClass = "panel-default";
+    $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
 <div class="col-md-6" style="text-align:justify;">
@@ -71,21 +38,21 @@ $panelWidth = "col-md-6";
                             </ul>
                         </p>
                         <p>
-                            With the platform "IxTheo Open Journals" we offer publishers the possibility to host their journals or series permanently Open Access.<br/>
-                            Next to the admission of new Open Access journals, we are also support you in transforming printed journals into Open Access. We provide you with the publication management software Open Journal Systems (OJS), which can be used to run the entire editorial process right through to publication.
+                            With the platform "IxTheo Open Journals" we provide a hosting environment for publishers to develop their own open access theological academic journals or series.<br/>
+                            You have the opportunity not only to start up a new open access journal, but also to transform a printed journal into an electronic open access publication. We provide you with the publication management software Open Journal Systems (OJS), which can be used to run the entire editorial process right through to publication.
                         </p>
                         <p>
                             Briefly outlined, cooperation with "IxTheo Open Journals" offers the following advantages:
                             <ul>
-                                <li>the FID Theology / Tübingen University Library provides the software OJS free of charge, sets up your journal or series, supplies initial training and ongoing technical support</li>
-                                <li>with OJS, all work steps from the submission of essays to the peer review process and publication can be implemented with one system</li>
-                                <li>the layout and design of an OJS journal / series can be individually adapted</li>
+                                <li>the FID Theology / Tübingen University Library provides the OJS software free of charge, sets up your journal or series, provides initial training and ongoing technical support</li>
+                                <li>with OJS, every editorial step from the submission of essays and the peer review process right up to publication can be implemented with one system</li>
+                                <li>the layout and design of an OJS journal / series can be individually arranged</li>
                                 <li>all journal articles are assigned a persistent identifier (DOI), which guarantees permanent searchability</li>
                                 <li>all journal articles are indexed in IxTheo</li>
                             </ul>
                         </p>
                         <p>
-                            This service is available to all publishers in Germany and internationally. If you are interested, please contact the <a href="mailto:ixtheo@ub.uni-tuebingen.de">IxTheo team</a>.
+                            This service is available to all publishers in Germany and around the world. If you are interested, please contact the <a href="mailto:ixtheo@ub.uni-tuebingen.de">IxTheo team</a>.
                         </p>
                     </div>
                 </div>

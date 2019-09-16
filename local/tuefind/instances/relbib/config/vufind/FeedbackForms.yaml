@@ -62,7 +62,6 @@ forms:
   FeedbackSite:
     title: Send us your feedback!
     enabled: true
-    useCaptcha: true
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
