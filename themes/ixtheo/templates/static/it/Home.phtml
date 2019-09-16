@@ -1,21 +1,4 @@
 <style>
-    .read-more-state {
-        display: none;
-    }
-
-    .read-more-target {
-        opacity: 0;
-        max-height: 0;
-        font-size: 0;
-        transition: .25s ease;
-    }
-
-    .read-more-state:checked ~ .read-more-wrap .read-more-target {
-        opacity: 1;
-        font-size: inherit;
-        max-height: 999em;
-    }
-
     .read-more-state ~ .read-more-trigger:before {
         content: 'Espandi';
     }
@@ -23,27 +6,11 @@
     .read-more-state:checked ~ .read-more-trigger:before {
         content: 'Riduci';
     }
-
-    .read-more-trigger {
-        cursor: pointer;
-        display: inline-block;
-        padding: 0 .5em;
-        color: #666;
-        font-size: .9em;
-        line-height: 2;
-        border: 1px solid #ddd;
-        border-radius: .25em;
-    }
-
-    div.new {
-        float: right;
-        color: red;
-    }
 </style>
-<?
-$panelId = 0;
-$panelClass = "panel-default";
-$panelWidth = "col-md-6";
+<?php
+    $panelId = 0;
+    $panelClass = "panel-default";
+    $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
 <div class="col-md-6" style="text-align:justify;">
