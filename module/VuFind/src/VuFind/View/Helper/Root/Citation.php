@@ -93,7 +93,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             $authors = (array)$driver->tryMethod('getCorporateAuthors');
         }
         $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
-        if (is_array($secondary) && !empty($secondary)) {
+        if (!empty($secondary)) {
             $authors = array_unique(array_merge($authors, $secondary));
         }
 
