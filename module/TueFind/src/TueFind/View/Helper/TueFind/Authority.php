@@ -79,7 +79,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
 
     public function getName(AuthorityRecordDriver &$driver) {
         $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+(-\d+)?"', '', $name));
+        $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
