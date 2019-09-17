@@ -62,7 +62,7 @@ class FlashmessagesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $messenger = $container->get('ControllerPluginManager')
-            ->get('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
+            ->get(\Zend\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         return new $requestedName($messenger);
     }
 }

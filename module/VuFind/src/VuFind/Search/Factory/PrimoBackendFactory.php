@@ -40,6 +40,8 @@ use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
 use Zend\ServiceManager\Factory\FactoryInterface;
 
+use ZfcRbac\Service\AuthorizationService;
+
 /**
  * Factory for Primo Central backends.
  *
@@ -54,7 +56,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Zend\Log\LoggerInterface
      */
     protected $logger;
 
@@ -86,10 +88,11 @@ class PrimoBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configReader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
 
         $connector = $this->createConnector();
@@ -146,7 +149,7 @@ class PrimoBackendFactory implements FactoryInterface
             : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;
@@ -177,7 +180,8 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
@@ -209,7 +213,7 @@ class PrimoBackendFactory implements FactoryInterface
                 $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
-                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+                $this->serviceLocator->get(AuthorizationService::class)
             );
             return $permHandler;
         }

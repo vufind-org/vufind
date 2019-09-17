@@ -107,7 +107,8 @@ class Factory implements FactoryInterface
         }
 
         // Load configurations:
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
 
         // Create service:
         $class = new $requestedName($this->getTransport($config));

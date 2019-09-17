@@ -62,8 +62,8 @@ class QRCodeControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\QRCode\Loader'),
-            $container->get('VuFind\Session\Settings')
+            $container->get(\VuFind\QRCode\Loader::class),
+            $container->get(\VuFind\Session\Settings::class)
         );
     }
 }

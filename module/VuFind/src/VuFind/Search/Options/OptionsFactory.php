@@ -59,7 +59,7 @@ class OptionsFactory implements FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager'), ...($options ?: [])
+            $container->get(\VuFind\Config\PluginManager::class), ...($options ?: [])
         );
     }
 }

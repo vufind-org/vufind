@@ -59,7 +59,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMockBuilder('VuFindTheme\ThemeInfo')
+        $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
         $loader = $this->getLoader([], $theme);
@@ -95,7 +95,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if ($mock) {
-            return $this->getMockBuilder('VuFind\QRCode\Loader')
+            return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
                 ->setMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();

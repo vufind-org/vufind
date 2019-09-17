@@ -60,7 +60,8 @@ class BooksiteFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $url = isset($config->Booksite->url)
             ? $config->Booksite->url : 'https://api.booksite.com';
         if (!isset($config->Booksite->key)) {

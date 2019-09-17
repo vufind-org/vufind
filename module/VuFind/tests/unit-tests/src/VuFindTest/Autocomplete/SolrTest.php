@@ -47,7 +47,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockOptions()
     {
-        return $this->getMockBuilder('VuFind\Search\Solr\Options')
+        return $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();
     }
 
@@ -58,7 +58,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockResults()
     {
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()
             ->setMethods(['getOptions'])
             ->getMock();
@@ -74,7 +74,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockResultsPluginManager()
     {
-        $rpm = $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        $rpm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()
             ->setMethods(['get'])
             ->getMock();

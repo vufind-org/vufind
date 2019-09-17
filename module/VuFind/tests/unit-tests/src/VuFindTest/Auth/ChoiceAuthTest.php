@@ -211,7 +211,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getSessionContainer($method = null)
     {
-        $mock = $this->getMockBuilder('Zend\Session\Container')
+        $mock = $this->getMockBuilder(\Zend\Session\Container::class)
             ->setMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
@@ -248,10 +248,10 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     protected function getMockPluginManager()
     {
         $pm = new PluginManager($this->getServiceManager());
-        $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
+        $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
+        $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
             ->disableOriginalConstructor()
             ->getMock();
         $pm->setService('VuFind\Auth\Database', $mockDb);
@@ -266,7 +266,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockUser()
     {
-        return $this->getMockBuilder('VuFind\Db\Row\User')
+        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -278,7 +278,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRequest()
     {
-        return $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+        return $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

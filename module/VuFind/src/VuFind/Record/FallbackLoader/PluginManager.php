@@ -44,7 +44,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'summon' => 'VuFind\Record\FallbackLoader\Summon',
+        'summon' => Summon::class,
     ];
 
     /**
@@ -53,8 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Record\FallbackLoader\Summon' =>
-            'VuFind\Record\FallbackLoader\SummonFactory',
+        Summon::class => SummonFactory::class,
     ];
 
     /**
@@ -65,6 +64,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Record\FallbackLoader\FallbackLoaderInterface';
+        return FallbackLoaderInterface::class;
     }
 }

@@ -62,7 +62,7 @@ class CartControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new \Zend\Session\Container(
-            'cart_followup', $container->get('Zend\Session\SessionManager')
+            'cart_followup', $container->get(\Zend\Session\SessionManager::class)
         );
         return new $requestedName($container, $session);
     }

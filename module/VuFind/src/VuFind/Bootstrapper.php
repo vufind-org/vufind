@@ -100,7 +100,7 @@ class Bootstrapper
         // Create the configuration manager:
         $app = $this->event->getApplication();
         $sm = $app->getServiceManager();
-        $this->config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        $this->config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
     }
 
     /**
@@ -119,9 +119,9 @@ class Bootstrapper
         $sm = $app->getServiceManager();
         $debugOverride = $sm->get('Request')->getQuery()->get('debug');
         if ($debugOverride) {
-            $auth = $sm->get('ZfcRbac\Service\AuthorizationService');
+            $auth = $sm->get(\ZfcRbac\Service\AuthorizationService::class);
             if ($auth->isGranted('access.DebugMode')) {
-                $logger = $sm->get('VuFind\Log\Logger');
+                $logger = $sm->get(\VuFind\Log\Logger::class);
                 $logger->addDebugWriter($debugOverride);
             }
         }
@@ -321,7 +321,7 @@ class Bootstrapper
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
-                $cookieManager = $sm->get('VuFind\Cookie\CookieManager');
+                $cookieManager = $sm->get(\VuFind\Cookie\CookieManager::class);
                 $cookieManager->set('language', $language);
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
@@ -335,7 +335,7 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get('Zend\Mvc\I18n\Translator');
+                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
                 $translator->setLocale($language)
                     ->addTranslationFile('ExtendedIni', null, 'default', $language);
                 foreach ($this->getTextDomains() as $domain) {
@@ -430,7 +430,7 @@ class Bootstrapper
     protected function initSearch()
     {
         $sm     = $this->event->getApplication()->getServiceManager();
-        $bm     = $sm->get('VuFind\Search\BackendManager');
+        $bm     = $sm->get(\VuFind\Search\BackendManager::class);
         $events = $sm->get('SharedEventManager');
         $events->attach('VuFindSearch', 'resolve', [$bm, 'onResolve']);
     }
@@ -444,8 +444,8 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has('VuFind\Log\Logger')) {
-                $log = $sm->get('VuFind\Log\Logger');
+            if ($sm->has(\VuFind\Log\Logger::class)) {
+                $log = $sm->get(\VuFind\Log\Logger::class);
                 if (is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,

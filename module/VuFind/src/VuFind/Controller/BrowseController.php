@@ -596,7 +596,7 @@ class BrowseController extends AbstractBase
         $sort = 'count', $query = '[* TO *]'
     ) {
         $results = $this->serviceLocator
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {

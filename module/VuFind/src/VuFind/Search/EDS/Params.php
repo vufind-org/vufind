@@ -56,11 +56,41 @@ class Params extends \VuFind\Search\Base\Params
     protected $extraFilterList = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Is the request using this parameters objects for setup only?
      *
      * @var bool
      */
     public $isSetupOnly = false;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($options, $configLoader);
+        $this->addLimitersAsCheckboxFacets($options);
+        $this->addExpandersAsCheckboxFacets($options);
+    }
 
     /**
      * Pull the search parameters
@@ -150,28 +180,6 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
-    }
-
-    /**
-     * Return an array structure containing information about all current filters.
-     *
-     * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
-     * the list (to be used as a complement to getCheckboxFacets()).
-     *
-     * @return array                       Field, values and translation status
-     */
-    public function getFilterList($excludeCheckboxFilters = false)
-    {
-        $filters = parent::getFilterList($excludeCheckboxFilters);
-        $label = $this->getFacetLabel('SEARCHMODE');
-        if (isset($filters[$label])) {
-            foreach (array_keys($filters[$label]) as $i) {
-                $filters[$label][$i]['suppressDisplay'] = true;
-            }
-        }
-        return $filters;
     }
 
     /**
@@ -287,25 +295,23 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
-        //Also store Limiter/Search Mode IDs/Values in the config file
-        $facetId = $field;
+        // Also store Limiter/Search Mode IDs/Values in the config file
         if (substr($field, 0, 6) == 'LIMIT|') {
             $facetId = substr($field, 6);
-        }
-        if (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
             $facetId = substr($field, 11);
+        } else {
+            $facetId = $field;
         }
-        return isset($this->facetConfig[$facetId])
-            ? $this->facetConfig[$facetId] : $facetId;
+        return parent::getFacetLabel($facetId, $value, $default ?: $facetId);
     }
 
     /**

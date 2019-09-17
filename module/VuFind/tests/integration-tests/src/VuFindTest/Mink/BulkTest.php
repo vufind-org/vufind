@@ -37,9 +37,11 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class BulkTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -64,7 +66,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
         // Hide autocomplete menu
-        $this->findCss($page, '#side-panel-format .title')->click();
+        $this->clickCss($page, '#side-panel-format .title');
         return $page;
     }
 
@@ -127,6 +129,8 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the email control works.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testBulkEmail()
@@ -148,16 +152,17 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->checkForLoginMessage($page);
 
         // Create an account.
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
 
         $this->findCssAndSetValue($page, '.modal #email_from', 'asdf@asdf.com');
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->findCssAndSetValue(
             $page, '.modal #email_to', 'demian.katz@villanova.edu'
         );
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         /* TODO: add back this check when everything is working (as of this
          * writing, the pop-up message is inexplicably missing... but we should
@@ -198,7 +203,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
-        $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->clickCss($page, '.modal-body input[name=submit]');
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(

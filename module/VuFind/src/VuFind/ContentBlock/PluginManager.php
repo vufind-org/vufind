@@ -27,6 +27,8 @@
  */
 namespace VuFind\ContentBlock;
 
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Content block plugin manager
  *
@@ -44,9 +46,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'channels' => 'VuFind\ContentBlock\Channels',
-        'facetlist' => 'VuFind\ContentBlock\FacetList',
-        'ilsstatusmonitor' => 'VuFind\ContentBlock\IlsStatusMonitor',
+        'channels' => Channels::class,
+        'facetlist' => FacetList::class,
+        'ilsstatusmonitor' => IlsStatusMonitor::class,
     ];
 
     /**
@@ -55,10 +57,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\ContentBlock\Channels' => 'VuFind\ContentBlock\ChannelsFactory',
-        'VuFind\ContentBlock\FacetList' => 'VuFind\ContentBlock\FacetListFactory',
-        'VuFind\ContentBlock\IlsStatusMonitor' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
+        Channels::class => ChannelsFactory::class,
+        FacetList::class => FacetListFactory::class,
+        IlsStatusMonitor::class => InvokableFactory::class,
     ];
 
     /**
@@ -88,6 +89,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\ContentBlock\ContentBlockInterface';
+        return ContentBlockInterface::class;
     }
 }

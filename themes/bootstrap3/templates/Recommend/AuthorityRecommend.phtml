@@ -14,7 +14,7 @@
 ?>
 <?php if (!empty($content)): ?>
   <div class="authoritybox">
-    <div><strong><?=$this->transEsc('See also')?>:</strong></div>
+    <div><strong><?=$this->transEsc($this->recommend->getHeader())?>:</strong></div>
     <div><?=$content?></div>
   </div>
 <?php endif; ?>

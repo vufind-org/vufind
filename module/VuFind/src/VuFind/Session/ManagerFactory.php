@@ -53,7 +53,7 @@ class ManagerFactory implements FactoryInterface
      */
     protected function getOptions(ContainerInterface $container)
     {
-        $cookieManager = $container->get('VuFind\Cookie\CookieManager');
+        $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         // Set options only if we are not running from CLI
         $options = 'cli' !== PHP_SAPI ? [
             'cookie_httponly' => $cookieManager->isHttpOnly(),
@@ -85,12 +85,14 @@ class ManagerFactory implements FactoryInterface
     protected function getHandler(ContainerInterface $container)
     {
         // Load and validate session configuration:
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         if (!isset($config->Session->type)) {
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
-        $sessionPluginManager = $container->get('VuFind\Session\PluginManager');
+        $sessionPluginManager = $container
+            ->get(\VuFind\Session\PluginManager::class);
         $sessionHandler = $sessionPluginManager->get($config->Session->type);
         $sessionHandler->setConfig($config->Session);
         return $sessionHandler;
@@ -171,7 +173,7 @@ class ManagerFactory implements FactoryInterface
         // Check if we need to immediately stop it based on the settings object
         // (which may have been informed by a controller that sessions should not
         // be written as part of the current process):
-        $settings = $container->get('VuFind\Session\Settings');
+        $settings = $container->get(\VuFind\Session\Settings::class);
         if ($settings->setSessionManager($sessionManager)->isWriteDisabled()) {
             $sessionManager->getSaveHandler()->disableWrites();
         } else {

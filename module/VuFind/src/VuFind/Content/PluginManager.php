@@ -44,11 +44,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
-        'excerpts' => 'VuFind\Content\Factory::getExcerpts',
-        'reviews' => 'VuFind\Content\Factory::getReviews',
-        'summaries' => 'VuFind\Content\Factory::getSummaries',
-        'toc' => 'VuFind\Content\Factory::getTOC',
+        'authornotes' => Factory::class,
+        'excerpts' => Factory::class,
+        'reviews' => Factory::class,
+        'summaries' => Factory::class,
+        'toc' => Factory::class,
     ];
 
     /**
@@ -59,6 +59,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Content\Loader';
+        return \VuFind\Content\Loader::class;
     }
 }

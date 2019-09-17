@@ -62,7 +62,7 @@ class RecordFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $recordFields = $container->get('VuFind\Config\YamlReader')
+        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
             ->get('SearchApiRecordFields.yaml');
         $helperManager = $container->get('ViewHelperManager');
         return new $requestedName($recordFields, $helperManager);

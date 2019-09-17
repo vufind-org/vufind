@@ -61,8 +61,9 @@ class WorldCatUtilsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $client = $container->get('VuFindHttp\HttpService')->createClient();
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         $ip = $container->get('Request')->getServer()->get('SERVER_ADDR');
         return new $requestedName(
             isset($config->WorldCat) ? $config->WorldCat : null,

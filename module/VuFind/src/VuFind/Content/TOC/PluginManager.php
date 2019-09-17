@@ -44,9 +44,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'demo' => 'VuFind\Content\TOC\Demo',
-        'syndetics' => 'VuFind\Content\TOC\Syndetics',
-        'syndeticsplus' => 'VuFind\Content\TOC\SyndeticsPlus',
+        'demo' => Demo::class,
+        'syndetics' => Syndetics::class,
+        'syndeticsplus' => SyndeticsPlus::class,
     ];
 
     /**
@@ -55,10 +55,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Content\TOC\Demo' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\TOC\Syndetics' => 'VuFind\Content\AbstractSyndeticsFactory',
-        'VuFind\Content\TOC\SyndeticsPlus' =>
-            'VuFind\Content\AbstractSyndeticsFactory',
+        Demo::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
+        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];
 
     /**
@@ -69,6 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Content\AbstractBase';
+        return \VuFind\Content\AbstractBase::class;
     }
 }

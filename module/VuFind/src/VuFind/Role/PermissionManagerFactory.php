@@ -61,11 +61,11 @@ class PermissionManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $permissions = $container->get('VuFind\Config\PluginManager')
+        $permissions = $container->get(\VuFind\Config\PluginManager::class)
             ->get('permissions')->toArray();
         $permManager = new $requestedName($permissions);
         $permManager->setAuthorizationService(
-            $container->get('ZfcRbac\Service\AuthorizationService')
+            $container->get(\ZfcRbac\Service\AuthorizationService::class)
         );
         return $permManager;
     }

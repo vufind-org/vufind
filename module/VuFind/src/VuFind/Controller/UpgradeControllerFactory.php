@@ -61,9 +61,9 @@ class UpgradeControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cookieManager = $container->get('VuFind\Cookie\CookieManager');
+        $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         $session = new \Zend\Session\Container(
-            'upgrade', $container->get('Zend\Session\SessionManager')
+            'upgrade', $container->get(\Zend\Session\SessionManager::class)
         );
         return new $requestedName($container, $cookieManager, $session);
     }

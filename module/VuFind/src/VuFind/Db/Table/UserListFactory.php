@@ -60,7 +60,7 @@ class UserListFactory extends GatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $sessionManager = $container->get('Zend\Session\SessionManager');
+        $sessionManager = $container->get(\Zend\Session\SessionManager::class);
         $session = new \Zend\Session\Container('List', $sessionManager);
         return parent::__invoke($container, $requestedName, [$session]);
     }

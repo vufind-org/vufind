@@ -75,18 +75,6 @@ class Export
     }
 
     /**
-     * Get bulk export options.
-     *
-     * @deprecated use getActiveFormats($context) instead
-     *
-     * @return array
-     */
-    public function getBulkOptions()
-    {
-        return $this->getActiveFormats('bulk');
-    }
-
-    /**
      * Get the URL for bulk export.
      *
      * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for

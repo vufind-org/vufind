@@ -81,7 +81,7 @@ class Importer
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
-            $solr = $this->serviceLocator->get('VuFind\Solr\Writer');
+            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $solr->save($index, new RawXMLDocument($xml));
         } else {
             Console::write($xml . "\n");

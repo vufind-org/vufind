@@ -84,7 +84,7 @@ class HarvestController extends AbstractBase
         }
 
         // Get the default VuFind HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
 
         // Run the job!

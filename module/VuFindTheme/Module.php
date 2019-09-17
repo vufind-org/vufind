@@ -1,6 +1,6 @@
 <?php
 /**
- * ZF2 module definition for the VuFind theme system.
+ * Module definition for the VuFind theme system.
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFindTheme;
 
-use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
- * ZF2 module definition for the VuFind theme system.
+ * Module definition for the VuFind theme system.
  *
  * @category VuFind
  * @package  Theme
@@ -65,17 +65,12 @@ class Module
     {
         return [
             'factories' => [
-                'VuFindTheme\MixinGenerator' =>
-                    'VuFindTheme\Module::getMixinGenerator',
-                'VuFindTheme\Mobile' =>
-                    'Zend\ServiceManager\Factory\InvokableFactory',
-                'VuFindTheme\ResourceContainer' =>
-                    'Zend\ServiceManager\Factory\InvokableFactory',
-                'VuFindTheme\ThemeCompiler' =>
-                    'VuFindTheme\Module::getThemeCompiler',
-                'VuFindTheme\ThemeGenerator' =>
-                    'VuFindTheme\Module::getThemeGenerator',
-                'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
+                MixinGenerator::class => ThemeInfoInjectorFactory::class,
+                Mobile::class => InvokableFactory::class,
+                ResourceContainer::class => InvokableFactory::class,
+                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
+                ThemeGenerator::class => ThemeInfoInjectorFactory::class,
+                ThemeInfo::class => ThemeInfoFactory::class,
             ],
         ];
     }
@@ -89,67 +84,24 @@ class Module
     {
         return [
             'factories' => [
-                'VuFindTheme\View\Helper\HeadThemeResources' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
-                'VuFindTheme\View\Helper\ImageLink' =>
-                    'VuFindTheme\View\Helper\Factory::getImageLink',
-                'Zend\View\Helper\HeadLink' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadLink',
-                'Zend\View\Helper\HeadScript' =>
-                    'VuFindTheme\View\Helper\Factory::getHeadScript',
-                'Zend\View\Helper\InlineScript' =>
-                    'VuFindTheme\View\Helper\Factory::getInlineScript',
+                View\Helper\HeadThemeResources::class =>
+                    View\Helper\HeadThemeResourcesFactory::class,
+                View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
+                View\Helper\HeadLink::class =>
+                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\HeadScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\InlineScript::class =>
+                    View\Helper\PipelineInjectorFactory::class,
             ],
             'aliases' => [
-                'headThemeResources' => 'VuFindTheme\View\Helper\HeadThemeResources',
-                'imageLink' => 'VuFindTheme\View\Helper\ImageLink',
+                'headThemeResources' => View\Helper\HeadThemeResources::class,
+                'imageLink' => View\Helper\ImageLink::class,
+                \Zend\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
+                \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
+                \Zend\View\Helper\InlineScript::class =>
+                    View\Helper\InlineScript::class,
             ],
         ];
-    }
-
-    /**
-     * Factory function for MixinGenerator object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return MixinGenerator
-     */
-    public static function getMixinGenerator(ServiceManager $sm)
-    {
-        return new MixinGenerator($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeCompiler object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return ThemeCompiler
-     */
-    public static function getThemeCompiler(ServiceManager $sm)
-    {
-        return new ThemeCompiler($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeGenerator object.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return ThemeGenerator
-     */
-    public static function getThemeGenerator(ServiceManager $sm)
-    {
-        return new ThemeGenerator($sm->get('VuFindTheme\ThemeInfo'));
-    }
-
-    /**
-     * Factory function for ThemeInfo object.
-     *
-     * @return ThemeInfo
-     */
-    public static function getThemeInfo()
-    {
-        return new ThemeInfo(realpath(APPLICATION_PATH . '/themes'), 'bootprint3');
     }
 }

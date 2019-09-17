@@ -186,7 +186,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
-                'VuFind\Log\Logger', $this->createMock('VuFind\Log\Logger')
+                'VuFind\Log\Logger', $this->createMock(\VuFind\Log\Logger::class)
             );
             $this->serviceManager->setService(
                 'VuFindHttp\HttpService', new \VuFindHttp\HttpService()
@@ -200,10 +200,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager->setService(
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
             );
+            $driverManager = $this->serviceManager
+                ->get(\VuFind\RecordDriver\PluginManager::class);
             $this->serviceManager->setService(
                 'VuFind\Record\Loader', new \VuFind\Record\Loader(
-                    $this->serviceManager->get('VuFindSearch\Service'),
-                    $this->serviceManager->get('VuFind\RecordDriver\PluginManager')
+                    $this->serviceManager->get(\VuFindSearch\Service::class),
+                    $driverManager
                 )
             );
             $this->serviceManager->setService('Config', []);
@@ -224,11 +226,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function getAuthManager()
     {
         $sm = $this->getServiceManager();
-        if (!$sm->has('VuFind\Auth\PluginManager')) {
+        if (!$sm->has(\VuFind\Auth\PluginManager::class)) {
             $authManager = new \VuFind\Auth\PluginManager($sm);
             $sm->setService('VuFind\Auth\PluginManager', $authManager);
         }
-        return $sm->get('VuFind\Auth\PluginManager');
+        return $sm->get(\VuFind\Auth\PluginManager::class);
     }
 
     /**

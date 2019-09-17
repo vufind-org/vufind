@@ -85,6 +85,21 @@ class QueryTest extends TestCase
     }
 
     /**
+     * Test normalization-related logic
+     *
+     * @return void
+     */
+    public function testNormalization()
+    {
+        $q = new Query('this is a tést OF THINGS');
+        $this->assertFalse($q->containsTerm('test'));
+        $this->assertTrue($q->containsNormalizedTerm('test'));
+        $this->assertEquals('this is a test of things', $q->getNormalizedString());
+        $q->replaceTerm('test', 'mess', true);
+        $this->assertEquals('this is a mess of things', $q->getString());
+    }
+
+    /**
      * Test setHandler() method
      *
      * @return void

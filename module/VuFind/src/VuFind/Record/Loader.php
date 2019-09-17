@@ -32,6 +32,7 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -97,16 +98,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Given an ID and record source, load the requested record object.
      *
-     * @param string $id              Record ID
-     * @param string $source          Record source
-     * @param bool   $tolerateMissing Should we load a "Missing" placeholder
+     * @param string   $id              Record ID
+     * @param string   $source          Record source
+     * @param bool     $tolerateMissing Should we load a "Missing" placeholder
      * instead of throwing an exception if the record cannot be found?
+     * @param ParamBag $params          Search backend parameters
      *
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
     public function load($id, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateMissing = false
+        $tolerateMissing = false, ParamBag $params = null
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
@@ -116,7 +118,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $results = $this->recordCache->lookup($id, $source);
             }
             if (empty($results)) {
-                $results = $this->searchService->retrieve($source, $id)
+                $results = $this->searchService->retrieve($source, $id, $params)
                     ->getRecords();
             }
             if (empty($results) && null !== $this->recordCache
@@ -127,6 +129,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
             if (!empty($results)) {
                 return $results[0];
+            }
+
+            if ($this->fallbackLoader
+                && $this->fallbackLoader->has($source)
+            ) {
+                $fallbackRecords = $this->fallbackLoader->get($source)
+                    ->load([$id]);
+
+                if (count($fallbackRecords) == 1) {
+                    return $fallbackRecords[0];
+                }
             }
         }
         if ($tolerateMissing) {
@@ -144,17 +157,18 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Given an array of IDs and a record source, load a batch of records for
      * that source.
      *
-     * @param array  $ids                       Record IDs
-     * @param string $source                    Record source
-     * @param bool   $tolerateBackendExceptions Whether to tolerate backend
+     * @param array    $ids                       Record IDs
+     * @param string   $source                    Record source
+     * @param bool     $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
      * subcscriptions
+     * @param ParamBag $params                    Search backend parameters
      *
      * @throws \Exception
      * @return array
      */
     public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateBackendExceptions = false
+        $tolerateBackendExceptions = false, ParamBag $params = null
     ) {
         $list = new Checklist($ids);
         $cachedRecords = [];
@@ -172,7 +186,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         if ($list->hasUnchecked()) {
             try {
                 $genuineRecords = $this->searchService
-                    ->retrieveBatch($source, $list->getUnchecked())->getRecords();
+                    ->retrieveBatch($source, $list->getUnchecked(), $params)
+                    ->getRecords();
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
@@ -241,28 +256,32 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * separated source|id strings), load all of the requested records in the
      * requested order.
      *
-     * @param array $ids                       Array of associative arrays with
+     * @param array      $ids                       Array of associative arrays with
      * id/source keys or strings in source|id format.  In associative array formats,
      * there is also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
-     * @param bool  $tolerateBackendExceptions Whether to tolerate backend
+     * @param bool       $tolerateBackendExceptions Whether to tolerate backend
      * exceptions that may be caused by e.g. connection issues or changes in
      * subcscriptions
+     * @param ParamBag[] $params                    Associative array of search
+     * backend parameters keyed with source key
      *
      * @throws \Exception
      * @return array     Array of record drivers
      */
-    public function loadBatch($ids, $tolerateBackendExceptions = false)
-    {
+    public function loadBatch(
+        $ids, $tolerateBackendExceptions = false, $params = []
+    ) {
         // Create a SourceAndIdList object to help sort the IDs by source:
         $list = new SourceAndIdList($ids);
 
         // Retrieve the records and put them back in order:
         $retVal = [];
         foreach ($list->getIdsBySource() as $source => $currentIds) {
+            $sourceParams = $params[$source] ?? null;
             $records = $this->loadBatchForSource(
-                $currentIds, $source, $tolerateBackendExceptions
+                $currentIds, $source, $tolerateBackendExceptions, $sourceParams
             );
             foreach ($records as $current) {
                 $position = $list->getRecordPosition($current);

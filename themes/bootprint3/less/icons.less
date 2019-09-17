@@ -1,6 +1,9 @@
 @bp3-icon-path: '../../bootprint3/images/icons';
+
 .doi-icon { width: 16px; }
-.bp-icon {
+
+.bp-icon,
+[class*="btn-type-"]::before {
   background-position: center center;
   background-repeat: no-repeat;
   color: transparent !important;
@@ -14,8 +17,42 @@
   width: 16px;
 }
 .fa-x { background-image: url("@{bp3-icon-path}/page_white.png"); &:extend(.bp-icon); }
-i.fa-archive { background-image: url("@{bp3-icon-path}/package.png"); &:extend(.bp-icon); }
+
+/**
+ * Toolbar Button Icons
+ */
+[class*="btn-type-"]::before {
+  margin-right: .25rem;
+}
+.btn-type-add::before,
+i.fa-plus-circle { background-image: url("@{bp3-icon-path}/add.png"); &:extend(.bp-icon); }
+.btn-type-cite::before,
 i.fa-asterisk { background-image: url("@{bp3-icon-path}/list.png"); &:extend(.bp-icon); }
+.btn-type-delete::before,
+i.fa-trash,
+i.fa-trash-o { background-image: url("@{bp3-icon-path}/bin.png"); &:extend(.bp-icon); }
+.btn-type-email::before,
+i.fa-email,
+i.fa-envelope,
+i.fa-envelope-o { background-image: url("@{bp3-icon-path}/email.png"); &:extend(.bp-icon); }
+.btn-type-empty::before,
+i.fa-close { background-image: url("@{bp3-icon-path}/cross.png"); &:extend(.bp-icon); }
+.btn-type-export::before,
+i.fa-external-link { background-image: url("@{bp3-icon-path}/link_go.png"); &:extend(.bp-icon); }
+.btn-type-minus::before,
+i.fa-minus-circle,
+i.fa-minus-sign { background-image: url("@{bp3-icon-path}/delete.png"); &:extend(.bp-icon); }
+.btn-type-phone::before,
+i.fa-mobile { background-image: url("@{bp3-icon-path}/phone.png"); &:extend(.bp-icon); }
+.btn-type-print::before,
+i.fa-print { background-image: url("@{bp3-icon-path}/printer.png"); &:extend(.bp-icon); }
+.btn-type-save::before,
+i.fa-star { background-image: url("@{bp3-icon-path}/star.png"); &:extend(.bp-icon); }
+
+/**
+ * Other FontAwesome overrides
+ */
+i.fa-archive { background-image: url("@{bp3-icon-path}/package.png"); &:extend(.bp-icon); }
 i.fa-atlas { background-image: url("@{bp3-icon-path}/map.png"); &:extend(.bp-icon); }
 i.fa-bell { background-image: url("@{bp3-icon-path}/bell.png"); &:extend(.bp-icon); }
 i.fa-book { background-image: url("@{bp3-icon-path}/book.png"); &:extend(.bp-icon); }
@@ -32,17 +69,12 @@ i.fa-cdrom { background-image: url("@{bp3-icon-path}/cd.png"); &:extend(.bp-icon
 i.fa-chart { background-image: url("@{bp3-icon-path}/chart_bar.png"); &:extend(.bp-icon); }
 i.fa-chipcartridge { background-image: url("@{bp3-icon-path}/server.png"); &:extend(.bp-icon); }
 i.fa-collage { background-image: url("@{bp3-icon-path}/pictures.png"); &:extend(.bp-icon); }
-i.fa-close { background-image: url("@{bp3-icon-path}/cross.png"); &:extend(.bp-icon); }
 i.fa-disccartridge { background-image: url("@{bp3-icon-path}/cd.png"); &:extend(.bp-icon); }
 i.fa-drawing { background-image: url("@{bp3-icon-path}/photo.png"); &:extend(.bp-icon); }
 i.fa-ebook { background-image: url("@{bp3-icon-path}/book_addresses.png"); &:extend(.bp-icon); }
 i.fa-edit { background-image: url("@{bp3-icon-path}/edit.png"); &:extend(.bp-icon); }
 i.fa-electronic { background-image: url("@{bp3-icon-path}/mouse.png"); &:extend(.bp-icon); }
-i.fa-email,
-i.fa-envelope,
-i.fa-envelope-o { background-image: url("@{bp3-icon-path}/email.png"); &:extend(.bp-icon); }
 i.fa-exchange { background-image: url("@{bp3-icon-path}/arrow_refresh.png"); &:extend(.bp-icon); }
-i.fa-external-link { background-image: url("@{bp3-icon-path}/link_go.png"); &:extend(.bp-icon); }
 i.fa-filmstrip { background-image: url("@{bp3-icon-path}/film.png"); &:extend(.bp-icon); }
 i.fa-flag { background-image: url("@{bp3-icon-path}/flag_red.png"); &:extend(.bp-icon); }
 i.fa-flashcard { background-image: url("@{bp3-icon-path}/table_lightening.png"); &:extend(.bp-icon); }
@@ -61,8 +93,6 @@ i.fa-lock { background-image: url("@{bp3-icon-path}/lock.png"); &:extend(.bp-ico
 i.fa-manuscript { background-image: url("@{bp3-icon-path}/script.png"); &:extend(.bp-icon); }
 i.fa-map { background-image: url("@{bp3-icon-path}/map.png"); &:extend(.bp-icon); }
 i.fa-microfilm { background-image: url("@{bp3-icon-path}/film.png"); &:extend(.bp-icon); }
-i.fa-minus-circle,i.fa-minus-sign { background-image: url("@{bp3-icon-path}/delete.png"); &:extend(.bp-icon); }
-i.fa-mobile { background-image: url("@{bp3-icon-path}/phone.png"); &:extend(.bp-icon); }
 i.fa-motionpicture { background-image: url("@{bp3-icon-path}/television.png"); &:extend(.bp-icon); }
 i.fa-musicalscore { background-image: url("@{bp3-icon-path}/music.png"); &:extend(.bp-icon); }
 i.fa-musicrecording { background-image: url("@{bp3-icon-path}/music.png"); &:extend(.bp-icon); }
@@ -74,15 +104,12 @@ i.fa-photo { background-image: url("@{bp3-icon-path}/photo.png"); &:extend(.bp-i
 i.fa-photonegative { background-image: url("@{bp3-icon-path}/film.png"); &:extend(.bp-icon); }
 i.fa-physicalobject { background-image: url("@{bp3-icon-path}/box.png"); &:extend(.bp-icon); }
 i.fa-plus { background-image: url("@{bp3-icon-path}/add.png"); &:extend(.bp-icon); }
-i.fa-plus-circle { background-image: url("@{bp3-icon-path}/add.png"); &:extend(.bp-icon); }
-i.fa-print { background-image: url("@{bp3-icon-path}/printer.png"); &:extend(.bp-icon); }
 i.fa-qrcode { background-image: url("@{bp3-icon-path}/qrcode.png"); &:extend(.bp-icon); }
 i.fa-remove { background-image: url("@{bp3-icon-path}/delete.png"); &:extend(.bp-icon); }
 i.fa-renew { background-image: url("@{bp3-icon-path}/renew.png"); &:extend(.bp-icon); }
 i.fa-renew-all { background-image: url("@{bp3-icon-path}/renewAll.png"); &:extend(.bp-icon); }
 i.fa-report { background-image: url("@{bp3-icon-path}/report.png"); &:extend(.bp-icon); }
 i.fa-rss { background-image: url("@{bp3-icon-path}/feed.png"); &:extend(.bp-icon); }
-i.fa-save { background-image: url("@{bp3-icon-path}/disk.png"); &:extend(.bp-icon); }
 i.fa-search { background-image: url("@{bp3-icon-path}/magnifier.png"); &:extend(.bp-icon); }
 i.fa-search-plus { background-image: url("@{bp3-icon-path}/magnifier_zoom_in.png"); &:extend(.bp-icon); }
 i.fa-sensorimage { background-image: url("@{bp3-icon-path}/photo.png"); &:extend(.bp-icon); }
@@ -96,15 +123,12 @@ i.fa-soundcassette { background-image: url("@{bp3-icon-path}/sound.png"); &:exte
 i.fa-sounddisc { background-image: url("@{bp3-icon-path}/cd.png"); &:extend(.bp-icon); }
 i.fa-soundrecording { background-image: url("@{bp3-icon-path}/sound.png"); &:extend(.bp-icon); }
 i.fa-spinner { background-image: url("@{bp3-icon-path}/ajax_loading.gif"); &:extend(.bp-icon); }
-i.fa-star { background-image: url("@{bp3-icon-path}/star.png"); &:extend(.bp-icon); }
 i.fa-status-unknown { background-image: url("@{bp3-icon-path}/bullet_orange.png"); &:extend(.bp-icon); }
 i.fa-suitcase { background-image: url("@{bp3-icon-path}/bookbag.png"); &:extend(.bp-icon); }
 i.fa-tapecartridge { background-image: url("@{bp3-icon-path}/drive.png"); &:extend(.bp-icon); }
 i.fa-tapecassette { background-image: url("@{bp3-icon-path}/drive.png"); &:extend(.bp-icon); }
 i.fa-tapereel { background-image: url("@{bp3-icon-path}/film.png"); &:extend(.bp-icon); }
 i.fa-transparency { background-image: url("@{bp3-icon-path}/film.png"); &:extend(.bp-icon); }
-i.fa-trash,
-i.fa-trash-o { background-image: url("@{bp3-icon-path}/bin.png"); &:extend(.bp-icon); }
 i.fa-tree { background-image: url("@{bp3-icon-path}/treeCurrent.png"); &:extend(.bp-icon); }
 i.fa-tree-muted { background-image: url("@{bp3-icon-path}/treeMuted.png"); &:extend(.bp-icon); }
 i.fa-unknown { background-image: url("@{bp3-icon-path}/page_white.png"); &:extend(.bp-icon); }

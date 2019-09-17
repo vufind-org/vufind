@@ -90,7 +90,7 @@ class LanguageHelperTest extends \VuFindTest\Unit\TestCase
     {
         $config = new Config(['Languages' => ['en' => 'English']]);
         return new LanguageHelper(
-            $this->createMock('VuFind\I18n\Translator\Loader\ExtendedIni'),
+            $this->createMock(\VuFind\I18n\Translator\Loader\ExtendedIni::class),
             $config
         );
     }
