@@ -23,13 +23,13 @@ class Authority extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getBirth(AuthorityRecordDriver &$driver) {
+    public function getBirth(AuthorityRecordDriver &$driver) {
         $display = '';
 
         $birthDate = $driver->getBirthDateOrYear();
         if ($birthDate != '') {
             $display .= $this->getView()->transEsc('Born: ');
-            $display .= '<span property="birthDate">' . $birthDate . '</span>';
+            $display .= $this->getDateTimeProperty($birthDate, 'birthDate');
             $birthPlace = $driver->getBirthPlace();
             if ($birthPlace != null)
                 $display .= ', <span property="birthPlace">' . $birthPlace . '</span>';
@@ -39,16 +39,37 @@ class Authority extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get rendered html for datetime property (for view + schema.org)
+     *
+     * schema.org timestamps must be provided as a ISO8601 timestamp,
+     * so if the timestamp differs, we create an additional element
+     * which is hidden + marked-up for schema.org.
+     *
+     * @param string $datetimeCandidate
+     * @param string $propertyId
+     * @return string
+     */
+    private function getDateTimeProperty($datetimeCandidate, $propertyId) {
+        $iso8601DateTime = $this->getView()->tuefind()->convertDateTimeToIso8601($datetimeCandidate);
+        if ($iso8601DateTime == $datetimeCandidate)
+            return '<span property="' . htmlspecialchars($propertyId) . '">' . $datetimeCandidate . '</span>';
+
+        $html = '<span>' . htmlspecialchars($datetimeCandidate) . '</span>';
+        $html .= '<span class="tf-schema-org-only" property="' . htmlspecialchars($propertyId) . '">' . htmlspecialchars($iso8601DateTime) . '</span>';
+        return $html;
+    }
+
+    /**
      * Get authority death information for display
      *
      * @return string
      */
-    function getDeath(AuthorityRecordDriver &$driver) {
+    public function getDeath(AuthorityRecordDriver &$driver) {
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
             $display .= $this->getView()->transEsc('Died: ');
-            $display .= '<span property="deathDate">' . $deathDate . '</span>';
+            $display .= $this->getDateTimeProperty($deathDate, 'deathDate');
             $deathPlace = $driver->getDeathPlace();
             if ($deathPlace != null)
                 $display .= ', <span property="deathPlace">' . $deathPlace . '</span>';
@@ -56,13 +77,13 @@ class Authority extends \Zend\View\Helper\AbstractHelper
         return $display;
     }
 
-    function getName(AuthorityRecordDriver &$driver) {
+    public function getName(AuthorityRecordDriver &$driver) {
         $name = $driver->getTitle();
-        $name = trim(preg_replace('"\d+(-\d+)?"', '', $name));
+        $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
-    function getProfessions(AuthorityRecordDriver &$driver) {
+    public function getProfessions(AuthorityRecordDriver &$driver) {
         $professions = $driver->getProfessions();
         $professions_display = '';
         foreach ($professions as $profession) {
@@ -76,7 +97,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
     /**
      * Get titles of this authority to show in a preview box
      */
-    function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10) {
+    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10) {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,

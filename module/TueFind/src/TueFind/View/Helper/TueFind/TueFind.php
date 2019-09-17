@@ -19,12 +19,37 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Convert a Date/Time string to ISO 8601 format.
+     *
+     * If the given datetime consists only of a year, return the plain year.
+     * This is supported by ISO 8601 (see RFC 3339: date = datespec-full / datespec-year /...)
+     *
+     * Else return a full ISO 8601 conform string with month/day/etc.
+     *
+     * On any error, the original given datetime string is returned.
+     *
+     * @param string $datetimeRaw
+     * @return string
+     */
+    public function convertDateTimeToIso8601($datetimeRaw) {
+        $datetimeCleaned = preg_replace('"[\[\]]"', '', $datetimeRaw);
+        if (preg_match('"^\d{4}$"', $datetimeCleaned))
+            return $datetimeCleaned;
+
+        $datetime = strtotime($datetimeRaw);
+        if ($datetime === false)
+            return $datetimeRaw;
+
+        return date('c', $datetime);
+    }
+
+    /**
      * Check if a facet value is equal to '[Unassigned]' or its translation
      *
      * @param string $value
      * @return bool
      */
-    function isUnassigned($value) {
+    public function isUnassigned($value) {
         return ($value == '[Unassigned]') || ($value == $this->translate('[Unassigned]'));
     }
 
@@ -36,7 +61,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return \Zend\Config\Config
      */
-    function getConfig($id = 'tuefind') {
+    public function getConfig($id = 'tuefind') {
         return $this->container->get('VuFind\Config\PluginManager')->get($id);
     }
 
@@ -46,7 +71,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getControllerName() {
+    public function getControllerName() {
         $default = 'index';
         $route_match = $this->container->get('application')->getMvcEvent()->getRouteMatch();
         if ($route_match == null)
@@ -63,7 +88,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return double
      */
-    function getOverallPercentage($count, \VuFind\Search\Solr\Results $results) {
+    public function getOverallPercentage($count, \VuFind\Search\Solr\Results $results) {
         return ($count * 100) / $results->getResultTotal();
     }
 
@@ -76,7 +101,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getLocalizedOverallPercentage(\Zend\View\Renderer\PhpRenderer $view,
+    public function getLocalizedOverallPercentage(\Zend\View\Renderer\PhpRenderer $view,
                                            $count, \VuFind\Search\Solr\Results $results) {
         $percentage = $this->getOverallPercentage($count, $results);
         return $percentage > 0.1 ? $view->localizedNumber($percentage, 1) : "&lt; 0.1";
@@ -87,7 +112,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getTeamEmail() {
+    public function getTeamEmail() {
         $config = $this->container->get('VuFind\Config')->get('config');
         $team_email = isset($config->Site->email_team) ? $config->Site->email_team : '';
         return $team_email;
@@ -99,7 +124,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function formatRoles($roles) {
+    public function formatRoles($roles) {
 
         if (!isset($roles['role'])) {
             return '';
@@ -126,7 +151,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    function atLeastOneFacetChosen($list) {
+    public function atLeastOneFacetChosen($list) {
         foreach($list as $i => $thisFacet)
             if ($thisFacet['isApplied'])
                 return true;
@@ -140,7 +165,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getRssFeedIcon($rssFeedId) {
+    public function getRssFeedIcon($rssFeedId) {
         $imgSrc = $this->getView()->imageLink('rss/' . $rssFeedId . '.png');
         if ($imgSrc == null)
             $imgSrc = $this->getView()->imageLink('rss/rss.png');
@@ -155,7 +180,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return array
      */
-    function getRssNewsEntries($max_item_count=null) {
+    public function getRssNewsEntries($max_item_count=null) {
         $rss_feed_path = $this->getConfig()->General->rss_feed_path;
         $rss_items = [];
 
@@ -188,7 +213,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * Get TueFind Instance as defined by VUFIND_LOCAL_DIR variable
       * @return string
       */
-    function getTueFindInstance() {
+    public function getTueFindInstance() {
         return basename(getenv('VUFIND_LOCAL_DIR'));
     }
 
@@ -196,7 +221,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * Derive textual description of TueFind (Subsystems of IxTheo return IxTheo)
       * @return string or false of no matching value could be found
       */
-    function getTueFindType() {
+    public function getTueFindType() {
         $instance = $this->getTueFindInstance();
         $instance = preg_replace('/\d+$/', "", $instance);
         switch ($instance) {
@@ -215,7 +240,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * Derive the German FID denomination
       * @return string or false of no matching value could be found
       */
-    function getTueFindFID() {
+    public function getTueFindFID() {
         $instance = $this->getTueFindInstance();
         $instance = preg_replace('/\d+$/', "", $instance);
         switch($instance) {
@@ -234,7 +259,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * Get the user address from a logged in user
       * @return string
       */
-    function getUserEmail() {
+    public function getUserEmail() {
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->email : "";
@@ -244,7 +269,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     * Get the first name of the logged in user
     * @return string
     */
-    function getUserFirstName() {
+    public function getUserFirstName() {
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->firstname : "";
@@ -254,7 +279,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      * Get the full name of the logged in user
      * @return string
      */
-    function getUserFullName() {
+    public function getUserFullName() {
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->firstname . ' ' . $user->lastname : "";
@@ -264,7 +289,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
       * Get the last name of the logged in user
       * @return string
       */
-    function getUserLastName() {
+    public function getUserLastName() {
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->lastname : "";
@@ -273,12 +298,12 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     /**
      * Check if user account deletion is enabled in config file.
      */
-    function isUserAccountDeletionEnabled() {
+    public function isUserAccountDeletionEnabled() {
         $config = $this->container->get('VuFind\Config')->get('config');
         return !empty($config->Authentication->account_deletion);
     }
 
-    function printSuperiorSeries($superior_record) {
+    public function printSuperiorSeries($superior_record) {
         $superior_series = $superior_record->tryMethod('getSeries');
         if (is_array($superior_series)) {
             foreach ($superior_series as $current) {
@@ -292,7 +317,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         return false;
     }
 
-    function printPublicationInformation($pubPlaces, $pubDates, $pubNames) {
+    public function printPublicationInformation($pubPlaces, $pubDates, $pubNames) {
         if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames) &&
             !(empty($pubPlaces) && empty($pubDates) && empty($pubNames))) {
              $total = min(count($pubPlaces), count($pubDates), count($pubNames));
