@@ -584,6 +584,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $mockDb->expects($this->any())->method('needsCsrfCheck')
+            ->will($this->returnValue(true));
         $mockMulti = $this->getMockBuilder(\VuFind\Auth\MultiILS::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -622,6 +624,9 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $post = new \Zend\Stdlib\Parameters();
         $mock->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
+        $get = new \Zend\Stdlib\Parameters();
+        $mock->expects($this->any())->method('getQuery')
+            ->will($this->returnValue($get));
         return $mock;
     }
 }

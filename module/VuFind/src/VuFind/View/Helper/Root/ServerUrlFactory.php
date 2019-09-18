@@ -1,6 +1,7 @@
 <?php
 /**
- * Factory for ILS authentication module (and others with equivalent constructors).
+ * ServerUrl helper factory. This uses the core Zend helper but configures it
+ * according to VuFind settings.
  *
  * PHP version 7
  *
@@ -20,25 +21,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Auth;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for ILS authentication module (and others with equivalent constructors).
+ * ServerUrl helper factory.
  *
  * @category VuFind
- * @package  Authentication
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IlsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ServerUrlFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -60,10 +62,11 @@ class IlsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get(ILSAuthenticator::class),
-            $container->get(EmailAuthenticator::class)
-        );
+        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $helper = new $requestedName();
+        if ($cfg->Site->reverse_proxy ?? false) {
+            $helper->setUseProxy(true);
+        }
+        return $helper;
     }
 }

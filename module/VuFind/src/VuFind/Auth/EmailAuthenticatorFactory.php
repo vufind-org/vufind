@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for ILS authentication module (and others with equivalent constructors).
+ * Factory for email authenticator module.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,15 +30,16 @@ namespace VuFind\Auth;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for ILS authentication module (and others with equivalent constructors).
+ * Factory for email authenticator module.
  *
  * @category VuFind
  * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IlsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class EmailAuthenticatorFactory
+    implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -61,9 +62,12 @@ class IlsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get(ILSAuthenticator::class),
-            $container->get(EmailAuthenticator::class)
+            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\VuFind\Validator\Csrf::class),
+            $container->get(\VuFind\Mailer\Mailer::class),
+            $container->get('ViewRenderer'),
+            $container->get('Request'),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

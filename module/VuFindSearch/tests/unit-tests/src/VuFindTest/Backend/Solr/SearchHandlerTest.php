@@ -75,7 +75,7 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar'], ['mm', '100%']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => []];
+        $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => [], 'DismaxMunge' => []];
         $this->assertEquals($spec + $defaults, $hndl->toArray());
     }
 
@@ -129,6 +129,31 @@ class SearchHandlerTest extends TestCase
         $this->assertEquals(
             '(callnumber:(ABC123)^1000 OR callnumber:(ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(ABC123*))',
             $hndl->createSimpleQueryString('abc"123*')
+        );
+    }
+
+    /**
+     * Test dismax munge rules.
+     *
+     * @return void
+     */
+    public function testPreprocessQueryString()
+    {
+        // fake munge rules based on a simplified version of default searchspecs.yaml
+        $spec = [
+            'DismaxMunge' => [
+                ['uppercase'],
+                ['preg_replace', '/[ "]/', ""],
+                ['preg_replace', '/\*+$/', ""]
+            ],
+            'DismaxFields' => ['callnumber'],
+            'DismaxHandler' => 'dismax'
+        ];
+
+        $hndl = new SearchHandler($spec);
+        $this->assertEquals(
+            'ABC123',
+            $hndl->preprocessQueryString('abc"123*')
         );
     }
 }

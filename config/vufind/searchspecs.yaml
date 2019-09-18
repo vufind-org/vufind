@@ -4,7 +4,8 @@
 # Format is:
 #  searchType:
 #    # CustomMunge is an optional section to define custom pre-processing of
-#    #     user input.  See below for details of munge actions.
+#    #     user input when Dismax does not apply.  See below for details of
+#    #     munge actions.
 #    CustomMunge:
 #      MungeName1:
 #        - [action1, actionParams]
@@ -12,6 +13,15 @@
 #        - [action3, actionParams]
 #      MungeName2:
 #        - [action1, actionParams]
+#    # While CustomMunge only applies to Lucene search, DismaxMunge is a
+#    #     counterpart that applies to Dismax and eDismax queries. DismaxMunge
+#    #     contains a chain of custom munge operations as described below. Note
+#    #     that using this function is NOT RECOMMENDED if you can accomplish your
+#    #     goals more elegantly through Solr schema adjustments, but it may be
+#    #     useful in some situations, such as when you are connecting to a Solr
+#    #     instance that is beyond your direct control. Here is an example stanza:
+#    DismaxMunge:
+#      - [preg_replace, '/^.*$/', '"$1"']
 #    # DismaxFields is optional and defines the fields sent to the Dismax handler
 #    #     when we are able to use it.  QueryFields will be used for advanced
 #    #     searches that Dismax cannot support.  QueryFields is always used if no
@@ -114,7 +124,7 @@
 #
 #-----------------------------------------------------------------------------------
 #
-# Munge types are based on the original Solr.php code, and consist of:
+# Munge types are string manipulation rules, and consist of:
 #
 # onephrase: eliminate all quotes and do it as a single phrase.
 #   testing "one two"
