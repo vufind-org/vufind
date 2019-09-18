@@ -91,7 +91,7 @@
                  "composer.local.json"
              ],
              "recurse": true,
-             "replace": false,
+             "replace": true,
              "ignore-duplicates": false,
              "merge-dev": true,
              "merge-extra": false,
