@@ -626,7 +626,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      *
-     * @see self::capitalizeRanges
+     * @see \VuFindSearch\Backend\Solr\LuceneSyntaxHelper::capitalizeRanges()
      *
      * @todo Check possible problem with umlauts/non-ASCII word characters
      */
