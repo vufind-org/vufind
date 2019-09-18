@@ -55,6 +55,9 @@
 #       label (string) Group label (translation key)
 #       options (array) List of select values (translation keys)
 #
+#     placeholder (string) Placeholder label (translation key). Used to instruct the user
+#       to make a selection from the options-list. Only select elements with 'options'
+#       are supported.
 #-----------------------------------------------------------------------------------
 
 forms:
