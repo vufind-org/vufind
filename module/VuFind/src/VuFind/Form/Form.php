@@ -216,7 +216,7 @@ class Form extends \Zend\Form\Form implements
         $configuredElements[] = $senderName;
         $configuredElements[] = $senderEmail;
 
-        foreach ($configuredElements as &$el) {
+        foreach ($configuredElements as $el) {
             $element = [];
 
             $required = ['type', 'name'];
