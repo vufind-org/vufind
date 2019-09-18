@@ -239,14 +239,6 @@ class Form extends \Zend\Form\Form implements
 
             $element['label'] = $this->translate($el['label'] ?? null);
 
-            $settings = [];
-            if (isset($el['settings'])) {
-                foreach ($el['settings'] as list($settingId, $settingVal)) {
-                    $settings[trim($settingId)] = trim($settingVal);
-                }
-                $element['settings'] = $settings;
-            }
-
             $elementType = $element['type'];
             if (in_array($elementType, ['checkbox', 'radio', 'select'])) {
                 if (empty($el['options']) && empty($el['optionGroups'])) {
@@ -287,6 +279,14 @@ class Form extends \Zend\Form\Form implements
                     }
                     $element['optionGroups'] = $groups;
                 }
+            }
+
+            $settings = [];
+            if (isset($el['settings'])) {
+                foreach ($el['settings'] as list($settingId, $settingVal)) {
+                    $settings[trim($settingId)] = trim($settingVal);
+                }
+                $element['settings'] = $settings;
             }
 
             if (in_array($elementType, ['text', 'url', 'email'])
