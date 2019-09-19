@@ -380,11 +380,6 @@ class Bootstrapper
             return;
         }
 
-        // Attach template injection configuration to the route event:
-        $this->events->attach(
-            'route', ['VuFindTheme\Initializer', 'configureTemplateInjection']
-        );
-
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
