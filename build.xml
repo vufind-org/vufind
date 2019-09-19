@@ -27,7 +27,7 @@
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_version" value="7.3.1" />
   <property name="skip_phpdoc" value="false" />
-  <property name="phpdoc_version" value="2.9.0" />
+  <property name="phpdoc_version" value="3.0.0-alpha.4" />
 
   <property name="version" value="6.0.1" />
 
