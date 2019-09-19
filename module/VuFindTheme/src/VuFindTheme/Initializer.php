@@ -353,7 +353,7 @@ class Initializer
             }
         }
 
-        // Inject the path stack generated above into the view resolver:
+        // Inject the path stack generated above into the resolver:
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
         $resolver->setPaths($templatePathStack);
 
