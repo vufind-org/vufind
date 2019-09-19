@@ -246,9 +246,12 @@ class Form extends \Zend\Form\Form implements
                 }
                 if (isset($el['options'])) {
                     $options = [];
-                    if ($elementType === 'select'
-                        && $placeholder = $element['placeholder'] ?? null
-                    ) {
+                    $placeholder
+                        = $elementType === 'select'
+                        ? ($element['placeholder'] ?? null)
+                        : null;
+
+                    if ($placeholder) {
                         $options[] = [
                             'value' => '',
                             'label' => $this->translate($placeholder),
@@ -258,10 +261,14 @@ class Form extends \Zend\Form\Form implements
                         ];
                     }
                     foreach ($el['options'] as $option) {
-                        $options[] = [
-                            'value' => $option,
-                            'label' => $this->translate($option)
-                        ];
+                        if ($placeholder) {
+                            $options[] = [
+                                'value' => $option,
+                                'label' => $this->translate($option)
+                            ];
+                        } else {
+                            $options[$option] = $this->translate($option);
+                        }
                     }
                     $element['options'] = $options;
                 } elseif (isset($el['optionGroups'])) {
