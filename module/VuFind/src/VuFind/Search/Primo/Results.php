@@ -100,7 +100,9 @@ class Results extends \VuFind\Search\Base\Results
                             'displayText' => $displayText,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
-                            'operator' => 'AND', 'count' => $count
+                            'operator' =>
+                                $this->getParams()->getFacetOperator($field),
+                            'count' => $count
                         ];
                     }
 
