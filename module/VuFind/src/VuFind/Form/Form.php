@@ -246,12 +246,12 @@ class Form extends \Zend\Form\Form implements
                 }
                 if (isset($el['options'])) {
                     $options = [];
-                    $placeholder
-                        = $elementType === 'select'
-                        ? ($element['placeholder'] ?? null)
-                        : null;
+                    $isSelect = $elementType === 'select';
+                    $placeholder = $element['placeholder'] ?? null;
 
-                    if ($placeholder) {
+                    if ($isSelect && $placeholder) {
+                        // Add placeholder option (without value) for
+                        // select element.
                         $options[] = [
                             'value' => '',
                             'label' => $this->translate($placeholder),
@@ -261,7 +261,7 @@ class Form extends \Zend\Form\Form implements
                         ];
                     }
                     foreach ($el['options'] as $option) {
-                        if ($placeholder) {
+                        if ($isSelect) {
                             $options[] = [
                                 'value' => $option,
                                 'label' => $this->translate($option)
