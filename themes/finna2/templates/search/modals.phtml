@@ -14,7 +14,7 @@
   <div class="imagepopup-holder" aria-hidden="true">
     <div class="imagepopup-container">
       <div class="popup-canvas paginator-canvas">
-        <button class="next-image left" type="button"><i class="fa fa-chevron-left"></i></button>
+        <button class="next-image left" title="<?= $this->transEsc('previous_image'); ?>" type="button"><i class="fa fa-chevron-left"></i></button>
         <div class="popup-nonzoom non-zoomable">
           <div class="iconlabel"></div>
           <img src="<?= $this->imageSrc()->getDataPixel() ?>" alt="" />
@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="popup-video video-popup"><video class="video-js vjs-big-play-centered" controls></video></div>
-        <button class="next-image right" type="button"><i class="fa fa-chevron-right"></i></button>
+        <button class="next-image right" title="<?= $this->transEsc('next_image'); ?>" type="button"><i class="fa fa-chevron-right"></i></button>
       </div>
       <div class="finna-image-pagination">
       </div>
