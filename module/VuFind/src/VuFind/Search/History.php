@@ -62,17 +62,27 @@ class History
     protected $resultsManager;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
      * History constructor
      *
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
+     * @param \Zend\Config\Config                  $config         Configuration
      */
-    public function __construct($searchTable, $sessionId, $resultsManager)
-    {
+    public function __construct($searchTable, $sessionId, $resultsManager,
+        \Zend\Config\Config $config = null
+    ) {
         $this->searchTable = $searchTable;
         $this->sessionId = $sessionId;
         $this->resultsManager = $resultsManager;
+        $this->config = $config;
     }
 
     /**
@@ -114,5 +124,19 @@ class History
         }
 
         return compact('saved', 'schedule', 'unsaved');
+    }
+
+    /**
+     * Get a list of scheduling options (empty list if scheduling disabled).
+     *
+     * @return array
+     */
+    public function getScheduleOptions()
+    {
+        if (!$this->config->Account->schedule_searches ?? false) {
+            return [];
+        }
+        return $this->config->Account->scheduled_search_frequencies
+            ?? [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'];
     }
 }
