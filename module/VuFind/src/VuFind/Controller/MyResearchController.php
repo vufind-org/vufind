@@ -426,6 +426,12 @@ class MyResearchController extends AbstractBase
      */
     protected function scheduleSearch($user, $schedule, $sid)
     {
+        // Fail if scheduled searches are disabled.
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        if ($check->getScheduledSearchSetting() === 'disabled') {
+            throw new ForbiddenException('Scheduled searches disabled.');
+        }
         $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
         $savedRow = $search->select(

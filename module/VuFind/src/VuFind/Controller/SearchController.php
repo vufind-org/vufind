@@ -137,6 +137,12 @@ class SearchController extends AbstractSolrSearch
         }
         $viewData = $searchHistoryHelper->getSearchHistory($userId);
         $viewData['alertemail'] = is_object($user) ? $user->email : null;
+        // Eliminate schedule settings if scheduled searches are disabled.
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        if ($check->getScheduledSearchSetting() === 'disabled') {
+            unset($viewData['schedule']);
+        }
         return $this->createViewModel($viewData);
     }
 

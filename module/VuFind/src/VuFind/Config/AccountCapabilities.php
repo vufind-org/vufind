@@ -149,6 +149,18 @@ class AccountCapabilities
     }
 
     /**
+     * Get scheduled search setting ('enabled' or 'disabled').
+     *
+     * @return string
+     */
+    public function getScheduledSearchSetting()
+    {
+        return $this->isAccountAvailable()
+            && ($this->config->Account->schedule_searches ?? false)
+            ? 'enabled' : 'disabled';
+    }
+
+    /**
      * Is a user account capable of saving data currently available?
      *
      * @return bool
