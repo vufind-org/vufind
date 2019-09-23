@@ -108,7 +108,9 @@ class History
             } else {
                 $unsaved[] = $search;
             }
-            $schedule[$search->getSearchId()] = $current->notify;
+            if ($search->getOptions()->supportsScheduledSearch()) {
+                $schedule[$search->getSearchId()] = $current->notify;
+            }
         }
 
         return compact('saved', 'schedule', 'unsaved');
