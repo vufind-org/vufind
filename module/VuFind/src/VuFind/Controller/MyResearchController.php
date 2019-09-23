@@ -398,6 +398,9 @@ class MyResearchController extends AbstractBase
             throw new ForbiddenException('Access denied.');
         }
         $row->saved = $saved ? 1 : 0;
+        if (!$saved) {
+            $row->notification_frequency = 0;
+        }
         $row->user_id = $userId;
         $row->save();
     }
