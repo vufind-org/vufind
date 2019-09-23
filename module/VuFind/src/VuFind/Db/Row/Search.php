@@ -91,7 +91,7 @@ class Search extends RowGateway
      */
     public function setSchedule($schedule, $url = null)
     {
-        $this->notify = $schedule;
+        $this->notification_frequency = $schedule;
         if ($url) {
             $this->notification_base_url = $url;
         }
