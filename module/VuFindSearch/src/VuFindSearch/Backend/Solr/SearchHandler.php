@@ -53,7 +53,7 @@ class SearchHandler
      */
     protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
-        'DismaxParams', 'FilterQuery'
+        'DismaxParams', 'FilterQuery', 'DismaxMunge'
     ];
 
     /**
@@ -123,6 +123,22 @@ class SearchHandler
     public function createSimpleQueryString($search)
     {
         return $this->createQueryString($search, false);
+    }
+
+    /**
+     * Apply standard pre-processing to the query string.
+     *
+     * @param string $search Search string
+     *
+     * @return string
+     */
+    public function preprocessQueryString($search)
+    {
+        // Apply Dismax munging, if required:
+        if ($this->hasDismax()) {
+            return $this->dismaxMunge($search);
+        }
+        return $search;
     }
 
     /**
@@ -381,32 +397,62 @@ class SearchHandler
         foreach ($this->specs['CustomMunge'] as $mungeName => $mungeOps) {
             $mungeValues[$mungeName] = $search;
             foreach ($mungeOps as $operation) {
-                switch ($operation[0]) {
-                case 'append':
-                    $mungeValues[$mungeName] .= $operation[1];
-                    break;
-                case 'lowercase':
-                    $mungeValues[$mungeName] = strtolower($mungeValues[$mungeName]);
-                    break;
-                case 'preg_replace':
-                    $mungeValues[$mungeName] = preg_replace(
-                        $operation[1], $operation[2], $mungeValues[$mungeName]
-                    );
-                    break;
-                case 'ucfirst':
-                    $mungeValues[$mungeName] = ucfirst($mungeValues[$mungeName]);
-                    break;
-                case 'uppercase':
-                    $mungeValues[$mungeName] = strtoupper($mungeValues[$mungeName]);
-                    break;
-                default:
-                    throw new \InvalidArgumentException(
-                        sprintf('Unknown munge operation: %s', $operation[0])
-                    );
-                }
+                $mungeValues[$mungeName]
+                    = $this->customMunge($mungeValues[$mungeName], $operation);
             }
         }
         return $mungeValues;
+    }
+
+    /**
+     * Apply custom search string munging to a Dismax query.
+     *
+     * @param string $search searchstring
+     *
+     * @return string
+     */
+    protected function dismaxMunge($search)
+    {
+        foreach ($this->specs['DismaxMunge'] as $operation) {
+            $search = $this->customMunge($search, $operation);
+        }
+        return $search;
+    }
+
+    /**
+     * Apply a munge operation to a search string.
+     *
+     * @param string $string    string to munge
+     * @param array  $operation munge operation
+     *
+     * @return string
+     */
+    protected function customMunge($string, $operation)
+    {
+        switch ($operation[0]) {
+        case 'append':
+            $string .= $operation[1];
+            break;
+        case 'lowercase':
+            $string = strtolower($string);
+            break;
+        case 'preg_replace':
+            $string = preg_replace(
+                $operation[1], $operation[2], $string
+            );
+            break;
+        case 'ucfirst':
+            $string = ucfirst($string);
+            break;
+        case 'uppercase':
+            $string = strtoupper($string);
+            break;
+        default:
+            throw new \InvalidArgumentException(
+                sprintf('Unknown munge operation: %s', $operation[0])
+            );
+        }
+        return $string;
     }
 
     /**
@@ -426,7 +472,9 @@ class SearchHandler
         // Extended Dismax available), let's build a Dismax subquery to avoid
         // some of the ugly side effects of our Lucene query generation logic.
         if (($this->hasExtendedDismax() || !$advanced) && $this->hasDismax()) {
-            $query = $this->dismaxSubquery($search);
+            $query = $this->dismaxSubquery(
+                $this->dismaxMunge($search)
+            );
         } else {
             $mungeRules  = $this->mungeRules();
             // Do not munge w/o rules

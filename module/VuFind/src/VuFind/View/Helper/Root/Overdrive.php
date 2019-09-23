@@ -96,10 +96,6 @@ class Overdrive extends \Zend\View\Helper\AbstractHelper
             return false;
         }
         $config = $this->connector->getConfig();
-        if ($config->showOverdriveAdminMenu) {
-            return true;
-        } else {
-            return false;
-        }
+        return (bool)($config->showOverdriveAdminMenu ?? false);
     }
 }
