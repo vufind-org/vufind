@@ -113,12 +113,10 @@
   ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
-    <?php if ($advancedSearch): ?>
+    <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+      <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+    <?php elseif ($advancedSearch): ?>
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
-    <?php else: ?>
-      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
-        <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
-      <?php endif; ?>
     <?php endif; ?>
     <div class="filters">
       <?=$filters ?>
