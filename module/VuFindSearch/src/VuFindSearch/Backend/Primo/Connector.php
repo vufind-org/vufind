@@ -284,10 +284,27 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             //     range facet control in the interface. look for injectPubDate
             if (!empty($args["filterList"])) {
                 foreach ($args["filterList"] as $facet => $values) {
-                    foreach ($values as $value) {
-                        $thisValue = preg_replace('/,/', '+', $value);
-                        $qs[] = "query=facet_" . $facet . ",exact,"
-                            . urlencode($thisValue);
+                    $facetOp = 'AND';
+                    if (isset($values['values'])) {
+                        $facetOp = $values['facetOp'];
+                        $values = $values['values'];
+                    }
+                    array_map(
+                        function ($value) {
+                            return urlencode(preg_replace('/,/', '+', $value));
+                        },
+                        $values
+                    );
+                    if ('OR' === $facetOp) {
+                        $qs[] = "query_inc=facet_$facet,exact," .
+                            implode(',', $values);
+                    } elseif ('NOT' === $facetOp) {
+                        $qs[] = "query_exc=facet_$facet,exact," .
+                            implode(',', $values);
+                    } else {
+                        foreach ($values as $value) {
+                            $qs[] = "query_inc=facet_$facet,exact,$value";
+                        }
                     }
                 }
             }
