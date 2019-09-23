@@ -58,11 +58,17 @@ class Cpu_Client
      * Redirect customer to PaymentAddress after validating response data.
      *
      * @param Cpu_Client_Payment $payment Payment data
-     * @return mixed|NULL JSON response from eCommerce
+     * @return mixed array containing an errormessage, JSON response from eCommerce or false
      */
     public function sendPayment(Cpu_Client_Payment $payment)
     {
-        if ($payment->isValid() && $this->service_url && $this->source && $this->secret_key) {
+        $valid = $payment->isValid();
+
+        if ($valid !== true) {
+            return ['error' => $valid];
+        }
+
+        if ($this->service_url && $this->source && $this->secret_key) {
 
             // Prepare data to be sent.
             $data = $payment->convertToArray();
@@ -87,13 +93,13 @@ class Cpu_Client
             );
 
             if (!$response) {
-                return false;
+                return ['error' => 'Failed to send payment'];
             }
 
             return $response['response'];
         }
 
-        return null;
+        return ['error' => 'Error with settings'];
     }
 
     /**
@@ -112,7 +118,7 @@ class Cpu_Client
         $separator  = '&';
         $string     = '';
 
-        if ($payment->isValid() && !empty($source) && !empty($secret_key)) {
+        if ($payment->isValid() === true && !empty($source) && !empty($secret_key)) {
             $string .= $payment->ApiVersion . $separator;
             $string .= $source . $separator;
             $string .= $payment->Id . $separator;

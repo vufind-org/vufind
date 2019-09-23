@@ -133,18 +133,32 @@ class Cpu_Client_Payment
     /**
      * Checks mandatory properties of payment.
      *
-     * @return boolean Payment has all necessary properties
+     * @return mixed boolean|string if the payment is valid or error code
      */
     public function isValid()
     {
-        return (!empty($this->ApiVersion)
-                && !empty($this->Id)
-                && $this->Mode == self::MODE_ECOMMERCE
-                && count($this->Products)
-                && !empty($this->ReturnAddress) && filter_var($this->ReturnAddress, FILTER_VALIDATE_URL)
-                && !empty($this->NotificationAddress) && filter_var($this->NotificationAddress, FILTER_VALIDATE_URL)
-            //	&& !empty($this->Hash)
-            ) ? true : false;
+        $result = true;
+
+        if (empty($this->ApiVersion)) {
+            $result = 'Empty apiversion given to payment';
+        }
+        if (empty($this->Id)) {
+            $result = 'Empty id given to payment';
+        }
+        if ($this->Mode !== self::MODE_ECOMMERCE) {
+            $result = 'Mode is not eCommerce';
+        }
+        if (count($this->Products) === 0) {
+            $result = 'No products given';
+        }
+        if (empty($this->ReturnAddress) || !filter_var($this->ReturnAddress, FILTER_VALIDATE_URL)) {
+            $result = 'Empty or invalid return address given';
+        }
+        if (empty($this->NotificationAddress) || !filter_var($this->NotificationAddress, FILTER_VALIDATE_URL)) {
+            $result = 'Empty or invalid notification address given';
+        }
+
+        return $result;
     }
 
     /**
