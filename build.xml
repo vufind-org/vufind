@@ -311,6 +311,7 @@
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+          <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
         </replaceregexp>
       </filterchain>
     </copy>
