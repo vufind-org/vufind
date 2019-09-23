@@ -1,0 +1,12 @@
+{
+    "__comment__": [
+        "See https://github.com/wikimedia/composer-merge-plugin for more details."
+    ],
+    "require": {
+        "erusev/parsedown": "1.6.1",
+        "picqer/php-barcode-generator": "0.2.1"
+    },
+    "scripts": {
+        "phing-install-dependencies": "phing installswaggerui"
+    }
+}
