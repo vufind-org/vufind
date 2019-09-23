@@ -469,6 +469,24 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Check if given array of urls contains pdf links
+     *
+     * @param array $urls Array of urls in the format returned by
+     *                    getUrls and getOnlineUrls
+     *
+     * @return boolean
+     */
+    public function containsPdfUrl($urls)
+    {
+        foreach ($urls as $url) {
+            if (strcasecmp(pathinfo($url['url'], PATHINFO_EXTENSION), 'pdf') === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Is rating allowed.
      *
      * @return boolean

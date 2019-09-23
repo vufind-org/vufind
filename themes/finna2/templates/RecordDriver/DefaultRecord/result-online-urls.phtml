@@ -11,14 +11,22 @@
     if (!empty($images)
       && !$this->record($this->driver)->containsNonImageURL($urls, $images)
       && !$this->record($this->driver)->containsNonImageURL($onlineURLs, $images)
+      && !$this->record($this->driver)->containsPdfUrl($onlineURLs)
       && (empty($mergedData['urls']) || !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images))
       && !$openUrlActive
     ) {
-       // All online URLs are record images that are handled by image-popup
+       // Some onlineurls might be links to pdf files, but otherwise they are imageurls
        return;
     }
     $videoScripts = $this->partial('Helpers/videojs-urls.phtml');
+
+    $urlBase = [
+      'class' => 'fulltext',
+      'target' => '_blank'
+    ];
+    $this->htmlElement()->addAttributeTemplate('url-base', $urlBase);
   ?>
+
   <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
     <div class="available-online-links">
       <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls)) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
@@ -27,24 +35,34 @@
       <?php if (!empty($urls)): ?>
         <?php foreach ($urls as $i => $url): ?>
           <?php
-            if (isset($images[$url['url']])) {
-               continue;
+            if (isset($images[$url['url']]) && strcasecmp(pathinfo($url['url'], PATHINFO_EXTENSION), 'pdf') !== 0) {
+              continue;
             } else {
-               $renderedURLs[] = $url['url'];
+              $renderedURLs[] = $url['url'];
             }
           ?>
           <?=$i > 0 ? '<br/>' : '' ?>
-          <a
-            class="fulltext"
-            href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?php if (!empty($url['videoSources'])): ?>
-            data-video-sources="<?= $this->escapeHtmlAttr(json_encode($url['videoSources'])) ?>" data-scripts="<?=$this->escapeHtmlAttr($videoScripts)?>"<?php endif; ?><?php if (!empty($url['posterUrl'])): ?>
-            data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
-            <?=!empty($url['embed']) && $url['embed'] == 'video' ? ' data-embed-video' : '' ?>
-            <?= $this->recordLink()->getEmbeddedVideo($url['url']) ?>
-            target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"
-            aria-hidden="true"
-            >
-            </i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?>
+          <?php
+            $currentUrl = [
+              'href' => $this->proxyUrl($url['url']),
+              'title' => $url['url']
+            ];
+            if (!empty($url['videoSources'])) {
+              $videoData = [
+                'data-video-sources' => json_encode($url['videoSources']),
+                'data-scripts' => $videoScripts
+              ];
+              $currentUrl = array_merge($currentUrl, $videoData);
+            }
+            if (!empty($url['posterUrl'])) {
+              $currentUrl['data-poster-url'] = $url['posterUrl'];
+            }
+            if (!empty($url['embed']) && $url['embed'] === 'video') {
+              $currentUrl['data-embed-video'] = '';
+            }
+          ?>
+          <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><i class="fa fa-external-link"aria-hidden="true"></i>
+            <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?>
           </a>
           <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?></span><?php endif; ?>
         <?php endforeach; ?>
@@ -52,9 +70,23 @@
 
       <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
-          <?php if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+          <?php
+            if (isset($images[$url['url']]) || in_array($url['url'], $renderedURLs))
+            {
+              continue;
+            }
+            $currentUrl = [
+              'href' => $this->proxyUrl($url['url']),
+              'title' => $url['url'],
+            ];
+            if (!empty($url['embed']) && $url['embed'] === 'iframe') {
+              $currentUrl['data-embed-iframe'] = '';
+            }
+          ?>
           <?=count($renderedURLs) || $i > 0 ? '<br/>' : '' ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link" aria-hidden="true"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+          <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><i class="fa fa-external-link" aria-hidden="true"></i>
+            <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?>
+          </a>
           <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?></span><?php endif; ?>
           <?php if ($url['source']): ?>
             <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
