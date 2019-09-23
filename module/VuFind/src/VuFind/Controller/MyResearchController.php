@@ -416,6 +416,34 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Support method for savesearchAction() -- schedule a search.
+     *
+     * @param \VuFind\Db\Row\User $user     Logged-in user object
+     * @param int                 $schedule Requested schedule setting
+     * @param int                 $sid      Search ID to schedule
+     *
+     * @return mixed
+     */
+    public function scheduleSearch($user, $schedule, $sid)
+    {
+        $search = $this->getTable('Search');
+        $baseurl = rtrim($this->getServerUrl('home'), '/');
+        $savedRow = $search->select(
+            ['id' => $sid, 'user_id' => $user->id, 'saved' => 1]
+        )->current();
+        if ($savedRow) {
+            $savedRow->setSchedule($schedule, $baseurl);
+        } else {
+            $this->setSavedFlagSecurely($sid, true, $user->id);
+            $historyRow = $search->select(
+                ['id' => $sid, 'user_id' => $user->id]
+            )->current();
+            $historyRow->setSchedule($schedule, $baseurl);
+        }
+        return $this->redirect()->toRoute('search-history');
+    }
+
+    /**
      * Handle 'save/unsave search' request
      *
      * @return mixed
@@ -432,6 +460,13 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
+        }
+
+        // Check for schedule-related parameters and process them first:
+        $schedule = $this->params()->fromQuery('schedule', false);
+        $sid = $this->params()->fromQuery('searchid', false);
+        if ($schedule !== false && $sid !== false) {
+            return $this->scheduleSearch($user, $schedule, $sid);
         }
 
         // Check for the save / delete parameters and process them appropriately:

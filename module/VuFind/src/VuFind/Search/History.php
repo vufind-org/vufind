@@ -100,7 +100,7 @@ class History
         $searchHistory = $this->searchTable->getSearches($this->sessionId, $userId);
 
         // Loop through and sort the history
-        $saved = $unsaved = [];
+        $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
             $search = $current->getSearchObject()->deminify($this->resultsManager);
             if ($current->saved == 1) {
@@ -108,8 +108,9 @@ class History
             } else {
                 $unsaved[] = $search;
             }
+            $schedule[$search->getSearchId()] = $current->notify;
         }
 
-        return compact('saved', 'unsaved');
+        return compact('saved', 'schedule', 'unsaved');
     }
 }

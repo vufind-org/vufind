@@ -80,4 +80,21 @@ class Search extends RowGateway
             : $this->search_object;
         parent::save();
     }
+
+    /**
+     * Set schedule for scheduled alert.
+     *
+     * @param int    $schedule Schedule.
+     * @param string $url      Site base URL
+     *
+     * @return mixed
+     */
+    public function setSchedule($schedule, $url = null)
+    {
+        $this->notify = $schedule;
+        if ($url) {
+            $this->notification_base_url = $url;
+        }
+        return $this->save();
+    }
 }

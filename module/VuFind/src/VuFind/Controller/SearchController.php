@@ -135,8 +135,9 @@ class SearchController extends AbstractSolrSearch
             // We don't want to remember the last search after a purge:
             $this->getSearchMemory()->forgetSearch();
         }
-        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
-        return $this->createViewModel($lastSearches);
+        $viewData = $searchHistoryHelper->getSearchHistory($userId);
+        $viewData['alertemail'] = is_object($user) ? $user->email : null;
+        return $this->createViewModel($viewData);
     }
 
     /**
