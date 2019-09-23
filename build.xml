@@ -305,7 +305,7 @@
       </else>
     </if>
 
-    <!-- Update config.ini to activate DB connection and exception logging -->
+    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
