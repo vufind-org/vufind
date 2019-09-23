@@ -424,7 +424,7 @@ class MyResearchController extends AbstractBase
      *
      * @return mixed
      */
-    public function scheduleSearch($user, $schedule, $sid)
+    protected function scheduleSearch($user, $schedule, $sid)
     {
         $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
