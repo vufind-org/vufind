@@ -121,10 +121,14 @@ CREATE TABLE `search` (
   `saved` int(1) NOT NULL DEFAULT '0',
   `search_object` blob,
   `checksum` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  `notify` tinyint(1) NOT NULL DEFAULT '0',
+  `last_notification_sent` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `notification_base_url` varchar(255) NOT NULL DEFAULT '',
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
-  KEY `session_id` (`session_id`)
+  KEY `session_id` (`session_id`),
+  KEY `notify` (`notify`),
+  KEY `notification_base_url` (`notification_base_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
