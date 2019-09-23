@@ -61,28 +61,12 @@ class ILS extends \VuFind\Auth\ILS
         $username = trim($request->getPost()->get('username'));
         $username = str_replace(' ', '', $username);
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || $password == '') {
-            throw new AuthException('authentication_error_blank');
-        }
+        $loginMethod = $this->getILSLoginMethod();
 
         // Check for a secondary username
         $secondaryUsername = trim($request->getPost()->get('secondary_username'));
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin(
-                $username, $password, $secondaryUsername
-            );
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return $this
+            ->handleLogin($username, $password, $loginMethod, $secondaryUsername);
     }
 }

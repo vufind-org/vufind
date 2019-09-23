@@ -30,21 +30,26 @@
   <form method="post" autocomplete="off">
     <?php if ($this->targets !== null): ?>
     <div class="form-group">
-      <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-      <select id="login_target" name="target" class="form-control">
+      <label class="control-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
+      <select id="profile_cat_target" name="target" class="form-control">
       <?php foreach ($this->targets as $target): ?>
-        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->defaultdriver ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
       <?php endforeach; ?>
       </select>
     </div>
     <?php endif; ?>
     <div class="form-group">
-      <label class="control-label" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+      <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+        <label class="control-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+      <?php endif; ?>
+      <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
+        <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
+      <?php endif; ?>
       <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
     </div>
     <div class="form-group">
-      <label class="control-label" for="login_secondary_username"></label>
-      <input id="login_secondary_username" type="text" name="cat_secondary_username" value="" class="form-control"/>
+      <label class="control-label" for="profile_cat_secondary_username"></label>
+      <input id="profile_cat_secondary_username" type="text" name="cat_secondary_username" value="" class="form-control"/>
     </div>
     <div class="form-group">
       <label class="control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
@@ -76,22 +81,29 @@
   } else {
     $manager->setAuthMethod('ILS');
   }
-  foreach ($this->targets as $target) {
-    $label = $manager->getSecondaryLoginFieldLabel($target);
-    $labels[] = '"' . addslashes($target) . '": "' . ($label ? addslashes($this->translate($label)) : '') . '"';
+  $labels = [];
+  if (null !== $this->targets) {
+    foreach ($this->targets as $target) {
+      $label = $manager->getSecondaryLoginFieldLabel($target);
+      $labels[$target] = $label ? $this->translate($label) : '';
+    }
   }
+
   $manager->setAuthMethod($originalMethod);
 
-  $labels = implode(', ', $labels);
+  $labels = json_encode($labels);
+  $methods = json_encode($this->loginMethods);
+
   $script = <<<EOT
-  finna.layout.initSecondaryLoginField({{$labels}}, '');
+  setupMultiILSLoginFields($methods, 'profile_cat_');
+  finna.layout.initSecondaryLoginField($labels, 'profile_cat_');
 EOT;
 
   // Inline the script for lightbox compatibility
   echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 ?>
 
-  <?php if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) > 1): ?>
+  <?php if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) >= 1): ?>
     <h3><?=$this->transEsc('catalog_login_change_card_heading') ?></h3>
     <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'])?>
   <?php endif; ?>

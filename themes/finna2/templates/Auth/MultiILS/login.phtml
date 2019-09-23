@@ -51,7 +51,7 @@
 
   $recovery = json_encode($recovery);
   $script = <<<EOT
-  finna.layout.initILSPasswordRecoveryLink($recovery);
+  finna.layout.initILSPasswordRecoveryLink($recovery, 'login_{$topClass}_');
 EOT;
 
   // Inline the script for lightbox compatibility

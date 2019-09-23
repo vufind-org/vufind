@@ -55,21 +55,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function catalogloginAction()
     {
-        // Connect to the ILS and check if multiple target support is available
-        // Add default driver to result so we can use it on cataloglogin.phtml
-        $targets = null;
-        $defaultTarget = null;
-        $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $targets = $catalog->getLoginDrivers();
-            $defaultTarget = $catalog->getDefaultLoginDriver();
-        }
-        $result = $this->createViewModel(
-            [
-                'targets' => $targets,
-                'defaultdriver' => $defaultTarget
-            ]
-        );
+        $result = parent::catalogloginAction();
 
         // Try to find the original action and map it to the corresponding menu item
         // since we were probably forwarded here.

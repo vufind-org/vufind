@@ -455,10 +455,11 @@ finna.layout = (function finnaLayout() {
     holder.find('select.jumpMenuUrl').unbind('change').change(function onChangeJumpMenuUrl(e) { window.location.href = $(e.target).val(); });
   }
 
-  function initSecondaryLoginField(labels, topClass) {
-    $('#login_target').change(function onChangeLoginTarget() {
-      var target = $('#login_target').val();
-      var field = $('#login_' + (topClass ? topClass + '_' : '') + 'secondary_username');
+  function initSecondaryLoginField(labels, idPrefix) {
+    var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+    $(searchPrefix + 'target').change(function onChangeLoginTarget() {
+      var target = $(searchPrefix + 'target').val();
+      var field = $(searchPrefix + 'secondary_username');
       if ((typeof labels[target] === 'undefined') || labels[target] === '') {
         field.val('');
         field.closest('.form-group').hide();
@@ -470,9 +471,10 @@ finna.layout = (function finnaLayout() {
     }).change();
   }
 
-  function initILSPasswordRecoveryLink(links) {
-    $('#login_target').change(function onChangeLoginTargetLink() {
-      var target = $('#login_target').val();
+  function initILSPasswordRecoveryLink(links, idPrefix) {
+    var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+    $(searchPrefix + 'target').change(function onChangeLoginTargetLink() {
+      var target = $(searchPrefix + 'target').val();
       if (links[target]) {
         $('#login_library_card_recovery').attr('href', links[target]).show();
       } else {
@@ -731,7 +733,7 @@ finna.layout = (function finnaLayout() {
     $('.filters-toggle').click(function filterToggleClicked() {
       var button = $(this);
       var filters = button.closest('.finna-filters').find('.filters');
-      
+
       function setState(setHidden, arrowClass, text) {
         filters.toggleClass('hidden', setHidden);
         button.find('.fa').attr('class', arrowClass);

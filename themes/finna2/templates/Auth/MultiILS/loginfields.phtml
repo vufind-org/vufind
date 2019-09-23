@@ -1,13 +1,14 @@
 <!-- START of: finna - Auth/MultiILS/loginfields.phtml -->
 <?php
   $authManager = $this->auth()->getManager();
+  $loginTargets = $authManager->getLoginTargets();
 ?>
 <div>
   <div class="form-group">
     <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
     <?php if (count($authManager->getLoginTargets()) > 1): ?>
       <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-      <select id="login_target" name="target" class="form-control">
+      <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-control">
         <?php foreach ($authManager->getLoginTargets() as $target):?>
           <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
         <?php endforeach ?>
@@ -23,7 +24,8 @@
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+    <label class="control-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+    <label class="control-label email-login hidden" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
     <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
   </div>
 
@@ -35,14 +37,18 @@
 
 <?php
   $labels = [];
+  $methods = [];
   foreach ($authManager->getLoginTargets() as $target) {
     $label = $authManager->getSecondaryLoginFieldLabel($target);
     $labels[$target] = $label ? addslashes($this->translate($label)) : '';
+    $methods[$target] = $authManager->getILSLoginMethod($target);
   }
 
   $labels = json_encode($labels);
+  $methods = json_encode($methods);
   $script = <<<EOT
-  finna.layout.initSecondaryLoginField($labels, '{$topClass}');
+  setupMultiILSLoginFields($methods, 'login_{$topClass}_');
+  finna.layout.initSecondaryLoginField($labels, 'login_{$topClass}_');
 EOT;
 
   // Inline the script for lightbox compatibility

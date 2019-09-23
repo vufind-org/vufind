@@ -1,16 +1,24 @@
-<div class="form-group">
-  <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
-  <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
-</div>
+<?php $loginMethod = $this->auth()->getManager()->getILSLoginMethod(); ?>
+<?php if ('email' === $loginMethod): ?>
+  <div class="form-group">
+    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
+    <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  </div>
+<?php else: ?>
+  <div class="form-group">
+    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+    <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  </div>
 
-<?php if ($label = $this->auth()->getManager()->getSecondaryLoginFieldLabel()): ?>
-<div class="form-group">
-  <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username"><?=$this->transEsc($label)?>:</label>
-  <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->request->get('secondary_username'))?>" class="form-control"/>
-</div>
+  <?php if ($label = $this->auth()->getManager()->getSecondaryLoginFieldLabel()): ?>
+  <div class="form-group">
+    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username"><?=$this->transEsc($label)?>:</label>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->request->get('secondary_username'))?>" class="form-control"/>
+  </div>
+  <?php endif; ?>
+
+  <div class="form-group">
+    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
+    <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="form-control"/>
+  </div>
 <?php endif; ?>
-
-<div class="form-group">
-  <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
-  <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="form-control"/>
-</div>

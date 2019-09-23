@@ -57,9 +57,9 @@
               <?php endif; ?>
               <td data-label="<?=$this->transEsc('Username')?>">
                 <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($username) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
-                  <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0): ?>
+                  <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0 && ($barcode = $this->barcode()->createPng($username, 2, 60))): ?>
                     <div class="librarycard-barcode">
-                      <img src="data:image/png;base64,<?=$this->barcode()->createPng($username, 2, 60)?>" alt="">
+                      <img src="data:image/png;base64,<?=$barcode?>" alt="">
                     </div>
                   <?php endif; ?>
                   <span><?=$this->escapeHtml($username)?></span>

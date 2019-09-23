@@ -62,6 +62,7 @@ trait CatalogLoginTrait
 
         // Now check if the user has provided credentials with which to log in:
         $ilsAuth = $this->getILSAuthenticator();
+        $patron = null;
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
@@ -74,16 +75,36 @@ trait CatalogLoginTrait
                 'cat_secondary_username', ''
             );
             try {
-                $patron = $ilsAuth->newCatalogLogin(
-                    $username, $password, $secondaryUsername
-                );
+                if ('email' === $this->getILSLoginMethod($target)) {
+                    $routeMatch = $this->getEvent()->getRouteMatch();
+                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
+                        : 'myresearch-profile';
+                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $this->flashMessenger()
+                        ->addSuccessMessage('email_login_link_sent');
+                } else {
+                    $patron = $ilsAuth->newCatalogLogin(
+                        $username,
+                        $password,
+                        $secondaryUsername
+                    );
 
-                // If login failed, store a warning message:
-                if (!$patron) {
-                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                    // If login failed, store a warning message:
+                    if (!$patron) {
+                        $this->flashMessenger()
+                            ->addErrorMessage('Invalid Patron Login');
+                    }
                 }
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            }
+        } elseif ('ILS' === $this->params()->fromQuery('auth_method', false)
+            && ($hash = $this->params()->fromQuery('hash', false))
+        ) {
+            try {
+                $patron = $ilsAuth->processEmailLoginHash($hash);
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
