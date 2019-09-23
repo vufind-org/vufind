@@ -124,6 +124,7 @@ CREATE TABLE `search` (
   `notify` tinyint(1) NOT NULL DEFAULT '0',
   `last_notification_sent` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `notification_base_url` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
   KEY `session_id` (`session_id`),
