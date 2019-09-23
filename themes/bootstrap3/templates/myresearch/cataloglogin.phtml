@@ -20,7 +20,7 @@
   <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">
     <?php if ($this->targets !== null): ?>
       <div class="form-group">
-        <label class="control-label" for="profile_cat_login_target"><?=$this->transEsc('login_target')?>:</label>
+        <label class="control-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
         <select id="profile_cat_target" name="target" class="form-control">
           <?php foreach ($this->targets as $target): ?>
             <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
