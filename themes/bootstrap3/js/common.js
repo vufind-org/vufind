@@ -431,7 +431,7 @@ $(document).ready(function commonDocReady() {
       // Print dialogs cause problems during testing, so disable them
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
-      if (document.cookie.indexOf('VuFindTestSuiteRunning') === -1) {
+      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
         window.print();
       } else {
         console.log("Printing disabled due to test mode.");
