@@ -140,7 +140,7 @@ trait FinnaOnlinePaymentControllerTrait
         }
 
         // Check if online payment is enabled for the ILS driver
-        if (!$catalog->checkFunction('markFeesAsPaid', $patron)) {
+        if (!$catalog->checkFunction('markFeesAsPaid', compact('patron'))) {
             return;
         }
 

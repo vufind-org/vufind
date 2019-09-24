@@ -73,7 +73,7 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
 
         try {
             $result = $this->ils->checkFunction(
-                'changePickupLocation', [$patron]
+                'changePickupLocation', compact('patron')
             );
             if (!$result) {
                 return $this->formatResponse(

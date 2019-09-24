@@ -72,7 +72,8 @@ class ChangeRequestStatus extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         try {
-            $result = $this->ils->checkFunction('changeRequestStatus', [$patron]);
+            $result = $this->ils
+                ->checkFunction('changeRequestStatus', compact('patron'));
             if (!$result) {
                 return $this->formatResponse(
                     $this->translate('unavailable'),

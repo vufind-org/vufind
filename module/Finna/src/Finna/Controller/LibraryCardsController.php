@@ -119,7 +119,8 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         // Connect to the ILS and check if it supports changing password
         $catalog = $this->getILS();
-        if (!$catalog->checkFunction('changePassword', $card->toArray())) {
+        if (!$catalog->checkFunction('changePassword', ['card' => $card->toArray()])
+        ) {
             throw new \Exception('Changing password not supported for this card');
         }
         // It's not exactly correct to send a card to getPasswordPolicy, but it has
@@ -157,7 +158,8 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         );
         $catalog = $this->getILS();
         $recoveryConfig = $catalog->checkFunction(
-            'getPasswordRecoveryToken', ['cat_username' => "$target.123"]
+            'getPasswordRecoveryToken',
+            ['patron' => ['cat_username' => "$target.123"]]
         );
         $view = $this->createViewModel(
             [
@@ -271,7 +273,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $catalog = $this->getILS();
         $recoveryConfig = $catalog->checkFunction(
             'recoverPassword',
-            ['cat_username' => "$target." . $recoveryData['username']]
+            ['patron' => ['cat_username' => "$target." . $recoveryData['username']]]
         );
         if (!$recoveryConfig) {
             $this->flashMessenger()->addMessage('recovery_disabled', 'error');

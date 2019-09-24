@@ -109,7 +109,7 @@ class AuthenticationStrategy implements PermissionProviderInterface
                 if ($patron) {
                     $functionConfig = $this->ils->checkFunction(
                         'getPatronAuthorizationStatus',
-                        $patron
+                        compact('patron')
                     );
                     if ($functionConfig
                         && !$this->ils->getPatronAuthorizationStatus($patron)
@@ -130,7 +130,7 @@ class AuthenticationStrategy implements PermissionProviderInterface
                 if ($patron) {
                     $functionConfig = $this->ils->checkFunction(
                         'getPatronStaffAuthorizationStatus',
-                        $patron
+                        compact('patron')
                     );
                     if ($functionConfig
                         && $this->ils->getPatronStaffAuthorizationStatus($patron)

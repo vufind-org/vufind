@@ -125,10 +125,11 @@
                 <div class="my-profile-col profile-long">
                   <?php if ($needsApproval): ?>
                     <i class="fa fa-info-big"></i> <?=$this->transEsc(($updatePhone || $updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
+                    <br/>
                   <?php endif; ?>
-                  <br/>
                   <?=$updateAddressLink ?>
                 </div>
+                <div class="clearfix"></div>
               <?php else: ?>
                 <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 1:</div>
                 <div class="profile-text-value"><?=$this->escapeHtml($this->profile['address1']) ?></div>
@@ -149,7 +150,7 @@
             <?php endif; ?>
             <?php if (!empty($this->profile['country'])): ?>
               <div class="my-profile-col profile-title"><?=$this->transEsc('Country') ?>:</div>
-              <div class="profile-text-value"><?=$this->escapeHtml($this->profile['country']) ?></div>
+              <div class="profile-text-value"><?=$this->transEsc($profile['country']) ?></div>
             <?php endif; ?>
             <?php if (!empty($this->profile['phone']) || $updatePhone): ?>
               <?php if ($updatePhone): ?>
@@ -225,6 +226,10 @@
             <?php if (!empty($this->profile['expiration_date'])): ?>
               <div class="my-profile-col profile-title"><?=$this->transEsc('Expires') ?>:</div>
               <div class="profile-text-value"><?=$this->escapeHtml($this->profile['expiration_date']) ?></div>
+            <?php endif; ?>
+            <?php if (!empty($this->profile['self_service_pin'])): ?>
+              <div class="my-profile-col profile-title"><?=$this->transEsc('self_service_pin') ?>:</div>
+              <div class="profile-text-value"><?=$this->escapeHtml($this->profile['self_service_pin']) ?></div>
             <?php endif; ?>
             <?php if ($guarantorFullName): ?>
               <div class="my-profile-col profile-title"><?=$this->transEsc('Guarantor') ?>:</div>
