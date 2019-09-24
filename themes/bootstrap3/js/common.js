@@ -1,5 +1,5 @@
 /*global Event, grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -355,6 +355,26 @@ function setupJumpMenus(_container) {
   container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
 }
 
+function setupMultiILSLoginFields(loginMethods, idPrefix) {
+  var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+  $(searchPrefix + 'target').change(function onChangeLoginTarget() {
+    var target = $(this).val();
+    var $usernameGroup = $(searchPrefix + 'username').closest('.form-group');
+    var $password = $(searchPrefix + 'password');
+    if (loginMethods[target] === 'email') {
+      $usernameGroup.find('label.password-login').addClass('hidden');
+      $usernameGroup.find('label.email-login').removeClass('hidden');
+      $password.closest('.form-group').addClass('hidden');
+      // Set password to a dummy value so that any checks for username+password work
+      $password.val('****');
+    } else {
+      $usernameGroup.find('label.password-login').removeClass('hidden');
+      $usernameGroup.find('label.email-login').addClass('hidden');
+      $password.closest('.form-group').removeClass('hidden');
+    }
+  }).change();
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -412,16 +432,6 @@ $(document).ready(function commonDocReady() {
     });
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
-  }
-
-  // retain filter sessionStorage
-  $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
-    sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
-    $('.applied-filter').prop('checked', this.checked);
-  });
-  if (sessionStorage.getItem('vufind_retain_filters')) {
-    var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
-    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
   }
 
   setupIeSupport();

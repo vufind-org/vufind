@@ -35,9 +35,11 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -66,6 +68,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test changing a password.
      *
+     * @retryCallback tearDownAfterClass
+     *
      * @return void
      */
     public function testChangePassword()
@@ -75,25 +79,25 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
 
         // Create account
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->snooze();
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->clickCss($page, '.modal-body .createAccountLink');
         $this->snooze();
         $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Go to profile page:
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
 
         // Log back in
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // Now click change password button:
@@ -102,7 +106,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Change the password (but get the old password wrong)
         $this->fillInChangePasswordForm($page, 'bad', 'good');
-        $this->findCss($page, '#newpassword .btn.btn-primary')->click();
+        $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
             'Invalid login -- please try again.',
@@ -111,7 +115,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Change the password successfully:
         $this->fillInChangePasswordForm($page, 'test', 'good');
-        $this->findCss($page, '#newpassword .btn.btn-primary')->click();
+        $this->clickCss($page, '#newpassword .btn.btn-primary');
         $this->snooze();
         $this->assertEquals(
             'Your password has successfully been changed',
@@ -119,24 +123,97 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         // Log out
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
 
         // Log back in (using old credentials, which should now fail):
-        $this->findCss($page, '#loginOptions a')->click();
+        $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
         $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
 
         // Now log in successfully:
         $this->fillInLoginForm($page, 'username1', 'good');
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
         // One final log out (to confirm that log in really worked).
-        $this->findCss($page, '.logoutOptions a.logout')->click();
+        $this->clickCss($page, '.logoutOptions a.logout');
         $this->snooze();
+    }
+
+    /**
+     * Test that changing email is disabled by default.
+     *
+     * @return void
+     */
+    public function testChangeEmailDisabledByDefault()
+    {
+        // Go to profile page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->snooze();
+
+        // Now confirm that email button is absent:
+        $link = $page->findLink('Change Email Address');
+        $this->assertFalse(is_object($link));
+    }
+
+    /**
+     * Test changing an email.
+     *
+     * @return void
+     */
+    public function testChangeEmail()
+    {
+        // Turn on email change option:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'change_email' => true,
+                    ]
+                ]
+            ]
+        );
+
+        // Go to profile page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->clickCss($page, '#loginOptions a');
+        $this->fillInLoginForm($page, 'username1', 'good');
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->snooze();
+
+        // Now click change email button:
+        $this->findAndAssertLink($page, 'Change Email Address')->click();
+        $this->snooze();
+
+        // Change the email:
+        $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
+        $this->clickCss($page, '[name="submit"]');
+        $this->snooze();
+        $this->assertEquals(
+            'Your email address has been changed successfully',
+            $this->findCss($page, '.alert-success')->getText()
+        );
+
+        // Now go to profile page and confirm that email has changed:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $this->assertEquals(
+            'First Name: Tester Last Name: McTestenson Email: new@email.com',
+            $this->findCss($page, '.table-striped')->getText()
+        );
     }
 
     /**

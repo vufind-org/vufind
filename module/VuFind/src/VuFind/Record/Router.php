@@ -39,13 +39,6 @@ namespace VuFind\Record;
 class Router
 {
     /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $loader;
-
-    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -55,13 +48,10 @@ class Router
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader Record loader
-     * @param \Zend\Config\Config   $config VuFind configuration
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct(\VuFind\Record\Loader $loader,
-        \Zend\Config\Config $config
-    ) {
-        $this->loader = $loader;
+    public function __construct(\Zend\Config\Config $config)
+    {
         $this->config = $config;
     }
 
@@ -85,14 +75,20 @@ class Router
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
      * @param string                                   $tab    Action to access
+     * @param array                                    $query  Optional query params
      *
      * @return array
      */
-    public function getTabRouteDetails($driver, $tab = null)
+    public function getTabRouteDetails($driver, $tab = null, $query = [])
     {
         $route = $this->getRouteDetails(
             $driver, '', empty($tab) ? [] : ['tab' => $tab]
         );
+        // Add the options and query elements only if we need a query to avoid
+        // an empty element in the route definition:
+        if ($query) {
+            $route['options']['query'] = $query;
+        }
 
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
@@ -105,16 +101,10 @@ class Router
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
-                    list($source, $id) = $this->extractSourceAndId($driver);
-                    try {
-                        $driver = $this->loader->load($id, $source);
-                    } catch (\Exception $e) {
-                        // Ignore exceptions here so that we don't crash when
-                        // creating a link to record that does not exist
-                    }
-                }
-                if (is_object($driver) && true === $driver->tryMethod('isCollection')
-                ) {
+                    // Avoid loading the driver. Set a flag so that if the link is
+                    // used, record controller will check for redirection.
+                    $route['options']['query']['checkRoute'] = 1;
+                } elseif (true === $driver->tryMethod('isCollection')) {
                     $route['route'] = $collectionRoute;
                 }
             }
@@ -154,8 +144,16 @@ class Router
         $routeBase = ($source == DEFAULT_SEARCH_BACKEND)
             ? 'record' : strtolower($source . 'record');
 
+        // Disable path normalization since it can unencode e.g. encoded slashes in
+        // record id's
+        $options = [
+            'normalize_path' => false
+        ];
+
         return [
-            'params' => $params, 'route' => $routeBase . $routeSuffix
+            'params' => $params,
+            'route' => $routeBase . $routeSuffix,
+            'options' => $options
         ];
     }
 

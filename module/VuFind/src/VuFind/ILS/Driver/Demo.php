@@ -290,7 +290,7 @@ class Demo extends AbstractBase
             ? $this->config['Records']['query'] : '*:*';
         $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
-            throw new \Exception('Problem retrieving random record from $source.');
+            throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
         return [$record->getUniqueId(), $record->getTitle()];
@@ -376,7 +376,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
-        return [
+        $result = [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
@@ -396,8 +396,26 @@ class Demo extends AbstractBase
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
-            'services'     => $status == 'Available' ? $this->getFakeServices() : []
+            'services'     => $status == 'Available' ? $this->getFakeServices() : [],
         ];
+
+        switch (rand(1, 5)) {
+        case 1:
+            $result['location'] = 'Digital copy available';
+            $result['locationhref'] = 'http://digital';
+            $result['__electronic__'] = true;
+            $result['availability'] = true;
+            $result['status'] = '';
+            break;
+        case 2:
+            $result['location'] = 'Electronic Journals';
+            $result['locationhref'] = 'http://electronic';
+            $result['__electronic__'] = true;
+            $result['availability'] = true;
+            $result['status'] = 'Available from ' . rand(2010, 2019);
+        }
+
+        return $result;
     }
 
     /**
@@ -526,6 +544,16 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get suppressed records.
+     *
+     * @return array ID numbers of suppressed records in the system.
+     */
+    public function getSuppressedRecords()
+    {
+        return $this->config['Records']['suppressed'] ?? [];
+    }
+
+    /**
      * Get the session container (constructing it on demand if not already present)
      *
      * @param string $patron ID of current patron
@@ -539,7 +567,7 @@ class Demo extends AbstractBase
         // when testing multiple accounts.
         $selectedPatron = empty($patron)
             ? (current(array_keys($this->session)) ?: 'default')
-            : $patron;
+            : md5($patron);
 
         // SessionContainer not defined yet? Build it now:
         if (!isset($this->session[$selectedPatron])) {
@@ -575,7 +603,7 @@ class Demo extends AbstractBase
         $holding = [];
         $records = rand() % 15;
         for ($i = 1; $i <= $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i, $patron);
+            $holding[] = $this->setStatus($id, [], true, $patron);
         }
         return $holding;
     }
@@ -588,16 +616,17 @@ class Demo extends AbstractBase
      *      number, barcode, availability, status, location,
      *      reserve, callnumber, duedate, is_holdable, and addLink
      * @param bool  $append  add another record or replace current record
+     * @param array $patron  Patron data
      *
      * @return array
      */
-    protected function setStatus($id, $holding = [], $append = true)
+    protected function setStatus($id, $holding = [], $append = true, $patron = null)
     {
         $id = (string)$id;
-        $session = $this->getSession();
+        $session = $this->getSession($patron['id'] ?? null);
         $i = isset($session->statuses[$id])
             ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i), $holding);
+        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
 
         // if statuses is already stored
         if ($session->statuses) {
@@ -638,14 +667,15 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options
      *
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * @return array On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
 
@@ -675,8 +705,46 @@ class Demo extends AbstractBase
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
         }
 
+        // Filter out electronic holdings from the normal holdings list:
+        $status = array_filter(
+            $status,
+            function ($a) {
+                return !($a['__electronic__'] ?? false);
+            }
+        );
+
+        // Slice out a chunk if pagination is enabled.
+        $slice = null;
+        if ($options['itemLimit'] ?? null) {
+            // For sensible pagination, we need to sort by location:
+            $callback = function ($a, $b) {
+                return strcmp($a['location'], $b['location']);
+            };
+            usort($status, $callback);
+            $slice = array_slice(
+                $status,
+                $options['offset'] ?? 0,
+                $options['itemLimit']
+            );
+        }
+
+        // Electronic holdings:
+        $statuses = $this->getStatus($id);
+        $electronic = [];
+        foreach ($statuses as $item) {
+            if ($item['__electronic__'] ?? false) {
+                // Don't expose internal __electronic__ flag upstream:
+                unset($item['__electronic__']);
+                $electronic[] = $item;
+            }
+        }
+
         // Send back final value:
-        return $status;
+        return [
+            'total' => count($status),
+            'holdings' => $slice ?: $status,
+            'electronic_holdings' => $electronic
+        ];
     }
 
     /**
@@ -705,33 +773,42 @@ class Demo extends AbstractBase
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string $barcode  The patron barcode
+     * @param string $username The patron username
      * @param string $password The patron password
      *
      * @throws ILSException
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $password)
+    public function patronLogin($username, $password)
     {
         $this->checkIntermittentFailure();
+
+        $user = [
+            'id'           => trim($username),
+            'firstname'    => 'Lib',
+            'lastname'     => 'Rarian',
+            'cat_username' => trim($username),
+            'cat_password' => trim($password),
+            'email'        => 'Lib.Rarian@library.not',
+            'major'        => null,
+            'college'      => null
+        ];
+
+        $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
+        if ('email' === $loginMethod) {
+            $user['email'] = $username;
+            $user['cat_password'] = '';
+            return $user;
+        }
+
         if (isset($this->config['Users'])) {
-            if (!isset($this->config['Users'][$barcode])
-                || $password !== $this->config['Users'][$barcode]
+            if (!isset($this->config['Users'][$username])
+                || $password !== $this->config['Users'][$username]
             ) {
                 return null;
             }
         }
-        $user = [];
-
-        $user['id']           = trim($barcode);
-        $user['firstname']    = trim("Lib");
-        $user['lastname']     = trim("Rarian");
-        $user['cat_username'] = trim($barcode);
-        $user['cat_password'] = trim($password);
-        $user['email']        = trim("Lib.Rarian@library.not");
-        $user['major']        = null;
-        $user['college']      = null;
 
         return $user;
     }
@@ -2229,6 +2306,7 @@ class Demo extends AbstractBase
                 'extraHoldFields' =>
                     'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',
+                'itemLimit' => $this->config['Holds']['itemLimit'] ?? null,
             ];
         }
         if ($function == 'StorageRetrievalRequests'
@@ -2290,6 +2368,12 @@ class Demo extends AbstractBase
                     'title asc' => 'sort_title'
                 ],
                 'default_sort' => 'due asc'
+            ];
+        }
+        if ($function == 'patronLogin') {
+            return [
+                'loginMethod'
+                    => $this->config['Catalog']['loginMethod'] ?? 'password'
             ];
         }
 

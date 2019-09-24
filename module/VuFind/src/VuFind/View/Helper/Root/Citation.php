@@ -22,12 +22,14 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Date\DateException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Citation view helper
@@ -35,11 +37,15 @@ use VuFind\Date\DateException;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Citation extends \Zend\View\Helper\AbstractHelper
+    implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Citation details
      *
@@ -82,16 +88,12 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     public function __invoke($driver)
     {
         // Build author list:
-        $authors = [];
-        $primary = $driver->tryMethod('getPrimaryAuthor');
-        if (empty($primary)) {
-            $primary = $driver->tryMethod('getCorporateAuthor');
+        $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        if (empty($authors)) {
+            $authors = (array)$driver->tryMethod('getCorporateAuthors');
         }
-        if (!empty($primary)) {
-            $authors[] = $primary;
-        }
-        $secondary = $driver->tryMethod('getSecondaryAuthors');
-        if (is_array($secondary) && !empty($secondary)) {
+        $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
+        if (!empty($secondary)) {
             $authors = array_unique(array_merge($authors, $secondary));
         }
 
@@ -702,12 +704,12 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             $i = 0;
             if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
-                $authorStr = $this->cleanNameDates($author) . ', et al';
+                $authorStr = $this->cleanNameDates($author) . ', et al.';
             } else {
                 foreach ($this->details['authors'] as $author) {
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
-                        $authorStr .= ', and ' .
+                        $authorStr .= ', ' . $this->translate('and') . ' ' .
                             $this->reverseName($this->stripPunctuation($author));
                     } elseif ($i > 0) {
                         $authorStr .= ', ' .

@@ -220,7 +220,8 @@ class Form extends \Zend\Form\Form implements
             $element = [];
 
             $required = ['type', 'name'];
-            $optional = ['required', 'help','value', 'inputType', 'group'];
+            $optional
+                = ['required', 'help','value', 'inputType', 'group', 'placeholder'];
             foreach (array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
@@ -245,8 +246,29 @@ class Form extends \Zend\Form\Form implements
                 }
                 if (isset($el['options'])) {
                     $options = [];
+                    $isSelect = $elementType === 'select';
+                    $placeholder = $element['placeholder'] ?? null;
+
+                    if ($isSelect && $placeholder) {
+                        // Add placeholder option (without value) for
+                        // select element.
+                        $options[] = [
+                            'value' => '',
+                            'label' => $this->translate($placeholder),
+                            'attributes' => [
+                                'selected' => 'selected', 'disabled' => 'disabled'
+                            ]
+                        ];
+                    }
                     foreach ($el['options'] as $option) {
-                        $options[$option] = $this->translate($option);
+                        if ($isSelect) {
+                            $options[] = [
+                                'value' => $option,
+                                'label' => $this->translate($option)
+                            ];
+                        } else {
+                            $options[$option] = $this->translate($option);
+                        }
                     }
                     $element['options'] = $options;
                 } elseif (isset($el['optionGroups'])) {

@@ -142,7 +142,9 @@ class Shibboleth extends AbstractBase
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
                 $value = $request->getServer()->get($shib->$attribute);
-                if ($attribute != 'cat_password') {
+                if ($attribute == 'email') {
+                    $user->updateEmail($value);
+                } elseif ($attribute != 'cat_password') {
                     $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;

@@ -302,8 +302,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
@@ -311,7 +312,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBib($id, true);
     }
@@ -1685,11 +1686,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         $offset = 0;
         $limit = 50;
-        $fields = 'location,status,barcode,callNumber,fixedFields';
-        if ('m' !== ($bib['bibLevel']['code'] ?? null)) {
-            // Fetch varFields for volume information
-            $fields .= ',varFields';
-        }
+        $fields = 'location,status,barcode,callNumber,fixedFields,varFields';
         $statuses = [];
         $sort = 0;
         while (!isset($result) || $limit === $result['total']) {

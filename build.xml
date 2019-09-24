@@ -26,9 +26,10 @@
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_version" value="7.3.1" />
-  <property name="phpdoc_version" value="2.9.0" />
+  <property name="skip_phpdoc" value="false" />
+  <property name="phpdoc_version" value="3.0.0-alpha.4" />
 
-  <property name="version" value="5.1.1" />
+  <property name="version" value="6.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -130,32 +131,45 @@
     <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
+  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <target name="checkLessToSass">
+    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
+  </target>
+
   <!-- PHP API Documentation -->
   <target name="phpdoc">
-    <!-- GET phpDocumentor.phar -->
+    <!-- Skip the whole phpdoc task when disabled -->
     <if>
-      <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+      <not><istrue value="${skip_phpdoc}" /></not>
       <then>
-        <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
-        <chmod mode="0755">
-          <fileset dir="${srcdir}/vendor/bin">
-            <include name="phpDocumentor-${phpdoc_version}.phar" />
+        <!-- GET phpDocumentor.phar -->
+        <if>
+          <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+          <then>
+            <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
+            <chmod mode="0755">
+              <fileset dir="${srcdir}/vendor/bin">
+                <include name="phpDocumentor-${phpdoc_version}.phar" />
+              </fileset>
+            </chmod>
+          </then>
+        </if>
+        <!-- Run phpdoc -->
+        <mkdir dir="${builddir}/apidocs" />
+        <mkdir dir="${builddir}/docs_cache" />
+        <!-- Old embedded version; no longer works correctly...
+        <phpdoc2 title="VuFind API Documentation"
+          pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
+          destdir="${builddir}/apidocs">
+          <fileset dir=".">
+            <include name="module/*/src/**/*.php" />
           </fileset>
-        </chmod>
+        </phpdoc2>
+        -->
+        <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --cache-folder=${builddir}/docs_cache --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
       </then>
     </if>
-    <!-- Run phpdoc -->
-    <mkdir dir="${builddir}/apidocs" />
-    <!-- Old embedded version; no longer works correctly...
-    <phpdoc2 title="VuFind API Documentation"
-      pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
-      destdir="${builddir}/apidocs">
-      <fileset dir=".">
-        <include name="module/*/src/**/*.php" />
-      </fileset>
-    </phpdoc2>
-    -->
-    <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
   </target>
 
   <!-- PHPUnit -->
@@ -235,9 +249,6 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <!-- get dependencies -->
-    <phingcall target="composer" />
-
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
@@ -283,7 +294,9 @@
         <!-- build database -->
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
         <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
@@ -351,6 +364,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>

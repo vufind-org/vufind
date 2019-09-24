@@ -324,6 +324,20 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
+    }
+
+    /**
      * Proxy auth method; a helper function to be called like:
      *   return $this->proxyAuthMethod(METHOD, func_get_args());
      *

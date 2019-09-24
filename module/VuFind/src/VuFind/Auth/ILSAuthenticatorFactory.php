@@ -70,7 +70,8 @@ class ILSAuthenticatorFactory implements FactoryInterface
             // Generate wrapped object:
             $auth = $container->get(\VuFind\Auth\Manager::class);
             $catalog = $container->get(\VuFind\ILS\Connection::class);
-            $wrapped = new $requestedName($auth, $catalog);
+            $emailAuth = $container->get(\VuFind\Auth\EmailAuthenticator::class);
+            $wrapped = new $requestedName($auth, $catalog, $emailAuth);
 
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
