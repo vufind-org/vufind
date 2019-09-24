@@ -185,12 +185,13 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Validate the schedule (return true if we should send a message).
      *
-     * @param \DateTime             $lastTime Last time notification was sent.
-     * @param \VuFind\Db\Row\Search $s        Search row to validate.
+     * @param \DateTime             $todayTime The time the notification job started.
+     * @param \DateTime             $lastTime  Last time notification was sent.
+     * @param \VuFind\Db\Row\Search $s         Search row to validate.
      *
      * @return bool
      */
-    protected function validateSchedule($lastTime, $s)
+    protected function validateSchedule($todayTime, $lastTime, $s)
     {
         $schedule = $s->notification_frequency;
         if (!isset($this->scheduleOptions[$schedule])) {
@@ -328,13 +329,13 @@ class ScheduledSearchController extends AbstractBase
         $lastExecutionDate = $lastTime->format($this->iso8601);
         if ($newestRecordDate < $lastExecutionDate) {
             $this->msg(
-                "      No new results for search {$s->id} ($searchId): "
+                "      No new results for search ($searchId): "
                 . "$newestRecordDate < $lastExecutionDate"
             );
             return false;
         }
         $this->msg(
-            "      New results for search {$s->id} ($searchId): "
+            "      New results for search ($searchId): "
             . "$newestRecordDate >= $lastExecutionDate"
         );
         // Collect records that have been indexed (for the first time)
@@ -400,7 +401,7 @@ class ScheduledSearchController extends AbstractBase
         $this->msg(sprintf('    Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
-            if (!$this->validateSchedule($lastTime, $s)
+            if (!$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
                 || !($searchObject = $this->getObjectForSearch($s))
                 || !($newRecords = $this->getNewRecords($searchObject, $lastTime))
