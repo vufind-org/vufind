@@ -27,7 +27,7 @@
 #
 #   Multiple recipients can be configured using a list:
 #
-#   recipient
+#   recipient:
 #     - name: Recipient 1
 #       email: recipient1@email
 #     - name: Recipient 2
