@@ -194,8 +194,9 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
                     $sectors[$parent['id']] = $sector;
                     $cache->setItem($cacheKey, $sectors);
                 }
-                $parent['sector'] = strstr($sector, 'mus') ? 'mus' : 'lib';
+                $parent['sector'] = $sector;
             }
+            $parent['sector'] = strstr($parent['sector'], 'mus') ? 'mus' : 'lib';
             if ($parent['sector'] !== 'mus') {
                 $libraries[] = $parent['id'];
                 continue;
