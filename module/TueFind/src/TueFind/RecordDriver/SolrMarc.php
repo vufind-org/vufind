@@ -318,10 +318,10 @@ class SolrMarc extends SolrDefault
                 $resultType = 'review';
                 if (!isset($references[$resultType]))
                     $references[$resultType] = [];
-		if ($author)
+                if ($author)
                     $author = $aSubfield->getData() ?? '';
-		else
-		    $author = '';
+                else
+                    $author = '';
                 $references[$resultType][] = ['id' => $referencedId,
                                               'title' => $title,
                                               'author' => $author];
