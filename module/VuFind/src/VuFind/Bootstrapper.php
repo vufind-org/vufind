@@ -354,6 +354,14 @@ class Bootstrapper
                     );
                 }
             }
+
+            // Store last selected language in user account, if applicable:
+            if (($user = $sm->get(\VuFind\Auth\Manager::class)->isLoggedIn())
+                && $user->last_language != $language
+            ) {
+                $user->updateLastLanguage($language);
+            }
+
             // Send key values to view:
             $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
