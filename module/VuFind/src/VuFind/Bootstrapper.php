@@ -372,11 +372,6 @@ class Bootstrapper
      */
     protected function initTheme()
     {
-        // Themes not needed in console mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
