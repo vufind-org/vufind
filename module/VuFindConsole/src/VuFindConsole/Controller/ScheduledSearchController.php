@@ -258,7 +258,7 @@ class ScheduledSearchController extends AbstractBase
         // Start with default language setting; override with user language
         // preference if set and valid.
         $language = $this->mainConfig->Site->language;
-        if ($user->last_language != ''
+        if ($userLang != ''
             && in_array(
                 $userLang,
                 array_keys($this->mainConfig->Languages->toArray())
@@ -348,6 +348,7 @@ class ScheduledSearchController extends AbstractBase
             }
             $newRecords[] = $record;
         }
+        return $newRecords;
     }
 
     /**
@@ -363,12 +364,12 @@ class ScheduledSearchController extends AbstractBase
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->notification_base_url;
-        $searchUrl .= $this->urlHelper(
+        $searchUrl .= $this->urlHelper->__invoke(
             $searchObject->getOptions()->getSearchAction()
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $s->getUnsubscribeSecret($this->hmac, $user);
         $unsubscribeUrl = $s->notification_base_url
-            . $this->urlHelper('myresearch-unsubscribe')
+            . $this->urlHelper->__invoke('myresearch-unsubscribe')
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
