@@ -70,11 +70,11 @@ class ScheduledSearchController extends AbstractBase
      */
     protected $renderer;
 
-     /**
-      * URL helper
-      *
-      * @var \Zend\View\Helper\Url
-      */
+    /**
+     * URL helper
+     *
+     * @var \Zend\View\Helper\Url
+     */
     protected $urlHelper;
 
     /**
