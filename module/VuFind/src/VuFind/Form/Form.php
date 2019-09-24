@@ -515,24 +515,31 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
-     * Return form recipient.
+     * Return form recipient(s).
      *
-     * @return array with name, email or null if not configured
+     * @return array of reciepients, each consisting of an array with
+     * name, email or null if not configured
      */
     public function getRecipient()
     {
-        $recipient = $this->formConfig['recipient'] ?? null;
+        $recipient = $this->formConfig['recipient'] ?? [null];
+        $recipients = isset($recipient['email']) || isset($recipient['name'])
+            ? [$recipient] : $recipient;
 
-        $recipientEmail = $recipient['email']
-            ?? $this->defaultFormConfig['recipient_email'] ?? null;
+        $cnt = $this->defaultFormConfig['max_recipient_cnt'] ?? null;
+        if ($cnt !== null) {
+            $recipients = array_slice($recipients, 0, max(1, (int)$cnt));
+        }
 
-        $recipientName = $recipient['name']
-            ?? $this->defaultFormConfig['recipient_name'] ?? null;
+        foreach ($recipients as &$recipient) {
+            $recipient['email'] = $recipient['email']
+                ?? $this->defaultFormConfig['recipient_email'] ?? null;
 
-        return [
-            $recipientName,
-            $recipientEmail,
-        ];
+            $recipient['name'] = $recipient['name']
+                ?? $this->defaultFormConfig['recipient_name'] ?? null;
+        }
+
+        return $recipients;
     }
 
     /**

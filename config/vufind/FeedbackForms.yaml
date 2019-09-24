@@ -24,6 +24,18 @@
 #                    [Feedback] section)
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
+#
+#   Multiple recipients can be configured using a list:
+#
+#   recipient
+#     - name: Recipient 1
+#       email: recipient1@email
+#     - name: Recipient 2
+#       email: recipient2@email
+#
+#   ...and updating the maximum number of recipients configured in
+#   config.ini > Feedback > max_recipient_cnt
+#
 #   response (string) Reponse after form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields
 #
