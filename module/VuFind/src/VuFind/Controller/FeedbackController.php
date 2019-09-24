@@ -98,14 +98,24 @@ class FeedbackController extends AbstractBase
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
+        $sendSuccess = true;
         foreach ($recipients as $recipient) {
             list($success, $errorMsg) = $this->sendEmail(
                 $recipient['name'], $recipient['email'], $senderName, $senderEmail,
                 $replyToName, $replyToEmail, $emailSubject, $emailMessage
             );
+
+            $sendSuccess = $sendSuccess && $success;
+            if (!$success) {
+                $this->showResponse(
+                    $view, $form, false, $errorMsg
+                );
+            }
         }
 
-        $this->showResponse($view, $form, $success, $errorMsg);
+        if ($sendSuccess) {
+            $this->showResponse($view, $form, true);
+        }
 
         return $view;
     }
