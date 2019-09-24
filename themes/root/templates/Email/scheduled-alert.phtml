@@ -1,0 +1,30 @@
+<?= $this->translate('New results found for search') ?>:
+  <?= empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
+
+<?php if (count($info['filters'])): ?>
+
+<?= $this->translate('history_limits') ?>:
+<?php foreach ($info['filters'] as $format => $filters): ?>
+  <?= $this->translate($format) . ': ' ?>
+<?php $index = 0; ?>
+<?php foreach ($filters as $f): ?>
+<?= ($index++ > 0 ? ' ' . $this->translate($f['operator']) . ' ' : '') . $this->translate($f['value']); ?>
+<?php endforeach; ?>
+
+<?php endforeach; ?>
+<?php endif; ?>
+
+<?= $this->translate('Link to full results') ?>:
+<?= $info['url'] ?>
+
+
+
+<?= $info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
+
+<?php foreach ($records as $result): ?>
+<?= $this->record($result)->getSearchResult('email') . PHP_EOL; ?>
+<?php endforeach; ?>
+
+
+<?= $this->translate('unsubscribe_description') ?>:
+<?= $info['unsubscribeUrl'] ?>
