@@ -5,8 +5,12 @@
   $this->layout()->breadcrumbs = '<li class="active">Error</li>';
 ?>
 <div class="alert alert-danger">
-  <p><?=$this->transEsc('An error has occurred')?></p>
-  <p><?=$this->transEsc($this->message)?></p>
+  <?php if ($this->exception instanceof \VuFind\Exception\RecordMissing): ?>
+    <p><?=$this->translate('record_not_found_description_html')?></p>
+  <?php else: ?>
+    <p><?=$this->transEsc('An error has occurred')?></p>
+    <p><?=$this->transEsc($this->message)?></p>
+  <?php endif; ?>
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
     <br/>
