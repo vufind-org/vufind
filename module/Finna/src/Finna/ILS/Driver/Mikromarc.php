@@ -152,7 +152,11 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'everything desc',
             ];
         }
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        $functionConfig = $this->config[$function] ?? false;
+        if ($functionConfig && 'onlinePayment' === $function) {
+            $functionConfig['exactBalanceRequired'] = true;
+        }
+        return $functionConfig;
     }
 
     /**

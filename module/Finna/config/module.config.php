@@ -489,6 +489,7 @@ $config = [
             ],
             'ils_driver' => [
                 'factories' => [
+                    'Finna\ILS\Driver\Alma' => 'VuFind\ILS\Driver\AlmaFactory',
                     'Finna\ILS\Driver\AxiellWebServices' => 'Finna\ILS\Driver\AxiellWebServicesFactory',
                     'Finna\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',
                     'Finna\ILS\Driver\Gemini' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
@@ -506,6 +507,7 @@ $config = [
                     // TOOD: remove the following line when KohaRest driver is available upstream:
                     'koharest' => 'Finna\ILS\Driver\KohaRest',
 
+                    'VuFind\ILS\Driver\Alma' => 'Finna\ILS\Driver\Alma',
                     'VuFind\ILS\Driver\Demo' => 'Finna\ILS\Driver\Demo',
                     'VuFind\ILS\Driver\KohaRest' => 'Finna\ILS\Driver\KohaRest',
                     'VuFind\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackend',

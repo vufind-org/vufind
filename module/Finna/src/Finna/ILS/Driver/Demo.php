@@ -61,8 +61,11 @@ class Demo extends \VuFind\ILS\Driver\Demo
     public function getConfig($function, $params = null)
     {
         if ($function == 'onlinePayment') {
-            return isset($this->config['OnlinePayment'])
-                ? $this->config['OnlinePayment'] : [];
+            $functionConfig = $this->config['OnlinePayment'] ?? [];
+            if ($functionConfig) {
+                $functionConfig['exactBalanceRequired'] = true;
+            }
+            return $functionConfig;
         }
         if ('getPasswordRecoveryToken' === $function
             || 'recoverPassword' === $function
