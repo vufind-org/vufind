@@ -184,6 +184,9 @@ $config = [
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatrecordController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
+        ],
         'aliases' => [
             'AJAX' => 'VuFind\Controller\AjaxController',
             'ajax' => 'VuFind\Controller\AjaxController',
@@ -304,6 +307,9 @@ $config = [
             'VuFind\Controller\Plugin\ResultScroller' => 'VuFind\Controller\Plugin\ResultScrollerFactory',
             'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\FlashMessengerFactory',
+        ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',

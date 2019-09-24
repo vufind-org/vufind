@@ -218,6 +218,7 @@ CREATE TABLE `user` (
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
   `last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `auth_method` varchar(50) DEFAULT NULL,
+  `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cat_id` (`cat_id`)

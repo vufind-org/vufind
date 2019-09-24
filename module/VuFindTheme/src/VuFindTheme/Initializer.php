@@ -352,10 +352,11 @@ class Initializer
                 $resources->setFavicon($currentThemeInfo['favicon']);
             }
         }
-        /** @var TemplatePathStack $resolver */
+
+        // Inject the path stack generated above into the resolver:
         $resolver = $this->serviceManager->get(TemplatePathStack::class);
-        // Inject the path stack generated above into the view resolver:
         $resolver->addPaths($templatePathStack);
+
         // Add theme specific language files for translation
         $this->updateTranslator($themes);
     }

@@ -332,7 +332,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      *
-     * @see self::reduceQueryGroup()
+     * @see \VuFindSearch\Backend\Solr\QueryBuilder::reduceQueryGroup()
      */
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
