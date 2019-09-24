@@ -2078,6 +2078,43 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Unsubscribe a scheduled alert for a saved search.
+     *
+     * @return mixed
+     */
+    public function unsubscribeAction()
+    {
+        $id = $this->params()->fromQuery('id', false);
+        $key = $this->params()->fromQuery('key', false);
+        $type = $this->params()->fromQuery('type', 'alert');
+        if ($id === false || $key === false) {
+            throw new \Exception('Missing parameters.');
+        }
+        $view = $this->createViewModel();
+        if ($this->params()->fromQuery('confirm', false) == 1) {
+            if ($type == 'alert') {
+                $search
+                    = $this->getTable('Search')->select(['id' => $id])->current();
+                if (!$search) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $user = $this->getTable('User')->getById($search->user_id);
+                $secret = $search->getUnsubscribeSecret(
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
+                );
+                if ($key !== $secret) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $search->setSchedule(0);
+            }
+        } else {
+            $view->unsubscribeUrl
+                = $this->getRequest()->getRequestUri() . '&confirm=1';
+        }
+        return $view;
+    }
+
+    /**
      * Get the ILS pagination helper
      *
      * @return PaginationHelper
