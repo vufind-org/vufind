@@ -140,7 +140,8 @@ trait TranslatorAwareTrait
 
         // Did the translation fail to change anything?  If so, use default:
         if (null !== $default && $msg == $str) {
-            $msg = $default;
+            $msg = $default instanceof \VuFind\I18n\TranslatableStringInterface
+                ? $default->getDisplayString() : $default;
         }
 
         // Do we need to perform substitutions?
