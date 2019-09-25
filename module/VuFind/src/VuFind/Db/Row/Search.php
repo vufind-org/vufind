@@ -78,6 +78,6 @@ class Search extends RowGateway
         $this->search_object = is_resource($this->search_object)
             ? stream_get_contents($this->search_object)
             : $this->search_object;
-        parent::save();
+        return parent::save();
     }
 }
