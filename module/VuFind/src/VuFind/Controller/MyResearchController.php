@@ -2106,6 +2106,7 @@ class MyResearchController extends AbstractBase
                     throw new \Exception('Invalid parameters.');
                 }
                 $search->setSchedule(0);
+                $view->success = true;
             }
         } else {
             $view->unsubscribeUrl
