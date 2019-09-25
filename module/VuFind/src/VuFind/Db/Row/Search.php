@@ -86,11 +86,11 @@ class Search extends RowGateway
     /**
      * Set last executed time for scheduled alert.
      *
-     * @param \DateTime $time Time.
+     * @param string $time Time.
      *
      * @return mixed
      */
-    public function setLastExecuted(\DateTime $time)
+    public function setLastExecuted($time)
     {
         $this->last_notification_sent = $time;
         return $this->save();
