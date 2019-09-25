@@ -526,11 +526,6 @@ class Form extends \Zend\Form\Form implements
         $recipients = isset($recipient['email']) || isset($recipient['name'])
             ? [$recipient] : $recipient;
 
-        $cnt = $this->defaultFormConfig['max_recipient_cnt'] ?? null;
-        if ($cnt !== null) {
-            $recipients = array_slice($recipients, 0, max(1, (int)$cnt));
-        }
-
         foreach ($recipients as &$recipient) {
             $recipient['email'] = $recipient['email']
                 ?? $this->defaultFormConfig['recipient_email'] ?? null;

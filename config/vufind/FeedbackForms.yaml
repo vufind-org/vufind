@@ -33,9 +33,6 @@
 #     - name: Recipient 2
 #       email: recipient2@email
 #
-#   ...and updating the maximum number of recipients configured in
-#   config.ini > Feedback > max_recipient_cnt
-#
 #   response (string) Reponse after form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields
 #
