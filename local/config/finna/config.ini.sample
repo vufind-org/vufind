@@ -553,6 +553,10 @@ email = SHIB_mail
 ;major = HTTP_MAJOR
 ;home_library = HTTP_HOME_LIBRARY
 
+; IdP-specific mappings from an attribute to ILS account identifier. The key is the
+; IdP identifier and value contains the user attribute and ILS driver separated by a
+; colon.
+;idp_to_ils_map[https://testidp.funet.fi/idp/shibboleth] = "SHIB_mail:almasandbox"
 
 ; Shibboleth Suomi.fi is optional.
 ; This section is only needed if Suomi.fi is to be used as an authentication method.

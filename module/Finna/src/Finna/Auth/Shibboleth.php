@@ -108,9 +108,20 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
             }
         }
 
+        $idpParam = $shib->idpserverparam ?? self::DEFAULT_IDPSERVERPARAM;
+        $idp = $this->getServerParam($request, $idpParam);
+        if (!empty($shib->idp_to_ils_map[$idp])) {
+            $parts = explode(':', $shib->idp_to_ils_map[$idp]);
+            $username = $this->getServerParam($request, $parts[0]);
+            $driver = $parts[1] ?? '';
+            if ($username && $driver) {
+                $user->cat_username = "$driver.$username";
+            }
+        }
+
         // Save credentials if applicable:
-        if (!empty($catPassword) && !empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+        if (!empty($user->cat_username)) {
+            $user->saveCredentials($user->cat_username, $catPassword ?? '');
         }
 
         // Store logout URL in session:
