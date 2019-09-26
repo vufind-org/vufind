@@ -155,11 +155,10 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
         }
 
         if (!$this->transactionTable->isTransactionInProgress($transactionId)) {
-            $this->logError(
-                'Error processing payment: '
-                . "transaction $transactionId already processed."
+            $this->logger->info(
+                "Processing payment: transaction $transactionId already processed."
             );
-            return ['success' => false];
+            return ['success' => true];
         }
 
         $driver = $t['driver'];
