@@ -238,13 +238,6 @@ class Bootstrapper
      */
     protected function initTheme()
     {
-        if (!Console::isConsole()) {
-            // Attach template injection configuration to the route event:
-            $this->events->attach(
-                'route', ['FinnaTheme\Initializer', 'configureTemplateInjection']
-            );
-        }
-
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
@@ -252,7 +245,7 @@ class Bootstrapper
             if ($this->isApiRoute($event)) {
                 return;
             }
-            $theme = new \FinnaTheme\Initializer($config, $event);
+            $theme = new \VuFindTheme\Initializer($config, $event);
             $theme->init();
         };
         $this->events->attach('dispatch.error', $callback, 9000);
