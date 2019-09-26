@@ -30,8 +30,8 @@ namespace VuFindTheme;
 use Zend\Config\Config;
 use Zend\Console\Console;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\View\Http\InjectTemplateListener as BaseInjectTemplateListener;
 use Zend\Stdlib\RequestInterface as Request;
+use Zend\View\Resolver\TemplatePathStack;
 
 /**
  * VuFind Theme Initializer
@@ -132,51 +132,6 @@ class Initializer
         // Set up mobile device detector:
         $this->mobile = $this->serviceManager->get(\VuFindTheme\Mobile::class);
         $this->mobile->enable(isset($this->config->mobile_theme));
-    }
-
-    /**
-     * Adjust template injection to a strategy that works better with our themes.
-     * This needs to be called prior to the dispatch event, which is why it is a
-     * separate static method rather than part of the init() method below.
-     *
-     * @param MvcEvent $event Dispatch event object
-     *
-     * @return void
-     */
-    public static function configureTemplateInjection(MvcEvent $event)
-    {
-        // Get access to the shared event manager:
-        $sharedEvents
-            = $event->getApplication()->getEventManager()->getSharedManager();
-
-        // Detach the default listener:
-        $listeners = $sharedEvents->getListeners(
-            ['Zend\Stdlib\DispatchableInterface'], MvcEvent::EVENT_DISPATCH
-        );
-        foreach ($listeners as $priority => $priorityGroup) {
-            foreach ($priorityGroup as $callback) {
-                if ($callback[0] instanceof BaseInjectTemplateListener) {
-                    $injectTemplatePriority = $priority;
-                    $sharedEvents->detach(
-                        $callback, 'Zend\Stdlib\DispatchableInterface'
-                    );
-                    break 2;
-                }
-            }
-        }
-
-        // If we didn't successfully detach a listener above, priority will not be
-        // set.  This is an unexpected situation, so we should throw an exception.
-        if (!isset($injectTemplatePriority)) {
-            throw new \Exception('Unable to detach InjectTemplateListener');
-        }
-
-        // Attach our own listener in place of the one we removed:
-        $injectTemplateListener  = new InjectTemplateListener();
-        $sharedEvents->attach(
-            'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH,
-            [$injectTemplateListener, 'injectTemplate'], $injectTemplatePriority
-        );
     }
 
     /**
@@ -398,16 +353,9 @@ class Initializer
             }
         }
 
-        // Inject the path stack generated above into the view resolver:
-        $resolver = $this->serviceManager->get('ViewResolver');
-        if (!is_a($resolver, 'Zend\View\Resolver\AggregateResolver')) {
-            throw new \Exception('Unexpected resolver: ' . get_class($resolver));
-        }
-        foreach ($resolver as $current) {
-            if (is_a($current, 'Zend\View\Resolver\TemplatePathStack')) {
-                $current->setPaths($templatePathStack);
-            }
-        }
+        // Inject the path stack generated above into the resolver:
+        $resolver = $this->serviceManager->get(TemplatePathStack::class);
+        $resolver->setPaths($templatePathStack);
 
         // Add theme specific language files for translation
         $this->updateTranslator($themes);

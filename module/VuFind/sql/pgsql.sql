@@ -144,6 +144,7 @@ created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 verify_hash varchar(42) NOT NULL DEFAULT '',
 last_login timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 auth_method varchar(50) DEFAULT NULL,
+last_language varchar(30) NOT NULL DEFAULT '',
 PRIMARY KEY (id),
 UNIQUE (username),
 UNIQUE (cat_id)

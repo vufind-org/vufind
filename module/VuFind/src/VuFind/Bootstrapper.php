@@ -354,6 +354,14 @@ class Bootstrapper
                     );
                 }
             }
+
+            // Store last selected language in user account, if applicable:
+            if (($user = $sm->get(\VuFind\Auth\Manager::class)->isLoggedIn())
+                && $user->last_language != $language
+            ) {
+                $user->updateLastLanguage($language);
+            }
+
             // Send key values to view:
             $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
@@ -379,11 +387,6 @@ class Bootstrapper
         if (Console::isConsole()) {
             return;
         }
-
-        // Attach template injection configuration to the route event:
-        $this->events->attach(
-            'route', ['VuFindTheme\Initializer', 'configureTemplateInjection']
-        );
 
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
