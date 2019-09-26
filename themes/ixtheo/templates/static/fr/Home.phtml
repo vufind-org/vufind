@@ -12,6 +12,79 @@
     $panelClass = "panel-default";
     $panelWidth = "col-md-6";
 ?>
+<div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-desktop"></i> Publications en libre accès sur IxTheo <div class="new">nouveau</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>IxTheo offre un soutien pour les revues électroniques en libre accès.<br/>
+                        <a href="/OpenJournals" data-lightbox>Liste des revues en libre accès publiées en collaboration avec IxTheo :</a>
+                    </p>
+                    <br/>
+                    <div class="read-more-target">
+                        <p></p>
+                        <p>
+                            <ul>
+                                <li><a target="_blank" href="https://jeac.de">Journal of Ethics in Antiquity and Christianity (JEAC)</a></li>
+                                <li><a target="_blank" href="https://iapt-cs.org">International Academy of Practical Theology. Conference Series (IAPT.CS)</a></li>
+                                <li><a target="_blank" href="https://vulgata-dialog.ch">Vulgata in Dialogue. A biblical online review</a></li>
+                                <li><a target="_blank" href="http://www.ethik-und-gesellschaft.de">Ethik und Gesellschaft (EuG)</a></li>
+                            </ul>
+                        </p>
+                        <p>
+                            Avec la plate-forme « IxTheo Open Journals », nous offrons aux éditeurs la possibilité d'héberger en permanence leurs revues académiques ou séries monographiques de théologie en libre accès.<br/>
+                            Nous vous permettons non seulement de fonder une nouvelle revue en libre accès, mais également de transformer une revue imprimée en revue électronique en libre accès. Pour ce faire, nous mettons à votre disposition le système de gestion de publications « Open Journal Systems » (OJS) qui permet de gérer la totalité du processus de rédaction, d'édition et de publication de votre revue.
+                        </p>
+                        <p>
+                            La collaboration avec « IxTheo Open Journals » vous offre les avantages suivants :
+                            <ul>
+                                <li>IxTheo / la bibliothèque de l'Université de Tübingen met gratuitement à votre disposition le logiciel OJS, met votre revue (ou votre série) sur pied, offre une formation et un soutien technique continu</li>
+                                <li>Avec OJS, toutes les étapes, de la réception des articles à la publication en passant par l'évaluation (« peer review »), sont gérées par un seul et unique système</li>
+                                <li>La mise en page et le graphisme de votre revue OJS peuvent être personnalisés</li>
+                                <li>Un identifiant pérenne (DOI) est attribué à tous les articles de la revue, ce qui garantit la capacité de les rechercher en permanence</li>
+                                <li>Tous les articles de la revue sont indexés dans la bibliographie IxTheo</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Cette offre est ouverte à tous les éditeurs de revues et de séries monographiques. Si elle vous intéresse, n'hésitez pas à contacter <a href="mailto:ixtheo@ub.uni-tuebingen.de">l'équipe IxTheo</a>.
+                        </p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6" style="text-align:justify;">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-puzzle-piece"></i> Collaboration IxTheo - <a target="_blank" href="https://www.uibk.ac.at/bildi/"><img src="<?=$this->imageLink('bildi.jpg')?>" width="50" alt="BILDI"></a> / <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/"><img src="<?=$this->imageLink('kaldi.png')?>" width="50" alt="KALDI"></a><div class="new">nouveau</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>IxTheo collabore avec la Faculté de Théologique Catholique de l'Université d'Innsbruck (Autriche) dans la production d'une bibliographie spécialisée en exégèse biblique et en droit canonique.</p>
+                    <div class="read-more-target">
+                        <p>La migration complète des métadonnées de la bibliographie <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> dans IxTheo a déjà été effectuée. Plus de 200 000 titres indexés avec soin ont ainsi enrichit notre bibliographie dans le domaine de l'exégèse biblique. Un accès indépendant à la littérature exégétique, géré conjointement par BILDI et IxTheo, sera offert vers la fin de 2019.</p>
+                        <p>La migration des métadonnées de la bibliographie <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a> est également terminée, ajoutant de ce fait plus de 34 000 titres de droit canonique avec une indexation de haut niveau à IxTheo. Un accès indépendant à la littérature sur le droit canonique, géré conjointement par KALDI, DaKaR (bibliographie basée à Münster) et IxTheo, sera offert vers la fin de 2019.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"><hr></div>
 <div class="col-md-6" style="text-align:justify;">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -196,7 +269,8 @@
                         <p>Dans cet exemple, la recherche permet également de trouver les titres liés à la notice d’autorité &laquo;Blutflüssige Frau&raquo; (&laquo;femme avec une perte de sang&raquo;). Les passages synoptiques Mc 5,25-34 de même que Mt 9,20-22 et Lc 8,43-48 sont associés à cette notice.</p>
                         <p>Néanmoins, il est toujours profitable de mener une recherche sur un passage biblique en utilisant &laquo;Tous les champs&raquo; comme facette de recherche, car ce ne sont pas encore tous les titres qui ont été associés aux notices d’autorité des passages bibliques. Par contre, ce type de recherche plus général ne permet pas de tirer profit des caractéristiques uniques de la recherche IxTheo des passages bibliques.</p>
                         <p>Au niveau technique de la mise en œuvre de la recherche IxTheo des passages bibliques, le  passage saisi en tant que chaîne de caractères est converti en une suite de 7 chiffres, avec laquelle il est possible d’effectuer des opérations. Les deux premiers chiffres correspondent au livre de la Bible, les trois chiffres du milieu au chapitre, et les deux derniers au verset. Ainsi, Mc 5,25-34 est converti comme suit : 0200525_0200534. En vue de déterminer la proximité entre le passage saisi et celui du titre trouvé, un score est attribué à cette paire de passages. Vous trouverez plus d’informations (en allemand) à la page suivante:
-                            <a href=https://github.com/ubtue/ixTheo/wiki/Bibelstellensuche---Technischer-%C3%9Cberblick target="_blank"><b>Aper&ccedil;u technique</b></a><p/>
+                            <a href=https://github.com/ubtue/ixTheo/wiki/Bibelstellensuche---Technischer-%C3%9Cberblick target="_blank"><b>Aper&ccedil;u technique</b></a>
+                        <p/>
                     </div>
                 </div>
                 <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
