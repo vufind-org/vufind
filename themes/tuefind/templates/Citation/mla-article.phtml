@@ -1,15 +1,15 @@
-<? if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <? endif; ?>
-&quot;<?=$this->title?><? if ($this->periodAfterTitle): ?>.<? endif ?>&quot;
+<?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>. <?php endif; ?>
+&quot;<?=$this->title?><?php if ($this->periodAfterTitle): ?>.<?php endif ?>&quot;
 <span style="font-style:italic;"><?=$this->escapeHtml($this->journal)?></span><!--Comment needed because otherwise this newline is interpreted as an unwanted space
---><? if (!empty($this->numberAndDate)): ?><?=' ' . $this->escapeHtml($this->numberAndDate)?>
-<? if (!empty($this->pageRange)): ?>
+--><?php if (!empty($this->numberAndDate)): ?><?=' ' . $this->escapeHtml($this->numberAndDate)?><?php endif; ?>
+<?php if (!empty($this->pageRange)): ?>
 <!----><?=$this->yearPageSeparator?>
-<!----><?if ($this->usePagePrefix) echo strstr($this->pageRange, '-') ? 'pp. ' : 'p. '; ?><? endif; ?>
+<!----><?php if ($this->usePagePrefix): echo strstr($this->pageRange, '-') ? 'pp. ' : 'p. '; ?><?php endif; ?>
 <!----><?=$this->escapeHtml($this->pageRange)?>.
-<? endif; ?>
-<? if (isset($this->doi)): ?>doi:<?=$this->escapeHtml($this->doi)?><? endif; ?>
-<? if (!isset($this->doi) && isset($this->url)): ?>
+<?php endif; ?>
+<?php if (isset($this->doi)): ?>doi:<?=$this->escapeHtml($this->doi)?><?php endif; ?>
+<?php if (!isset($this->doi) && isset($this->url)): ?>
     <?=$this->escapeHtml($this->url);?>
     (<?=$this->transEsc("accessed");?>
     <?=$this->localizedDate?>).
-<? endif; ?>
+<?php endif; ?>
