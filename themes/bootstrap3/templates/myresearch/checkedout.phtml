@@ -148,12 +148,12 @@
             <?php endif; ?>
 
             <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $this->translate($ilsDetails['institution_name']))?></strong>
+              <strong><?=$this->transEscLocation($ilsDetails['institution_name'])?></strong>
               <br />
             <?php endif; ?>
 
             <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $this->translate($ilsDetails['borrowingLocation']))?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscLocation($ilsDetails['borrowingLocation'])?>
               <br />
             <?php endif; ?>
 

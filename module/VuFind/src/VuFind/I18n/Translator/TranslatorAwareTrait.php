@@ -122,6 +122,29 @@ trait TranslatorAwareTrait
     }
 
     /**
+     * Translate a location string (or string-castable object)
+     *
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
+     *
+     * @return string
+     */
+    public function translateLocation($target, $tokens = [], $default = null)
+    {
+        if (is_string($target)) {
+            if (null === $default) {
+                $default = $target;
+            }
+            $target = "location_$target";
+        }
+        return $this->translate($target, $tokens, $default);
+    }
+
+    /**
      * Get translation for a string
      *
      * @param string $str     String to translate
