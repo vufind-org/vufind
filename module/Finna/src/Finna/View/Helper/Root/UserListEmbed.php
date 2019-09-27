@@ -103,17 +103,17 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
 
         $opt['limit'] = $opt['limit'] ?? 100;
 
-        $params = $this->results->getParams();
+        $resultsCopy = clone $this->results;
+        $params = $resultsCopy->getParams();
         $params->initFromRequest(new Parameters($opt));
-        $this->results->performAndProcessSearch();
-        $list = $this->results->getListObject();
-
+        $resultsCopy->performAndProcessSearch();
+        $list = $resultsCopy->getListObject();
         $view = $opt['view'] ?? 'list';
 
         return $this->getView()->render(
             'Helpers/userlist.phtml',
             [
-                'results' => $this->results,
+                'results' => $resultsCopy,
                 'params' => $params,
                 'view' => $view,
                 'title' =>
