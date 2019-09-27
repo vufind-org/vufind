@@ -72,9 +72,7 @@ if ($img):
         <?php endif; ?>
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
         <?=$this->record($this->driver)->getPreviews()?>
-        <?php if ($this->layout()->templateDir === 'list'): ?>
-          <?=$this->render('list/list-notes.phtml')?>
-        <?php endif; ?>
+        <?=$this->render('list/list-notes.phtml')?>
 
         <?php /* Saved lists */ ?>
         <div class="savedLists">

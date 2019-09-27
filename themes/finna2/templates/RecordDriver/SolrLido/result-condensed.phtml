@@ -123,9 +123,7 @@
     <?php endif; ?>
     <div class="clearfix visible-xs"></div>
     <?=$this->record($this->driver)->getPreviews()?>
-    <?php if ($this->layout()->templateDir === 'list'): ?>
-      <?=$this->render('list/list-notes.phtml')?>
-    <?php endif; ?>
+    <?=$this->render('list/list-notes.phtml')?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrLido/result-condensed.phtml -->

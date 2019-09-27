@@ -204,11 +204,9 @@
               <strong><?=$this->transEsc("Saved in")?>:</strong>
             </div>
         <?php endif; ?>
-        <?php if ($this->layout()->templateDir === 'list'): ?>
-          <div>
-            <?=$this->render('list/list-notes.phtml')?>
-          </div>
-        <?php endif; ?>
+        <div>
+          <?=$this->render('list/list-notes.phtml')?>
+        </div>
         <div class="clearfix visible-xs"></div>
       </div>
     </div>

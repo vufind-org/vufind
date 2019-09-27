@@ -106,9 +106,7 @@ if ($img):
         <?=$recordHelper->getOnlineUrls('results');?>
         <?=$recordHelper->getPreviews();?>
 
-        <?php if ($this->layout()->templateDir === 'list'): ?>
-          <?=$this->render('list/list-notes.phtml')?>
-        <?php endif; ?>
+        <?=$this->render('list/list-notes.phtml')?>
         <?php /* Hierarchy tree link */ ?>
         <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
           <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>

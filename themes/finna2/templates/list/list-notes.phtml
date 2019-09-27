@@ -1,5 +1,5 @@
 <!-- START of: finna - list/list-notes.phtml -->
-<?php
+<?php if (in_array($this->layout()->templateDir, ['content', 'list', 'search']) && $this->layout()->templateName !== 'results'):
   $list = $this->results->getListObject();
   $notes = $this->driver->getListNotes($list->id); if (!empty($notes)): ?>
   <?php
@@ -17,5 +17,6 @@
         </div>
       </div>
     </div>
+  <?php endif; ?>
 <?php endif; ?>
 <!-- END of: finna - list/list-notes.phtml -->
