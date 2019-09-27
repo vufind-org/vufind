@@ -298,7 +298,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // reason, the first 10 items are called which is the default API behaviour.
         $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
             . $apiPagingParams
-            . '&order_by=library,location,enum_a,enum_b&direction=desc';
+            . '&order_by=library,location,enum_a,enum_b&direction=desc'
+            . '&expand=due_date';
 
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the total number of items returned from the API call and set it to
@@ -310,25 +311,17 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $number = ++$copyCount;
                 $holdingId = (string)$item->holding_data->holding_id;
                 $itemId = (string)$item->item_data->pid;
-                $processType = (string)$item->item_data->process_type;
                 $barcode = (string)$item->item_data->barcode;
-                $requested = ((string)$item->item_data->requested == 'false')
-                             ? false
-                             : true;
-
-                // For some data we need to do additional API calls due to the Alma
-                // API architecture.
-                $duedate = ($requested) ? 'requested' : null;
-                if ($processType === 'LOAN' && !$requested) {
-                    $loanDataPath = '/bibs/' . urlencode($id) . '/holdings/'
-                        . urlencode($holdingId) . '/items/'
-                        . urlencode($itemId) . '/loans';
-                    $loanData = $this->makeRequest($loanDataPath);
-                    $loan = $loanData->item_loan;
-                    $duedate = $this->parseDate((string)$loan->due_date);
+                $status = (string)$item->item_data->base_status[0]
+                    ->attributes()['desc'];
+                $duedate = $item->item_data->due_date
+                    ? $this->parseDate((string)$item->item_data->due_date) : null;
+                if ($duedate && 'Item not in place' === $status) {
+                    $status = 'Checked Out';
                 }
 
                 // Calculate request options if a user is logged-in
+                $addLink = false;
                 if ($patronId) {
                     // Call the request-options API for the logged-in user
                     $requestOptionsPath = '/bibs/' . urlencode($id)
@@ -355,15 +348,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $addLink = in_array('HOLD', $requestTypesArr);
                 }
 
-                if ($item->item_data->public_note != null
-                    && !empty($item->item_data->public_note)
-                ) {
-                    $itemNotes = [(string)$item->item_data->public_note];
-                }
+                $itemNotes = !empty($item->item_data->public_note)
+                    ? [(string)$item->item_data->public_note] : null;
 
-                if ($item->item_data->description != null
-                    && !empty($item->item_data->description)
-                ) {
+                $description = null;
+                if (!empty($item->item_data->description)) {
                     $number = (string)$item->item_data->description;
                     $description = (string)$item->item_data->description;
                 }
@@ -372,8 +361,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'id' => $id,
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
-                    'status' => (string)$item->item_data->base_status[0]
-                        ->attributes()['desc'],
+                    'status' => $status,
                     'location' => (string)$item->item_data->location,
                     'reserve' => 'N',   // TODO: support reserve status
                     'callnumber' => (string)$item->holding_data->call_number,
@@ -1660,9 +1648,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         }
                         $status[] = $item;
                     }
-                } else {
-                    // TODO: Throw error
-                    error_log('no record');
                 }
                 $results[(string)$bib->mms_id] = $status;
             }
