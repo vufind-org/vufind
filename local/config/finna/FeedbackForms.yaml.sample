@@ -30,6 +30,14 @@
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
 #
+#   Multiple recipients can be configured using a list:
+#
+#   recipient:
+#     - name: Recipient 1
+#       email: recipient1@email
+#     - name: Recipient 2
+#       email: recipient2@email
+#
 #   response (string) Reponse after form submit (translation key)
 #
 #   By default, the form renders input fields for sender name and email address with the
@@ -68,6 +76,14 @@
 #     optionGroups (array) List of option groups with keys:
 #       label (string) Group label (translation key)
 #       options (array) List of select values (translation keys)
+#
+#     placeholder (string) Placeholder label (translation key). Used to instruct or force
+#       (when combined with 'required' attribute) the user to make a selection from the
+#       options-list. Only select elements with 'options' are supported.
+#       For text, textarea, email and url elements, a placeholder text can be configured
+#       by adding a HTML-attribute via 'settings', for example:
+#       settings:
+#         - [placeholder, Please select...]
 #
 #-----------------------------------------------------------------------------------
 
