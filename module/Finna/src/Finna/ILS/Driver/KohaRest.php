@@ -991,7 +991,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         }
         $functionConfig = parent::getConfig($function, $params);
         if ($functionConfig && 'onlinePayment' === $function) {
-            $functionConfig['exactBalanceRequired'] = true;
+            if (!isset($functionConfig['exactBalanceRequired'])) {
+                $functionConfig['exactBalanceRequired'] = false;
+            }
         }
         return $functionConfig;
     }
