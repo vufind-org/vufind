@@ -1,8 +1,13 @@
-<div class="panel panel-top panel-inverse tf-panel-home-4">
+<div class="panel panel-top panel-inverse tf-panel-home-3">
     <div class="panel-image" style="background-image: url(<?=$this->imageLink('frontpage/news.jpg') ?>);"></div>
     <div class="panel-content">
         <h4>Aktuelles</h4>
-        <p>Erfahren Sie was es Neues von IxTheo gibt.</p>
-        <a href="#" class="btn btn-inverse" role="button">Weiterlesen</a>
+        <p>
+            <ul>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Neuankündigungen</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Blog-Aggregator</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Twitter-Aggregator</a></li>
+            </ul>
+        </p>
     </div>
 </div>
