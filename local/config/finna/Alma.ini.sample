@@ -2,6 +2,7 @@
 ; The base URL for your Alma instance (example is public demo):
 apiBaseUrl = "https://api-eu.hosted.exlibrisgroup.com/almaws/v1"
 ; An API key configured to allow access to Alma:
+; Sample API test request: https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/code-tables/CountryCodes?apikey=xyz
 apiKey = "your-key-here"
 ; Patron login method to use. The following options are available:
 ; vufind    Use VuFind's user database for authentication -- patrons are retrieved
