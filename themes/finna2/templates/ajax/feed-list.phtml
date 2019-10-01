@@ -17,14 +17,18 @@
           <img src="<?= $item['image']['url']; ?>" alt="" />
         <?php endif; ?>
         <span class="title"><?= $item['title']; ?></span>
-          <?php if (isset($item['xcal']['startDate'])): ?>
-            <p class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date'); ?>"></i><?= $item['xcal']['startDate']; ?><?php if ($item['xcal']['startDate'] !== $item['xcal']['endDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate'] ?><?php endif;?></p>
-            <?php if (isset($item['xcal']['startTime']) && $item['xcal']['endDate'] === $item['xcal']['startDate']): ?>
-              <p class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time'); ?>"></i><?= $item['xcal']['startTime']; ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?></p>
+        <?php if (isset($item['xcal'])): ?>
+          <div class="xcal-fields">
+            <?php if (isset($item['xcal']['startDate'])): ?>
+              <p class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date'); ?>"></i><?= $item['xcal']['startDate']; ?><?php if ($item['xcal']['startDate'] !== $item['xcal']['endDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate'] ?><?php endif;?></p>
+              <?php if (isset($item['xcal']['startTime']) && $item['xcal']['endDate'] === $item['xcal']['startDate']): ?>
+                <p class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time'); ?>"></i><?= $item['xcal']['startTime']; ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?></p>
+              <?php endif; ?>
             <?php endif; ?>
-          <?php endif; ?>
-        <?php if (isset($item['xcal']['location'])): ?>
-          <p class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location'); ?>"></i><?= $item['xcal']['location']; ?></p>
+            <?php if (isset($item['xcal']['location'])): ?>
+              <p class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location'); ?>"></i><?= $item['xcal']['location']; ?></p>
+            <?php endif; ?>
+          </div>
         <?php endif; ?>
         <?php if (isset($item['text'])): ?><span class="text"><?= $item['text']; ?></span><?php endif; ?>
         <?php if (!isset($this->linkText) && isset($item['link'])):?></a><?php endif; ?>
