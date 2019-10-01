@@ -1,0 +1,79 @@
+<!-- START of: finna - content/help_favorites_sv.phtml -->
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-favorites'])?>
+<?php endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="favorites" class="content-section">
+      <h2>Favoritlistor</h2>
+      <p>Du kan spara material som du hittar i Favoritlistor och ordna det i den ordning som du själv föredrar. Med hjälp av favoritlistor är det lätt att hitta materialet när du behöver det. Du kan även dela URL-adressen eller RSS-flödet till din favoritlista med andra. Material i favoritlistor kan även skickas per e-post eller exporteras till referenshanteringsprogrammet Refworks.
+      </p>
+      <p>Du hittar alla favoritlistor på ditt eget konto. Du kan också spara dina sökningar (se <a href="#saving-searches">Spara sökningen</a>).
+      </p>
+      <h3>Skapa favoritlista</h3>
+      <p>Logga först in på Finna och sök det material som du är intresserad av.
+      </p>
+      <p>Lägg till materialet i en favoritlista genom att klicka på knappnålsikonen. <span aria-hidden="true" style="color: #723981;"><i class="fa fa-heart brand-primary"></i></span>
+      </p>
+      <p>Du hittar knappnålsikonen till höger på sidan med sökresultaten.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-1_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>I vyn med materialets detaljerade uppgifter finns knappnålsikonen uppe till vänster. <span aria-hidden="true" style="color: #00a3b5;"><i class="fa fa-heart brand-primary" aria-hidden="true">&nbsp;<span class="hidden-xs"><?=$this->transEsc('Add to favorites')?></span></i></span>
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-2_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Välj i rullgardinsmenyn som öppnas den favoritlista du vill spara det valda materialet i. Alla listor som du har skapat tidigare syns i menyn <strong>Välj en lista</strong> Du kan även skapa en ny favoritlista. Välj då <strong>eller skapa en ny lista</strong>. Om du vill kan du lägga till en beskrivning (som du kan ändra på senare). Tryck sedan på <strong>Spara</strong>.      
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-3_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Ändra favoritlista</h3>
+      <p>Du kan göra ändringar i dina favoritlistor genom att i menyn <strong>Mitt konto</strong> välja <strong>Favoriter</strong>. Du kan välja <strong>Alla favoriter</strong> eller en favoritlista som du själv skapat. Du kan ändra namnet på och beskrivningen av favoritlistorna och lägga till egna beskrivningar till materialet. För att ta bort material från en favoritlista markerar du det material du vill ta bort och väljer sedan <em>Med valda:</em> <strong>Radera</strong>. Genom att markera <strong>Välj sida</strong> kan du välja allt material i en favoritlista.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-4_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Genom att klicka på <strong>Ändra ordning</strong> öppnas ett fönster där du kan ändra materialets ordning genom att dra det till en annan plats. Tryck sedan på <strong>Spara följd</strong>. Materialets nya ordning hittar du i rullgardinsmenyn <strong>Sortera</strong> under rubriken <strong>Egen sortering</strong>.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-5_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Favoritlistans visningsvy och delning</h3>
+      <p>Om du vill granska din favoritlista i visningsvy, välj <strong>Offentlig</strong> synlighet. Då visas ikonen för delning <span aria-hidden="true"><i class="fa fa-public brand-primary"></i></span> efter namnet på listan. Genom att klicka på <strong>Offentlig länk till lista</strong> visas favoritlistan i visningsvy. Om du inte delar länken i visningsvyn har ingen annan än du tillgång till favoritlistan.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-6_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>I visningsvyn kan olika visningssätt väljas. Listan kan sorteras på olika sätt, till exempel efter årtal. Prova även olika alternativ för att visa materialet.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-7_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Du kan dela favoritlistans visningsvy genom att kopiera URL-adressen i adressfältet och dela den till vald mottagare. URL-adressen ändras utifrån visningssätt, därför ska det väljas innan URL-adressen delas med andra. Då syns det visningssätt som du valt som standard även för mottagaren. RSS-flödet finns i den nedre delen av visningsvyn.
+      </p>
+      <h3>Dela favoriter per e-post</h3>
+      <p>Du kan dela länkar till material som du har sparat i favoritlistor direkt per e-post.
+      </p>
+      <ol class="list-numbers">
+        <li>Välj <strong>Mitt konto</strong> &rarr; <strong>Favoriter</strong>.
+        </li>
+        <li>Du kan välja <strong>Alla favoriter</strong> eller en specifik favoritlista.
+        </li>
+        <li>Du kan välja att skicka allt material som visas genom att markera <strong>Välj sida</strong> eller markera ett specifikt material som du vill skicka.
+        </li>
+        <li>Klicka på <strong>Med valda</strong> &rarr; <strong>E-post</strong>. Lägg till mottagarens e-postadress och skriv ett meddelande i fältet som öppnas. Tryck sedan på <strong>Skicka</strong>.
+        </li>
+      </ol>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-8_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+    <div id="saving-searches" class="content-section">
+      <h2>Spara sökningen</h2>
+      <p>Sökningar som du valt att spara hittar du genom att välja <strong>Egna uppgifter</strong> &rarr; <strong>Sparade sökningar</strong>. Knappen <strong>Spara sökningen</strong> hittar du nere på sidan med sökresultat. När du har sparat sökningen kan du även välja att bevaka dina sökkriterier genom att välja sökbevakning. Då får du information om nytt material som motsvarar dina sökkriterier.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-9_sv.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help_favorites_sv.phtml -->

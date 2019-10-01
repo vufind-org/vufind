@@ -13,6 +13,9 @@
         <li class="help-tab <?= $activeTab == "help-syntax" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">
            <?=$this->translate('tabs_help-syntax');?>
         </li>
+        <li class="help-tab <?= $activeTab == "help-favorites" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-favorites'])?>">
+           <?=$this->translate('tabs_help-favorites');?>
+        </li>
     </ul>
     <div class="mobile-main-tabs visible-xs">
         <div class="dropdown visible-xs">
@@ -32,6 +35,9 @@
                 </li>
                 <li role="menuitem" <?php if($activeTab == "help-syntax"): ?> class="active" <?php endif; ?>>
                     <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>"><?=$this->translate('tabs_help-syntax');?></a>
+                </li>
+                <li role="menuitem" <?php if($activeTab == "help-favorites"): ?> class="active" <?php endif; ?>>
+                    <a href="<?=$this->url('content-page', ['page' => 'help-favorites'])?>"><?=$this->translate('tabs_help-favorites');?></a>
                 </li>
             </ul>
         </div>

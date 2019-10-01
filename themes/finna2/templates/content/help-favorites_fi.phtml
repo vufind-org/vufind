@@ -1,0 +1,79 @@
+<!-- START of: finna - content/help_favorites_fi.phtml -->
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-favorites'])?>
+<?php endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="favorites" class="content-section">
+      <h2>Suosikkilistat</h2>
+      <p>Suosikkilistoille voit tallentaa löytämiäsi aineistoja ja järjestellä niitä haluamallasi tavalla. Suosikkilistojen avulla löydät aineiston helposti uudelleen. Jaa suosikkilistasi halutessasi muille URL-osoitteena tai RSS-syötteenä. Voit myös lähettää suosikkilistan aineistoja sähköpostilla tai viedä ne Refworks-tiedonhallintaohjelmaan.
+      </p>
+      <p>Kaikki suosikkilistat löytyvät omalta tililtäsi. Voit tallentaa hyviksi toteamiasi hakuja myös sellaisenaan (ks. <a href="#saving-searches">Haun tallentaminen</a>).
+      </p>
+      <h3>Suosikkilistan luominen</h3>
+      <p>Kirjaudu ensin sisään Finnaan ja etsi haluamaasi aineistoa.
+      </p>
+      <p>Lisää aineistoa suosikkilistalle klikkaamalla nastakuvaketta. <span aria-hidden="true"><i class="fa fa-heart brand-primary"></i></span>
+      </p>
+      <p>Löydät nastakuvakkeen hakutulossivulta aineiston oikealta puolelta.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-1_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Aineiston tarkoista tiedoista nastakuvake löytyy vasemmasta yläkulmasta. <i class="fa fa-heart brand-primary">&nbsp;<span class="hidden-xs"><?=$this->transEsc('Add to favorites')?></span></i>
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-2_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Valitse avautuvasta valikosta suosikkilista, jolle haluat valitun aineiston tallentaa. Kaikki aiemmin luomasi listat näkyvät <strong>Valitse lista</strong> -valikossa. Uuden suosikkilistan luot valitsemalla <strong>tai luo uusi lista</strong>. Lisää halutessasi kuvaus (jota voit myöhemmin muokata). Paina lopuksi <strong>Tallenna</strong>.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-3_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Suosikkilistan muokkaaminen</h3>
+      <p>Muokkaa suosikkilistaa valitsemalla <strong>Oma tili</strong> -valikosta <strong>Suosikit</strong>. Valitse <strong>Kaikki suosikit</strong> tai itse luomasi suosikkilistan. Voit muokata itse luomasi suosikkilistan nimeä, listan kuvausta ja lisätä aineistoille omia kuvauksia. Poista tietty aineisto suosikkilistalta klikkaamalla aineisto aktiiviseksi ja valitse <em>Valituille:</em> <strong>Poista</strong>. Klikkaamalla aktiiviseksi <strong>Valitse sivu</strong> valitset kaikki suosikkilistan aineistot.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-4_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Klikkaamalla <strong>Muokkaa järjestystä</strong>, avautuu ikkuna, jossa voit vetämällä muokata aineistojen järjestystä. Paina lopuksi <strong>Tallenna järjestys</strong>. Muokkaamasi järjestys löytyy <strong>Järjestä</strong>-pudotusvalikosta nimellä <strong>Oma järjestys</strong>.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-5_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Suosikkilistan katselunäkymä ja jakaminen</h3>
+      <p>Jos haluat tarkastella suosikkilistaasi katselunäkymässä, valitse näkyvyydeksi <strong>Julkinen</strong>. Tällöin listan nimen perään ilmestyy jakamiskuvake <span aria-hidden="true"><i class="fa fa-public brand-primary"></i></span>. Klikkaamalla <strong>Listan julkinen linkki</strong>, avautuu suosikkilistasi katselunäkymään. Ellet jaa katselunäkymän linkkiä muille, on suosikkilista edelleen vain omassa käytössäsi.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-6_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Katselunäkymässä voit valita erilaisia esitystapoja. Voit järjestää listaa eri tavoin (esim. vuosiluvun mukaan) ja kokeilla eri vaihtoehtoja aineiston näyttämiseen.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-7_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Voit jakaa suosikkilistasi katselunäkymän jakamalla osoiterivistöllä olevan URL-osoitteen haluamallesi vastaanottajalle. URL-osoite muuttuu esitystavan mukaisesti, joten valitse esitystapa ennen URL-osoitteen jakamista. Näin valitsemasi esitystapa näkyy oletuksena myös vastaanottajalle. RSS-syöte löytyy katselunäkymän alaosasta.
+      </p>
+      <h3>Suosikkien jakaminen sähköpostilla</h3>
+      <p>Jaa suosikkilistoille tallentamiesi aineistojen linkkejä suoraan sähköpostilla.
+      </p>
+      <ol class="list-numbers">
+        <li>Valitse <strong>Oma tili</strong> &rarr; <strong>Suosikit</strong>.
+        </li>
+        <li>Voit valita <strong>Kaikki suosikit</strong> tai yksittäisen suosikkilistan.
+        </li>
+        <li>Voit valita kaikki näkyvät aineistot kohdasta <strong>Valitse sivu</strong> tai valita yksittäin aineistoja lähetettäviksi.
+        </li>
+        <li>Klikkaa <strong>Valituille</strong> &rarr; <strong>Sähköposti</strong>. Lisää vastaanottajan sähköpostiosoite ja kirjoita haluamasi viesti avautuvaan kenttään. Paina lopuksi <strong>Lähetä</strong>.
+        </li>
+      </ol>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-8_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+    <div id="saving-searches" class="content-section">
+      <h2>Haun tallentaminen</h2>
+      <p>Tallenna haluamasi haut hakutulossivun alaosan <strong>Tallenna haku</strong> -painikkeella. Löydät haut valitsemalla <strong>Omat tiedot</strong> &rarr; <strong>Tallennetut haut</strong>. Tallennetulle haulle voit asettaa uutuusvahdin, joka ilmoittaa haun mukaisista uusista aineistoista.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-9_fi.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help_favorites_fi.phtml -->
