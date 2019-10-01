@@ -1602,25 +1602,24 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     // Physical
                     $physicalItems = $record->getFields('AVA');
                     foreach ($physicalItems as $field) {
-                        $avail = $field->getSubfield('e')->getData();
+                        $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = (string)$field->getSubfield('c')
-                            ->getData();
+                        $item['location'] = $this->getMarcSubfield($field, 'c');
                         $status[] = $item;
                     }
                     // Electronic
                     $electronicItems = $record->getFields('AVE');
                     foreach ($electronicItems as $field) {
-                        $avail = $field->getSubfield('e')->getData();
+                        $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $field->getSubfield('m')->getData();
-                        $url = $field->getSubfield('u')->getData();
+                        $item['location'] = $this->getMarcSubfield($field, 'm');
+                        $url = $this->getMarcSubfield($field, 'u');
                         if (preg_match('/^https?:\/\//', $url)) {
                             $item['locationhref'] = $url;
                         }
-                        $item['status'] = $field->getSubfield('s')->getData();
+                        $item['status'] = $this->getMarcSubfield($field, 's');
                         $status[] = $item;
                     }
                     // Digital
@@ -1638,11 +1637,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $item = $tmpl;
                         unset($item['callnumber']);
                         $item['availability'] = true;
-                        $item['location'] = $field->getSubfield('e')->getData();
+                        $item['location'] = $this->getMarcSubfield($field, 'e');
                         if ($deliveryUrl) {
                             $item['locationhref'] = str_replace(
                                 '%%id%%',
-                                $field->getSubfield('b')->getData(),
+                                $this->getMarcSubfield($field, 'b'),
                                 $deliveryUrl
                             );
                         }
@@ -1677,6 +1676,20 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 ? (string)$email->email_address : null;
         }
         return null;
+    }
+
+    /**
+     * Get a MARC subfield from a MARC field
+     *
+     * @param \File_MARC_Subfield $field    MARC Field
+     * @param string              $subfield Subfield code
+     *
+     * @return string
+     */
+    protected function getMarcSubfield($field, $subfield)
+    {
+        $subfield = $field->getSubfield($subfield);
+        return false === $subfield ? '' : $subfield->getData();
     }
 
     // @codingStandardsIgnoreStart
