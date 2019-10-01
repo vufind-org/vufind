@@ -402,11 +402,14 @@
             display: none;
         }
     }
-    ul.article-links li {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 1.05em;
-        word-wrap: break-word;
+    ul.article-links {
+        margin-left: 0px;
+        li {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            word-wrap: break-word;
+        }
     }
 }
 
@@ -423,6 +426,15 @@
             color: @gray-light;
             margin-bottom: 15px;
             display: none;
+        }
+        ul, ol {
+            margin-left: 25px;
+        }
+        ul li {
+            list-style-type: disc;
+        }
+        ol li {
+            list-style-type: decimal;
         }
     }
 }
