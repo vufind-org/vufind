@@ -903,4 +903,33 @@ trait MarcAdvancedTrait
     {
         return $this->getFieldArray('035', 'a', true);
     }
+
+    /**
+     * Return first ISMN found for this record, or false if no one fonund
+     *
+     * @return mixed
+     */
+    public function getCleanISMN()
+    {
+        $fields024 = $this->getMarcRecord()->getFields('024');
+        $ismn = null;
+        foreach ($fields024 as $field) {
+            if ($field->getIndicator(1) == 2) {
+                $ismn = $field->getSubfield('a')->getData();
+                break;
+            }
+        }
+        return $ismn ?? false;
+    }
+
+    /**
+     * Return first national bibliography number found, or false if not found
+     *
+     * @return mixed
+     */
+    public function getCleanNBN()
+    {
+        $nbns = $this->getFieldArray('015', ['a']);
+        return empty($nbns) ? false : $nbns[0];
+    }
 }

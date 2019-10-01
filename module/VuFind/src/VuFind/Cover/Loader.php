@@ -122,6 +122,20 @@ class Loader extends \VuFind\ImageLoader
     protected $upc = null;
 
     /**
+     * User National bibliography number parameter
+     *
+     * @var string
+     */
+    protected $nbn = null;
+
+    /**
+     * User ISMN parameter
+     *
+     * @var string
+     */
+    protected $ismn = null;
+
+    /**
      * User record id number parameter
      *
      * @var string
@@ -232,6 +246,8 @@ class Loader extends \VuFind\ImageLoader
             'upc' => null,
             'recordid' => null,
             'source' => null,
+            'nbn' => null,
+            'ismn' => null,
         ];
     }
 
@@ -254,6 +270,8 @@ class Loader extends \VuFind\ImageLoader
             'issn' => $args[6],
             'oclc' => $args[7],
             'upc' => $args[8],
+            'nbn' => $args[9],
+            'ismn' => $args[10],
         ];
     }
 
@@ -274,10 +292,19 @@ class Loader extends \VuFind\ImageLoader
         } else {
             $this->issn = null;
         }
+
+        if (!empty($settings['ismn'])) {
+            $rawismn = preg_replace('/[^0-9X]/', '', strtoupper($settings['ismn']));
+            $this->ismn = substr($rawismn, 0, 13);
+        } else {
+            $this->ismn = null;
+        }
+
         $this->oclc = $settings['oclc'];
         $this->upc = $settings['upc'];
         $this->recordid = $settings['recordid'];
         $this->source = $settings['source'];
+        $this->nbn = $settings['nbn'];
         $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
         $this->size = $settings['size'];
     }
@@ -289,7 +316,8 @@ class Loader extends \VuFind\ImageLoader
      * contain any or all of these keys: 'isbn' (ISBN), 'size' (requested size),
      * 'type' (content type), 'title' (title of book, for dynamic covers), 'author'
      * (author of book, for dynamic covers), 'callnumber' (unique ID, for dynamic
-     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number).
+     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
+     * 'nbn' (national bibliography number), 'ismn' (ISMN).
      *
      * @return void
      */
@@ -347,6 +375,10 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
         } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
+        } elseif (isset($ids['nbn'])) {
+            return $this->getCachePath($this->size, 'NBN' . $ids['nbn']);
+        } elseif (isset($ids['isn'])) {
+            return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']);
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
@@ -375,6 +407,12 @@ class Loader extends \VuFind\ImageLoader
         }
         if ($this->upc && strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
+        }
+        if ($this->nbn && strlen($this->nbn) > 0) {
+            $ids['nbn'] = $this->nbn;
+        }
+        if ($this->ismn && (strlen($this->ismn) == 12 || strlen($this->ismn) == 8)) {
+            $ids['ismn'] = $this->ismn;
         }
         if ($this->recordid && strlen($this->recordid) > 0) {
             $ids['recordid'] = $this->recordid;
