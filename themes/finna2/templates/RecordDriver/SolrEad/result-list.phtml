@@ -102,7 +102,6 @@ if ($img):
         <?php endif; ?>
 
         <?php $recordHelper = $this->record($this->driver); ?>
-        <?=$recordHelper->renderTemplate('holdings.phtml');?>
         <?=$recordHelper->getOnlineUrls('results');?>
         <?=$recordHelper->getPreviews();?>
 
