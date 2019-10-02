@@ -1,16 +1,20 @@
-<h3><?=$this->transEsc('Electronic')?></h3>
-<table class="table table-striped">
+<div class="table record-holdings-table electronic-holdings">
+  <div class="headers">
+    <span class="holdings-title"><?=$this->transEsc('Electronic')?></span>
+  </div>
   <?php foreach ($this->holdings as $item): ?>
-    <tr>
-      <td class="fullLocation">
+    <div class="holdings-container-heading">
+      <div class="location electronic">
         <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
-          <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
+          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($item['locationhref']))?>" target="_blank">
+            <i class="fa fa-external-link"></i> <?=$locationText?>
+          </a>
         <?php else: ?>
           <?=$locationText?>
         <?php endif; ?>
-      </td>
-      <td class="fullAvailability">
+      </div>
+      <div class="holdings-details electronic">
         <?php if ($item['use_unknown_message'] ?? false): ?>
           <span><?=$this->transEsc('status_unknown_message')?></span>
         <?php elseif ($item['availability']): ?>
@@ -18,7 +22,8 @@
         <?php else: ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php endif; ?>
-      </td>
-    </tr>
+      </div>
+      <div class="clearfix"></div>
+    </div>
   <?php endforeach; ?>
-</table>
+</div>

@@ -130,9 +130,34 @@ finna.record = (function finnaRecord() {
     });
   }
 
+  function augmentOnlineLinksFromHoldings() {
+    $('.electronic-holdings a').each(function handleLink() {
+      var $a = $(this);
+      var href = $a.attr('href');
+      var $recordUrls = $('.recordURLs');
+      var $existing = $recordUrls.find('a[href="' + href + '"]');
+      var desc = $a.text();
+      if ($existing.length === 0 || $existing.text() !== desc) {
+        // No existing link, prepend to the list
+        var newLink = $('.recordURLs .url-template').html();
+        newLink = newLink
+          .replace('HREF', href)
+          .replace('DESC', desc)
+          .replace('SOURCE', $('.record-holdings-table:not(.electronic-holdings) .holdings-title').text());
+
+        var $newLink = $(newLink)
+          .removeClass('url-template')
+          .removeClass('hidden');
+        $newLink.prependTo($recordUrls);
+      }
+    });
+
+  }
+
   function setupHoldingsTab() {
     initHoldingsControls();
     setUpCheckRequest();
+    augmentOnlineLinksFromHoldings();
     finna.layout.initLocationService();
     finna.layout.initJumpMenus($('.holdings-tab'));
     VuFind.lightbox.bind($('.holdings-tab'));

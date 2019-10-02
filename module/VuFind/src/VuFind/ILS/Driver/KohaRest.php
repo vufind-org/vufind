@@ -2182,7 +2182,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array
      */
-    protected function holdError($code, $result)
+    protected function holdError($code, $result = null)
     {
         $message = $result['error'] ?? 'hold_error_fail';
         switch ($message) {

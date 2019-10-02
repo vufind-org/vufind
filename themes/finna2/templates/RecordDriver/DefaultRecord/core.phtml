@@ -91,8 +91,17 @@
     <?php
       $formats = $this->driver->getFormats();
     ?>
-    <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-      <div class="recordURLs local-available-online-record">
+
+    <?php // Include the recordURLs div as a placeholder for URLs from holdings too ?>
+    <div class="recordURLs local-available-online-record">
+      <div class="fulltextField url-template hidden">
+        <a class="fulltext" href="HREF" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>">
+          <i class="fa fa-external-link"></i> DESC
+          <span class="online-source">SOURCE</span>
+        </a>
+        <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
+      </div>
+      <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <div class="truncate-field">
           <?php if (!empty($otherUrls)): ?>
             <?php foreach ($otherUrls as $url): ?>
@@ -118,19 +127,19 @@
             <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
               <?php if (in_array($url['url'], $renderedURLs)) { continue; } ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
-              <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
-              <?php if ($url['source']): ?>
-                <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
-              <?php endif; ?>
+                <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
+                <?php if ($url['source']): ?>
+                  <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
+                <?php endif; ?>
               </div>
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
-      <?php if ($openUrlActive): ?>
-        <?=$openUrl->renderTemplate()?>
+        <?php if ($openUrlActive): ?>
+          <?=$openUrl->renderTemplate()?>
+        <?php endif; ?>
       <?php endif; ?>
-      </div>
-    <?php endif; ?>
+    </div>
 
     <div class="record-core-metadata">
       <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>

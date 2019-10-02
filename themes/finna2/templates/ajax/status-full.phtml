@@ -214,12 +214,17 @@ foreach ($this->statusItems as $item):
     if (!$classes) {
       $classes = ['remove', 'error'];
     }
+    $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']);
+    if ($item['locationhref'] ?? false) {
+      $locationText = '<a href="' . $this->escapeHtmlAttr($item['locationhref']) . '" target="_blank">'
+        . $locationText . '</a>';
+    }
     if (!empty($item['department']) && !$groupBranches) {
-      $location = '<span class="branch">' . $this->transEsc($item['location']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>';
+      $location = '<span class="branch">' . $locationText . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>';
     } elseif ($groupBranches) {
       $location = '<span class="branch">' . ($this->transEsc($item['branch']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>');
     } else {
-      $location = '<span class="branch">' . $this->transEsc($item['location']) . '</span>';
+      $location = '<span class="branch">' . $locationText . '</span>';
     }
   ?>
     <div class="<?=$currentRow % 2 == 0 ? 'even' : 'odd'?> clearfix">

@@ -162,9 +162,11 @@
             float: left;
             padding-left: 15px;
             padding-right: 15px;
-            font-weight: bold;
-            font-size: .92em;
-            text-transform: uppercase;
+            &:not(.electronic) {
+                text-transform: uppercase;
+                font-weight: bold;
+                font-size: .92em;
+            }
             & > i {
                 margin-left: -11px;
             }
@@ -186,8 +188,13 @@
         }
         & .holdings-details {
             padding-right: 15px;
-            font-weight: bold;
-            width: 25%;
+            &.electronic {
+                width: 50%;
+            }
+            &:not(.electronic) {
+                font-weight: bold;
+                width: 25%;
+            }
             float: left;
             .clearfix();
             @media (max-width: @screen-xs-max) {
