@@ -14,7 +14,7 @@
         <?php endforeach ?>
       </select>
     <?php else: ?>
-      <input type="hidden" id="login_target" name="target" value="<?=$this->escapeHtmlAttr($currentTarget)?>">
+      <input type="hidden" id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" value="<?=$this->escapeHtmlAttr($currentTarget)?>">
       <div><strong><?=$this->transEsc("source_$currentTarget", null, $currentTarget)?></strong></div>
     <?php endif; ?>
   </div>
