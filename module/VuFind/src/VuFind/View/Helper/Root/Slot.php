@@ -55,6 +55,10 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         return $this->instance;
     }
 
+    public function get($name) {
+        return isset($this->blocks[$name]) ?: null;
+    }
+
     public function set($name, $value) {
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = trim($value);
