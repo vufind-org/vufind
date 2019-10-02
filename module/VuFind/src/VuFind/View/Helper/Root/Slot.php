@@ -43,7 +43,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     protected $blocks = [];
 
     /**
-     * Get the Slot object.
+     * Get the Slot instance. Create if instance doesn't exist.
      *
      * @return Slot
      */
