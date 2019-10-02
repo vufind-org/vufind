@@ -671,6 +671,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             if (400 === $status) {
                 return null;
             }
+        } elseif ('vufind' !== $loginMethod) {
+            $this->logError("Invalid login method configured: $loginMethod");
+            throw new ILSException('Invalid login method configured');
         }
 
         // Create parameters for API call
