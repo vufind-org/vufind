@@ -55,10 +55,25 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         return $this->instance;
     }
 
+    /**
+     * Get current value of slot. Returns null if unset.
+     *
+     * @param string $name Name of desired block
+     *
+     * @return string|null
+     */
     public function get($name) {
         return isset($this->blocks[$name]) ?: null;
     }
 
+    /**
+     * Set current value of slot but only if unset.
+     *
+     * @param string $name  Name of desired block
+     * @param string $value Value to override if unset
+     *
+     * @return string|null
+     */
     public function set($name, $value) {
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = trim($value);
@@ -66,15 +81,37 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         return $this->blocks[$name];
     }
 
+    /**
+     * Starts a buffer capture to override the value of a block.
+     *
+     * @param string $name Name of desired block
+     *
+     * @return void
+     */
     public function start($name) {
         ob_start();
     }
+
+    /**
+     * End a buffer capture to override the value of a block. Returns slot value.
+     *
+     * @param string $name Name of desired block
+     *
+     * @return string
+     */
     public function end($name) {
         $ret = $this->set($name, ob_get_contents());
         ob_end_clean();
         return $ret;
     }
 
+    /**
+     * Unset any values stored in a slot.
+     *
+     * @param string $name Name of target block
+     *
+     * @return void
+     */
     public function clear($name) {
         unset($this->blocks[$name]);
     }
