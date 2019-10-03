@@ -38,21 +38,19 @@ namespace VuFind\View\Helper\Root;
  */
 class Slot extends \Zend\View\Helper\AbstractHelper
 {
-    protected $instance;
-
     protected $blocks = [];
+
+    protected $stack = [];
 
     /**
      * Get the Slot instance. Create if instance doesn't exist.
      *
      * @return Slot
      */
-    public function __invoke()
+    public function __invoke($name)
     {
-        if (!isset($this->instance)) {
-            $this->instance = new $this();
-        }
-        return $this->instance;
+        $this->stack[] = $name;
+        return $this;
     }
 
     /**
@@ -62,7 +60,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return string|null
      */
-    public function get($name) {
+    public function get() {
+        $name = array_pop($this->stack);
         return isset($this->blocks[$name]) ?: null;
     }
 
@@ -74,7 +73,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return string|null
      */
-    public function set($name, $value) {
+    public function set($value) {
+        $name = array_pop($this->stack);
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = trim($value);
         }
@@ -88,7 +88,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function start($name) {
+    public function start() {
+        array_pop($this->stack);
         ob_start();
     }
 
@@ -99,8 +100,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function end($name) {
-        $ret = $this->set($name, ob_get_contents());
+    public function end() {
+        $ret = $this->set(ob_get_contents());
         ob_end_clean();
         return $ret;
     }
@@ -112,7 +113,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return void
      */
-    public function clear($name) {
+    public function clear() {
+        $name = array_pop($this->stack);
         unset($this->blocks[$name]);
     }
 }
