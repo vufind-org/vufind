@@ -41,16 +41,6 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Available sort options for facets
-     *
-     * @var array
-     */
-    protected $facetSortOptions = [
-        'count' => 'sort_count',
-        'index' => 'sort_alphabetic'
-    ];
-
-    /**
      * Hierarchical facets
      *
      * @var array
