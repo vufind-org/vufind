@@ -55,6 +55,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Get the Slot instance. Create if instance doesn't exist.
      *
+     * @param string $name Name of target block for action
+     *
      * @return Slot
      */
     public function __invoke($name)
@@ -66,8 +68,6 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Get current value of slot. Returns null if unset.
      *
-     * @param string $name Name of desired block
-     *
      * @return string|null
      */
     public function get() {
@@ -78,7 +78,6 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Set current value of slot but only if unset.
      *
-     * @param string $name  Name of desired block
      * @param string $value Value to override if unset
      *
      * @return string|null
@@ -94,8 +93,6 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Starts a buffer capture to override the value of a block.
      *
-     * @param string $name Name of desired block
-     *
      * @return void
      */
     public function start() {
@@ -105,8 +102,6 @@ class Slot extends \Zend\View\Helper\AbstractHelper
 
     /**
      * End a buffer capture to override the value of a block. Returns slot value.
-     *
-     * @param string $name Name of desired block
      *
      * @return string
      */
@@ -118,8 +113,6 @@ class Slot extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Unset any values stored in a slot.
-     *
-     * @param string $name Name of target block
      *
      * @return void
      */
