@@ -295,8 +295,8 @@ abstract class Options implements TranslatorAwareInterface
 
         $id = $this->getSearchClassId();
         $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->FacetSort[$id])) {
-            foreach ($facetSettings->FacetSort[$id]->toArray()
+        if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
+            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
                      as $facet => $sortOptions
             ) {
                 $this->facetSortOptions[$facet] = [];
