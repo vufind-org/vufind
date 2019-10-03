@@ -1,6 +1,6 @@
 <?php
 /**
- * Slot/block view helper
+ * Slot view helper
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Slot/block view helper
+ * Slot view helper
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,8 +38,18 @@ namespace VuFind\View\Helper\Root;
  */
 class Slot extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Storage for strings saved to slots
+     *
+     * @var array
+     */
     protected $blocks = [];
 
+    /**
+     * Call stack to handle nested slots
+     *
+     * @var array
+     */
     protected $stack = [];
 
     /**
