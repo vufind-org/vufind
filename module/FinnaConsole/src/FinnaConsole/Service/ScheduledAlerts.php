@@ -383,13 +383,13 @@ class ScheduledAlerts extends AbstractService
 
             // Set email language
             $language = $this->mainConfig->Site->language;
-            if ($user->finna_language != ''
+            if (!empty($user->last_language)
                 && in_array(
-                    $user->finna_language,
+                    $user->last_language,
                     array_keys($this->mainConfig->Languages->toArray())
                 )
             ) {
-                $language = $user->finna_language;
+                $language = $user->last_language;
             }
 
             $this->serviceManager->get(\Zend\Mvc\I18n\Translator::class)

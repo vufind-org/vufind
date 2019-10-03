@@ -93,19 +93,6 @@ class User extends \VuFind\Db\Row\User
     }
 
     /**
-     * Updated saved language
-     *
-     * @param string $language New language
-     *
-     * @return void
-     */
-    public function updateFinnaLanguage($language)
-    {
-        $this->finna_language = $language;
-        $this->save();
-    }
-
-    /**
      * Add/update a resource in the user's account.
      *
      * @param array                   $resources       The resources to add/update

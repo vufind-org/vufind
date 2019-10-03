@@ -29,7 +29,6 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 --
 -- Additional columns for user
 --
-ALTER TABLE `user` ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
 ALTER TABLE `user` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE `user` ADD COLUMN `finna_last_expiration_reminder` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
 ALTER TABLE `user` ADD COLUMN `finna_nickname` varchar(255) DEFAULT NULL UNIQUE;

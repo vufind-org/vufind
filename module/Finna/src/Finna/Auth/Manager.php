@@ -82,20 +82,4 @@ class Manager extends \VuFind\Auth\Manager
         }
         return false;
     }
-
-    /**
-     * Update common user attributes on login
-     *
-     * @param \VuFind\Db\Row\User $user User object
-     *
-     * @return void
-     */
-    protected function updateUser($user)
-    {
-        parent::updateUser($user);
-        if ($lng = $this->cookieManager->get('language')) {
-            $user->finna_language = $lng;
-            $user->save();
-        }
-    }
 }
