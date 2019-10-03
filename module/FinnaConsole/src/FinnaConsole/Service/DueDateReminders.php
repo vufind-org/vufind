@@ -467,10 +467,10 @@ class DueDateReminders extends AbstractService
         $language = isset($this->currentSiteConfig['Site']['language'])
             ? $this->currentSiteConfig['Site']['language'] : 'fi';
         $validLanguages = array_keys($this->currentSiteConfig['Languages']);
-        if (!empty($user->finna_language)
-            && in_array($user->finna_language, $validLanguages)
+        if (!empty($user->last_language)
+            && in_array($user->last_language, $validLanguages)
         ) {
-            $language = $user->finna_language;
+            $language = $user->last_language;
         }
         $this->translator
             ->addTranslationFile('ExtendedIni', null, 'default', $language)

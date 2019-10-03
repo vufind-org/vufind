@@ -392,10 +392,10 @@ class AccountExpirationReminders extends AbstractService
             ? $this->currentSiteConfig['Site']['language'] : 'fi';
         $validLanguages = array_keys((array)$this->currentSiteConfig['Languages']);
 
-        if (!empty($user->finna_language)
-            && in_array($user->finna_language, $validLanguages)
+        if (!empty($user->last_language)
+            && in_array($user->last_language, $validLanguages)
         ) {
-            $language = $user->finna_language;
+            $language = $user->last_language;
         }
 
         $this->translator
