@@ -361,10 +361,7 @@ class SolrExtensionsListener
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
-        if (isset($searchConfig->Records->deduplication)
-            && $searchConfig->Records->deduplication
-            && !empty($searchConfig->Records->sources)
-        ) {
+        if (!empty($searchConfig->Records->sources)) {
             $params = $event->getParam('params');
             $filters = $params->get('fq');
             if (null !== $filters) {
@@ -376,19 +373,22 @@ class SolrExtensionsListener
                     $sources
                 );
 
-                foreach ($filters as $key => $value) {
-                    if ($value === 'online_boolean:"1"'
-                        || $value === 'free_online_boolean:"1"'
-                    ) {
-                        unset($filters[$key]);
-                        $filter = $value == 'online_boolean:"1"'
-                            ? 'online_str_mv' : 'free_online_str_mv';
-                        $filter .= ':(' . implode(' OR ', $sources) . ')';
-                        $filters[] = $filter;
-                        $params->set('fq', $filters);
-                        break;
+                if (!empty($searchConfig->Records->deduplication)) {
+                    foreach ($filters as $key => $value) {
+                        if ($value === 'online_boolean:"1"'
+                            || $value === 'free_online_boolean:"1"'
+                        ) {
+                            unset($filters[$key]);
+                            $filter = $value == 'online_boolean:"1"'
+                                ? 'online_str_mv' : 'free_online_str_mv';
+                            $filter .= ':(' . implode(' OR ', $sources) . ')';
+                            $filters[] = $filter;
+                            $params->set('fq', $filters);
+                            break;
+                        }
                     }
                 }
+
                 foreach ($filters as $key => $value) {
                     if ($value === 'source_available_str_mv:*') {
                         $buildings = [];
