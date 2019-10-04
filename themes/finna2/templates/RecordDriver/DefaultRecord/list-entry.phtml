@@ -142,7 +142,7 @@
             $hasNote = !empty($listNotes) && strlen($notes) > 0;
           }
         ?>
-          <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Description')?>:</strong></div>
+          <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Note')?>:</strong></div>
           <?php if ($list_id): ?>
             <div class="resource-note markdown">
               <i class="fa fa-pen icon"></i>
@@ -168,7 +168,7 @@
 
         <?php $countNotes = count($this->driver->getListNotes($list_id, $user_id)); ?>
         <?php if ($countNotes > 0 && !$list): ?>
-          <strong><?=$this->transEsc('description_count', ['%%count%%' => $countNotes])?></strong>
+          <strong><?=$this->transEsc('note_count', ['%%count%%' => $countNotes])?></strong>
         <?php endif; ?>
       </div>
       <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
