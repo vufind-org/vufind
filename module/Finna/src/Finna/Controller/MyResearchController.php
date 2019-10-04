@@ -554,43 +554,60 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             foreach ($updateConfig['fields'] as $fieldConfig) {
                 if (is_array($fieldConfig)) {
                     $fields[$fieldConfig['field']] = $fieldConfig;
+                    if (!isset($fields[$fieldConfig['field']]['required'])) {
+                        $fields[$fieldConfig['field']]['required'] = false;
+                    }
                 } else {
                     $parts = explode(':', $fieldConfig);
-                    $label = $parts[0];
                     $field = $parts[1] ?? '';
-                    $type = $parts[2] ?? '';
+                    if (!$field) {
+                        continue;
+                    }
                     $fields[$field] = [
-                        'label' => $label,
-                        'type' => $type,
+                        'label' => $parts[0],
+                        'type' => $parts[2] ?? 'text',
+                        'required' => ($parts[3] ?? '') === 'required'
                     ];
                 }
             }
         }
         if (empty($fields)) {
             $fields = [
-                'address1' => ['label' => 'Address'],
-                'zip' => ['label' => 'Zip'],
-                'city' => ['label' => 'City'],
-                'country' => ['label' => 'Country']
+                'address1'
+                    => ['label' => 'Address', 'type' => 'text', 'required' => true],
+                'zip' => ['label' => 'Zip', 'type' => 'text', 'required' => true],
+                'city' => ['label' => 'City', 'type' => 'text', 'required' => true],
+                'country'
+                    => ['label' => 'Country', 'type' => 'text', 'required' => true]
             ];
 
             if (false === $catalog->checkFunction('updateEmail', compact('patron'))
             ) {
-                $fields['email'] = ['label' => 'Email'];
+                $fields['email']
+                    = ['label' => 'Email', 'type' => 'email', 'required' => true];
             }
             if (false === $catalog->checkFunction('updatePhone', compact('patron'))
             ) {
-                $fields['phone'] = ['label' => 'Phone'];
+                $fields['phone']
+                    = ['label' => 'Phone', 'type' => 'tel', 'required' => true];
             }
             $updateSms
                 = $catalog->checkFunction('updateSmsNumber', compact('patron'));
             if (false === $updateSms) {
-                $fields['sms_number'] = ['label' => 'SMS Number'];
+                $fields['sms_number'] = [
+                    'label' => 'SMS Number', 'type' => 'tel', 'required' => false
+                ];
             }
         }
 
-        $view = $this->createViewModel();
-        $view->fields = $fields;
+        $view = $this->createViewModel(
+            [
+                'fields' => $fields,
+                'profile' => $profile,
+                'config' => $updateConfig,
+            ]
+        );
+        $view->setTemplate('myresearch/change-address-settings');
 
         if ($this->formWasSubmitted('address_change_request')) {
             $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -603,6 +620,19 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                         'ILS driver does not support updating profile information'
                     );
                 }
+
+                foreach ($fields as $fieldName => $fieldConfig) {
+                    if ($fieldConfig['required']
+                        && (!isset($data[$fieldName]) || '' === $data[$fieldName])
+                    ) {
+                        $this->flashMessenger()->addErrorMessage(
+                            $this->translate('This field is required') . ': '
+                            . $this->translate($fieldConfig['label'])
+                        );
+                        return $view;
+                    }
+                }
+
                 try {
                     $result = $catalog->updateAddress($patron, $data);
                     if ($result['success']) {
@@ -633,9 +663,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
         }
 
-        $view->profile = $profile;
-        $view->config = $updateConfig;
-        $view->setTemplate('myresearch/change-address-settings');
         return $view;
     }
 

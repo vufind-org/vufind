@@ -560,15 +560,17 @@ class Alma extends \VuFind\ILS\Driver\Alma
             // Add code tables
             if (!empty($config['fields'])) {
                 foreach ($config['fields'] as &$field) {
-                    list($label, $fieldId) = explode(':', $field);
+                    $parts = explode(':', $field);
+                    $fieldId = $parts[1] ?? '';
                     if ('country' === $fieldId) {
                         $field = [
                             'field' => 'country',
-                            'label' => $label,
+                            'label' => $parts[0],
                             'type' => 'select',
                             'options' => $this->getCodeTableOptions(
                                 'CountryCodes', 'description'
-                            )
+                            ),
+                            'required' => ($parts[3] ?? '') === 'required',
                         ];
                     }
                 }
