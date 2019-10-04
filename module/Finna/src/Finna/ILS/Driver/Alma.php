@@ -318,7 +318,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
             'address3' => 'line3',
             'address4' => 'line4',
             'address5' => 'line5',
-            'zip' => 'zip',
+            'zip' => 'postal_code',
             'city' => 'city',
             'country' => 'country'
         ];
