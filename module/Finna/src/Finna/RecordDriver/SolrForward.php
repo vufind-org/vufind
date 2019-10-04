@@ -48,9 +48,25 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $nonPresenterAuthorRelators = [
-        'A00', 'A03', 'A06', 'A50', 'A99', 'D01', 'D02', 'F01', 'F02',
-        'anm', 'aud', 'chr', 'cnd', 'cst', 'exp', 'lgd', 'oth', 'pmn', 'prn',
-        'sds', 'std', 'trl', 'wst'
+        'a00', 'a01', 'a03', 'a06', 'a50', 'a99',
+        'd01', 'd02', 'd99',
+        'e02', 'e03', 'e04', 'e05', 'e06', 'e08',
+        'f01', 'f02', 'f99',
+        'cmp', 'cph', 'exp', 'fds', 'fmp', 'rce', 'wst', 'oth', 'prn',
+        // These are copied from Marc
+        'act', 'anm', 'ann', 'arr', 'acp', 'ar', 'ard', 'aft', 'aud', 'aui', 'aus',
+        'bjd', 'bpd', 'cll', 'ctg', 'chr', 'cng', 'clb', 'clr', 'cwt', 'com',
+        'cpl', 'cpt', 'cpe', 'ccp', 'cnd', 'cos', 'cot', 'coe', 'cts', 'ctt', 'cte',
+        'ctb', 'crp', 'cst', 'cov', 'cur', 'dnc', 'dtc', 'dto', 'dfd', 'dft', 'dfe',
+        'dln', 'dpc', 'dsr', 'dis', 'drm', 'edt', 'elt', 'egr', 'etr', 'fac',
+        'fld', 'flm', 'frg', 'ilu', 'ill', 'ins', 'itr', 'ivr', 'ldr', 'lsa', 'led',
+        'lil', 'lit', 'lie', 'lel', 'let', 'lee', 'lbt', 'lgd', 'ltg', 'lyr', 'mrb',
+        'mte', 'msd', 'mus', 'nrt', 'opn', 'org', 'pta', 'pth', 'prf', 'pht', 'ptf',
+        'ptt', 'pte', 'prt', 'pop', 'prm', 'pro', 'pmn', 'prd', 'prg', 'pdr', 'pbd',
+        'ppt', 'ren', 'rpt', 'rth', 'rtm', 'res', 'rsp', 'rst', 'rse', 'rpy', 'rsg',
+        'rev', 'rbr', 'sce', 'sad', 'scr', 'scl', 'spy', 'std', 'sng', 'sds', 'spk',
+        'stm', 'str', 'stl', 'sht', 'ths', 'trl', 'tyd', 'tyg', 'vdg', 'voc', 'wde',
+        'wdc', 'wam'
     ];
 
     /**
@@ -66,7 +82,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $presenterAuthorRelators = [
-        'E01', 'E99', 'cmm'
+        'e01', 'e99', 'cmm'
     ];
 
     /**
@@ -83,6 +99,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         'D01' => 'fmp',
         'D02' => 'drt',
         'E01' => 'act',
+        'E04' => 'spk',
         'F01' => 'cng',
         'F02' => 'flm'
     ];
@@ -544,7 +561,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         $result = [];
         foreach ($authors as $author) {
             $isPrimary = isset($author['role'])
-                && in_array($author['role'], $this->primaryAuthorRelators);
+                && in_array(
+                    strtolower($author['role']), $this->primaryAuthorRelators
+                );
             if ($isPrimary === $primary) {
                 $result[] = $author;
             }
@@ -843,7 +862,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         $idx = 0;
         foreach ($xml->HasAgent as $agent) {
             $relator = (string)$agent->Activity;
-            if (!in_array($relator, $relators)) {
+            if (!in_array(strtolower($relator), $relators)) {
                 continue;
             }
             $normalizedRelator = mb_strtoupper($relator, 'UTF-8');
