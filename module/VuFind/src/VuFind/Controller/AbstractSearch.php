@@ -310,6 +310,10 @@ class AbstractSearch extends AbstractBase
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
+
+            foreach ($results->getErrors() as $error) {
+                $this->flashMessenger()->addErrorMessage($error);
+            }
         }
 
         // Special case: If we're in RSS view, we need to render differently:

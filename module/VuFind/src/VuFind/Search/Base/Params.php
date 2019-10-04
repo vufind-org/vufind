@@ -1720,7 +1720,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return VuFindSearch\Query\AbstractQuery
+     * @return \VuFindSearch\Query\AbstractQuery
      */
     public function getQuery()
     {

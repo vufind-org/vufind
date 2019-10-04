@@ -78,6 +78,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Return any errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return [];
+    }
+
+    /**
      * Shuffles records.
      *
      * @return bool
