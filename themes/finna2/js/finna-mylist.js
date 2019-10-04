@@ -316,7 +316,7 @@ finna.myList = (function finnaMyList() {
 
         callback(markdown);
       });
-
+      $('.CodeMirror-code').focus();
       // Prevent clicks within the editor area from bubbling up and closing the editor.
       element.closest('.markdown').unbind('click').click(function onClickEditor() {
         return false;
