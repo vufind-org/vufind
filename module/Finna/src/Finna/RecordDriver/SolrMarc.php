@@ -458,8 +458,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 $partArrangers = [];
                 $partOtherAuthors = [];
                 foreach ($partAuthors as $author) {
-                    if (isset($configArray['Record']['presenter_roles'])) {
-                        foreach ($configArray['Record']['presenter_roles']
+                    if (isset($this->recordConfig['Record']['presenter_roles'])) {
+                        foreach ($this->recordConfig['Record']['presenter_roles']
                             as $role
                         ) {
                             $author = trim($author);
@@ -469,8 +469,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                             }
                         }
                     }
-                    if (isset($configArray['Record']['arranger_roles'])) {
-                        foreach ($configArray['Record']['arranger_roles'] as $role) {
+                    if (isset($this->recordConfig['Record']['arranger_roles'])) {
+                        foreach ($this->recordConfig['Record']['arranger_roles']
+                            as $role
+                        ) {
                             if (substr($author, -strlen($role) - 2) == ", $role") {
                                 $partArrangers[] = $author;
                                 continue 2;
@@ -1489,10 +1491,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     /**
      * Strip trailing spaces and punctuation characters from a string
      *
-     * @param string|string[] $input      String to strip
-     * @param string          $additional Additional punctuation characters
+     * @param string|array $input      String to strip
+     * @param string       $additional Additional punctuation characters
      *
-     * @return string
+     * @return string|array
      */
     protected function stripTrailingPunctuation($input, $additional = '')
     {
