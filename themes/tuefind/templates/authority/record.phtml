@@ -26,18 +26,24 @@
     <div class="col-sm-4">
       <?php
         // Image (partially rendered by JS)
-        $imgUrl = '/wikidataproxy/load?search[]=';
-        $names = $this->driver->getNameAliases();
-        $encodedNames = [];
-        foreach ($names as $name) {
+        $imgUrl = '/wikidataproxy/load';
+        $wikidataId = $this->driver->getWikidataId();
+        if ($wikidataId != null) {
+          $imgUrl .= '?id=' . $wikidataId;
+        } else {
+          $imgUrl .= '?search[]=';
+          $names = $this->driver->getNameAliases();
+          $encodedNames = [];
+          foreach ($names as $name) {
             $encodedNames[] = urlencode($name);
-        }
-        $imgUrl .= implode('&search[]=', $encodedNames);
-        $params = ['birthYear' => $this->driver->getBirthYear(),
-                   'deathYear' => $this->driver->getDeathYear()];
-        foreach ($params as $key => $value) {
-          if ($value)
-            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+          }
+          $imgUrl .= implode('&search[]=', $encodedNames);
+          $params = ['birthYear' => $this->driver->getBirthYear(),
+                     'deathYear' => $this->driver->getDeathYear()];
+          foreach ($params as $key => $value) {
+            if ($value)
+              $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+          }
         }
       ?>
       <!-- onload didn't work, so we use a separate script snippet -->
