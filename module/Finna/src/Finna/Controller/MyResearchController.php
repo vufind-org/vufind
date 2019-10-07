@@ -383,7 +383,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         if ($this->formWasSubmitted('cancelOrdering')) {
-            return $this->redirect()->toRoute('userList', ['id' => $listID]);
+            return $this->redirect()->toRoute('userList', ['id' => $listId]);
         }
         if ($this->formWasSubmitted('saveOrdering')) {
             $orderedList = json_decode(
@@ -430,8 +430,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
             throw $e;
         }
-
-        return $view;
     }
 
     /**
@@ -844,13 +842,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($this->formWasSubmitted('opcode')
             && $this->params()->fromPost('opcode') == 'save_order'
         ) {
+            $listID = $this->params()->fromPost('list_id');
             $this->session->url = empty($listID)
                 ? $this->url()->fromRoute('myresearch-favorites')
                 : $this->url()->fromRoute('userList', ['id' => $listID]);
 
             $orderedList = $this->params()->fromPost('orderedList');
             $table = $this->getTable('UserResource');
-            $listID = $this->params()->fromPost('list_id');
             if (empty($listID) || empty($orderedList)
                 || !$table->saveCustomFavoriteOrder($user->id, $listID, $orderedList)
             ) {
