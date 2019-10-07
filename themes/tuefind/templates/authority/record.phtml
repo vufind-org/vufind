@@ -61,15 +61,18 @@
             $links['VIAF - Virtual International Authority File'] = '//viaf.org/viaf/' . urlencode($viaf);
 
         $lccn = $this->driver->getLCCN();
-        if ($lccn != null) {
+        if ($lccn != null)
             $links['LOC - Library Of Congress (NACO)'] = '//lccn.loc.gov/' . urlencode($lccn);
-        }
 
         $gnd_number = $this->driver->getGNDNumber();
         if ($gnd_number != null) {
             $links['DDB - Deutsche Digitale Bibliothek'] = '//www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
             $links['GND - Gemeinsame Normdatei'] = '//swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
         }
+
+        $wikidata_id = $this->driver->getWikidataId();
+        if ($wikidata_id != null)
+            $links['Wikidata'] = '//www.wikidata.org/wiki/' . urlencode($wikidata_id);
 
         $beacon_references = $this->driver->getBeaconReferences();
         foreach ($beacon_references as $beacon_reference) {

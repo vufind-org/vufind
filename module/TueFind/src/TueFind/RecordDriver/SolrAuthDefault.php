@@ -28,4 +28,8 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
     public function getVIAF() {
         return $this->fields['viaf'] ?? null;
     }
+
+    public function getWikidataId() {
+        return $this->fields['wikidata'] ?? null;
+    }
 }
