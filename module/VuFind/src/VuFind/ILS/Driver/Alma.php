@@ -1598,7 +1598,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $tmpl = [
                     'id' => (string)$bib->mms_id,
                     'source' => 'Solr',
-                    'callnumber' => (string)($bib->isbn ?? ''),
+                    'callnumber' => '',
                     'reserve' => 'N',
                 ];
                 if ($record = $marc->next()) {
@@ -1609,6 +1609,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
                         $item['location'] = $this->getMarcSubfield($field, 'c');
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         $status[] = $item;
                     }
                     // Electronic
@@ -1618,11 +1619,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
                         $item['location'] = $this->getMarcSubfield($field, 'm');
+                        // Using subfield 't' ('Interface name') as callnumber
+                        $item['callnumber'] = $this->getMarcSubfield($field, 't');
                         $url = $this->getMarcSubfield($field, 'u');
                         if (preg_match('/^https?:\/\//', $url)) {
                             $item['locationhref'] = $url;
                         }
                         $item['status'] = $this->getMarcSubfield($field, 's');
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         $status[] = $item;
                     }
                     // Digital
@@ -1641,6 +1645,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         unset($item['callnumber']);
                         $item['availability'] = true;
                         $item['location'] = $this->getMarcSubfield($field, 'e');
+                        // Using subfield 'd' ('Repository Name') as callnumber
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         if ($deliveryUrl) {
                             $item['locationhref'] = str_replace(
                                 '%%id%%',
