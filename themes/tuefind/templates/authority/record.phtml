@@ -47,23 +47,35 @@
       <?php
         // External links
         $links = [];
-        $gnd_number = $this->driver->getGNDNumber();
-        if ($gnd_number != null) {
-            $links['Entity Facts'] = '//www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
-            $links['OGND'] = '//swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
-        }
+
         $orcid = $this->driver->getORCID();
         if ($orcid != null)
-            $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
+            $links['ORCID - Open Researcher and Contributor Identifier'] = '//orcid.org/' . urlencode($orcid);
+
+        $isni = $this->driver->getISNI();
+        if ($isni != null)
+            $links['ISNI - International Standard Name Identifier'] = '//www.isni.org/' . urlencode($isni);
+
         $viaf = $this->driver->getVIAF();
         if ($viaf != null)
-            $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
+            $links['VIAF - Virtual International Authority File'] = '//viaf.org/viaf/' . urlencode($viaf);
+
+        $lccn = $this->driver->getLCCN();
+        if ($lccn != null) {
+            $links['LOC - Library Of Congress (NACO)'] = '//lccn.loc.gov/' . urlencode($lccn);
+        }
+
+        $gnd_number = $this->driver->getGNDNumber();
+        if ($gnd_number != null) {
+            $links['DDB - Deutsche Digitale Bibliothek'] = '//www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
+            $links['GND - Gemeinsame Normdatei'] = '//swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
+        }
 
         $beacon_references = $this->driver->getBeaconReferences();
-        foreach ($beacon_references as $beacon_reference)
-            $links[$beacon_reference['title']] = $beacon_reference['url'];
-
-        ksort($links);
+        foreach ($beacon_references as $beacon_reference) {
+            $beacon_title = 'Archivmaterial (' . $beacon_reference['title'] . ')';
+            $links[$beacon_title] = $beacon_reference['url'];
+        }
       ?>
       <?php if (count($links) > 0): ?>
         <p>
