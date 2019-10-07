@@ -709,7 +709,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
      * @param array $types Inventory types
      *
      * @return array An array of getStatus() return values on success.
-     * @todo         Switch back to core version when callnumber field is fixed.
+     * @todo   Switch back to core version when callnumber field is fixed.
      */
     protected function getStatusesForInventoryTypes($ids, $types)
     {
