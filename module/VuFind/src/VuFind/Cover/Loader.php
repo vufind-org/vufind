@@ -270,8 +270,6 @@ class Loader extends \VuFind\ImageLoader
             'issn' => $args[6],
             'oclc' => $args[7],
             'upc' => $args[8],
-            'nbn' => $args[9],
-            'ismn' => $args[10],
         ];
     }
 
@@ -294,7 +292,7 @@ class Loader extends \VuFind\ImageLoader
         }
 
         if (!empty($settings['ismn'])) {
-            $rawismn = preg_replace('/[^0-9X]/', '', strtoupper($settings['ismn']));
+            $rawismn = preg_replace('/[^M0-9]/', '', strtoupper($settings['ismn']));
             $this->ismn = substr($rawismn, 0, 13);
         } else {
             $this->ismn = null;
