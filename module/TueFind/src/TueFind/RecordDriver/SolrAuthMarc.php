@@ -188,22 +188,4 @@ class SolrAuthMarc extends SolrAuthDefault {
             $names[] = $alias;
         return $names;
     }
-
-    /**
-     * Get professions from 550
-     * @return [['title']] (array to be extended)
-     */
-    public function getProfessions() {
-        $professions = [];
-        $fields = $this->getMarcRecord()->getFields('550');
-        foreach ($fields as $field) {
-            $title_subfield = $field->getSubfield('a');
-            $type_subfield = $field->getSubfield('i');
-            if ($title_subfield !== false && $type_subfield !== false && preg_match('"Beruf"i', $type_subfield->getData())) {
-                $profession = ['title' => $title_subfield->getData()];
-                $professions[] = $profession;
-            }
-        }
-        return $professions;
-    }
 }
