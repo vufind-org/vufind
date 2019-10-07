@@ -83,7 +83,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         'recordCount' => 0,
         'documents' => [],
         'facets' => [],
-        'error' => 'Primo does not accept an empty query'
+        'error' => 'An empty query is not allowed with the current search target'
     ];
 
     /**
