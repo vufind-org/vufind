@@ -83,7 +83,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         'recordCount' => 0,
         'documents' => [],
         'facets' => [],
-        'error' => 'An empty query is not allowed with the current search target'
+        'error' => 'empty_search_disallowed'
     ];
 
     /**
