@@ -79,7 +79,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Set current value of slot but only if unset.
      *
-     * @param string $value Value to override if unset
+     * @param any $value Value to override if unset
      *
      * @return string|null
      */
@@ -87,7 +87,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     {
         $name = array_pop($this->stack);
         if (!isset($this->blocks[$name])) {
-            $this->blocks[$name] = trim($value);
+            $this->blocks[$name] = $value;
         }
         return $this->blocks[$name];
     }
