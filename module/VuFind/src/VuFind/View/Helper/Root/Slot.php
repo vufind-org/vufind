@@ -73,7 +73,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     public function get()
     {
         $name = array_pop($this->stack);
-        return isset($this->blocks[$name]) ?: null;
+        return $this->blocks[$name] ?? null;
     }
 
     /**
