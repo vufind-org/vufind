@@ -26,97 +26,70 @@
     <div class="col-sm-4">
       <?php
         // Image (partially rendered by JS)
-        $imgUrl = '/wikidataproxy/load?search[]=';
-        $names = $this->driver->getNameAliases();
-        $encodedNames = [];
-        foreach ($names as $name) {
+        $imgUrl = '/wikidataproxy/load';
+        $wikidataId = $this->driver->getWikidataId();
+        if ($wikidataId != null) {
+          $imgUrl .= '?id=' . $wikidataId;
+        } else {
+          $imgUrl .= '?search[]=';
+          $names = $this->driver->getNameAliases();
+          $encodedNames = [];
+          foreach ($names as $name) {
             $encodedNames[] = urlencode($name);
-        }
-        $imgUrl .= implode('&search[]=', $encodedNames);
-        $params = ['birthYear' => $this->driver->getBirthYear(),
-                   'deathYear' => $this->driver->getDeathYear()];
-        foreach ($params as $key => $value) {
-          if ($value)
-            $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+          }
+          $imgUrl .= implode('&search[]=', $encodedNames);
+          $params = ['birthYear' => $this->driver->getBirthYear(),
+                     'deathYear' => $this->driver->getDeathYear()];
+          foreach ($params as $key => $value) {
+            if ($value)
+              $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+          }
         }
       ?>
       <!-- onload didn't work, so we use a separate script snippet -->
       <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
       <script>TueFind.GetImagesFromWikidata();</script>
-
-      <?php
-        // External links
-        $links = [];
-        $gnd_number = $this->driver->getGNDNumber();
-        if ($gnd_number != null) {
-            $links['Entity Facts'] = '//www.deutsche-digitale-bibliothek.de/entity/' . urlencode($gnd_number);
-            $links['OGND'] = '//swb.bsz-bw.de/DB=2.104/SET=3/TTL=1/CMD?retrace=0&trm_old=&ACT=SRCHA&IKT=2999&SRT=RLV&MATCFILTER=N&MATCSET=N&NOABS=Y&SHRTST=50&TRM=' . urlencode($gnd_number);
-        }
-        $orcid = $this->driver->getORCID();
-        if ($orcid != null)
-            $links['ORCID'] = '//orcid.org/' . urlencode($orcid);
-        $viaf = $this->driver->getVIAF();
-        if ($viaf != null)
-            $links['VIAF'] = '//viaf.org/viaf/' . urlencode($viaf);
-
-        $beacon_references = $this->driver->getBeaconReferences();
-        foreach ($beacon_references as $beacon_reference)
-            $links[$beacon_reference['title']] = $beacon_reference['url'];
-
-        ksort($links);
-      ?>
-      <?php if (count($links) > 0): ?>
-        <p>
-          External links:
-          <ul>
-            <?php foreach ($links as $label => $url): ?>
-              <li><a target="_blank" href="<?=$url?>"><i class="fa fa-external-link"></i> <?=$label?></a></li>
-            <?php endforeach; ?>
-          </ul>
-        </p>
-      <?php endif; ?>
-
     </div>
   </div>
   <br>
   <?php
-    // the tab logic is taken from non-authority core record driver
+    // TueFind: the tab logic is taken from non-authority core record driver
     // (authority records normally don't have tabs)
-    if (!isset($this->activeTab))
-      $this->activeTab = 'Details';
   ?>
   <?php if (count($this->tabs) > 0): ?>
-    <div class="record-tabs">
-      <ul class="nav nav-tabs">
-        <?php foreach ($this->tabs as $tab => $obj): ?>
-          <?php // add current tab to breadcrumbs if applicable:
-            $desc = $obj->getDescription();
-            $tabName = preg_replace("/\W/", "-", strtolower($tab));
-            $tabClasses = [ 'record-tab', $tabName ];
-            if (0 === strcasecmp($this->activeTab, $tab)) {
-              if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                $tabClasses[] = 'active';
+      <a name="tabnav"></a>
+      <div class="record-tabs">
+        <ul class="nav nav-tabs">
+          <?php foreach ($this->tabs as $tab => $obj): ?>
+            <?php // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabClasses = [ 'record-tab', $tabName ];
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                  $tabClasses[] = 'active';
+                }
+                $tabClasses[] = 'initiallyActive';
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
               }
-              $tabClasses[] = 'initiallyActive';
-              $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-              $activeTabObj = $obj;
-            }
-            if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-            if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
-          ?>
-          <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
-            <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-          </li>
-        <?php endforeach; ?>
-      </ul>
+              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+            ?>
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
+              <?php //TueFind: use url params instead of route due to routing problems ?>
+              <a href="<?=$this->recordLink()->getUrl($this->driver)?>?tab=<?=urlencode($tab)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
 
-      <div class="tab-content">
-        <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-          <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
-            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-          </div>
-        <?php endif; ?>
+        <div class="tab-content">
+          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+            </div>
+          <?php endif; ?>
+        </div>
       </div>
-    </div>
-  <?php endif; ?>
+    <?php endif; ?>
 </div>
