@@ -493,7 +493,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getFacetSortOptions($facet)
+    public function getFacetSortOptions($facet = '*')
     {
         return $this->facetSortOptions[$facet] ?? $this->facetSortOptions['*'] ?? [];
     }
