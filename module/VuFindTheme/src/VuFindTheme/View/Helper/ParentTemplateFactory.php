@@ -1,6 +1,6 @@
 <?php
 /**
- * UserList helper factory.
+ * ParentTemplate helper factory.
  *
  * PHP version 7
  *
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -32,11 +32,11 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use TemplatePathStack;
 
 /**
- * UserList helper factory.
+ * ParentTemplate helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */

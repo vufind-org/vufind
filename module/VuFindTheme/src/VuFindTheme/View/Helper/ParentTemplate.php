@@ -1,6 +1,6 @@
 <?php
 /**
- * Slot view helper
+ * Helper to get path to a parent template (for including)
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFindTheme\View\Helper;
 use Zend\View\Resolver\TemplatePathStack;
 
 /**
- * Slot view helper
+ * Helper to get path to a parent template (for including)
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,9 +52,9 @@ class ParentTemplate extends \Zend\View\Helper\AbstractHelper
      *
      * @param TemplatePathStack $templateStack Inheritance stack of template paths
      */
-    public function __construct($templatePathStack)
+    public function __construct($templateStack)
     {
-        $this->templatePathStack = $templatePathStack;
+        $this->templatePathStack = $templateStack;
     }
 
     /**
@@ -70,7 +70,7 @@ class ParentTemplate extends \Zend\View\Helper\AbstractHelper
     {
         $paths = $this->templatePathStack->getPaths();
         $paths->next();
-        while(
+        while (
             $paths->current() &&
             (!file_exists($paths->current() . $template) ||
             (!empty($targetParent) && !strstr($paths->current(), $targetParent)))

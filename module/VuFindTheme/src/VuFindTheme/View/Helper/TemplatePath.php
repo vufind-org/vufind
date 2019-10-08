@@ -1,6 +1,6 @@
 <?php
 /**
- * Slot view helper
+ * Helper to get path to a template from another theme (for including)
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFindTheme\View\Helper;
 use Zend\View\Resolver\TemplatePathStack;
 
 /**
- * Slot view helper
+ * Helper to get path to a template from another theme (for including)
  *
  * @category VuFind
  * @package  View_Helpers
@@ -66,8 +66,8 @@ class TemplatePath extends \Zend\View\Helper\AbstractHelper
         $paths = $this->templatePathStack->getPaths();
         // split for easy replacement later
         preg_match('/\/themes\/([^\/]+)/', $paths->current(), $matches);
-        list($this->pathPre, $this->pathPost) =
-            explode($matches[1], $paths->current());
+        list($this->pathPre, $this->pathPost)
+            = explode($matches[1], $paths->current());
     }
 
     /**
@@ -82,7 +82,7 @@ class TemplatePath extends \Zend\View\Helper\AbstractHelper
     public function __invoke($template, $targetTheme)
     {
         $path = $this->pathPre . $targetTheme . $this->pathPost . $template;
-        if(!file_exists($path)) {
+        if (!file_exists($path)) {
             throw new \Exception(
                 'template not found in ' . $targetTheme . ': ' . $template
             );
