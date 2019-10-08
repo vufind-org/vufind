@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFindTheme\View\Helper;
 
 use Zend\View\Resolver\TemplatePathStack;
 
@@ -40,14 +40,33 @@ use Zend\View\Resolver\TemplatePathStack;
  */
 class ParentTemplate extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Inheritance stack of template folder paths
+     *
+     * @var TemplatePathStack
+     */
     protected $templatePathStack;
 
+    /**
+     * Constructor
+     *
+     * @param TemplatePathStack $templateStack Inheritance stack of template paths
+     */
     public function __construct($templatePathStack)
     {
         $this->templatePathStack = $templatePathStack;
     }
 
-    public function __invoke($template, $targetParent = null)
+    /**
+     * Returns an template path according the configured theme
+     *
+     * @param string $template    template name like 'footer.phtml'
+     * @param string $targetTheme specific parent to inherit from
+     *
+     * @return string path, null if image not found
+     * @throws Exception if no file exists at path
+     */
+    public function __invoke($template, $targetTheme = null)
     {
         $paths = $this->templatePathStack->getPaths();
         $paths->next();
