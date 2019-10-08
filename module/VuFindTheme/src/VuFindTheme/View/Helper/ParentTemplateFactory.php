@@ -29,7 +29,6 @@ namespace VuFindTheme\View\Helper;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use TemplatePathStack;
 
 /**
  * ParentTemplate helper factory.
