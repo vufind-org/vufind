@@ -75,6 +75,7 @@ $config = [
     'controllers' => [
         'factories' => [
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
+            'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
@@ -88,6 +89,8 @@ $config = [
         'aliases' => [
             'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
+            'Authority' => 'TueFind\Controller\AuthorityController',
+            'authority' => 'TueFind\Controller\AuthorityController',
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
@@ -121,6 +124,7 @@ $config = [
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
@@ -140,6 +144,8 @@ $config = [
             'VuFind\RecordLoader' => 'TueFind\Record\Loader',
             'VuFind\RecordDriverPluginManager' => 'TueFind\RecordDriver\PluginManager',
             'VuFind\RecordDriver\PluginManager' => 'TueFind\RecordDriver\PluginManager',
+            'VuFind\RecordTabPluginManager' => 'TueFind\RecordTab\PluginManager',
+            'VuFind\RecordTab\PluginManager' => 'TueFind\RecordTab\PluginManager',
             'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
@@ -154,7 +160,18 @@ $config = [
         'strategies' => [
             'ViewJsonStrategy',
         ],
-    ]
+    ],
+    'vufind' => [
+        'recorddriver_tabs' => [
+            'VuFind\RecordDriver\SolrAuthMarc' => [
+                'tabs' => [
+                    'ExternalAuthorityDatabases' => 'ExternalAuthorityDatabases',
+                    'Details' => 'StaffViewMARC',
+                ],
+                'defaultTab' => null,
+            ],
+        ],
+    ],
 ];
 
 $recordRoutes = [];

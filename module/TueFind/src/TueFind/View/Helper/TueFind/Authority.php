@@ -89,7 +89,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
         foreach ($professions as $profession) {
             if ($professions_display != '')
                 $professions_display .= '/';
-            $professions_display .= '<span property="hasOccupation">' . $profession['title'] . '</span>';
+            $professions_display .= '<span property="hasOccupation">' . $profession . '</span>';
         }
         return $professions_display;
     }

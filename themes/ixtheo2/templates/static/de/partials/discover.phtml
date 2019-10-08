@@ -1,8 +1,17 @@
-<div class="panel panel-top panel-default tf-panel-home-4">
+<div class="panel panel-top panel-default tf-panel-home-3">
     <div class="panel-image" style="background-image: url(<?=$this->imageLink('frontpage/discover.jpg') ?>);"></div>
     <div class="panel-content">
         <h4>IxTheo entdecken</h4>
-        <p>IxTheo bietet viele Funktionen an. Entdecken Sie was IxTheo anbietet und wie sie es nutzen können.</p>
-        <a href="#" class="btn btn-default" role="button">Mehr erfahren</a>
+        <p>
+            <ul>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Allgemein (Erschließungskonzept)</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Alerting</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Thematische Suche</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Volltextsuche</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Authorensteckbrief (Personalisierte Seiten)</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Nachlässe</a></li>
+                <li><a href="<?=$this->url('content-page', ['page' => '']) ?>">Personalisierungsfunktion in VuFind</a></li>
+            </ul>
+        </p>
     </div>
 </div>
