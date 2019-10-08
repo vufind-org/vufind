@@ -133,7 +133,7 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-<?php if ($paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+<?php if (!empty($holdings['total']) && $paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
   <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
