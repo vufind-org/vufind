@@ -375,7 +375,7 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
         } elseif (isset($ids['nbn'])) {
             return $this->getCachePath($this->size, 'NBN' . $ids['nbn']);
-        } elseif (isset($ids['isn'])) {
+        } elseif (isset($ids['ismn'])) {
             return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']);
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
