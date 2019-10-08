@@ -86,14 +86,17 @@ var TueFind = {
                     // => "Use this file on the web"
                     let artist = request.getResponseHeader('artist');
                     let license = request.getResponseHeader('link');
-                    let title = TueFind.EscapeHTML(artist);
+                    let title = '&copy; ' + TueFind.EscapeHTML(artist);
                     if (license != null) {
                         let pattern = /<([^>]+)>;\s*rel="license";\s*title="([^"]+)"/;
                         let match = pattern.exec(license);
                         title += '[' + match[2] + ' by ' + match[1]+ ']';
                     }
                     title += ', via Wikimedia Commons';
-                    let content = '<img src="'+imageUrl+'" width="200" title="'+title+'">';
+                    let content = '<figure style="max-width: 200px;">';
+                    content += '<img src="' + imageUrl + '" title="' + title + '">';
+                    content += '<figcaption style="text-align: center;">' + title + '</figcaption>';
+                    content += '</figure>';
                     $(placeholder).append(content);
                 }
             });
