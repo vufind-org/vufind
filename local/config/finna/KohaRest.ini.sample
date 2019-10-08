@@ -87,6 +87,8 @@ display_full_call_number = true
 display_title_hold_in_results = true
 ; Whether to use holding records
 use_holding_records = true
+; Whether to use serial subscriptions
+use_serial_subscriptions = true
 ; Whether to group holdings by location in addition to branch. Default is false.
 ;group_by_location = true
 ; Fields to include in notes. Default is "852z".

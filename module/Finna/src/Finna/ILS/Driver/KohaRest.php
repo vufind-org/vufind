@@ -186,7 +186,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $items = [];
         foreach ($ids as $id) {
-            $statuses = $this->getItemStatusesForBiblio($id);
+            $statuses = $this->getItemStatusesForBiblio($id, null, true);
             if (isset($statuses['holdings'])) {
                 $items[] = array_merge(
                     $statuses['holdings'],
@@ -1274,11 +1274,14 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             );
         }
         if (!$this->groupHoldingsByLocation) {
-            $result[] = $this->translateLocation(
+            $loc = $this->translateLocation(
                 $item['location'],
                 !empty($item['location_description'])
                     ? $item['location_description'] : $item['location']
             );
+            if ($loc) {
+                $result[] = $loc;
+            }
         }
         if ((!empty($item['itemcallnumber'])
             || !empty($item['itemcallnumber_display']))
@@ -1389,11 +1392,12 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron information, if available
+     * @param bool   $brief  Whether to return brief information only (getStatus)
      *
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBiblio($id, $patron = null)
+    protected function getItemStatusesForBiblio($id, $patron = null, $brief = false)
     {
         $holdings = [];
         if (!empty($this->config['Holdings']['use_holding_records'])) {
@@ -1411,13 +1415,14 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 throw new ILSException('Problem with Koha REST API.');
             }
 
-            // Turn the holdings into a keyed array
+            // Turn the results into a keyed array
             if (!empty($holdingsResult['holdings'])) {
                 foreach ($holdingsResult['holdings'] as $holding) {
                     $holdings[$holding['holding_id']] = $holding;
                 }
             }
         }
+
         list($code, $result) = $this->makeRequest(
             ['v1', 'availability', 'biblio', 'search'],
             ['biblionumber' => $id],
@@ -1527,6 +1532,65 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $entry += $holdingData;
 
                 $statuses[] = $entry;
+            }
+        }
+
+        // Add serial purchase information
+        if (!$brief
+            && !empty($this->config['Holdings']['use_serial_subscriptions'])
+        ) {
+            list($code, $serialsResult) = $this->makeRequest(
+                ['v1', 'biblios', $id, 'serialsubscriptions'],
+                [],
+                'GET',
+                $patron,
+                true
+            );
+            if (404 === $code) {
+                return [];
+            }
+            if ($code !== 200) {
+                throw new ILSException('Problem with Koha REST API.');
+            }
+
+            // Turn the results into a keyed array
+            if (!empty($serialsResult['subscriptions'])) {
+                foreach ($serialsResult['subscriptions'] as $subscription) {
+                    $i++;
+                    $seqs = [];
+                    foreach ($subscription['issues'] as $issue) {
+                        if (!$issue['received']) {
+                            continue;
+                        }
+                        $seq = $issue['serialseq'];
+                        if ($issue['notes']) {
+                            $seq .= ' ' . $issue['notes'];
+                        }
+                        $seqs[] = $seq;
+                    }
+                    $seqs = array_unique($seqs);
+                    natsort($seqs);
+                    $issues = [];
+                    foreach (array_reverse($seqs) as $seq) {
+                        $issues[] = [
+                            'issue' => $seq
+                        ];
+                    }
+
+                    $entry = $this->createSerialEntry($subscription, $i);
+
+                    foreach ($statuses as &$status) {
+                        if ($status['location'] === $entry['location']
+                            && $status['callnumber'] === $entry['callnumber']
+                        ) {
+                            $status['purchase_history'] = $issues;
+                            continue 2;
+                        }
+                    }
+                    unset($status);
+                    $entry['purchase_history'] = $issues;
+                    $statuses[] = $entry;
+                }
             }
         }
 
@@ -1654,6 +1718,43 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'sort' => $sortKey,
             'branchId' => $branchId,
             'locationId' => $locationId
+        ];
+    }
+
+    /**
+     * Create a serial entry
+     *
+     * @param array $subscription Subscription record
+     * @param int   $sortKey      Sort key
+     *
+     * @return array
+     */
+    protected function createSerialEntry($subscription, $sortKey)
+    {
+        $item = [
+            'homebranch' => $subscription['branchcode'],
+            'holdingbranch' => $subscription['branchcode'],
+            'location' => $subscription['location'],
+            'location_description' => $subscription['location_description'] ?? null,
+            'itemcallnumber' => $subscription['callnumber'] ?? null,
+            'itemcallnumber_display' => $subscription['callnumber'] ?? null,
+        ];
+        $location = $this->getItemLocationName($item);
+        $callnumber = $this->getItemCallNumber($item);
+
+        return [
+            'item_id' => "SERIAL_$sortKey",
+            'location' => $location,
+            'callnumber' => $callnumber,
+            'branchId' => $subscription['branchcode'],
+            'locationId' => $subscription['location'],
+            'requests_placed' => 0,
+            'availability' => false,
+            'use_unknown_message' => true,
+            'sort' => $sortKey,
+            'duedate' => null,
+            'status' => '',
+            'barcode' => null,
         ];
     }
 
