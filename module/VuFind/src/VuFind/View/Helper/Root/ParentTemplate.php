@@ -52,8 +52,9 @@ class ParentTemplate extends \Zend\View\Helper\AbstractHelper
         $paths = $this->templatePathStack->getPaths();
         $paths->next();
         while(
-            !file_exists($paths->current() . $template) ||
-            (!empty($targetParent) && !strstr($paths->current(), $targetParent))
+            $paths->current() &&
+            (!file_exists($paths->current() . $template) ||
+            (!empty($targetParent) && !strstr($paths->current(), $targetParent)))
         ) {
             $paths->next();
         }
