@@ -2,12 +2,12 @@
 /**
  * Redis session handler
  *
- * Note: This relies on Pecl Redis extension
- * (see https://github.com/phpredis/phpredis)
+ * Note: Using phpredis extension (see https://github.com/phpredis/phpredis) is
+ * optional, this class use Credis in standalone mode by default
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019. // ?
+ * Coypright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +25,7 @@
  * @category VuFind2
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
  */
@@ -36,6 +37,7 @@ namespace VuFind\Session;
  * @category VuFind2
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
  */
@@ -44,16 +46,22 @@ class Redis extends AbstractBase
     /**
      * Redis connection
      *
-     * @var \Redis
+     * @var \Credis_Client
      */
     protected $connection = false;
+
+    /**
+     * Redis version
+     *
+     * @var int
+     */
     protected $redisVersion = 3;
 
     /**
      * Get connection to Redis
      *
      * @throws \Exception
-     * @return \Redis
+     * @return \Credis_Client
      */
     public function getConnection()
     {
@@ -71,25 +79,15 @@ class Redis extends AbstractBase
                 ? $this->config->redis_db : 0;
             $this->redisVersion = isset($this->config->redis_version)
                 ? int($this->config->redis_version) : 3;
+            $standalone = isset($this->config->redis_standalone)
+                ? bool($this->config->redis_standalone) : true;
 
-            // Connect to Redis
-            $this->connection = new \Redis();
-            if (!$this->connection->connect($host, $port, $timeout)) {
-                throw new \Exception(
-                    "Could not connect to Redis (host = {$host}, port = {$port})."
-                );
-            }
-            if ($auth) {
-                if (!$this->connection->auth($auth)) {
-                    throw new \exception(
-                        "unable to authenticate auth to redis (host = {$host}, port = {$port})."
-                    );
-                }
-            }
-            if (!$this->connection->select($redis_db)) {
-                throw new \Exception(
-                    "Unable to change Redis database to $redis_db."
-                );
+            // Create Credis client, the connection is established lazily
+            $this->connection = new \Credis_Client(
+                $host, $port, $timeout, '', $redis_db, $auth
+            );
+            if ($standalone) {
+                $this->connection->forceStandalone();
             }
         }
         return $this->connection;
@@ -101,11 +99,12 @@ class Redis extends AbstractBase
      *
      * @param string $sess_id The session ID to read
      *
-     * @return string or FALSE
+     * @return string
      */
     public function read($sess_id)
     {
-        return $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        $session = $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        return $session !== false ? $session : '';
     }
 
     /**
@@ -118,7 +117,7 @@ class Redis extends AbstractBase
      */
     public function write($sess_id, $data)
     {
-        return $this->getConnection()->setEx(
+        return $this->getConnection()->setex(
             "vufind_sessions/{$sess_id}", $this->lifetime, $data
         );
     }
@@ -138,9 +137,9 @@ class Redis extends AbstractBase
 
         // Perform Redis-specific cleanup
         if ($this->redisVersion >= 4) {
-		return $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
+            $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
         } else {
-		return $this->getConnection()->del("vufind_sessions/{$sess_id}");
+            $this->getConnection()->del("vufind_sessions/{$sess_id}");
         }
     }
 }
