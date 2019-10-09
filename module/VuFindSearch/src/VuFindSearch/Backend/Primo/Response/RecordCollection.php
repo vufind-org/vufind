@@ -101,6 +101,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getErrors()
     {
-        return (array)$this->response['error'] ?? [];
+        return (array)($this->response['error'] ?? []);
     }
 }
