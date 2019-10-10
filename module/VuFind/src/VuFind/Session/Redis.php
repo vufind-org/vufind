@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
@@ -34,7 +34,7 @@ namespace VuFind\Session;
 /**
  * Redis session handler
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
@@ -67,16 +67,11 @@ class Redis extends AbstractBase
     {
         if (!$this->connection) {
             // Set defaults if nothing set in config file.
-            $host = isset($this->config->redis_host)
-                ? $this->config->redis_host : 'localhost';
-            $port = isset($this->config->redis_port)
-                ? $this->config->redis_port : 6379;
-            $timeout = isset($this->config->redis_connection_timeout)
-                ? $this->config->redis_connection_timeout : 0.5;
-            $auth = isset($this->config->redis_auth)
-                ? $this->config->redis_auth : false;
-            $redis_db = isset($this->config->redis_db)
-                ? $this->config->redis_db : 0;
+            $host = $this->config->redis_host ?? 'localhost';
+            $port = $this->config->redis_port ?? 6379;
+            $timeout = $this->config->redis_connection_timeout ?? 0.5;
+            $auth = $this->config->redis_auth ?? false;
+            $redis_db = $this->config->redis_db ?? 0;
             $this->redisVersion = isset($this->config->redis_version)
                 ? int($this->config->redis_version) : 3;
             $standalone = isset($this->config->redis_standalone)
