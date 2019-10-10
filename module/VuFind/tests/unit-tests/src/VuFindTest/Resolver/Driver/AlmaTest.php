@@ -87,6 +87,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => 'Available from 2019',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861830000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
             1 => [
@@ -94,6 +96,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861800000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
             2 => [
@@ -101,6 +105,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861790000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
             3 => [
@@ -108,6 +114,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'open',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861770000561&institutionId=561&customerId=550',
+                'notes' => 'notessssssssssss SERVICE LEVEL PUBLIC NOTE',
+                'authentication' => 'collection level auth SERVICE LEVEL AUTHE NOTE',
                 'service_type' => 'getFullTxt',
             ],
             4 => [
@@ -115,6 +123,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861780000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getHolding',
             ],
             5 => [
@@ -122,6 +132,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861820000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
             6 => [
@@ -129,6 +141,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => '',
                 'href' => 'https://www.google.com/search?Testingrft.oclcnum=437189463&q=Fundamental+Data+Compression&rft.archive=9942811800561',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getWebService',
             ],
             7 => [
@@ -136,6 +150,8 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861810000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
         ];
