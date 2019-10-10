@@ -17,6 +17,7 @@
         "php": ">=7.1",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
+        "colinmollenhour/credis": "1.10.1",
         "endroid/qr-code": "3.5.8",
         "ghislainf/zf2-whoops": "dev-master#2649cf7caf400409942ddc3f8fe15b89381fc74e",
         "jasig/phpcas": "1.3.7",
