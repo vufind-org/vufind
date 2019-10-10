@@ -75,6 +75,13 @@ abstract class Results
     protected $results = null;
 
     /**
+     * Any errors reported by the search backend
+     *
+     * @var array
+     */
+    protected $errors = null;
+
+    /**
      * An ID number for saving/retrieving search
      *
      * @var int
@@ -257,6 +264,7 @@ abstract class Results
         $this->resultTotal = 0;
         $this->results = [];
         $this->suggestions = [];
+        $this->errors = [];
 
         // Run the search:
         $this->startQueryTimer();
@@ -373,6 +381,19 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->results;
+    }
+
+    /**
+     * Basic 'getter' for errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        if (null === $this->errors) {
+            $this->performAndProcessSearch();
+        }
+        return $this->errors;
     }
 
     /**

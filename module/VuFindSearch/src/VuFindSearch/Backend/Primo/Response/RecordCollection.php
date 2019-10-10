@@ -93,4 +93,14 @@ class RecordCollection extends AbstractRecordCollection
         $size = $this->response['query']['pageSize'] ?? 0;
         return $page * $size;
     }
+
+    /**
+     * Return any errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return (array)($this->response['error'] ?? []);
+    }
 }
