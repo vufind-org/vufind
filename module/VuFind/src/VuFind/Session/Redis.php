@@ -63,7 +63,7 @@ class Redis extends AbstractBase
      * @throws \Exception
      * @return \Credis_Client
      */
-    public function getConnection()
+    protected function getConnection()
     {
         if (!$this->connection) {
             // Set defaults if nothing set in config file.
