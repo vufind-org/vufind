@@ -502,6 +502,45 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
+     *
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
+     * @todo   Remove this when https://github.com/vufind-org/vufind/pull/1463 is
+     * merged.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getHolding($id, array $patron = null, array $options = [])
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            // If the patron belongs to another source, just pass on an empty array
+            // to indicate that the patron has logged in but is not available for the
+            // current catalog.
+            if ($patron && $this->getSource($patron['cat_username']) !== $source) {
+                $patron = [];
+            }
+            $holdings = $driver->getHolding(
+                $this->getLocalId($id),
+                $this->stripIdPrefixes($patron, $source),
+                $options
+            );
+            return $this->addIdPrefixes($holdings, $source);
+        }
+        return [];
+    }
+
+    /**
      * Get configuration for the ILS driver.  We will load an .ini file named
      * after the driver class and number if it exists;
      * otherwise we will return an empty array.

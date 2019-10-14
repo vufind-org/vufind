@@ -67,6 +67,47 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Get holdings
+     *
+     * Retrieve holdings from ILS driver class and normalize result array if needed.
+     *
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
+     *
+     * @return array Array with holding data
+     * @todo   Remove this when https://github.com/vufind-org/vufind/pull/1463 is
+     * merged.
+     */
+    public function getHolding($id, $patron = null, $options = [])
+    {
+        // Get pagination options for holdings tab
+        $holdsConfig
+            = $this->checkCapability('getConfig', ['Holds', compact('id')])
+            ? $this->driver->getConfig('Holds', compact('id')) : null;
+        $itemLimit = !empty($holdsConfig['itemLimit'])
+            ? $holdsConfig['itemLimit'] : null;
+        $page = $this->request ? $this->request->getQuery('page', 1) : 1;
+        $offset = ($itemLimit && is_numeric($itemLimit))
+            ? ($page * $itemLimit) - $itemLimit
+            : null;
+        $defaultOptions = compact('page', 'itemLimit', 'offset');
+        $finalOptions = $options + $defaultOptions;
+
+        // Get the holdings from the ILS
+        $holdings = $this->__call('getHolding', [$id, $patron, $finalOptions]);
+
+        // Return all the necessary details:
+        return [
+            'total' => $holdings['total'] ?? count($holdings),
+            'holdings' => $holdings['holdings'] ?? $holdings,
+            'electronic_holdings' => $holdings['electronic_holdings'] ?? [],
+            'page' => $finalOptions['page'],
+            'itemLimit' => $finalOptions['itemLimit'],
+        ];
+    }
+
+    /**
      * Check Holds
      *
      * A support method for checkFunction(). This is responsible for checking
