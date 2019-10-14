@@ -197,6 +197,14 @@ ISN:
       - [and, 100]
       - [or, ~]
 
+IxTheoNotation:
+  DismaxFields:
+    - ixtheo_notation_expanded
+  QueryFields:
+    ixtheo_notation_expanded:
+      - [and, 100]
+      - [or, ~]
+
 Subject:
   DismaxFields:
     - topic_unstemmed^150
