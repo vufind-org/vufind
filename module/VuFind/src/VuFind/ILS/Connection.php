@@ -1016,8 +1016,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         // Get pagination options for holdings tab
         $holdsConfig
-            = $this->checkCapability('getConfig', ['Holds', compact('patron')])
-            ? $this->driver->getConfig('Holds') : null;
+            = $this->checkCapability('getConfig', ['Holds', compact('id')])
+            ? $this->driver->getConfig('Holds', compact('id')) : null;
         $itemLimit = !empty($holdsConfig['itemLimit'])
             ? $holdsConfig['itemLimit'] : null;
         $page = $this->request ? $this->request->getQuery('page', 1) : 1;
