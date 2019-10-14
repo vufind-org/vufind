@@ -197,7 +197,7 @@ ISN:
       - [and, 100]
       - [or, ~]
 
-IxTheoNotation:
+IxTheoNotations:
   DismaxFields:
     - ixtheo_notation_expanded
   QueryFields:
