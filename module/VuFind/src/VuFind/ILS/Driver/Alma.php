@@ -320,34 +320,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $status = 'Checked Out';
                 }
 
-                // Calculate request options if a user is logged-in
-                $addLink = false;
-                if ($patronId) {
-                    // Call the request-options API for the logged-in user
-                    $requestOptionsPath = '/bibs/' . urlencode($id)
-                       . '/holdings/' . urlencode($holdingId) . '/items/'
-                       . urlencode($itemId) . '/request-options?user_id='
-                       . urlencode($patronId);
-
-                    // Make the API request
-                    $requestOptions = $this->makeRequest($requestOptionsPath);
-
-                    // Get all possible request types from the API answer
-                    $requestTypes = $requestOptions->xpath(
-                        '/request_options/request_option//type'
-                    );
-
-                    // Add all allowed request types to an array
-                    $requestTypesArr = [];
-                    foreach ($requestTypes as $requestType) {
-                        $requestTypesArr[] = (string)$requestType;
-                    }
-
-                    // If HOLD is an allowed request type, add the link for placing
-                    // a hold
-                    $addLink = in_array('HOLD', $requestTypesArr);
-                }
-
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
 
@@ -372,7 +344,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holding_id' => $holdingId,
-                    'addLink' => $addLink ?? false,
+                    'holdtype' => 'auto',
+                    'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
                     'description' => $description ?? null
                 ];
@@ -398,6 +371,58 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
 
         return $results;
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        $patronId = $patron['id'];
+        $level = $data['level'] ?? 'copy';
+        if ('copy' === $level) {
+            // Call the request-options API for the logged-in user
+            $requestOptionsPath = '/bibs/' . urlencode($id)
+                . '/holdings/' . urlencode($data['holding_id']) . '/items/'
+                . urlencode($data['item_id']) . '/request-options?user_id='
+                . urlencode($patronId);
+
+            // Make the API request
+            $requestOptions = $this->makeRequest($requestOptionsPath);
+        } elseif ('title' === $level) {
+            $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
+            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
+                return false;
+            }
+            // Call the request-options API for the logged-in user
+            $requestOptionsPath = '/bibs/' . urlencode($id)
+                . '/request-options?user_id=' . urlencode($patronId);
+
+            // Make the API request
+            $requestOptions = $this->makeRequest($requestOptionsPath);
+        } else {
+            return false;
+        }
+
+        // Check possible request types from the API answer
+        $requestTypes = $requestOptions->xpath(
+            '/request_options/request_option//type'
+        );
+        foreach ($requestTypes as $requestType) {
+            if ('HOLD' === (string)$requestType) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
