@@ -159,13 +159,13 @@
                 </xsl:for-each>
 
                 <!-- URL -->
-               <xsl:for-each select="//dc:identifier">
-                   <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
-                       <field name="url">
-                           <xsl:value-of select="." />
-                       </field>
-                   </xsl:if>
-               </xsl:for-each>
+                <xsl:for-each select="//dc:identifier">
+                    <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
+                        <field name="url">
+                            <xsl:value-of select="." />
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>
