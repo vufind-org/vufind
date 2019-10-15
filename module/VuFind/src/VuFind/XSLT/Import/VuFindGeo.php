@@ -27,9 +27,6 @@
  */
 namespace VuFind\XSLT\Import;
 
-use DOMDocument;
-use VuFind\Config\Locator as ConfigLocator;
-
 /**
  * XSLT importer support methods for geographic indexing.
  *
