@@ -1058,29 +1058,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $videoUrl = (string)$title->TitleText;
                 $videoSources = [];
                 $sourceType = strtolower(pathinfo($videoUrl, PATHINFO_EXTENSION));
-                foreach ($sourceConfigs as $config) {
-                    if (!in_array($sourceType, $config['sourceTypes'])) {
-                        continue;
-                    }
-                    $src = str_replace(
-                        '{videoname}', $videoUrl, $config['src']
-                    );
-                    $videoSources[] = [
-                        'src' => $src,
-                        'type' => $config['mediaType'],
-                        'priority' => $config['priority']
-                    ];
-                }
-                if (empty($videoSources)) {
-                    continue;
-                }
-
-                usort(
-                    $videoSources,
-                    function ($a, $b) {
-                        return $a['priority'] - $b['priority'];
-                    }
-                );
+                $eventAttrs = $xml->ProductionEvent->ProductionEventType
+                    ->attributes();
 
                 $poster = '';
                 $videoType = 'elokuva';
@@ -1103,9 +1082,49 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     }
                 }
 
-                $eventAttrs = $xml->ProductionEvent->ProductionEventType
-                    ->attributes();
+                // Lets see if this video has a vimeo-id
+                $vimeo = (string)$eventAttrs->{'vimeo-id'};
+                $vimeo_url = $this->recordConfig->Record->vimeo_url;
+                if (!empty($vimeo) && !empty($vimeo_url)) {
+                    $src = str_replace(
+                        '{videoid}', $vimeo, $vimeo_url
+                    );
+                    $videoUrls[] = [
+                        'url' => $src,
+                        'posterUrl' => $poster,
+                        // Include both 'text' and 'desc' for online and normal urls
+                        'text' => $description ?: $videoType,
+                        'desc' => $description ?: $videoType,
+                        'source' => $source,
+                    ];
+                }
+
                 $url = (string)$eventAttrs->{'elokuva-elonet-materiaali-video-url'};
+
+                foreach ($sourceConfigs as $config) {
+                    if (!in_array($sourceType, $config['sourceTypes'])) {
+                        continue;
+                    }
+                    $src = str_replace(
+                        '{videoname}', $videoUrl, $config['src']
+                    );
+                    $videoSources[] = [
+                        'src' => $src,
+                        'type' => $config['mediaType'],
+                        'priority' => $config['priority']
+                    ];
+                }
+
+                if (empty($videoSources)) {
+                    continue;
+                }
+
+                usort(
+                    $videoSources,
+                    function ($a, $b) {
+                        return $a['priority'] - $b['priority'];
+                    }
+                );
 
                 if ($this->urlBlacklisted($url, $description)) {
                     continue;

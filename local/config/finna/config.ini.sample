@@ -1310,6 +1310,9 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ;video_sources[] = "kavi|application/dash+xml|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/manifest.mpd"
 ;video_sources[] = "kavi|application/x-mpegURL|http://elo.salama.tv.funet.fi/vod/_definst_/mp4:{videoname}/playlist.m3u8"
 
+; Source url for Vimeo videos, leave blank or comment out to disable Vimeo videos
+;vimeo_url = "https://vimeo.com/{videoid}"
+
 ; Video poster source configuration keyed by data source. {filename} is replaced with
 ; the actual filename.
 ;poster_sources[kavi] = "http://www.elonet.fi/tenho/media/{filename}"
