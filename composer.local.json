@@ -7,6 +7,9 @@
         "picqer/php-barcode-generator": "0.2.1"
     },
     "scripts": {
-        "phing-install-dependencies": "phing installswaggerui"
+        "phing-install-dependencies": "phing installswaggerui",
+        "create-translation-files": "touch local/languages/finna/fi-datasources.ini; touch local/languages/finna/sv-datasources.ini; touch local/languages/finna/en-gb-datasources.ini",
+        "post-install-cmd": ["@phing-install-dependencies", "@create-translation-files"],
+        "post-update-cmd": ["@phing-install-dependencies", "@create-translation-files"]
     }
 }
