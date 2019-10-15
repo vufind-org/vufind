@@ -525,8 +525,12 @@ finna.imagePaginator = (function imagePaginator() {
   FinnaPaginator.prototype.changeTriggerImage = function changeTriggerImage(imagePopup) {
     var _ = this;
     var img = _.trigger.find('img');
-    img.attr('data-src', imagePopup.attr('href')).css('opacity', 0.5);
+    img.attr('data-src', imagePopup.attr('href'));
     img.attr('alt', imagePopup.find('img').attr('alt'));
+
+    if (_.openImageIndex !== imagePopup.attr('index')) {
+      img.css('opacity', 0.5);
+    }
 
     function setImageProperties(image) {
       $(image).css('opacity', '');
@@ -564,7 +568,7 @@ finna.imagePaginator = (function imagePaginator() {
     _.imageDetail.html(imagePopup.data('description'));
 
     if (_.isList) {
-      img.unveil(200, function tryMasonry(){
+      img.unveil(200, function tryMasonry() {
         $(this).load(function handleImage() {
           setImageProperties(this);
           if (finna.layout.getMasonryState()) {
