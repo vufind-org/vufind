@@ -59,6 +59,8 @@ class VuFindGeo
     /**
      * Return true if the coordinate set is valid for inclusion in VuFind's index.
      *
+     * @param array $coords Output of parseCoverage() in need of validation
+     *
      * @return bool
      */
     protected static function validateCoverageCoordinates($coords)
