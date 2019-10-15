@@ -98,10 +98,13 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\InlineScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\Slot::class =>
+                    View\Helper\PipelineInjectorFactory::class,
             ],
             'aliases' => [
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
+                'slot' => View\Helper\Slot::class,
                 \Zend\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
                 \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
                 \Zend\View\Helper\InlineScript::class =>
