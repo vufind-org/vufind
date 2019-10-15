@@ -85,7 +85,7 @@
                         <xsl:value-of select="//dc:contributor[normalize-space()]" />
                     </field>
                 </xsl:if>
-                
+
                 <!-- TYPE -->
                 <xsl:if test="//dc:type">
                     <field name="format">
@@ -142,6 +142,21 @@
                         <xsl:value-of select="substring(//dc:date, 1, 4)"/>
                     </field>
                 </xsl:if>
+
+                <!-- GEO -->
+                <xsl:for-each select="//dc:coverage">
+                    <xsl:if test="string-length(php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))) > 0">
+                        <field name="long_lat">
+                            <xsl:value-of select="php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))" />
+                        </field>
+                        <field name="long_lat_display">
+                            <xsl:value-of select="php:function('VuFindGeo::getDisplayCoordinatesFromCoverage', string(.))" />
+                        </field>
+                        <field name="long_lat_label">
+                            <xsl:value-of select="php:function('VuFindGeo::getLabelFromCoverage', string(.))" />
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- URL -->
                <xsl:for-each select="//dc:identifier">
