@@ -39,11 +39,25 @@ namespace VuFind\View\Helper\Root;
 class Slot extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Storage for strings to be concatinated to the front of a block
+     *
+     * @var array of arrays
+     */
+    protected $blockPrepends = [];
+
+    /**
      * Storage for strings saved to slots
      *
      * @var array
      */
     protected $blocks = [];
+
+    /**
+     * Storage for strings to be concatinated to the end of a block
+     *
+     * @var array of arrays
+     */
+    protected $blockAppends = [];
 
     /**
      * Call stack to handle nested slots
@@ -66,6 +80,28 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Helper function to return blocks with prepends and appends
+     *
+     * @param string $name Name of target block for action
+     *
+     * @return string|any
+     */
+    protected function build($name)
+    {
+        $pre = $this->blockPrepends[$name] ?? [];
+        $block = $this->blocks[$name] ?? '';
+        $post = $this->blockAppends[$name] ?? [];
+        if (!empty($pre) || !empty($post)) {
+            // TODO: Warn about non-string blocks
+            return implode(' ', $pre) . $block . implode(' ', $post);
+        }
+        if (empty($block)) {
+            return null;
+        }
+        return $block;
+    }
+
+    /**
      * Get current value of slot. Returns null if unset.
      *
      * @return string|null
@@ -73,7 +109,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     public function get()
     {
         $name = array_pop($this->stack);
-        return $this->blocks[$name] ?? null;
+        return $this->build($name);
     }
 
     /**
@@ -89,7 +125,43 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = $value;
         }
-        return $this->blocks[$name];
+        return $this->build($name);
+    }
+
+    /**
+     * Add string to list of block prepends.
+     *
+     * @param string $value Value to override if unset
+     *
+     * @return string
+     */
+    public function prepend($value)
+    {
+        $name = array_pop($this->stack);
+        if (!isset($this->blockPrepends[$name])) {
+            $this->blockPrepends[$name] = [$value];
+        } else {
+            array_unshift($this->blockPrepends[$name], $value);
+        }
+        return $this->build($name);
+    }
+
+    /**
+     * Add string to list of block appends.
+     *
+     * @param string $value Value to override if unset
+     *
+     * @return string
+     */
+    public function append($value)
+    {
+        $name = array_pop($this->stack);
+        if (!isset($this->blockAppends[$name])) {
+            $this->blockAppends[$name] = [$value];
+        } else {
+            array_push($this->blockAppends[$name], $value);
+        }
+        return $this->build($name);
     }
 
     /**
@@ -106,11 +178,20 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * End a buffer capture to override the value of a block. Returns slot value.
      *
-     * @return string
+     * @param string $method SET/PREPEND/APPEND for where this buffer should be saved
+     *
+     * @return string|any
      */
-    public function end()
+    public function end($method = 'SET')
     {
-        $ret = $this->set(ob_get_contents());
+        $ret;
+        if ($method == 'SET') {
+            $ret = $this->set(ob_get_contents());
+        } elseif ($method == 'PREPEND') {
+            $ret = $this->prepend(ob_get_contents());
+        } elseif ($method == 'APPEND') {
+            $ret = $this->append(ob_get_contents());
+        }
         ob_end_clean();
         return $ret;
     }
