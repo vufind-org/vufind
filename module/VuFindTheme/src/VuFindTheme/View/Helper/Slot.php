@@ -78,14 +78,28 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Get the Slot instance. Create if instance doesn't exist.
      *
-     * @param string $name Name of target block for action
+     * @param string $name  Name of target block for action
+     * @param any    $value Optional shortcut parameter to set a value
      *
-     * @return Slot
+     * @return Slot|string|any
      */
-    public function __invoke($name)
+    public function __invoke($name, $value = null)
     {
         $this->stack[] = $name;
+        if ($value != null) {
+            return $this->set($value);
+        }
         return $this;
+    }
+
+    /**
+     * Shortcut to get if no methods are called on invoke.
+     *
+     * @return string|any
+     */
+    public function __toString()
+    {
+        return $this->get();
     }
 
     /**
