@@ -56,6 +56,13 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     protected $hiddenFilters = [];
 
     /**
+     * Cache manager
+     *
+     * @var \VuFind\Cache\Manager
+     */
+    protected $cacheManager = null;
+
+    /**
      * Set hidden filters
      *
      * @param array $filters Hidden filters
@@ -80,6 +87,18 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     }
 
     /**
+     * Set cache manager
+     *
+     * @param \VuFind\Cache\Manager $manager Cache manager
+     *
+     * @return void
+     */
+    public function setCacheManager(\VuFind\Cache\Manager $manager)
+    {
+        $this->cacheManager = $manager;
+    }
+
+    /**
      * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
@@ -97,7 +116,32 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 $qs .= "&displayField=$field";
             }
         }
-        return parent::call($qs, $method);
+
+        $cacheKey = md5(
+            json_encode(
+                [
+                    'inst' => $this->inst,
+                    'host' => $this->host,
+                    'qs' => $qs,
+                    'method' => $method
+                ]
+            )
+        );
+        $cache = null;
+        if ($this->cacheManager) {
+            $cache = $this->cacheManager->getCache('object', 'PrimoConnector');
+            if ($result = $cache->getItem($cacheKey)) {
+                return $result;
+            }
+        }
+
+        $result = parent::call($qs, $method);
+
+        if ($cache) {
+            $cache->setItem($cacheKey, $result);
+        }
+
+        return $result;
     }
 
     /**

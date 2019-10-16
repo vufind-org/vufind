@@ -141,9 +141,9 @@
 <?php endif; ?>
 
 <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-    <?php foreach ($this->results->getRecommendations('top') as $current): ?>
-        <?=$this->recommend($current)?>
-    <?php endforeach; ?>
+  <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
+    <?=$this->recommend($current, 'top', $index)?>
+  <?php endforeach; ?>
 <?php endif; ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
   <?php if ($recordTotal < 1): ?>
@@ -178,9 +178,9 @@
       <?php if (isset($this->parseError)): ?>
         <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <?php endif; ?>
-      <?php foreach ($this->results->getRecommendations('noresults') as $current): ?>
+      <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
         <?php if (!in_array($current, $topRecommendations)): ?>
-          <?=$this->recommend($current)?>
+          <?=$this->recommend($current, 'noresults', $index)?>
         <?php endif; ?>
       <?php endforeach; ?>
       <?php if ($this->fromStreetSearch): ?>
@@ -224,8 +224,8 @@
     <?php /* End Listing Options */ ?>
     <h1 class="sr-only"><?= $this->transEsc('Search Results'); ?></h1>
     <?php if ($recordTotal < 1): ?>
-      <?php foreach ($topRecommendations as $current): ?>
-        <?=$this->recommend($current)?>
+      <?php foreach ($topRecommendations as $index => $current): ?>
+        <?=$this->recommend($current, 'top', $index)?>
       <?php endforeach; ?>
       <?php if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
         <div id="search-tabs-recommendations-holder" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
@@ -246,8 +246,8 @@
   <?php /* Narrow Search Options */ ?>
   <div id="sidebar" class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('sidebar')?>">
     <?php $messageAdded = false; ?>
-    <?php foreach ($this->results->getRecommendations('side') as $current): ?>
-      <?=$this->recommend($current)?>
+    <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+      <?=$this->recommend($current, 'side', $index)?>
       <?php if (!$messageAdded) {
         if (!isset($this->layout()->srmessage)) {
           $this->layout()->srmessage = '';

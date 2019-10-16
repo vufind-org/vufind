@@ -1,0 +1,235 @@
+[Primary]
+backend = Solr
+
+[Secondary]
+backend = Primo
+
+[Blending]
+boostPosition = 2
+boostCount = 3
+
+; ---------- searches.ini settings ----------
+
+[General]
+default_handler = AllFields
+default_sort = "relevance,id asc"
+default_view = list
+default_limit = 20
+;limit_options        = 10,20,40,60,80,100
+case_sensitive_bools = true
+case_sensitive_ranges = true
+
+default_top_recommend[] = SpellingSuggestions
+;default_top_recommend[] = VisualFacets:Visual_Settings
+default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets:Blender
+;default_noresults_recommend[] = SwitchTab
+default_noresults_recommend[] = SwitchType
+default_noresults_recommend[] = SwitchQuery:::fuzzy
+default_noresults_recommend[] = SpellingSuggestions
+default_noresults_recommend[] = RemoveFilters
+
+; Set this to true in order to highlight keywords from the search query when they
+; appear in fields displayed in search results.
+highlighting = true
+
+; Set this to restrict the list of fields that will be highlighted (the hl.fl
+; Solr parameter); default = '*' for all fields:
+highlighting_fields = "author,author2,author_additional,author_fuller,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,institution,isbn,issn,language,lccn,material,measurements,publication_place_txt_mv,publisher,series,series2,title,title_alt,title_full,title_new,title_old,topic"
+snippets = true
+retain_filters_by_default = true
+;default_filters[] = "format:Book"
+;default_filters[] = "institution:MyInstitution"
+;default_filters[] = "(format:Book AND institution:MyInstitution)"
+
+[Records]
+; Boolean value indicating if deduplication is enabled. Defaults to false.
+deduplication = true
+; Priority order (descending) for record sources (record ID prefixes separated
+; from the actual record by period, e.g. testsrc.12345)
+;sources = alli,testsrc
+
+; This section controls the search handler options displayed in blended mode.
+[Basic_Searches]
+All Fields = "All Fields"
+Title = Title
+Author = Author
+Subject = Subject
+
+[Sorting]
+relevance,id asc = sort_relevance
+main_date_str desc = sort_year
+;dewey-sort = sort_callnumber
+author = sort_author
+title = sort_title
+
+; ---------- facets.ini settings ----------
+
+; The order of display is as shown below
+; The name of the index field is on the left
+; The display name of the field is on the right
+[Results]
+sector_str_mv      = Sector
+;institution        = Institution
+building           = Organisation
+;building_sub_str_mv = Department
+format_ext_str_mv   = Format
+author_facet        = Author
+language            = Language
+original_lng_str_mv = original_work_language
+subtitle_lng_str_mv = subtitle_language
+main_date_str       = "Year"
+topic_facet         = Topic
+
+[FacetLabels]
+labelSections[] = Advanced_Facets
+labelSections[] = HomePage_Facets
+labelSections[] = ResultsTop
+labelSections[] = Results
+labelSections[] = ExtraFacetLabels
+checkboxSections[] = CheckboxFacets
+
+; This setting lists configuration settings defining checkbox facets. If you use
+; a custom section to configure additional facets, be sure to add it to this list
+; so labels display correctly in history, the advanced search editor, etc.
+checkboxSections[] = CheckboxFacets
+
+; This section is used to identify facets for special treatment by the SideFacets
+; recommendations module.
+[SpecialFacets]
+; Any fields listed below will be treated as year-based date ranges rather than plain
+; facets:
+dateRange[] = publishDate
+; Any fields listed below will be treated as year/month/day-based date ranges rather
+; than plain facets:
+;fullDateRange[] = example_field_date
+; Any fields listed below will be treated as numeric ranges rather than plain facets:
+;numericRange[] = example_field_str
+; Any fields listed below will be treated as free-form ranges rather than plain
+; facets:
+;genericRange[] = example_field_str
+; Any fields listed below will be treated as hierarchical facets
+; (see https://wiki.apache.org/solr/HierarchicalFaceting but note that we always
+; use a trailing slash to avoid ambiquities)
+hierarchical[] = building
+hierarchical[] = format
+hierarchical[] = sector_str_mv
+hierarchical[] = category_str_mv
+hierarchical[] = format_ext_str_mv
+; Sort options for hierarchical facets:
+; How hierarchical facets are sorted. Default is result count, but alternative ways
+; can be specified:
+; top = Sort the top level list alphabetically, others by result count (useful e.g.
+;       for a large number of building facets where top level is organization and
+;       second level the library branch)
+; all = Sort all levels alphabetically
+hierarchicalFacetSortOptions[building] = top
+; How hierarchical facet values are displayed in the records:
+; single = Display only the deepest level (default)
+; full   = Display full hierarchy for each entry
+;hierarchicalFacetDisplayStyles[format] = full
+; Separator used when display hierarchical facet levels (default is "/")
+;hierarchicalFacetSeparators[format] = " > "
+; Any fields listed below will be treated as new items facets
+newItems[] = first_indexed
+; Date visualisations
+dateVis[] = main_date_str
+dateRangeVis = search_daterange_mv:main_date_str
+
+; This section is reserved for special boolean facets.  These are displayed
+; as checkboxes.  If the box is checked, the filter on the left side of the
+; equal sign is applied.  If the box is not checked, the filter is not applied.
+; The value on the right side of the equal sign is the text to display to the
+; user.  It will be run through the translation code, so be sure to update the
+; language files appropriately.
+;
+; Leave the section empty if you do not need checkbox facets.
+[CheckboxFacets]
+;edition:1st* = "First Edition"     ; Contrived hypothetical example
+online_boolean:1 = online_material_facet_html
+;free_online_boolean:1 = free_online_material_facet_html
+source_available_str_mv:* = available_locally_facet_html
+
+; These settings affect the way the [Results] facets are displayed
+; If using facets at the top of search results you have more room for text.
+[Results_Settings]
+; By default, how many values should we show for each facet? (-1 for no limit)
+facet_limit        = 30
+; Override facet_limit on a per-field basis using this array:
+;facet_limit_by_field[format] = 50
+
+; By default, the side facets will only show 6 facets and then the "show more"
+; button. This can get configured with the showMore settings.
+; You can use the * to set a new default setting.
+showMore[*] = 6
+; Or you can set a facet specific value by using the facet name as index.
+;showMore['format'] = 10
+
+; Show more facets in a lightbox (paginated, no limit)
+; If false, facets expand in side bar to show facets up to the above limit
+; If "more", facets expand and offer an option at the bottom to open the lightbox
+; If true, facets immediately open in the lightbox
+showMoreInLightbox[*] = more
+lightboxLimit = 100 ; page size for the lightbox
+
+; Rows and columns for table used by top facets
+top_rows = 2
+top_cols = 3
+; Should we show "exclude" links for some or all of the facets? Set to * for
+; all facets, use a comma-separated list to show for some of the facets, set
+; to false or omit to disable "exclude" links
+;exclude = *
+; Should we OR together facets rather than ANDing them? Set to * for
+; all facets, use a comma-separated list to apply to some of the facets, set
+; to false or omit to disable ORed facets.
+orFacets = *
+; Do we want any facets to be collapsed by default?
+collapsedFacets = sector_str_mv,building,author_facet,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv,major_genre_str_mv
+
+; This can be used to sort specific facet fields alphabetically by index value
+; (which normally results in alphabetical order).
+; Please note: This sorts natively in the Solr index using untranslated values,
+; so if you are using facet translation, your values may not always display in
+; the expected order.
+sorted_by_index[] = usage_rights_str_mv
+
+; Most of these settings affect the way the [Advanced] facets are displayed; the
+; translated_facets setting affects facets globally.
+[Advanced_Settings]
+facet_limit      = -1      ; how many values should we show for each facet?
+; Should we OR together facets rather than ANDing them? Set to * for
+; all facets, use a comma-separated list to apply to some of the facets, set
+; to false or omit to disable ORed facets.
+orFacets = *
+
+; The facets listed under the [Advanced] section above will be used as limiters on
+; the advanced search screen and will be displayed uniformly as multi-select boxes.
+; Some facet types don't lend themselves to this format, and they can be turned on
+; by inclusion in the comma-separated list below, or turned off by being excluded.
+; Currently, just two values are supported: "illustrated", for the "illustrated/not
+; illustrated" radio button limiter and "daterange" for the publication year range
+; control.
+special_facets   = "daterange"
+
+; Any facets named in the list below will have their values run through the
+; translation code; unlisted facets will displayed as-is without translation.  For
+; translated facets, be sure that all of the necessary strings are included in the
+; language files found in the web/lang directory.  By default, no facets are
+; translated -- uncomment or add lines below to turn on this feature.
+translated_facets[] = institution
+translated_facets[] = building
+translated_facets[] = building_sub_str_mv:department
+translated_facets[] = format
+translated_facets[] = language
+translated_facets[] = genre_facet
+translated_facets[] = sector_str_mv
+translated_facets[] = first_indexed
+translated_facets[] = original_lng_str_mv
+translated_facets[] = subtitle_lng_str_mv
+translated_facets[] = category_str_mv
+translated_facets[] = usage_rights_str_mv
+translated_facets[] = major_genre_str_mv
+translated_facets[] = format_ext_str_mv
+
+; Prefix to be used in facet translation to avoid mixing facet strings with other
+; translated content
+facet_translation_prefix = "facet_"

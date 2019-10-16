@@ -1,0 +1,11 @@
+; Inherit main configuration
+[Parent_Config]
+relative_path = ../finna/Blender.ini
+
+; Add any overrides below
+;[Records]
+; Boolean value indicating if deduplication is enabled. Defaults to false.
+deduplication = true
+; Priority order (descending) for record sources (record ID prefixes separated
+; from the actual record by period, e.g. testsrc.12345)
+;sources = alli,testsrc

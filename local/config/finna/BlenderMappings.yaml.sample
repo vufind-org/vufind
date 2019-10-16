@@ -1,0 +1,55 @@
+Facets:
+  building:
+    Secondary: domain
+  format_ext_str_mv:
+    Secondary: rtype
+    Type: hierarchical
+    Values:
+      articles: "1/Journal/eArticle/"
+      book_chapters: "1/Book/eBookSection/"
+      books: "1/Book/eBook/"
+      conference_proceedings: "1/OtherText/ConferenceProceeding/"
+      databases: "0/Database/"
+      dissertations: "1/Thesis/Thesis/"
+      government_documents: "1/OtherText/Text/"
+      images: "1/Image/Image/"
+      journals: "1/Journal/eJournal/"
+      legal_documents: "1/OtherText/Text/"
+      maps: "1/Map/Map/"
+      media: "1/Other/Electronic/"
+      newspaper_articles: "1/Journal/NewspaperArticle/"
+      other: "1/Other/Other/"
+      patents: "1/OtherText/Text/"
+      reference_entrys: "1/OtherText/Text/"
+      research_datasets: "1/Other/ResearchData/"
+      reviews: "1/OtherText/Text/"
+      scores: "1/MusicalScore/MusicalScore/"
+      statistical_data_sets: "1/Other/Other/"
+      technical_reports: "1/OtherText/Text/"
+      text_resources: "1/OtherText/Text/"
+      websites: "1/Other/Electronic/"
+  author_facet:
+    Secondary: creator
+  topic:
+    Secondary: topic
+  main_date_str:
+    Secondary: creationdate
+  language:
+    Secondary: lang
+  online_boolean:
+    Secondary: tlevel
+    Type: boolean
+    Values:
+      online_resources: true
+Search:
+  Fields:
+    AllFields: AllFields
+    Title: Title
+    Author: Author
+    Subject: Subject
+Sorting:
+  Fields:
+    relevance: "relevance,id asc"
+    scdate: "main_date_str desc"
+    screator: author
+    title: title

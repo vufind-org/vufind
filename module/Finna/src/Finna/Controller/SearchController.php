@@ -207,6 +207,25 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
+     * Blended action.
+     *
+     * @return mixed
+     */
+    public function blendedAction()
+    {
+        $saveId = $this->searchClassId;
+        try {
+            $this->searchClassId = 'Blender';
+            $view = parent::resultsAction();
+        } catch (\Exception $e) {
+            $this->searchClassId = $saveId;
+            throw $e;
+        }
+        $this->searchClassId = $saveId;
+        return $view;
+    }
+
+    /**
      * Results action.
      *
      * @return mixed

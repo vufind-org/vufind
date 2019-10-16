@@ -54,7 +54,7 @@
 
     // Set up Finna Main Tabs:
     if (!$browse) {
-      if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
+      if (($module === 'search' && ($action === 'results' || $action === 'blended') && $this->searchType != 'advanced')
          || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
          || ($module === 'eds' && $action === 'search' && $this->searchType != 'advanced')
          || ($module === 'summon' && $action === 'search' && $this->searchType != 'advanced')

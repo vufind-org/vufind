@@ -5,13 +5,20 @@
   <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('Sort')?></span>
   <div class="sort-button">
   <div class="dropdown">
+    <?php $selectedFound = false; ?>
     <?php foreach ($list as $sortType => $sortData): ?>
       <?php if ($sortData['selected']): ?>
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <span><?=$this->transEsc($sortData['desc'])?></span> <i class="fa fa-arrow-down"></i>
-      </a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <span><?=$this->transEsc($sortData['desc'])?></span> <i class="fa fa-arrow-down"></i>
+        </a>
+        <?php $selectedFound = true; ?>
       <?php endif; ?>
     <?php endforeach; ?>
+    <?php if (!$selectedFound): ?>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <span><?=$this->transEsc('choose_from_list')?></span> <i class="fa fa-arrow-down"></i>
+      </a>
+    <?php endif; ?>
     <ul class="dropdown-menu" role="menu">
       <?php foreach ($list as $sortType => $sortData): ?>
       <li role="menuitem">

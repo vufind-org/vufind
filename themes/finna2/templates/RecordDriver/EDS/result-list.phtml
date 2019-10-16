@@ -1,9 +1,24 @@
 <!-- START of: finna - RecordDriver/EDS/result-list.phtml -->
 <?php
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+
+  if ($img && $this->layout()->templateName === 'blended') {
+    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
+  }
 ?>
 <div class="record-container list-view<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?>">
   <div class="media">
+    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+        <?=$thumbnail ?>
+      </div>
+    <?php endif; ?>
     <div class="media-body">
       <div class="result-body">
         <div>
@@ -210,6 +225,13 @@
         <div class="clearfix visible-xs"></div>
       </div>
     </div>
+    <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+        <?=$thumbnail ?>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 <!-- END of: finna - RecordDriver/EDS/result-list.phtml -->

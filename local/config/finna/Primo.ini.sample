@@ -20,7 +20,7 @@ timeout = 30
 ; instance (e.g. primoapac01). Use http://mlplus.hosted.exlibrisgroup.com for
 ; MetaLib Plus.
 ; You may also enter the full URL including a path to the brief search if necessary.
-url = "http://ndl-pc-fe1.hosted.exlibrisgroup.com:1701"
+url = "https://ndl-pc-fe1.hosted.exlibrisgroup.com"
 
 ; This section controls the result limit options for search results. default_limit
 ; sets the default number of results per page. limit_options is a comma-separated

@@ -5,12 +5,10 @@
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
-if ($img):
-    ob_start(); ?>
-    <?=$img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]) ?>
-    <?php $thumbnail = ob_get_contents(); ?>
-  <?php ob_end_clean(); ?>
-<?php endif; ?>
+  if ($img) {
+    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
+  }
+?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
