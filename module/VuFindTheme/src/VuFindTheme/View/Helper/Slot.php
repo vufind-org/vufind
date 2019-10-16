@@ -204,6 +204,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     public function clear()
     {
         $name = array_pop($this->stack);
+        unset($this->blockPrepends[$name]);
         unset($this->blocks[$name]);
+        unset($this->blockAppends[$name]);
     }
 }
