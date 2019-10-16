@@ -12,7 +12,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     return callnumber;
   }
   function displayItemStatus(result, $item) {
-    $item.removeClass('js-item-pending');
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
     if (typeof(result.error) != 'undefined'
@@ -71,7 +70,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
 
-  var itemStatusObserver = null;
   var ItemStatusHandler = {
     name: "default",
     //array to hold IDs and elements
@@ -99,7 +97,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
         .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
     },
-    itemQueueAjax: function itemQueueAjax(id, el){
+    itemQueueAjax: function itemQueueAjax(id, el) {
       clearTimeout(this.itemStatusTimer);
       this.itemStatusIds.push(id);
       this.itemStatusEls[id] = el;
@@ -110,7 +108,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       el.find('.status').removeClass('hidden');
     },
 
-    runItemAjaxForQueue: function runItemAjaxForQueue(){
+    runItemAjaxForQueue: function runItemAjaxForQueue() {
       if (this.itemStatusRunning) {
         this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
         return;
@@ -124,7 +122,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       })
         .done(this.checkItemStatusDone)
         .fail( this.itemStatusFail)
-        .always(function queueAjaxAlways(){
+        .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
         });
     }//end runItemAjax
@@ -179,17 +177,16 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       }
       checkItemHandlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
     }
-    // Stop looking for a scroll loader
-    if (itemStatusObserver) {
-      itemStatusObserver.disconnect();
-    }
   }
-  function init() {
+  function init(_container) {
     if (typeof Hunt === 'undefined') {
-      checkItemStatuses();
+      checkItemStatuses(_container);
     } else {
-      itemStatusObserver = new Hunt(
-        $('.ajaxItem').toArray(),
+      var container = typeof _container === 'undefined'
+        ? document.body
+        : _container;
+      new Hunt(
+        $(container).find('.ajaxItem').toArray(),
         { enter: checkItemStatus }
       );
     }
