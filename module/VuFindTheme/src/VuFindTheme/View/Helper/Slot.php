@@ -104,6 +104,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Helper function to return blocks with prepends and appends.
+     * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening
      *
      * Non-string data can be stored in a slot but prepend and append
      * will cause it to be concatinated into a string.
@@ -118,9 +119,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         $block = $this->blocks[$name] ?? '';
         $post = $this->blockAppends[$name] ?? [];
         if (!empty($pre) || !empty($post)) {
-            return trim(
-                implode(' ', $pre) . ' ' . $block . ' ' . implode(' ', $post)
-            );
+            $ret = implode(' ', $pre) . ' ' . $block . ' ' . implode(' ', $post);
+            return trim($ret);
         }
         if (empty($block)) {
             return null;
