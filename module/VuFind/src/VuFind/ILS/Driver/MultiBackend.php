@@ -268,7 +268,8 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $options
             );
             return $this->addIdPrefixes($holdings, $source);
         }

@@ -1014,12 +1014,18 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getHolding($id, $patron = null, $options = [])
     {
-        // Get pagination options for holdings tab
-        $holdsConfig
-            = $this->checkCapability('getConfig', ['Holds', compact('patron')])
-            ? $this->driver->getConfig('Holds') : null;
-        $itemLimit = !empty($holdsConfig['itemLimit'])
-            ? $holdsConfig['itemLimit'] : null;
+        // Get pagination options for holdings tab:
+        $params = compact('id', 'patron');
+        $config = $this->checkCapability('getConfig', ['Holdings', $params])
+            ? $this->getDriver()->getConfig('Holdings', $params) : [];
+        if (empty($config['itemLimit'])) {
+            // Use itemLimit in Holds as fallback for backward compatibility:
+            $config
+                = $this->checkCapability('getConfig', ['Holds', $params])
+                ? $this->getDriver()->getConfig('Holds', $params) : [];
+        }
+        $itemLimit = !empty($config['itemLimit']) ? $config['itemLimit'] : null;
+
         $page = $this->request ? $this->request->getQuery('page', 1) : 1;
         $offset = ($itemLimit && is_numeric($itemLimit))
             ? ($page * $itemLimit) - $itemLimit
