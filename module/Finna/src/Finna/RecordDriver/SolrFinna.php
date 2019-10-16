@@ -1006,13 +1006,14 @@ trait SolrFinna
     {
         $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
         if ($this->hasILS()) {
-            if ($bibLevels = $this->ils->getConfig('getTitleHoldBibLevels')) {
-                if (in_array($biblioLevel, $bibLevels)) {
-                    if ($this->ils->getTitleHoldsMode() != "disabled") {
-                        return $this->titleHoldLogic->getHold($this->getUniqueID());
-                    }
-                }
-            } elseif ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
+            $bibLevels = $this->ils->getConfig(
+                'getTitleHoldBibLevels',
+                ['id' => $this->getUniqueID()]
+            );
+            if (false === $bibLevels) {
+                $bibLevels = ['monograph', 'part'];
+            }
+            if (in_array($biblioLevel, $bibLevels)) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
