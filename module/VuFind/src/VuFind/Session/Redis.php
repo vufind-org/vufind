@@ -72,8 +72,8 @@ class Redis extends AbstractBase
             $timeout = $this->config->redis_connection_timeout ?? 0.5;
             $auth = $this->config->redis_auth ?? false;
             $redis_db = $this->config->redis_db ?? 0;
-            $this->redisVersion = int($this->config->redis_version ?? 3);
-            $standalone = bool($this->config->redis_standalone ?? true);
+            $this->redisVersion = (int)($this->config->redis_version ?? 3);
+            $standalone = (bool)($this->config->redis_standalone ?? true);
 
             // Create Credis client, the connection is established lazily
             $this->connection = new \Credis_Client(
