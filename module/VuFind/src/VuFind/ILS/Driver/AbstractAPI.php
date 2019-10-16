@@ -150,7 +150,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param array $config Configuration array (usually loaded from a VuFind .ini
      * file whose name corresponds with the driver class name).
      *
-     * @throws ILSException if base url excluded
+     * @throws BadConfig if base url excluded
      * @return void
      */
     public function setConfig($config)
