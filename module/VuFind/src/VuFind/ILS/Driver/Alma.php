@@ -1283,9 +1283,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set default value for "itemLimit" in Alma driver
             if ($function === 'Holdings') {
                 // Use itemLimit in Holds as fallback for backward compatibility
-                $functionConfig['itemLimit'] = $functionConfig['itemLimit']
+                $functionConfig['itemLimit'] = ($functionConfig['itemLimit']
                     ?? $this->config['Holds']['itemLimit']
-                    ?? 10;
+                    ?? 10) ?: 10;
             }
         } elseif ('getMyTransactions' === $function) {
             $functionConfig = [
