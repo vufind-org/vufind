@@ -86,16 +86,17 @@
 
 // Record view holdings styles
 .holdings-tab {
-    & .library_card, .placehold.btn, .placeStorageRetrievalRequest.btn, .placeILLRequest.btn {
+    .library_card, .placehold.btn, .placeStorageRetrievalRequest.btn, .placeILLRequest.btn {
         margin-bottom: 5px;
         margin-left: 5px;
     }
-    & .placehold.btn {
+    .placehold.btn, .placeStorageRetrievalRequest.btn, .placeILLRequest.btn  {
         white-space: normal;
         height: auto;
+        margin-top: 2px;
     }
-    & .place-hold-wrapper {
-        & p {
+    .place-hold-wrapper {
+        p {
             margin-top: 5px;
         }
         a {
@@ -105,7 +106,7 @@
             margin-top: 7px;
         }
     }
-    & .borrowing-block-container {
+    .borrowing-block-container {
         margin-top: 20px;
     }
 }
