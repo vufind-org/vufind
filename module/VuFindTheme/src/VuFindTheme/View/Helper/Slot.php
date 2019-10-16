@@ -39,6 +39,15 @@ namespace VuFindTheme\View\Helper;
 class Slot extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * End saving methods
+     *
+     * @const string
+     */
+    const SET   = 'SET';
+    const PREPEND = 'PREPEND';
+    const APPEND = 'APPEND';
+
+    /**
      * Storage for strings to be concatinated to the front of a block
      *
      * @var array of arrays
@@ -188,13 +197,16 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      */
     public function end($method = 'SET')
     {
-        $ret;
-        if ($method == 'SET') {
+        $method = strtoupper($method);
+        $ret = null;
+        if ($method == self::SET) {
             $ret = $this->set(ob_get_contents());
-        } elseif ($method == 'PREPEND') {
+        } elseif ($method == self::PREPEND) {
             $ret = $this->prepend(ob_get_contents());
-        } elseif ($method == 'APPEND') {
+        } elseif ($method == self::APPEND) {
             $ret = $this->append(ob_get_contents());
+        } else {
+            throw new \Exception("Undefined Slot method: $method");
         }
         ob_end_clean();
         return $ret;
