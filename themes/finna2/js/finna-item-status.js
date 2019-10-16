@@ -3,6 +3,13 @@ finna.itemStatus = (function finnaItemStatus() {
 
   function checkItemStatus(id) {
     var item = $('.hiddenId[value="' + id + '"]').closest('.record-container');
+
+    // Check that availability isn't already done
+    if (item.data('ajaxAvailabilityDone')) {
+      return;
+    }
+    item.data('ajaxAvailabilityDone', 1);
+
     item.find(".ajax-availability").removeClass('hidden');
     item.find(".availability-load-indicator").removeClass('hidden');
 
