@@ -49,6 +49,7 @@ local/config/vufind/*.wsdl
 local/httpd-vufind.conf
 local/import/import.properties
 local/import/import_auth.properties
+local/languages/finna/*-datasources.ini
 themes/finna2/css/finna.css
 themes/custom/css/finna.css
 *.diff
