@@ -47,6 +47,13 @@
         <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
         <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
       </p>
+      <?=$this->context($this)->renderInContext(
+        'search/filters.phtml',
+        [
+          'params' => $params ?? null,
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+        ]
+      );?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
   </div>
 <?php else: ?>
@@ -109,6 +116,13 @@
         echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
       }
     ?>
+    <?=$this->context($this)->renderInContext(
+      'search/filters.phtml',
+      [
+        'params' => $params ?? null,
+        'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+      ]
+    );?>
   </form>
   <?php if ($advSearch): ?>
     <div class="container">
