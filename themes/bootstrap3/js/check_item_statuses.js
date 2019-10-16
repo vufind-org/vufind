@@ -18,12 +18,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     if (typeof(result.error) != 'undefined'
           && result.error.length > 0
     ) {
-      // Only show error message if we also have a status indicator active:
-      if ($item.find('.status').length > 0) {
-        $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
-      } else {
-        $item.find('.callnumAndLocation').addClass('hidden');
-      }
+      $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
       $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
     } else if (typeof(result.full_status) != 'undefined'
           && result.full_status.length > 0
