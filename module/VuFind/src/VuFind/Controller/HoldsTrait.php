@@ -165,7 +165,7 @@ trait HoldsTrait
         $defaultRequired = $this->holds()->getDefaultRequiredDate(
             $checkHolds, $catalog, $patron, $gatheredDetails
         );
-        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup
@@ -181,12 +181,15 @@ trait HoldsTrait
             $defaultRequestGroup = false;
         }
 
+        $config = $this->getConfig();
+        $allowHomeLibrary = $config->Account->set_home_library ?? true;
         $view = $this->createViewModel(
             [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
-                'homeLibrary' => $this->getUser()->home_library,
+                'homeLibrary' => $allowHomeLibrary
+                    ? $this->getUser()->home_library : '',
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => $defaultRequired,
                 'requestGroups' => $requestGroups,

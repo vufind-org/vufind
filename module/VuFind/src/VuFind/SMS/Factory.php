@@ -58,8 +58,9 @@ class Factory implements FactoryInterface
         array $options = null
     ) {
         // Load configurations:
-        $mainConfig = $container->get('VuFind\Config\PluginManager')->get('config');
-        $smsConfig = $container->get('VuFind\Config\PluginManager')->get('sms');
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $mainConfig = $configManager->get('config');
+        $smsConfig = $configManager->get('sms');
 
         // Determine SMS type:
         $type = isset($smsConfig->General->smsType)
@@ -68,10 +69,11 @@ class Factory implements FactoryInterface
         // Initialize object based on requested type:
         switch (strtolower($type)) {
         case 'clickatell':
-            $client = $container->get('VuFindHttp\HttpService')->createClient();
+            $client = $container->get(\VuFindHttp\HttpService::class)
+                ->createClient();
             return new Clickatell($smsConfig, ['client' => $client]);
         case 'mailer':
-            $options = ['mailer' => $container->get('VuFind\Mailer\Mailer')];
+            $options = ['mailer' => $container->get(\VuFind\Mailer\Mailer::class)];
             if (isset($mainConfig->Site->email)) {
                 $options['defaultFrom'] = $mainConfig->Site->email;
             }

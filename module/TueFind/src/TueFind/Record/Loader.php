@@ -3,10 +3,11 @@
 namespace TueFind\Record;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFindSearch\ParamBag;
 
 class Loader extends \VuFind\Record\Loader {
     public function load($id, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateMissing = false
+        $tolerateMissing = false, ParamBag $params = null
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
@@ -16,7 +17,7 @@ class Loader extends \VuFind\Record\Loader {
                 $results = $this->recordCache->lookup($id, $source);
             }
             if (empty($results)) {
-                $results = $this->searchService->retrieve($source, $id)
+                $results = $this->searchService->retrieve($source, $id, $params)
                     ->getRecords();
             }
             if (empty($results) && null !== $this->recordCache

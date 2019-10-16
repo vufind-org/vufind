@@ -102,7 +102,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $this->getServiceManager()
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->createMock('VuFind\Config\PluginManager');
+        $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockConfigReader->expects($this->any())->method('get')
             ->will($this->returnValue(new \Zend\Config\Config([])));
         $auth = new \VuFind\Auth\ILS(
@@ -113,7 +113,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             $authenticator
         );
         $auth->setDbTableManager(
-            $this->getServiceManager()->get('VuFind\Db\Table\PluginManager')
+            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
         );
         $auth->getCatalog()->setDriver($driver);
         return $auth;
@@ -368,7 +368,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     protected function getMockILSAuthenticator($patron = null)
     {
-        $mock = $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+        $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
             ->setMethods(['storedCatalogLogin'])
             ->getMock();

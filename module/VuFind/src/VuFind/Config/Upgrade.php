@@ -292,11 +292,14 @@ class Upgrade
     {
         // Configuration files to load.  Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
-        $configs = [
-            'config.ini', 'authority.ini', 'facets.ini', 'geofeatures.ini',
-            'reserves.ini', 'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
-            'permissions.ini', 'Collection.ini', 'Primo.ini'
-        ];
+        $configs = ['config.ini'];
+        foreach (glob($this->rawDir . '/*.ini') as $ini) {
+            $parts = explode('/', str_replace('\\', '/', $ini));
+            $filename = array_pop($parts);
+            if ($filename !== 'config.ini') {
+                $configs[] = $filename;
+            }
+        }
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
             // settings:

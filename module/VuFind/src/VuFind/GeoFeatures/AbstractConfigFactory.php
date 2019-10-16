@@ -64,6 +64,8 @@ class AbstractConfigFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFind\Config\PluginManager'));
+        return new $requestedName(
+            $container->get(\VuFind\Config\PluginManager::class)
+        );
     }
 }

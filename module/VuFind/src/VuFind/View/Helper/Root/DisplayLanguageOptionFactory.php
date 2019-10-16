@@ -28,6 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Zend\Mvc\I18n\Translator;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -64,8 +65,7 @@ class DisplayLanguageOptionFactory implements FactoryInterface
         // We want to construct a separate translator instance for this helper,
         // since it configures different language/locale than the core shared
         // instance!
-        return new $requestedName(
-            \VuFind\Service\Factory::getTranslator($container)
-        );
+        $factory = new \VuFind\I18n\Translator\TranslatorFactory();
+        return new $requestedName($factory($container, Translator::class));
     }
 }

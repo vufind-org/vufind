@@ -114,6 +114,7 @@ $config = [
         ],
     ],
     'service_manager' => [
+        'allow_override' => true,
         'factories' => [
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -125,7 +126,7 @@ $config = [
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFindSearch\Service' => 'TueFind\Service\Factory::getSearchService',
+            'TueFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
         ],
         'initializers' => [

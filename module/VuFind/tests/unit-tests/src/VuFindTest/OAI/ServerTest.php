@@ -89,7 +89,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockResultsManager()
     {
-        return $this->getMockBuilder('VuFind\Search\Results\PluginManager')
+        return $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -101,7 +101,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRecordLoader()
     {
-        return $this->getMockBuilder('VuFind\Record\Loader')
+        return $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -113,7 +113,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockTableManager()
     {
-        return $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+        return $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -125,7 +125,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRecordFormatter()
     {
-        return $this->getMockBuilder('VuFindApi\Formatter\RecordFormatter')
+        return $this->getMockBuilder(\VuFindApi\Formatter\RecordFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

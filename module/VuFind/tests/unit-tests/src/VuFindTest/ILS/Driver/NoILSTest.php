@@ -61,11 +61,11 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp()
     {
-        $this->loader = $this->getMockBuilder('VuFind\Record\Loader')
+        $this->loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->setConstructorArgs(
                 [
-                    $this->createMock('VuFindSearch\Service'),
-                    $this->createMock('VuFind\RecordDriver\PluginManager')
+                    $this->createMock(\VuFindSearch\Service::class),
+                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
                 ]
             )->getMock();
         $this->driver = new NoILS($this->loader);

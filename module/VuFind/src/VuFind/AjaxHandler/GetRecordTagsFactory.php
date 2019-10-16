@@ -62,10 +62,10 @@ class GetRecordTagsFactory implements \Zend\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $tablePluginManager->get('VuFind\Db\Table\Tags'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $tablePluginManager->get(\VuFind\Db\Table\Tags::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ViewRenderer')
         );
     }

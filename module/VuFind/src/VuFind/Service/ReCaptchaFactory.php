@@ -61,7 +61,8 @@ class ReCaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $siteKey = isset($config->Captcha->siteKey)
             ? $config->Captcha->siteKey
             : (isset($config->Captcha->publicKey)
@@ -72,8 +73,9 @@ class ReCaptchaFactory implements FactoryInterface
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $httpClient = $container->get('VuFindHttp\HttpService')->createClient();
-        $translator = $container->get('Zend\Mvc\I18n\Translator');
+        $httpClient = $container->get(\VuFindHttp\HttpService::class)
+            ->createClient();
+        $translator = $container->get(\Zend\Mvc\I18n\Translator::class);
         $rcOptions = ['lang' => $translator->getLocale()];
         if (isset($config->Captcha->theme)) {
             $rcOptions['theme'] = $config->Captcha->theme;

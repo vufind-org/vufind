@@ -84,7 +84,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $writer = new \Zend\Log\Writer\Mock();
         $logger->addWriter($writer);
 
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -202,7 +202,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($configData, $val);
 
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
@@ -2220,7 +2220,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $dummyILS = new DummyILS();
 
-        $sm = $this->getMockBuilder('VuFind\ILS\Driver\PluginManager')
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $sm->expects($this->any())
             ->method('get')
@@ -2282,7 +2282,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockILSAuthenticator($userSource = '')
     {
-        $mockAuth = $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
             ->getMock();
         if ($userSource) {
@@ -2309,7 +2309,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $configData = ['config' => 'values'];
         $config = new \Zend\Config\Config($configData);
-        $mockPM = $this->createMock('\VuFind\Config\PluginManager');
+        $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will($this->returnValue($config));
@@ -2352,7 +2352,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockSM($times = null, $driver = 'Voyager', $return = null)
     {
-        $sm = $this->getMockBuilder('VuFind\ILS\Driver\PluginManager')
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $sm->expects($times === null ? $this->any() : $times)
             ->method('get')
@@ -2368,14 +2368,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockDemoDriver($methods)
     {
-        $session = $this->getMockBuilder('Zend\Session\Container')
+        $session = $this->getMockBuilder(\Zend\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setMethods($methods)
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
-                    $this->createMock('VuFindSearch\Service'),
+                    $this->createMock(\VuFindSearch\Service::class),
                     function () use ($session) {
                         return $session;
                     }
@@ -2458,6 +2458,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * @throws \VuFind\Exception\ILS
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getStatus($id)
     {
@@ -2474,6 +2476,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array of getStatus() return values on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getStatuses($ids)
     {
@@ -2488,13 +2492,16 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws \VuFind\Exception\ILS
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return [];
     }
@@ -2509,6 +2516,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws \VuFind\Exception\ILS
      * @return array     An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

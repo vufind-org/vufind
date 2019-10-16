@@ -166,7 +166,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = $this->serviceLocator->get('VuFind\Cache\Manager');
+        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -181,7 +181,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = $this->serviceLocator->get('VuFind\Cache\Manager');
+        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
@@ -355,7 +355,8 @@ class InstallController extends AbstractBase
                 try {
                     $dbName = ($view->driver == 'pgsql')
                         ? 'template1' : $view->driver;
-                    $db = $this->serviceLocator->get('VuFind\Db\AdapterFactory')
+                    $db = $this->serviceLocator
+                        ->get(\VuFind\Db\AdapterFactory::class)
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()
@@ -392,7 +393,7 @@ class InstallController extends AbstractBase
                             $db->query($query, $db::QUERY_MODE_EXECUTE);
                         }
                         $dbFactory = $this->serviceLocator
-                            ->get('VuFind\Db\AdapterFactory');
+                            ->get(\VuFind\Db\AdapterFactory::class);
                         $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
                         );
@@ -453,11 +454,13 @@ class InstallController extends AbstractBase
             return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
+        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}'"
+            . "IDENTIFIED BY {$escapedPass}";
         $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
             . $view->dbname
             . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
-            . "IDENTIFIED BY {$escapedPass} WITH GRANT OPTION";
-        return [$create, $grant, 'FLUSH PRIVILEGES'];
+            . "WITH GRANT OPTION";
+        return [$create, $user, $grant, 'FLUSH PRIVILEGES'];
     }
 
     /**
@@ -586,7 +589,7 @@ class InstallController extends AbstractBase
     protected function testSearchService()
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $searchService = $this->serviceLocator->get('VuFindSearch\Service');
+        $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
         $searchService->retrieve('Solr', '1');
     }
 
@@ -801,7 +804,7 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
         try {
-            $this->serviceLocator->get('VuFindHttp\HttpService')
+            $this->serviceLocator->get(\VuFindHttp\HttpService::class)
                 ->get('https://google.com');
             $status = true;
         } catch (\VuFindHttp\Exception\RuntimeException $e) {

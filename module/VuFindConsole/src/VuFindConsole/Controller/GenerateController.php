@@ -357,7 +357,7 @@ class GenerateController extends AbstractBase
         }
 
         // Use the theme generator to create and configure the theme:
-        $generator = $this->serviceLocator->get('VuFindTheme\ThemeGenerator');
+        $generator = $this->serviceLocator->get(\VuFindTheme\ThemeGenerator::class);
         if (!$generator->generate($name)
             || !$generator->configure($this->getConfig(), $name)
         ) {
@@ -384,7 +384,7 @@ class GenerateController extends AbstractBase
         }
 
         // Use the theme generator to create and configure the theme:
-        $generator = $this->serviceLocator->get('VuFindTheme\MixinGenerator');
+        $generator = $this->serviceLocator->get(\VuFindTheme\MixinGenerator::class);
         if (!$generator->generate($name)) {
             Console::writeLine($generator->getLastError());
             return $this->getFailureResponse();
@@ -402,6 +402,8 @@ class GenerateController extends AbstractBase
      */
     protected function getGeneratorTools()
     {
-        return $this->serviceLocator->get('VuFindConsole\Generator\GeneratorTools');
+        return $this->serviceLocator->get(
+            \VuFindConsole\Generator\GeneratorTools::class
+        );
     }
 }

@@ -62,11 +62,11 @@ class ChannelLoaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('channels'),
-            $container->get('VuFind\Cache\Manager'),
-            $container->get('VuFind\ChannelProvider\PluginManager'),
-            $container->get('VuFind\Search\SearchRunner'),
-            $container->get('VuFind\Record\Loader')
+            $container->get(\VuFind\Config\PluginManager::class)->get('channels'),
+            $container->get(\VuFind\Cache\Manager::class),
+            $container->get(\VuFind\ChannelProvider\PluginManager::class),
+            $container->get(\VuFind\Search\SearchRunner::class),
+            $container->get(\VuFind\Record\Loader::class)
         );
     }
 }

@@ -62,7 +62,7 @@ class SearchOptionsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Options\PluginManager')
+            $container->get(\VuFind\Search\Options\PluginManager::class)
         );
     }
 }

@@ -154,7 +154,7 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getMockPmd($config = false)
     {
-        $mockPmd = $this->getMockBuilder('\VuFind\Role\PermissionDeniedManager')
+        $mockPmd = $this->getMockBuilder(\VuFind\Role\PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
         $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
@@ -171,7 +171,7 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getMockPm($isAuthorized = false)
     {
-        $mockPm = $this->getMockBuilder('\VuFind\Role\PermissionManager')
+        $mockPm = $this->getMockBuilder(\VuFind\Role\PermissionManager::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockPm->expects($this->any())->method('isAuthorized')
@@ -189,7 +189,7 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder('VuFind\View\Helper\Root\Context')
+        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
             ->disableOriginalConstructor()->getMock();
     }
 

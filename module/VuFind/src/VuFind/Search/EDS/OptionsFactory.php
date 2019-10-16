@@ -61,11 +61,12 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new \Zend\Session\Container(
-            'EBSCO', $container->get('Zend\Session\SessionManager')
+            'EBSCO', $container->get(\Zend\Session\SessionManager::class)
         );
         // No API info in session? Re-establish connection:
         if (!isset($session->info)) {
-            $backend = $container->get('VuFind\Search\BackendManager')->get('EDS');
+            $backend = $container->get(\VuFind\Search\BackendManager::class)
+                ->get('EDS');
             $backend->getSessionToken();
         }
         return parent::__invoke($container, $requestedName, [$session->info]);

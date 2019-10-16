@@ -170,7 +170,7 @@ class Loader extends \VuFind\ImageLoader
         $code = new QrCode($text);
         $code->setWriterByName('png');
         $code->setMargin($margin);
-        $code->setErrorCorrectionLevel($level);
+        $code->setErrorCorrectionLevel(new ErrorCorrectionLevel($level));
         $code->setSize($size);
         $code->setEncoding('UTF-8');
 

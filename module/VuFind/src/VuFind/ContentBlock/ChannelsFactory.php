@@ -63,7 +63,7 @@ class ChannelsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get('Request'),
-            $container->get('VuFind\ChannelProvider\ChannelLoader')
+            $container->get(\VuFind\ChannelProvider\ChannelLoader::class)
         );
     }
 }

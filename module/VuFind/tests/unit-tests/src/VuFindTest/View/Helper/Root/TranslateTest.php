@@ -220,7 +220,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testLocaleWithTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock('Zend\I18n\Translator\Translator');
+        $translator = $this->createMock(\Zend\I18n\Translator\Translator::class);
         $translator->expects($this->once())->method('getLocale')
             ->will($this->returnValue('foo'));
         $translate->setTranslator($translator);
@@ -235,7 +235,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testGetTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }
@@ -252,7 +252,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         $callback = function ($str, $domain) use ($translations) {
             return $translations[$domain][$str] ?? $str;
         };
-        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         return $translator;

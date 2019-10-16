@@ -208,17 +208,17 @@ class SearchTabsHelperTest extends TestCase
     protected function getSearchTabsHelper($config = 'default_unfiltered',
         $filters = null
     ) {
-        $mockRequest = $this->createMock('Zend\Http\Request');
+        $mockRequest = $this->createMock(\Zend\Http\Request::class);
         $mockRequest->expects($this->any())
             ->method('getQuery')
             ->with($this->equalTo('hiddenFilters'))
             ->willReturn($filters);
 
-        $configManager = $this->createMock('VuFind\Config\PluginManager');
+        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
 
-        $mockSolrOptions = $this->getMockBuilder('VuFind\Search\Solr\Options')
+        $mockSolrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();
-        $mockSolr = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $mockSolr = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $mockSolr->expects($this->any())
             ->method('getParams')
@@ -226,9 +226,9 @@ class SearchTabsHelperTest extends TestCase
                 new \VuFind\Search\Solr\Params($mockSolrOptions, $configManager)
             );
 
-        $mockPrimoOptions = $this->getMockBuilder('VuFind\Search\Primo\Options')
+        $mockPrimoOptions = $this->getMockBuilder(\VuFind\Search\Primo\Options::class)
             ->disableOriginalConstructor()->getMock();
-        $mockPrimo = $this->getMockBuilder('VuFind\Search\Primo\Results')
+        $mockPrimo = $this->getMockBuilder(\VuFind\Search\Primo\Results::class)
             ->disableOriginalConstructor()->getMock();
         $mockPrimo->expects($this->any())
             ->method('getParams')
@@ -236,7 +236,7 @@ class SearchTabsHelperTest extends TestCase
                 new \VuFind\Search\Primo\Params($mockPrimoOptions, $configManager)
             );
 
-        $mockResults = $this->createMock('VuFind\Search\Results\PluginManager');
+        $mockResults = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockResults->expects($this->any())
             ->method('get')
             ->will(

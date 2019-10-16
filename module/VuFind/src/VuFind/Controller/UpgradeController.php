@@ -237,7 +237,7 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $factory = $this->serviceLocator->get('VuFind\Db\AdapterFactory');
+            $factory = $this->serviceLocator->get(\VuFind\Db\AdapterFactory::class);
             $adapter = $factory->getAdapter(
                 $this->session->dbRootUser, $this->session->dbRootPass
             );
@@ -302,7 +302,7 @@ class UpgradeController extends AbstractBase
     protected function fixSearchChecksumsInDatabase()
     {
         $manager = $this->serviceLocator
-            ->get('VuFind\Search\Results\PluginManager');
+            ->get(\VuFind\Search\Results\PluginManager::class);
         $search = $this->getTable('search');
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $search->select($searchWhere);
@@ -498,7 +498,8 @@ class UpgradeController extends AbstractBase
                 // If this is a MySQL connection, we can do an automatic upgrade;
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
-                $adapter = $this->serviceLocator->get('Zend\Db\Adapter\Adapter');
+                $adapter = $this->serviceLocator
+                    ->get(\Zend\Db\Adapter\Adapter::class);
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
@@ -597,7 +598,7 @@ class UpgradeController extends AbstractBase
                 try {
                     // Query a table known to exist
                     $factory = $this->serviceLocator
-                        ->get('VuFind\Db\AdapterFactory');
+                        ->get(\VuFind\Db\AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query("SELECT * FROM user;");
                     $this->session->dbRootUser = $dbrootuser;
@@ -725,7 +726,7 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if ($this->formWasSubmitted('submit')) {
-            $converter = $this->serviceLocator->get('VuFind\Date\Converter');
+            $converter = $this->serviceLocator->get(\VuFind\Date\Converter::class);
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()
@@ -828,7 +829,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->serviceLocator->get('VuFind\Cache\Manager');
+        $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }

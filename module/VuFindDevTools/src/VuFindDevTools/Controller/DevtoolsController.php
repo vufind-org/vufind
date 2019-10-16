@@ -29,6 +29,7 @@
 namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
 
 /**
@@ -55,7 +56,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         try {
             $backend = $this->serviceLocator
-                ->get('VuFind\Search\BackendManager')
+                ->get(\VuFind\Search\BackendManager::class)
                 ->get($id);
         } catch (\Exception $e) {
             return null;
@@ -78,7 +79,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->serviceLocator->get('VuFind\Search\Results\PluginManager')
+                $this->serviceLocator->get(ResultsManager::class)
             );
         }
         if (isset($view->results) && $view->results) {

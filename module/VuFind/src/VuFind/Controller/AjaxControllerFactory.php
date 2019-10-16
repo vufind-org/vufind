@@ -61,7 +61,7 @@ class AjaxControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $pm = $container->get('VuFind\AjaxHandler\PluginManager');
+        $pm = $container->get(\VuFind\AjaxHandler\PluginManager::class);
         return new $requestedName($pm);
     }
 }

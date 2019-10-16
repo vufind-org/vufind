@@ -31,6 +31,7 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\PhpEnvironment\Request;
 
@@ -84,6 +85,9 @@ class Database extends AbstractBase
             throw new AuthException('authentication_error_invalid');
         }
 
+        // Verify email address:
+        $this->checkEmailVerified($user);
+
         // If we got this far, the login was successful:
         return $user;
     }
@@ -125,6 +129,9 @@ class Database extends AbstractBase
         // If we got this far, we're ready to create the account:
         $user = $this->createUserFromParams($params, $userTable);
         $user->save();
+
+        // Verify email address:
+        $this->checkEmailVerified($user);
 
         return $user;
     }
@@ -188,6 +195,28 @@ class Database extends AbstractBase
         }
         // Password policy
         $this->validatePasswordAgainstPolicy($params['password']);
+    }
+
+    /**
+     * Check if the user's email address has been verified (if necessary) and
+     * throws exception if not.
+     *
+     * @param \VuFind\Db\Row\User $user User to check
+     *
+     * @return void
+     * @throws AuthEmailNotVerifiedException
+     */
+    protected function checkEmailVerified($user)
+    {
+        $config = $this->getConfig();
+        $verify_email = $config->Authentication->verify_email ?? false;
+        if ($verify_email && !$user->checkEmailVerified()) {
+            $exception = new AuthEmailNotVerifiedException(
+                'authentication_error_email_not_verified_html'
+            );
+            $exception->user = $user;
+            throw $exception;
+        }
     }
 
     /**
