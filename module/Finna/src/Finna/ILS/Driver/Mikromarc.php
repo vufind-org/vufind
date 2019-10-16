@@ -152,6 +152,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'everything desc',
             ];
         }
+        if ('getTitleHoldBibLevels' === $function) {
+            return $this->getTitleHoldBibLevels();
+        }
         $functionConfig = $this->config[$function] ?? false;
         if ($functionConfig && 'onlinePayment' === $function) {
             $functionConfig['exactBalanceRequired'] = true;
@@ -1459,6 +1462,20 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get bibliograpcic levels for which title hold is allowed from ini file
+     *
+     * @return array|boolean array of bibliographic levels or false if not configured
+     */
+    public function getTitleHoldBibLevels()
+    {
+        if (isset($this->config['Holds']['titleHoldBibLevels'])) {
+            $bibLevels = explode(':', $this->config['Holds']['titleHoldBibLevels']);
+            return $bibLevels;
+        }
+        return false;
+    }
+
+    /**
      * Get Item Statuses
      *
      * This is responsible for retrieving the status information of a certain
@@ -1507,7 +1524,15 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             ];
 
             $unit = $this->getLibraryUnit($unitId);
+            $number = '';
+            $shelf = $item['Shelf'];
 
+            // Special case: detect if Shelf field has issue number information
+            // (e.g. 2018:4) and put the info into number field instead
+            if (preg_match('/^\d{4}:\d+$/', $shelf) === 1) {
+                $number = $shelf;
+                $shelf = '';
+            }
             $entry = [
                 'id' => $id,
                 'item_id' => $item['Id'],
@@ -1519,10 +1544,11 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'availability' => $available,
                 'status' => $statusCode,
                 'reserve' => 'N',
-                'callnumber' => $item['Shelf'],
+                'callnumber' => $shelf,
                 'duedate' => null,
                 'barcode' => $item['Barcode'],
                 'item_notes' => [isset($items['notes']) ? $item['notes'] : null],
+                'number' => $number,
             ];
 
             if (!empty($item['LocationId'])) {
@@ -1570,6 +1596,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getHoldingsSummary($holdings)
     {
         $holdable = false;
+        $titleHold = true;
         $availableTotal = $itemsTotal = $orderedTotal = $reservationsTotal = 0;
         $locations = [];
         foreach ($holdings as $item) {
@@ -1585,6 +1612,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
 
             if ($item['is_holdable']) {
                 $holdable = true;
+            }
+            if (!empty($item['number'])) {
+                $titleHold = false;
             }
             $itemsTotal++;
         }
@@ -1602,7 +1632,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
            'availability' => null,
            'callnumber' => null,
            'location' => null,
-           'groupBranches' => false
+           'groupBranches' => false,
+           'titleHold' => $titleHold
         ];
     }
 
@@ -2098,5 +2129,30 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             return $this->holdError($code, $result);
         }
         return ['success' => true];
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        if ('title' === $data['level']) {
+            $items = $this->getStatus($id);
+            $summary = array_pop($items);
+            if ((isset($summary['titleHold']) && $summary['titleHold'] === false)
+                || !$summary['holdable']
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }
