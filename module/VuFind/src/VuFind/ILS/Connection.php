@@ -31,6 +31,7 @@
  */
 namespace VuFind\ILS;
 
+use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
@@ -174,7 +175,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     protected function initializeDriver()
     {
-        $this->driver->setConfig($this->getDriverConfig());
+        try {
+            $this->driver->setConfig($this->getDriverConfig());
+        } catch (\Exception $e) {
+            // Any errors thrown during configuration should be cast to BadConfig
+            // so we can handle them differently from other runtime problems.
+            throw $e instanceof BadConfig
+                ? $e
+                : new BadConfig('Failure during configuration.', 0, $e);
+        }
         $this->driver->init();
         $this->driverInitialized = true;
     }
@@ -195,10 +204,20 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * If configured, fail over to the NoILS driver and return true; otherwise,
      * return false.
      *
+     * @param \Exception $e The exception that triggered the failover.
+     *
      * @return bool
      */
-    protected function failOverToNoILS()
+    protected function failOverToNoILS(\Exception $e = null)
     {
+        // If the exception is caused by a configuration error, the administrator
+        // needs to fix it, but failing over to NoILS will mask the error and cause
+        // confusion. We shouldn't do that!
+        if ($e instanceof BadConfig) {
+            return false;
+        }
+
+        // If we got this far, we want to proceed with failover...
         $this->failing = true;
 
         // Only fail over if we're configured to allow it and we haven't already
@@ -232,7 +251,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             try {
                 $this->initializeDriver();
             } catch (\Exception $e) {
-                if (!$this->failOverToNoILS()) {
+                if (!$this->failOverToNoILS($e)) {
                     throw $e;
                 }
             }
@@ -722,7 +741,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -757,7 +776,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -789,7 +808,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -873,7 +892,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             return $this->checkCapability('hasHoldings', [$id])
                 ? $this->getDriver()->hasHoldings($id) : true;
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -894,7 +913,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             return $this->checkCapability('loginIsHidden')
                 ? $this->getDriver()->loginIsHidden() : false;
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -1066,7 +1085,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
