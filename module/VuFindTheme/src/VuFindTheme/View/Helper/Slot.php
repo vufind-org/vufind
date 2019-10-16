@@ -94,7 +94,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
         if (!empty($pre) || !empty($post)) {
             // TODO: Warn about non-string blocks
             return trim(
-                implode(' ', $pre) . ' ' . $block . ' ' .implode(' ', $post)
+                implode(' ', $pre) . ' ' . $block . ' ' . implode(' ', $post)
             );
         }
         if (empty($block)) {
