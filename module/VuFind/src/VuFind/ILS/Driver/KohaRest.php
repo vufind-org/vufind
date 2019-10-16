@@ -925,12 +925,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
 
-        $result = $this->makeRequest(
-            ['v1', 'libraries'],
-            false,
-            'GET',
-            $patron
-        );
+        $result = $this->getBranches();
         if (empty($result)) {
             return [];
         }
@@ -2056,6 +2051,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get branches from cache or from the API
+     *
+     * @return array
+     */
+    protected function getBranches()
+    {
+        $cacheKey = 'branches';
+        $branches = $this->getCachedData($cacheKey);
+        if (null === $branches) {
+            $result = $this->makeRequest(
+                ['v1', 'libraries'], false, 'GET'
+            );
+            $branches = [];
+            foreach ($result as $branch) {
+                $branches[$branch['branchcode']] = $branch;
+            }
+            $this->putCachedData($cacheKey, $branches);
+        }
+        return $branches;
+    }
+
+    /**
      * Get patron's blocks, if any
      *
      * @param array $patron Patron
@@ -2226,18 +2243,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ? $item['holdingbranch'] : $item['homebranch'];
         $name = $this->translateLocation($branchId);
         if ($name === $branchId) {
-            $branches = $this->getCachedData('branches');
-            if (null === $branches) {
-                $result = $this->makeRequest(
-                    ['v1', 'libraries'], false, 'GET'
-                );
-                $branches = [];
-                foreach ($result as $branch) {
-                    $branches[$branch['branchcode']] = $branch['branchname'];
-                }
-                $this->putCachedData('branches', $branches);
-            }
-            $name = $branches[$branchId] ?? $branchId;
+            $branches = $this->getBranches();
+            $name = isset($branches[$branchId])
+                ? $branches[$branchId]['branchname'] : $branchId;
         }
         return $name;
     }
