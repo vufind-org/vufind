@@ -1,8 +1,8 @@
 <?php foreach($this->driver->getEnclosedTitlesWithAuthors() as $title_and_author_string): ?>
-  <?$title_and_author =  explode('|', $title_and_author_string);?>
+  <?php $title_and_author =  explode('|', $title_and_author_string);?>
   <?=$this->escapeHtml($title_and_author[0])?>
-  <?if (!empty($title_and_author[1])):?>
+  <?php if (!empty($title_and_author[1])): ?>
     &thinsp;(<?=$this->escapeHtml($title_and_author[1])?>)
-  <? endif;?>
+  <?php endif; ?>
   <br/>
 <?php endforeach; ?>

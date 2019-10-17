@@ -1,10 +1,10 @@
-<?
+<?php
 $countries = IxTheo\Auth\Database::$countries;
 $appellations = IxTheo\Auth\Database::$appellations;
 $titles = IxTheo\Auth\Database::$titles;
 ?>
 
-<? if (!$this->only_additional_information):
+<?php if (!$this->only_additional_information):
   $pattern = '';
   if (isset($this->passwordPolicy['pattern'])) {
     if ($this->passwordPolicy['pattern'] == 'numeric') {
@@ -49,25 +49,25 @@ $titles = IxTheo\Auth\Database::$titles;
     </div>
 </div>
 <hr/>
-<?endif;?>
+<?php endif;?>
 <div class="form-group row">
     <label class="col-sm-4 control-label" for="account_title"><?= $this->transEsc('Title') ?>:</label>
     <div class="col-sm-2">
         <select name="appellation" class="form-control">
             <option></option>
-            <? foreach ($appellations as $appellation): ?>
-                <? $selected = $this->request->get('appellation') === $appellation ? 'selected' : ''; ?>
+            <?php foreach ($appellations as $appellation): ?>
+                <?php $selected = $this->request->get('appellation') === $appellation ? 'selected' : ''; ?>
                 <option <?= $selected; ?> value="<?= $appellation; ?>"><?= $this->transEsc($appellation); ?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
         </select>
     </div>
     <div class="col-sm-6">
         <select name="title" class="form-control">
             <option></option>
-            <? foreach ($titles as $title): ?>
-                <? $selected = $this->request->get('title') == $title ? 'selected' : ''; ?>
+            <?php foreach ($titles as $title): ?>
+                <?php $selected = $this->request->get('title') == $title ? 'selected' : ''; ?>
                 <option <?= $selected; ?> value="<?= $title; ?>"><?= $this->transEsc($title); ?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
         </select>
     </div>
 </div>
@@ -84,7 +84,7 @@ $titles = IxTheo\Auth\Database::$titles;
                placeholder="<?= $this->transEsc('Last Name') ?>" class="form-control col-md-4"/>
     </div>
 </div>
-<? if ($this->only_additional_information): ?>
+<?php if ($this->only_additional_information): ?>
 <div class="form-group row">
     <label class="col-sm-4 control-label" for="account_email"><?= $this->transEsc('Email') ?>:</label>
     <div class="col-md-8">
@@ -93,7 +93,7 @@ $titles = IxTheo\Auth\Database::$titles;
                placeholder="<?= $this->transEsc('Email') ?>" class="form-control"/>
     </div>
 </div>
-<? endif; ?>
+<?php endif; ?>
 <div class="form-group row">
     <label class="col-sm-4 control-label" for="account_institution"><?= $this->transEsc('Institution') ?>:</label>
     <div class="col-md-8">
@@ -108,18 +108,18 @@ $titles = IxTheo\Auth\Database::$titles;
     <div class="col-md-4">
         <select id="account_country" name="country" class="form-control">
             <option></option>
-            <? foreach ($countries as $country): ?>
-                <? $selected = $this->request->get('country') == $country ? 'selected' : ''; ?>
+            <?php foreach ($countries as $country): ?>
+                <?php $selected = $this->request->get('country') == $country ? 'selected' : ''; ?>
                 <option <?= $selected; ?> value="<?= $country; ?>"><?= $this->transEsc($country); ?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
         </select>
     </div>
     <div class="col-md-4">
         <select id="account_country" name="language" class="form-control">
-            <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-                <? $selected = $this->request->get('language') === $langCode ? 'selected' : '';?>
+            <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                <?php $selected = $this->request->get('language') === $langCode ? 'selected' : '';?>
                 <option <?= $selected; ?> value="<?= $langCode; ?>"><?=$this->displayLanguageOption($langName)?></option>
-            <? endforeach; ?>
+            <?php endforeach; ?>
         </select>
     </div>
 </div>
