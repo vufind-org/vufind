@@ -185,12 +185,21 @@ class Form extends \VuFind\Form\Form
      */
     public function getRecipient()
     {
-        $recipient = parent::getRecipient();
+        $recipients = parent::getRecipient();
 
-        if (empty($recipient[1]) && $this->institutionEmail) {
-            return ['', $this->institutionEmail];
+        if (! $this->useEmailHandler()) {
+            // Return a single "receiver" so that the response does not
+            // get saved multiple times to the database.
+            return [$recipients[0]];
         }
-        return $recipient;
+
+        foreach ($recipients as &$recipient) {
+            if (empty($recipient['email']) && $this->institutionEmail) {
+                $recipient['email'] = $this->institutionEmail;
+            }
+        }
+
+        return $recipients;
     }
 
     /**
