@@ -83,7 +83,7 @@ class SolrMarc extends SolrDefault
         foreach ($results as $result) {
             $subfields = $this->getSubfieldArray($result, ['a', '2'], false);
             if ($subfields && count($subfields) == 2) {
-                if (strtolower($subfields[1]) == 'doi');
+                if (strtolower($subfields[1]) == 'doi')
                     return $subfields[0];
             }
         }
