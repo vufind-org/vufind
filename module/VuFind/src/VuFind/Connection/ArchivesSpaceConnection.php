@@ -135,10 +135,10 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
         $client->setUri($url);
         $client->setMethod('POST');
         $client->setParameterPost(
-                [
+            [
                 'password' => $password
                 ]
-            );
+        );
         $response = $client->send();
         if ($response->isSuccess()) {
             $phpNative = json_decode($response->getBody());
