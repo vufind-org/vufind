@@ -182,7 +182,7 @@ foreach ($this->statusItems as $item):
     <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?> clearfix">
       <div class="header">
         <?php if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><?php endif; ?>
-        <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
+        <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
           <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationText?></a>
         <?php else: ?>
@@ -214,7 +214,7 @@ foreach ($this->statusItems as $item):
     if (!$classes) {
       $classes = ['remove', 'error'];
     }
-    $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']);
+    $locationText = $this->transEscWithPrefix('location_', $item['location']);
     if ($item['locationhref'] ?? false) {
       $locationText = '<a href="' . $this->escapeHtmlAttr($item['locationhref']) . '" target="_blank">'
         . $locationText . '</a>';

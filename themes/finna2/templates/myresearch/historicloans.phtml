@@ -102,12 +102,12 @@
             </td>
             <td class="checkedout-status-information">
               <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
-                <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
+                <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
                 <br />
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
-                <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
+                <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
                 <br />
               <?php endif; ?>
 

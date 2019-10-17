@@ -146,7 +146,7 @@
                   </div>
                   <div class="half-table-column holds-status-information">
                     <?php if (!empty($ilsDetails['requestGroup'])): ?>
-                      <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], [], $this->transEsc('location_' . $ilsDetails['requestGroup'], [], $ilsDetails['requestGroup']))?>
+                      <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], [], $this->transEscWithPrefix('location_', $ilsDetails['requestGroup']))?>
                       <br />
                     <?php endif; ?>
 
