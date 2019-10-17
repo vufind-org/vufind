@@ -334,9 +334,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
                     'status' => $status,
-                    'location' => (string)$item->item_data->location,
+                    'location'
+                        => $this->getTranslatableString($item->item_data->location),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => (string)$item->holding_data->call_number,
+                    'callnumber' => $this->getTranslatableString(
+                        $item->holding_data->call_number
+                    ),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,
@@ -751,8 +754,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             'lastname'   => (isset($xml->last_name))
                                 ? (string)$xml->last_name
                                 : null,
-            'group'      => (isset($xml->user_group['desc']))
-                                ? (string)$xml->user_group['desc']
+            'group'      => isset($xml->user_group)
+                                ? $this->getTranslatableString($xml->user_group)
                                 : null,
             'group_code' => (isset($xml->user_group))
                                 ? (string)$xml->user_group
@@ -815,7 +818,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $created = (string)$fee->creation_time;
             $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"   => (string)($fee->title ?? ''),
+                "title"    => (string)($fee->title ?? ''),
                 "amount"   => round(floatval($fee->original_amount) * 100),
                 "balance"  => round(floatval($fee->balance) * 100),
                 "createdate" => $this->dateConverter->convertToDisplayDateAndTime(
@@ -826,7 +829,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'Y-m-d\TH:i:s.???T',
                     $checkout
                 ),
-                "fine"     => (string)$fee->type['desc']
+                "fine"     => $this->getTranslatableString($fee->type)
             ];
         }
         return $fineList;
@@ -1136,12 +1139,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
-                $loan['institution_name'] = (string)$itemLoan->library;
+                $loan['institution_name']
+                    = $this->getTranslatableString($itemLoan->library);
                 //$loan['isbn'] = ;
                 //$loan['issn'] = ;
                 //$loan['oclc'] = ;
                 //$loan['upc'] = ;
-                $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
+                $loan['borrowingLocation']
+                    = $this->getTranslatableString($itemLoan->circ_desk);
 
                 // Calculate due status
                 $dueDateTS = strtotime($loan['duedate']);
@@ -1711,6 +1716,24 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 ? (string)$email->email_address : null;
         }
         return null;
+    }
+
+    /**
+     * Gets a translatable string from an element with content and a desc attribute.
+     *
+     * @param SimpleXMLElement $element XML element
+     *
+     * @return \VuFind\I18n\TranslatableString
+     */
+    protected function getTranslatableString($element)
+    {
+        if (null === $element) {
+            return null;
+        }
+        $value = ($this->config['Catalog']['translationPrefix'] ?? '')
+            . (string)$element;
+        $desc = $element->attributes()->desc ?? $value;
+        return new \VuFind\I18n\TranslatableString($value, $desc);
     }
 
     /**

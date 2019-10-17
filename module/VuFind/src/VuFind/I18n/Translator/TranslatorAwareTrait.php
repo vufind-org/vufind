@@ -122,6 +122,32 @@ trait TranslatorAwareTrait
     }
 
     /**
+     * Translate a string (or string-castable object) using a prefix, or without the
+     * prefix if a prefixed translation is not found.
+     *
+     * @param string              $prefix  Translation key prefix
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
+     *
+     * @return string
+     */
+    public function translateWithPrefix($prefix, $target, $tokens = [],
+        $default = null
+    ) {
+        if (is_string($target)) {
+            if (null === $default) {
+                $default = $target;
+            }
+            $target = $prefix . $target;
+        }
+        return $this->translate($target, $tokens, $default);
+    }
+
+    /**
      * Get translation for a string
      *
      * @param string $str     String to translate
@@ -140,7 +166,8 @@ trait TranslatorAwareTrait
 
         // Did the translation fail to change anything?  If so, use default:
         if (null !== $default && $msg == $str) {
-            $msg = $default;
+            $msg = $default instanceof \VuFind\I18n\TranslatableStringInterface
+                ? $default->getDisplayString() : $default;
         }
 
         // Do we need to perform substitutions?
