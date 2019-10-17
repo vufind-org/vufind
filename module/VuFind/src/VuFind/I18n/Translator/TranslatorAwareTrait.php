@@ -122,8 +122,10 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Translate a location string (or string-castable object)
+     * Translate a string (or string-castable object) using a prefix, or without the
+     * prefix if a prefixed translation is not found.
      *
+     * @param string              $prefix  Translation key prefix
      * @param string|object|array $target  String to translate or an array of text
      * domain and string to translate
      * @param array               $tokens  Tokens to inject into the translated
@@ -133,13 +135,14 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translateLocation($target, $tokens = [], $default = null)
-    {
+    public function translateWithPrefix($prefix, $target, $tokens = [],
+        $default = null
+    ) {
         if (is_string($target)) {
             if (null === $default) {
                 $default = $target;
             }
-            $target = "location_$target";
+            $target = $prefix . $target;
         }
         return $this->translate($target, $tokens, $default);
     }

@@ -369,7 +369,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 'availability' =>
                     $details['available'] ?? false,
                 'location' => htmlentities(
-                    $this->translateLocation($location),
+                    $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>

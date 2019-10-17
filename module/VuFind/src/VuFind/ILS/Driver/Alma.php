@@ -362,9 +362,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
                     'status' => $status,
-                    'location' => (string)$item->item_data->location,
+                    'location'
+                        => $this->getTranslatableString($item->item_data->location),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => (string)$item->holding_data->call_number,
+                    'callnumber' => $this->getTranslatableString(
+                        $item->holding_data->call_number
+                    ),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,

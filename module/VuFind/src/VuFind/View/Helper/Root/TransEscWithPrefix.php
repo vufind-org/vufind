@@ -1,6 +1,6 @@
 <?php
 /**
- * Translate + escape location view helper
+ * Translate with prefix + escape view helper
  *
  * PHP version 7
  *
@@ -30,9 +30,9 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Translate + escape location view helper
+ * Translate with prefix + escape view helper
  *
- * Like transEsc, but applies a location_ prefix if needed.
+ * Like transEsc, but applies a prefix to the translation key.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscLocation extends \Zend\View\Helper\AbstractHelper
+class TransEscWithPrefix extends \Zend\View\Helper\AbstractHelper
     implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -49,6 +49,7 @@ class TransEscLocation extends \Zend\View\Helper\AbstractHelper
     /**
      * Translate and escape a location
      *
+     * @param string        $prefix  Translation key prefix
      * @param string|object $str     String to translate
      * @param array         $tokens  Tokens to inject into the translated string
      * @param string        $default Default value to use if no translation is found
@@ -56,9 +57,11 @@ class TransEscLocation extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
+    public function __invoke($prefix, $str, $tokens = [], $default = null)
     {
         $escaper = $this->getView()->plugin('escapeHtml');
-        return $escaper($this->translateLocation($str, $tokens, $default));
+        return $escaper(
+            $this->translateWithPrefix($prefix, $str, $tokens, $default)
+        );
     }
 }
