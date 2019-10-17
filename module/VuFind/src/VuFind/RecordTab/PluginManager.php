@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'archivesspace' => ArchivesSpace::class,
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
         'componentparts' => ComponentParts::class,
@@ -72,6 +73,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        ArchivesSpace::class => ArchivesSpaceFactory::class,
         CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
         CollectionList::class => CollectionListFactory::class,
         ComponentParts::class => ComponentPartsFactory::class,
