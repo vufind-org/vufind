@@ -5,18 +5,18 @@
         <th class="col-sm-1"></th>
         <th class="col-sm-2 col-xs-4"></th>
     </tr>
-    <? if (!empty($this->results)): ?>
-        <? $r = $this->results->getResults() ?>
-        <? if (!empty($r)): ?>
-            <? foreach ($this->results->getResults() as $current): ?>
+    <?php if (!empty($this->results)): ?>
+        <?php $r = $this->results->getResults() ?>
+        <?php if (!empty($r)): ?>
+            <?php foreach ($this->results->getResults() as $current): ?>
                 <tr>
                     <td>
-                        <?$first = true;?>
-                        <? foreach (preg_split("~(?<!\\\)/~", $current['value']) as $term): ?>
+                        <?php $first = true;?>
+                        <?php foreach (preg_split("~(?<!\\\)/~", $current['value']) as $term): ?>
                             <?=$first ? '' : ' / '; $first = false; ?>
                             <a href="<?= $this->url('keywordchainsearch-results') ?>?lookfor=<?= urlencode('"' . $term . '"') ?>" data-toggle="tooltip" title="<?=$this->transEsc('tooltip_add_remove_with_shift', array(), '')?>">
                                 <span class="kwc_single_term" style="padding:5px;"><?= $this->escapeHtml(str_replace("\\/","/", $term)) ?></span></a>
-                        <? endforeach; ?>
+                        <?php endforeach; ?>
                     </td>
                     <td>
                         <span class="badge"><?=$this->escapeHtml($current['count'])?></span>
@@ -34,9 +34,9 @@
                         </a>
                     </td>
                 </tr>
-            <? endforeach; ?>
-        <? endif; ?>
-    <? endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endif; ?>
     </tbody>
 </table>
 <script>
