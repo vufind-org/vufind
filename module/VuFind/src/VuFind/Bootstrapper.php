@@ -110,7 +110,7 @@ class Bootstrapper
      */
     protected function initTestMode()
     {
-        // If we're in test mode (as determined by the config.ini property installed)
+        // If we're in test mode (as determined by the config.ini property installed
         // by the build.xml startup process), set a cookie so the front-end code can
         // act accordingly. (This is needed to work around a problem where opening
         // print dialogs during testing stalls the automated test process).
