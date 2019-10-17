@@ -1,0 +1,99 @@
+<style>
+
+	.adjustedFontSize {
+		font-size: 1.1em
+	}
+
+</style>
+
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb());
+
+    //  Calls to the ArchivesSpace API
+    $resource = $this->tab->getSummaryInfo();
+    $tree = $this->tab->makeRequestFor($resource->tree->ref);
+?>
+
+
+
+ <h4><b><span class='adjustedFontSize'><?= $resource->title ?></span></b></h4>
+
+ <h5><b><span class='adjustedFontSize'>Size:</span></b> <?= $resource->extents[0]->extent_type; ?></h5>
+
+ <h5><b><span class='adjustedFontSize'>Call Number:</span></b> <?= $resource->id_0; ?></h5>
+ <br>
+
+<?php
+
+	 $notes = $resource->notes;
+
+	 foreach($notes as $note) {
+
+	    echo "<h4><b><span class='adjustedFontSize'>" . $this->translate($note->type). "</span></b></h4>";
+	    if ($note->jsonmodel_type == "note_singlepart") {
+	        $contentArray = $note->content;
+	        foreach($contentArray as $noteContent) {
+	           echo $noteContent;
+	           echo "<br>";
+	        }
+	    }
+	    else {
+	        $subnotes = $note->subnotes;
+	        foreach($subnotes as $subnote) {
+	            echo $subnote->content;
+	            echo "<br>";
+	        }
+	    }
+	    echo "<br>";
+
+	 }
+
+	 echo "<h4><b><span class='adjustedFontSize'>Content</span></b></h4>";
+
+
+	 $children = $tree->children;
+	 foreach($children as $child) {
+	    echo "<a href='#" . $child->id ."'>" . $child->title . "</a>";
+	    echo "<br>";
+	 }
+	 echo "<br><br>";
+	 
+	 $children = $tree->children;
+	 foreach($children as $child) {
+	    echo "<br>";
+	    echo "<a name='" . $child->id . "'></a>";
+	    echo "<h4><b><span class='adjustedFontSize'>" . $child->title . "</span></b></h4>";
+	    echo "<ul>";
+	    foreach($child->children as $subchild) {
+	    	//NOTE: FOR VERY LARGE FINDING AIDS MAKING THESE ADDITIONAL API CALLS TO DISPLAY
+	    	//DETAILS TAKES TOO MUCH TIME, SO I REMOVED THIS CODE
+	    	//LEAVING IT HERE FOR REFERENCE/FUTURE USE
+
+	        //$containerInfo = $this->tab->makeRequestFor($subchild->record_uri);
+	        echo "<li><b>" . $subchild->title . "</b></li>";
+	        //echo "<li><b>" . $containerInfo->display_string . "</b></li>";
+	        //echo $containerInfo->instances[0]->container->type_1;
+	        //echo "&nbsp;&nbsp";
+	        //echo $containerInfo->instances[0]->container->indicator_1;
+	        //echo "&nbsp;&nbsp";
+	        //echo $containerInfo->instances[0]->container->type_2;
+	        //echo "&nbsp;&nbsp";
+	        //echo $containerInfo->instances[0]->container->indicator_2;
+	        //echo "<br>";
+
+	        //foreach($containerInfo->notes as $n) {
+	        //    foreach($n->subnotes as $subn) {
+	        //        echo $subn->content;
+	        //        echo "<br>";
+	        //    }
+	        //}
+	        echo "<br>";
+
+	    }
+	    echo "</ul>";
+	 }
+
+
+
+?>
