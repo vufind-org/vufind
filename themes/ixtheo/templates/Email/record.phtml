@@ -4,7 +4,7 @@
 ------------------------------------------------------------
   <?=$this->driver->getBreadcrumb()?>
 
-  <?$realm = basename(getenv('VUFIND_LOCAL_DIR'))?>
+  <?php $realm = basename(getenv('VUFIND_LOCAL_DIR'))?>
 <?=$this->translate('email_link_' . $realm)?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
