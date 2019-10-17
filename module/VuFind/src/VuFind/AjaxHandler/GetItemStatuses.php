@@ -165,9 +165,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         // send back the first list value:
         if ($mode == 'first' || count($list) == 1) {
             if ($transPrefix) {
-                $str = $list[0] instanceof \VuFind\I18n\TranslatableString
-                    ? $list[0] : $transPrefix . $list[0];
-                return $this->translate($str, [], $list[0]);
+                return $this->translateWithPrefix($transPrefix, $list[0]);
             }
             return $list[0];
         } elseif (count($list) == 0) {
