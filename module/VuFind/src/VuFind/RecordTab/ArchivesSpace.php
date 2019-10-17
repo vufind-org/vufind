@@ -67,19 +67,17 @@ class ArchivesSpace extends AbstractBase
         return 'Finding Aid';
     }
 
-
-     /**
-      * Is this tab active?
-      *
-      * @return bool
-      */
+    /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
     public function isActive()
     {
         return $this->connector->isActive($this->getRecordDriver()->tryMethod('getFindingAids'));
     }
 
-
-    public function getSummaryInfo() 
+    public function getSummaryInfo()
     {
         return $this->connector->getSummaryInfo($this->getRecordDriver()->tryMethod('getFindingAidUrl')[0]);
     }
@@ -88,6 +86,4 @@ class ArchivesSpace extends AbstractBase
     {
         return $this->connector->makeRequestFor($url);
     }
-
-    
 }

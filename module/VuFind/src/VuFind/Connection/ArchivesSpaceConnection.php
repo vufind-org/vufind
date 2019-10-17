@@ -77,15 +77,16 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
         $this->config = $config;
     }
 
-     /**
-      * Is this tab active?
-      *
-      * @return bool
-      */
+    /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
     public function isActive($findingAid)
     {
         //is the ArchivesSpace Connector enabled in config file?
-        if (!$this->config['enabled']) { return false;
+        if (!$this->config['enabled']) {
+            return false;
         }
         //Check the 555 fields for an archivesspace url
         //Compare it with the host name from the archivesspace config file
@@ -95,33 +96,29 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
         return empty($matches) ? false : true;
     }
 
-
-
     /**
-     * API call requesting summary information about the finding aid 
+     * API call requesting summary information about the finding aid
      *
      * @return httpResponse body
      */
     public function getSummaryInfo($faUrl)
     {
-         //THE URL IN THE RECORD (555 FIELD) IS THE PUBLIC
-         //URL FOR THIS FINDING AID.
-         //EG: http://mylibrary.edu/repositories/7/resources/215
-         //THIS CODE GRABS THE END OF IT (/repositories/7/resources/215) 
-         //& COMBINES IT WITH
-         //THE BASE URL FOR THE API - TO DETERMINE THE INITIAL API
-         //CALL TO RETREIVE THE FINDING AID SUMMARY
-         //BETTER WAY TO DO THIS?
-         $host = $this->config['host'];
-         $arr = explode($host, $faUrl);
-         $resourceurl = $arr[1];
-         $baseurl = $this->config['baseapiurl'];
-         $url = $baseurl . $resourceurl;
-         $resource = $this->callAPI($url);
-         return $resource;
+        //THE URL IN THE RECORD (555 FIELD) IS THE PUBLIC
+        //URL FOR THIS FINDING AID.
+        //EG: http://mylibrary.edu/repositories/7/resources/215
+        //THIS CODE GRABS THE END OF IT (/repositories/7/resources/215)
+        //& COMBINES IT WITH
+        //THE BASE URL FOR THE API - TO DETERMINE THE INITIAL API
+        //CALL TO RETREIVE THE FINDING AID SUMMARY
+        //BETTER WAY TO DO THIS?
+        $host = $this->config['host'];
+        $arr = explode($host, $faUrl);
+        $resourceurl = $arr[1];
+        $baseurl = $this->config['baseapiurl'];
+        $url = $baseurl . $resourceurl;
+        $resource = $this->callAPI($url);
+        return $resource;
     }
-
-
 
     /**
      * authentication & save session id
@@ -130,65 +127,63 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
      */
     public function initSession()
     {
-            $baseurl = $this->config['baseapiurl'];
-            $userid =  $this->config['userid'];
-            $password = $this->config['password'];
-            $url = $baseurl . "/users/" . $userid . "/login";
-            $client = $this->client;
-            $client->setUri($url);
-            $client->setMethod('POST');
-            $client->setParameterPost(
-                array(
+        $baseurl = $this->config['baseapiurl'];
+        $userid =  $this->config['userid'];
+        $password = $this->config['password'];
+        $url = $baseurl . "/users/" . $userid . "/login";
+        $client = $this->client;
+        $client->setUri($url);
+        $client->setMethod('POST');
+        $client->setParameterPost(
+                [
                 'password' => $password
-                )
+                ]
             );
-            $response = $client->send();
+        $response = $client->send();
         if ($response->isSuccess()) {
-              $phpNative = json_decode($response->getBody());
-              $sessionid = $phpNative->session;
-              $this->sessionkey = $sessionid;
-        }
-        else {
+            $phpNative = json_decode($response->getBody());
+            $sessionid = $phpNative->session;
+            $this->sessionkey = $sessionid;
+        } else {
             $this->debug(
                 'HTTP status ' . $response->getStatusCode() .
                 ' received, initializing ArchivesSpace session using ID: ' . $userid
             );
             return false;
-        
         }
     }
 
-     /**
-      * calls the ArchivesSpace API
-      * using param $url
-      *
-      * @param string
-      *
-      * @return httpResponse body
-      */
-    public function callAPI($url) 
+    /**
+     * calls the ArchivesSpace API
+     * using param $url
+     *
+     * @param string
+     *
+     * @return httpResponse body
+     */
+    public function callAPI($url)
     {
-        if ($this->sessionkey == null) { $this->initSession();
+        if ($this->sessionkey == null) {
+            $this->initSession();
         }
         $client = $this->client;
         $client->setUri($url);
         $client->setMethod('GET');
-        $client->setHeaders(array('X-ArchivesSpace-Session'=>$this->sessionkey));
+        $client->setHeaders(['X-ArchivesSpace-Session'=>$this->sessionkey]);
         $client->setOptions(['timeout' => 60]);
         $response = $this->client->send();
         $responseBody =  json_decode($response->getBody());
         return $responseBody;
     }
 
-
-     /**
-      * combines base url with param $url
-      * triggers call to api
-      *
-      * @param string
-      *
-      * @return stdClass
-      */
+    /**
+     * combines base url with param $url
+     * triggers call to api
+     *
+     * @param string
+     *
+     * @return stdClass
+     */
     public function makeRequestFor($url)
     {
         $baseurl = $this->config['baseapiurl'];
@@ -196,9 +191,4 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
         $response = $this->callAPI($combinedUrl);
         return $response;
     }
-
-
-
-
-   
 }
