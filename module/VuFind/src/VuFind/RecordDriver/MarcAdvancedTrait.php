@@ -224,14 +224,28 @@ trait MarcAdvancedTrait
         return $record->toXML();
     }
 
-    /**
-     * Get notes on finding aids related to the record.
+     /**
+     * Used for the ArchivesSpace integration.
+     * Our convention is the ArchivesSpace
+     * finding aid URL will appear in the 555 field.
      *
      * @return array
      */
     public function getFindingAids()
     {
-        return $this->getFieldArray('555');
+        return $this->getFieldArray('555', ['a', 'u']);  
+    }
+
+    /**
+     * Used for the ArchivesSpace integration.
+     * Our convention is the ArchivesSpace
+     * finding aid URL will appear in the 555 field.
+     *
+     * @return array
+     */
+    public function getFindingAidUrl()
+    {
+         return $this->getFieldArray('555', ['u']);
     }
 
     /**
