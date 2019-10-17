@@ -69,13 +69,13 @@ class ArchivesSpace extends AbstractBase
 
 
      /**
-     * Is this tab active?
-     *
-     * @return bool
-     */
+      * Is this tab active?
+      *
+      * @return bool
+      */
     public function isActive()
     {
-       return $this->connector->isActive($this->getRecordDriver()->tryMethod('getFindingAids'));
+        return $this->connector->isActive($this->getRecordDriver()->tryMethod('getFindingAids'));
     }
 
 
