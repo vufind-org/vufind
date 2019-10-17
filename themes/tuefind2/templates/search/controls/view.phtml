@@ -4,8 +4,8 @@
       <?php if (!$viewData['selected']): ?>
         <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
       <?php endif; ?>
-      <i class="fa fa-<?=$viewType ?>"<? if($viewData['selected']): ?> title="<?=$this->transEsc($viewData['desc']) ?> <?=$this->transEsc('view already selected') ?>" <? endif ?> alt="<?=$this->transEsc($viewData['desc'])?>"></i>
-      <?=$this->transEsc($viewData['desc']) ?><? if (!$viewData['selected']): ?></a><? endif; ?>&nbsp;
+      <i class="fa fa-<?=$viewType ?>"<?php if($viewData['selected']): ?> title="<?=$this->transEsc($viewData['desc']) ?> <?=$this->transEsc('view already selected') ?>" <?php endif ?> alt="<?=$this->transEsc($viewData['desc'])?>"></i>
+      <?=$this->transEsc($viewData['desc']) ?><?php if (!$viewData['selected']): ?></a><?php endif; ?>&nbsp;
     <?php endforeach; ?>
   <?php endif; ?>
 </div>

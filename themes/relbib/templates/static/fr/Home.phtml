@@ -34,14 +34,14 @@
         border: 1px solid #ddd;
         border-radius: .25em;
     }
-    
-    <!-- http://getbootstrap.com.vn/examples/equal-height-columns/equal-height-columns.css (10/24/16)--> 
+
+    <!-- http://getbootstrap.com.vn/examples/equal-height-columns/equal-height-columns.css (10/24/16)-->
     .row-eq-height {
         display: -webkit-box;
         display: -webkit-flex;
         display: -ms-flexbox;
         display: flex;
-    }  
+    }
 
     div.new {
         float: right;
@@ -49,7 +49,7 @@
     }
 </style>
 
-<?
+<?php
 $panelId = 0;
 $panelClass = "panel-default";
 $panelWidth = "col-md-6";
@@ -70,7 +70,7 @@ $panelWidth = "col-md-6";
                           de la bibliothèque centrale de l’Université de Tübingen.
                       </p>
                       <p>
-                          La banque de données contient présentement  <b><? include(dirname(__DIR__) . '/includes/relbib_journals_total.txt')?></b>
+                          La banque de données contient présentement  <b><?php include(dirname(__DIR__) . '/includes/relbib_journals_total.txt')?></b>
                           revues de sciences des religions générales ou comparées, de l’histoire des religions et de quelques autres domaines des sciences
                           culturelles. Nous cataloguons présentement le contenu des articles de
                           <b><?include(dirname(__DIR__) . '/includes/relbib_journals_evaluated.txt')?></b>
@@ -84,8 +84,8 @@ $panelWidth = "col-md-6";
                       </p>
                       <p>
                           RelBib est un service à libre accès gratuitement offert à la communauté mondiale de recherche en sciences des religions. L’éditeur de RelBib est
-                          la bibliothèque de l’Université de Tübingen. RelBib est conçu en collaboration avec <a href="https://ixtheo.de" target="_blank">IxTheo</a>, 
-                          la banque de données théologique, qui est développée et gérée par le Service spécialisé d’Information sur la Théologie. Cette collaboration permet de créer des 
+                          la bibliothèque de l’Université de Tübingen. RelBib est conçu en collaboration avec <a href="https://ixtheo.de" target="_blank">IxTheo</a>,
+                          la banque de données théologique, qui est développée et gérée par le Service spécialisé d’Information sur la Théologie. Cette collaboration permet de créer des
                           synergies facilitant la recherche et l’utilisation de contenus théologiques en supplément.
                       </p>
                       <p>
@@ -190,8 +190,8 @@ $panelWidth = "col-md-6";
                     <div class="read-more-target">
                         <h3>Fonction d’alerte</h3>
                         <p>Cette fonction vous tient au courant de la publication de nouveaux articles dans les revues et de nouveaux volumes dans les séries de monographies de votre choix.</p>
-                        <p>Pour activer cette fonction pour une publication, vous devez d’abord trouver l’enregistrement pour cette publication, puis cliquer sur le symbole en 
-                           forme de cloche situé à droite de l’entrée. 
+                        <p>Pour activer cette fonction pour une publication, vous devez d’abord trouver l’enregistrement pour cette publication, puis cliquer sur le symbole en
+                           forme de cloche situé à droite de l’entrée.
                         Vous pouvez gérer vos alertes dans votre compte sous la rubrique &raquo;liste d’alertes&raquo;.</p>
 
                         <p>1<sup>er</sup> exemple : Afin d’activer la fonction d’alerte pour la revue &raquo;Theologische Quartalschrift&raquo;, saisissez d’abord ce titre ou son abréviation &raquo;ThQ&raquo; dans le champ de recherche. Ensuite, choisissez &raquo;Périodique&raquo; dans la facette &raquo;Format&raquo;. Vous trouverez alors 2 titres : un pour la version imprimée, et un pour la version électronique de cette revue. Dans un cas semblable, il est plus sûr d’activer la fonction pour les deux versions.</p>
