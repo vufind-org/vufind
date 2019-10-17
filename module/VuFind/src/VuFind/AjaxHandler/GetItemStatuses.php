@@ -139,11 +139,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         $transList = [];
         foreach ($list as $current) {
-            $default = $current;
-            if (!($current instanceof \VuFind\I18n\TranslatableString)) {
-                $current = $transPrefix . $current;
-            }
-            $transList[] = $this->translate($current, [], $default);
+            $transList[] = $this->translateWithPrefix($transPrefix, $current);
         }
         return $transList;
     }
