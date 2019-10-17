@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Mailer;
 
-use VuFind\Mailer\Mailer;
 use VuFind\Mailer\Factory as MailerFactory;
+use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
