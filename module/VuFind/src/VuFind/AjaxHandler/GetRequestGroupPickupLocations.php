@@ -77,9 +77,8 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
                 $results = $this->ils->getPickupLocations($patron, $details);
                 foreach ($results as &$result) {
                     if (isset($result['locationDisplay'])) {
-                        $result['locationDisplay'] = $this->translate(
-                            'location_' . $result['locationDisplay'],
-                            [],
+                        $result['locationDisplay'] = $this->translateWithPrefix(
+                            'location_',
                             $result['locationDisplay']
                         );
                     }

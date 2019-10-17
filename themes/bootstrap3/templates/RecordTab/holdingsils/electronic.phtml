@@ -3,9 +3,9 @@
     <span class="holdings-title"><?=$this->transEsc('Electronic')?></span>
   </div>
   <?php foreach ($this->holdings as $item): ?>
-    <div class="holdings-container-heading">
-      <div class="location electronic">
-        <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
+    <tr>
+      <td class="fullLocation">
+        <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($item['locationhref']))?>" target="_blank">
             <i class="fa fa-external-link"></i> <?=$locationText?>
