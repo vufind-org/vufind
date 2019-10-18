@@ -121,7 +121,7 @@ class Redis extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -130,9 +130,10 @@ class Redis extends AbstractBase
 
         // Perform Redis-specific cleanup
         if ($this->redisVersion >= 4) {
-            $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
+            $return = $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
         } else {
-            $this->getConnection()->del("vufind_sessions/{$sess_id}");
+            $return = $this->getConnection()->del("vufind_sessions/{$sess_id}");
         }
+        return ($return > 0) ? true : false;
     }
 }
