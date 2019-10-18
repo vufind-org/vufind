@@ -1,6 +1,6 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
 class PRISM extends AbstractBase {
     // https://www.idealliance.org/prism-metadata

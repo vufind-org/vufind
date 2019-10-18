@@ -121,7 +121,7 @@ $config = [
             'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
-            'TueFind\Meta\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'TueFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -164,7 +164,7 @@ $config = [
     ],
     'vufind' => [
         'plugin_managers' => [
-            'meta' => [],
+            'metadatavocabulary' => [],
         ],
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\SolrAuthMarc' => [

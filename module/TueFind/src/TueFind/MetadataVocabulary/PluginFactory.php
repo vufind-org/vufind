@@ -1,6 +1,6 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
 use Interop\Container\ContainerInterface;
 
@@ -8,7 +8,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     public function __construct()
     {
-        $this->defaultNamespace = 'TueFind\Meta';
+        $this->defaultNamespace = 'TueFind\MetadataVocabulary';
     }
 
     public function __invoke(ContainerInterface $container, $requestedName,

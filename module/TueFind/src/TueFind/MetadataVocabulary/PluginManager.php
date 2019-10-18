@@ -1,6 +1,6 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager {
     public function __construct($configOrContainerInstance = null,
@@ -12,7 +12,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager {
 
     protected function getExpectedInterface()
     {
-        return MetaInterface::class;
+        return MetadataVocabularyInterface::class;
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
 class HighwirePress extends AbstractBase {
 

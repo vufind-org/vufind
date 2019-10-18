@@ -5,7 +5,7 @@ namespace TueFind\View\Helper\TueFind;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
-class MetaFactory implements FactoryInterface {
+class MetadataFactory implements FactoryInterface {
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
@@ -13,8 +13,8 @@ class MetaFactory implements FactoryInterface {
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        return new Meta(
-            $container->get('TueFind\Meta\PluginManager'),
+        return new Metadata(
+            $container->get('TueFind\MetadataVocabulary\PluginManager'),
             $container->get('VuFind\Config\PluginManager')->get('tuefind')
         );
     }

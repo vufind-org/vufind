@@ -1,8 +1,8 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
-abstract class AbstractBase implements MetaInterface {
+abstract class AbstractBase implements MetadataVocabularyInterface {
     protected $map = [];
     protected $metaHelper;
 

@@ -1,7 +1,7 @@
 <?php
 
-namespace TueFind\Meta;
+namespace TueFind\MetadataVocabulary;
 
-interface MetaInterface {
+interface MetadataVocabularyInterface {
     public function addMetatags(\VuFind\RecordDriver\DefaultRecord $driver);
 }

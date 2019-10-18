@@ -2,12 +2,12 @@
 
 namespace TueFind\View\Helper\TueFind;
 
-class Meta extends \Zend\View\Helper\AbstractHelper {
+class Metadata extends \Zend\View\Helper\AbstractHelper {
 
     protected $config;
     protected $pluginManager;
 
-    public function __construct(\TueFind\Meta\PluginManager $pluginManager,
+    public function __construct(\TueFind\MetadataVocabulary\PluginManager $pluginManager,
                                 \Zend\Config\Config $config)
     {
         $this->pluginManager = $pluginManager;
