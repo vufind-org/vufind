@@ -1732,7 +1732,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
-        $desc = $element->attributes()->desc ?? $value;
+        $desc = (string)($element->attributes()->desc ?? $value);
         return new \VuFind\I18n\TranslatableString($value, $desc);
     }
 
