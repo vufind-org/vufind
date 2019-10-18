@@ -3,7 +3,7 @@
 namespace TueFind\MetadataVocabulary;
 
 abstract class AbstractBase implements MetadataVocabularyInterface {
-    protected $map = [];
+    protected $vocabFieldToGenericFieldsMap = [];
     protected $metaHelper;
 
     public function __construct(\Zend\View\Helper\HeadMeta $metaHelper) {
@@ -11,17 +11,33 @@ abstract class AbstractBase implements MetadataVocabularyInterface {
     }
 
     public function addMetatags(\VuFind\RecordDriver\DefaultRecord $driver) {
-        $fieldToMethodMap = ['title' => $driver->getTitle(),
-                             'doi' => $driver->getCleanDOI(),
-                             'isbn' => $driver->getCleanISBN(),
-                             'issn' => $driver->getCleanISSN(),
-                             ];
+        $genericFieldsToValuesMap = ['author' => array_merge($driver->getPrimaryAuthors(),
+                                                     $driver->getSecondaryAuthors(),
+                                                     $driver->getCorporateAuthors()),
+                                     'container_title' => $driver->getContainerTitle(),
+                                     'date' => $driver->getPublicationDates(),
+                                     'doi' => $driver->getCleanDOI(),
+                                     'endpage' => $driver->getContainerEndPage(),
+                                     'isbn' => $driver->getCleanISBN(),
+                                     'issn' => $driver->getCleanISSN(),
+                                     'issue' => $driver->getContainerIssue(),
+                                     'language' => $driver->getLanguages(),
+                                     'publisher' => $driver->getPublishers(),
+                                     'startpage' => $driver->getContainerStartPage(),
+                                     'title' => $driver->getTitle(),
+                                     'volume' => $driver->getContainerVolume(),
+                                    ];
 
-        foreach ($fieldToMethodMap as $genericField => $value) {
-            if ($value != '') {
-                $targetField = $this->map[$genericField] ?? null;
-                if ($targetField !== null) {
-                    $this->metaHelper->appendName($targetField, $value);
+        foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genericFields) {
+            if (!is_array($genericFields))
+                $genericFields = [$genericFields];
+            foreach ($genericFields as $genericField) {
+                $values = $genericFieldsToValuesMap[$genericField] ?? [];
+                if ($values) {
+                    if (!is_array($values))
+                        $values = [$values];
+                    foreach ($values as $value)
+                        $this->metaHelper->appendName($vocabField, $value);
                 }
             }
         }
