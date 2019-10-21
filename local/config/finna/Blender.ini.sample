@@ -5,7 +5,10 @@ backend = Solr
 backend = Primo
 
 [Blending]
+; Result list position for records boosted from secondary. Position and count (below)
+; must fit within first 20 records or boosting will be ignored.
 boostPosition = 2
+; Number of records boosted from secondary
 boostCount = 3
 
 ; ---------- searches.ini settings ----------

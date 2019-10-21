@@ -104,7 +104,9 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         $this->config = $config;
         $this->mappings = $mappings;
 
-        $this->blendLimit = min(100, $this->config['Blending']['blendLimit'] ?? 100);
+        $boost = ($this->config['Blending']['boostPosition'] ?? 0)
+            + ($this->config['Blending']['boostCount'] ?? 0);
+        $this->blendLimit = max(20, $boost);
         $this->blockSize = $this->config['Blending']['blockSize'] ?? 10;
     }
 
