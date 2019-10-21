@@ -12,15 +12,15 @@ class Eprints extends AbstractBase {
                                                'eprints.title' => 'title',
                                             ];
 
-    public function addMetatags(\VuFind\RecordDriver\DefaultRecord $driver) {
+    public function addMetatags(\VuFind\RecordDriver\AbstractBase $driver) {
         parent::addMetatags($driver);
 
         // special handling for pagerange
-        $startpage = $driver->getContainerStartPage();
-        $endpage = $driver->getContainerEndPage();
+        $startpage = $driver->tryMethod('getContainerStartPage');
 
         if ($startpage) {
             $pagerange = $startpage;
+            $endpage = $driver->tryMethod('getContainerEndPage');
             if ($endpage != '' && $endpage != $startpage)
                 $pagerange = $startpage . '-' . $endpage;
             $this->metaHelper->appendName('eprints.pagerange', $pagerange);

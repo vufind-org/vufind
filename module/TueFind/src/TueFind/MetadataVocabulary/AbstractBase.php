@@ -10,22 +10,22 @@ abstract class AbstractBase implements MetadataVocabularyInterface {
         $this->metaHelper = $metaHelper;
     }
 
-    public function addMetatags(\VuFind\RecordDriver\DefaultRecord $driver) {
-        $genericFieldsToValuesMap = ['author' => array_merge($driver->getPrimaryAuthors(),
-                                                     $driver->getSecondaryAuthors(),
-                                                     $driver->getCorporateAuthors()),
-                                     'container_title' => $driver->getContainerTitle(),
-                                     'date' => $driver->getPublicationDates(),
-                                     'doi' => $driver->getCleanDOI(),
-                                     'endpage' => $driver->getContainerEndPage(),
-                                     'isbn' => $driver->getCleanISBN(),
-                                     'issn' => $driver->getCleanISSN(),
-                                     'issue' => $driver->getContainerIssue(),
-                                     'language' => $driver->getLanguages(),
-                                     'publisher' => $driver->getPublishers(),
-                                     'startpage' => $driver->getContainerStartPage(),
-                                     'title' => $driver->getTitle(),
-                                     'volume' => $driver->getContainerVolume(),
+    public function addMetatags(\VuFind\RecordDriver\AbstractBase $driver) {
+        $genericFieldsToValuesMap = ['author' => array_merge($driver->tryMethod('getPrimaryAuthors'),
+                                                     $driver->tryMethod('getSecondaryAuthors'),
+                                                     $driver->tryMethod('getCorporateAuthors')),
+                                     'container_title' => $driver->tryMethod('getContainerTitle'),
+                                     'date' => $driver->tryMethod('getPublicationDates'),
+                                     'doi' => $driver->tryMethod('getCleanDOI'),
+                                     'endpage' => $driver->tryMethod('getContainerEndPage'),
+                                     'isbn' => $driver->tryMethod('getCleanISBN'),
+                                     'issn' => $driver->tryMethod('getCleanISSN'),
+                                     'issue' => $driver->tryMethod('getContainerIssue'),
+                                     'language' => $driver->tryMethod('getLanguages'),
+                                     'publisher' => $driver->tryMethod('getPublishers'),
+                                     'startpage' => $driver->tryMethod('getContainerStartPage'),
+                                     'title' => $driver->tryMethod('getTitle'),
+                                     'volume' => $driver->tryMethod('getContainerVolume'),
                                     ];
 
         foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genericFields) {
