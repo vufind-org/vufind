@@ -4,7 +4,7 @@
 }
 
 .panel-home {
-    min-height: 300px;
+    min-height: 350px;
 }
 
 /*
@@ -12,12 +12,12 @@
 * - adjust size
 * - fix problems due to collisions with VuFind's similar items carousel
 */
+@ix-news-carousel-height: 300px;
 #ix-news-carousel {
-  height: 300px;
-  margin-bottom: 60px;
+  height: @ix-news-carousel-height;
 
   .item {
-    height: 300px;
+    height: @ix-news-carousel-height;
     background-color: #777;
   }
 
@@ -26,7 +26,7 @@
     top: 0;
     left: 0;
     min-width: 100%;
-    height: 300px;
+    height: @ix-news-carousel-height;
   }
 
   .glyphicon-chevron-left::before {

@@ -7,6 +7,7 @@ var TueFind2 = {
             MinHeight: 300
         }
     },
+    ExpandDropdownsOnHover: false,
 
     /**
     * - resize the box if we are not on the default page anymore (detected by url length)
@@ -21,3 +22,14 @@ var TueFind2 = {
         }
     }
 }
+
+$(function(){
+    if (TueFind2.ExpandDropdownsOnHover === true) {
+        $('.dropdown').hover(function() {
+            $(this).addClass('open');
+        },
+        function() {
+            $(this).removeClass('open');
+        });
+    }
+});
