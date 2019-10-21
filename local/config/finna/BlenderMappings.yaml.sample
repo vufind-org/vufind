@@ -41,6 +41,16 @@ Facets:
     Type: boolean
     Values:
       online_resources: true
+  open_access_boolean:
+    Secondary: tlevel
+    Type: boolean
+    Values:
+      open_access: true
+  peer_reviewed_boolean:
+    Secondary: tlevel
+    Type: boolean
+    Values:
+      peer_reviewed: true
 Search:
   Fields:
     AllFields: AllFields
