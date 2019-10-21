@@ -34,10 +34,6 @@ extraHoldFields = comments:requiredByDate:pickUpLocation
 ; 3) a value within the Location IDs returned by getPickUpLocations()
 defaultPickUpLocation = ""
 
-; Max. no. of items displayed in the holdings tab. A paginator is used when there are
-; more holdings to display.
-itemLimit = "10"
-
 
 ; The "NewUser" section defines some default values that are used when creating an account
 ; in Alma via its API. This is only relevant if you use the authentication method "AlmaDatabase"
