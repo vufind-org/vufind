@@ -188,20 +188,23 @@ class RecordCollection
             }
         }
         unset($values);
-        foreach ($secondary as $facet => $values) {
-            $mappings = [];
-            $facetType = '';
-            foreach ($this->mappings['Facets'] ?? [] as $key => $current) {
-                if ($facet === $current['Secondary']) {
-                    $facet = $key;
-                    $mappings = $current['Values'] ?? [];
-                    $facetType = $current['Type'] ?? '';
-                    break;
-                }
-            }
+
+        // Iterate through mappings and merge secondary values.
+        // It is vital to do it this way since multiple facets may map to a secondary
+        // facet in checkbox facets.
+        foreach ($this->mappings['Facets'] as $facet => $settings) {
+            $secondaryFacet = $settings['Secondary'];
+            $mappings = $settings['Values'] ?? [];
+            $facetType = $settings['Type'] ?? '';
+
+            $values = $secondary[$secondaryFacet] ?? [];
             if (is_object($values)) {
                 $values = $values->toArray();
             }
+            if (empty($values)) {
+                continue;
+            }
+
             $list = $facets[$facet] ?? [];
             foreach ($values as $field => $count) {
                 if (isset($mappings[$field])) {
