@@ -24,6 +24,10 @@
 <?php if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php elseif ($this->targets === null || !empty($this->targets)): ?>
+  <?php if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) >= 1): ?>
+    <h3><?=$this->transEsc('catalog_login_change_card_heading') ?></h3>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'])?>
+  <?php endif; ?>
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
@@ -68,9 +72,11 @@
     ?>
     <?=$this->partial("librarycards/library_card_terms_$language.phtml"); ?>
   <?php endif; ?>
-  <?php if (!$isPartial): ?>
-    </div>
-  <?php endif; ?>
+<?php endif; ?>
+<?php if (!$isPartial): ?>
+  </div>
+<?php endif; ?>
+
 <?php
   $labels = [];
   $manager = $this->auth()->getManager();
@@ -102,9 +108,3 @@ EOT;
   // Inline the script for lightbox compatibility
   echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 ?>
-
-  <?php if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) >= 1): ?>
-    <h3><?=$this->transEsc('catalog_login_change_card_heading') ?></h3>
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'])?>
-  <?php endif; ?>
-<?php endif; ?>
