@@ -65,7 +65,7 @@
       'searchParams' => $searchParams,
       'baseParams' => $formParams,
       'type' => $type,
-      'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
+      'backend' => (null === $module || $module == 'search') ? 'Solr' : $module,
       'daterangeFacet' => $daterangeFacetField,
       'plotFrom' => $plotFrom,
       'plotImmediately' => !in_array($facet, $collapsedFacets) ? 'true' : 'false'
