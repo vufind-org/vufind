@@ -121,7 +121,10 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
 
         // Save credentials if applicable:
         if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword ?? '');
+            $user->saveCredentials(
+                $user->cat_username,
+                $catPassword ?? $user->getCatPassword()
+            );
         }
 
         // Store logout URL in session:
