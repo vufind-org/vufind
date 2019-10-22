@@ -1,7 +1,8 @@
 <?php
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
-        $this->searchClassId = 'Solr';
+        $config = $this->config()->get('config');
+        $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
     }
 
     // Load search actions and settings (if any):
