@@ -374,6 +374,19 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
     }
+
+    /**
+     * Test connection reset
+     *
+     * @return void
+     */
+    public function testResetConnection()
+    {
+        $transport = $this->createMock(\Zend\Mail\Transport\Smtp::class);
+        $transport->expects($this->once())->method('disconnect');
+        $mailer = new Mailer($transport);
+        $mailer->resetConnection();
+    }
 }
 
 class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
