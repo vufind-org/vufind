@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c01f26599f0e078562a18c7fb8d23bd9",
+    "content-hash": "18aecdf224c0ef44221ceadd15cd098c",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2476,16 +2476,16 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b"
+                "reference": "f6516ae29ef60d6e99aaa53bd375fb894915ab2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2415b70424156ef9ebcbcff7900500c5fa62789b",
-                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/f6516ae29ef60d6e99aaa53bd375fb894915ab2c",
+                "reference": "f6516ae29ef60d6e99aaa53bd375fb894915ab2c",
                 "shasum": ""
             },
             "require": {
@@ -2527,7 +2527,7 @@
             ],
             "description": "VuFind HTTP service library",
             "homepage": "https://vufind.org/",
-            "time": "2018-05-23T17:51:55+00:00"
+            "time": "2019-10-23T13:22:49+00:00"
         },
         {
             "name": "wikimedia/composer-merge-plugin",
@@ -5085,6 +5085,7 @@
                 "sqs",
                 "zf2"
             ],
+            "abandoned": "aws/aws-sdk-php",
             "time": "2019-02-07T18:15:54+00:00"
         },
         {
