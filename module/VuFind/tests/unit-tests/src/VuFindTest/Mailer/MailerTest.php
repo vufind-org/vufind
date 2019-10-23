@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Mailer;
 
+use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFindTest\Container\MockContainer;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
 
@@ -42,6 +44,43 @@ use Zend\Mail\AddressList;
  */
 class MailerTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Test that the factory configures the object correctly.
+     *
+     * @return void
+     */
+    public function testFactoryConfiguration()
+    {
+        $config = new \Zend\Config\Config(
+            [
+                'Mail' => [
+                    'host' => 'vufindtest.localhost',
+                    'port' => 123,
+                    'connection_time_limit' => 600,
+                    'name' => 'foo',
+                    'username' => 'vufinduser',
+                    'password' => 'vufindpass',
+                ]
+            ]
+        );
+        $cm = new MockContainer($this);
+        $cm->set('config', $config);
+        $sm = new MockContainer($this);
+        $sm->set(\VuFind\Config\PluginManager::class, $cm);
+        $factory = new MailerFactory();
+        $mailer = $factory($sm, Mailer::class);
+        $options = $mailer->getTransport()->getOptions();
+        $this->assertEquals('vufindtest.localhost', $options->getHost());
+        $this->assertEquals('foo', $options->getName());
+        $this->assertEquals(123, $options->getPort());
+        $this->assertEquals(600, $options->getConnectionTimeLimit());
+        $this->assertEquals('login', $options->getConnectionClass());
+        $this->assertEquals(
+            ['username' => 'vufinduser', 'password' => 'vufindpass'],
+            $options->getConnectionConfig()
+        );
+    }
+
     /**
      * Test sending an email.
      *
