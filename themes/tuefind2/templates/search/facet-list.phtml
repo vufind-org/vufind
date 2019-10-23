@@ -40,9 +40,9 @@
           <?php $subLinks = $this->exclude && !$item['isApplied']; ?>
           <?php if ($subLinks): ?>
             <li class="list-group-item js-facet-item">
-              <a href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
+              <a href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
           <?php else: ?>
-            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
+            <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<?php if($item['isApplied']): ?> active<?php endif; ?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<?php if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?>>
           <?php endif; ?>
               <?php if (!empty($item['displayText'])): ?>
                 <?=$this->escapeHtml($item['displayText']) ?>

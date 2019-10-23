@@ -15,5 +15,5 @@ if (isset($media_types)) {
   $i = 0;
   foreach ($formats as $format) { ?>
     <span class="iconlabel <?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?><?=(++$i < count($formats) - 1) ? " |" : ""?> </span>
-  <? }
+  <?php }
 }?>

@@ -1,10 +1,10 @@
 <?=$this->doctype('HTML5')?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
 
-<? $backgroundSmallClass = ''; ?>
-<? if ($this->layout()->searchbox === false): ?>
-  <? $backgroundSmallClass = ' background-small'; ?>
-<? endif; ?>
+<?php $backgroundSmallClass = ''; ?>
+<?php if ($this->layout()->searchbox === false): ?>
+  <?php $backgroundSmallClass = ' background-small'; ?>
+<?php endif; ?>
 
   <head>
     <?php $this->headThemeResources(); ?>
@@ -151,7 +151,7 @@ JS;
       </div>
       &nbsp;
     </div>
-    <? // Set up the search box -- there are three possible cases:
+    <?php // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
       // 3. It is set to a custom string; we should display the provided version

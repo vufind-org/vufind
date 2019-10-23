@@ -4,6 +4,7 @@ return [
     'favicon' => 'ixtheo-favicon.ico',
     'js' => [
         'ixtheo.js',
+        'ixtheo2.js',
     ],
     'helpers' => [
         'factories' => [

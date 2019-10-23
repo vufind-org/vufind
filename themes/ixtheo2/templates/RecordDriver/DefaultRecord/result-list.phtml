@@ -249,7 +249,7 @@
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
-      <?$label = str_replace('class="', 'class="badge badge-info ', $this->record($this->driver)->getFormatList())?>
+      <?php $label = str_replace('class="', 'class="badge badge-info ', $this->record($this->driver)->getFormatList())?>
       <?php /* Remove separator needed for long title view */ ?>
       <?=str_replace(' | ', '', $label)?>
       </div>

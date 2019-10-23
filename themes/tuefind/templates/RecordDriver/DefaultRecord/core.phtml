@@ -1,3 +1,4 @@
+<?php $this->metadata()->generateMetatags($this->driver);?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");

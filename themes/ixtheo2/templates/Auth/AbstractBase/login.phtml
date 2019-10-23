@@ -1,6 +1,6 @@
-<? $account = $this->auth()->getManager(); ?>
-<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
-<? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+<?php $account = $this->auth()->getManager(); ?>
+<?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
@@ -11,19 +11,19 @@
 
           <div class="row pt-3">
               <div class="col-6">
-              <? if ($account->supportsCreation()): ?>
+              <?php if ($account->supportsCreation()): ?>
                 <a class="btn btn-outline-secondary btn-sm createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
-              <? endif; ?>
+              <?php endif; ?>
               </div>
               <div class="col-6">
-              <? if ($account->supportsRecovery()): ?>
+              <?php if ($account->supportsRecovery()): ?>
                 <a class="btn btn-outline-secondary btn-sm" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>" data-lightbox-ignore><?=$this->transEsc('Forgot Password')?></a>
-             <? endif; ?>
+             <?php endif; ?>
               </div>
           </div>
       </div>
     </div>
   </form>
-<? else: ?>
+<?php else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" class="btn btn-link" data-lightbox-ignore><?=$this->transEsc("Institutional Login")?></a>
-<? endif; ?>
+<?php endif; ?>

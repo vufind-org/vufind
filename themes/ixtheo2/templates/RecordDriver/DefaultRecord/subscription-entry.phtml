@@ -1,51 +1,51 @@
-<?
+<?php
 // Set up some convenience variables:
 $id = $this->driver->getUniqueId();
 $source = $this->driver->getSourceIdentifier();
 $user_id = $this->user ? $this->user->id : null;
 $is_missing_record = get_class($this->driver) == "VuFind\RecordDriver\Missing";
 ?>
-<div class="row result<? if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+<div class="row result<?php if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
     <div class="col-xs-1 left">
         <label class="pull-left flip"><?= $this->record($this->driver)->getCheckbox() ?></label>
         <input type="hidden" value="<?= $id ?>" class="hiddenId"/>
     </div>
     <div class="col-xs-9 middle">
-        <? if (!$is_missing_record):?>
+        <?php if (!$is_missing_record):?>
             <div class="resultItemLine1">
                 <a href="<?= $this->recordLink()->getUrl($this->driver) ?>">
                     <?= $this->record($this->driver)->getTitleHtml() ?>
                 </a>
             </div>
-        <? else: ?>
+        <?php else: ?>
              <div class="text-muted">
                  <?=$this->record($this->driver)->getTitleHtml()?>
             </div>
-        <? endif; ?>
+        <?php endif; ?>
         <div class="resultItemLine2">
-            <? if ($this->driver->isCollection()): ?>
+            <?php if ($this->driver->isCollection()): ?>
                 <?= implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
-            <? else: ?>
-                <? $summAuthor = $this->driver->getPrimaryAuthor();
+            <?php else: ?>
+                <?php $summAuthor = $this->driver->getPrimaryAuthor();
                 if (!empty($summAuthor)): ?>
                     <?= $this->transEsc('by') ?>
                     <a href="<?= $this->record($this->driver)->getLink('author', $summAuthor) ?>"><?= $this->escapeHtml($summAuthor) ?></a>
-                <? endif; ?>
+                <?php endif; ?>
 
-                <? $journalTitle = $this->driver->getContainerTitle();
+                <?php $journalTitle = $this->driver->getContainerTitle();
                 $summDate = $this->driver->getPublicationDates(); ?>
-                <? if (!empty($journalTitle)): ?>
+                <?php if (!empty($journalTitle)): ?>
                     <?= !empty($summAuthor) ? '<br/>' : '' ?>
                     <?= /* TODO: handle highlighting more elegantly here */
                     $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>'; ?>
                     <?= !empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : '' ?>
-                <? elseif (!empty($summDate)): ?>
+                <?php elseif (!empty($summDate)): ?>
                     <?= !empty($summAuthor) ? '<br/>' : '' ?>
                     <?= $this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0]) ?>
-                <? endif; ?>
-                <? $summInCollection = $this->driver->getContainingCollections();
+                <?php endif; ?>
+                <?php $summInCollection = $this->driver->getContainingCollections();
                 if (false && !empty($summInCollection)): ?>
-                    <? foreach ($summInCollection as $collId => $collText): ?>
+                    <?php foreach ($summInCollection as $collId => $collText): ?>
                         <div>
                             <b><?= $this->transEsc("in_collection_label") ?></b>
                             <a class="collectionLinkText"
@@ -53,9 +53,9 @@ $is_missing_record = get_class($this->driver) == "VuFind\RecordDriver\Missing";
                                 <?= $this->escapeHtml($collText) ?>
                             </a>
                         </div>
-                    <? endforeach; ?>
-                <? endif; ?>
-            <? endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
 
         <div class="last">
@@ -65,7 +65,7 @@ $is_missing_record = get_class($this->driver) == "VuFind\RecordDriver\Missing";
     </div>
 
     <div class="col-xs-2 right">
-        <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
+        <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
         $deleteUrl = $this->url('myresearch-subscriptions');
         $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
 
