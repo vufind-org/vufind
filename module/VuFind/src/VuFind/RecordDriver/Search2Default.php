@@ -1,6 +1,6 @@
 <?php
 /**
- * Default model for Solr records -- used when a more specific model based on
+ * Default model for Search2 records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
  * PHP version 7
@@ -23,13 +23,14 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
 /**
- * Default model for Solr records -- used when a more specific model based on
+ * Default model for Search2 records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
  * This should be used as the base class for all Solr-based record models.
@@ -37,6 +38,7 @@ namespace VuFind\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  *

@@ -1,6 +1,6 @@
 <?php
 /**
- * Hierarchy Tree Data Source (Solr)
+ * Hierarchy Tree Data Source (Search2)
  *
  * PHP version 7
  *
@@ -22,19 +22,21 @@
  * @category VuFind
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy Tree Data Source (Solr)
+ * Hierarchy Tree Data Source (Search2)
  *
  * This is a base helper class for producing hierarchy Trees.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
