@@ -57,7 +57,7 @@ class Search2Default extends SolrDefault
      * Get the Hierarchy Type (false if none)
      *
      * @return string|bool
-     */    
+     */
     public function getHierarchyType()
     {
         return 'search2';
