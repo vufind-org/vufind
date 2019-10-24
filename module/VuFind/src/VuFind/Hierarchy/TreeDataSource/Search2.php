@@ -40,6 +40,17 @@ namespace VuFind\Hierarchy\TreeDataSource;
  */
 class Search2 extends Solr
 {
+    /**
+     * Collection page route.
+     *
+     * @var string
+     */
     protected $collectionRoute = 'search2collection';
+
+    /**
+     * Record page route.
+     *
+     * @var string
+     */
     protected $recordRoute = 'search2record';
 }
