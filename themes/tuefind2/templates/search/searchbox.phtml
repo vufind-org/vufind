@@ -88,6 +88,7 @@
                     <?php else: ?>
                         <form class="searchForm" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
                             <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+                            <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
                             <div class="form-group row">
                                 <!-- Begin search input field -->
@@ -97,7 +98,7 @@
                                                class="form-control form-control-lg searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>"
                                                type="text" name="lookfor"
                                                value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"
-                                               placeholder="<?=$this->translate('Search for keywords, title or author')?>"/>
+                                               <?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?>/>
                                         <span class="input-group-addon">
                                             <i class="fa fa-search"></i>
                                         </span>
