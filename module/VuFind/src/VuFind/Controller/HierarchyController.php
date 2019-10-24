@@ -86,11 +86,12 @@ class HierarchyController extends AbstractBase
             ? $config->Hierarchy->treeSearchLimit : -1;
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
+        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
         $results = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get($source);
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(['id'], false, $limit + 1);
@@ -120,9 +121,10 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
+        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
-            if ($recordDriver = $loader->load($id)) {
+            if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
                     $recordDriver,
                     $this->params()->fromQuery('context'),
@@ -153,9 +155,10 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
+        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
-            if ($recordDriver = $loader->load($id)) {
+            if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()
                     ->getTreeRenderer($recordDriver)->getJSON(
                         $this->params()->fromQuery('hierarchyID'),
@@ -183,9 +186,10 @@ class HierarchyController extends AbstractBase
     public function getrecordAction()
     {
         $id = $this->params()->fromQuery('id');
+        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
-            $record = $loader->load($id);
+            $record = $loader->load($id, $source);
             $result = $this->getViewRenderer()->record($record)
                 ->getCollectionBriefRecord();
         } catch (\VuFind\Exception\RecordMissing $e) {

@@ -75,7 +75,7 @@
         <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
       </form>
     <?php else: ?>
-      <h4><?=$this->transEsc($params->getDisplayQuery() || $filterCount > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
+      <h4><?=$this->transEsc($params->getDisplayQuery() || ($filterCount ?? 0) > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
       <div class="clearfix">
       </div>
     <?php endif; ?>

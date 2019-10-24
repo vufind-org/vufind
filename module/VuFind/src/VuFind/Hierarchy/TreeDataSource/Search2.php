@@ -1,6 +1,6 @@
 <?php
 /**
- * Hierarchy driver plugin manager
+ * Hierarchy Tree Data Source (Solr)
  *
  * PHP version 7
  *
@@ -20,54 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Hierarchy_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  HierarchyTree_DataSource
+ * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-namespace VuFind\Hierarchy\Driver;
+namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy driver plugin manager
+ * Hierarchy Tree Data Source (Solr)
+ *
+ * This is a base helper class for producing hierarchy Trees.
  *
  * @category VuFind
- * @package  Hierarchy_Drivers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  HierarchyTree_DataSource
+ * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Search2 extends Solr
 {
-    /**
-     * Default plugin aliases.
-     *
-     * @var array
-     */
-    protected $aliases = [
-        'default' => HierarchyDefault::class,
-        'flat' => HierarchyFlat::class,
-        'search2' => HierarchySearch2::class
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        HierarchyDefault::class => ConfigurationBasedFactory::class,
-        HierarchyFlat::class => ConfigurationBasedFactory::class,
-        HierarchySearch2::class => ConfigurationBasedFactory::class
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
-    {
-        return AbstractBase::class;
-    }
+    protected $collectionRoute = 'search2collection';
+    protected $recordRoute = 'search2record';
 }

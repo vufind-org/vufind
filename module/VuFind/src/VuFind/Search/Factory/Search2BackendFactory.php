@@ -40,6 +40,13 @@ namespace VuFind\Search\Factory;
 class Search2BackendFactory extends SolrDefaultBackendFactory
 {
     /**
+     * Callback for creating a record driver.
+     *
+     * @var string
+     */
+    protected $createRecordCallback = 'getSearch2Record';
+
+    /**
      * Constructor
      */
     public function __construct()

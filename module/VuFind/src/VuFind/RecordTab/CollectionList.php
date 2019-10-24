@@ -64,6 +64,13 @@ class CollectionList extends AbstractBase
     protected $recommendManager;
 
     /**
+     * Backend id
+     *
+     * @var string
+     */
+    protected $backendId = 'SolrCollection';
+
+    /**
      * Constructor
      *
      * @param SearchRunner     $runner Search runner
@@ -116,7 +123,7 @@ class CollectionList extends AbstractBase
                 $listener->attach($runner->getEventManager()->getSharedManager());
             };
             $this->results
-                = $this->runner->run($request, 'SolrCollection', $cb);
+                = $this->runner->run($request, $this->backendId, $cb);
         }
         return $this->results;
     }

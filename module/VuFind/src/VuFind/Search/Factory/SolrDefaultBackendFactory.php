@@ -44,6 +44,13 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
 {
     /**
+     * Callback for creating a record driver.
+     *
+     * @var string
+     */
+    protected $createRecordCallback = 'getSolrRecord';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -78,7 +85,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
+        $factory = new RecordCollectionFactory([$manager, $this->createRecordCallback]);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
     }
