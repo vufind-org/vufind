@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "da17e1ea553f8b21efc74f8cdc15e3d6",
+    "content-hash": "18aecdf224c0ef44221ceadd15cd098c",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -143,6 +143,46 @@
             "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
             "homepage": "https://github.com/cap60552/php-sip2",
             "time": "2015-11-03T04:42:39+00:00"
+        },
+        {
+            "name": "colinmollenhour/credis",
+            "version": "1.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/colinmollenhour/credis.git",
+                "reference": "c1cab895f2331a1877738b282d0d8b1ff6d4c92d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/c1cab895f2331a1877738b282d0d8b1ff6d4c92d",
+                "reference": "c1cab895f2331a1877738b282d0d8b1ff6d4c92d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Client.php",
+                    "Cluster.php",
+                    "Sentinel.php",
+                    "Module.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin Mollenhour",
+                    "email": "colin@mollenhour.com"
+                }
+            ],
+            "description": "Credis is a lightweight interface to the Redis key-value store which wraps the phpredis library when available for better performance.",
+            "homepage": "https://github.com/colinmollenhour/credis",
+            "time": "2019-03-05T16:29:14+00:00"
         },
         {
             "name": "container-interop/container-interop",
@@ -367,8 +407,8 @@
             "authors": [
                 {
                     "name": "Filipe Dobreira",
-                    "role": "Developer",
-                    "homepage": "https://github.com/filp"
+                    "homepage": "https://github.com/filp",
+                    "role": "Developer"
                 }
             ],
             "description": "php error handling for cool kids",
@@ -2436,16 +2476,16 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b"
+                "reference": "f6516ae29ef60d6e99aaa53bd375fb894915ab2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2415b70424156ef9ebcbcff7900500c5fa62789b",
-                "reference": "2415b70424156ef9ebcbcff7900500c5fa62789b",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/f6516ae29ef60d6e99aaa53bd375fb894915ab2c",
+                "reference": "f6516ae29ef60d6e99aaa53bd375fb894915ab2c",
                 "shasum": ""
             },
             "require": {
@@ -2487,7 +2527,7 @@
             ],
             "description": "VuFind HTTP service library",
             "homepage": "https://vufind.org/",
-            "time": "2018-05-23T17:51:55+00:00"
+            "time": "2019-10-23T13:22:49+00:00"
         },
         {
             "name": "wikimedia/composer-merge-plugin",
@@ -5045,6 +5085,7 @@
                 "sqs",
                 "zf2"
             ],
+            "abandoned": "aws/aws-sdk-php",
             "time": "2019-02-07T18:15:54+00:00"
         },
         {

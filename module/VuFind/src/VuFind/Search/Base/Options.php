@@ -292,6 +292,20 @@ abstract class Options implements TranslatorAwareInterface
     {
         $this->limitOptions = [$this->defaultLimit];
         $this->setConfigLoader($configLoader);
+
+        $id = $this->getSearchClassId();
+        $facetSettings = $configLoader->get($this->facetsIni);
+        if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
+            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
+                     as $facet => $sortOptions
+            ) {
+                $this->facetSortOptions[$facet] = [];
+                foreach (explode(',', $sortOptions) as $fieldAndLabel) {
+                    list($field, $label) = explode('=', $fieldAndLabel);
+                    $this->facetSortOptions[$facet][$field] = $label;
+                }
+            }
+        }
     }
 
     /**
@@ -473,13 +487,15 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get an array of sort options for facets.
+     * Get an array of sort options for a facet.
+     *
+     * @param string $facet Facet
      *
      * @return array
      */
-    public function getFacetSortOptions()
+    public function getFacetSortOptions($facet = '*')
     {
-        return $this->facetSortOptions;
+        return $this->facetSortOptions[$facet] ?? $this->facetSortOptions['*'] ?? [];
     }
 
     /**

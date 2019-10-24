@@ -139,9 +139,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         $transList = [];
         foreach ($list as $current) {
-            $transList[] = $this->translate(
-                $transPrefix . $current, [], $current
-            );
+            $transList[] = $this->translateWithPrefix($transPrefix, $current);
         }
         return $transList;
     }
@@ -166,9 +164,10 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         // If there is only one value in the list, or if we're in "first" mode,
         // send back the first list value:
         if ($mode == 'first' || count($list) == 1) {
-            return $transPrefix
-                ? $this->translate($transPrefix . $list[0], [], $list[0])
-                : $list[0];
+            if ($transPrefix) {
+                return $this->translateWithPrefix($transPrefix, $list[0]);
+            }
+            return $list[0];
         } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
@@ -364,7 +363,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 'availability' =>
                     $details['available'] ?? false,
                 'location' => htmlentities(
-                    $this->translate('location_' . $location, [], $location),
+                    $this->translateWithPrefix('location_', $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>

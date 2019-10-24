@@ -112,10 +112,19 @@ class Alma extends AbstractBase
                     ? 'open' : 'limited';
             }
             if ($coverage = $this->getKeyWithId($service, 'Availability')) {
-                $coverage = trim(str_replace('<br>', ' ', $coverage));
+                $coverage = $this->cleanupText($coverage);
+            }
+            if ($notes = $this->getKeyWithId($service, 'public_note')) {
+                $notes = $this->cleanupText($notes);
+            }
+            $authentication = $this->getKeyWithId($service, 'Authentication_note');
+            if ($authentication) {
+                $authentication = $this->cleanupText($authentication);
             }
 
-            $record = compact('title', 'coverage', 'access', 'href');
+            $record = compact(
+                'title', 'coverage', 'access', 'href', 'notes', 'authentication'
+            );
             $record['service_type'] = $serviceType;
             $records[] = $record;
         }
@@ -156,5 +165,19 @@ class Alma extends AbstractBase
             'GeneralElectronicService' => 'getWebService'
         ];
         return $map[$serviceType] ?? '';
+    }
+
+    /**
+     * Clean up textual information
+     *
+     * @param string $str Text
+     *
+     * @return string
+     */
+    protected function cleanupText($str)
+    {
+        $str = trim(preg_replace('/<br\/?>/', ' ', $str));
+        $str = strip_tags($str);
+        return $str;
     }
 }
