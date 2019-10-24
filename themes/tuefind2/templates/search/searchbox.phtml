@@ -86,7 +86,7 @@
                             <?php if (!empty($tabs)): ?></div><?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <form class="searchForm" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
+                        <form id="searchForm" class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
                             <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
                             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
@@ -109,7 +109,7 @@
                                 <!-- Begin search select -->
                                 <div class="col-xs-12 col-sm-3 col-lg-2 searchForm_select">
                                     <?php if ($handlerCount > 1): ?>
-                                        <select id="searchForm_type" class="searchForm_type form-control form-control-lg custom-select" name="type" data-native-menu="false" aria-label="<?=$this->transEsc("Search type")?>">
+                                        <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEsc("Search type")?>">
                                             <?php foreach ($handlers as $handler): ?>
                                                 <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : '' ?>><?= $handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
                                             <?php endforeach; ?>
