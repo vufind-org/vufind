@@ -128,4 +128,12 @@ class Mailer extends \VuFind\Mailer\Mailer {
         }
         return $message;
     }
+
+    public function getDefaultRecordSubject($record)
+    {
+        $config = $this->container->get('VuFind\Config')->get('config');
+
+        return $this->translate('Library Catalog Record', [ 'siteTitle' => $config->Site->title ]) . ': '
+            . $record->getBreadcrumb();
+    }
 }
