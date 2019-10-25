@@ -328,12 +328,16 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             ? $this->config['Profile']['phoneNumberField']
             : 'mobile';
 
+        $smsField = isset($this->config['Profile']['smsNumberField'])
+            ? $this->config['Profile']['smsNumberField']
+            : 'smsalertnumber';
+
         return [
             'firstname' => $result['firstname'],
             'lastname' => $result['surname'],
             'phone' => $phoneField && !empty($result[$phoneField])
                 ? $result[$phoneField] : '',
-            'smsnumber' => $result['smsalertnumber'],
+            'smsnumber' => $smsField ? $result[$smsField] : '',
             'email' => $result['email'],
             'address1' => $result['address'],
             'address2' => $result['address2'],

@@ -150,3 +150,19 @@ userPassword = '1234'
 [Loans]
 ; How many loans can be displayed on a single page
 ;max_page_size = 25
+
+[Profile]
+; The field to display as the phone number. Default is mobile.
+; Set to empty string for "none".
+;phoneNumberField = ""
+; The field to display as the SMS number. Default is smsalertnumber.
+; Set to empty string for "none".
+;smsNumberField = ""
+
+; Changing of SMS alert number is enabled if method parameter is set. Only valid
+; value for Koha is 'driver'. Set to empty string to disable.
+[updateSmsNumber]
+;method = driver
+; Link the SMS number to the following Koha fields. Default for Finna is
+; "smsalertnumber,phone".
+;fields = "smsalertnumber,phone"
