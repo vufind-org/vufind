@@ -8,7 +8,7 @@
 
 <?php endif; ?>
  <?php $realm = basename(getenv('VUFIND_LOCAL_DIR'))?>
- <?=$this->translate('email_link_' . $realm)?>: <<?=$this->msgUrl?>>
+ <?=$this->translate('email_link_' . $realm)?>: <<?=$this->shortenUrl($this->msgUrl)?>>
 
 ------------------------------------------------------------
 
