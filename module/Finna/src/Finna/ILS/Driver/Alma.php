@@ -48,6 +48,134 @@ class Alma extends \VuFind\ILS\Driver\Alma
     protected $cachedRequest = [];
 
     /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * Finna: Make email login also possible with primary id.
+     *
+     * @param string $username The patrons barcode or other username.
+     * @param string $password The patrons password.
+     *
+     * @return string[]|NULL
+     */
+    public function patronLogin($username, $password)
+    {
+        $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'vufind';
+
+        $patron = [];
+        $patronId = $username;
+        if ('email' === $loginMethod) {
+            // Try to find the user in Alma by primary id
+            list($response, $status) = $this->makeRequest(
+                '/users/' . urlencode($username),
+                [
+                    'view' => 'full'
+                ],
+                [],
+                'GET',
+                null,
+                null,
+                [400],
+                true
+            );
+            if (400 != $status) {
+                $patron = [
+                    'id' => (string)$response->primary_id,
+                    'cat_username' => trim($username),
+                    'email' => $this->getPreferredEmail($response)
+                ];
+            } else {
+                // Create parameters for API call
+                $getParams = [
+                    'q' => 'email~' . $username
+                ];
+
+                // Try to find the user in Alma
+                $response = $this->makeRequest(
+                    '/users/',
+                    $getParams
+                );
+
+                foreach (($response->user ?? []) as $user) {
+                    if ((string)$user->status !== 'ACTIVE') {
+                        continue;
+                    }
+                    if ($patron) {
+                        // More than one match, cannot log in by email
+                        $this->debug(
+                            "Email $username matches more than one user, cannot"
+                            . ' login'
+                        );
+                        return null;
+                    }
+                    $patron = [
+                        'id' => (string)$user->primary_id,
+                        'cat_username' => trim($username),
+                        'email' => trim($username)
+                    ];
+                }
+            }
+            if (!$patron) {
+                return null;
+            }
+            // Use primary id in further queries
+            $patronId = $patron['id'];
+        } elseif ('password' === $loginMethod) {
+            // Create parameters for API call
+            $getParams = [
+                'user_id_type' => 'all_unique',
+                'op' => 'auth',
+                'password' => $password
+            ];
+
+            // Try to authenticate the user with Alma
+            list($response, $status) = $this->makeRequest(
+                '/users/' . urlencode($username),
+                $getParams,
+                [],
+                'POST',
+                null,
+                null,
+                [400],
+                true
+            );
+            if (400 === $status) {
+                return null;
+            }
+        } elseif ('vufind' !== $loginMethod) {
+            $this->logError("Invalid login method configured: $loginMethod");
+            throw new ILSException('Invalid login method configured');
+        }
+
+        // Create parameters for API call
+        $getParams = [
+            'user_id_type' => 'all_unique',
+            'view' => 'full',
+            'expand' => 'none'
+        ];
+
+        // Check for patron in Alma
+        $response = $this->makeRequest(
+            '/users/' . urlencode($patronId),
+            $getParams
+        );
+
+        if ($response !== null) {
+            // We may already have some information, so just fill the gaps
+            $patron['id'] = (string)$response->primary_id;
+            $patron['cat_username'] = trim($username);
+            $patron['cat_password'] = trim($password);
+            $patron['firstname'] = (string)$response->first_name ?? '';
+            $patron['lastname'] = (string)$response->last_name ?? '';
+            $patron['email'] = $this->getPreferredEmail($response);
+            return $patron;
+        }
+
+        return null;
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
