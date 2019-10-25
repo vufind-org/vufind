@@ -133,7 +133,7 @@ class Mailer extends \VuFind\Mailer\Mailer {
     {
         $config = $this->container->get('VuFind\Config')->get('config');
 
-        return $this->translate('Library Catalog Record', [ 'siteTitle' => $config->Site->title ]) . ': '
+        return $this->translate('Library Catalog Record', [ '%%siteTitle%%' => $config->Site->title ]) . ': '
             . $record->getBreadcrumb();
     }
 }
