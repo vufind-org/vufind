@@ -45,14 +45,17 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'IxTheo\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'IxTheo\Controller\Plugin\Subscriptions' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'IxTheo\Controller\Plugin\PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptionsFactory',
         ],
         'aliases' => [
-            'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+            'newItems' => 'IxTheo\Controller\Plugin\NewItems',
             'pdasubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
-            'Subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
             'PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptions',
+            'subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+            'Subscriptions' => 'IxTheo\Controller\Plugin\Subscriptions',
+
         ],
     ],
     'service_manager' => [
