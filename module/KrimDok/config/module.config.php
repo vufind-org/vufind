@@ -16,7 +16,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'KrimDok\Controller\Plugin\NewItems' => 'KrimDok\Controller\Plugin\Factory::getNewItems',
+            'KrimDok\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
         ],
         'aliases' => [
             'newItems' => 'KrimDok\Controller\Plugin\NewItems',
