@@ -133,6 +133,7 @@ finna.itemStatus = (function finnaItemStatus() {
       $.cookie('preferredRecordSource', source, {path: VuFind.path});
 
       var recordContainer = $(this).closest('.record-container');
+      recordContainer.data('ajaxAvailabilityDone', 0);
       var oldRecordId = recordContainer.find('.hiddenId')[0].value;
 
       // Update IDs of elements
