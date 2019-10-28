@@ -367,7 +367,6 @@ class ScheduledSearchController extends AbstractBase
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
-        $filters = $this->processFilters($params->getFilterList());
         $viewParams = [
             'records' => $newRecords,
             'info' => [
@@ -376,7 +375,7 @@ class ScheduledSearchController extends AbstractBase
                 'recordCount' => count($newRecords),
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'filters' => $filters,
+                'filters' => $params->getFilterList(),
                 'userInstitution' => $userInstitution
              ]
         ];
@@ -457,41 +456,5 @@ class ScheduledSearchController extends AbstractBase
             }
         }
         $this->msg('    Done processing searches');
-    }
-
-    /**
-     * Utility function for collecting filter
-     * information needed in the email.
-     *
-     * @param array $filters Filter list
-     *
-     * @return array Processed filter list
-     */
-    protected function processFilters($filters)
-    {
-        $result = [];
-        $currentField = null;
-        $currentFilters = null;
-        foreach ($filters as $key => $filterList) {
-            foreach ($filterList as $f) {
-                $field = $f['field'];
-                if (isset($this->facets[$field])) {
-                    $field = $this->facets[$field];
-                }
-                if ($field != $currentField) {
-                    if ($currentField) {
-                        $result[ucfirst($currentField)] = $currentFilters;
-                    }
-                    $currentField = $field;
-                    $currentFilters = [];
-                }
-                $currentFilters[] = [
-                    'value' => $f['displayText'],
-                    'operator' => $f['operator']
-                ];
-            }
-            $result[$currentField] = $currentFilters;
-        }
-        return $result;
     }
 }
