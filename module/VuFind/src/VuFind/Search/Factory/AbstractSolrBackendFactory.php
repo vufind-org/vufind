@@ -128,6 +128,20 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $uniqueKey = 'id';
 
     /**
+     * Solr connector class
+     *
+     * @var string
+     */
+    protected $connectorClass = Connector::class;
+
+    /**
+     * Solr backend class
+     *
+     * @var string
+     */
+    protected $backendClass = Backend::class;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -168,7 +182,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = new Backend($connector);
+        $backend = new $this->backendClass($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
@@ -341,7 +355,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
-        $connector = new Connector(
+        $connector = new $this->connectorClass(
             $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
         );
         $connector->setTimeout(
