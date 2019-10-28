@@ -438,18 +438,14 @@ class MyResearchController extends AbstractBase
         }
         $search = $this->getTable('Search');
         $baseurl = rtrim($this->getServerUrl('home'), '/');
-        $savedRow = $search->select(
-            ['id' => $sid, 'user_id' => $user->id, 'saved' => 1]
-        )->current();
-        if ($savedRow) {
-            $savedRow->setSchedule($schedule, $baseurl);
-        } else {
+        $searchCriteria = ['id' => $sid, 'user_id' => $user->id, 'saved' => 1];
+        $savedRow = $search->select($searchCriteria)->current();
+        // If we didn't find an already-saved row, let's save and retry:
+        if (!$savedRow) {
             $this->setSavedFlagSecurely($sid, true, $user->id);
-            $historyRow = $search->select(
-                ['id' => $sid, 'user_id' => $user->id]
-            )->current();
-            $historyRow->setSchedule($schedule, $baseurl);
+            $savedRow = $search->select($searchCriteria)->current();
         }
+        $savedRow->setSchedule($schedule, $baseurl);
         return $this->redirect()->toRoute('search-history');
     }
 
