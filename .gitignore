@@ -26,12 +26,14 @@ schema_local_fields.xml
 solrconfig.xml
 
 # Solr/SolrMarc plugins
+ConditionalInsertField.jar
+CustomDebugComponent.jar
+FacetPrefixSortComponent.jar
+KeywordChainParser.jar
 MultiLanguageDocTransformerFactory.jar
 MultiLanguageQueryParser.jar
-KeywordChainParser.jar
 RangedSearches.jar
 TuelibSolrmarcMixin.jar
-FacetPrefixSortComponent.jar
 
 # other logs & temporary files
 *.log

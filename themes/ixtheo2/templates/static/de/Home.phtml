@@ -1,59 +1,293 @@
-<!-- TueFind extension placeholder for additional content below searchbox -->
-<div id="ix-news-carousel" class="carousel slide" data-ride="carousel">
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-        <li data-target="#ix-news-carousel" data-slide-to="0" class="active"></li>
-        <li data-target="#ix-news-carousel" data-slide-to="1" class=""></li>
-        <li data-target="#ix-news-carousel" data-slide-to="2" class=""></li>
-    </ol>
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img class="first-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
-            <div class="container">
-                <div class="carousel-caption">
-                    <h1>Example headline.</h1>
-                    <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous" Glyphicon buttons on the left and right might not load/display properly due to web browser security rules.</p>
-                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+<div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0;">
+    <div class="container">
+        <div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle"><?=$this->transEsc('Browse')?>&nbsp;<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?=$this->url('keywordchainsearch-home')?>"><?=$this->transEsc('Browse Keywordchains')?></a></li>
+                        <li><a class="dropdown-item" href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+                        <li><a class="dropdown-item" href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+                    </ul>
+                </li>
+                <li><a href="<?=$this->url('search-newitem')?>" role="button" rel="nofollow"><?=$this->transEsc('New Items')?></a></li>
+                <li><a href="<?=$this->url('search-history')?>" role="button" rel="nofollow"><?=$this->transEsc('Search History')?></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<?php $this->headLink()->appendStylesheet('vendor/slick/slick.css');?>
+<?php $this->headLink()->appendStylesheet('vendor/slick/slick-theme.css');?>
+<?php $this->headLink()->appendStylesheet('vendor/cw/swiper.css');?>
+
+<?php $this->headScript()->appendFile('vendor/slick/slick.min.js');?>
+<?php $this->headScript()->appendFile('vendor/cw/ofi.js');?>
+<?php $this->headScript()->appendFile('vendor/cw/smooth-scroll.js');?>
+<?php $this->headScript()->appendFile('vendor/cw/swiper.js');?>
+<?php $this->headScript()->appendFile('vendor/cw/theme.js');?>
+
+<div class="row">
+    <div class="col-md-6">
+        <section class="cw-py-6">
+            <div class="cw-text-center">
+                <p class="cw-subtitle cw-text-primary">Aktuelles</p>
+                <h2 class="cw-h2 cw-mb-5">Karussel mit Bild</h2>
+            </div>
+            <div class="slick-slider-single-item" align="center">
+                <div><img src="<?=$this->imageLink('frontpage/authors.jpg')?>" height="400"></div>
+                <div><img src="<?=$this->imageLink('frontpage/discover.jpg')?>" height="400"></div>
+                <div><img src="<?=$this->imageLink('frontpage/publishers.jpg')?>" height="400"></div>
+            </div>
+        </section>
+
+        <script>
+            $(document).ready(function(){
+                $('.slick-slider-single-item').slick({
+                    dots: true,
+                    infinite: true,
+                    speed: 300,
+                    fade: true,
+                    cssEase: 'linear',
+                    arrows: true
+                });
+            });
+        </script>
+    </div>
+    <div class="col-md-6">
+        <section class="cw-py-6">
+            <div class="cw-text-center">
+                <p class="cw-subtitle cw-text-primary">News</p>
+                <h2 class="cw-h2 cw-mb-5">In Arbeit</h2>
+                <ul>
+                    <li>Normdatensuche</li>
+                    <li>Volltextsuche</li>
+                    <li>...</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- IxTheo entdecken -->
+<section class="cw-py-6 cw-bg-gray-100">
+    <div class="container">
+        <div class="text-center cw-pb-lg-4">
+            <p class="cw-subtitle cw-text-secondary">Finden | Suchen | etc.</p>
+            <h2 class="cw-h2 cw-mb-5">IxTheo entdecken</h2>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                <div class="cw-px-0 cw-px-lg-3">
+                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                        <use xlink:href="#destination-map-1">
+                        <symbol viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" id="destination-map-1">
+                            <title>Destination Map</title>
+                            <desc>A line styled icon from Orion Icon Library.</desc>
+                            <path d="M43.1 17l9.9 9.9M43 27l9.9-9.9m-19.5 7.6a10 10 0 0 1 6.8-2.7M29.7 35.2a10 10 0 0 0 .5-2.9V32a10 10 0 0 1 .9-4.3M21.2 42a10 10 0 0 0 6.6-3.5M9.8 42h7.6M2 42h4" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer2" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                            <path d="M62 10v50l-22-6-16 6-22-6V4l22 6 16-6 22 6z" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer1" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                        </symbol>
+                        </use>
+                        </svg>
+                    </div>
+                    <h3 class="cw-h5">Volltextsuche</h3>
+                    <p class="text-muted">One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in</p>
                 </div>
             </div>
-        </div>
-        <div class="item">
-            <img class="second-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
-            <div class="container">
-                <div class="carousel-caption">
-                    <h1>Another example headline.</h1>
-                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                <div class="cw-px-0 cw-px-lg-3">
+                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                        <use xlink:href="#pay-by-cw-card-1">
+                        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="pay-by-cw-card-1">
+                            <title>Pay by Card</title>
+                            <desc>A line styled icon from Orion Icon Library.</desc>
+                            <path data-name="layer1" d="M40 20l8.8 8.7C51.2 31.1 52 34.2 52 40c0 8.6-.1 22-.1 22M22 44a20 20 0 0 0 3.3 11.5C28.1 60 28 61.3 28 62" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                            <path data-name="layer2" d="M29.8 44H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v31M30 2v23" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                            <path data-name="layer1" d="M44.1 39.1L28.4 23.5a5 5 0 0 0-7 0 5 5 0 0 0 0 7l8.6 8.6s-2.6 8 6 14.9" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                        </symbol>
+                        </use>
+                        </svg>
+                    </div>
+                    <h3 class="cw-h5">Open Access</h3>
+                    <p class="text-muted">The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pit</p>
                 </div>
             </div>
-        </div>
-        <div class="item">
-            <img class="third-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Third slide">
-            <div class="container">
-                <div class="carousel-caption">
-                    <h1>One more for good measure.</h1>
-                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                <div class="cw-px-0 cw-px-lg-3">
+                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                        <use xlink:href="#heart-1">
+                        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="heart-1">
+                            <title>Heart</title>
+                            <desc>A line styled icon from Orion Icon Library.</desc>
+                            <path data-name="layer1" d="M47 5c-6.5 0-12.9 4.2-15 10-2.1-5.8-8.5-10-15-10A15 15 0 0 0 2 20c0 13 11 26 30 39 19-13 30-26 30-39A15 15 0 0 0 47 5z" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                        </symbol>
+                        </use>
+                        </svg>
+                    </div>
+                    <h3 class="cw-h5">Digitalisierung</h3>
+                    <p class="text-muted">His room, a proper human room although a little too small, lay peacefully between its four familiar </p>
                 </div>
             </div>
         </div>
     </div>
-    <a class="left carousel-control" href="#ix-news-carousel" role="button" data-slide="prev" aria-label="<?=$this->transEsc('Prev') ?>">
-        <span class="fa fa-chevron-left glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#ix-news-carousel" role="button" data-slide="next" aria-label="<?=$this->transEsc('Next') ?>">
-        <span class="fa fa-chevron-right glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
-</div>
+</section>
 
-<div class="tf-background-body">
+<section class="cw-py-6">
+    <div class="container">
+        <div class="row cw-mb-5">
+            <div class="col-md-8">
+                <p class="cw-subtitle cw-text-primary">Bibliografien</p>
+                <h2 class="cw-h2">Ressourcen</h2>
+            </div>
+            <div class="col-md-4 d-lg-flex cw-align-items-center justify-content-end">
+                <a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="text-muted cw-text-sm">See all guides<i class="fas fa-angle-double-right ml-2"></i></a>
+            </div>
+        </div>
+        <div class="swiper-container guides-slider mx-n2 pt-3 swiper-container-horizontal">
+            <!-- Additional required wrapper-->
+            <div class="swiper-wrapper pb-5" style="transform: translate3d(-912px, 0px, 0px); transition-duration: 0ms;"><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate swiper-slide-duplicate-active" data-swiper-slide-index="0" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Derivate</h6>
+                            <p class="cw-card-text cw-text-sm">The big apple</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate swiper-slide-duplicate-next" data-swiper-slide-index="1" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Kuratierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Artist capital of Europe</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate" data-swiper-slide-index="2" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/barcelona.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Interne Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Dalí, Gaudí, Barrio Gotico</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate swiper-slide-prev" data-swiper-slide-index="3" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Personalisierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">City of hundred towers</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slides-->
+                <div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-active" data-swiper-slide-index="0" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Derivate</h6>
+                            <p class="cw-card-text cw-text-sm">The big apple</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-next" data-swiper-slide-index="1" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Kuratierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Artist capital of Europe</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide cw-h-auto cw-px-2" data-swiper-slide-index="2" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/barcelona.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Interne Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Dalí, Gaudí, Barrio Gotico</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate-prev" data-swiper-slide-index="3" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Personalisierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">City of hundred towers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate swiper-slide-duplicate-active" data-swiper-slide-index="0" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/new-york.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Derivate</h6>
+                            <p class="cw-card-text cw-text-sm">The big apple</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate swiper-slide-duplicate-next" data-swiper-slide-index="1" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/paris.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Kuratierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Artist capital of Europe</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate" data-swiper-slide-index="2" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/barcelona.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Interne Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">Dalí, Gaudí, Barrio Gotico</p>
+                        </div>
+                    </div>
+                </div><div class="swiper-slide cw-h-auto cw-px-2 swiper-slide-duplicate" data-swiper-slide-index="3" style="width: 213px; margin-right: 15px;">
+                    <div class="cw-card cw-card-poster cw-gradient-overlay hover-animate mb-4 mb-lg-0"><a href="https://demo.bootstrapious.com/directory/1-3/category.html" class="cw-tile-link"></a><img src="<?=$this->imageLink('cw/prague.jpg')?>" alt="Card image" class="bg-image">
+                        <div class="cw-card-body overlay-content">
+                            <h6 class="cw-card-title text-cw-shadow text-uppercase">Personalisierte Sammlungen</h6>
+                            <p class="cw-card-text cw-text-sm">City of hundred towers</p>
+                        </div>
+                    </div>
+                </div></div>
+            <div class="swiper-pagination d-md-none swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-bullets-dynamic" style="width: 40px;"><span class="swiper-pagination-bullet swiper-pagination-bullet-active swiper-pagination-bullet-active-main" style="left: 12px;" tabindex="0" role="button" aria-label="Go to slide 1"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active-next" style="left: 12px;" tabindex="0" role="button" aria-label="Go to slide 2"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active-next-next" style="left: 12px;" tabindex="0" role="button" aria-label="Go to slide 3"></span><span class="swiper-pagination-bullet" style="left: 12px;" tabindex="0" role="button" aria-label="Go to slide 4"></span></div>
+            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+    </div>
+</section>
+
+<section class="cw-py-7 cw-position-relative cw-dark-overlay"><img src="<?=$this->imageLink('cw/photo-1497436072909-60f360e1d4b1.jpg')?>" alt="" class="cw-bg-image">
+    <div class="container">
+        <div class="cw-overlay-content cw-text-white cw-py-lg-5">
+            <h3 class="cw-display-3 cw-font-weight-bold cw-text-serif cw-text-shadow cw-mb-5">Networking</h3><a href="https://demo.bootstrapious.com/directory/1-3/category-rooms.html" class="cw-btn cw-btn-light">Get started</a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container-fluid cw-px-0">
+        <div class="swiper-container instagram-slider swiper-container-horizontal">
+            <div class="swiper-wrapper" style="transform: translate3d(0px, 0px, 0px);">
+                <div class="swiper-slide cw-overflow-hidden swiper-slide-active" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-1.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden swiper-slide-next" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-2.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-3.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-4.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-5.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-6.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-7.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-8.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-9.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-10.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-11.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-12.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-13.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-14.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-10.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-11.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-12.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-13.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+                <div class="swiper-slide cw-overflow-hidden" style="width: 119px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-14.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale"></a></div>
+            </div>
+            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+        </div>
+    </div>
+</section>
+
+<div class="tf-background-body" style="display: none;">
     <div id="content" class="container">
         <div class="row">
-            <?=$this->HelpText()->render('partials/discover', null, 'static'); ?>
-            <?=$this->HelpText()->render('partials/services', null, 'static'); ?>
-            <?=$this->HelpText()->render('partials/derivatives', null, 'static'); ?>
+            <?=$this->HelpText()->render('partials/discover', null, 'static');?>
+            <?=$this->HelpText()->render('partials/services', null, 'static');?>
+            <?=$this->HelpText()->render('partials/derivatives', null, 'static');?>
         </div>
     </div>
 </div>
