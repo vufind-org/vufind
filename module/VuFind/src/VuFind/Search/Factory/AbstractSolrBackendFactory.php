@@ -132,14 +132,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $connectorClass = '\VuFindSearch\Backend\Solr\Connector';
+    protected $connectorClass = Connector::class;
 
     /**
      * Solr backend class
      *
      * @var string
      */
-    protected $backendClass = '\VuFindSearch\Backend\Solr\Backend';
+    protected $backendClass = Backend::class;
 
     /**
      * Constructor
