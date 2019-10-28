@@ -3,50 +3,7 @@
   background-position: center center;
 }
 
-.panel-home {
-  min-height: 350px;
-}
-
 .panel-default, .panel-inverse, .panel-buttons {
    border: 5px solid @tf-background-body-color;
    -webkit-box-shadow: none;
-}
-
-/*
-* carousel:
-* - adjust size
-* - fix problems due to collisions with VuFind's similar items carousel
-*/
-@ix-news-carousel-height: 300px;
-#ix-news-carousel {
-  height: @ix-news-carousel-height;
-
-  .item {
-    height: @ix-news-carousel-height;
-    background-color: #777;
-  }
-
-  .carousel-inner > .item > img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    height: @ix-news-carousel-height;
-  }
-
-  .glyphicon-chevron-left::before {
-    content: "\f053";
-  }
-
-  .glyphicon-chevron-right::before {
-    content: "\f054";
-  }
-
-  a.carousel-control:focus {
-    outline: initial;
-  }
-}
-
-#ix-news-carousel:hover .carousel-caption {
-    background-color: initial;
 }

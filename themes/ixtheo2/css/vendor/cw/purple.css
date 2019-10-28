@@ -1,0 +1,609 @@
+a {
+  color: #7952B3;
+}
+input[type="submit"].dokan-btn-theme,
+a.dokan-btn-theme,
+.dokan-btn-theme {
+  color: #fff;
+  background-color: #7952B3;
+  border-color: #7952B3;
+  border-radius: 0px;
+}
+input[type="submit"].dokan-btn-theme:hover,
+a.dokan-btn-theme:hover,
+.dokan-btn-theme:hover,
+input[type="submit"].dokan-btn-theme:focus,
+a.dokan-btn-theme:focus,
+.dokan-btn-theme:focus,
+input[type="submit"].dokan-btn-theme:active,
+a.dokan-btn-theme:active,
+.dokan-btn-theme:active,
+input[type="submit"].dokan-btn-theme.active,
+a.dokan-btn-theme.active,
+.dokan-btn-theme.active,
+.open .dropdown-toggleinput[type="submit"].dokan-btn-theme,
+.open .dropdown-togglea.dokan-btn-theme,
+.open .dropdown-toggle.dokan-btn-theme {
+  color: #fff;
+  background-color: #614092;
+  border-color: #6a3381;
+}
+input[type="submit"].dokan-btn-theme:active,
+a.dokan-btn-theme:active,
+.dokan-btn-theme:active,
+input[type="submit"].dokan-btn-theme.active,
+a.dokan-btn-theme.active,
+.dokan-btn-theme.active,
+.open .dropdown-toggleinput[type="submit"].dokan-btn-theme,
+.open .dropdown-togglea.dokan-btn-theme,
+.open .dropdown-toggle.dokan-btn-theme {
+  background-image: none;
+}
+input[type="submit"].dokan-btn-theme.disabled,
+a.dokan-btn-theme.disabled,
+.dokan-btn-theme.disabled,
+input[type="submit"].dokan-btn-theme[disabled],
+a.dokan-btn-theme[disabled],
+.dokan-btn-theme[disabled],
+fieldset[disabled] input[type="submit"].dokan-btn-theme,
+fieldset[disabled] a.dokan-btn-theme,
+fieldset[disabled] .dokan-btn-theme,
+input[type="submit"].dokan-btn-theme.disabled:hover,
+a.dokan-btn-theme.disabled:hover,
+.dokan-btn-theme.disabled:hover,
+input[type="submit"].dokan-btn-theme[disabled]:hover,
+a.dokan-btn-theme[disabled]:hover,
+.dokan-btn-theme[disabled]:hover,
+fieldset[disabled] input[type="submit"].dokan-btn-theme:hover,
+fieldset[disabled] a.dokan-btn-theme:hover,
+fieldset[disabled] .dokan-btn-theme:hover,
+input[type="submit"].dokan-btn-theme.disabled:focus,
+a.dokan-btn-theme.disabled:focus,
+.dokan-btn-theme.disabled:focus,
+input[type="submit"].dokan-btn-theme[disabled]:focus,
+a.dokan-btn-theme[disabled]:focus,
+.dokan-btn-theme[disabled]:focus,
+fieldset[disabled] input[type="submit"].dokan-btn-theme:focus,
+fieldset[disabled] a.dokan-btn-theme:focus,
+fieldset[disabled] .dokan-btn-theme:focus,
+input[type="submit"].dokan-btn-theme.disabled:active,
+a.dokan-btn-theme.disabled:active,
+.dokan-btn-theme.disabled:active,
+input[type="submit"].dokan-btn-theme[disabled]:active,
+a.dokan-btn-theme[disabled]:active,
+.dokan-btn-theme[disabled]:active,
+fieldset[disabled] input[type="submit"].dokan-btn-theme:active,
+fieldset[disabled] a.dokan-btn-theme:active,
+fieldset[disabled] .dokan-btn-theme:active,
+input[type="submit"].dokan-btn-theme.disabled.active,
+a.dokan-btn-theme.disabled.active,
+.dokan-btn-theme.disabled.active,
+input[type="submit"].dokan-btn-theme[disabled].active,
+a.dokan-btn-theme[disabled].active,
+.dokan-btn-theme[disabled].active,
+fieldset[disabled] input[type="submit"].dokan-btn-theme.active,
+fieldset[disabled] a.dokan-btn-theme.active,
+fieldset[disabled] .dokan-btn-theme.active {
+  background-color: #7952B3;
+  border-color: #7952B3;
+}
+input[type="submit"].dokan-btn-theme .badge,
+a.dokan-btn-theme .badge,
+.dokan-btn-theme .badge {
+  color: #7952B3;
+  background-color: #fff;
+}
+mark {
+  color: #fff;
+  background: #7952B3;
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.pagination > li > span.current,
+.pagination > li > a:hover {
+  background-color: #7952B3;
+  border-color: #7952B3;
+  color: #fff;
+}
+.dokan-info {
+  border-top: 3px solid #7952B3;
+}
+.dokan-info:before {
+  background-color: #7952B3;
+}
+.dokan-dashboard .dokan-dash-sidebar ul.dokan-dashboard-menu li.active,
+.dokan-dashboard .dokan-dash-sidebar ul.dokan-dashboard-menu li:hover,
+.dokan-dashboard .dokan-dash-sidebar ul.dokan-dashboard-menu li.active {
+  background: #7952B3;
+}
+.site-header .navbar-collapse ul.navbar-nav > li > ul.dropdown-menu > li.active > a {
+  background: #7952B3;
+  color: #fff;
+}
+.navbar-top-area.navbar-inverse .navbar-nav > .open > a,
+.navbar-top-area.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-top-area.navbar-inverse .navbar-nav > .open > a:focus {
+  background-color: #7952B3;
+  color: #fff;
+}
+.navbar-top-area.navbar-inverse .dropdown-menu > .active a,
+.navbar-top-area.navbar-inverse .dropdown-menu > .active a:hover,
+.navbar-top-area.navbar-inverse .dropdown-menu > .active a:focus {
+  background-color: #7952B3;
+  color: #fff;
+}
+.navbar-top-area.navbar-inverse .widget_shopping_cart_content a.button {
+  background: #7952B3;
+  color: #fff;
+  border: 1px solid #7952B3;
+}
+.home .slider-container h2.slider-heading {
+  border-left: 5px solid #7952B3;
+}
+.home .product-sliders .flex-direction-nav a {
+  background: #7952B3;
+}
+.home .product-sliders li .item-button a.add_to_cart_button {
+  background: #7952B3;
+  border-color: #7952B3;
+}
+.home .product-sliders li .item-button a.add_to_cart_button:hover {
+  color: #7952B3;
+  background: #fff;
+  border-color: #DDD;
+}
+.home .product-sliders li .item-button a.fav {
+  background: #fff;
+}
+.home .product-sliders li .item-button a.fav:hover {
+  color: #fff;
+  background: #7952B3;
+  border-color: #7952B3;
+}
+.home .product-sliders li .item-button .added_to_cart {
+  background: #7952B3;
+}
+.home .product-sliders li span.onsale {
+  background: #7952B3;
+}
+.widget .widget-title {
+  border-left: 3px solid #7952B3;
+  margin-left: -10px;
+  padding-left: 6px;
+}
+.widget.widget_search .btn-primary,
+.widget.widget_product_search .btn-primary {
+  background-color: #7952B3;
+  border-color: #7952B3;
+}
+.dokan-dash-sidebar ul.dokan-dashboard-menu li.active {
+  background: #7952B3;
+}
+.dokan-dash-sidebar ul.dokan-dashboard-menu li:hover {
+  background: #7952B3;
+}
+.woocommerce span.onsale,
+.woocommerce-page span.onsale {
+  background: #7952B3;
+}
+.woocommerce a.button,
+.woocommerce-page a.button,
+.woocommerce button.button,
+.woocommerce-page button.button,
+.woocommerce input.button,
+.woocommerce-page input.button,
+.woocommerce #respond input#submit,
+.woocommerce-page #respond input#submit,
+.woocommerce #content input.button,
+.woocommerce-page #content input.button {
+  color: #fff;
+  background-color: #7952B3;
+  border-color: #7952B3;
+  border-radius: 0px;
+}
+.woocommerce a.button:hover,
+.woocommerce-page a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce-page button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce-page input.button:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce-page #respond input#submit:hover,
+.woocommerce #content input.button:hover,
+.woocommerce-page #content input.button:hover,
+.woocommerce a.button:focus,
+.woocommerce-page a.button:focus,
+.woocommerce button.button:focus,
+.woocommerce-page button.button:focus,
+.woocommerce input.button:focus,
+.woocommerce-page input.button:focus,
+.woocommerce #respond input#submit:focus,
+.woocommerce-page #respond input#submit:focus,
+.woocommerce #content input.button:focus,
+.woocommerce-page #content input.button:focus,
+.woocommerce a.button:active,
+.woocommerce-page a.button:active,
+.woocommerce button.button:active,
+.woocommerce-page button.button:active,
+.woocommerce input.button:active,
+.woocommerce-page input.button:active,
+.woocommerce #respond input#submit:active,
+.woocommerce-page #respond input#submit:active,
+.woocommerce #content input.button:active,
+.woocommerce-page #content input.button:active,
+.woocommerce a.button.active,
+.woocommerce-page a.button.active,
+.woocommerce button.button.active,
+.woocommerce-page button.button.active,
+.woocommerce input.button.active,
+.woocommerce-page input.button.active,
+.woocommerce #respond input#submit.active,
+.woocommerce-page #respond input#submit.active,
+.woocommerce #content input.button.active,
+.woocommerce-page #content input.button.active,
+.open .dropdown-toggle.woocommerce a.button,
+.open .dropdown-toggle.woocommerce-page a.button,
+.open .dropdown-toggle.woocommerce button.button,
+.open .dropdown-toggle.woocommerce-page button.button,
+.open .dropdown-toggle.woocommerce input.button,
+.open .dropdown-toggle.woocommerce-page input.button,
+.open .dropdown-toggle.woocommerce #respond input#submit,
+.open .dropdown-toggle.woocommerce-page #respond input#submit,
+.open .dropdown-toggle.woocommerce #content input.button,
+.open .dropdown-toggle.woocommerce-page #content input.button {
+  color: #fff;
+  background-color: #614092;
+  border-color: #6a3381;
+}
+.woocommerce a.button:active,
+.woocommerce-page a.button:active,
+.woocommerce button.button:active,
+.woocommerce-page button.button:active,
+.woocommerce input.button:active,
+.woocommerce-page input.button:active,
+.woocommerce #respond input#submit:active,
+.woocommerce-page #respond input#submit:active,
+.woocommerce #content input.button:active,
+.woocommerce-page #content input.button:active,
+.woocommerce a.button.active,
+.woocommerce-page a.button.active,
+.woocommerce button.button.active,
+.woocommerce-page button.button.active,
+.woocommerce input.button.active,
+.woocommerce-page input.button.active,
+.woocommerce #respond input#submit.active,
+.woocommerce-page #respond input#submit.active,
+.woocommerce #content input.button.active,
+.woocommerce-page #content input.button.active,
+.open .dropdown-toggle.woocommerce a.button,
+.open .dropdown-toggle.woocommerce-page a.button,
+.open .dropdown-toggle.woocommerce button.button,
+.open .dropdown-toggle.woocommerce-page button.button,
+.open .dropdown-toggle.woocommerce input.button,
+.open .dropdown-toggle.woocommerce-page input.button,
+.open .dropdown-toggle.woocommerce #respond input#submit,
+.open .dropdown-toggle.woocommerce-page #respond input#submit,
+.open .dropdown-toggle.woocommerce #content input.button,
+.open .dropdown-toggle.woocommerce-page #content input.button {
+  background-image: none;
+}
+.woocommerce a.button.disabled,
+.woocommerce-page a.button.disabled,
+.woocommerce button.button.disabled,
+.woocommerce-page button.button.disabled,
+.woocommerce input.button.disabled,
+.woocommerce-page input.button.disabled,
+.woocommerce #respond input#submit.disabled,
+.woocommerce-page #respond input#submit.disabled,
+.woocommerce #content input.button.disabled,
+.woocommerce-page #content input.button.disabled,
+.woocommerce a.button[disabled],
+.woocommerce-page a.button[disabled],
+.woocommerce button.button[disabled],
+.woocommerce-page button.button[disabled],
+.woocommerce input.button[disabled],
+.woocommerce-page input.button[disabled],
+.woocommerce #respond input#submit[disabled],
+.woocommerce-page #respond input#submit[disabled],
+.woocommerce #content input.button[disabled],
+.woocommerce-page #content input.button[disabled],
+fieldset[disabled] .woocommerce a.button,
+fieldset[disabled] .woocommerce-page a.button,
+fieldset[disabled] .woocommerce button.button,
+fieldset[disabled] .woocommerce-page button.button,
+fieldset[disabled] .woocommerce input.button,
+fieldset[disabled] .woocommerce-page input.button,
+fieldset[disabled] .woocommerce #respond input#submit,
+fieldset[disabled] .woocommerce-page #respond input#submit,
+fieldset[disabled] .woocommerce #content input.button,
+fieldset[disabled] .woocommerce-page #content input.button,
+.woocommerce a.button.disabled:hover,
+.woocommerce-page a.button.disabled:hover,
+.woocommerce button.button.disabled:hover,
+.woocommerce-page button.button.disabled:hover,
+.woocommerce input.button.disabled:hover,
+.woocommerce-page input.button.disabled:hover,
+.woocommerce #respond input#submit.disabled:hover,
+.woocommerce-page #respond input#submit.disabled:hover,
+.woocommerce #content input.button.disabled:hover,
+.woocommerce-page #content input.button.disabled:hover,
+.woocommerce a.button[disabled]:hover,
+.woocommerce-page a.button[disabled]:hover,
+.woocommerce button.button[disabled]:hover,
+.woocommerce-page button.button[disabled]:hover,
+.woocommerce input.button[disabled]:hover,
+.woocommerce-page input.button[disabled]:hover,
+.woocommerce #respond input#submit[disabled]:hover,
+.woocommerce-page #respond input#submit[disabled]:hover,
+.woocommerce #content input.button[disabled]:hover,
+.woocommerce-page #content input.button[disabled]:hover,
+fieldset[disabled] .woocommerce a.button:hover,
+fieldset[disabled] .woocommerce-page a.button:hover,
+fieldset[disabled] .woocommerce button.button:hover,
+fieldset[disabled] .woocommerce-page button.button:hover,
+fieldset[disabled] .woocommerce input.button:hover,
+fieldset[disabled] .woocommerce-page input.button:hover,
+fieldset[disabled] .woocommerce #respond input#submit:hover,
+fieldset[disabled] .woocommerce-page #respond input#submit:hover,
+fieldset[disabled] .woocommerce #content input.button:hover,
+fieldset[disabled] .woocommerce-page #content input.button:hover,
+.woocommerce a.button.disabled:focus,
+.woocommerce-page a.button.disabled:focus,
+.woocommerce button.button.disabled:focus,
+.woocommerce-page button.button.disabled:focus,
+.woocommerce input.button.disabled:focus,
+.woocommerce-page input.button.disabled:focus,
+.woocommerce #respond input#submit.disabled:focus,
+.woocommerce-page #respond input#submit.disabled:focus,
+.woocommerce #content input.button.disabled:focus,
+.woocommerce-page #content input.button.disabled:focus,
+.woocommerce a.button[disabled]:focus,
+.woocommerce-page a.button[disabled]:focus,
+.woocommerce button.button[disabled]:focus,
+.woocommerce-page button.button[disabled]:focus,
+.woocommerce input.button[disabled]:focus,
+.woocommerce-page input.button[disabled]:focus,
+.woocommerce #respond input#submit[disabled]:focus,
+.woocommerce-page #respond input#submit[disabled]:focus,
+.woocommerce #content input.button[disabled]:focus,
+.woocommerce-page #content input.button[disabled]:focus,
+fieldset[disabled] .woocommerce a.button:focus,
+fieldset[disabled] .woocommerce-page a.button:focus,
+fieldset[disabled] .woocommerce button.button:focus,
+fieldset[disabled] .woocommerce-page button.button:focus,
+fieldset[disabled] .woocommerce input.button:focus,
+fieldset[disabled] .woocommerce-page input.button:focus,
+fieldset[disabled] .woocommerce #respond input#submit:focus,
+fieldset[disabled] .woocommerce-page #respond input#submit:focus,
+fieldset[disabled] .woocommerce #content input.button:focus,
+fieldset[disabled] .woocommerce-page #content input.button:focus,
+.woocommerce a.button.disabled:active,
+.woocommerce-page a.button.disabled:active,
+.woocommerce button.button.disabled:active,
+.woocommerce-page button.button.disabled:active,
+.woocommerce input.button.disabled:active,
+.woocommerce-page input.button.disabled:active,
+.woocommerce #respond input#submit.disabled:active,
+.woocommerce-page #respond input#submit.disabled:active,
+.woocommerce #content input.button.disabled:active,
+.woocommerce-page #content input.button.disabled:active,
+.woocommerce a.button[disabled]:active,
+.woocommerce-page a.button[disabled]:active,
+.woocommerce button.button[disabled]:active,
+.woocommerce-page button.button[disabled]:active,
+.woocommerce input.button[disabled]:active,
+.woocommerce-page input.button[disabled]:active,
+.woocommerce #respond input#submit[disabled]:active,
+.woocommerce-page #respond input#submit[disabled]:active,
+.woocommerce #content input.button[disabled]:active,
+.woocommerce-page #content input.button[disabled]:active,
+fieldset[disabled] .woocommerce a.button:active,
+fieldset[disabled] .woocommerce-page a.button:active,
+fieldset[disabled] .woocommerce button.button:active,
+fieldset[disabled] .woocommerce-page button.button:active,
+fieldset[disabled] .woocommerce input.button:active,
+fieldset[disabled] .woocommerce-page input.button:active,
+fieldset[disabled] .woocommerce #respond input#submit:active,
+fieldset[disabled] .woocommerce-page #respond input#submit:active,
+fieldset[disabled] .woocommerce #content input.button:active,
+fieldset[disabled] .woocommerce-page #content input.button:active,
+.woocommerce a.button.disabled.active,
+.woocommerce-page a.button.disabled.active,
+.woocommerce button.button.disabled.active,
+.woocommerce-page button.button.disabled.active,
+.woocommerce input.button.disabled.active,
+.woocommerce-page input.button.disabled.active,
+.woocommerce #respond input#submit.disabled.active,
+.woocommerce-page #respond input#submit.disabled.active,
+.woocommerce #content input.button.disabled.active,
+.woocommerce-page #content input.button.disabled.active,
+.woocommerce a.button[disabled].active,
+.woocommerce-page a.button[disabled].active,
+.woocommerce button.button[disabled].active,
+.woocommerce-page button.button[disabled].active,
+.woocommerce input.button[disabled].active,
+.woocommerce-page input.button[disabled].active,
+.woocommerce #respond input#submit[disabled].active,
+.woocommerce-page #respond input#submit[disabled].active,
+.woocommerce #content input.button[disabled].active,
+.woocommerce-page #content input.button[disabled].active,
+fieldset[disabled] .woocommerce a.button.active,
+fieldset[disabled] .woocommerce-page a.button.active,
+fieldset[disabled] .woocommerce button.button.active,
+fieldset[disabled] .woocommerce-page button.button.active,
+fieldset[disabled] .woocommerce input.button.active,
+fieldset[disabled] .woocommerce-page input.button.active,
+fieldset[disabled] .woocommerce #respond input#submit.active,
+fieldset[disabled] .woocommerce-page #respond input#submit.active,
+fieldset[disabled] .woocommerce #content input.button.active,
+fieldset[disabled] .woocommerce-page #content input.button.active {
+  background-color: #7952B3;
+  border-color: #7952B3;
+}
+.woocommerce a.button .badge,
+.woocommerce-page a.button .badge,
+.woocommerce button.button .badge,
+.woocommerce-page button.button .badge,
+.woocommerce input.button .badge,
+.woocommerce-page input.button .badge,
+.woocommerce #respond input#submit .badge,
+.woocommerce-page #respond input#submit .badge,
+.woocommerce #content input.button .badge,
+.woocommerce-page #content input.button .badge {
+  color: #7952B3;
+  background-color: #fff;
+}
+.woocommerce ul.products li.product .item-button a.add_to_cart_button,
+.woocommerce-page ul.products li.product .item-button a.add_to_cart_button {
+  background: #7952B3;
+  border-color: #7952B3;
+}
+.woocommerce ul.products li.product .item-button a.add_to_cart_button:after,
+.woocommerce-page ul.products li.product .item-button a.add_to_cart_button:after {
+  content: '';
+}
+.woocommerce ul.products li.product .item-button a.add_to_cart_button:hover,
+.woocommerce-page ul.products li.product .item-button a.add_to_cart_button:hover {
+  color: #7952B3;
+  background: #fff;
+  border-color: #DDD;
+}
+.woocommerce ul.products li.product .item-button a.fav,
+.woocommerce-page ul.products li.product .item-button a.fav {
+  background: #fff;
+}
+.woocommerce ul.products li.product .item-button a.fav:hover,
+.woocommerce-page ul.products li.product .item-button a.fav:hover {
+  color: #fff;
+  background: #7952B3;
+  border-color: #7952B3;
+}
+.woocommerce ul.products li.product .item-button .added_to_cart,
+.woocommerce-page ul.products li.product .item-button .added_to_cart {
+  background: #7952B3;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce-page div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce-page div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce #content div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce-page #content div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce #content div.product .woocommerce-tabs ul.tabs li.active,
+.woocommerce-page #content div.product .woocommerce-tabs ul.tabs li.active {
+  box-shadow: inset 0px 4px 0px #7952B3;
+}
+.woocommerce #reviews #respond input[type=submit],
+.woocommerce-page #reviews #respond input[type=submit] {
+  background-color: #7952B3;
+  border-color: #7952B3;
+  color: #fff;
+}
+.woocommerce #reviews #respond input[type=submit]:hover,
+.woocommerce-page #reviews #respond input[type=submit]:hover {
+  background-color: #7f3d9b;
+  border-color: #7f3d9b;
+}
+.woocommerce nav.woocommerce-pagination ul li span.current,
+.woocommerce-page nav.woocommerce-pagination ul li span.current,
+.woocommerce #content nav.woocommerce-pagination ul li span.current,
+.woocommerce-page #content nav.woocommerce-pagination ul li span.current,
+.woocommerce nav.woocommerce-pagination ul li a:hover,
+.woocommerce-page nav.woocommerce-pagination ul li a:hover,
+.woocommerce #content nav.woocommerce-pagination ul li a:hover,
+.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,
+.woocommerce nav.woocommerce-pagination ul li a:focus,
+.woocommerce-page nav.woocommerce-pagination ul li a:focus,
+.woocommerce #content nav.woocommerce-pagination ul li a:focus,
+.woocommerce-page #content nav.woocommerce-pagination ul li a:focus {
+  background: #7952B3;
+}
+.woocommerce a.button,
+.woocommerce-page a.button,
+.woocommerce button.button,
+.woocommerce-page button.button,
+.woocommerce input.button,
+.woocommerce-page input.button,
+.woocommerce #respond input#submit,
+.woocommerce-page #respond input#submit,
+.woocommerce #content input.button,
+.woocommerce-page #content input.button {
+  border-radius: 0px;
+}
+.woocommerce a.button.alt,
+.woocommerce-page a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce-page button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce-page input.button.alt,
+.woocommerce #respond input#submit.alt,
+.woocommerce-page #respond input#submit.alt,
+.woocommerce #content input.button.alt,
+.woocommerce-page #content input.button.alt {
+  border: 1px solid #7952B3;
+  background: #7952B3;
+}
+.woocommerce a.button.alt:hover,
+.woocommerce-page a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce-page button.button.alt:hover,
+.woocommerce input.button.alt:hover,
+.woocommerce-page input.button.alt:hover,
+.woocommerce #respond input#submit.alt:hover,
+.woocommerce-page #respond input#submit.alt:hover,
+.woocommerce #content input.button.alt:hover,
+.woocommerce-page #content input.button.alt:hover {
+  border: 1px solid #614092;
+  background: #614092;
+}
+.woocommerce .woocommerce-message,
+.woocommerce-page .woocommerce-message,
+.woocommerce .woocommerce-error,
+.woocommerce-page .woocommerce-error,
+.woocommerce .woocommerce-info,
+.woocommerce-page .woocommerce-info {
+  background: #fff;
+  box-shadow: none;
+  border-left: 1px solid #F1F1F1;
+  border-right: 1px solid #F1F1F1;
+  border-bottom: 1px solid #F1F1F1;
+}
+.woocommerce .woocommerce-info,
+.woocommerce-page .woocommerce-info {
+  border-top: 3px solid #7952B3;
+}
+.woocommerce .woocommerce-info:before,
+.woocommerce-page .woocommerce-info:before {
+  color: #7952B3;
+}
+.pagination > .active > a,
+.pagination > .active > a:hover {
+  background-color: #7952B3;
+  border-color: #7952B3;
+}
+.store-page-wrap .profile-frame {
+  background-color: #7952B3;
+}
+/* WooCommerce override
+-----------------------------------*/
+.woocommerce.single-product .entry-summary form.cart .button,
+.woocommerce-page.single-product .entry-summary form.cart .button {
+  background: #7952B3;
+}
+.woocommerce.single-product .entry-summary a.button.alt,
+.woocommerce-page.single-product .entry-summary a.button.alt {
+  background: #7952B3;
+}
+#comments #respond #cancel-comment-reply-link {
+  background: #7952B3;
+}
+#comments #respond input[type=submit] {
+  background: #7952B3;
+  border: 1px solid #7952B3;
+  padding: 3px 10px;
+}
+#comments ol.commentlist .reply a.comment-reply-link {
+  background: #7952B3;
+}
+.woocommerce .star-rating {
+  color: #7952B3;
+}
