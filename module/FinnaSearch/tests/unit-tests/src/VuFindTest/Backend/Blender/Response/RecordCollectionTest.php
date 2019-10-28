@@ -29,8 +29,8 @@
  */
 namespace FinnaTest\Backend\Blender\Response;
 
-use PHPUnit\Framework\TestCase;
 use FinnaSearch\Backend\Blender\Response\Json\RecordCollection;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for BrowZine record collection
@@ -89,7 +89,6 @@ class RecordCollectionTest extends TestCase
             );
         }
 
-
         $rc = new RecordCollection(
             [
                 'Blending' => [
@@ -128,7 +127,6 @@ class RecordCollectionTest extends TestCase
                 "Primary at $offset should be " . ($primary ? 'true' : 'false')
             );
         }
-
 
         $rc = new RecordCollection(
             [
