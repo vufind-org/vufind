@@ -195,9 +195,7 @@ class ScheduledSearchController extends AbstractBase
     {
         $schedule = $s->notification_frequency;
         if (!isset($this->scheduleOptions[$schedule])) {
-            $this->err(
-                'Search ' . $s->id . ': unknown schedule: ' . $s->schedule, '='
-            );
+            $this->err('Search ' . $s->id . ': unknown schedule: ' . $s->schedule);
             return false;
         }
         $diff = $todayTime->diff($lastTime);
@@ -285,8 +283,7 @@ class ScheduledSearchController extends AbstractBase
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
             $this->err(
                 'Unsupported search backend ' . $searchObject->getBackendId()
-                    . ' for search ' . $searchObject->getSearchId(),
-                '='
+                . ' for search ' . $searchObject->getSearchId()
             );
             return false;
         }
@@ -312,10 +309,7 @@ class ScheduledSearchController extends AbstractBase
         try {
             $records = $searchObject->getResults();
         } catch (\Exception $e) {
-            $this->err(
-                "Error processing search $searchId: " . $e->getMessage(),
-                '='
-            );
+            $this->err("Error processing search $searchId: " . $e->getMessage());
             return false;
         }
         if (empty($records)) {
@@ -430,9 +424,7 @@ class ScheduledSearchController extends AbstractBase
             }
             $searchTime = date('Y-m-d H:i:s');
             if ($s->setLastExecuted($searchTime) === 0) {
-                $this->err(
-                    "Error updating last_executed date for search $searchId", '='
-                );
+                $this->err("Error updating last_executed date for search $searchId");
             }
         }
         $this->msg('    Done processing searches');
