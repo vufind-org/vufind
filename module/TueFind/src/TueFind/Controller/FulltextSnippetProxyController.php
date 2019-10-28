@@ -25,6 +25,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected $base_url; //Elasticsearch host and port (host:port)
     protected $index; //Elasticsearch index
+    protected $page_index; //Elasticssearch index with single HTML pages
     protected $es; // Elasticsearch interface
     protected $logger;
     protected $configLoader;
@@ -49,6 +50,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         $config = $configLoader->get($this->getFulltextSnippetIni());
         $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
         $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
+        $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
     }
 
@@ -58,14 +60,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function getFulltext($doc_id, $search_query, $verbose) {
-        // Is this an ordinary query or a phrase query (surrounded by quotes) ?
-        $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
-        $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
-        $params = [
-             'index' => $this->index,
+    protected function getQueryParams($doc_id, $search_query, $verbose, $paged_results) {
+         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
+         $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
+         $index = $paged_results ? $this->page_index : $this->index;
+         $params = [
+             'index' => $index,
              'body' => [
-                 '_source' => false,
+                 '_source' => $paged_results ? [ "page" ] : false,
                  'size' => '100',
                  'query' => [
                      'bool' => [
@@ -88,9 +90,56 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  ]
              ]
         ];
-        $response = $this->es->search($params);
-        return $this->extractSnippets($response);
+        return $params;
     }
+
+
+    protected function getFulltext($doc_id, $search_query, $verbose) {
+        // Is this an ordinary query or a phrase query (surrounded by quotes) ?
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, false /*return paged results*/);
+        $response = $this->es->search($params);
+        $snippets = $this->extractSnippets($response);
+        if ($snippets == false)
+            return false;
+        $results['snippets'] = $snippets['snippets'];
+        return $results;
+    }
+
+
+    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose) {
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, true);
+        $response = $this->es->search($params);
+        $snippets = $this->extractSnippets($response);
+        if ($snippets == false)
+            return false;
+        $results['snippets'] = $snippets['snippets'];
+        return $results;
+    }
+
+
+    protected function extractStyle($response) {
+        $style = <<<EOT
+<style type="text/css">
+/*<![CDATA[*/
+<!--
+        p {margin: 0; padding: 0;}      .ft00{font-size:10px;font-family:Helvetica;color:#dcdcdc;}
+        .ft01{font-size:11px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+        .ft02{font-size:7px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+        .ft03{font-size:11px;font-family:ILDCPF+StempelGaramond-Italic;color:#000000;}
+        .ft04{font-size:10px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+        .ft05{font-size:6px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+        .ft06{font-size:11px;line-height:17px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+        .ft07{font-size:11px;line-height:17px;font-family:ILDCPF+StempelGaramond-Italic;color:#000000;}
+        .ft08{font-size:10px;line-height:14px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
+-->
+/*]]>*/
+</style>
+EOT;
+       return $style;
+
+    }
+
+
 
 
     protected function extractSnippets($response) {
@@ -105,32 +154,38 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             return false;
         //second order hits
         if (array_key_exists('hits', $top_level_hits))
-            $hits = $top_level_hits['hits'];
+           $hits = $top_level_hits['hits'];
         if (empty($top_level_hits))
-            return false;
+           return false;
 
         $snippets = [];
+        $pages = [];
         if (count($hits) > $this->maxSnippets)
             $hits = array_slice($hits, 0, $this->maxSnippets);
-        error_log("HITS:" . count($hits));
         foreach ($hits as $hit) {
             if (array_key_exists('highlight', $hit))
                 $highlight_results = $hit['highlight'][self::FIELD];
             if (count($highlight_results) > $this->maxSnippets);
                 $highlight_results = array_slice($highlight_results, 0, $this->maxSnippets);
             foreach ($highlight_results as $highlight_result) {
-                array_push($snippets, $highlight_result);
+                array_push($snippets, [ 'snippet' =>  $highlight_result, 'page' => $hit['_source']['page'], 'style' => $this->extractStyle($hit)]);
             }
         }
-        return empty($snippets) ? false : $this->formatHighlighting($snippets);
+        if (empty($snippets))
+            return false;
+
+        $results['snippets'] =  $this->formatHighlighting($snippets);
+        return $results;
     }
 
 
     protected function formatHighlighting($snippets) {
         $formatted_snippets = [];
         foreach ($snippets as $snippet) {
-            $snippet = '...' . $snippet . '...';
+            //$snippet = '...' . $snippet . '...';
+            $snippet = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet); //remove styles with absolute positions
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
+            //array_push($formatted_snippets, $snippet);
         }
         return $formatted_snippets;
     }
@@ -152,7 +207,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 'status' => 'EMPTY QUERY'
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
-        $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
+        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose);
         if (empty($snippets))
             return new JsonModel([
                  'status' => 'NO RESULTS'
@@ -160,7 +215,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
         return new JsonModel([
                'status' => 'SUCCESS',
-               'snippets' =>  $snippets
+               'snippets' => $snippets['snippets']
                ]);
     }
 }

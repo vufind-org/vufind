@@ -59,7 +59,10 @@ var TueFind = {
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
                             $(this).removeAttr('style');
-                            $(this).html(snippets.join('<br/>') + '<br/>');
+                            var styles = snippets.map(a => a.style).join();
+                            $(styles).appendTo("head");
+                            var snippets_and_pages = snippets.map(a => a.snippet + '</br>[' + a.page + ']');
+                            $(this).html(snippets_and_pages.join('<hr/>') + '<hr/>');
                         } else
                             $(this).html("");
                     });
