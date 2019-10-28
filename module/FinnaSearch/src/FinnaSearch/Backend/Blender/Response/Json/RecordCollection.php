@@ -141,18 +141,32 @@ class RecordCollection
      */
     public function isPrimaryAtOffset($offset, $blockSize)
     {
-        $boostPos = $this->config['Blending']['boostPosition'] ?? $blockSize;
+        // Account for configuration being 1-based
+        $boostPos = ($this->config['Blending']['boostPosition'] ?? $blockSize) - 1;
         $boostCount = $this->config['Blending']['boostCount'] ?? 0;
+        $maxBoostedPos = $boostPos + $boostCount;
+        $maxAffectedPos = ceil($maxBoostedPos / $blockSize) * $blockSize
+            + $boostCount - 1;
         if ($offset < $boostPos
             || 0 === $boostCount
-            || $offset >= $boostPos + $boostCount
+            || $offset > $maxAffectedPos
+            || $maxBoostedPos > $blockSize
         ) {
-            // We're outside any boosted records, calculate by block
+            // We're outside the blocks affected by boosting, calculate by block
             $currentBlock = floor($offset / $blockSize);
             return $currentBlock % 2 === 0;
         }
 
-        // We're in a boost block
+        // Check if we're in a boost block
+        if ($boostCount > 0
+            && $offset >= $boostPos && $offset < $boostPos + $boostCount
+        ) {
+            return false;
+        }
+        // Check if we're in the first primary block
+        if ($offset < $blockSize + $boostCount) {
+            return true;
+        }
         return false;
     }
 
