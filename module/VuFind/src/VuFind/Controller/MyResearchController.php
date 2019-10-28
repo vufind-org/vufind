@@ -445,6 +445,12 @@ class MyResearchController extends AbstractBase
             $this->setSavedFlagSecurely($sid, true, $user->id);
             $savedRow = $search->select($searchCriteria)->current();
         }
+        if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
+            // By default, a first scheduled email will be sent because the database
+            // last notification date will be initialized to a past date. If we don't
+            // want that to happen, we need to set it to a more appropriate date:
+            $savedRow->last_notification_sent = date('Y-m-d H:i:s');
+        }
         $savedRow->setSchedule($schedule, $baseurl);
         return $this->redirect()->toRoute('search-history');
     }
