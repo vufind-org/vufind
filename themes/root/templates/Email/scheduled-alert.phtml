@@ -8,7 +8,7 @@
   <?=$this->translate($format) . ': ' ?>
 <?php $index = 0; ?>
 <?php foreach ($filters as $f): ?>
-<?=($index++ > 0 ? ' ' . $this->translate($f['operator']) . ' ' : '') . $f['displayText']; ?>
+<?=(($f['operator'] == 'NOT' || $index++ > 0) ? ($index > 0 ? ' ' : '') . $this->translate($f['operator']) . ' ' : '') . $f['displayText']; ?>
 <?php endforeach; ?>
 
 <?php endforeach; ?>
