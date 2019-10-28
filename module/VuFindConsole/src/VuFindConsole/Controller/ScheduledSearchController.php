@@ -385,6 +385,44 @@ class ScheduledSearchController extends AbstractBase
     }
 
     /**
+     * Try to send an email message to a user. Return true on success, false on
+     * error.
+     *
+     * @param \VuFind\Db\Row\User $user    User to email
+     * @param string              $message Email message body
+     *
+     * @return bool
+     */
+    protected function sendEmail($user, $message)
+    {
+        $subject = $this->mainConfig->Site->title
+            . ': ' . $this->translate('Scheduled Alert Results');
+        $from = $this->mainConfig->Site->email;
+        $to = $user->email;
+        try {
+            $this->mailer->send($to, $from, $subject, $message);
+            return true;
+        } catch (\Exception $e) {
+            $this->msg(
+                'Initial email send failed; resetting connection and retrying...'
+            );
+        }
+        // If we got this far, the first attempt threw an exception; let's reset
+        // the connection, then try again....
+        $this->mailer->resetConnection();
+        try {
+            $this->mailer->send($to, $from, $subject, $message);
+        } catch (\Exception $e) {
+            $this->err(
+                "Failed to send message to {$user->email}: " . $e->getMessage()
+            );
+            return false;
+        }
+        // If we got here, the retry was a success!
+        return true;
+    }
+
+    /**
      * Send scheduled alerts for a view.
      *
      * @return void
@@ -408,18 +446,9 @@ class ScheduledSearchController extends AbstractBase
 
             // Prepare email content
             $message = $this->buildEmail($s, $user, $searchObject, $newRecords);
-            $subject
-                = $this->mainConfig->Site->title
-                . ': ' . $this->translate('Scheduled Alert Results');
-            $from = $this->mainConfig->Site->email;
-            $to = $user->email;
-            try {
-                $this->mailer->send($to, $from, $subject, $message);
-            } catch (\Exception $e) {
-                $this->err(
-                    "Failed to send message to {$user->email}: " . $e->getMessage(),
-                    'Failed to send a message to a user'
-                );
+            if (!$this->sendEmail($user, $message)) {
+                // If email send failed, move on to the next user without updating
+                // the database table.
                 continue;
             }
             $searchTime = date('Y-m-d H:i:s');
