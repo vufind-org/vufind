@@ -14,29 +14,29 @@ $account = $this->auth()->getManager();
 $user = $this->auth()->isLoggedIn();
 ?>
 
-<?=$this->flashmessages()?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->transEsc("PDASubscriptions")?></h2>
 
-<div class="row">
-    <div class="<?=$this->layoutClass('mainbody')?>">
-        <?php if ($recordTotal > 0): ?>
-            <div class="resulthead">
-                <div class="pull-right flip">
-                    <?=$this->render('search/controls/sort.phtml')?>
-                </div>
+    <?=$this->flashmessages()?>
+
+    <?php if ($recordTotal > 0): ?>
+        <div class="resulthead">
+            <div class="pull-right flip">
+                <?=$this->render('search/controls/sort.phtml')?>
             </div>
-            <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-                <?=$this->context($this)->renderInContext('myresearch/subscriptions-bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
-                <?php foreach ($this->results->getResults() as $i=>$current): ?>
-                    <?=$this->record($current)->getPDASubscriptionListEntry($list, $user)?>
-                <?php endforeach; ?>
-            </form>
-            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
-        <?php else: ?>
-            <p><?=$this->transEsc('You do not have any saved PDA resources')?></p>
-        <?php endif; ?>
-    </div>
+        </div>
+        <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+            <?=$this->context($this)->renderInContext('myresearch/subscriptions-bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+            <?php foreach ($this->results->getResults() as $i=>$current): ?>
+                <?=$this->record($current)->getPDASubscriptionListEntry($list, $user)?>
+            <?php endforeach; ?>
+        </form>
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    <?php else: ?>
+        <p><?=$this->transEsc('You do not have any saved PDA resources')?></p>
+    <?php endif; ?>
+</div>
 
-    <div class="<?=$this->layoutClass('sidebar')?>">
-        <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'pdasubscriptions'))?>
-    </div>
+<div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'pdasubscriptions'))?>
 </div>
