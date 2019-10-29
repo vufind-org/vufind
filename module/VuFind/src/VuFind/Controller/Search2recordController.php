@@ -65,14 +65,4 @@ class Search2recordController extends AbstractRecord
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
-
-    /**
-     * Get the Hierarchy Type (false if none)
-     *
-     * @return string|bool
-     */
-    public function getHierarchyType()
-    {
-        return 'Search2';
-    }
 }
