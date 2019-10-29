@@ -60,6 +60,6 @@ class Search2Default extends SolrDefault
      */
     public function getHierarchyType()
     {
-        return 'search2';
+        return parent::getHierarchyType() ? 'search2' : false;
     }
 }
