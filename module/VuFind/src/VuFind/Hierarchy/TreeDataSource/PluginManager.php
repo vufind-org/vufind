@@ -58,7 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Solr::class => SolrFactory::class,
-        Search2::class => SolrFactory::class,
+        Search2::class => Search2Factory::class,
         XMLFile::class => InvokableFactory::class,
     ];
 
