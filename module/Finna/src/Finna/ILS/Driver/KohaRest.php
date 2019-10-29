@@ -562,7 +562,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $fieldConfig = isset($this->config['updateAddress']['fields'])
             ? $this->config['updateAddress']['fields'] : [];
         foreach ($fieldConfig as $field) {
-            $parts = explode(':', $field, 2);
+            $parts = explode(':', $field);
             if (isset($parts[1])) {
                 $addressFields[$parts[1]] = $parts[0];
             }
