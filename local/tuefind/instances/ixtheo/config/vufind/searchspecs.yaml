@@ -215,8 +215,12 @@ ISN:
 
 IxTheoNotations:
   DismaxFields:
-    - ixtheo_notation_expanded
+    - ixtheo_notation^100
+    - ixtheo_notation_expanded^99
   QueryFields:
+    ixtheo_notation:
+      - [and, 200]
+      - [or, ~]
     ixtheo_notation_expanded:
       - [and, 100]
       - [or, ~]
