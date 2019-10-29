@@ -107,6 +107,7 @@ trait ILSFinna
     protected function handleLogin($username, $password, $loginMethod,
         $secondaryUsername = ''
     ) {
+        $username = str_replace(' ', '', $username);
         if ($username == '' || ('password' === $loginMethod && $password == '')) {
             throw new AuthException('authentication_error_blank');
         }
