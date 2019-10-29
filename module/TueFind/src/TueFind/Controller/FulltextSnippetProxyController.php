@@ -67,7 +67,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
          $params = [
              'index' => $index,
              'body' => [
-                 '_source' => $paged_results ? [ "page" ] : false,
+                 '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
                  'size' => '100',
                  'query' => [
                      'bool' => [
@@ -117,29 +117,23 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function extractStyle($response) {
-        $style = <<<EOT
-<style type="text/css">
-/*<![CDATA[*/
-<!--
-        p {margin: 0; padding: 0;}      .ft00{font-size:10px;font-family:Helvetica;color:#dcdcdc;}
-        .ft01{font-size:11px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
-        .ft02{font-size:7px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
-        .ft03{font-size:11px;font-family:ILDCPF+StempelGaramond-Italic;color:#000000;}
-        .ft04{font-size:10px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
-        .ft05{font-size:6px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
-        .ft06{font-size:11px;line-height:17px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
-        .ft07{font-size:11px;line-height:17px;font-family:ILDCPF+StempelGaramond-Italic;color:#000000;}
-        .ft08{font-size:10px;line-height:14px;font-family:ILDDBH+StempelGaramond-Roman;color:#000000;}
--->
-/*]]>*/
-</style>
-EOT;
-       return $style;
-
+    protected function extractStyle($html_page) {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($html_page);
+        $xpath = new \DOMXPath($dom);
+        $style_object = $xpath->query('/html/head/style');
+        $style = $dom->saveHTML($style_object->item(0));
+        return $style;
     }
 
 
+    // Needed because each page has its own classes that we finally have to import
+    // So try to avoid clashes by prefixing them with id and page
+    protected function normalizeCSSClasses($doc_id, $page, $object) {
+        // Replace patterns '.ftXXX{' or 'class="ftXXX"
+        $object = preg_replace('/(?<=class="|\.)ft(\d+)(?=[{"])/', '_' . $doc_id . '_' . $page . '_ft\1', $object);
+        return $object;
+    }
 
 
     protected function extractSnippets($response) {
@@ -168,7 +162,13 @@ EOT;
             if (count($highlight_results) > $this->maxSnippets);
                 $highlight_results = array_slice($highlight_results, 0, $this->maxSnippets);
             foreach ($highlight_results as $highlight_result) {
-                array_push($snippets, [ 'snippet' =>  $highlight_result, 'page' => $hit['_source']['page'], 'style' => $this->extractStyle($hit)]);
+                $doc_id = $hit['_source']['id'];
+                $page = $hit['_source']['page'];
+                $style =  $this->extractStyle($hit['_source']['full_text']);
+                $style = $this->normalizeCSSClasses($doc_id, $page, $style);
+                $snippet = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
+                $snippet = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet); //remove styles with absolute positions
+                array_push($snippets, [ 'snippet' =>  $snippet, 'page' => $hit['_source']['page'], 'style' => $style]);
             }
         }
         if (empty($snippets))
@@ -183,7 +183,6 @@ EOT;
         $formatted_snippets = [];
         foreach ($snippets as $snippet) {
             //$snippet = '...' . $snippet . '...';
-            $snippet = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet); //remove styles with absolute positions
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
             //array_push($formatted_snippets, $snippet);
         }
