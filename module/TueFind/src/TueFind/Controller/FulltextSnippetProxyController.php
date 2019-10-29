@@ -42,6 +42,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     const FRAGMENT_SIZE_VERBOSE = 700;
     const ORDER_DEFAULT = 'none';
     const ORDER_VERBOSE = 'score';
+    const esHighlightStartTag = '<em>';
+    const esHighlightEndTag = '</em>';
+
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
@@ -80,10 +83,17 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'highlight' => [
                      'fields' => [
                           self::FIELD => [
-                               'type' => 'unified',
+                               'type' => 'fvh',
+                               //'type' => 'unified',
+                               'boundary_scanner' => 'chars',
+                               'force_source' => 'true',
+                               'boundary_chars' => '<',
+                               'boundary_max_scan' => '200',
+                               //'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
                                'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
                                'phrase_limit' => self::PHRASE_LIMIT,
-                               'number_of_fragments' => $this->maxSnippets,
+                               //'number_of_fragments' => $this->maxSnippets,
+                               'number_of_fragments' => '0',
                                'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
                            ]
                       ]
@@ -131,8 +141,30 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     // So try to avoid clashes by prefixing them with id and page
     protected function normalizeCSSClasses($doc_id, $page, $object) {
         // Replace patterns '.ftXXX{' or 'class="ftXXX"
-        $object = preg_replace('/(?<=class="|\.)ft(\d+)(?=[{"])/', '_' . $doc_id . '_' . $page . '_ft\1', $object);
+        $object = preg_replace('/(?<=class="|class=\n"|\.)ft(\d+)(?=[{"])/', '_' . $doc_id . '_' . $page . '_ft\1', $object);
         return $object;
+    }
+
+
+    protected function extractSnippetParagraph($snippet_page) {
+        $esHighlightStartTag = self::esHighlightStartTag;
+        $esHighlightEndTag = self::esHighlightEndTag;
+        $dom = new \DOMDocument();
+        $dom->loadHTML($snippet_page);
+        $xpath = new \DOMXPath($dom);
+        $highlight_nodes =  $xpath->query('//' . 'em');
+        $snippets = [];
+        foreach ($highlight_nodes as $highlight_node) {
+            $snippet_tree = $highlight_node->parentNode;
+            //$snippet_tree->appendChild($highlight_node->parentNode->previousSibling);
+            //$snippet_tree->appendChild($highlight_node->parentNode->nextSibling);
+            $snippet =  $dom->saveHTML($snippet_tree);
+            //$snippet = $snippet = '...' . $snippet . '...';
+            array_push($snippets, $snippet);
+        }
+        $snippets = array_unique($snippets); // Handle several highlights in the same paragraph
+        return implode("", $snippets);
+
     }
 
 
@@ -166,8 +198,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 $page = $hit['_source']['page'];
                 $style =  $this->extractStyle($hit['_source']['full_text']);
                 $style = $this->normalizeCSSClasses($doc_id, $page, $style);
-                $snippet = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
-                $snippet = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet); //remove styles with absolute positions
+                $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
+                $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
+                $snippet = $this->extractSnippetParagraph($snippet_page);
                 array_push($snippets, [ 'snippet' =>  $snippet, 'page' => $hit['_source']['page'], 'style' => $style]);
             }
         }
