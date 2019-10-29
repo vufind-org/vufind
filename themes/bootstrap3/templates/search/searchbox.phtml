@@ -36,6 +36,7 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
+    $showFilters = $filterDetails && (isset($results) || $options->getRetainFilterSetting());
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -52,7 +53,11 @@
         'search/filters.phtml',
         [
           'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+          'filterList' => $showFilters ? $filterList : [],
+          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+          'searchClassId' => $this->searchClassId,
+          'searchType' => $this->searchType,
         ]
       );?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
@@ -140,7 +145,11 @@
       'search/filters.phtml',
       [
         'params' => $params ?? null,
-        'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+        'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+        'filterList' => $showFilters ? $filterList : [],
+        'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+        'searchClassId' => $this->searchClassId,
+        'searchType' => $this->searchType,
       ]
     );?>
   </form>
