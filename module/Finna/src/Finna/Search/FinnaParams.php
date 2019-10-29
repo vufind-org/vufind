@@ -104,7 +104,7 @@ trait FinnaParams
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
-        if (strncmp($field, '{!geofilt', 9) == 0) {
+        if ($this->isGeographicFilter($field)) {
             return 'Geographical Area';
         }
         return parent::getFacetLabel($field, $value, $default);
@@ -120,9 +120,9 @@ trait FinnaParams
     public function getGeographicFilters($filterList)
     {
         $results = [];
-        foreach ($filterList as $key => $filters) {
-            foreach ($filters as $filterKey => $filter) {
-                if (strncmp($filter['field'], '{!geofilt ', 10) == 0) {
+        foreach ($filterList as $filters) {
+            foreach ($filters as $filter) {
+                if ($this->isGeographicFilter($filter['field'])) {
                     $results[] = $filter['field'];
                 }
             }
@@ -133,14 +133,14 @@ trait FinnaParams
     /**
      * Check if the given filter is a geographic filter.
      *
-     * @param array $filter Facet
+     * @param string|array $filter Facet
      *
      * @return boolean
      */
     public function isGeographicFilter($filter)
     {
-        return isset($filter[0]['field'])
-            ? strncmp($filter[0]['field'], '{!geofilt', 9) == 0 : false;
+        $filter = $filter[0]['field'] ?? $filter;
+        return strncmp($filter, '{!geofilt', 9) === 0;
     }
 
     /**
@@ -194,7 +194,7 @@ trait FinnaParams
     {
         foreach ($filterList as $key => $filters) {
             foreach ($filters as $filterKey => $filter) {
-                if (strncmp($filter['field'], '{!geofilt ', 10) == 0) {
+                if ($this->isGeographicFilter($filter['field'])) {
                     unset($filters[$filterKey]);
                 }
             }
@@ -293,11 +293,17 @@ trait FinnaParams
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
         $res = parent::formatFilterListEntry($field, $value, $operator, $translate);
-        return $this->formatDateRangeFilterListEntry($res, $field, $value);
+        if ($this->isDateRangeFilter($field)) {
+            return $this->formatDateRangeFilterListEntry($res, $field, $value);
+        }
+        if ($this->isGeographicFilter($field)) {
+            return $this->formatGeographicFilterListEntry($res, $field, $value);
+        }
+        return $res;
     }
 
     /**
-     * Format a single filter for use in getFilterList().
+     * Format a date range filter for use in getFilterList().
      *
      * @param array  $listEntry List entry
      * @param string $field     Field name
@@ -307,24 +313,36 @@ trait FinnaParams
      */
     protected function formatDateRangeFilterListEntry($listEntry, $field, $value)
     {
-        if ($this->isDateRangeFilter($field)) {
-            $range = $this->parseDateRangeFilter($value);
-            if ($range) {
-                $display = '';
-                $from = $range['from'];
-                $to = $range['to'];
+        $range = $this->parseDateRangeFilter($value);
+        if ($range) {
+            $display = '';
+            $from = $range['from'];
+            $to = $range['to'];
 
-                if ($from != '*') {
-                    $display .= $from;
-                }
-                $ndash = html_entity_decode('&#x2013;', ENT_NOQUOTES, 'UTF-8');
-                $display .= $ndash;
-                if ($to != '*') {
-                    $display .= $to;
-                }
-                $listEntry['displayText'] = $display;
+            if ($from != '*') {
+                $display .= $from;
             }
+            $ndash = html_entity_decode('&#x2013;', ENT_NOQUOTES, 'UTF-8');
+            $display .= $ndash;
+            if ($to != '*') {
+                $display .= $to;
+            }
+            $listEntry['displayText'] = $display;
         }
+        return $listEntry;
+    }
+
+    /**
+     * Format a geographic filter for use in getFilterList().
+     *
+     * @param array  $listEntry List entry
+     * @param string $field     Field name
+     * @param string $value     Field value
+     *
+     * @return array
+     */
+    protected function formatGeographicFilterListEntry($listEntry, $field, $value)
+    {
         return $listEntry;
     }
 

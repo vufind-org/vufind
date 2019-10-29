@@ -475,7 +475,6 @@ class ScheduledAlerts extends AbstractService
                 $urlHelper->__invoke('myresearch-unsubscribe')
                 . "?id={$s->id}&key=$secret";
             $userInstitution = $this->mainConfig->Site->institution;
-            $filters = $this->processFilters($params->getFilterList());
             $params = [
                 'records' => $newRecords,
                 'info' => [
@@ -484,9 +483,10 @@ class ScheduledAlerts extends AbstractService
                     'recordCount' => count($newRecords),
                     'url' => $searchUrl,
                     'unsubscribeUrl' => $unsubscribeUrl,
-                    'filters' => $filters,
-                    'userInstitution' => $userInstitution
-                 ]
+                    'filters' => $params->getFilterList(),
+                    'userInstitution' => $userInstitution,
+                ],
+                'params' => $params,
             ];
 
             $message = $renderer->render('Email/scheduled-alert.phtml', $params);
@@ -515,43 +515,6 @@ class ScheduledAlerts extends AbstractService
             }
         }
         $this->msg('    Done processing searches');
-    }
-
-    /**
-     * Utility function for collecting filter
-     * information needed in the email.
-     *
-     * @param array $filters Filter list
-     *
-     * @return array Processed filter list
-     */
-    protected function processFilters($filters)
-    {
-        $result = [];
-        $currentField = null;
-        $currentFilters = null;
-        foreach ($filters as $key => $filterList) {
-            foreach ($filterList as $f) {
-                $field = $f['field'];
-                if (isset($this->facets[$field])) {
-                    $field = $this->facets[$field];
-                }
-                if ($field != $currentField) {
-                    if ($currentField) {
-                        $result[ucfirst($currentField)] = $currentFilters;
-                    }
-
-                    $currentField = $field;
-                    $currentFilters = [];
-                }
-                $currentFilters[] = [
-                    'value' => $f['displayText'],
-                    'operator' => $f['operator']
-                ];
-            }
-            $result[$currentField] = $currentFilters;
-        }
-        return $result;
     }
 
     /**

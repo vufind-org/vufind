@@ -24,9 +24,10 @@
 
       <td>
         <?php foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
+          <?php $geographic = is_callable([$info->getParams(), 'isGeographicFilter']) && $info->getParams()->isGeographicFilter($filters); ?>
           <?php foreach ($filters as $i => $filter): ?>
             <?php if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
-            <strong><?=$this->transEsc($field)?></strong><?php if (!empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><?php endif; ?><br/>
+            <strong><?=$this->transEsc($field)?></strong><?php if (!$geographic && !empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><?php endif; ?><br/>
           <?php endforeach; ?>
         <?php endforeach; ?>
         <?php foreach($info->getParams()->getCheckboxFacets() as $facet): ?>

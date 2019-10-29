@@ -1,35 +1,30 @@
-<?= $this->translate('New results found for search') ?>:
-  <?= empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
+<?=$this->translate('New results found for search') ?>:
+  <?=empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
 
 <?php if (count($info['filters'])): ?>
 
-<?= $this->translate('Limits') ?>:
+<?=$this->translate('history_limits') ?>:
 <?php foreach ($info['filters'] as $format => $filters): ?>
-  <?= $this->translate($format) . ': ' ?>
+  <?=$this->translate($format) . ((!is_callable([$this->params, 'isGeographicFilter']) || !$this->params->isGeographicFilter($filters)) ? ': ' : ' ') ?>
 <?php $index = 0; ?>
 <?php foreach ($filters as $f): ?>
-<?= ($index++ > 0 ? ' ' . $this->translate($f['operator']) . ' ' : '') . $this->translate($f['value']); ?>
+<?=(($f['operator'] == 'NOT' || $index++ > 0) ? ($index > 0 ? ' ' : '') . $this->translate($f['operator']) . ' ' : '') . $f['displayText']; ?>
 <?php endforeach; ?>
 
 <?php endforeach; ?>
 <?php endif; ?>
 
-<?= $this->translate('Link to full results') ?>:
-<?= $info['url'] ?>
+<?=$this->translate('Link to full results') ?>:
+<?=$info['url'] ?>
 
 
 
-<?= $info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
+<?=$info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
 
 <?php foreach ($records as $result): ?>
-<?= $this->record($result)->getSearchResult('email') . PHP_EOL; ?>
+  <?=$this->record($result)->getSearchResult('email') . PHP_EOL; ?>
 <?php endforeach; ?>
 
 
-<?= $this->translate('unsubscribe_description') ?>:
-<?= $info['unsubscribeUrl'] ?>
-
-
-<?=$this->translate('messaging_organisation'); ?>: <?=$this->transEsc("source_{$info['userInstitution']}"); ?>
-
-<?=$info['baseUrl'] ?>
+<?=$this->translate('unsubscribe_description') ?>:
+<?=$info['unsubscribeUrl'] ?>
