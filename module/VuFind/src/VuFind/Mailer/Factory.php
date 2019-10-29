@@ -83,6 +83,10 @@ class Factory implements FactoryInterface
                 $settings['connection_config']['ssl'] = 'ssl';
             }
         }
+        if (isset($config->Mail->connection_time_limit)) {
+            $settings['connection_time_limit']
+                = $config->Mail->connection_time_limit;
+        }
         return new Smtp(new SmtpOptions($settings));
     }
 
