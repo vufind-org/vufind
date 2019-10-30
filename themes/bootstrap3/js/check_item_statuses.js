@@ -12,6 +12,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     return callnumber;
   }
   function displayItemStatus(result, $item) {
+    $item.addClass('js-item-done').removeClass('js-item-pending');
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
     if (typeof(result.error) != 'undefined'
@@ -144,7 +145,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function checkItemStatus(el) {
     var $item = $(el);
-    if ($item.hasClass('js-item-pending')) {
+    if ($item.hasClass('js-item-pending') || $item.hasClass('js-item-done')) {
       return;
     }
     if ($item.find('.hiddenId').length === 0) {
