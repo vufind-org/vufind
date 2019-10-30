@@ -38,14 +38,4 @@ CREATE TABLE ixtheo_user (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE relbib_ids (
-    record_id VARCHAR(10) NOT NULL PRIMARY KEY) DEFAULT CHARSET=utf8mb4;
-
-GRANT DROP ON vufind.relbib_ids TO 'vufind'@'localhost';
-
-CREATE TABLE bibstudies_ids (
-    record_id VARCHAR(10) NOT NULL PRIMARY KEY) DEFAULT CHARSET=utf8mb4;
-
-GRANT DROP ON vufind.bibstudies_ids TO 'vufind'@'localhost';
-
 GRANT CREATE TEMPORARY TABLES ON `vufind`.* TO 'vufind'@'localhost';
