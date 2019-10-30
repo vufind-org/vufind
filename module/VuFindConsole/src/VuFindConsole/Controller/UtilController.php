@@ -282,7 +282,9 @@ class UtilController extends AbstractBase
             ->get(\VuFind\Config\PluginManager::class);
         $generator = new Sitemap(
             $this->serviceLocator->get(\VuFind\Search\BackendManager::class),
-            $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
+            $this->serviceLocator->get(\VuFindSearch\Service::class),
+            $configLoader->get('config')->Site->url,
+            $configLoader->get('sitemap')
         );
         $request = $this->getRequest();
         $generator->setVerbose($request->getParam('verbose', false));

@@ -95,14 +95,15 @@ class Service
      * @param int                 $offset  Search offset
      * @param int                 $limit   Search limit
      * @param ParamBag            $params  Search backend parameters
+     * @param string              $context Event context
      *
      * @return RecordCollectionInterface
      */
     public function search($backend, Query\AbstractQuery $query, $offset = 0,
-        $limit = 20, ParamBag $params = null
+        $limit = 20, ParamBag $params = null, $context = null
     ) {
         $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
+        $context = $context ?: __FUNCTION__;
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
         $args['backend_instance'] = $backend;

@@ -29,7 +29,10 @@ namespace VuFind\Sitemap;
 
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
 use Zend\Config\Config;
 use Zend\Console\Console;
 
@@ -50,6 +53,13 @@ class Generator
      * @var BackendManager
      */
     protected $backendManager;
+
+    /**
+     * Search service.
+     *
+     * @var SearchService
+     */
+    protected $searchService;
 
     /**
      * Base URL for site
@@ -124,14 +134,17 @@ class Generator
     /**
      * Constructor
      *
-     * @param BackendManager $bm      Search backend
+     * @param BackendManager $bm      Search backend manaver
+     * @param SearchService  $ss      Search manager
      * @param string         $baseUrl VuFind base URL
      * @param Config         $config  Sitemap configuration settings
      */
-    public function __construct(BackendManager $bm, $baseUrl, Config $config)
-    {
+    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
+        Config $config
+    ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
+        $this->searchService = $ss;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
 
@@ -216,7 +229,7 @@ class Generator
         // Display total elapsed time in verbose mode:
         if ($this->verbose) {
             Console::writeLine(
-                'Elapsed time (in seconds): ' . ($this->getTime() - $startTime)
+                'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
             );
         }
     }
@@ -331,6 +344,16 @@ class Generator
         }
         $prevCursorMark = $cursorMark;
 
+        // Set up the record factory on first call. We use a very simple factory
+        // since performance is important and we only need the identifier.
+        if ('*' === $cursorMark) {
+            $recordFactory = function ($data) {
+                return $data;
+            };
+            $collectionFactory = new RecordCollectionFactory($recordFactory);
+            $backend->setRecordCollectionFactory($collectionFactory);
+        }
+
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();
         $params = new ParamBag(
@@ -347,13 +370,18 @@ class Generator
                 'cursorMark' => $cursorMark
             ]
         );
-        $raw = $connector->search($params);
-        $result = json_decode($raw);
-        $ids = [];
-        $nextOffset = $result->nextCursorMark;
-        foreach ($result->response->docs ?? [] as $doc) {
-            $ids[] = $doc->$key;
+        $results = $this->searchService->search(
+            $backend->getIdentifier(),
+            new Query('*:*'),
+            0,
+            $this->countPerPage,
+            $params,
+            'getids'
+        );
+        foreach ($results->getRecords() as $doc) {
+            $ids[] = $doc[$key];
         }
+        $nextOffset = $results->getCursorMark();
         return compact('ids', 'nextOffset');
     }
 
