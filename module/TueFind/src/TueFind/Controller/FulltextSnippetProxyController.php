@@ -140,7 +140,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     // Needed because each page has its own classes that we finally have to import
     // So try to avoid clashes by prefixing them with id and page
     protected function normalizeCSSClasses($doc_id, $page, $object) {
-        // Replace patterns '.ftXXX{' or 'class="ftXXX"
+        // Replace patterns '.ftXXX{' or 'class=\n?"ftXXX"
         $object = preg_replace('/(?<=class="|class=\n"|\.)ft(\d+)(?=[{"])/', '_' . $doc_id . '_' . $page . '_ft\1', $object);
         return $object;
     }
@@ -149,16 +149,32 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     protected function extractSnippetParagraph($snippet_page) {
         $esHighlightStartTag = self::esHighlightStartTag;
         $esHighlightEndTag = self::esHighlightEndTag;
+        //echo '<pre>' . var_dump($snippet_page) .  '</pre>';
         $dom = new \DOMDocument();
         $dom->loadHTML($snippet_page);
+        $dom->normalizeDocument(); //Hopefully get rid of strange empty textfields caused by whitspace nodes that prevent proper navigation
         $xpath = new \DOMXPath($dom);
         $highlight_nodes =  $xpath->query('//' . 'em');
         $snippets = [];
         foreach ($highlight_nodes as $highlight_node) {
-            $snippet_tree = $highlight_node->parentNode;
-            //$snippet_tree->appendChild($highlight_node->parentNode->previousSibling);
-            //$snippet_tree->appendChild($highlight_node->parentNode->nextSibling);
-            $snippet =  $dom->saveHTML($snippet_tree);
+            $parent_node = $highlight_node->parentNode;
+            if (is_null($parent_node))
+                continue;
+            $parent_node_path = $parent_node->getNodePath();
+            $parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
+            $parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
+            $snippet_tree = new \DomDocument();
+            if (!is_null($parent_sibling_left)) {
+                $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
+                $snippet_tree->appendChild($import_node_left);
+            }
+            $import_node = $snippet_tree->importNode($parent_node, true /*deep*/);
+            $snippet_tree->appendChild($import_node);
+            if (!is_null($parent_sibling_right)) {
+                $import_node_right = $snippet_tree->importNode($parent_sibling_right, true);
+                $snippet_tree->appendChild($import_node_right);
+            }
+            $snippet =  $snippet_tree->saveHTML();
             //$snippet = $snippet = '...' . $snippet . '...';
             array_push($snippets, $snippet);
         }
@@ -217,7 +233,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         foreach ($snippets as $snippet) {
             //$snippet = '...' . $snippet . '...';
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
-            //array_push($formatted_snippets, $snippet);
         }
         return $formatted_snippets;
     }
