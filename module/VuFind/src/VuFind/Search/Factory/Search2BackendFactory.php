@@ -44,7 +44,7 @@ class Search2BackendFactory extends SolrDefaultBackendFactory
      *
      * @var string
      */
-    protected $createRecordCallback = 'getSearch2Record';
+    protected $createRecordMethod = 'getSearch2Record';
 
     /**
      * Constructor
