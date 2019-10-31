@@ -282,7 +282,7 @@
             </a><br/>
             <?php if ($this->driver->isSubscribable()):?>
               <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
-                <i class="result-link-icon fa fa-fw fa-bell"></i>
+                <i class="result-link-icon fa fa-fw fa-bell<?=$this->IxTheo()->isRecordSubscribed($this->driver) ? '-slash' : ''?>"></i>
               </a><br/>
             <?php endif; ?>
           <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>

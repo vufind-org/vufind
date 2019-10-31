@@ -205,7 +205,7 @@
         </a><br/>
         <?php if ($this->driver->tryMethod('isSubscribable')):?>
           <a class="subscribe-record save-record modal-link" data-lightbox  id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
-            <i class="fa fa-fw fa-bell"></i>
+            <i class="fa fa-fw fa-bell<?=$this->IxTheo()->isRecordSubscribed($this->driver) ? '-slash' : ''?>"></i>
           </a>
         <?php endif; ?>
       <?php endif; ?>
