@@ -55,4 +55,11 @@ class Search2 extends Solr
      * @var string
      */
     protected $recordRoute = 'search2record';
+
+    /**
+     * Hierarchy cache file prefix.
+     *
+     * @var string
+     */
+    protected $cachePrefix = 'Search2';
 }
