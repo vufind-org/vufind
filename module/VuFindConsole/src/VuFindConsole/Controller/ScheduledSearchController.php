@@ -367,6 +367,10 @@ class ScheduledSearchController extends AbstractBase
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
+        // Filter function to only pass along selected checkboxes:
+        $selectedCheckboxes = function ($data) {
+            return $data['selected'] ?? false;
+        };
         $viewParams = [
             'records' => $newRecords,
             'info' => [
@@ -375,7 +379,10 @@ class ScheduledSearchController extends AbstractBase
                 'recordCount' => count($newRecords),
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'filters' => $params->getFilterList(),
+                'checkboxFilters' => array_filter(
+                    $params->getCheckboxFacets(), $selectedCheckboxes
+                ),
+                'filters' => $params->getFilterList(true),
                 'userInstitution' => $userInstitution
              ]
         ];
