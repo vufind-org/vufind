@@ -41,7 +41,7 @@
 
   <!-- IxTheo: Subscribe button -->
   <?php if ($this->driver->isSubscribable()):?>
-    <li><a class="subscribe-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><i class="fa fa-bell"></i> <?=$this->transEsc('Subscribe')?></a></li>
+    <li><a class="subscribe-record toolbar-btn btn-type-alert" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Subscribe')?></a></li>
   <?php endif; ?>
 </ul>
 
