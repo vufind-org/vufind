@@ -67,8 +67,8 @@
 #     placeholder (string) Placeholder label (translation key). Used to instruct or force
 #       (when combined with 'required' attribute) the user to make a selection from the
 #       options-list. Only select elements with 'options' are supported.
-#       For text, textarea, email and url elements, a placeholder text can be configured
-#       by adding a HTML-attribute via 'settings', for example:
+#       For text, textarea, email and url elements, a placeholder text (translation key)
+#       can be configured by adding a HTML-attribute via 'settings', for example:
 #       settings:
 #         - [placeholder, Please select...]
 #
