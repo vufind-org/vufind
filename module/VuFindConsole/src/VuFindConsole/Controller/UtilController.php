@@ -603,7 +603,9 @@ class UtilController extends AbstractBase
                 . ' [<backend>] [--skip-xml or -sx] [--skip-json or -sj]'
                 . ' [--help or -h]'
             );
-            Console::writeLine("\t<backend> => Search backend, Solr (default) or Search2");
+            Console::writeLine(
+                "\t<backend> => Search backend, Solr (default) or Search2"
+            );
             Console::writeLine("\t--skip-xml or -sx => Skip the XML cache");
             Console::writeLine("\t--skip-json or -sj => Skip the JSON cache");
             Console::writeLine("\t--help or -h => Show this message");
