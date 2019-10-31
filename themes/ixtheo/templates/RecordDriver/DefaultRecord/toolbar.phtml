@@ -4,7 +4,7 @@
     $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
   }
 ?>
-<ul class="nav nav-pills hidden-print">
+<ul class="record-nav nav nav-pills hidden-print">
   <?php if (count($this->driver->getCitationFormats()) > 0): ?>
     <li><a class="cite-record toolbar-btn btn-type-cite" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" rel="nofollow"><?=$this->transEsc('Cite this')?></a></li>
   <?php endif; ?>
@@ -37,5 +37,14 @@
   <?php if (!empty($addThis)): ?>
     <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark" aria-hidden="true"></i> <?=$this->transEsc('Bookmark')?></a></li>
   <?php endif; ?>
-    <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+  <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+
+  <!-- IxTheo: Subscribe button -->
+  <?php if ($this->driver->isSubscribable()):?>
+    <?php if ($this->IxTheo()->isRecordSubscribed($this->driver)): ?>
+      <li><a class="subscribe-record toolbar-btn btn-type-unsubscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Unsubscribe')?></a></li>
+    <?php else: ?>
+      <li><a class="subscribe-record toolbar-btn btn-type-subscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Subscribe')?></a></li>
+    <?php endif; ?>
+  <?php endif; ?>
 </ul>
