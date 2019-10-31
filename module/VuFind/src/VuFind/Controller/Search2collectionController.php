@@ -38,6 +38,5 @@ namespace VuFind\Controller;
  */
 class Search2collectionController extends CollectionController
 {
-
     protected $searchClassId = 'Search2';
 }
