@@ -43,5 +43,5 @@ class Search2CollectionList extends CollectionList
      *
      * @var string
      */
-    protected $backendId = 'Search2Collection';
+    protected $searchClassId = 'Search2Collection';
 }

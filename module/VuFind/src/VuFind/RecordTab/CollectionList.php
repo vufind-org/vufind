@@ -64,11 +64,11 @@ class CollectionList extends AbstractBase
     protected $recommendManager;
 
     /**
-     * Backend id
+     * Search class id
      *
      * @var string
      */
-    protected $backendId = 'SolrCollection';
+    protected $searchClassId = 'SolrCollection';
 
     /**
      * Constructor
@@ -123,7 +123,7 @@ class CollectionList extends AbstractBase
                 $listener->attach($runner->getEventManager()->getSharedManager());
             };
             $this->results
-                = $this->runner->run($request, $this->backendId, $cb);
+                = $this->runner->run($request, $this->searchClassId, $cb);
         }
         return $this->results;
     }
