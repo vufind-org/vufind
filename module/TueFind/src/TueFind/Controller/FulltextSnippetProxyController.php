@@ -72,6 +72,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
              'body' => [
                  '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
                  'size' => '100',
+                 'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
                  'query' => [
                      'bool' => [
                            'must' => [
@@ -83,17 +84,10 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'highlight' => [
                      'fields' => [
                           self::FIELD => [
-                               'type' => 'fvh',
-                               //'type' => 'unified',
-                               'boundary_scanner' => 'chars',
-                               'force_source' => 'true',
-                               'boundary_chars' => '<',
-                               'boundary_max_scan' => '200',
-                               //'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
+                               'type' => 'unified',
                                'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
                                'phrase_limit' => self::PHRASE_LIMIT,
-                               //'number_of_fragments' => $this->maxSnippets,
-                               'number_of_fragments' => '0',
+                               'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For oriented approach get whole page */
                                'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
                            ]
                       ]
@@ -160,20 +154,23 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             $parent_node = $highlight_node->parentNode;
             if (is_null($parent_node))
                 continue;
-            $parent_node_path = $parent_node->getNodePath();
-            $parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
-            $parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
+            //$parent_node_path = $parent_node->getNodePath();
+            //$parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
+            //$parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
             $snippet_tree = new \DomDocument();
-            if (!is_null($parent_sibling_left)) {
+            /*if (!is_null($parent_sibling_left)) {
                 $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
                 $snippet_tree->appendChild($import_node_left);
-            }
+            }*/
             $import_node = $snippet_tree->importNode($parent_node, true /*deep*/);
+            //echo "VALUE [1]: " . $import_node->textContent;
+            //$import_node->textContent = '...' . $parent_node->textContent . '...';
+            //echo "VALUE [2]: " . $import_node->nodeValue;
             $snippet_tree->appendChild($import_node);
-            if (!is_null($parent_sibling_right)) {
+            /*if (!is_null($parent_sibling_right)) {
                 $import_node_right = $snippet_tree->importNode($parent_sibling_right, true);
                 $snippet_tree->appendChild($import_node_right);
-            }
+            }*/
             $snippet =  $snippet_tree->saveHTML();
             //$snippet = $snippet = '...' . $snippet . '...';
             array_push($snippets, $snippet);
@@ -198,7 +195,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         if (array_key_exists('hits', $top_level_hits))
            $hits = $top_level_hits['hits'];
         if (empty($top_level_hits))
-           return false;
+            return false;
 
         $snippets = [];
         $pages = [];
@@ -210,14 +207,19 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             if (count($highlight_results) > $this->maxSnippets);
                 $highlight_results = array_slice($highlight_results, 0, $this->maxSnippets);
             foreach ($highlight_results as $highlight_result) {
-                $doc_id = $hit['_source']['id'];
-                $page = $hit['_source']['page'];
-                $style =  $this->extractStyle($hit['_source']['full_text']);
-                $style = $this->normalizeCSSClasses($doc_id, $page, $style);
-                $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
-                $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
-                $snippet = $this->extractSnippetParagraph($snippet_page);
-                array_push($snippets, [ 'snippet' =>  $snippet, 'page' => $hit['_source']['page'], 'style' => $style]);
+                // Handle pages or generic highlight snippets accordingly
+                if (isset($hit['_source']['page'])) {
+                    $doc_id = $hit['_source']['id'];
+                    $page = $hit['_source']['page'];
+                    $style =  $this->extractStyle($hit['_source']['full_text']);
+                    $style = $this->normalizeCSSClasses($doc_id, $page, $style);
+                    $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
+                    $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
+                    $snippet = $this->extractSnippetParagraph($snippet_page);
+                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style]);
+                } else {
+                    array_push($snippets, [ 'snippet' => $highlight_result ]);
+                }
             }
         }
         if (empty($snippets))
@@ -230,10 +232,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected function formatHighlighting($snippets) {
         $formatted_snippets = [];
-        foreach ($snippets as $snippet) {
-            //$snippet = '...' . $snippet . '...';
+        foreach ($snippets as $snippet)
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
-        }
         return $formatted_snippets;
     }
 
@@ -255,10 +255,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
         $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose);
-        if (empty($snippets))
+        //$snippets = $this->getFulltext($doc_id, $search_query, $verbose);
+        if (empty($snippets)) {
+            // Use non-paged text as fallback
+            $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
             return new JsonModel([
                  'status' => 'NO RESULTS'
-                ]);
+             ]);
+        }
 
         return new JsonModel([
                'status' => 'SUCCESS',
