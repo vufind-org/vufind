@@ -281,9 +281,16 @@
               <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
             </a><br/>
             <?php if ($this->driver->isSubscribable()):?>
-              <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
-                <i class="result-link-icon fa fa-fw fa-bell<?=$this->IxTheo()->isRecordSubscribed($this->driver) ? '-slash' : ''?>"></i>
-              </a><br/>
+              <?php if ($this->IxTheo()->isRecordSubscribed($this->driver)): ?>
+                <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Unsubscribe')?>">
+                  <i class="result-link-icon fa fa-fw fa-bell-slash"></i>
+                </a>
+              <?php else: ?>
+                <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Subscribe')?>">
+                  <i class="result-link-icon fa fa-fw fa-bell"></i>
+                </a>
+              <?php endif; ?>
+              <br/>
             <?php endif; ?>
           <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
             <?=$block?>
