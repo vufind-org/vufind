@@ -249,9 +249,28 @@ class JSTree extends AbstractBase
                     'recordID' => '__record_id__'
                 ]
             ];
-            $cache[$route] = $this->router->fromRoute($route, $params, $options);
+            $cache[$route] = $this->router->fromRoute(
+                $this->getRouteNameFromDataSource($route), $params, $options
+            );
         }
         return str_replace('__record_id__', urlencode($id), $cache[$route]);
+    }
+
+    /**
+     * Get route name from data source.
+     *
+     * @param string $route Route
+     *
+     * @return string
+     */
+    protected function getRouteNameFromDataSource($route)
+    {
+        if ($route === 'collection') {
+            return $this->getDataSource()->getCollectionRoute();
+        } elseif ($route === 'record') {
+            return $this->getDataSource()->getRecordRoute();
+        }
+        return $route;
     }
 
     /**
