@@ -598,13 +598,18 @@ class UtilController extends AbstractBase
     {
         $request = $this->getRequest();
         if ($request->getParam('help') || $request->getParam('h')) {
+            $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' util createHierarchyTrees';
+            }
             Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' util createHierarchyTrees'
+                'Usage: ' . $scriptName
                 . ' [<backend>] [--skip-xml or -sx] [--skip-json or -sj]'
                 . ' [--help or -h]'
             );
             Console::writeLine(
-                "\t<backend> => Search backend, Solr (default) or Search2"
+                "\t<backend> => Search backend, e.g. " . DEFAULT_SEARCH_BACKEND
+                . " (default) or Search2"
             );
             Console::writeLine("\t--skip-xml or -sx => Skip the XML cache");
             Console::writeLine("\t--skip-json or -sj => Skip the JSON cache");
@@ -613,7 +618,7 @@ class UtilController extends AbstractBase
         }
         $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
-        $backendId = $request->getParam('backend') ?? 'Solr';
+        $backendId = $request->getParam('backend') ?? DEFAULT_SEARCH_BACKEND;
         $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $hierarchies = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class)->get($backendId)
