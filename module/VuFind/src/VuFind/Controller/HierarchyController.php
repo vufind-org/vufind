@@ -86,7 +86,8 @@ class HierarchyController extends AbstractBase
             ? $config->Hierarchy->treeSearchLimit : -1;
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
-        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
+        $source = $this->params()
+            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
@@ -121,7 +122,8 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
+        $source = $this->params()
+            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if ($recordDriver = $loader->load($id, $source)) {
@@ -155,7 +157,8 @@ class HierarchyController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
+        $source = $this->params()
+            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if ($recordDriver = $loader->load($id, $source)) {
@@ -186,7 +189,8 @@ class HierarchyController extends AbstractBase
     public function getrecordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $source = $this->params()->fromQuery('hierarchySource', 'Solr');
+        $source = $this->params()
+            ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             $record = $loader->load($id, $source);
