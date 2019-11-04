@@ -184,7 +184,9 @@ foreach ($this->statusItems as $item):
         <?php if ($collapseBranches): ?><i class="fa fa-arrow-right arrow right"></i><?php endif; ?>
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
-          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationText?></a>
+          <span class="available-online-links">
+            <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationText?></a>
+          </span>
         <?php else: ?>
           <?=$locationText?>
         <?php endif; ?>
@@ -216,8 +218,8 @@ foreach ($this->statusItems as $item):
     }
     $locationText = $this->transEscWithPrefix('location_', $item['location']);
     if ($item['locationhref'] ?? false) {
-      $locationText = '<a href="' . $this->escapeHtmlAttr($item['locationhref']) . '" target="_blank">'
-        . $locationText . '</a>';
+      $locationText = '<span class="available-online-links"><a href="' . $this->escapeHtmlAttr($item['locationhref']) . '" target="_blank">'
+        . $locationText . '</a></span>';
     }
     if (!empty($item['department']) && !$groupBranches) {
       $location = '<span class="branch">' . $locationText . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>';
