@@ -322,7 +322,7 @@ class Record extends AbstractClassBasedTemplateRenderer
      * Render the link of the specified type.
      *
      * @param string $type    Link type
-     * @param string $lookfor String to search for at link or empty if not needed.
+     * @param string $lookfor String to search for at link
      *
      * @return string
      */
