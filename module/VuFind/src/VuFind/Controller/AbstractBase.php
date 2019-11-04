@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\Exception;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Model\ViewModel;
@@ -77,6 +78,13 @@ class AbstractBase extends AbstractActionController
     protected $serviceLocator;
 
     /**
+     * Nonce (number used once) for content security policy
+     *
+     * @var string
+     */
+    protected $nonce;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service locator
@@ -84,6 +92,8 @@ class AbstractBase extends AbstractActionController
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->serviceLocator = $sm;
+        $nonceGenerator = $sm->get(\VuFind\Security\NonceGenerator::class);
+        $this->nonce = $nonceGenerator->getNonce();
     }
 
     /**
@@ -162,6 +172,27 @@ class AbstractBase extends AbstractActionController
             $params['inLightbox'] = true;
         }
         return new ViewModel($params);
+    }
+
+    /**
+     * Execute the request
+     *
+     * @param MvcEvent $e MVC event object
+     *
+     * @return mixed
+     *
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(MvcEvent $e)
+    {
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine(
+            'Content-Security-Policy',
+            "script-src 'strict-dynamic' 'nonce-$this->nonce' 'unsafe-inline' "
+                . "http: https:; object-src 'none'; base-uri 'self';"
+        );
+        return parent::onDispatch($e);
     }
 
     /**
