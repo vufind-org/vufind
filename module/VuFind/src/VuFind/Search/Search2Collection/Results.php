@@ -1,11 +1,10 @@
 <?php
-
 /**
- * Factory for a second Solr backend
+ * Search2 Collection aspect of the Search Multi-class (Results)
  *
  * PHP version 7
  *
- * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
+ * Copyright (C) The National Library of Finland 2019
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -13,7 +12,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,38 +20,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Factory
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Search_SolrAuthor
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\Search\Factory;
+namespace VuFind\Search\Search2Collection;
 
 /**
- * Factory for a second Solr backend
+ * Search2 Collection Search Options
  *
  * @category VuFind
- * @package  Search_Factory
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Search_SolrAuthor
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Search2BackendFactory extends SolrDefaultBackendFactory
+class Results extends \VuFind\Search\SolrCollection\Results
 {
     /**
-     * Callback for creating a record driver.
+     * Search backend identifiers.
      *
      * @var string
      */
-    protected $createRecordMethod = 'getSearch2Record';
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->mainConfig = $this->searchConfig = $this->facetConfig = 'Search2';
-        $this->searchYaml = 'searchspecs2.yaml';
-    }
+    protected $backendId = 'Search2Collection';
 }
