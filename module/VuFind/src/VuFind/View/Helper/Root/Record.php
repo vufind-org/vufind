@@ -323,15 +323,14 @@ class Record extends AbstractClassBasedTemplateRenderer
      *
      * @param string $type    Link type
      * @param string $lookfor String to search for at link or empty if not needed.
-     * @param array  $extra   Extra parameters as a list of of key-value entries.
      *
      * @return string
      */
-    public function getLink($type, $lookfor, $extra = [])
+    public function getLink($type, $lookfor)
     {
         $link = $this->renderTemplate(
             'link-' . $type . '.phtml',
-            array_merge($extra, ['driver' => $this->driver, 'lookfor' => $lookfor])
+            ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
         $link .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
