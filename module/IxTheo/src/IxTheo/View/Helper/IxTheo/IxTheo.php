@@ -11,6 +11,7 @@ use VuFindSearch\Query\Query;
 class IxTheo extends \Zend\View\Helper\AbstractHelper
 {
     protected $container;
+    protected $cachedSubscriptions = null;
 
     public function __construct(ContainerInterface $container) {
         $this->container = $container;
@@ -77,6 +78,33 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         $html = $this->getView()->render('myresearch/subscription_bundles.phtml',
                                         ['subscription_bundles' =>  $subscription_bundles]);
         return $html;
+    }
+
+
+    /**
+     * Helper to decide whether to show unsubscribe button
+     * - Never show "unsubscribe" when user is not logged in.
+     * - Use getAll per user + cache result for better performance
+     *   if a lot of items are shown at once (e.g. check search result items)
+     */
+    public function isRecordSubscribed($driver) {
+        $user = $this->container->get(\VuFind\Auth\Manager::class)->isLoggedIn();
+        if (!$user)
+            return false;
+
+        if ($this->cachedSubscriptions === null) {
+            $table = $this->container->get(\VuFind\Db\Table\PluginManager::class)
+                ->get('subscription');
+
+            $this->cachedSubscriptions = $table->getAll($user->id, 'asc');
+        }
+
+        foreach ($this->cachedSubscriptions as $subscription) {
+            if ($subscription->journal_control_number_or_bundle_name == $driver->getUniqueId())
+                return true;
+        }
+
+        return false;
     }
 
 }

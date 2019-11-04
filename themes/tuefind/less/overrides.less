@@ -23,3 +23,7 @@
         width: 40%;
     }
 }
+
+/* not possible to set "tf-"-prefix, else bootstrap3's "btn-type-*" directive won't work */
+.btn-type-subscribe::before { content: "\f0f3"; } // .fa-bell
+.btn-type-unsubscribe::before { content: "\f1f6"; } // .fa-bell-slash

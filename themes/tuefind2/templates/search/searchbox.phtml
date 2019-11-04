@@ -86,8 +86,9 @@
                             <?php if (!empty($tabs)): ?></div><?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <form class="searchForm" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
+                        <form id="searchForm" class="searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
                             <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
+                            <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
                             <div class="form-group row">
                                 <!-- Begin search input field -->
@@ -97,7 +98,7 @@
                                                class="form-control form-control-lg searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><?php endif ?>"
                                                type="text" name="lookfor"
                                                value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"
-                                               placeholder="<?=$this->translate('Search for keywords, title or author')?>"/>
+                                               <?php if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<?php endif ?>/>
                                         <span class="input-group-addon">
                                             <i class="fa fa-search"></i>
                                         </span>
@@ -108,10 +109,28 @@
                                 <!-- Begin search select -->
                                 <div class="col-xs-12 col-sm-3 col-lg-2 searchForm_select">
                                     <?php if ($handlerCount > 1): ?>
-                                        <select id="searchForm_type" class="searchForm_type form-control form-control-lg custom-select" name="type" data-native-menu="false" aria-label="<?=$this->transEsc("Search type")?>">
+                                        <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEsc("Search type")?>">
+                                            <?php $currentGroup = $insideGroup = false; ?>
                                             <?php foreach ($handlers as $handler): ?>
-                                                <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : '' ?>><?= $handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+                                                <?php
+                                                    if ($currentGroup !== ($handler['group'] ?? false)) {
+                                                        $currentGroup = $handler['group'];
+                                                        if ($insideGroup) {
+                                                            echo '</optgroup>';
+                                                        }
+                                                        if ($currentGroup) {
+                                                            echo '<optgroup label="' . $this->escapeHtmlAttr($currentGroup) . '">';
+                                                            $insideGroup = true;
+                                                        } else {
+                                                            $insideGroup = false;
+                                                        }
+                                                    }
+                                                ?>
+                                                <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
                                             <?php endforeach; ?>
+                                            <?php if ($insideGroup): ?>
+                                              </optgroup>
+                                            <?php endif; ?>
                                         </select>
                                     <?php elseif ($handlerCount == 1): ?>
                                         <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
