@@ -319,12 +319,13 @@
       </else>
     </if>
 
-    <!-- Update config.ini to activate DB connection and exception logging -->
+    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+          <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
         </replaceregexp>
       </filterchain>
     </copy>

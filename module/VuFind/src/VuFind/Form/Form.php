@@ -291,7 +291,12 @@ class Form extends \Zend\Form\Form implements
             $settings = [];
             if (isset($el['settings'])) {
                 foreach ($el['settings'] as list($settingId, $settingVal)) {
-                    $settings[trim($settingId)] = trim($settingVal);
+                    $settingId = trim($settingId);
+                    $settingVal = trim($settingVal);
+                    if ($settingId === 'placeholder') {
+                        $settingVal = $this->translate($settingVal);
+                    }
+                    $settings[$settingId] = $settingVal;
                 }
                 $element['settings'] = $settings;
             }

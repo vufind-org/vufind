@@ -644,33 +644,54 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $patron = [];
         $patronId = $username;
         if ('email' === $loginMethod) {
-            // Create parameters for API call
-            $getParams = [
-                'q' => 'email~' . $username
-            ];
-
-            // Try to find the user in Alma
-            $response = $this->makeRequest(
-                '/users/',
-                $getParams
+            // Try to find the user in Alma by an identifier
+            list($response, $status) = $this->makeRequest(
+                '/users/' . urlencode($username),
+                [
+                    'view' => 'full'
+                ],
+                [],
+                'GET',
+                null,
+                null,
+                [400],
+                true
             );
-
-            foreach (($response->user ?? []) as $user) {
-                if ((string)$user->status !== 'ACTIVE') {
-                    continue;
-                }
-                if ($patron) {
-                    // More than one match, cannot log in by email
-                    $this->debug(
-                        "Email $username matches more than one user, cannot login"
-                    );
-                    return null;
-                }
+            if (400 != $status) {
                 $patron = [
-                    'id' => (string)$user->primary_id,
+                    'id' => (string)$response->primary_id,
                     'cat_username' => trim($username),
-                    'email' => trim($username)
+                    'email' => $this->getPreferredEmail($response)
                 ];
+            } else {
+                // Try to find the user in Alma by unique email address
+                $getParams = [
+                    'q' => 'email~' . $username
+                ];
+
+                $response = $this->makeRequest(
+                    '/users/',
+                    $getParams
+                );
+
+                foreach (($response->user ?? []) as $user) {
+                    if ((string)$user->status !== 'ACTIVE') {
+                        continue;
+                    }
+                    if ($patron) {
+                        // More than one match, cannot log in by email
+                        $this->debug(
+                            "Email $username matches more than one user, cannot"
+                            . ' login'
+                        );
+                        return null;
+                    }
+                    $patron = [
+                        'id' => (string)$user->primary_id,
+                        'cat_username' => trim($username),
+                        'email' => trim($username)
+                    ];
+                }
             }
             if (!$patron) {
                 return null;
@@ -1732,7 +1753,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
-        $desc = $element->attributes()->desc ?? $value;
+        $desc = (string)($element->attributes()->desc ?? $value);
         return new \VuFind\I18n\TranslatableString($value, $desc);
     }
 
