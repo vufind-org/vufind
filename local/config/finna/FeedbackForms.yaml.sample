@@ -29,6 +29,8 @@
 #                    [Feedback] section)
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
+#   reminderEmail (string) Email address where reminders about pending feedbacks are sent.
+#                          Possible only when 'sendMethod' is 'database'.
 #
 #   Multiple recipients can be configured using a list:
 #
@@ -106,6 +108,7 @@ forms:
     senderInfoHelp: feedback_info
     hideSenderInfo: false
     sendMethod: email
+    #reminderEmail: feedback@myuniversity.edu
     #help:
     #  pre: feedback_help_pre
     #  post: feedback_help_post
