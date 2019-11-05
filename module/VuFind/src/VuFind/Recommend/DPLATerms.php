@@ -183,7 +183,7 @@ class DPLATerms implements RecommendInterface
     {
         // Extract the first search term from the search object:
         $search = $this->searchObject->getParams()->getQuery();
-        $filters = $this->searchObject->getParams()->getFilters();
+        $filters = $this->searchObject->getParams()->getRawFilters();
         $lookfor = ($search instanceof \VuFindSearch\Query\Query)
             ? $search->getString()
             : '';
