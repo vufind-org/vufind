@@ -1058,8 +1058,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $videoUrl = (string)$title->TitleText;
                 $videoSources = [];
                 $sourceType = strtolower(pathinfo($videoUrl, PATHINFO_EXTENSION));
-                $eventAttrs = $xml->ProductionEvent->ProductionEventType
-                    ->attributes();
 
                 $poster = '';
                 $videoType = 'elokuva';
@@ -1081,6 +1079,13 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                         );
                     }
                 }
+
+                //If there is no ProductionEventType set, continue
+                if (!isset($xml->ProductionEvent->ProductionEventType)) {
+                    continue;
+                }
+                $eventAttrs = $xml->ProductionEvent->ProductionEventType
+                    ->attributes();
 
                 // Lets see if this video has a vimeo-id
                 $vimeo = (string)$eventAttrs->{'vimeo-id'};
