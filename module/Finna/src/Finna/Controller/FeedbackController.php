@@ -88,7 +88,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $view->form->setRecord($this->getRecordLoader()->load($recId, $source));
             $data['record_id'] = $id;
         }
-        $view->form->setData($data);
+        $view->form->populateValues($data);
 
         if (!$this->submitOk) {
             return $view;
