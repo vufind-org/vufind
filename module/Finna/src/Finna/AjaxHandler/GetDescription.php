@@ -146,6 +146,12 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
                     if ('UTF-8' !== $encoding) {
                         $content = utf8_encode($content);
                     }
+                    // Remove head tag, so no titles will be printed.
+                    $content = preg_replace(
+                        '/<head[^>]*>(.*?)<\/head>/s',
+                        '',
+                        $content
+                    );
 
                     $content = preg_replace('/<title>.*?<\/title>/', '', $content);
                     $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
