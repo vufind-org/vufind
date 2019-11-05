@@ -147,8 +147,12 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
                         $content = utf8_encode($content);
                     }
 
+                    $content = preg_replace('/<title>.*?<\/title>/', '', $content);
                     $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
-                    $content = strip_tags($content);
+                    $content = strip_tags($content, '<br>');
+
+                    // Trim leading and trailing whitespace
+                    $content = trim($content);
 
                     // Replace line breaks with <br>
                     $content = preg_replace(
