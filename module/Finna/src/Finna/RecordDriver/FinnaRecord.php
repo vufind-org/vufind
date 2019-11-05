@@ -171,9 +171,9 @@ trait FinnaRecord
      *
      * @param int $user_id user user_id
      *
-     * @return User
+     * @return User|boolean
      */
-    public function getUserById($user_id): User
+    public function getUserById($user_id)
     {
         return $this->getDbTable('User')->getById($user_id);
     }
