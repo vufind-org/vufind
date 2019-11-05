@@ -348,7 +348,7 @@ class Generator
         // since performance is important and we only need the identifier.
         if ('*' === $cursorMark) {
             $recordFactory = function ($data) {
-                return $data;
+                return new SimpleRecord($data);
             };
             $collectionFactory = new RecordCollectionFactory($recordFactory);
             $backend->setRecordCollectionFactory($collectionFactory);
@@ -379,7 +379,7 @@ class Generator
             'getids'
         );
         foreach ($results->getRecords() as $doc) {
-            $ids[] = $doc[$key];
+            $ids[] = $doc->get($key);
         }
         $nextOffset = $results->getCursorMark();
         return compact('ids', 'nextOffset');

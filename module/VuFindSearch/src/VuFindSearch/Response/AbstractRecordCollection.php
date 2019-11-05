@@ -147,13 +147,13 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     /**
      * Add a record to the collection.
      *
-     * @param mixed $record        Record to add
-     * @param bool  $checkExisting Whether to check for existing record in the
-     * collection (slower, but makes sure there are no duplicates)
+     * @param RecordInterface $record        Record to add
+     * @param bool            $checkExisting Whether to check for existing record in
+     * the collection (slower, but makes sure there are no duplicates)
      *
      * @return void
      */
-    public function add($record, $checkExisting = true)
+    public function add(RecordInterface $record, $checkExisting = true)
     {
         if (!$checkExisting || !$this->has($record)) {
             $this->records[$this->pointer] = $record;

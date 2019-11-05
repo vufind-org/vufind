@@ -97,9 +97,9 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     /**
      * Add a record to the collection.
      *
-     * @param mixed $record Record to add
+     * @param RecordInterface $record Record to add
      *
      * @return void
      */
-    public function add($record);
+    public function add(RecordInterface $record);
 }
