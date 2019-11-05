@@ -40,8 +40,8 @@ finna.contentFeed = (function finnaContentFeed() {
             if (typeof item.xcal != 'undefined') {
               $.each(item.xcal, function addXcal(key, value) {
                 var field = container.find('.xcal-' + key);
-                if (key === 'organizer-url') {
-                  field.find('xcal-value').attr('href', value);
+                if (key === 'organizer-url' || key === 'url') {
+                  field.find('.xcal-value').attr('href', value);
                 } else if (key === 'featured') {
                   container.find('.xcal-featured').attr('src', value);
                 } else if (key === 'endDate' && value === item.xcal.startDate) {
