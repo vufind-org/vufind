@@ -24,7 +24,8 @@
 
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  ob_start(); ?>
+  ob_start();
+?>
   <div class="media-<?=$thumbnailAlignment ?>">
 
     <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img, 'sizes' => ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 1200, 'h' => 1200]]]);?>
@@ -45,11 +46,27 @@
 
     <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
   </div>
-  <?php $thumbnail = ob_get_contents(); ?>
-  <?php ob_end_clean(); ?>
+<?php
+  $thumbnail = ob_get_contents();
+  ob_end_clean();
+  $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false;
+  ob_start();
+?>
+  <div class="truncate-field wide recordSummary">
+    <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
+  </div>
+<?php
+  $summaryContent = ob_get_contents();
+  ob_end_clean();
+?>
   <?php $this->headScript()->appendFile("finna-record.js"); ?>
   <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
     <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+    <?php if ($summary): ?>
+      <div class="truncate-wrapper visible-xs">
+        <?=$summaryContent?>
+      </div>
+    <?php endif; ?>
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <?=$thumbnail ?>
     <?php endif; ?>
@@ -77,10 +94,9 @@
           <?php endif; ?>
         </div>
 
-        <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
         <?php if ($summary): ?>
-          <div class="truncate-field wide recordSummary">
-            <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
+          <div class="truncate-wrapper hidden-xs">
+            <?=$summaryContent?>
           </div>
         <?php endif; ?>
 
