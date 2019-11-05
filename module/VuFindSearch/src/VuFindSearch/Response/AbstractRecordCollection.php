@@ -127,11 +127,6 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
-        foreach ($this->records as $record) {
-            if (is_callable([$record, 'setSourceIdentifier'])) {
-                $record->setSourceIdentifier($identifier);
-            }
-        }
     }
 
     /**
@@ -147,30 +142,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     /**
      * Add a record to the collection.
      *
-     * @param RecordInterface $record        Record to add
-     * @param bool            $checkExisting Whether to check for existing record in
-     * the collection (slower, but makes sure there are no duplicates)
+     * @param RecordInterface $record Record to add
      *
      * @return void
      */
-    public function add(RecordInterface $record, $checkExisting = true)
+    public function add(RecordInterface $record)
     {
-        if (!$checkExisting || !$this->has($record)) {
+        if (!in_array($record, $this->records, true)) {
             $this->records[$this->pointer] = $record;
             $this->next();
         }
-    }
-
-    /**
-     * Check if the collection contains the given record
-     *
-     * @param mixed $record Record to check
-     *
-     * @return bool
-     */
-    public function has($record)
-    {
-        return in_array($record, $this->records, true);
     }
 
     /**
