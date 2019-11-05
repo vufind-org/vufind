@@ -42,8 +42,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     const FRAGMENT_SIZE_VERBOSE = 700;
     const ORDER_DEFAULT = 'none';
     const ORDER_VERBOSE = 'score';
-    const esHighlightStartTag = '<em>';
-    const esHighlightEndTag = '</em>';
+    const esHighlightTag = 'em';
 
 
 
@@ -123,7 +122,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected function extractStyle($html_page) {
         $dom = new \DOMDocument();
-        $dom->loadHTML($html_page);
+        $dom->loadHTML($html_page, LIBXML_NOERROR);
         $xpath = new \DOMXPath($dom);
         $style_object = $xpath->query('/html/head/style');
         $style = $dom->saveHTML($style_object->item(0));
@@ -140,39 +139,44 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
+    protected function addDotsToSnippet($snippet_node) {
+        $innerHTML= '';
+        $children = $node->childNodes;
+        foreach ($children as $child)
+           $innerHTML .= $child->ownerDocument->saveXML($child);
+
+        return $innerHTML;
+    }
+
+
     protected function extractSnippetParagraph($snippet_page) {
-        $esHighlightStartTag = self::esHighlightStartTag;
-        $esHighlightEndTag = self::esHighlightEndTag;
-        //echo '<pre>' . var_dump($snippet_page) .  '</pre>';
         $dom = new \DOMDocument();
-        $dom->loadHTML($snippet_page);
-        $dom->normalizeDocument(); //Hopefully get rid of strange empty textfields caused by whitspace nodes that prevent proper navigation
+        $dom->loadHTML($snippet_page, LIBXML_NOERROR /*Needed since ES highlighting does not address nesting of tags properly*/);
+        $dom->normalizeDocument(); //Hopefully get rid of strange empty textfields caused by whitespace nodes that prevent proper navigation
         $xpath = new \DOMXPath($dom);
-        $highlight_nodes =  $xpath->query('//' . 'em');
+        $highlight_nodes =  $xpath->query('//' . self::esHighlightTag);
         $snippets = [];
         foreach ($highlight_nodes as $highlight_node) {
             $parent_node = $highlight_node->parentNode;
             if (is_null($parent_node))
                 continue;
-            //$parent_node_path = $parent_node->getNodePath();
-            //$parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
-            //$parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
+            $parent_node_path = $parent_node->getNodePath();
+            $parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
+            $parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
             $snippet_tree = new \DomDocument();
-            /*if (!is_null($parent_sibling_left)) {
+            if (!is_null($parent_sibling_left)) {
                 $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
+                $import_node_left->firstChild->textContent = '...' . $import_node_left->firstChild->textContent;
                 $snippet_tree->appendChild($import_node_left);
-            }*/
+            }
             $import_node = $snippet_tree->importNode($parent_node, true /*deep*/);
-            //echo "VALUE [1]: " . $import_node->textContent;
-            //$import_node->textContent = '...' . $parent_node->textContent . '...';
-            //echo "VALUE [2]: " . $import_node->nodeValue;
             $snippet_tree->appendChild($import_node);
-            /*if (!is_null($parent_sibling_right)) {
-                $import_node_right = $snippet_tree->importNode($parent_sibling_right, true);
+            if (!is_null($parent_sibling_right)) {
+                $import_node_right = $snippet_tree->importNode($parent_sibling_right, true /*deep*/);
+                $import_node_right->firstChild->textContent =  $import_node_right->firstChild->textContent . '...';
                 $snippet_tree->appendChild($import_node_right);
-            }*/
-            $snippet =  $snippet_tree->saveHTML();
-            //$snippet = $snippet = '...' . $snippet . '...';
+            }
+            $snippet = $snippet_tree->saveHTML();
             array_push($snippets, $snippet);
         }
         $snippets = array_unique($snippets); // Handle several highlights in the same paragraph
@@ -255,7 +259,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
         $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose);
-        //$snippets = $this->getFulltext($doc_id, $search_query, $verbose);
         if (empty($snippets)) {
             // Use non-paged text as fallback
             $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
