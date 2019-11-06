@@ -62,7 +62,8 @@ class UnpaywallFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->DOI;
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config')->DOI;
         return new $requestedName($config);
     }
 }

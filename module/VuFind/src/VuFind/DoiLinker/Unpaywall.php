@@ -39,17 +39,22 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
-class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface, HttpServiceAwareInterface
+class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
+    HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
+     * URL to Unpaywall API
+     *
      * @var string api url
      */
     protected $apiUrl;
 
     /**
+     * E-mail used as parameter when calling API
+     *
      * @var string email
      */
     protected $email;
@@ -57,13 +62,16 @@ class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface, HttpSer
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config
+     * @param \Zend\Config\Config $config DOI section of main VuFind config
+     *
      * @throws \Exception
      */
     public function __construct($config)
     {
         if (!isset($config->unpaywall_email)) {
-            throw new \Exception("Missing configuration for Unpaywall DOI linker: unpaywall_email");
+            throw new \Exception(
+                "Missing configuration for Unpaywall DOI linker: unpaywall_email"
+            );
         }
         $this->email = $config->unpaywall_email;
         $this->apiUrl = $config->unpaywall_api_url ?? "https://api.unpaywall.org/v2";
