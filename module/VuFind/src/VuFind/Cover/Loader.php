@@ -124,7 +124,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * User National bibliography number parameter
      *
-     * @var string
+     * @var array
      */
     protected $nbn = null;
 
@@ -374,7 +374,7 @@ class Loader extends \VuFind\ImageLoader
         } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
         } elseif (isset($ids['nbn'])) {
-            return $this->getCachePath($this->size, 'NBN' . $ids['nbn']);
+            return $this->getCachePath($this->size, 'NBN' . $ids['nbn']['nbn']);
         } elseif (isset($ids['ismn'])) {
             return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']);
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
@@ -406,7 +406,7 @@ class Loader extends \VuFind\ImageLoader
         if ($this->upc && strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
         }
-        if ($this->nbn && strlen($this->nbn) > 0) {
+        if ($this->nbn && is_array($this->nbn)) {
             $ids['nbn'] = $this->nbn;
         }
         if ($this->ismn && (strlen($this->ismn) == 12 || strlen($this->ismn) == 8)) {

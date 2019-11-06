@@ -929,7 +929,19 @@ trait MarcAdvancedTrait
      */
     public function getCleanNBN()
     {
-        $nbns = $this->getFieldArray('015', ['a']);
-        return empty($nbns) ? false : $nbns[0];
+        $field = $this->getMarcRecord()->getField('650');
+        $nbn = false;
+        if ($field) {
+            $subfields = $this->getSubfieldArray($field, ['a', '7'], false);
+            if (!empty($subfields)) {
+                $nbn = [
+                    'nbn' => $subfields[0],
+                ];
+                if (isset($subfields[1])) {
+                    $nbn['source'] = $subfields[1];
+                }
+            }
+        }
+        return $nbn;
     }
 }
