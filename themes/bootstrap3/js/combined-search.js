@@ -6,7 +6,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
         container.hide();
       } else {
         VuFind.openurl.init(container);
-        VuFind.itemStatuses.check(container);
+        VuFind.itemStatuses.init(container);
         checkSaveStatuses(container);
       }
     });
