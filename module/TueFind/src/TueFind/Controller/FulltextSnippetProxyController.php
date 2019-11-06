@@ -139,16 +139,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function addDotsToSnippet($snippet_node) {
-        $innerHTML= '';
-        $children = $node->childNodes;
-        foreach ($children as $child)
-           $innerHTML .= $child->ownerDocument->saveXML($child);
-
-        return $innerHTML;
-    }
-
-
     protected function extractSnippetParagraph($snippet_page) {
         $dom = new \DOMDocument();
         $dom->loadHTML($snippet_page, LIBXML_NOERROR /*Needed since ES highlighting does not address nesting of tags properly*/);
