@@ -59,7 +59,16 @@ var TueFind = {
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
                             $(this).removeAttr('style');
-                            $(this).html(snippets.join('<br/>') + '<br/>');
+                            if (snippets[0].hasOwnProperty('style')) {
+                                var styles = snippets.map(a => a.style).join();
+                                $(styles).appendTo("head");
+                            }
+                            if (snippets[0].hasOwnProperty('page')) {
+                               var snippets_and_pages = snippets.map(a => a.snippet + '</br>[' + a.page + ']');
+                               $(this).html(snippets_and_pages.join('<hr/>'));
+                            }
+                            else
+                               $(this).html(snippets.map(a => a.snippet).join('<br/>'));
                         } else
                             $(this).html("");
                     });

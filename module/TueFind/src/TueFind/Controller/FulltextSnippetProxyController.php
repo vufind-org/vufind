@@ -25,6 +25,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
     protected $base_url; //Elasticsearch host and port (host:port)
     protected $index; //Elasticsearch index
+    protected $page_index; //Elasticssearch index with single HTML pages
     protected $es; // Elasticsearch interface
     protected $logger;
     protected $configLoader;
@@ -41,6 +42,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     const FRAGMENT_SIZE_VERBOSE = 700;
     const ORDER_DEFAULT = 'none';
     const ORDER_VERBOSE = 'score';
+    const esHighlightTag = 'em';
+
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
@@ -49,6 +52,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         $config = $configLoader->get($this->getFulltextSnippetIni());
         $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
         $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
+        $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
     }
 
@@ -58,15 +62,16 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
-    protected function getFulltext($doc_id, $search_query, $verbose) {
-        // Is this an ordinary query or a phrase query (surrounded by quotes) ?
-        $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
-        $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
-        $params = [
-             'index' => $this->index,
+    protected function getQueryParams($doc_id, $search_query, $verbose, $paged_results) {
+         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
+         $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
+         $index = $paged_results ? $this->page_index : $this->index;
+         $params = [
+             'index' => $index,
              'body' => [
-                 '_source' => false,
+                 '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
                  'size' => '100',
+                 'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
                  'query' => [
                      'bool' => [
                            'must' => [
@@ -81,15 +86,92 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                                'type' => 'unified',
                                'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
                                'phrase_limit' => self::PHRASE_LIMIT,
-                               'number_of_fragments' => $this->maxSnippets,
+                               'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For oriented approach get whole page */
                                'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
                            ]
                       ]
                  ]
              ]
         ];
+        return $params;
+    }
+
+
+    protected function getFulltext($doc_id, $search_query, $verbose) {
+        // Is this an ordinary query or a phrase query (surrounded by quotes) ?
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, false /*return paged results*/);
         $response = $this->es->search($params);
-        return $this->extractSnippets($response);
+        $snippets = $this->extractSnippets($response);
+        if ($snippets == false)
+            return false;
+        $results['snippets'] = $snippets['snippets'];
+        return $results;
+    }
+
+
+    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose) {
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, true);
+        $response = $this->es->search($params);
+        $snippets = $this->extractSnippets($response);
+        if ($snippets == false)
+            return false;
+        $results['snippets'] = $snippets['snippets'];
+        return $results;
+    }
+
+
+    protected function extractStyle($html_page) {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($html_page, LIBXML_NOERROR);
+        $xpath = new \DOMXPath($dom);
+        $style_object = $xpath->query('/html/head/style');
+        $style = $dom->saveHTML($style_object->item(0));
+        return $style;
+    }
+
+
+    // Needed because each page has its own classes that we finally have to import
+    // So try to avoid clashes by prefixing them with id and page
+    protected function normalizeCSSClasses($doc_id, $page, $object) {
+        // Replace patterns '.ftXXX{' or 'class=\n?"ftXXX"
+        $object = preg_replace('/(?<=class="|class=\n"|\.)ft(\d+)(?=[{"])/', '_' . $doc_id . '_' . $page . '_ft\1', $object);
+        return $object;
+    }
+
+
+    protected function extractSnippetParagraph($snippet_page) {
+        $dom = new \DOMDocument();
+        $dom->loadHTML($snippet_page, LIBXML_NOERROR /*Needed since ES highlighting does not address nesting of tags properly*/);
+        $dom->normalizeDocument(); //Hopefully get rid of strange empty textfields caused by whitespace nodes that prevent proper navigation
+        $xpath = new \DOMXPath($dom);
+        $highlight_nodes =  $xpath->query('//' . self::esHighlightTag);
+        $snippets = [];
+        foreach ($highlight_nodes as $highlight_node) {
+            $parent_node = $highlight_node->parentNode;
+            if (is_null($parent_node))
+                continue;
+            $parent_node_path = $parent_node->getNodePath();
+            $parent_sibling_left = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
+            $parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
+            $snippet_tree = new \DomDocument();
+            if (!is_null($parent_sibling_left)) {
+                $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
+                $import_node_left->firstChild->textContent = '...' . $import_node_left->firstChild->textContent;
+                $snippet_tree->appendChild($import_node_left);
+            }
+            $import_node = $snippet_tree->importNode($parent_node, true /*deep*/);
+            $snippet_tree->appendChild($import_node);
+            if (!is_null($parent_sibling_right)) {
+                $import_node_right = $snippet_tree->importNode($parent_sibling_right, true /*deep*/);
+                $import_node_right->firstChild->textContent =  $import_node_right->firstChild->textContent . '...';
+                $snippet_tree->appendChild($import_node_right);
+            }
+            $snippet = $snippet_tree->saveHTML();
+            array_push($snippets, $snippet);
+        }
+        $snippets = array_unique($snippets); // Handle several highlights in the same paragraph
+        return implode("", $snippets);
+
     }
 
 
@@ -105,33 +187,47 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
             return false;
         //second order hits
         if (array_key_exists('hits', $top_level_hits))
-            $hits = $top_level_hits['hits'];
+           $hits = $top_level_hits['hits'];
         if (empty($top_level_hits))
             return false;
 
         $snippets = [];
+        $pages = [];
         if (count($hits) > $this->maxSnippets)
             $hits = array_slice($hits, 0, $this->maxSnippets);
-        error_log("HITS:" . count($hits));
         foreach ($hits as $hit) {
             if (array_key_exists('highlight', $hit))
                 $highlight_results = $hit['highlight'][self::FIELD];
             if (count($highlight_results) > $this->maxSnippets);
                 $highlight_results = array_slice($highlight_results, 0, $this->maxSnippets);
             foreach ($highlight_results as $highlight_result) {
-                array_push($snippets, $highlight_result);
+                // Handle pages or generic highlight snippets accordingly
+                if (isset($hit['_source']['page'])) {
+                    $doc_id = $hit['_source']['id'];
+                    $page = $hit['_source']['page'];
+                    $style = $this->extractStyle($hit['_source']['full_text']);
+                    $style = $this->normalizeCSSClasses($doc_id, $page, $style);
+                    $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
+                    $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
+                    $snippet = $this->extractSnippetParagraph($snippet_page);
+                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style]);
+                } else {
+                    array_push($snippets, [ 'snippet' => $highlight_result ]);
+                }
             }
         }
-        return empty($snippets) ? false : $this->formatHighlighting($snippets);
+        if (empty($snippets))
+            return false;
+
+        $results['snippets'] = $this->formatHighlighting($snippets);
+        return $results;
     }
 
 
     protected function formatHighlighting($snippets) {
         $formatted_snippets = [];
-        foreach ($snippets as $snippet) {
-            $snippet = '...' . $snippet . '...';
+        foreach ($snippets as $snippet)
             array_push($formatted_snippets, str_replace(['<em>', '</em>'], [self::highlightStartTag, self::highlightEndTag], $snippet));
-        }
         return $formatted_snippets;
     }
 
@@ -152,15 +248,18 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 'status' => 'EMPTY QUERY'
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
-        $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
-        if (empty($snippets))
+        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose);
+        if (empty($snippets)) {
+            // Use non-paged text as fallback
+            $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
             return new JsonModel([
                  'status' => 'NO RESULTS'
-                ]);
+             ]);
+        }
 
         return new JsonModel([
                'status' => 'SUCCESS',
-               'snippets' =>  $snippets
+               'snippets' => $snippets['snippets']
                ]);
     }
 }
