@@ -205,7 +205,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                 if (isset($hit['_source']['page'])) {
                     $doc_id = $hit['_source']['id'];
                     $page = $hit['_source']['page'];
-                    $style =  $this->extractStyle($hit['_source']['full_text']);
+                    $style = $this->extractStyle($hit['_source']['full_text']);
                     $style = $this->normalizeCSSClasses($doc_id, $page, $style);
                     $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
                     $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
@@ -219,7 +219,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         if (empty($snippets))
             return false;
 
-        $results['snippets'] =  $this->formatHighlighting($snippets);
+        $results['snippets'] = $this->formatHighlighting($snippets);
         return $results;
     }
 
