@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "18aecdf224c0ef44221ceadd15cd098c",
+    "content-hash": "308babc3c095a2a7735ad866b8e09690",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2332,16 +2332,16 @@
         },
         {
             "name": "vufind-org/vufindcode",
-            "version": "v1.1.1",
+            "version": "v1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindcode.git",
-                "reference": "c95683bbe2ed5259a807669fd3d0f58ad24964fe"
+                "reference": "df7f4d2188c9f2c654dfee69774b80b9d03b1ab4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/c95683bbe2ed5259a807669fd3d0f58ad24964fe",
-                "reference": "c95683bbe2ed5259a807669fd3d0f58ad24964fe",
+                "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/df7f4d2188c9f2c654dfee69774b80b9d03b1ab4",
+                "reference": "df7f4d2188c9f2c654dfee69774b80b9d03b1ab4",
                 "shasum": ""
             },
             "require": {
@@ -2373,9 +2373,9 @@
                     "email": "demian.katz@villanova.edu"
                 }
             ],
-            "description": "Class for representing ISBNs (a VuFind support library)",
+            "description": "Classes for working with EANs, ISBNs and ISMNs (a VuFind support library)",
             "homepage": "https://vufind.org/",
-            "time": "2019-01-22T14:41:47+00:00"
+            "time": "2019-11-07T14:29:07+00:00"
         },
         {
             "name": "vufind-org/vufinddate",
