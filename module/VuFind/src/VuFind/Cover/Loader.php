@@ -30,6 +30,7 @@ namespace VuFind\Cover;
 
 use VuFind\Content\Covers\PluginManager as ApiManager;
 use VuFindCode\ISBN;
+use VuFindCode\ISMN;
 
 /**
  * Book Cover Generator
@@ -131,7 +132,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * User ISMN parameter
      *
-     * @var string
+     * @var ISMN
      */
     protected $ismn = null;
 
@@ -284,18 +285,12 @@ class Loader extends \VuFind\ImageLoader
     protected function storeSanitizedSettings($settings)
     {
         $this->isbn = new ISBN($settings['isbn']);
+        $this->ismn = new ISMN($settings['ismn']);
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
             $this->issn = substr($rawissn, 0, 8);
         } else {
             $this->issn = null;
-        }
-
-        if (!empty($settings['ismn'])) {
-            $rawismn = preg_replace('/[^M0-9]/', '', strtoupper($settings['ismn']));
-            $this->ismn = substr($rawismn, 0, 13);
-        } else {
-            $this->ismn = null;
         }
 
         $this->oclc = $settings['oclc'];
@@ -376,7 +371,7 @@ class Loader extends \VuFind\ImageLoader
         } elseif (isset($ids['nbn'])) {
             return $this->getCachePath($this->size, 'NBN' . $ids['nbn']['nbn']);
         } elseif (isset($ids['ismn'])) {
-            return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']);
+            return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']->get13());
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
@@ -409,7 +404,7 @@ class Loader extends \VuFind\ImageLoader
         if ($this->nbn && is_array($this->nbn)) {
             $ids['nbn'] = $this->nbn;
         }
-        if ($this->ismn && (strlen($this->ismn) == 12 || strlen($this->ismn) == 8)) {
+        if ($this->ismn && $this->ismn->isValid()) {
             $ids['ismn'] = $this->ismn;
         }
         if ($this->recordid && strlen($this->recordid) > 0) {
