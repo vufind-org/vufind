@@ -52,6 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'database' => Database::class,
         'file' => File::class,
         'memcache' => Memcache::class,
+        'redis' => Redis::class,
         // for legacy 1.x compatibility
         'filesession' => File::class,
         'memcachesession' => Memcache::class,
@@ -67,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Database::class => InvokableFactory::class,
         File::class => InvokableFactory::class,
         Memcache::class => InvokableFactory::class,
+        Redis::class => InvokableFactory::class,
     ];
 
     /**
@@ -78,6 +80,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Database::class => [SecureDelegatorFactory::class],
         File::class => [SecureDelegatorFactory::class],
         Memcache::class => [SecureDelegatorFactory::class],
+        Redis::class => [SecureDelegatorFactory::class],
     ];
 
     /**

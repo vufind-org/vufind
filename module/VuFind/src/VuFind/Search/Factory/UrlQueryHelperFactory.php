@@ -115,7 +115,7 @@ class UrlQueryHelperFactory
         if ($params->getPage() != 1) {
             $urlParams['page'] = $params->getPage();
         }
-        $filters = $params->getFilters();
+        $filters = $params->getRawFilters();
         if (!empty($filters)) {
             $urlParams['filter'] = [];
             foreach ($filters as $field => $values) {

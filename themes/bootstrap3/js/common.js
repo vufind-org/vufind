@@ -428,7 +428,14 @@ $(document).ready(function commonDocReady() {
   if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function triggerPrint() {
-      window.print();
+      // Print dialogs cause problems during testing, so disable them
+      // when the "test mode" cookie is set. This should never happen
+      // under normal usage outside of the Phing startup process.
+      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
+        window.print();
+      } else {
+        console.log("Printing disabled due to test mode.");
+      }
     });
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});

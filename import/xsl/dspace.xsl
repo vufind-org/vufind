@@ -85,7 +85,7 @@
                         <xsl:value-of select="//dc:contributor[normalize-space()]" />
                     </field>
                 </xsl:if>
-                
+
                 <!-- TYPE -->
                 <xsl:if test="//dc:type">
                     <field name="format">
@@ -144,13 +144,13 @@
                 </xsl:if>
 
                 <!-- URL -->
-               <xsl:for-each select="//dc:identifier">
-                   <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
-                       <field name="url">
-                           <xsl:value-of select="." />
-                       </field>
-                   </xsl:if>
-               </xsl:for-each>
+                <xsl:for-each select="//dc:identifier">
+                    <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
+                        <field name="url">
+                            <xsl:value-of select="." />
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>
