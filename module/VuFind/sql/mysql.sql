@@ -112,7 +112,7 @@ CREATE TABLE `resource_tags` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `session_id` varchar(128) DEFAULT NULL,
   `folder_id` int(11) DEFAULT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE `search` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `session` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
   `data` mediumtext,
   `last_used` int(12) NOT NULL DEFAULT '0',
@@ -153,7 +153,7 @@ CREATE TABLE `session` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `external_session` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) NOT NULL,
   `external_session_id` varchar(255) NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',

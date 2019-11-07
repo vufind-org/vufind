@@ -81,6 +81,13 @@ class Solr extends AbstractBase
     protected $batchSize = 1000;
 
     /**
+     * Hierarchy cache file prefix.
+     *
+     * @var string
+     */
+    protected $cachePrefix = null;
+
+    /**
      * Constructor.
      *
      * @param Connector        $connector Solr connector
@@ -265,7 +272,9 @@ class Solr extends AbstractBase
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
-            ? $this->cacheDir . '/' . sprintf($cacheTemplate, urlencode($id))
+            ? $this->cacheDir . '/'
+              . ($this->cachePrefix ? "{$this->cachePrefix}_" : '')
+              . sprintf($cacheTemplate, urlencode($id))
             : false;
 
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;

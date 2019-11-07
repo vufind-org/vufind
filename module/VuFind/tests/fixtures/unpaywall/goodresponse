@@ -1,0 +1,80 @@
+HTTP/1.1 200 OK
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Date: Wed, 06 Nov 2019 20:38:59 GMT
+Content-Type: application/json
+Content-Length: 2336
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE, PATCH
+Access-Control-Allow-Headers: origin, content-type, accept, x-requested-with
+Via: 1.1 vegur
+
+{
+  "best_oa_location": {
+    "endpoint_id": null,
+    "evidence": "open (via page says license)",
+    "host_type": "publisher",
+    "is_best": true,
+    "license": "cc-by-sa",
+    "pmh_id": null,
+    "repository_institution": null,
+    "updated": "2018-07-24T23:01:04.482481",
+    "url": "http://sajlis.journals.ac.za/pub/article/download/1434/1332",
+    "url_for_landing_page": "https://doi.org/10.7553/66-4-1434",
+    "url_for_pdf": "http://sajlis.journals.ac.za/pub/article/download/1434/1332",
+    "version": "publishedVersion"
+  },
+  "data_standard": 2,
+  "doi": "10.7553/66-4-1434",
+  "doi_url": "https://doi.org/10.7553/66-4-1434",
+  "genre": "journal-article",
+  "has_repository_copy": false,
+  "is_oa": true,
+  "journal_is_in_doaj": true,
+  "journal_is_oa": true,
+  "journal_issn_l": "0256-8861",
+  "journal_issns": "2304-8263",
+  "journal_name": "South African Journal of Libraries and Information Science",
+  "oa_locations": [
+    {
+      "endpoint_id": null,
+      "evidence": "open (via page says license)",
+      "host_type": "publisher",
+      "is_best": true,
+      "license": "cc-by-sa",
+      "pmh_id": null,
+      "repository_institution": null,
+      "updated": "2018-07-24T23:01:04.482481",
+      "url": "http://sajlis.journals.ac.za/pub/article/download/1434/1332",
+      "url_for_landing_page": "https://doi.org/10.7553/66-4-1434",
+      "url_for_pdf": "http://sajlis.journals.ac.za/pub/article/download/1434/1332",
+      "version": "publishedVersion"
+    },
+    {
+      "endpoint_id": null,
+      "evidence": "oa journal (via doaj)",
+      "host_type": "publisher",
+      "is_best": false,
+      "license": "cc-by-sa",
+      "pmh_id": null,
+      "repository_institution": null,
+      "updated": "2019-11-06T20:38:59.834062",
+      "url": "https://doi.org/10.7553/66-4-1434",
+      "url_for_landing_page": "https://doi.org/10.7553/66-4-1434",
+      "url_for_pdf": null,
+      "version": "publishedVersion"
+    }
+  ],
+  "oa_status": "gold",
+  "published_date": "2014-01-26",
+  "publisher": "Stellenbosch University",
+  "title": "Pioneers, passionate ladies, and private eyes : dime novels, series books, and paperbacks Sullivan, Larry E. & Cushman Schurman, Lydia eds.",
+  "updated": "2018-07-24T23:02:00.263680",
+  "year": 2014,
+  "z_authors": [
+    {
+      "family": "Sandham",
+      "given": "Tim"
+    }
+  ]
+}

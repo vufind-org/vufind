@@ -12,18 +12,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     return callnumber;
   }
   function displayItemStatus(result, $item) {
-    $item.removeClass('js-item-pending');
+    $item.addClass('js-item-done').removeClass('js-item-pending');
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
     if (typeof(result.error) != 'undefined'
           && result.error.length > 0
     ) {
-      // Only show error message if we also have a status indicator active:
-      if ($item.find('.status').length > 0) {
-        $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
-      } else {
-        $item.find('.callnumAndLocation').addClass('hidden');
-      }
+      $item.find('.callnumAndLocation').empty().addClass('text-danger').append(result.error);
       $item.find('.callnumber,.hideIfDetailed,.location').addClass('hidden');
     } else if (typeof(result.full_status) != 'undefined'
           && result.full_status.length > 0
@@ -76,7 +71,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
 
-  var itemStatusObserver = null;
   var ItemStatusHandler = {
     name: "default",
     //array to hold IDs and elements
@@ -104,7 +98,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       $('.js-item-pending .callnumAndLocation').addClass('text-danger').empty().removeClass('hidden')
         .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
     },
-    itemQueueAjax: function itemQueueAjax(id, el){
+    itemQueueAjax: function itemQueueAjax(id, el) {
       clearTimeout(this.itemStatusTimer);
       this.itemStatusIds.push(id);
       this.itemStatusEls[id] = el;
@@ -115,7 +109,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       el.find('.status').removeClass('hidden');
     },
 
-    runItemAjaxForQueue: function runItemAjaxForQueue(){
+    runItemAjaxForQueue: function runItemAjaxForQueue() {
       if (this.itemStatusRunning) {
         this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
         return;
@@ -129,7 +123,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       })
         .done(this.checkItemStatusDone)
         .fail( this.itemStatusFail)
-        .always(function queueAjaxAlways(){
+        .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
         });
     }//end runItemAjax
@@ -151,7 +145,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   function checkItemStatus(el) {
     var $item = $(el);
-    if ($item.hasClass('js-item-pending')) {
+    if ($item.hasClass('js-item-pending') || $item.hasClass('js-item-done')) {
       return;
     }
     if ($item.find('.hiddenId').length === 0) {
@@ -184,17 +178,16 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       }
       checkItemHandlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
     }
-    // Stop looking for a scroll loader
-    if (itemStatusObserver) {
-      itemStatusObserver.disconnect();
-    }
   }
-  function init() {
+  function init(_container) {
     if (typeof Hunt === 'undefined') {
-      checkItemStatuses();
+      checkItemStatuses(_container);
     } else {
-      itemStatusObserver = new Hunt(
-        $('.ajaxItem').toArray(),
+      var container = typeof _container === 'undefined'
+        ? document.body
+        : _container;
+      new Hunt(
+        $(container).find('.ajaxItem').toArray(),
         { enter: checkItemStatus }
       );
     }

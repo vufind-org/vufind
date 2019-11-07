@@ -72,8 +72,8 @@ class Redis extends AbstractBase
             $timeout = $this->config->redis_connection_timeout ?? 0.5;
             $auth = $this->config->redis_auth ?? false;
             $redis_db = $this->config->redis_db ?? 0;
-            $this->redisVersion = int($this->config->redis_version ?? 3);
-            $standalone = bool($this->config->redis_standalone ?? true);
+            $this->redisVersion = (int)($this->config->redis_version ?? 3);
+            $standalone = (bool)($this->config->redis_standalone ?? true);
 
             // Create Credis client, the connection is established lazily
             $this->connection = new \Credis_Client(
@@ -121,7 +121,7 @@ class Redis extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -130,9 +130,10 @@ class Redis extends AbstractBase
 
         // Perform Redis-specific cleanup
         if ($this->redisVersion >= 4) {
-            $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
+            $return = $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
         } else {
-            $this->getConnection()->del("vufind_sessions/{$sess_id}");
+            $return = $this->getConnection()->del("vufind_sessions/{$sess_id}");
         }
+        return ($return > 0) ? true : false;
     }
 }
