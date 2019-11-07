@@ -292,7 +292,6 @@ class Loader extends \VuFind\ImageLoader
         } else {
             $this->issn = null;
         }
-
         $this->oclc = $settings['oclc'];
         $this->upc = $settings['upc'];
         $this->recordid = $settings['recordid'];
