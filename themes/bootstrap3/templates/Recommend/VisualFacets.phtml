@@ -31,7 +31,7 @@
 ?>
 
 <?php if (isset($visualFacetSet)): ?>
-  <script type="text/javascript">
+  <script type="text/javascript" nonce="<?=$this->cspnonce()?>">
   var pivotdata = <?=json_encode($visualFacetSet);?>;
   jQuery(document).ready(function(data) {
   if (!d3.select("#visualResults").empty()) {

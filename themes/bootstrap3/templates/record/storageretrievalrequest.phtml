@@ -93,7 +93,7 @@
   </div>
 </form>
 
-<script type="text/javascript">
+<script type="text/javascript" nonce="<?=$this->cspnonce()?>">
 $(document).ready(function() {
   $("input[type='radio']").change(function() {
     if ($('#storageRetrievalRequestItem').is(':checked')) {
