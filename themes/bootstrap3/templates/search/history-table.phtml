@@ -2,7 +2,7 @@
   $scheduleSupported = !empty($this->schedule);
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
-<table class="table table-striped">
+<table class="search-history-table">
   <tr>
     <th width="20%"><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
@@ -55,7 +55,7 @@
       <?php if ($saveSupported): ?>
         <td>
           <?php if ($this->showSaved): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
           <?php else: ?>
             <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc("history_save_link")?></a>
           <?php endif; ?>

@@ -481,3 +481,12 @@ body.rtl {
     }
   }
 }
+
+.search-history-table {
+  &:extend(.table all);
+  &:extend(.table-striped all);
+
+  table-layout: auto;
+
+  tbody > tr > td { vertical-align: middle; }
+}
