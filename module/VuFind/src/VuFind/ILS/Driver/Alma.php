@@ -158,7 +158,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
             // Set timeout
             $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
-            $client->setOptions(['timeout' => $timeout]);
+            $client->setOptions(['timeout' => $timeout, 'keepalive' => true]);
 
             // Set other GET parameters (apikey and other URL parameters are used
             // also with e.g. POST requests)
@@ -1471,14 +1471,16 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by the patronLogin method.
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Hold details
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPickupLocations($patron)
+    public function getPickupLocations($patron, $holdDetails)
     {
         $xml = $this->makeRequest('/conf/libraries');
         $libraries = [];

@@ -86,12 +86,23 @@ purgeDate =
 secret = YOUR_WEBHOOK_SECRET_FROM_ALMA
 
 [Holdings]
+; Max. no. of items displayed in the holdings tab. A paginator is used when there are
+; more holdings to display.
+;itemLimit = "10"
 ; The digital delivery URL for your Alma instance. Replace at least SOMETHING and
 ; INSTITUTION with correct values.
 ;digitalDeliveryUrl = "https://SOMETHING.alma.exlibrisgroup.com/view/delivery/INSTITUTION/%%id%%"
 ; Inventory types to display from Alma. A colon-separated list. Supported values
 ; are "physical", "electronic" and "digital". By default all are displayed.
 ;inventoryTypes = "physical:electronic"
+; Fields to include in notes. Default is "852z".
+notes = "506au:845a:852z"
+; Fields to include in summary. Default is "866a".
+summary = "863abiz:866az"
+; Fields to include in supplements. Default is none.
+supplements = "867az"
+; Fields to include in indexes. Default is none.
+indexes = "868az"
 
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.

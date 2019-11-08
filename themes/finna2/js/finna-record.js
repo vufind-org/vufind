@@ -81,7 +81,6 @@ finna.record = (function finnaRecord() {
       vars.push(getRequestLinkData(element, recordId));
     });
 
-
     var url = VuFind.path + '/AJAX/JSON?method=checkRequestsAreValid';
     $.ajax({
       dataType: 'json',
@@ -103,10 +102,32 @@ finna.record = (function finnaRecord() {
       });
   }
 
+  function fetchHoldingsDetails(elements) {
+    if (!elements[0]) {
+      return;
+    }
+
+    $.each(elements, function handleElement(idx, element) {
+      $(element).find('.holdings-load-indicator').removeClass('hidden');
+      var url = VuFind.path + '/AJAX/JSON?method=getHoldingsDetails';
+      $.ajax({
+        dataType: 'json',
+        data: $(element).data(),
+        method: 'POST',
+        cache: false,
+        url: url
+      })
+        .done(function onGetDetailsDone(response) {
+          $(element).html(response.data.html);
+        });
+    });
+  }
+
   function setUpCheckRequest() {
     checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold');
     checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest');
     checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest');
+    fetchHoldingsDetails($('.expandedGetDetails').removeClass('expandedGetDetails'));
   }
 
   function initHoldingsControls() {
@@ -126,6 +147,7 @@ finna.record = (function finnaRecord() {
         checkRequestsAreValid(rows.find('.collapsedCheckRequest').removeClass('collapsedCheckRequest'), 'Hold', 'holdBlocked');
         checkRequestsAreValid(rows.find('.collapsedCheckStorageRetrievalRequest').removeClass('collapsedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
         checkRequestsAreValid(rows.find('.collapsedCheckILLRequest').removeClass('collapsedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
+        fetchHoldingsDetails(rows.filter('.collapsedGetDetails').removeClass('collapsedGetDetails'));
       }
     });
   }

@@ -597,6 +597,230 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
+     *
+     * @return array On success an array with the key "total" containing the total
+     * number of items for the given bib id, and the key "holdings" containing an
+     * array of holding information each one with these keys: id, source,
+     * availability, status, location, reserve, callnumber, duedate, returnDate,
+     * number, barcode, item_notes, item_id, holding_id, addLink, description
+     */
+    public function getHolding($id, $patron = null, array $options = [])
+    {
+        $results = parent::getHolding($id, $patron, $options);
+
+        // Add holdings without items if we have a single page of holdings.
+        // Otherwise we don't know all the items.
+        if (!isset($options['itemLimit'])
+            || $results['total'] <= $options['itemLimit']
+        ) {
+            $noItemsHoldings = [];
+            $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
+            foreach ($records->holding ?? [] as $record) {
+                $itemsFound = false;
+                foreach ($results['holdings'] as &$holding) {
+                    if ($holding['holding_id'] === (string)$record->holding_id) {
+                        $holding['details_ajax'] = $holding['holding_id'];
+                        $itemsFound = true;
+                    }
+                }
+                unset($holding);
+                if (!$itemsFound) {
+                    $noItemsHoldings[] = $record;
+                }
+            }
+
+            foreach ($noItemsHoldings as $record) {
+                $entry = $this->createHoldingEntry($id, $record);
+                $entry['details_ajax'] = $entry['holding_id'];
+                $results['holdings'][] = $entry;
+                ++$results['total'];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get detailed holding information for a single holdings record
+     *
+     * @param string $id     Bib record id
+     * @param string $key    Retrieval key
+     * @param array  $patron Patron data
+     *
+     * @return array
+     */
+    public function getHoldingsDetails($id, $key, $patron = null)
+    {
+        return $this->getHoldingsData($id, $key);
+    }
+
+    /**
+     * Get holdings data from a holdings record
+     *
+     * @param string $id         Bib ID
+     * @param array  $holdingsId Holdings record ID
+     *
+     * @return array
+     */
+    protected function getHoldingsData($id, $holdingsId)
+    {
+        // If the record is from the holdings list, it doesn't include MARC..
+        $record = $this->makeRequest(
+            '/bibs/' . urlencode($id) . '/holdings/'
+            . urlencode($holdingsId)
+        );
+        $marc = $record->record;
+
+        $marcDetails = [];
+
+        // Get Notes
+        $data = $this->getMFHDData(
+            $marc,
+            isset($this->config['Holdings']['notes'])
+            ? $this->config['Holdings']['notes']
+            : '852z'
+        );
+        if ($data) {
+            $marcDetails['notes'] = $data;
+        }
+
+        // Get Summary (may be multiple lines)
+        $data = $this->getMFHDData(
+            $marc,
+            isset($this->config['Holdings']['summary'])
+            ? $this->config['Holdings']['summary']
+            : '866a'
+        );
+        if ($data) {
+            $marcDetails['summary'] = $data;
+        }
+
+        // Get Supplements
+        if (isset($this->config['Holdings']['supplements'])) {
+            $data = $this->getMFHDData(
+                $marc,
+                $this->config['Holdings']['supplements']
+            );
+            if ($data) {
+                $marcDetails['supplements'] = $data;
+            }
+        }
+
+        // Get Indexes
+        if (isset($this->config['Holdings']['indexes'])) {
+            $data = $this->getMFHDData(
+                $marc,
+                $this->config['Holdings']['indexes']
+            );
+            if ($data) {
+                $marcDetails['indexes'] = $data;
+            }
+        }
+
+        // Get links
+        if (isset($this->config['Holdings']['links'])) {
+            $data = $this->getMFHDData(
+                $marc,
+                $this->config['Holdings']['links']
+            );
+            if ($data) {
+                $marcDetails['links'] = $data;
+            }
+        }
+
+        // Make sure to return an empty array unless we have details to display
+        if (!empty($marcDetails)) {
+            $marcDetails['holding_id'] = $record['holding_id'];
+        }
+
+        return $marcDetails;
+    }
+
+    /**
+     * Create a holding entry
+     *
+     * @param string $id      Bib ID
+     * @param array  $holding Holding
+     *
+     * @return array
+     */
+    protected function createHoldingEntry($id, $holding)
+    {
+        $location = $this->getTranslatableString($holding->library);
+        $callnumber = $this->getTranslatableString($holding->call_number);
+
+        return [
+            'id' => $id,
+            'item_id' => 'HLD_' . (string)$holding->holding_id,
+            'location' => $location,
+            'requests_placed' => 0,
+            'status' => '',
+            'use_unknown_message' => true,
+            'availability' => false,
+            'duedate' => '',
+            'barcode' => '',
+            'callnumber' => $callnumber,
+            'holding_id' => (string)$holding->holding_id,
+        ];
+    }
+
+    /**
+     * Get specified fields from an MFHD MARC Record
+     *
+     * @param object       $record     SimpleXMLElement
+     * @param array|string $fieldSpecs Array or colon-separated list of
+     * field/subfield specifications (3 chars for field code and then subfields,
+     * e.g. 866az)
+     *
+     * @return string|string[] Results as a string if single, array if multiple
+     */
+    protected function getMFHDData($record, $fieldSpecs)
+    {
+        if (!is_array($fieldSpecs)) {
+            $fieldSpecs = explode(':', $fieldSpecs);
+        }
+        $results = '';
+        foreach ($fieldSpecs as $fieldSpec) {
+            $fieldCode = substr($fieldSpec, 0, 3);
+            $subfieldCodes = substr($fieldSpec, 3);
+            foreach ($record->datafield as $field) {
+                if ((string)$field->attributes()->tag === $fieldCode) {
+                    $line = '';
+                    foreach ($field->subfield as $subfield) {
+                        $code = (string)$subfield->attributes()->code;
+                        if (!strstr($subfieldCodes, $code)) {
+                            continue;
+                        }
+                        if ($line) {
+                            $line .= ' ';
+                        }
+                        $line .= (string)$subfield;
+                    }
+                    if ($line) {
+                        if (!$results) {
+                            $results = $line;
+                        } else {
+                            if (!is_array($results)) {
+                                $results = [$results];
+                            }
+                            $results[] = $line;
+                        }
+                    }
+                }
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get code table options for table
      *
      * @param string $codeTable Code table to fetch
