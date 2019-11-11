@@ -44,6 +44,41 @@ use VuFind\Exception\Auth as AuthException;
 class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 {
     /**
+     * Send user's library cards to the view
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $view = parent::homeAction();
+        if (!empty($view->libraryCards)) {
+            // Try to see if the actual barcode is different from the login ID.
+            // Typical with email login.
+            try {
+                $cards = [];
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+                foreach ($view->libraryCards as $card) {
+                    $card = $card->toArray();
+                    if ($patron
+                        && $patron['cat_username'] === $card['cat_username']
+                    ) {
+                        $profile = $this->getILS()->getMyProfile($patron);
+                        if (!empty($profile['barcode'])) {
+                            $card['barcode'] = $profile['barcode'];
+                        }
+                    }
+                    $cards[] = $card;
+                }
+                $view->libraryCards = $cards;
+            } catch (\Exception $e) {
+                // No worries, this isn't critical
+            }
+        }
+
+        return $view;
+    }
+
+    /**
      * Send user's library card to the edit view
      *
      * @return mixed

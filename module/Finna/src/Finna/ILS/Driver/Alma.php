@@ -283,6 +283,18 @@ class Alma extends \VuFind\ILS\Driver\Alma
                                         : null;
             }
         }
+
+        if ($xml->user_identifiers && $xml->user_identifiers->user_identifier) {
+            foreach ($xml->user_identifiers->user_identifier as $identifier) {
+                if ('BARCODE' === (string)$identifier->id_type
+                    && 'ACTIVE' === (string)$identifier->status
+                ) {
+                    $profile['barcode'] = (string)$identifier->value;
+                    break;
+                }
+            }
+        }
+
         $profile['self_service_pin'] = '****';
 
         if ($xml->proxy_for_users) {
