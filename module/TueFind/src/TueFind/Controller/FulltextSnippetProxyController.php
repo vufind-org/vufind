@@ -20,8 +20,10 @@ use Zend\View\Model\JsonModel;
  * @package  Controller
  */
 
-class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
+class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     protected $base_url; //Elasticsearch host and port (host:port)
     protected $index; //Elasticsearch index
@@ -46,7 +48,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
 
 
 
-    public function __construct(\Elasticsearch\ClientBuilder $builder, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
+    public function __construct(\Elasticsearch\ClientBuilder $builder, \Zend\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
         $this->logger = $logger;
         $this->configLoader = $configLoader;
         $config = $configLoader->get($this->getFulltextSnippetIni());
@@ -54,6 +56,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
         $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
+        parent::__construct($sm);
+
     }
 
 
@@ -62,10 +66,20 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
     }
 
 
+    protected function selectSynonymAnalyzer() {
+        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+        $current_lang = $this->getTranslatorLocale();
+        $analyzer = 'synonyms_' . $current_lang;
+        return $analyzer;
+    }
+
+
     protected function getQueryParams($doc_id, $search_query, $verbose, $paged_results) {
          $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
          $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
          $index = $paged_results ? $this->page_index : $this->index;
+         $synonym_analyzer = $this->selectSynonymAnalyzer();
+
          $params = [
              'index' => $index,
              'body' => [
@@ -74,11 +88,15 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
                  'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
                  'query' => [
                      'bool' => [
-                           'must' => [
-                               [ $is_phrase_query ? 'match_phrase' : 'match' => [ self::FIELD => $search_query ] ],
-                               [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                           ]
-                      ]
+                         'must' => [
+                             [ $is_phrase_query ? 'match_phrase' : 'match' => [
+                                                                                self::FIELD => [ 'query' => $search_query,
+                                                                                                 'analyzer' => $synonym_analyzer ]
+                                                                              ],
+                             ],
+                             [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
+                          ]
+                     ]
                  ],
                  'highlight' => [
                      'fields' => [
