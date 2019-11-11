@@ -27,8 +27,6 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Zend\I18n\Translator\TranslatorInterface;
-
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *
