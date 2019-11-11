@@ -33,7 +33,7 @@
         "serialssolutions/summon": "1.2.0",
         "symfony/yaml": "3.4.29",
         "swagger-api/swagger-ui": "2.2.10",
-        "vufind-org/vufindcode": "1.1.1",
+        "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.0.0",
         "vufind-org/vufindharvest": "2.4.1",
         "vufind-org/vufindhttp": "2.3.0",

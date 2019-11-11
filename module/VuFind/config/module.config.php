@@ -156,6 +156,7 @@ $config = [
             'VuFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
@@ -234,6 +235,8 @@ $config = [
             'feedback' => 'VuFind\Controller\FeedbackController',
             'Search2' => 'VuFind\Controller\Search2Controller',
             'search2' => 'VuFind\Controller\Search2Controller',
+            'Search2Collection' => 'VuFind\Controller\Search2collectionController',
+            'search2collection' => 'VuFind\Controller\Search2collectionController',
             'Search2Record' => 'VuFind\Controller\Search2recordController',
             'search2record' => 'VuFind\Controller\Search2recordController',
             'Help' => 'VuFind\Controller\HelpController',
@@ -601,6 +604,8 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
+    'search2collection' => 'Search2Collection',
+    'search2collectionrecord' => 'Search2Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
