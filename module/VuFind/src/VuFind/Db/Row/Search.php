@@ -49,16 +49,31 @@ class Search extends RowGateway
     }
 
     /**
+     * Support method to make sure that the search_object field is formatted as a
+     * string, since PostgreSQL sometimes represents it as a resource.
+     *
+     * @return void
+     */
+    protected function normalizeSearchObject()
+    {
+        // Note that if we have a resource, we need to grab the contents before
+        // saving -- this is necessary for PostgreSQL compatibility although MySQL
+        // returns a plain string
+        if (is_resource($this->search_object)) {
+            $this->search_object = stream_get_contents($this->search_object);
+        }
+    }
+
+    /**
      * Get the search object from the row
      *
      * @return \VuFind\Search\Minified
      */
     public function getSearchObject()
     {
-        // Resource check for PostgreSQL compatibility:
-        $raw = is_resource($this->search_object)
-            ? stream_get_contents($this->search_object) : $this->search_object;
-        $result = unserialize($raw);
+        // We need to make sure the search object is a string before unserializing:
+        $this->normalizeSearchObject();
+        $result = unserialize($this->search_object);
         if (!($result instanceof \VuFind\Search\Minified)) {
             throw new \Exception('Problem decoding saved search');
         }
@@ -72,12 +87,9 @@ class Search extends RowGateway
      */
     public function save()
     {
-        // Note that if we have a resource, we need to grab the contents before
-        // saving -- this is necessary for PostgreSQL compatibility although MySQL
-        // returns a plain string
-        $this->search_object = is_resource($this->search_object)
-            ? stream_get_contents($this->search_object)
-            : $this->search_object;
+        // We can't save if the search object is a resource; make sure it's a
+        // string first:
+        $this->normalizeSearchObject();
         return parent::save();
     }
 }
