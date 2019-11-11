@@ -191,7 +191,8 @@ class AbstractBase extends AbstractActionController
             'Content-Security-Policy',
             "default-src 'none'; script-src 'strict-dynamic' 'nonce-$this->nonce' "
                 . "'unsafe-inline' http: https:; connect-src 'self'; "
-                . "style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'self';"
+                . "style-src 'self'; img-src 'self'; font-src 'self'; "
+                . "base-uri 'self';"
         );
         return parent::onDispatch($e);
     }
