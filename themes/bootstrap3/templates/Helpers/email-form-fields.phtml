@@ -38,8 +38,10 @@
 <div class="form-group">
   <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send')?>"/>
 </div>
-<script type="text/javascript" nonce="<?=$this->cspnonce()?>">
+<?php $emailFormScript = <<<'JS'
     $('#email_to, #email_from, #email_subject').on('invalid', function($e) {
         $('#modal .fa-spinner').remove();
     });
-</script>
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $emailFormScript, 'SET');

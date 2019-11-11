@@ -17,4 +17,5 @@
 <?php else: ?>
   <li class="active" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
 <?php endif; ?>
-<?php $this->headScript()->appendScript("$('.dropdown-toggle').dropdown()");
+<?php $dropdownToggle = '$(\'.dropdown-toggle\').dropdown()'; ?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $dropdownToggle, 'SET');
