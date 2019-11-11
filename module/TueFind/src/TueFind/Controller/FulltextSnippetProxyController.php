@@ -252,9 +252,11 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase
         if (empty($snippets)) {
             // Use non-paged text as fallback
             $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
-            return new JsonModel([
-                 'status' => 'NO RESULTS'
-             ]);
+            if (empty($snippets)) {
+                return new JsonModel([
+                     'status' => 'NO RESULTS'
+                 ]);
+            }
         }
 
         return new JsonModel([
