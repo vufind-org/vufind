@@ -189,8 +189,9 @@ class AbstractBase extends AbstractActionController
         $headers = $response->getHeaders();
         $headers->addHeaderLine(
             'Content-Security-Policy',
-            "script-src 'strict-dynamic' 'nonce-$this->nonce' 'unsafe-inline' "
-                . "http: https:; object-src 'none'; base-uri 'self';"
+            "default-src 'none'; script-src 'strict-dynamic' 'nonce-$this->nonce' "
+                . "'unsafe-inline' http: https:; connect-src 'self'; "
+                . "style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'self';"
         );
         return parent::onDispatch($e);
     }
