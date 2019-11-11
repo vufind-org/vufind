@@ -615,9 +615,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     'success' => false
                 ];
             } else {
-                $newDate = $this->dateConverter->convertToDisplayDate(
-                    'Y-m-d\TH:i:sP', $result['date_due']
-                );
+                $newDate = !empty($result['date_due'])
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d\TH:i:sP', $result['date_due']
+                    ) : '-';
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => true,
