@@ -59,4 +59,23 @@ class VuFindGeoTest extends \VuFindTest\Unit\TestCase
             VuFindGeo::getAllCoordinatesFromCoverage($coverage)
         );
     }
+
+    /**
+     * Test missing coordinate data.
+     *
+     * @return void
+     */
+    public function testMissingData()
+    {
+        $badInputs = [
+            '',
+            'name=Dehradun; westlimit=77.8884; southlimit=30.2259;',
+            'eastlimit=78.2234; northlimit=30.4511',
+        ];
+        foreach ($badInputs as $input) {
+            // When one or more coordinates are missing, we expect a null return:
+            $this->assertNull(VuFindGeo::getDisplayCoordinatesFromCoverage($input));
+            $this->assertNull(VuFindGeo::getAllCoordinatesFromCoverage($input));
+        }
+    }
 }

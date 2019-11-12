@@ -50,8 +50,11 @@ class VuFindGeo
         $parts = array_map('trim', explode(';', $coverage));
         $parsed = [];
         foreach ($parts as $part) {
-            list($key, $value) = array_map('trim', explode('=', $part, 2));
-            $parsed[$key] = $value;
+            $chunks = array_map('trim', explode('=', $part, 2));
+            if (count($chunks) == 2) {
+                list($key, $value) = $chunks;
+                $parsed[$key] = $value;
+            }
         }
         return $parsed;
     }
