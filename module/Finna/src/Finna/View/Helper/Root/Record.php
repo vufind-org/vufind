@@ -352,6 +352,9 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     protected function isAuthorityEnabled()
     {
+        if (!is_callable([$this->driver, 'getDatasource'])) {
+            return false;
+        }
         $recordSource = $this->driver->getDatasource();
         return isset($this->datasourceConfig[$recordSource]['authority']);
     }
