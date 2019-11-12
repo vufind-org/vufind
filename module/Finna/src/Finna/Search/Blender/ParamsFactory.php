@@ -61,8 +61,10 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $helper
+        $facetHelper
             = $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $authorityHelper
+            = $container->get(\Finna\Search\Solr\AuthorityHelper::class);
         $converter = $container->get(\VuFind\Date\Converter::class);
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
         $blenderConfig = $configLoader->get('Blender');
@@ -77,8 +79,8 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             . '\\Params'
         );
         return parent::__invoke(
-            $container, $requestedName, [$helper, $converter, $secondaryParams,
-            $blenderConfig, $blenderMappings]
+            $container, $requestedName, [$facetHelper, $authorityHelper, $converter,
+            $secondaryParams, $blenderConfig, $blenderMappings]
         );
     }
 }

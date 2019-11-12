@@ -75,12 +75,15 @@ class Params extends \Finna\Search\Solr\Params
     public function __construct(\VuFind\Search\Base\Options $options,
         \VuFind\Config\PluginManager $configLoader,
         \Finna\Search\Solr\HierarchicalFacetHelper $facetHelper,
+        \Finna\Search\Solr\AuthorityHelper $authorityHelper,
         \VuFind\Date\Converter $dateConverter,
         \VuFind\Search\Base\Params $secondaryParams,
         \Zend\Config\Config $blenderConfig,
         $mappings
     ) {
-        parent::__construct($options, $configLoader, $facetHelper, $dateConverter);
+        parent::__construct(
+            $options, $configLoader, $facetHelper, $authorityHelper, $dateConverter
+        );
 
         $this->secondaryParams = $secondaryParams;
         $this->blenderConfig = $blenderConfig;
