@@ -9,6 +9,7 @@ class FulltextSnippetProxyControllerFactory {
 
    public function __invoke(ContainerInterface $container, $requestedName, array $options = null) {
        return new FulltextSnippetProxyController(new \Elasticsearch\ClientBuilder,
+                                                 $container,
                                                  $container->get('VuFind\Logger'),
                                                  $container->get('VuFind\Config\PluginManager'));
    }
