@@ -281,7 +281,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Correct copy count in case of paging
         $copyCount = $options['offset'] ?? 0;
-        $patronId = $patron['id'] ?? null;
 
         // Paging parameters for paginated API call. The "limit" tells the API how
         // many items the call should return at once (e. g. 10). The "offset" defines
@@ -322,6 +321,13 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
+
+                $processType = (string)($item->item_data->process_type ?? '');
+                if ($processType && 'LOAN' !== $processType) {
+                    $status = $this->getTranslatableStatusString(
+                        $item->item_data->process_type
+                    );
+                }
 
                 $description = null;
                 if (!empty($item->item_data->description)) {
@@ -1772,6 +1778,23 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
+        $desc = (string)($element->attributes()->desc ?? $value);
+        return new \VuFind\I18n\TranslatableString($value, $desc);
+    }
+
+    /**
+     * Gets a translatable string from an element with content and a desc attribute.
+     *
+     * @param SimpleXMLElement $element XML element
+     *
+     * @return \VuFind\I18n\TranslatableString
+     */
+    protected function getTranslatableStatusString($element)
+    {
+        if (null === $element) {
+            return null;
+        }
+        $value = 'status_' . strtolower((string)$element);
         $desc = (string)($element->attributes()->desc ?? $value);
         return new \VuFind\I18n\TranslatableString($value, $desc);
     }
