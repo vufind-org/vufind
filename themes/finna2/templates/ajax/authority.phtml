@@ -16,31 +16,4 @@
   <?php endforeach; ?>
 </table>
 <?php endif; ?>
-
-<?php // NOTE: fullrecord outputted for debugging purposes. ?>
-<?php $rawFieldData = $this->driver->getRawData(); ?>
-<?php if (!empty($rawFieldData['fullrecord']) && strncmp($rawFieldData['fullrecord'], '<', 1) == 0): ?>
-<pre id="record-data" style="display: none;">
-<?php
-  $dom = new DOMDocument('1.0');
-  $dom->preserveWhiteSpace = false;
-  $dom->formatOutput = true;
-  if ($dom->loadXML($rawFieldData['fullrecord'])) {
-    echo $this->escapeHtml($dom->saveXML());
-    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
-    echo $this->inlineScript();
-    $script = <<<JS
-$(document).ready(function() {
-  $('#record-data').each(function(i, block) {
-    hljs.highlightBlock(block);
-  });
-});
-JS;
-    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
-  } else {
-    echo $this->escapeHtml($rawFieldData['fullrecord']);
-  }
-?>
-<?php endif ?>
-</pre>
 <!-- END of: finna - ajax/authority.phtml -->
