@@ -139,6 +139,16 @@
     <field name="exclude_ixtheo" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="bundle_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="has_fulltext" type="boolean" indexed="true" stored="true" multiValued="false"/>
+    <field name="fulltext_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_fr" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_it" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_es" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_pt" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_ru" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_el" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_hans" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_hant" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
 
     <!-- COMMON copyFields-->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
@@ -211,4 +221,15 @@
     <copyField source="era_facet_de" dest="topic_browse"/>
     <copyField source="genre_facet_de" dest="topic_browse"/>
     <copyField source="geographic_facet_de" dest="topic_browse"/>
+    <!-- CopyFields for Fulltext Synonyms -->
+    <copyField source="fulltext" dest="fulltext_synonyms_de"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_en"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_fr"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_it"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_es"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_pt"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_ru"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_el"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_hans"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_hant"/>
 </fields>
