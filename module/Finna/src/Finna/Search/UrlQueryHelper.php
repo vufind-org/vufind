@@ -28,6 +28,8 @@
  */
 namespace Finna\Search;
 
+use Finna\Search\Solr\AuthorityHelper;
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
@@ -165,5 +167,42 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
         $params = $this->urlParams;
         unset($params['page']);
         return '?' . $this->buildQueryString($params, $escape);
+    }
+
+    /**
+     * Get the current search parameters with an author id-role filter.
+     *
+     * @param string $idWithRole Author id with role
+     *
+     * @return string
+     */
+    public function setAuthorIdWithRole($idWithRole)
+    {
+        $separator = AuthorityHelper::AUTHOR_ID_ROLE_SEPARATOR;
+        list($id, $role) = explode($separator, $idWithRole);
+
+        $params = $this->urlParams;
+        $filters = $params['filter'] ?? [];
+        $filters[]
+            = AuthorityHelper::AUTHOR_ID_ROLE_FACET . ":{$id}{$separator}{$role}";
+        $params['filter'] = $filters;
+        return '?' . $this->buildQueryString($params, true);
+    }
+
+    /**
+     * Get the current search parameters with an author id filter.
+     *
+     * @param string $id Author id
+     *
+     * @return string
+     */
+    public function setAuthorId($id)
+    {
+        $filters = $this->urlParams['filter'] ?? [];
+        $filters[]
+            = AuthorityHelper::AUTHOR2_ID_FACET . ":{$id}";
+        $params = $this->urlParams;
+        $params['filter'] = $filters;
+        return '?' . $this->buildQueryString($params, true);
     }
 }

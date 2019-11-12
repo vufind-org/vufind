@@ -4,7 +4,6 @@ return [
     'helpers' => [
         'factories' => [
             'Finna\View\Helper\Root\Auth' => 'Finna\View\Helper\Root\AuthFactory',
-            'Finna\View\Helper\Root\Authority' => 'Finna\View\Helper\Root\AuthorityFactory',
             'Finna\View\Helper\Root\AuthorizationNotification' => 'Finna\View\Helper\Root\AuthorizationNotificationFactory',
             'Finna\View\Helper\Root\Autocomplete' => 'Finna\View\Helper\Root\AutocompleteFactory',
             'Finna\View\Helper\Root\Barcode' => 'Zend\ServiceManager\Factory\InvokableFactory',
@@ -62,7 +61,6 @@ return [
         ],
         'aliases' => [
             'auth' => 'Finna\View\Helper\Root\Auth',
-            'authority' => 'Finna\View\Helper\Root\Authority',
             'authorizationNote' => 'Finna\View\Helper\Root\AuthorizationNotification',
             'autocomplete' => 'Finna\View\Helper\Root\Autocomplete',
             'barcode' => 'Finna\View\Helper\Root\Barcode',
@@ -169,6 +167,7 @@ return [
         'record.js',
         'finna.js',
         'finna-autocomplete.js',
+        'finna-authority.js',
         'finna-combined-results.js',
         'finna-video-popup.js',
         'finna-image-paginator.js',

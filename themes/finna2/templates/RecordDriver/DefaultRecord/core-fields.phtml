@@ -2,7 +2,14 @@
 <?php foreach ($coreFields as $key => $current): ?>
   <?php $header = $this->transEsc($current['context']['title'] ?? $current['label']); ?>
   <?php if ($header): ?>
-    <tr class="<?=$current['context']['class'];?>"><th><?=$header?></th><td><?=$current['value']?></td></tr>
+    <?php if ($class = $current['context']['class'] ?? null): ?>
+      <tr class="<?=$this->escapeHtmlAttr($class)?>">
+    <?php else: ?>
+      <tr>
+    <?php endif; ?>
+        <th><?=$header?></th>
+        <td><?=$current['value']?></td>
+      </tr>
   <?php else: ?>
     <?=$current['value']?>
   <?php endif; ?>

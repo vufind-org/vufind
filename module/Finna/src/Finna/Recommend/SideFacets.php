@@ -53,6 +53,13 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     use SideFacetsTrait;
 
     /**
+     * Authority helper
+     *
+     * @var \Finna\Search\Solr\AuthorityHelper
+     */
+    protected $authorityHelper;
+
+    /**
      * Display the map under region facet
      *
      * @var array
@@ -60,6 +67,25 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     protected $geographicFacet = [
         'map_selection' => false,
     ];
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager                $configLoader    Configu-
+     * ration loader
+     * @param \Finna\Search\Solr\AuthorityHelper          $authorityHelper Authority
+     * helper
+     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper     Helper for
+     * handling hierarchical facets
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        \Finna\Search\Solr\AuthorityHelper $authorityHelper,
+        \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper = null
+    ) {
+        parent::__construct($configLoader, $facetHelper);
+        $this->authorityHelper = $authorityHelper;
+    }
 
     /**
      * Store the configuration of the recommendation module.
@@ -140,5 +166,20 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     public function getGeographicFacet()
     {
         return $this->geographicFacet;
+    }
+
+    /**
+     * Get facet information from the search results.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getFacetSet()
+    {
+        $facetSet = parent::getFacetSet();
+        if ($this->authorityHelper) {
+            $facetSet = $this->authorityHelper->formatFacetSet($facetSet);
+        }
+        return $facetSet;
     }
 }

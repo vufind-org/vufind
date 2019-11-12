@@ -225,7 +225,9 @@
     <h1 class="sr-only"><?= $this->transEsc('Search Results'); ?></h1>
     <?php if ($recordTotal < 1): ?>
       <?php foreach ($topRecommendations as $index => $current): ?>
-        <?=$this->recommend($current, 'top', $index)?>
+        <?php if (! $current instanceof \Finna\Recommend\AuthorityRecommend): ?>
+          <?=$this->recommend($current, 'top', $index)?>
+        <?php endif; ?>
       <?php endforeach; ?>
       <?php if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
         <div id="search-tabs-recommendations-holder" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>

@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for authority helper.
+ * Authority recommendations helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018-2019.
+ * Copyright (C) The National Library of Finland 2014-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Search
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     http://vufind.org   Main Site
  */
-namespace Finna\View\Helper\Root;
+namespace Finna\Search\Solr;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for authority helper.
+ * Authority recommendations helper factory.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Search
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     http://vufind.org   Main Site
  */
-class AuthorityFactory implements FactoryInterface
+class AuthorityHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -59,12 +59,11 @@ class AuthorityFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get('VuFind\Config\PluginManager');
         return new $requestedName(
-            $configManager->get('config'),
-            $configManager->get('datasources')
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get('ViewRenderer')->plugin('translate')
         );
     }
 }

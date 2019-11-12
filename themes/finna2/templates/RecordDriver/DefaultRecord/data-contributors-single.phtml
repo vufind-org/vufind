@@ -1,15 +1,5 @@
 <?php //Don't add START and END comments ?>
-<?php
-  $url = $this->record($this->driver)->getLink('author', $this->author['name']);
-  $label = $this->escapeHtml($this->author['name']);
-  $authorityLink = null;
-  if (!empty($this->author['id'])) {
-    $authorityLink = $this->authority()->link(
-      $url, $label, $this->author['id'], $this->author['type'], $this->author['role'], $this->driver
-    );
-  }
-?>
-<?php if (!empty($authorityLink)): ?><?=$authorityLink?><?php else: ?><a href="<?=$url?>"><?=$label?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?><?php endif; ?>
+<?=$this->record($this->driver)->getAuthorityLinkElement('author', $this->author['name'], $this->author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null, 'showInlineInfo' => true])?>
 <?php if (!empty($author['description'])): ?>
   <span class="author-description"> (<?=$this->escapeHtml($author['description'])?>)</span>
 <?php endif; ?>

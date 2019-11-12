@@ -1,0 +1,87 @@
+<?php
+$data = $this->recommend->getRecommendations();
+$activeRecord = $activeInd = null;
+if ($data) {
+  if ($activeId = $this->recommend->getActiveRecommendation()) {
+    foreach ($data as $ind => $rec) {
+        if ($activeId === $rec->getUniqueID()) {
+            $activeInd = $ind;
+            $activeRecord = $rec;
+            break;
+        }
+    }
+  }
+  if (!$activeRecord) {
+    $activeInd = count($data) ? count($data) - 1 : 0;
+    $activeRecord = $data[$activeInd];
+  }
+}
+$results = $this->recommend->getResults();
+$that = $this;
+?>
+
+<div class="authority-recommend" data-search-id="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
+  <?php if ($params->hasAuthorIdFilter()): ?>
+    <?php // Authority info for active authors (when author-id filter(s) is active) ?>
+    <?php $collapseAuthorityInfo = $this->recommend->collapseAuthorityInfo(); ?>
+    <?php if (!empty($data)): ?>
+      <div class="tabs-table">
+        <ul class="nav nav-tabs">
+          <?php foreach ($data as $ind => $record): ?>
+            <?php
+              $formats = $record->getFormats();
+              $institutions = $record->getInstitutions();
+            ?>
+            <li data-id="<?= $this->escapeHtmlAttr($record->getUniqueID())?>" <?= $ind === $activeInd ? ' class="active"' : ''?> aria-label="<?=$this->escapeHtmlAttr($this->translate('authority_' . $formats[0])) ?>">
+                <a><i class="fa fa-authority-<?=$this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0]))?>"></i> <?=$this->escapeHtml($record->getTitle())?></a>
+            </li>
+          <?php endforeach; ?>
+          <li class="spinner hide" aria-label="hidden"><i class="fa fa-spin fa-spinner"></i></li>
+          <li class="toggle<?= $collapseAuthorityInfo ? ' collapsed' : ''?>" aria-label="hidden"></li>
+        </ul>
+      </div>
+      <?php  $js = <<<JS
+$(document).ready(function(){
+  finna.authority.initAuthorityRecommendTabs();
+});
+JS;
+        $this->headScript()->appendScript($js);
+      ?>
+    <?php endif; ?>
+    <?php
+      $formats = $activeRecord->getFormats();
+      $formatter = $this->recordDataFormatter();
+      $coreFields = $formatter->getDefaults('authority');
+    ?>
+    <div class="authoritybox filtered<?= $collapseAuthorityInfo ? ' hide' : ''?>" data-id="<?= $this->escapeHtmlAttr($activeRecord->getUniqueID())?>">
+      <?= $this->partial('ajax/authority-recommend.phtml', ['recommend' => $this->recommend, 'authority' => $activeRecord, 'params' => $results->getParams(), 'collapsed' => $collapseAuthorityInfo]); ?>
+    </div>
+  <?php else: ?>
+    <?php
+    // Authority recommendations when no author-id filter is active.
+    $displayQuery = $results->getParams()->getDisplayQuery();
+    if (!$displayQuery) {
+      return;
+    }
+    $that = $this;
+    $searchIndex = $this->contextParams['searchIndex'] ?? null;
+    $urlQuery = $results->getUrlQuery();
+    $callback = function ($record) use ($displayQuery, $that, $urlQuery) {
+        // Generate a new search URL that replaces the user's current term
+        // with the authority term:
+        $id = $record->getUniqueId();
+        $formats = $record->getFormats();
+        $authoritySearchUrl = $urlQuery->setAuthorId($id);
+        $html = '<span class="authority-page-link"><a class="authority-page" href="' . $authoritySearchUrl . '"><i class="fa' . (!empty($formats) ? ' fa-authority-' . $this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0])) : '') . '"></i> ' . $that->escapeHtml($record->getBreadCrumb()) . '</a></span>';
+        return $html;
+    };
+    $content = implode(', ', array_map($callback, $data));
+    if (!empty($content)) {
+      echo '<div class="authoritybox">';
+      echo '<div><strong>' . $this->transEsc($this->recommend->getHeader()) . ':</strong></div>';
+      echo "<div>$content</div>";
+      echo '</div>';
+    }
+    ?>
+  <?php endif; ?>
+</div>

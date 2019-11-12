@@ -1562,6 +1562,14 @@ url = "https://my.surveypal.com/Finnasurvey"
 
 ; Authority info
 [Authority]
-; Authority support is disabled by default. Uncomment the following line to enable
-; it.
-;enabled = true
+; Uncomment to convert Author search links to authority links
+; (filters by author ID instead of doing a type = Author search)
+;authority_links = true
+
+; Uncomment to enable Authority info (displayed beside author links on record page)
+;authority_info = true
+
+; Mapping to Finna authority record types
+; typeMap[elonet_henkilo] = Personal Name
+; typeMap[elonet_kokoonpano] = Group Name
+; typeMap[elonet_yhtio] = Corporate Name

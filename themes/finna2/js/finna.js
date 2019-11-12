@@ -7,6 +7,7 @@ var finna = (function finnaModule() {
       // List of modules to be inited
       var modules = [
         'advSearch',
+        'authority',
         'autocomplete',
         'contentFeed',
         'common',

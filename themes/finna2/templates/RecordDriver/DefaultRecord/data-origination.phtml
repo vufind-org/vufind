@@ -1,10 +1,2 @@
-<?php //Don't add START and END comments ?>
-<?php
-  $url = $this->record($this->driver)->getLink('author', $data);
-  $authority = $this->driver->tryMethod('getOriginationExtended');
-?>
-<?php if ($authority && ($authorityLink = $this->authority()->link($url, $this->escapeHtml($authority['name']), $authority['id'], $authority['type'], $this->driver))): ?>
-  <?=$authorityLink?>
-<?php else: ?>
-  <a href="<?=$url?>"><?=$this->escapeHtml($data)?></a>
-<?php endif; ?>
+<?php $originationExt = $this->driver->tryMethod('getOriginationExtended'); //Don't add START and END comments ?>
+<?=$this->record($this->driver)->getAuthorityLinkElement('author', $originationExt ? $originationExt['name'] : $data, $originationExt ?? null, ['showInlineInfo' => true, 'authorityType' => $author['type'] ?? null])?>

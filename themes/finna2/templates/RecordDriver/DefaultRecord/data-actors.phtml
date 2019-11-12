@@ -3,13 +3,13 @@
 <div class="truncate-field">
   <?php if (!empty($data['credited']['presenters'])): ?>
       <?php foreach($data['credited']['presenters'] as $index => $author): ?>
-        <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><?php endif; ?>
+        <?=($index > 0 ? '<br/> ' : '')?><?=$this->record($this->driver)->getAuthorityLinkElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null, 'showInlineInfo' => true])?>
       <?php endforeach; ?>
   <?php endif; ?>
   <?php if (!empty($data['uncredited']['presenters'])): ?>
     <div class="subheading"><?=$this->translate("Uncredited")?></div>
       <?php foreach($data['uncredited']['presenters'] as $index => $author): ?>
-          <?=($index > 0 ? '<br/> ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['roleName'])): ?><span class="author-rolename">, <?=$this->escapeHtml($author['roleName']) ?></span><?php endif; ?>
+          <?=($index > 0 ? '<br/> ' : '')?><?=$this->record($this->driver)->getAuthorityLinkElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null, 'showInlineInfo' => true])?>
       <?php endforeach; ?>
   <?php endif; ?>
 </div>

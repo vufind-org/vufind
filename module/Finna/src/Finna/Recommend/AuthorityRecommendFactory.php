@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Solr search params objects.
+ * Recommendation module plugin manager
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Solr
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Recommendations
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-namespace Finna\Search\Solr;
+namespace Finna\Recommend;
 
 use Interop\Container\ContainerInterface;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
- * Factory for Solr search params objects.
+ * Recommendation module plugin manager
  *
  * @category VuFind
- * @package  Search_Solr
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Recommendations
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
+class AuthorityRecommendFactory
+    implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -53,21 +55,22 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $helper
-            = $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-        $authorityHelper
-            = $container->get(\Finna\Search\Solr\AuthorityHelper::class);
-        $converter = $container->get(\VuFind\Date\Converter::class);
-        return parent::__invoke(
-            $container, $requestedName,
-            [$helper, $authorityHelper, $converter]
+        return new $requestedName(
+            $container->get(ResultsManager::class),
+            $container->get(\Finna\Search\Solr\AuthorityHelper::class),
+            new \Zend\Session\Container(
+                'Authority', $container->get(\Zend\Session\SessionManager::class)
+            ),
+            $container->get(\VuFind\Cookie\CookieManager::class)
         );
     }
 }
