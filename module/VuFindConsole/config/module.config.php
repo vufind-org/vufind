@@ -70,7 +70,7 @@ $routes = [
     'language/normalize' => 'language normalize [<target>]',
     'util/cleanup_record_cache' => 'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
     'util/commit' => 'util commit [<core>]',
-    'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [--help|-h]',
+    'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [<backend>] [--help|-h]',
     'util/cssBuilder' => 'util cssBuilder [...themes]',
     'util/deletes' => 'util deletes [--verbose] [<filename>] [<format>] [<index>]',
     'util/expire_external_sessions' => 'util expire_external_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',

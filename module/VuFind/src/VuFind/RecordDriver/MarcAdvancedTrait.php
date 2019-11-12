@@ -196,6 +196,8 @@ trait MarcAdvancedTrait
             return "Collection";
         case 'D': // Collection Part
             return "CollectionPart";
+        case 'I': // Integrating Resource
+            return "IntegratingResource";
         default:
             return "Unknown";
         }
