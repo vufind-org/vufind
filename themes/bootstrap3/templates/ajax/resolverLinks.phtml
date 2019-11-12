@@ -5,11 +5,7 @@
       <ul>
         <?php foreach ($this->electronic as $link): ?>
           <li>
-            <?php if (!empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-' . $link['access'] . '"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
-            <?php else: ?>
-              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
-            <?php endif; ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'electronic']); ?>
           </li>
         <?php endforeach; ?>
       </ul>
@@ -21,24 +17,22 @@
       <ul>
         <?php foreach ($this->print as $link): ?>
           <li>
-            <?php if (!empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-' . $link['access'] . '"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
-            <?php else: ?>
-              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
-            <?php endif; ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'print']); ?>
           </li>
         <?php endforeach; ?>
       </ul>
     </div>
   <?php endif; ?>
   <div class="openurls">
-    <?php if (!empty($this->moreOptionsLink)): ?><strong><a href="<?=$this->escapeHtmlAttr($this->moreOptionsLink)?>"><?=$this->transEsc('More options')?></a></strong><?php endif; ?>
+    <?php if (!empty($this->moreOptionsLink)): ?>
+      <strong><a href="<?=$this->escapeHtmlAttr($this->moreOptionsLink)?>"><?=$this->transEsc('More options')?></a></strong>
+    <?php endif; ?>
     <?php if (!empty($this->services)): ?>
       <ul>
         <?php foreach ($this->services as $link): ?>
           <?php if (!empty($link['href'])): ?>
             <li>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-' . $link['access'] . '"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+              <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'service']); ?>
             </li>
           <?php endif; ?>
         <?php endforeach; ?>

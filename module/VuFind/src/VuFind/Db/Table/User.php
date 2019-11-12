@@ -97,6 +97,18 @@ class User extends Gateway
     }
 
     /**
+     * Retrieve a user object from the database based on ID.
+     *
+     * @param string $id ID.
+     *
+     * @return UserRow
+     */
+    public function getById($id)
+    {
+        return $this->select(['id' => $id])->current();
+    }
+
+    /**
      * Retrieve a user object from the database based on catalog ID.
      *
      * @param string $catId Catalog ID.

@@ -514,7 +514,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyTransactions($patron)
     {
-        $query = ['query' => 'userId==' . $patron['username']];
+        $query = ['query' => 'userId==' . $patron['id']];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json->loans) == 0) {
@@ -522,15 +522,16 @@ class Folio extends AbstractAPI implements
         }
         $transactions = [];
         foreach ($json->loans as $trans) {
-            $dueDate = date_create($trans['dueDate']);
+            $date = date_create($trans->dueDate);
             $transactions[] = [
                 'duedate' => date_format($date, "j M Y"),
                 'dueTime' => date_format($date, "g:i:s a"),
                 // TODO: Due Status
                 // 'dueStatus' => $trans['itemId'],
-                'id' => $trans['itemId'],
-                'barcode' => $trans['item']['barcode'],
-                'title' => $trans['item']['title'],
+                'id' => $trans->item->instanceId,
+                'item_id' => $trans->item->id,
+                'barcode' => $trans->item->barcode,
+                'title' => $trans->item->title,
             ];
         }
         return $transactions;

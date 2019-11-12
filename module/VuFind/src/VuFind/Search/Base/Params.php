@@ -1013,9 +1013,20 @@ class Params
      *
      * @return array
      */
-    public function getFilters()
+    public function getRawFilters()
     {
         return $this->filterList;
+    }
+
+    /**
+     * Get the raw filter list.
+     *
+     * @return     array
+     * @deprecated Obsolete since VuFind 6.1. Use getRawFilters() instead.
+     */
+    public function getFilters()
+    {
+        return $this->getRawFilters();
     }
 
     /**
@@ -1720,7 +1731,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return VuFindSearch\Query\AbstractQuery
+     * @return \VuFindSearch\Query\AbstractQuery
      */
     public function getQuery()
     {

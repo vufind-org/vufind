@@ -156,6 +156,7 @@ $config = [
             'VuFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
@@ -183,6 +184,9 @@ $config = [
             'VuFind\Controller\WebController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatrecordController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'AJAX' => 'VuFind\Controller\AjaxController',
@@ -231,6 +235,8 @@ $config = [
             'feedback' => 'VuFind\Controller\FeedbackController',
             'Search2' => 'VuFind\Controller\Search2Controller',
             'search2' => 'VuFind\Controller\Search2Controller',
+            'Search2Collection' => 'VuFind\Controller\Search2collectionController',
+            'search2collection' => 'VuFind\Controller\Search2collectionController',
             'Search2Record' => 'VuFind\Controller\Search2recordController',
             'search2record' => 'VuFind\Controller\Search2recordController',
             'Help' => 'VuFind\Controller\HelpController',
@@ -305,6 +311,9 @@ $config = [
             'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\FlashMessengerFactory',
         ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
+        ],
         'aliases' => [
             'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
@@ -326,6 +335,7 @@ $config = [
         'factories' => [
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -594,6 +604,8 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
+    'search2collection' => 'Search2Collection',
+    'search2collectionrecord' => 'Search2Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]

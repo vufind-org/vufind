@@ -90,7 +90,7 @@ class Results extends \VuFind\Search\Base\Results
         $facetResult = [];
         if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
-            $filterList = $this->getParams()->getFilters();
+            $filterList = $this->getParams()->getRawFilters();
             $translatedFacets = $this->getOptions()->getTranslatedFacets();
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on

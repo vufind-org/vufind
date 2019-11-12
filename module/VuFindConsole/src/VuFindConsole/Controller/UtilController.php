@@ -598,17 +598,30 @@ class UtilController extends AbstractBase
     {
         $request = $this->getRequest();
         if ($request->getParam('help') || $request->getParam('h')) {
-            Console::writeLine('Available switches:');
-            Console::writeLine('--skip-xml or -sx => Skip the XML cache');
-            Console::writeLine('--skip-json or -sj => Skip the JSON cache');
-            Console::writeLine('--help or -h => Show this message');
+            $scriptName = $this->getRequest()->getScriptName();
+            if (substr($scriptName, -9) === 'index.php') {
+                $scriptName .= ' util createHierarchyTrees';
+            }
+            Console::writeLine(
+                'Usage: ' . $scriptName
+                . ' [<backend>] [--skip-xml or -sx] [--skip-json or -sj]'
+                . ' [--help or -h]'
+            );
+            Console::writeLine(
+                "\t<backend> => Search backend, e.g. " . DEFAULT_SEARCH_BACKEND
+                . " (default) or Search2"
+            );
+            Console::writeLine("\t--skip-xml or -sx => Skip the XML cache");
+            Console::writeLine("\t--skip-json or -sj => Skip the JSON cache");
+            Console::writeLine("\t--help or -h => Show this message");
             return $this->getFailureResponse();
         }
         $skipJson = $request->getParam('skip-json') || $request->getParam('sj');
         $skipXml = $request->getParam('skip-xml') || $request->getParam('sx');
+        $backendId = $request->getParam('backend') ?? DEFAULT_SEARCH_BACKEND;
         $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $hierarchies = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr')
+            ->get(\VuFind\Search\Results\PluginManager::class)->get($backendId)
             ->getFullFieldFacets(['hierarchy_top_id']);
         if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
             $hierarchies['hierarchy_top_id']['data']['list'] = [];
@@ -624,7 +637,7 @@ class UtilController extends AbstractBase
                 . number_format($count) . ' records'
             );
             try {
-                $driver = $recordLoader->load($recordid);
+                $driver = $recordLoader->load($recordid, $backendId);
                 // Only do this if the record is actually a hierarchy type record
                 if ($driver->getHierarchyType()) {
                     // JSON

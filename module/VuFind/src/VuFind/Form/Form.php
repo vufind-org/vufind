@@ -220,7 +220,8 @@ class Form extends \Zend\Form\Form implements
             $element = [];
 
             $required = ['type', 'name'];
-            $optional = ['required', 'help','value', 'inputType', 'group'];
+            $optional
+                = ['required', 'help','value', 'inputType', 'group', 'placeholder'];
             foreach (array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
@@ -245,8 +246,29 @@ class Form extends \Zend\Form\Form implements
                 }
                 if (isset($el['options'])) {
                     $options = [];
+                    $isSelect = $elementType === 'select';
+                    $placeholder = $element['placeholder'] ?? null;
+
+                    if ($isSelect && $placeholder) {
+                        // Add placeholder option (without value) for
+                        // select element.
+                        $options[] = [
+                            'value' => '',
+                            'label' => $this->translate($placeholder),
+                            'attributes' => [
+                                'selected' => 'selected', 'disabled' => 'disabled'
+                            ]
+                        ];
+                    }
                     foreach ($el['options'] as $option) {
-                        $options[$option] = $this->translate($option);
+                        if ($isSelect) {
+                            $options[] = [
+                                'value' => $option,
+                                'label' => $this->translate($option)
+                            ];
+                        } else {
+                            $options[$option] = $this->translate($option);
+                        }
                     }
                     $element['options'] = $options;
                 } elseif (isset($el['optionGroups'])) {
@@ -269,7 +291,12 @@ class Form extends \Zend\Form\Form implements
             $settings = [];
             if (isset($el['settings'])) {
                 foreach ($el['settings'] as list($settingId, $settingVal)) {
-                    $settings[trim($settingId)] = trim($settingVal);
+                    $settingId = trim($settingId);
+                    $settingVal = trim($settingVal);
+                    if ($settingId === 'placeholder') {
+                        $settingVal = $this->translate($settingVal);
+                    }
+                    $settings[$settingId] = $settingVal;
                 }
                 $element['settings'] = $settings;
             }
@@ -493,24 +520,26 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
-     * Return form recipient.
+     * Return form recipient(s).
      *
-     * @return array with name, email or null if not configured
+     * @return array of reciepients, each consisting of an array with
+     * name, email or null if not configured
      */
     public function getRecipient()
     {
-        $recipient = $this->formConfig['recipient'] ?? null;
+        $recipient = $this->formConfig['recipient'] ?? [null];
+        $recipients = isset($recipient['email']) || isset($recipient['name'])
+            ? [$recipient] : $recipient;
 
-        $recipientEmail = $recipient['email']
-            ?? $this->defaultFormConfig['recipient_email'] ?? null;
+        foreach ($recipients as &$recipient) {
+            $recipient['email'] = $recipient['email']
+                ?? $this->defaultFormConfig['recipient_email'] ?? null;
 
-        $recipientName = $recipient['name']
-            ?? $this->defaultFormConfig['recipient_name'] ?? null;
+            $recipient['name'] = $recipient['name']
+                ?? $this->defaultFormConfig['recipient_name'] ?? null;
+        }
 
-        return [
-            $recipientName,
-            $recipientEmail,
-        ];
+        return $recipients;
     }
 
     /**
