@@ -9,6 +9,7 @@
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">DSpace</xsl:param>
     <xsl:param name="urlPrefix">http</xsl:param>
+    <xsl:param name="geographic">false</xsl:param>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
@@ -144,19 +145,21 @@
                 </xsl:if>
 
                 <!-- GEO -->
-                <xsl:for-each select="//dc:coverage">
-                    <xsl:if test="string-length(php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))) > 0">
-                        <field name="long_lat">
-                            <xsl:value-of select="php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))" />
-                        </field>
-                        <field name="long_lat_display">
-                            <xsl:value-of select="php:function('VuFindGeo::getDisplayCoordinatesFromCoverage', string(.))" />
-                        </field>
-                        <field name="long_lat_label">
-                            <xsl:value-of select="php:function('VuFindGeo::getLabelFromCoverage', string(.))" />
-                        </field>
-                    </xsl:if>
-                </xsl:for-each>
+                <xsl:if test="$geographic = 'true'">
+                    <xsl:for-each select="//dc:coverage">
+                        <xsl:if test="string-length(php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))) > 0">
+                            <field name="long_lat">
+                                <xsl:value-of select="php:function('VuFindGeo::getAllCoordinatesFromCoverage', string(.))" />
+                            </field>
+                            <field name="long_lat_display">
+                                <xsl:value-of select="php:function('VuFindGeo::getDisplayCoordinatesFromCoverage', string(.))" />
+                            </field>
+                            <field name="long_lat_label">
+                                <xsl:value-of select="php:function('VuFindGeo::getLabelFromCoverage', string(.))" />
+                            </field>
+                        </xsl:if>
+                    </xsl:for-each>
+                </xsl:if>
 
                 <!-- URL -->
                 <xsl:for-each select="//dc:identifier">
