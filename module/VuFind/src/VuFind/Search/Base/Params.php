@@ -1800,12 +1800,12 @@ class Params
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
         if (substr($facetList, 0, 1) == '~') {
-            foreach ($config->{substr($facetList, 1)} as $value => $key) {
+            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }
         } else {
-            foreach ($config->$facetList as $key => $value) {
+            foreach ($config->$facetList ?? [] as $key => $value) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }
