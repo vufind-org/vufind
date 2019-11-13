@@ -13,5 +13,5 @@ DIR="$(dirname $(readlink --canonicalize "$0"))"
 
 if [[ $TUEFIND_FLAVOUR == "ixtheo" ]]; then
    mkdir -p $DIR/synonyms
-   for i in de en fr it es pt ru el hans hant; do touch synonyms/synonyms_$i.txt; done
+   for i in de en fr it es pt ru el hans hant; do touch $DIR/synonyms/synonyms_$i.txt; done
 fi
