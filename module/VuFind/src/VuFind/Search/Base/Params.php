@@ -1797,11 +1797,19 @@ class Params
     ) {
         $config = $this->configLoader
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (empty($config->$facetList)) {
-            return false;
+        $retVal = false;
+        // If the section is in reverse order, the tilde will flag this:
+        if (substr($facetList, 0, 1) == '~') {
+            foreach ($config->{substr($facetList, 1)} as $value => $key) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
+        } else {
+            foreach ($config->$facetList as $key => $value) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
         }
-        foreach ($config->$facetList as $key => $value) {
-            $this->addCheckboxFacet($key, $value);
-        }
+        return $retVal;
     }
 }
