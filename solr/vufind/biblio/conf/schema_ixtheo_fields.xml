@@ -149,7 +149,7 @@
     <field name="fulltext_synonyms_el" type="fulltext_syn_el" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
-    <field name="fulltext_synonyms_hant" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
 
     <!-- COMMON copyFields-->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
