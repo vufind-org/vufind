@@ -577,25 +577,23 @@ class Params extends \VuFind\Search\Solr\Params
     {
         $result = [];
         foreach ($this->getFilterList() as $key => $val) {
-            $authorRoleFilter = in_array($key, ['Author role']);
-            $authorIdFilter = in_array($key, ['Author', 'authority_id_label']);
-
-            if ($authorRoleFilter || $authorIdFilter) {
-                foreach ($val as $filterItem) {
-                    $filter = $filterItem['value'] ?? null;
-                    if (!$filter) {
-                        continue;
-                    }
-                    if ($authorIdFilter) {
+            foreach ($val as $filterItem) {
+                $filter = $filterItem['value'] ?? null;
+                if (!$filter) {
+                    continue;
+                }
+                $field = $filterItem['field'];
+                if ($field === AuthorityHelper::AUTHOR2_ID_FACET) {
+                    // Author id filter
+                    $result[] = $filter;
+                } elseif ($field === AuthorityHelper::AUTHOR_ID_ROLE_FACET) {
+                    // Author id-role filter
+                    if ($includeRole) {
                         $result[] = $filter;
                     } else {
-                        if ($includeRole) {
-                            $result[] = $filter;
-                        } else {
-                            list($id, $role)
-                                = $this->authorityHelper->extractRole($filter);
-                            $result[] = $id;
-                        }
+                        list($id, $role)
+                            = $this->authorityHelper->extractRole($filter);
+                        $result[] = $id;
                     }
                 }
             }
