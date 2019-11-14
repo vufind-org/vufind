@@ -201,7 +201,7 @@ class ScheduledSearchController extends AbstractBase
         $diff = $todayTime->diff($lastTime);
         if ($diff->days < $schedule) {
             $this->msg(
-                '      Bypassing search ' . $s->id
+                '  Bypassing search ' . $s->id
                 . ': previous execution too recent ('
                 . $this->scheduleOptions[$schedule] . ', '
                 . $lastTime->format($this->iso8601) . ')'
@@ -314,7 +314,7 @@ class ScheduledSearchController extends AbstractBase
         }
         if (empty($records)) {
             $this->msg(
-                "      No results found for search $searchId"
+                "  No results found for search $searchId"
             );
             return false;
         }
@@ -323,13 +323,13 @@ class ScheduledSearchController extends AbstractBase
         $lastExecutionDate = $lastTime->format($this->iso8601);
         if ($newestRecordDate < $lastExecutionDate) {
             $this->msg(
-                "      No new results for search ($searchId): "
+                "  No new results for search ($searchId): "
                 . "$newestRecordDate < $lastExecutionDate"
             );
             return false;
         }
         $this->msg(
-            "      New results for search ($searchId): "
+            "  New results for search ($searchId): "
             . "$newestRecordDate >= $lastExecutionDate"
         );
         // Collect records that have been indexed (for the first time)
@@ -437,7 +437,7 @@ class ScheduledSearchController extends AbstractBase
     {
         $todayTime = new \DateTime();
         $scheduled = $this->getTable('search')->getScheduledSearches();
-        $this->msg(sprintf('    Processing %d searches', count($scheduled)));
+        $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
             if (!$this->validateSchedule($todayTime, $lastTime, $s)
@@ -462,6 +462,6 @@ class ScheduledSearchController extends AbstractBase
                 $this->err("Error updating last_executed date for search $searchId");
             }
         }
-        $this->msg('    Done processing searches');
+        $this->msg('Done processing searches');
     }
 }
