@@ -348,7 +348,7 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Build the email message.
      *
-     * @param  \VuFind\Db\Row\Search      $s            Search table row
+     * @param \VuFind\Db\Row\Search       $s            Search table row
      * @param \VuFind\Db\Row\User         $user         User owning search row
      * @param \VuFind\Search\Base\Results $searchObject Search results object
      * @param array                       $newRecords   New results in search
