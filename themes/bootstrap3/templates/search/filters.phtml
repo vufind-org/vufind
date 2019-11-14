@@ -32,15 +32,8 @@
         <?php
           $removeLink = isset($urlQuery)
             ? $urlQuery->removeFilter($filter['filter'])
-            : $this->url(
-              'search-editmemory',
-              [],
-              ['query' =>
-                [
-                  'searchClassId' => $this->searchClassId,
-                  'removeFilter' => $filter['filter']
-                ]
-              ]
+            : $this->searchMemory()->getEditLink(
+              $this->searchClassId, 'removeFilter', $filter['filter']
             );
           $desc = $this->translate($filter['desc']);
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
@@ -100,16 +93,7 @@
           <?php
             $removeLink = isset($this->urlQuery)
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
-              : $this->url(
-                'search-editmemory',
-                [],
-                ['query' =>
-                  [
-                    'searchClassId' => $this->searchClassId,
-                    'removeFacet' => $value
-                  ]
-                ]
-              );
+              : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
           <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
         </span>
@@ -132,16 +116,7 @@
       ? null
       : isset($urlQuery)
         ? $urlQuery->removeAllFilters()->resetDefaultFilters()
-        : $this->url(
-          'search-editmemory',
-          [],
-          ['query' =>
-            [
-              'searchClassId' => $this->searchClassId,
-              'removeAllFilters' => 1
-            ]
-          ]
-        );
+        : $this->searchMemory()->getEditLink($this->searchClassId, 'removeAllFilters', 1);
   ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
