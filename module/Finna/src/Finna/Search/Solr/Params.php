@@ -429,7 +429,6 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         $from = $to = null;
-        $filters = $this->getFilters();
         $found = false;
 
         // Date range filter
@@ -657,8 +656,8 @@ class Params extends \VuFind\Search\Solr\Params
             $displayText .= $to ? " $ndash $to" : '';
         }
 
-        $displayText
-            = $this->authorityHelper->formatFacet($field, $displayText);
+/* TODO FIX       $displayText
+            = $this->authorityHelper->formatFacet($field, $displayText);*/
         return compact('value', 'displayText', 'field', 'operator');
     }
 
