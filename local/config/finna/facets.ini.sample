@@ -253,3 +253,6 @@ facet_limit      = -1
 [Geographical]
 ;Map selection enabled?
 ;map_selection = ""
+
+[ExtraFacetLabels]
+author2_id_role_str_mv = Author role
