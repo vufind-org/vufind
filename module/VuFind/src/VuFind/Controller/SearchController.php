@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Mail as MailException;
+use VuFind\Search\Factory\UrlQueryHelperFactory;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -49,6 +50,59 @@ class SearchController extends AbstractSolrSearch
     {
         $this->searchClassId = 'SolrCollection';
         return $this->facetListAction();
+    }
+
+    /**
+     * Edit search memory action.
+     *
+     * @return mixed
+     */
+    public function editmemoryAction()
+    {
+        // Get the user's referer, with the home page as a fallback; we'll
+        // redirect here after the work is done.
+        $from = $this->getRequest()->getServer()->get('HTTP_REFERER')
+            ?? $this->url()->fromRoute('home');
+
+        // Get parameters:
+        $searchClassId = $this->params()
+            ->fromQuery('searchClassId', DEFAULT_SEARCH_BACKEND);
+        $removeAllFilters = $this->params()->fromQuery('removeAllFilters');
+        $removeFacet = $this->params()->fromQuery('removeFacet');
+        $removeFilter = $this->params()->fromQuery('removeFilter');
+
+        // Retrieve and manipulate the parameters:
+        $searchHelper = $this->getViewRenderer()->plugin('searchMemory');
+        $params = $searchHelper->getLastSearchParams($searchClassId);
+        $factory = new UrlQueryHelperFactory();
+        $initialParams = $factory->fromParams($params);
+
+        if ($removeAllFilters) {
+            $defaultFilters = $params->getOptions()->getDefaultFilters();
+            $query = $initialParams->removeAllFilters();
+            foreach ($defaultFilters as $filter) {
+                $query = $query->addFilter($filter);
+            }
+        } elseif ($removeFacet) {
+            $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
+            extract($removeFacet + $defaults);
+            $query = $initialParams->removeFacet($field, $value, $operator);
+        } elseif ($removeFilter) {
+            $query = $initialParams->removeFilter($removeFilter);
+        } else {
+            $query = null;
+        }
+
+        // Remember the altered parameters:
+        if ($query) {
+            $base = $this->url()
+                ->fromRoute($params->getOptions()->getSearchAction());
+            $this->getSearchMemory()
+                ->rememberSearch($base . $query->getParams(false));
+        }
+
+        // Send the user back where they came from:
+        return $this->redirect()->toUrl($from);
     }
 
     /**
