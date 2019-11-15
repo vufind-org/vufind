@@ -238,24 +238,24 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
 
         $this->results = $results;
 
-        // empty searches such as New Items will return blank
+        // Empty searches such as New Items will return blank
         if ($this->lookfor == null) {
             return;
         }
 
-        // check result limit before proceeding...
+        // Check result limit before proceeding...
         if ($this->resultLimit > 0
             && $this->resultLimit < $results->getResultTotal()
         ) {
             return;
         }
 
-        // see if we can add main headings matching use_for/see_also fields...
+        // See if we can add main headings matching use_for/see_also fields...
         if ($this->isModeActive('usefor')) {
             $this->addUseForHeadings();
         }
 
-        // see if we can add see-also references associated with main headings...
+        // See if we can add see-also references associated with main headings...
         if ($this->isModeActive('seealso')) {
             $this->addSeeAlsoReferences();
         }
@@ -294,8 +294,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
                 return [];
             }
 
-            $roles
-                = $facets[AuthorityHelper::AUTHOR_ID_ROLE_FACET]['list'] ?? [];
+            $roles = $facets[AuthorityHelper::AUTHOR_ID_ROLE_FACET]['list'] ?? [];
             if ($this->authorityHelper) {
                 foreach ($roles as &$role) {
                     $authorityInfo = $this->authorityHelper->formatFacet(
@@ -303,8 +302,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
                     );
                     $role['displayText'] = $authorityInfo['displayText'];
                     $role['role'] = $authorityInfo['role'];
-                    $role['enabled']
-                        = in_array($role['value'], $authorIdFilters);
+                    $role['enabled'] = in_array($role['value'], $authorIdFilters);
                 }
             }
         } catch (RequestErrorException $e) {
