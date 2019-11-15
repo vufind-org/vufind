@@ -112,11 +112,12 @@
 
 <?php if ($hasDefaultsApplied || $filterCount > 0): ?>
   <?php
-    $resetLink = $onlyDefaultsApplied
-      ? null
-      : isset($urlQuery)
+    $resetLink = null;
+    if (!$onlyDefaultsApplied) {
+      $resetLink = isset($urlQuery)
         ? $urlQuery->removeAllFilters()->resetDefaultFilters()
         : $this->searchMemory()->getEditLink($this->searchClassId, 'removeAllFilters', 1);
+    }
   ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">

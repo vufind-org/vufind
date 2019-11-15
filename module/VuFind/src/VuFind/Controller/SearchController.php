@@ -78,7 +78,11 @@ class SearchController extends AbstractSolrSearch
         $initialParams = $factory->fromParams($params);
 
         if ($removeAllFilters) {
+            $defaultFilters = $params->getOptions()->getDefaultFilters();
             $query = $initialParams->removeAllFilters();
+            foreach ($defaultFilters as $filter) {
+                $query = $query->addFilter($filter);
+            }
         } elseif ($removeFacet) {
             $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
             extract($removeFacet + $defaults);
