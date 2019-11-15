@@ -203,7 +203,7 @@
           $firstDueStr = $row['duedate'];
         }
       }
-      $statuses[$this->translate('status_' . $row['status'], null, $row['status'])] = 1;
+      $statuses[$this->translate('status_' . $row['status'], null, $this->translate($row['status']))] = 1;
       if (isset($row['branch'])) {
         $branches = true;
       } else {
@@ -379,7 +379,7 @@
             </div>
           <?php else: ?>
             <?php /* Begin Unavailable Items (Recalls) */ ?>
-            <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove" aria-hidden="true"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
+            <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove" aria-hidden="true"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $this->translate($row['status']))?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
             <?php if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><?php endif; ?>
             <?php if (isset($row['duedate']) && $row['duedate']): ?>
               &ndash;&nbsp;<span class="small"><?=$this->transEsc('Due')?>:&nbsp;<?=$this->escapeHtml($row['duedate'])?></span>
