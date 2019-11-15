@@ -656,8 +656,6 @@ class Params extends \VuFind\Search\Solr\Params
             $displayText .= $to ? " $ndash $to" : '';
         }
 
-/* TODO FIX       $displayText
-            = $this->authorityHelper->formatFacet($field, $displayText);*/
         return compact('value', 'displayText', 'field', 'operator');
     }
 
