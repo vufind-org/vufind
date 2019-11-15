@@ -348,7 +348,7 @@ class Generator
         // since performance is important and we only need the identifier.
         if ('*' === $cursorMark) {
             $recordFactory = function ($data) {
-                return new SimpleRecord($data);
+                return new \VuFindSearch\Response\SimpleRecord($data);
             };
             $collectionFactory = new RecordCollectionFactory($recordFactory);
             $backend->setRecordCollectionFactory($collectionFactory);
@@ -359,7 +359,6 @@ class Generator
         $params = new ParamBag(
             [
                 'q' => '*:*',
-                'fl' => $key,
                 'rows' => $this->countPerPage,
                 'start' => 0, // Always 0 when using a cursorMark
                 'wt' => 'json',
@@ -370,13 +369,12 @@ class Generator
                 'cursorMark' => $cursorMark
             ]
         );
-        $results = $this->searchService->search(
+        $results = $this->searchService->getIds(
             $backend->getIdentifier(),
             new Query('*:*'),
             0,
             $this->countPerPage,
-            $params,
-            'getids'
+            $params
         );
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

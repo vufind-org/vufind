@@ -1,6 +1,6 @@
 <?php
 /**
- * A minimal record class for the sitemap generator
+ * A minimal record class for wrapping an array of fields
  *
  * PHP version 7
  *
@@ -25,10 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Sitemap;
+namespace VuFindSearch\Response;
 
 /**
- * A minimal record class for the sitemap generator
+ * A minimal record class for wrapping an array of fields
  *
  * @category VuFind
  * @package  Sitemap
@@ -36,7 +36,7 @@ namespace VuFind\Sitemap;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SimpleRecord implements \VuFindSearch\Response\RecordInterface
+class SimpleRecord implements RecordInterface
 {
     /**
      * Source backend identifier
