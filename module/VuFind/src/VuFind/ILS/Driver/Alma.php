@@ -881,25 +881,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $holdList = [];
         foreach ($xml as $request) {
-            $lastInterestDate = $request->last_interest_date
-                ? $this->dateConverter->convertToDisplayDate(
-                    'Y-m-dT', (string)$request->last_interest_date
-                ) : null;
-            $available = (string)$request->request_status === 'On Hold Shelf';
-            if ($available) {
-                $lastPickupDate = $request->expiry_date
-                    ? $this->dateConverter->convertToDisplayDate(
-                        'Y-m-dT', (string)$request->expiry_date
-                    ) : null;
-            }
             $holdList[] = [
-                'create' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-dT', (string)$request->request_date
-                ),
-                'expire' => $lastInterestDate,
+                'create' => (string)$request->request_date,
+                'expire' => (string)$request->last_interest_date,
                 'id' => (string)$request->request_id,
-                'available' => $available,
-                'last_pickup_date' => $lastPickupDate,
+                'in_transit' => (string)$request->request_status !== 'On Hold Shelf',
                 'item_id' => (string)$request->mms_id,
                 'location' => (string)$request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
