@@ -677,6 +677,80 @@ class Folio extends AbstractAPI implements
         }
     }
 
+    /**
+     * Get Departments
+     *
+     * Obtain a list of departments for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = dept. ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        $response = $this->makeRequest(
+            'GET',
+            '/coursereserves/departments',
+            []
+        );
+        $departments = json_decode($response->getBody())['departments'] ?? [];
+        $retVal = [];
+        foreach ($departments as $department) {
+            $retVal[$department['id']] = $department['name'];
+        }
+        return $retVal;
+    }
+
+    /**
+     * Get Instructors
+     *
+     * Obtain a list of instructors for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        // TODO: API does not currently support full instructor retrieval
+        return [];
+    }
+
+    /**
+     * Get Courses
+     *
+     * Obtain a list of courses for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        $response = $this->makeRequest(
+            'GET',
+            '/coursereserves/courses',
+            []
+        );
+        $courses = json_decode($response->getBody())['courses'] ?? [];
+        $retVal = [];
+        foreach ($courses as $course) {
+            $retVal[$course['id']] = $course['name'];
+        }
+        return $retVal;
+    }
+
+    /**
+     * Find Reserves
+     *
+     * Obtain information on course reserves.
+     *
+     * @param string $course ID from getCourses (empty string to match all)
+     * @param string $inst   ID from getInstructors (empty string to match all)
+     * @param string $dept   ID from getDepartments (empty string to match all)
+     *
+     * @return mixed An array of associative arrays representing reserve items.
+     */
+    public function findReserves($courseID, $instructorID, $departmentID)
+    {
+        // TODO
+        return [];
+    }
+
     // @codingStandardsIgnoreStart
     /** NOT FINISHED BELOW THIS LINE **/
 
@@ -709,27 +783,6 @@ class Folio extends AbstractAPI implements
     public function getPurchaseHistory($bibID)
     {
         return [];
-    }
-
-    /**
-     * This method returns items that are on reserve for the specified course,
-     * instructor and/or department.
-     *
-     *     Input: CourseID, InstructorID, DepartmentID (these values come from the
-     * corresponding getCourses, getInstructors and getDepartments methods; any of
-     * these three filters may be set to a blank string to skip)
-     *     Output: An array of associative arrays representing reserve items. Keys:
-     *         BIB_ID - The record ID of the current reserve item.
-     *         COURSE_ID - The course ID associated with the
-     * current reserve item, if any (required when using Solr-based reserves).
-     *         DEPARTMENT_ID - The department ID associated with the current
-     * reserve item, if any (required when using Solr-based reserves).
-     *         INSTRUCTOR_ID - The instructor ID associated with the current
-     * reserve item, if any (required when using Solr-based reserves).
-     *
-     */
-    public function findReserves($courseID, $instructorID, $departmentID)
-    {
     }
 
     /**
