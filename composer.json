@@ -26,7 +26,7 @@
         "ocramius/proxy-manager": "2.1.1",
         "oyejorge/less.php": "1.7.0.14",
         "pear/archive_tar": "^1.4",
-        "pear/file_marc": "1.2.0",
+        "pear/file_marc": "1.4.1",
         "pear/http_request2": "2.3.0",
         "pear/validate_ispn": "dev-master",
         "phing/phing": "2.16.1",
