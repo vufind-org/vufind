@@ -815,8 +815,6 @@ class Folio extends AbstractAPI implements
      */
     public function findReserves($course, $inst, $dept)
     {
-        // TODO -- account for $course/$inst/$dept filters!
-
         $retVal = [];
         $limit = 1000; // how many records to retrieve at once
         $offset = 0;
@@ -863,6 +861,16 @@ class Folio extends AbstractAPI implements
             // in a full iteration, something has gone wrong, and we should stop
             // so we don't loop forever!
         } while ($total && $postCount < $total && $preCount != $postCount);
+
+        // If the user has requested a filter, apply it now:
+        if (!empty($course) || !empty($inst) || !empty($dept)) {
+            $filter = function ($value) use ($course, $inst, $dept) {
+                return (empty($course) || $course == $value['COURSE_ID'])
+                    && (empty($inst) || $inst == $value['INSTRUCTOR_ID'])
+                    && (empty($dept) || $dept == $value['DEPARTMENT_ID']);
+            };
+            return array_filter($retVal, $filter);
+        }
         return $retVal;
     }
 
