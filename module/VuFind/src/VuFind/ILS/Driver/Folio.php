@@ -700,7 +700,11 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             $total = $json->totalRecords ?? 0;
             $preCount = count($retVal);
-            foreach ($json->$type ?? [] as $item) {
+            // The JSON response element we want will correspond to the last element
+            // of the incoming type value (it may have other parts in some cases):
+            $typeParts = explode('/', $type);
+            $responseKey = array_pop($typeParts);
+            foreach ($json->$responseKey ?? [] as $item) {
                 $retVal[$item->id] = $item->name;
             }
             $postCount = count($retVal);
@@ -750,6 +754,25 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a course listing ID, get an array of associated courses.
+     *
+     * @param string $courseListingId Course listing ID
+     *
+     * @return array
+     */
+    protected function getCourseIds($courseListingId)
+    {
+        $values = empty($courseListingId)
+            ? []
+            : $this->getCourseResourceList(
+                'courselistings/' . $courseListingId . '/courses'
+            );
+        // Return an array with null in it if we can't find any values, because
+        // we want to loop at least once to build our course reserves response.
+        return empty($values) ? [null] : array_keys($values);
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -784,13 +807,16 @@ class Folio extends AbstractAPI implements
                 } catch (\Exception $e) {
                     $bibId = null;
                 }
+                $courseIds = $this->getCourseIds($item->courseListingId ?? null);
                 if ($bibId !== null) {
-                    $retVal[] = [
-                        'BIB_ID' => $bibId,
-                        'COURSE_ID' => null, // TODO
-                        'DEPARTMENT_ID' => null, // TODO
-                        'INSTRUCTOR_ID' => null, // TODO
-                    ];
+                    foreach ($courseIds as $courseId) {
+                        $retVal[] = [
+                            'BIB_ID' => $bibId,
+                            'COURSE_ID' => $courseId,
+                            'DEPARTMENT_ID' => null, // TODO
+                            'INSTRUCTOR_ID' => null, // TODO
+                        ];
+                    }
                 }
             }
             $postCount = count($retVal);
