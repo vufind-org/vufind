@@ -762,8 +762,44 @@ class Folio extends AbstractAPI implements
      */
     public function findReserves($course, $inst, $dept)
     {
-        // TODO
-        return [];
+        // TODO -- account for $course/$inst/$dept filters!
+
+        $retVal = [];
+        $limit = 1000; // how many records to retrieve at once
+        $offset = 0;
+
+        // Results can be paginated, so let's loop until we've gotten everything:
+        do {
+            $response = $this->makeRequest(
+                'GET',
+                '/coursereserves/reserves',
+                compact('offset', 'limit')
+            );
+            $json = json_decode($response->getBody());
+            $total = $json->totalRecords ?? 0;
+            $preCount = count($retVal);
+            foreach ($json->reserves ?? [] as $item) {
+                try {
+                    $bibId = $this->getBibId(null, null, $item->itemId);
+                } catch (\Exception $e) {
+                    $bibId = null;
+                }
+                if ($bibId !== null) {
+                    $retVal[] = [
+                        'BIB_ID' => $bibId,
+                        'COURSE_ID' => null, // TODO
+                        'DEPARTMENT_ID' => null, // TODO
+                        'INSTRUCTOR_ID' => null, // TODO
+                    ];
+                }
+            }
+            $postCount = count($retVal);
+            $offset += $limit;
+            // Loop has a safety valve: if the count of records doesn't change
+            // in a full iteration, something has gone wrong, and we should stop
+            // so we don't loop forever!
+        } while ($total && $postCount < $total && $preCount != $postCount);
+        return $retVal;
     }
 
     // @codingStandardsIgnoreStart
