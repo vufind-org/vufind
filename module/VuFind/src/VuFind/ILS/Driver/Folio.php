@@ -760,7 +760,7 @@ class Folio extends AbstractAPI implements
      *
      * @return mixed An array of associative arrays representing reserve items.
      */
-    public function findReserves($courseID, $instructorID, $departmentID)
+    public function findReserves($course, $inst, $dept)
     {
         // TODO
         return [];
