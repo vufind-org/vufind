@@ -691,10 +691,10 @@ class Folio extends AbstractAPI implements
             '/coursereserves/departments',
             []
         );
-        $departments = json_decode($response->getBody())['departments'] ?? [];
+        $departments = json_decode($response->getBody())->departments ?? [];
         $retVal = [];
         foreach ($departments as $department) {
-            $retVal[$department['id']] = $department['name'];
+            $retVal[$department->id] = $department->name;
         }
         return $retVal;
     }
@@ -726,10 +726,10 @@ class Folio extends AbstractAPI implements
             '/coursereserves/courses',
             []
         );
-        $courses = json_decode($response->getBody())['courses'] ?? [];
+        $courses = json_decode($response->getBody())->courses ?? [];
         $retVal = [];
         foreach ($courses as $course) {
-            $retVal[$course['id']] = $course['name'];
+            $retVal[$course->id] = $course->name;
         }
         return $retVal;
     }
