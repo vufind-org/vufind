@@ -793,7 +793,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 || $attributes->{$attribute} == $requiredValue)
             ) {
                 $authId = isset($agent->AgentIdentifier)
-                    ? (string)$agent->AgentIdentifier->IDTypeName . ':' .
+                    ? (string)$agent->AgentIdentifier->IDTypeName . '_' .
                     (string)$agent->AgentIdentifier->IDValue
                     : null;
                 $authType = (string)$agent->AgentIdentifier->IDTypeName ?? null;
@@ -913,7 +913,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             }
 
             $authType = (string)$agent->AgentIdentifier->IDTypeName;
-            $authId = (string)$agent->AgentIdentifier->IDTypeName . ':' .
+            $authId = (string)$agent->AgentIdentifier->IDTypeName . '_' .
                 (string)$agent->AgentIdentifier->IDValue;
 
             ++$idx;
