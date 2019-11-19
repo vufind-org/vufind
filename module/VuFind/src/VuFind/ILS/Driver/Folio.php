@@ -678,16 +678,19 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Obtain a list of course resources, creating an id => name associative array.
+     * Obtain a list of course resources, creating an id => value associative array.
      *
      * @param string $type        Type of resource to retrieve from the API.
      * @param string $responseKey Key containing useful values in response (defaults
      * to $type if unspecified)
+     * @param string $valueKey    Key containing value to extract from response
+     * (defaults to 'name')
      *
      * @return array
      */
-    protected function getCourseResourceList($type, $responseKey = null)
-    {
+    protected function getCourseResourceList($type, $responseKey = null,
+        $valueKey = 'name'
+    ) {
         $retVal = [];
         $limit = 1000; // how many records to retrieve at once
         $offset = 0;
@@ -703,7 +706,7 @@ class Folio extends AbstractAPI implements
             $total = $json->totalRecords ?? 0;
             $preCount = count($retVal);
             foreach ($json->{$responseKey ?? $type} ?? [] as $item) {
-                $retVal[$item->id] = $item->name ?? '';
+                $retVal[$item->id] = $item->$valueKey ?? '';
             }
             $postCount = count($retVal);
             $offset += $limit;
@@ -766,12 +769,33 @@ class Folio extends AbstractAPI implements
      *
      * @return array
      */
-    protected function getCourseIds($courseListingId)
+    protected function getCourseDetails($courseListingId)
     {
         $values = empty($courseListingId)
             ? []
             : $this->getCourseResourceList(
-                'courselistings/' . $courseListingId . '/courses', 'courses'
+                'courselistings/' . $courseListingId . '/courses',
+                'courses',
+                'departmentId'
+            );
+        // Return an array with empty values in it if we can't find any values,
+        // because we want to loop at least once to build our reserves response.
+        return empty($values) ? ['' => ''] : $values;
+    }
+
+    /**
+     * Given a course listing ID, get an array of associated instructors.
+     *
+     * @param string $courseListingId Course listing ID
+     *
+     * @return array
+     */
+    protected function getInstructorIds($courseListingId)
+    {
+        $values = empty($courseListingId)
+            ? []
+            : $this->getCourseResourceList(
+                'courselistings/' . $courseListingId . '/instructors', 'instructors'
             );
         // Return an array with null in it if we can't find any values, because
         // we want to loop at least once to build our course reserves response.
@@ -813,15 +837,23 @@ class Folio extends AbstractAPI implements
                 } catch (\Exception $e) {
                     $bibId = null;
                 }
-                $courseIds = $this->getCourseIds($item->courseListingId ?? null);
                 if ($bibId !== null) {
-                    foreach ($courseIds as $courseId) {
-                        $retVal[] = [
-                            'BIB_ID' => $bibId,
-                            'COURSE_ID' => $courseId,
-                            'DEPARTMENT_ID' => null, // TODO
-                            'INSTRUCTOR_ID' => null, // TODO
-                        ];
+                    $courseData = $this->getCourseDetails(
+                        $item->courseListingId ?? null
+                    );
+                    $instructorIds = $this->getInstructorIds(
+                        $item->courseListingId ?? null
+                    );
+                    foreach ($courseData as $courseId => $departmentId) {
+                        foreach ($instructorIds as $instructorId) {
+                            $retVal[] = [
+                                'BIB_ID' => $bibId,
+                                'COURSE_ID' => $courseId == '' ? null : $courseId,
+                                'DEPARTMENT_ID' => $departmentId == ''
+                                    ? null : $departmentId,
+                                'INSTRUCTOR_ID' => $instructorId,
+                            ];
+                        }
                     }
                 }
             }
