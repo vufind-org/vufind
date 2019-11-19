@@ -156,7 +156,7 @@ class Bootstrapper
     protected function initSystemStatus()
     {
         // If the system is unavailable, forward to a different place:
-        if (isset($this->config->System->available)
+        if (!Console::isConsole() && isset($this->config->System->available)
             && !$this->config->System->available
         ) {
             $callback = function ($e) {
