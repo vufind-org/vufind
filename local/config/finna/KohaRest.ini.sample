@@ -85,10 +85,15 @@ display_full_call_number = true
 ;use_non_display_call_number = true
 ; Whether to display title hold links in results list
 display_title_hold_in_results = true
-; Whether to use holding records
+; Whether to use holding records. Default is false.
 use_holding_records = true
-; Whether to use serial subscriptions
+; Whether to use serial subscriptions. Default is false.
 use_serial_subscriptions = true
+; How the list of serials is filtered. Valid settings are:
+;   empty = No filtering, display all (default)
+;   "last year" = Display only latest received year
+;   "current+1" = Current and previous years
+;serial_subscription_filter = ""
 ; Whether to group holdings by location in addition to branch. Default is false.
 ;group_by_location = true
 ; Fields to include in notes. Default is "852z".

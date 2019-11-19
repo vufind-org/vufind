@@ -1556,16 +1556,37 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             if (!empty($serialsResult['subscriptions'])) {
                 $currentYear = date('Y');
                 $lastYear = $currentYear - 1;
+                $filter = $this->config['Holdings']['serial_subscription_filter']
+                    ?? '';
+                $yearFilter = 'current+1' === $filter;
                 foreach ($serialsResult['subscriptions'] as $subscription) {
                     $i++;
                     $seqs = [];
+                    $latestReceived = 0;
+                    if ('last year' === $filter) {
+                        foreach ($subscription['issues'] as $issue) {
+                            if (!$issue['received']) {
+                                continue;
+                            }
+                            list($year) = explode('-', $issue['publisheddate']);
+                            if ($year > $latestReceived) {
+                                $latestReceived = $year;
+                            }
+                        }
+                    }
                     foreach ($subscription['issues'] as $issue) {
                         if (!$issue['received']) {
                             continue;
                         }
                         list($year) = explode('-', $issue['publisheddate']);
-                        // Limit to current and last year
-                        if ($year && $year != $currentYear && $year != $lastYear) {
+                        if ($yearFilter) {
+                            // Limit to current and last year
+                            if ($year && $year != $currentYear
+                                && $year != $lastYear
+                            ) {
+                                continue;
+                            }
+                        } elseif ($latestReceived && $year != $latestReceived) {
                             continue;
                         }
                         $seq = $issue['serialseq'];
