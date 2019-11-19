@@ -1554,11 +1554,18 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
             // Turn the results into a keyed array
             if (!empty($serialsResult['subscriptions'])) {
+                $currentYear = date('Y');
+                $lastYear = $currentYear - 1;
                 foreach ($serialsResult['subscriptions'] as $subscription) {
                     $i++;
                     $seqs = [];
                     foreach ($subscription['issues'] as $issue) {
                         if (!$issue['received']) {
+                            continue;
+                        }
+                        list($year) = explode('-', $issue['publisheddate']);
+                        // Limit to current and last year
+                        if ($year && $year != $currentYear && $year != $lastYear) {
                             continue;
                         }
                         $seq = $issue['serialseq'];
@@ -1579,9 +1586,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     $entry = $this->createSerialEntry($subscription, $i);
 
                     foreach ($statuses as &$status) {
-                        if ($status['location'] === $entry['location']
-                            && $status['callnumber'] === $entry['callnumber']
-                        ) {
+                        if ($status['location'] === $entry['location']) {
                             $status['purchase_history'] = $issues;
                             continue 2;
                         }
