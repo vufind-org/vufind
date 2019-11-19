@@ -678,6 +678,41 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Obtain a list of course resources, creating an id => name associative array.
+     *
+     * @param string $type Type of resource to retrieve from the API.
+     *
+     * @return array
+     */
+    protected function getCourseResourceList($type)
+    {
+        $retVal = [];
+        $limit = 1000; // how many records to retrieve at once
+        $offset = 0;
+
+        // Results can be paginated, so let's loop until we've gotten everything:
+        do {
+            $response = $this->makeRequest(
+                'GET',
+                '/coursereserves/' . $type,
+                compact('offset', 'limit')
+            );
+            $json = json_decode($response->getBody());
+            $total = $json->totalRecords ?? 0;
+            $preCount = count($retVal);
+            foreach ($json->$type ?? [] as $item) {
+                $retVal[$item->id] = $item->name;
+            }
+            $postCount = count($retVal);
+            $offset += $limit;
+            // Loop has a safety valve: if the count of records doesn't change
+            // in a full iteration, something has gone wrong, and we should stop
+            // so we don't loop forever!
+        } while ($total && $postCount < $total && $preCount != $postCount);
+        return $retVal;
+    }
+
+    /**
      * Get Departments
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -686,17 +721,7 @@ class Folio extends AbstractAPI implements
      */
     public function getDepartments()
     {
-        $response = $this->makeRequest(
-            'GET',
-            '/coursereserves/departments',
-            []
-        );
-        $departments = json_decode($response->getBody())->departments ?? [];
-        $retVal = [];
-        foreach ($departments as $department) {
-            $retVal[$department->id] = $department->name;
-        }
-        return $retVal;
+        return $this->getCourseResourceList('departments');
     }
 
     /**
@@ -721,17 +746,7 @@ class Folio extends AbstractAPI implements
      */
     public function getCourses()
     {
-        $response = $this->makeRequest(
-            'GET',
-            '/coursereserves/courses',
-            []
-        );
-        $courses = json_decode($response->getBody())->courses ?? [];
-        $retVal = [];
-        foreach ($courses as $course) {
-            $retVal[$course->id] = $course->name;
-        }
-        return $retVal;
+        return $this->getCourseResourceList('courses');
     }
 
     /**
