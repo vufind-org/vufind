@@ -680,11 +680,13 @@ class Folio extends AbstractAPI implements
     /**
      * Obtain a list of course resources, creating an id => name associative array.
      *
-     * @param string $type Type of resource to retrieve from the API.
+     * @param string $type        Type of resource to retrieve from the API.
+     * @param string $responseKey Key containing useful values in response (defaults
+     * to $type if unspecified)
      *
      * @return array
      */
-    protected function getCourseResourceList($type)
+    protected function getCourseResourceList($type, $responseKey = null)
     {
         $retVal = [];
         $limit = 1000; // how many records to retrieve at once
@@ -700,12 +702,8 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             $total = $json->totalRecords ?? 0;
             $preCount = count($retVal);
-            // The JSON response element we want will correspond to the last element
-            // of the incoming type value (it may have other parts in some cases):
-            $typeParts = explode('/', $type);
-            $responseKey = array_pop($typeParts);
-            foreach ($json->$responseKey ?? [] as $item) {
-                $retVal[$item->id] = $item->name;
+            foreach ($json->{$responseKey ?? $type} ?? [] as $item) {
+                $retVal[$item->id] = $item->name ?? '';
             }
             $postCount = count($retVal);
             $offset += $limit;
@@ -737,8 +735,16 @@ class Folio extends AbstractAPI implements
      */
     public function getInstructors()
     {
-        // TODO: API does not currently support full instructor retrieval
-        return [];
+        $retVal = [];
+        $ids = array_keys(
+            $this->getCourseResourceList('courselistings', 'courseListings')
+        );
+        foreach ($ids as $id) {
+            $retVal += $this->getCourseResourceList(
+                'courselistings/' . $id . '/instructors', 'instructors'
+            );
+        }
+        return $retVal;
     }
 
     /**
@@ -765,7 +771,7 @@ class Folio extends AbstractAPI implements
         $values = empty($courseListingId)
             ? []
             : $this->getCourseResourceList(
-                'courselistings/' . $courseListingId . '/courses'
+                'courselistings/' . $courseListingId . '/courses', 'courses'
             );
         // Return an array with null in it if we can't find any values, because
         // we want to loop at least once to build our course reserves response.
