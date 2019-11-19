@@ -57,7 +57,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
         parent::__construct($sm);
-
     }
 
 
@@ -66,58 +65,64 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
-    protected function selectSynonymAnalyzer() {
-        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
-        $current_lang = $this->getTranslatorLocale();
-        $analyzer = 'synonyms_' . $current_lang;
-        return $analyzer;
+    protected function selectSynonymAnalyzer($synonyms) {
+        if ($synonyms == "all")
+            return 'synonyms_all';
+        if ($synonyms == "lang") {
+            $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+            $current_lang = $this->getTranslatorLocale();
+            $analyzer = 'synonyms_' . $current_lang;
+            return $analyzer;
+        }
+        return 'fulltext_analyzer';
     }
 
 
-    protected function getQueryParams($doc_id, $search_query, $verbose, $paged_results) {
-         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
-         $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
-         $index = $paged_results ? $this->page_index : $this->index;
-         $synonym_analyzer = $this->selectSynonymAnalyzer();
+    protected function getQueryParams($doc_id, $search_query, $verbose, $synonyms, $paged_results) {
+        $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
+        $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
+        $index = $paged_results ? $this->page_index : $this->index;
+        $synonym_analyzer = $this->selectSynonymAnalyzer($synonyms);
 
-         $params = [
-             'index' => $index,
-             'body' => [
-                 '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
-                 'size' => '100',
-                 'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
-                 'query' => [
-                     'bool' => [
-                         'must' => [
-                             [ $is_phrase_query ? 'match_phrase' : 'match' => [
-                                                                                self::FIELD => [ 'query' => $search_query,
-                                                                                                 'analyzer' => $synonym_analyzer ]
-                                                                              ],
-                             ],
-                             [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                          ]
-                     ]
-                 ],
-                 'highlight' => [
-                     'fields' => [
-                          self::FIELD => [
-                               'type' => 'unified',
-                               'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
-                               'phrase_limit' => self::PHRASE_LIMIT,
-                               'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For oriented approach get whole page */
-                               'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
-                           ]
-                      ]
-                 ]
-             ]
+        $params = [
+            'index' => $index,
+            'body' => [
+                '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
+                'size' => '100',
+                'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [ $is_phrase_query ? 'match_phrase' : 'match' => [
+                                                                               self::FIELD => [ 'query' => $search_query,
+                                                                                                'analyzer' => $synonym_analyzer ]
+                                                                             ],
+                            ],
+                            [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
+                         ]
+                    ]
+                ],
+                'highlight' => [
+                    'fields' => [
+                        self::FIELD => [
+                            'type' => 'unified',
+                            'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
+                            'phrase_limit' => self::PHRASE_LIMIT,
+                            'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For oriented approach get whole page */
+                            'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
+                        ]
+                    ]
+                ]
+            ]
         ];
         return $params;
     }
 
 
-    protected function getFulltext($doc_id, $search_query, $verbose) {
+    protected function getFulltext($doc_id, $search_query, $verbose, $synonyms) {
         // Is this an ordinary query or a phrase query (surrounded by quotes) ?
-        $params = $this->getQueryParams($doc_id, $search_query, $verbose, false /*return paged results*/);
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose,
+                                        $synonyms , false /*return paged results*/);
         $response = $this->es->search($params);
         $snippets = $this->extractSnippets($response);
         if ($snippets == false)
@@ -127,8 +132,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
-    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose) {
-        $params = $this->getQueryParams($doc_id, $search_query, $verbose, true);
+    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms) {
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, $synonyms, true);
         $response = $this->es->search($params);
         $snippets = $this->extractSnippets($response);
         if ($snippets == false)
@@ -266,10 +271,11 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 'status' => 'EMPTY QUERY'
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
-        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose);
+        $synonyms = isset($parameters['synonyms']) && preg_match('/lang|all/', $parameters['synonyms']) ? $parameters['synonyms'] : "";
+        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms);
         if (empty($snippets)) {
             // Use non-paged text as fallback
-            $snippets = $this->getFulltext($doc_id, $search_query, $verbose);
+            $snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms);
             if (empty($snippets)) {
                 return new JsonModel([
                      'status' => 'NO RESULTS'

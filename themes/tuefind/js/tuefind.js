@@ -43,11 +43,12 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
-    GetFulltextSnippets: function(url, doc_id, query, verbose = false) {
-        // Try to determine status
+    GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "") {
+        var valid_synonym_terms = new RegExp('lang|all');
+        synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
         $.ajax({
             type: "GET",
-            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : ""),
+            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : "") + (synonyms ? "&synonyms=" + synonyms : ""),
             dataType: "json",
             success: function (json) {
                 $(document).ready(function () {
