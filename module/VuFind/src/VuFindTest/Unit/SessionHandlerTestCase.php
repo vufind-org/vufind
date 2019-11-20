@@ -63,6 +63,7 @@ abstract class SessionHandlerTestCase extends TestCase
         }
         return $this->tables;
     }
+
     /**
      * Set up mock databases for a session handler.
      *
