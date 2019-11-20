@@ -259,6 +259,8 @@ class Generator
         $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
         $recordCount = 0;
 
+        $this->setupBackend($backend);
+
         while (true) {
             // Get IDs and break out of the loop if we've run out:
             $result = $this->getIdsFromBackend($backend, $currentOffset);
@@ -292,6 +294,49 @@ class Generator
             $currentPage++;
         }
         return $currentPage;
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackend(Backend $backend)
+    {
+        $method = $this->retrievalMode == 'terms'
+            ? 'setupBackendUsingTerms' : 'setupBackendUsingCursorMark';
+        return $this->$method($backend);
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingTerms(Backend $backend)
+    {
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingCursorMark(Backend $backend)
+    {
+        // Set up the record factory. We use a very simple factory since performance
+        // is important and we only need the identifier.
+        $recordFactory = function ($data) {
+            return new \VuFindSearch\Response\SimpleRecord($data);
+        };
+        $collectionFactory = new RecordCollectionFactory($recordFactory);
+        $backend->setRecordCollectionFactory($collectionFactory);
     }
 
     /**
@@ -343,16 +388,6 @@ class Generator
             return ['ids' => [], 'cursorMark' => $cursorMark];
         }
         $prevCursorMark = $cursorMark;
-
-        // Set up the record factory on first call. We use a very simple factory
-        // since performance is important and we only need the identifier.
-        if ('*' === $cursorMark) {
-            $recordFactory = function ($data) {
-                return new \VuFindSearch\Response\SimpleRecord($data);
-            };
-            $collectionFactory = new RecordCollectionFactory($recordFactory);
-            $backend->setRecordCollectionFactory($collectionFactory);
-        }
 
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();

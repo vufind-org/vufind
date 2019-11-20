@@ -40,6 +40,7 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
+            'VuFind\Sitemap\Generator' => 'VuFind\Sitemap\GeneratorFactory',
             'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
         ],
     ],

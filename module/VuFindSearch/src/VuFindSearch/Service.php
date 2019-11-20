@@ -413,38 +413,6 @@ class Service
     }
 
     /**
-     * Perform a search and return a wrapped response.
-     *
-     * @param string              $backend Search backend identifier
-     * @param Query\AbstractQuery $query   Search query
-     * @param int                 $offset  Search offset
-     * @param int                 $limit   Search limit
-     * @param ParamBag            $params  Search backend parameters
-     * @param string              $context Event context
-     *
-     * @return RecordCollectionInterface
-     */
-    protected function performSearch($backend, Query\AbstractQuery $query,
-        $offset = 0, $limit = 20, ParamBag $params = null, $context = ''
-    ) {
-        $context ?: 'search';
-        $params  = $params ?: new ParamBag();
-        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
-        $backend  = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-        try {
-            $response = $backend->search($query, $offset, $limit, $params);
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
-    }
-
-    /**
      * Trigger the error event.
      *
      * @param BackendException $exception Error exception
