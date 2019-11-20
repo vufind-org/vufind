@@ -65,24 +65,11 @@ class Redis extends AbstractBase
      * @param Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(\Credis_Client $connection, Config $config = null)
     {
         parent::__construct($config);
-
-        // Set defaults if nothing set in config file.
-        $host = $config->redis_host ?? 'localhost';
-        $port = $config->redis_port ?? 6379;
-        $timeout = $config->redis_connection_timeout ?? 0.5;
-        $auth = $config->redis_auth ?? false;
-        $redisDb = $config->redis_db ?? 0;
         $this->redisVersion = (int)($config->redis_version ?? 3);
-
-        // Create Credis client, the connection is established lazily
-        $this->connection
-            = new \Credis_Client($host, $port, $timeout, '', $redisDb, $auth);
-        if ((bool)($config->redis_standalone ?? true)) {
-            $this->connection->forceStandalone();
-        }
+        $this->connection = $connection;
     }
 
     /**
