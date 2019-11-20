@@ -6,9 +6,11 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
 
-    $user = $this->auth()->isLoggedIn();
-
     $recordCount = $this->paginator ? $this->paginator->getTotalItemCount() : count($this->transactions ?? []);
+    $catalog = $this->ils();
+    $user = $this->auth()->isLoggedIn();
+    $patron = $user ? $this->auth()->getILSPatron() : false;
+    $purgeAllowed = $catalog->checkCapability('purgeTransactionHistory', $patron ? compact('patron') : []);
 ?>
 
 <!-- Leftside navigationbar -->
@@ -39,9 +41,11 @@
           <div class="text-right hidden-print right-control">
             <?=$this->render('search/controls/sort.phtml')?>
           </div>
-          <div class="hidden-print left-control">
-            <a class="btn btn-primary" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
-          </div>
+          <?php if ($purgeAllowed): ?>
+            <div class="hidden-print left-control">
+              <a class="btn btn-primary" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
+            </div>
+          <?php endif; ?>
           <div class="pagination-container">
             <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => $this->params]) : ''?>
           </div>

@@ -4,7 +4,6 @@ Uncomment in order to log the response time of AWS
 Uncomment in order to active verbose debug mode
 ;verbose = true
 
-
 [Catalog]
 arena_member = XXXXXXXXXXX
 
@@ -164,6 +163,18 @@ dueDateAlert = "none:email"
 ; By default due date reminder is disabled in Finna since the ILS does the job
 enabled = false
 
+; Transaction history settings
+;[getMyTransactionHistory]
+;max_results = 100
+;default_sort = "CHECK_OUT_DATE DESCENDING"
+
+;sort['CHECK_OUT_DATE DESCENDING'] = "sort_checkout_date_desc"
+;sort['CHECK_OUT_DATE ASCENDING'] = "sort_checkout_date_asc"
+;sort['CHECK_IN_DATE DESCENDING'] = "sort_return_date_desc"
+;sort['CHECK_IN_DATE ASCENDING'] = 'sort_return_date_asc'
+;sort['AUTHOR ASCENDING'] = 'sort_author'
+;sort['TITLE ASCENDING'] = 'sort_title'
+
 [onlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true
@@ -177,3 +188,9 @@ minimumFee = 65
 transactionMaxDuration = 15
 ; Currency
 currency = 'EUR'
+
+; valid value is 'driver'.
+[updateTransactionHistoryState]
+method = driver
+options[1] = loan_history_forever
+options[0] = loan_history_never

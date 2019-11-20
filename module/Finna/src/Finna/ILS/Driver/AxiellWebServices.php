@@ -47,6 +47,7 @@ use Zend\Db\Sql\Ddl\Column\Boolean;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -137,6 +138,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      * @var string
      */
     protected $loans_wsdl = '';
+
+    /**
+     * Wsdl file name or url for accessing the loansaurora section of aws
+     *
+     * @var string
+     */
+    protected $loansaurora_wsdl = '';
 
     /**
      * Wsdl file name or url for accessing the payment section of AWS
@@ -317,6 +325,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 = $this->getWsdlPath($this->config['Catalog']['loans_wsdl']);
         } else {
             throw new ILSException('loans_wsdl configuration needs to be set.');
+        }
+
+        if (isset($this->config['Catalog']['loansaurora_wsdl'])) {
+            $this->loansaurora_wsdl
+                = $this->getWsdlPath($this->config['Catalog']['loansaurora_wsdl']);
         }
 
         if (isset($this->config['Catalog']['payments_wsdl'])) {
@@ -1202,6 +1215,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $lastname = array_pop($names);
         $firstname = implode(' ', $names);
 
+        $loanHistoryEnabled = $info->isLoanHistoryEnabled ?? false;
+
+        /**
+         * Request an authentication id used in certain requests e.g:
+         * GetTransactionHistory
+         */
+        $patronId = $this->authenticatePatron($username, $password);
+
         $user = [
             'id' => $info->backendPatronId,
             'cat_username' => $username,
@@ -1209,7 +1230,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'lastname' => $lastname,
             'firstname' => $firstname,
             'major' => null,
-            'college' => null
+            'college' => null,
+            'patronId' => $patronId
         ];
 
         $userCached = [
@@ -1230,7 +1252,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'phoneLocalCode' => '',
             'phoneAreaCode' => '',
             'major' => null,
-            'college' => null
+            'college' => null,
+            'patronId' => $patronId,
+            'loan_history' => (bool)$loanHistoryEnabled
         ];
 
         if (!empty($info->emailAddresses->emailAddress)) {
@@ -1498,6 +1522,122 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         return $transList;
+    }
+
+    /**
+     * Get Patron Transaction History
+     *
+     * This is responsible for retrieving all historical transactions
+     * (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    public function getMyTransactionHistory($patron, $params)
+    {
+        $sort = explode(
+            ' ',
+            !empty($params['sort'])
+                ? $params['sort'] : 'CHECK_OUT_DATE DESCENDING', 2
+        );
+
+        $sortField = $sort[0] ?? 'CHECK_OUT_DATE';
+        $sortKey = $sort[1] ?? 'DESCENDING';
+
+        $username = $patron['cat_username'];
+
+        $function = 'GetLoanHistory';
+        $functionResult = 'loanHistoryResponse';
+        $pageSize = $params['limit'] ?? 50;
+        $conf = [
+            'arenaMember' => $this->arenaMember,
+            'language' => $this->getLanguage(),
+            'patronId' => $patron['patronId'],
+            'start' => isset($params['page'])
+                ? ($params['page'] - 1) * $pageSize : 0,
+            'count' => $pageSize,
+            'sortField' => $sortField,
+            'sortDirection' => $sortKey
+        ];
+
+        $result = $this->doSOAPRequest(
+            $this->loansaurora_wsdl, $function, $functionResult, $username,
+            ['loanHistoryRequest' => $conf]
+        );
+
+        $statusAWS = $result->$functionResult->status;
+
+        if ($statusAWS->type != 'ok') {
+            $message = $this->handleError($function, $statusAWS, $username);
+            if ($message == 'ils_connection_failed') {
+                throw new ILSException($message);
+            }
+            return [];
+        }
+
+        $formatted = [];
+        $transList = [];
+        $transactions = $this->objectToArray(
+            $result->loanHistoryResponse->loanHistoryItems->loanHistoryItem
+        );
+        foreach ($transactions as $transaction => $record) {
+            $obj = $record->catalogueRecord;
+            $trans = [
+                'id' => $obj->id,
+                'title' => $obj->title,
+                'checkoutdate' => $this->formatDate($record->checkOutDate),
+                'returndate' => isset($record->checkInDate)
+                    ? $this->formatDate($record->checkInDate) : ''
+            ];
+            $transList[] = $trans;
+        }
+
+        $formatted['success'] = $statusAWS->type === 'ok';
+        $formatted['transactions'] = $transList;
+        $formatted['count'] = $result->loanHistoryResponse
+            ->loanHistoryItems->totalCount;
+
+        return $formatted;
+    }
+
+    /**
+     * Returns an id which is used to authenticate current session in SOAP API
+     *
+     * @param string $username patron username
+     * @param string $password patron password
+     *
+     * @return mixed id as string if succesfull, null if failed
+     */
+    public function authenticatePatron($username, $password)
+    {
+        $function = 'authenticatePatron';
+        $functionResult = 'authenticatePatronResult';
+        $conf = [
+            'arenaMember' => $this->arenaMember,
+            'user' => $username,
+            'password' => $password
+        ];
+
+        $result = $this->doSOAPRequest(
+            $this->patron_wsdl, $function, $functionResult, $username,
+            ['authenticatePatronParam' => $conf]
+        );
+
+        $statusAWS = $result->$functionResult->status;
+        if ($statusAWS->type != 'ok') {
+            $message = $this->handleError($function, $statusAWS, $username);
+            if ($message == 'ils_connection_failed') {
+                throw new ILSException($message);
+            }
+            return null;
+        }
+
+        return $result->authenticatePatronResult->patronId;
     }
 
     /**
@@ -1949,6 +2089,52 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'status' => 'Phone number changed',
                 'sys_message' => ''
             ];
+    }
+
+    /**
+     * Update Patron Transaction History State
+     *
+     * Enable or disable patron's transaction history
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param mixed $state  Any of the configured values
+     *
+     * @return array Associative array of the results
+     */
+    public function updateTransactionHistoryState($patron, $state)
+    {
+        $username = $patron['cat_username'];
+        $function = 'changeLoanHistoryStatus';
+        $functionResult = 'changeLoanHistoryStatusResult';
+
+        $conf = [
+            'arenaMember' => $this->arenaMember,
+            'patronId' => $patron['patronId'],
+            'isLoanHistoryEnabled' => $state
+        ];
+
+        $result = $this->doSOAPRequest(
+            $this->patronaurora_wsdl, $function, $functionResult, $username,
+            ['changeLoanHistoryStatusParam' => $conf]
+        );
+
+        $statusAWS = $result->$functionResult->status;
+
+        if ($statusAWS->type != 'ok') {
+            $message = $this->handleError($function, $statusAWS, $username);
+            if ($message == 'ils_connection_failed') {
+                throw new ILSException($message);
+            }
+            return [
+                'success' => false,
+                'status' => 'Changing the checkout history state failed'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => 'request_change_done',
+        ];
     }
 
     /**
@@ -2612,11 +2798,16 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function supportsMethod($method, $params)
     {
-        //Special case: change password is only available if properly configured.
-        if ($method == 'changePassword') {
+        switch ($method) {
+        case 'changePassword':
             return isset($this->config['changePassword']);
+        case 'getMyTransactionHistory':
+            return !empty($this->loansaurora_wsdl);
+        case 'updateAddress':
+            return !empty($this->patronaurora_wsdl);
+        default:
+            return is_callable([$this, $method]);
         }
-        return is_callable([$this, $method]);
     }
 
     /**

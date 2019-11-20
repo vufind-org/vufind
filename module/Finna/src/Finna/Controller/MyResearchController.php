@@ -25,6 +25,7 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @author   Tuure Ilmarinen <tuure.ilmarinen@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -40,6 +41,7 @@ namespace Finna\Controller;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Konsta Raunio <konsta.raunio@helsinki.fi>
  * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -1208,22 +1210,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
         $listUrl = $this->getRequest()->getRequestUri();
-        /*$routeName = $publicView ? 'list-page' : 'userList';
-        $idParamName = $publicView ? 'lid' : 'id';
-        $request = $this->getRequest();
-        $queryParams = [];
-        if ($view = $request->getQuery('view')) {
-            $queryParams['view'] = $view;
-        }
-        if ($page = $request->getQuery('page')) {
-            $queryParams['page'] = $page;
-        }
-        if ($filter = $request->getQuery('filter')) {
-            $queryParams['filter'] = $filter;
-        }
-        $listUrl = $this->url()->fromRoute(
-            $routeName, [$idParamName => $id], ['query' => $queryParams]
-        );*/
         $memory->rememberSearch($listUrl);
     }
 
