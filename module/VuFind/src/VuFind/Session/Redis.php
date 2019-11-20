@@ -62,7 +62,8 @@ class Redis extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param \Credis_Client $connection Redis connection object
+     * @param Config         $config     Session configuration ([Session] section of
      * config.ini)
      */
     public function __construct(\Credis_Client $connection, Config $config = null)
