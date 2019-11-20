@@ -43,7 +43,7 @@
             <a class="btn btn-primary" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
           </div>
           <div class="pagination-container">
-            <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml') : ''?>
+            <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => $this->params]) : ''?>
           </div>
         </div>
         <table class="myresearch-table">
