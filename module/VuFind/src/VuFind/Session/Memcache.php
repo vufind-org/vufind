@@ -53,10 +53,11 @@ class Memcache extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param Config    $config Session configuration ([Session] section of
      * config.ini)
+     * @param \Memcache $client Optional Memcache client object
      */
-    public function __construct(Config $config = null)
+    public function __construct(Config $config = null, \Memcache $client = null)
     {
         parent::__construct($config);
 
@@ -66,7 +67,7 @@ class Memcache extends AbstractBase
         $timeout = $config->memcache_connection_timeout ?? 1;
 
         // Connect to Memcache:
-        $this->connection = new \Memcache();
+        $this->connection = $client ?? new \Memcache();
         if (!$this->connection->connect($host, $port, $timeout)) {
             throw new \Exception(
                 "Could not connect to Memcache (host = {$host}, port = {$port})."
