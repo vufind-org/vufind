@@ -29,8 +29,6 @@
  */
 namespace VuFind\Session;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Session handler plugin manager
  *

@@ -118,6 +118,6 @@ class Redis extends AbstractBase
         $unlinkMethod = ($this->redisVersion >= 4) ? 'unlink' : 'del';
         $return = $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
 
-        return ($return > 0);
+        return $return > 0;
     }
 }
