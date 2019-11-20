@@ -112,7 +112,7 @@ class AuthorityHelper
      *
      * @return array
      */
-    public function formatFacets($field, $facets)
+    public function formatFacetList($field, $facets)
     {
         if (!in_array($field, $this->getAuthorIdFacets())) {
             return $facets;

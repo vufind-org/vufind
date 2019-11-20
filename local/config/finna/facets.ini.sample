@@ -256,3 +256,13 @@ facet_limit      = -1
 
 [ExtraFacetLabels]
 author2_id_role_str_mv = Author role
+
+[AvailableFacetSortOptions]
+; By default all Solr facets can be sorted by count and alphabetically.
+
+; Sort author-id facets by count
+Solr[author2_id_str_mv] = "count=sort_count"
+Solr[author2_id_role_str_mv] = "count=sort_count"
+
+; Example: sort Solr author_facet only alphabetically
+; Solr[author_facet] = "index=sort_alphabetic"

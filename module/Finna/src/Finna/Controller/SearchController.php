@@ -285,6 +285,27 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
+     * Returns a list of all items associated with one facet for the lightbox
+     *
+     * Parameters:
+     * facet        The facet to retrieve
+     * searchParams Facet search params from $results->getUrlQuery()->getParams()
+     *
+     * @return mixed
+     */
+    public function facetListAction()
+    {
+        $authorityHelper
+            = $this->serviceLocator->get(\Finna\Search\Solr\AuthorityHelper::class);
+
+        $view = parent::facetListAction();
+
+        // Convert author-id facet labels to readable names
+        $view->data = $authorityHelper->formatFacetList($view->facet, $view->data);
+        return $view;
+    }
+
+    /**
      * Handler for database and journal browse actions.
      *
      * @param string $type Browse type
