@@ -27,6 +27,8 @@
  */
 namespace VuFind\Session;
 
+use Zend\Config\Config;
+
 /**
  * File-based session handler
  *
@@ -39,84 +41,80 @@ namespace VuFind\Session;
 class File extends AbstractBase
 {
     /**
-     * Path to session file (boolean false until set)
+     * Path to session file
      *
-     * @var string|bool
+     * @var string
      */
-    protected $path = false;
+    protected $path;
 
     /**
-     * Get the file path for writing sessions.
+     * Constructor
      *
-     * @throws \Exception
-     * @return string
+     * @param Config $config Session configuration ([Session] section of
+     * config.ini)
      */
-    protected function getPath()
+    public function __construct(Config $config = null)
     {
-        if (!$this->path) {
-            // Set defaults if nothing set in config file.
-            if (isset($this->config->file_save_path)) {
-                $this->path = $this->config->file_save_path;
-            } else {
-                $tempdir = function_exists('sys_get_temp_dir')
-                    ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
-                $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufind_sessions';
-            }
+        parent::__construct($config);
 
-            // Die if the session directory does not exist and cannot be created.
-            if (!file_exists($this->path) || !is_dir($this->path)) {
-                if (!mkdir($this->path)) {
-                    throw new \Exception(
-                        "Cannot access session save path: " . $this->path
-                    );
-                }
-            }
+        // Set defaults if nothing set in config file.
+        if (isset($config->file_save_path)) {
+            $this->path = $config->file_save_path;
+        } else {
+            $tempdir = function_exists('sys_get_temp_dir')
+                ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
+            $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufind_sessions';
         }
 
-        return $this->path;
+        // Die if the session directory does not exist and cannot be created.
+        if ((!file_exists($this->path) || !is_dir($this->path))
+            && !mkdir($this->path)
+        ) {
+            throw new \Exception("Cannot access session save path: " . $this->path);
+        }
     }
 
     /**
      * Read function must return string value always to make save handler work as
      * expected. Return empty string if there is no data to read.
      *
-     * @param string $sess_id The session ID to read
+     * @param string $sessId The session ID to read
      *
      * @return string
      */
-    public function read($sess_id)
+    public function read($sessId)
     {
-        $sess_file = $this->getPath() . '/sess_' . $sess_id;
-        if (!file_exists($sess_file)) {
+        $sessFile = $this->path . '/sess_' . $sessId;
+        if (!file_exists($sessFile)) {
             return '';
         }
 
         // enforce lifetime of this session data
-        if (filemtime($sess_file) + $this->lifetime <= time()) {
-            $this->destroy($sess_id);
+        if (filemtime($sessFile) + $this->lifetime <= time()) {
+            $this->destroy($sessId);
             return '';
         }
 
-        return (string)file_get_contents($sess_file);
+        return (string)file_get_contents($sessFile);
     }
 
     /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
-     * @param string $sess_id The session ID to destroy
+     * @param string $sessId The session ID to destroy
      *
      * @return bool
      */
-    public function destroy($sess_id)
+    public function destroy($sessId)
     {
         // Perform standard actions required by all session methods:
-        parent::destroy($sess_id);
+        parent::destroy($sessId);
 
         // Perform file-specific cleanup:
-        $sess_file = $this->getPath() . '/sess_' . $sess_id;
-        if (file_exists($sess_file)) {
-            return unlink($sess_file);
+        $sessFile = $this->path . '/sess_' . $sessId;
+        if (file_exists($sessFile)) {
+            return unlink($sessFile);
         }
         return true;
     }
@@ -131,7 +129,7 @@ class File extends AbstractBase
      */
     public function gc($maxlifetime)
     {
-        foreach (glob($this->getPath() . "/sess_*") as $filename) {
+        foreach (glob($this->path . "/sess_*") as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
                 unlink($filename);
             }
@@ -142,17 +140,17 @@ class File extends AbstractBase
     /**
      * A function that is called internally when session data is to be saved.
      *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
+     * @param string $sessId The current session ID
+     * @param string $data   The session data to write
      *
      * @return bool
      */
-    protected function saveSession($sess_id, $data)
+    protected function saveSession($sessId, $data)
     {
-        $sess_file = $this->getPath() . '/sess_' . $sess_id;
-        if ($fp = fopen($sess_file, "w")) {
-            $return = fwrite($fp, $data);
-            fclose($fp);
+        $sessFile = $this->path . '/sess_' . $sessId;
+        if ($handle = fopen($sessFile, "w")) {
+            $return = fwrite($handle, $data);
+            fclose($handle);
             if ($return !== false) {
                 return true;
             }
@@ -161,7 +159,7 @@ class File extends AbstractBase
         // It is tempting to throw an exception here, but this code is called
         // outside of the context of exception handling, so all we can do is
         // echo a message.
-        echo 'Cannot write session to ' . $sess_file . "\n";
+        echo 'Cannot write session to ' . $sessFile . "\n";
         return false;
     }
 }
