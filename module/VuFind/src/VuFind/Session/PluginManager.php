@@ -68,7 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Database::class => AbstractBaseFactory::class,
         File::class => AbstractBaseFactory::class,
         Memcache::class => AbstractBaseFactory::class,
-        Redis::class => AbstractBaseFactory::class,
+        Redis::class => RedisFactory::class,
     ];
 
     /**
