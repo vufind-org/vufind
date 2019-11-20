@@ -191,7 +191,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.result a.title');
         // Did our result stay closed?
         $session->reload();
-        $this->snooze();
+        $this->snooze(2);
         $result = $page->find('css', '.result.embedded');
         $this->assertFalse(is_object($result));
 
