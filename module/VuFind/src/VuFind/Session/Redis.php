@@ -95,7 +95,7 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    public function write($sessId, $data)
+    protected function saveSession($sessId, $data)
     {
         return $this->connection->setex(
             "vufind_sessions/{$sessId}", $this->lifetime, $data
