@@ -59,6 +59,8 @@
             }
             if (!empty($url['embed']) && $url['embed'] === 'video') {
               $currentUrl['data-embed-video'] = '';
+            } elseif (!empty($url['embed']) && $url['embed'] === 'iframe') {
+              $currentUrl['data-embed-iframe'] = '';
             }
           ?>
           <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><i class="fa fa-external-link"aria-hidden="true"></i>
