@@ -311,8 +311,8 @@ class UtilController extends AbstractBase
         if ($url = $request->getParam('baseurl', false)) {
             $generator->setBaseUrl($url);
         }
-        if ($url = $request->getParam('basesitemapurl', false)) {
-            $generator->setBaseSitemapUrl($url);
+        if ($sitemapUrl = $request->getParam('basesitemapurl', false)) {
+            $generator->setBaseSitemapUrl($sitemapUrl);
         }
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
