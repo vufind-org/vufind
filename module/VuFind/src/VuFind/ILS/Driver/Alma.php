@@ -1708,15 +1708,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $this->getMarcSubfield($field, 'm');
-                        // Using subfield 't' ('Interface name') as callnumber
+                        // Use the following subfields for location:
+                        // m (Collection name)
+                        // i (Available for library)
+                        // d (Available for library)
+                        // b (Available for library)
+                        $location = [
+                            $this->getMarcSubfield($field, 'm') ?: 'Get full text'
+                        ];
+                        foreach (['i', 'd', 'b'] as $code) {
+                            if ($content = $this->getMarcSubfield($field, $code)) {
+                                $location[] = $content;
+                            }
+                        }
+                        $item['location'] = implode(' - ', $location);
                         $item['callnumber'] = $this->getMarcSubfield($field, 't');
                         $url = $this->getMarcSubfield($field, 'u');
                         if (preg_match('/^https?:\/\//', $url)) {
                             $item['locationhref'] = $url;
                         }
-                        $item['status'] = $this->getMarcSubfield($field, 's');
-                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
+                        $item['status'] = $this->getMarcSubfield($field, 's')
+                            ?: null;
+                        if ($note = $this->getMarcSubfield($field, 'n')) {
+                            $item['item_notes'] = [$note];
+                        }
                         $status[] = $item;
                     }
                     // Digital
