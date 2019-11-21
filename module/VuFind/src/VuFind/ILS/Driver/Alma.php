@@ -886,6 +886,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'Y-m-dT', (string)$request->last_interest_date
                 ) : null;
             $available = (string)$request->request_status === 'On Hold Shelf';
+            $lastPickupDate = null;
             if ($available) {
                 $lastPickupDate = $request->expiry_date
                     ? $this->dateConverter->convertToDisplayDate(
