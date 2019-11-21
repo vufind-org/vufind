@@ -881,11 +881,26 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $holdList = [];
         foreach ($xml as $request) {
+            $lastInterestDate = $request->last_interest_date
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-dT', (string)$request->last_interest_date
+                ) : null;
+            $available = (string)$request->request_status === 'On Hold Shelf';
+            $lastPickupDate = null;
+            if ($available) {
+                $lastPickupDate = $request->expiry_date
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-dT', (string)$request->expiry_date
+                    ) : null;
+            }
             $holdList[] = [
-                'create' => (string)$request->request_date,
-                'expire' => (string)$request->last_interest_date,
+                'create' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-dT', (string)$request->request_date
+                ),
+                'expire' => $lastInterestDate,
                 'id' => (string)$request->request_id,
-                'in_transit' => (string)$request->request_status !== 'On Hold Shelf',
+                'available' => $available,
+                'last_pickup_date' => $lastPickupDate,
                 'item_id' => (string)$request->mms_id,
                 'location' => (string)$request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
@@ -1693,15 +1708,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $this->getMarcSubfield($field, 'm');
-                        // Using subfield 't' ('Interface name') as callnumber
+                        // Use the following subfields for location:
+                        // m (Collection name)
+                        // i (Available for library)
+                        // d (Available for library)
+                        // b (Available for library)
+                        $location = [
+                            $this->getMarcSubfield($field, 'm') ?: 'Get full text'
+                        ];
+                        foreach (['i', 'd', 'b'] as $code) {
+                            if ($content = $this->getMarcSubfield($field, $code)) {
+                                $location[] = $content;
+                            }
+                        }
+                        $item['location'] = implode(' - ', $location);
                         $item['callnumber'] = $this->getMarcSubfield($field, 't');
                         $url = $this->getMarcSubfield($field, 'u');
                         if (preg_match('/^https?:\/\//', $url)) {
                             $item['locationhref'] = $url;
                         }
-                        $item['status'] = $this->getMarcSubfield($field, 's');
-                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
+                        $item['status'] = $this->getMarcSubfield($field, 's')
+                            ?: null;
+                        if ($note = $this->getMarcSubfield($field, 'n')) {
+                            $item['item_notes'] = [$note];
+                        }
                         $status[] = $item;
                     }
                     // Digital
