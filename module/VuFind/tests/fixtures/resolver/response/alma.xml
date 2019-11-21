@@ -274,7 +274,8 @@ Date: Mon, 19 Aug 2019 12:34:14 GMT
         <key id="is_closly_related">false</key>
         <key id="license_exist">false</key>
         <key id="crossref_enabled">no</key>
-        <key id="Filtered">false</key>
+        <key id="Filtered">true</key>
+        <key id="Filter reason">Date Filter</key>
         <key id="preferred_link">false</key>
       </keys>
       <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861810000561&amp;institutionId=561&amp;customerId=550</resolution_url>
