@@ -829,13 +829,14 @@ class DefaultRecord extends AbstractBase
         // of databases if they do not cover the exact date provided!
         unset($params['rft.date']);
 
-        // If we're working with the SFX resolver, we should add a
+        // If we're working with the SFX or Alma resolver, we should add a
         // special parameter to ensure that electronic holdings links
         // are shown even though no specific date or issue is specified:
-        if (isset($this->mainConfig->OpenURL->resolver)
-            && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
-        ) {
+        $resolver = strtolower($this->mainConfig->OpenURL->resolver ?? '');
+        if ('sfx' === $resolver) {
             $params['sfx.ignore_date_threshold'] = 1;
+        } elseif ('alma' === $resolver) {
+            $params['u.ignore_date_coverage'] = 'true';
         }
         return $params;
     }
