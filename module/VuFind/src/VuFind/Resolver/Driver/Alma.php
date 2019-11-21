@@ -95,6 +95,10 @@ class Alma extends AbstractBase
         }
 
         foreach ($xml->context_services->children() as $service) {
+            $filtered = $this->getKeyWithId($service, 'Filtered');
+            if ('true' === $filtered) {
+                continue;
+            }
             $serviceType = $this->mapServiceType(
                 (string)$service->attributes()->service_type
             );
