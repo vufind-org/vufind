@@ -26,7 +26,7 @@
         <?php if ($item['use_unknown_message'] ?? false): ?>
           <span><?=$this->transEsc("status_unknown_message")?></span>
         <?php elseif ($item['availability']): ?>
-          <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>
+          <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc($item['status'] ?? 'Available')?></span>
         <?php else: ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php endif; ?>
