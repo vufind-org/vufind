@@ -41,7 +41,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  *
  * @codeCoverageIgnore
  */
-class ManagerFactory implements FactoryInterface
+class AbstractBaseFactory implements FactoryInterface
 {
     /**
      * Create an object
