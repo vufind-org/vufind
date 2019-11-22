@@ -43,11 +43,12 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
-    GetFulltextSnippets: function(url, doc_id, query, verbose = false) {
-        // Try to determine status
+    GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "") {
+        var valid_synonym_terms = new RegExp('lang|all');
+        synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
         $.ajax({
             type: "GET",
-            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : ""),
+            url: url + "fulltextsnippetproxy/load?search_query=" + query + "&doc_id=" + doc_id + (verbose ? "&verbose=1" : "") + (synonyms ? "&synonyms=" + synonyms : ""),
             dataType: "json",
             success: function (json) {
                 $(document).ready(function () {
@@ -59,7 +60,16 @@ var TueFind = {
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
                             $(this).removeAttr('style');
-                            $(this).html(snippets.join('<br/>') + '<br/>');
+                            if (snippets[0].hasOwnProperty('style')) {
+                                var styles = snippets.map(a => a.style).join();
+                                $(styles).appendTo("head");
+                            }
+                            if (snippets[0].hasOwnProperty('page')) {
+                               var snippets_and_pages = snippets.map(a => a.snippet + '</br>[' + a.page + ']');
+                               $(this).html(snippets_and_pages.join('<hr/>'));
+                            }
+                            else
+                               $(this).html(snippets.map(a => a.snippet).join('<br/>'));
                         } else
                             $(this).html("");
                     });

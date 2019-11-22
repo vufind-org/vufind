@@ -215,8 +215,12 @@ ISN:
 
 IxTheoNotations:
   DismaxFields:
-    - ixtheo_notation_expanded
+    - ixtheo_notation^100
+    - ixtheo_notation_expanded^99
   QueryFields:
+    ixtheo_notation:
+      - [and, 200]
+      - [or, ~]
     ixtheo_notation_expanded:
       - [and, 100]
       - [or, ~]
@@ -394,6 +398,46 @@ FulltextOnly:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
+
+FulltextWithSynonyms:
+  DismaxFields:
+    - fulltext_unstemmed^750
+    - fulltext^750
+    - fulltext_synonyms^750
+  QueryFields:
+    fulltext_unstemmed:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
+
+FulltextAllSynonyms:
+  DismaxFields:
+    - fulltext_unstemmed^750
+    - fulltext^750
+    - fulltext_synonyms_all^750
+  QueryFields:
+    fulltext_unstemmed:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    fulltext:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
 
 AllFields:
   DismaxFields:

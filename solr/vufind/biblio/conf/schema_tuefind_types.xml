@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
-    
+  <!-- With this field type case is preserved for stored values, but a case insensitive field will
+       be provided to search on. Caveat: case insensitive wildcard search cannot be done since
+       wild card phrases bypass the query analyzer and will not be lowercased before matching
+       against the index. This means that the characters in wildcard phrases must be lowercase in
+       order to match.
+  -->
+    <fieldType name="stringCaseInsensitive" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+        <analyzer type="query">
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>    
 </types>

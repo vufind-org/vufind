@@ -3,8 +3,22 @@
 <span id="fulltext_snippets">
       <div style="color:grey" id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"><?=$this->transEsc("Loading")?>...</div>
   <script>
-      <?php $query = $this->params->getQuery()->getAllTerms();?>
-      TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query);?>");
+<?php       $query = $this->params->getQuery();
+            $query_terms = $query->getAllTerms();
+            $handler = $query instanceof \VuFindSearch\Query\Query ? $query->getHandler() :
+                       ($query instanceof \VuFindSearch\Query\QueryGroup ? $query->getReducedHandler() : "");
+            $type = "";
+            //error_log("HANDLER", $handler);
+            switch ($handler) {
+              case "FulltextWithSynonyms":
+                $type = "lang";
+                break;
+              case "FulltextAllSynonyms":
+                $type = "all";
+                break;
+           }
+      ?>
+      TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query_terms);?>", false, "<?=$type?>");
   </script>
 </span>
 <?php endif; ?>

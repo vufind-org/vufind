@@ -46,8 +46,8 @@
     <field name="is_probably_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_religious_studies" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="is_subscribable" type="boolean" indexed="false" stored="true" multiValued="false"/>
-    <field name="ixtheo_notation_expanded" type="string" indexed="true" stored="true" multiValued="true" />
-    <field name="ixtheo_notation" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="ixtheo_notation_expanded" type="text" indexed="true" stored="true" multiValued="true" />
+    <field name="ixtheo_notation" type="stringCaseInsensitive" indexed="true" stored="true" multiValued="true" />
     <field name="ixtheo_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="key_word_chain_bag" type="text" indexed="true" stored="true" multiValued="true" />
     <field name="key_word_chain_bag_de" type="text" indexed="true" stored="true" multiValued="true" />
@@ -139,6 +139,17 @@
     <field name="exclude_ixtheo" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="bundle_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="has_fulltext" type="boolean" indexed="true" stored="true" multiValued="false"/>
+    <field name="fulltext_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_fr" type="fulltext_syn_fr" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_it" type="fulltext_syn_it" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_es" type="fulltext_syn_es" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_pt" type="fulltext_syn_pt" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_ru" type="fulltext_syn_ru" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_el" type="fulltext_syn_el" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
 
     <!-- COMMON copyFields-->
     <xi:include href="schema_tuefind_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude" parse="xml" xpointer="xpointer(//copyField)"/>
@@ -211,4 +222,16 @@
     <copyField source="era_facet_de" dest="topic_browse"/>
     <copyField source="genre_facet_de" dest="topic_browse"/>
     <copyField source="geographic_facet_de" dest="topic_browse"/>
+    <!-- CopyFields for Fulltext Synonyms -->
+    <copyField source="fulltext" dest="fulltext_synonyms_de"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_en"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_fr"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_it"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_es"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_pt"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_ru"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_el"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_hans"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_hant"/>
+    <copyField source="fulltext" dest="fulltext_synonyms_all"/>
 </fields>
