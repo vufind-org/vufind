@@ -189,8 +189,19 @@ class SearchController extends AbstractSolrSearch
             // We don't want to remember the last search after a purge:
             $this->getSearchMemory()->forgetSearch();
         }
-        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
-        return $this->createViewModel($lastSearches);
+        $viewData = $searchHistoryHelper->getSearchHistory($userId);
+        // Eliminate schedule settings if scheduled searches are disabled; add
+        // user email data if scheduled searches are enabled.
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (empty($scheduleOptions)) {
+            unset($viewData['schedule']);
+        } else {
+            $viewData['scheduleOptions'] = $scheduleOptions;
+            $viewData['alertemail'] = is_object($user) ? $user->email : null;
+        }
+        return $this->createViewModel($viewData);
     }
 
     /**

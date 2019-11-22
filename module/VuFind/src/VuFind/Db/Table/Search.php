@@ -213,6 +213,21 @@ class Search extends Gateway
     }
 
     /**
+     * Get scheduled searches.
+     *
+     * @return array Array of VuFind\Db\Row\Search objects.
+     */
+    public function getScheduledSearches()
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('saved', 1);
+            $select->where->greaterThan('notification_frequency', 0);
+            $select->order('user_id');
+        };
+        return $this->select($callback);
+    }
+
+    /**
      * Add a search into the search table (history)
      *
      * @param \VuFind\Search\Results\PluginManager $manager   Search manager
