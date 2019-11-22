@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2013-2017.
+ * Copyright (C) The National Library of Finland 2013-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -215,6 +215,19 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
         $record = clone $this->getSimpleXML();
         while ($record->abstract) {
             unset($record->abstract[0]);
+        }
+        // Try to filter out any summary or abstract fields
+        $filterTerms = [
+            'tiivistelmä', 'abstract', 'abstracts', 'abstrakt', 'sammandrag',
+            'sommario', 'summary', 'аннотация'
+        ];
+        for ($i = count($record->description) - 1; $i >= 0; $i--) {
+            $node = $record->description[$i];
+            $description = mb_strtolower((string)$node, 'UTF-8');
+            $firstWords = array_slice(preg_split('/\s/', $description), 0, 5);
+            if (array_intersect($firstWords, $filterTerms)) {
+                unset($record->description[$i]);
+            }
         }
         return $record->asXML();
     }
