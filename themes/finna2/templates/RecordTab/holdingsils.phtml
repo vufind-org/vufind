@@ -107,7 +107,13 @@
         <a class="holdings-url-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?></a>
       <?php endforeach; ?>
     <?php endif; ?>
-    <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
+    <?php if ($openUrlActive): ?>
+      <?=$openUrl->renderTemplate()?>
+      <?php
+        $loadOpenURLs = "finna.openUrl.initLinks($('.holdings-urls'));";
+        echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadOpenURLs, 'SET')
+      ?>
+    <?php endif; ?>
     <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
   </div>
 </div>
