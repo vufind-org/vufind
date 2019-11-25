@@ -848,14 +848,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 "title"    => (string)($fee->title ?? ''),
                 "amount"   => round(floatval($fee->original_amount) * 100),
                 "balance"  => round(floatval($fee->balance) * 100),
-                "createdate" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $created
-                ),
-                "checkout" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $checkout
-                ),
+                "createdate" => $this->parseDate($created, true),
+                "checkout" => $this->parseDate($checkout, true),
                 "fine"     => $this->getTranslatableString($fee->type)
             ];
         }
