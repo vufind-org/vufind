@@ -4,13 +4,47 @@
 }
 
 .panel-default, .panel-inverse, .panel-buttons {
-   border: 5px solid @tf-background-body-color;
-   -webkit-box-shadow: none;
+  border: 5px solid @tf-background-body-color;
+  -webkit-box-shadow: none;
 }
 
 .panel-home {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.ix2-searchForm {
+  input {
+    border: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+  }
+
+  .type-dropdown {
+    display: inline-block;
+    width: 20%;
+    border: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    text-align: right;
+  }
+
+  .search-button {
+    border: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    border-radius: 0;
+  }
+
+  .search-button:hover {
+    background-color: @brand-primary;
+    color: @body-bg;
+  }
 }
