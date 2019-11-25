@@ -77,14 +77,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 "title"    => (string)($fee->title ?? ''),
                 "amount"   => round(floatval($fee->original_amount) * 100),
                 "balance"  => round(floatval($fee->balance) * 100),
-                "createdate" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $created
-                ),
-                "checkout" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $checkout
-                ),
+                "createdate" => $this->parseDate($created, true),
+                "checkout" => $this->parseDate($checkout, true),
                 "fine"     => (string)$fee->type['desc'],
                 'payableOnline' => $payable
             ];
