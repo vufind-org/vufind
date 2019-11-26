@@ -17,7 +17,12 @@
           <br/>
           <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
         <?php endif; ?>
-        <a id="login_library_card_recovery" class="btn btn-link" href="<?=$this->url('librarycards-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
+        <p>
+          <a id="login_library_card_register" class="btn btn-link" href="<?=$this->url('librarycards-register') ?>"><?=$this->transEsc('new_ils_account')?></a>
+        </p>
+        <p>
+          <a id="login_library_card_recovery" class="btn btn-link" href="<?=$this->url('librarycards-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
+        </p>
     </div>
   </form>
 </div>
@@ -44,14 +49,19 @@
 
 <?php
   $recovery = [];
-  foreach ($this->auth()->getManager()->getLoginTargets() as $target) {
-    $recovery[$target] = $this->auth()->getManager()->ilsSupportsPasswordRecovery($target)
+  $register = [];
+  foreach ($account->getLoginTargets() as $target) {
+    $recovery[$target] = $account->ilsSupportsPasswordRecovery($target)
       ? $this->url('librarycards-recover') . "?target=$target" : false;
+    $register[$target] = $account->ilsSupportsSelfRegistration($target)
+      ? $this->url('librarycards-register') . "?target=$target" : false;
   }
 
   $recovery = json_encode($recovery);
+  $register = json_encode($register);
   $script = <<<EOT
   finna.layout.initILSPasswordRecoveryLink($recovery, 'login_{$topClass}_');
+  finna.layout.initILSSelfRegistrationLink($register, 'login_{$topClass}_');
 EOT;
 
   // Inline the script for lightbox compatibility

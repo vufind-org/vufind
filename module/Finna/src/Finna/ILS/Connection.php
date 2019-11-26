@@ -522,4 +522,35 @@ class Connection extends \VuFind\ILS\Connection
         }
         return false;
     }
+
+    /**
+     * Check if self-registration.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodregisterPatron($functionConfig, $params)
+    {
+        if ($this->checkCapability('registerPatron', [$params ?: []])) {
+            if (isset($functionConfig['introductionText'])) {
+                $functionConfig['introductionText'] = $this->getHelpText(
+                    $functionConfig['introductionText']
+                );
+            }
+            if (isset($functionConfig['registrationHelpText'])) {
+                $functionConfig['registrationHelpText'] = $this->getHelpText(
+                    $functionConfig['registrationHelpText']
+                );
+            }
+            if (isset($functionConfig['termsUrl'])) {
+                $functionConfig['termsUrl'] = $this->getHelpText(
+                    $functionConfig['termsUrl']
+                );
+            }
+            return $functionConfig;
+        }
+        return false;
+    }
 }

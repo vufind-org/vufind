@@ -6,7 +6,7 @@
   margin-top: 6px;
   font-weight: 400;
   line-height: 2;
-  
+
   > span {
     margin-right: 5px;
   }
@@ -58,5 +58,23 @@
       color: @gray;
       border: 1px solid @gray-lighter;
     }
+  }
+}
+
+#new-account-form {
+  .form-control:not([type="radio"]) {
+    width: 70%;
+  }
+  .form-control[type="radio"] {
+    display: inline-block;
+    margin: -4px 0.5em 0 0;
+    padding: 0;
+    height: 1.5em;
+  }
+  legend {
+    font-size: 100%;
+    font-weight: 700;
+    border: 0;
+    margin-bottom: 5px;
   }
 }

@@ -82,4 +82,20 @@ class Manager extends \VuFind\Auth\Manager
         }
         return false;
     }
+
+    /**
+     * Check if ILS supports self-registration
+     *
+     * @param string $target Login target (only for MultiILS)
+     *
+     * @return string|false
+     */
+    public function ilsSupportsSelfRegistration($target = '')
+    {
+        $auth = $this->getAuth();
+        if (is_callable([$auth, 'ilsSupportsSelfRegistration'])) {
+            return $auth->ilsSupportsSelfRegistration($target);
+        }
+        return false;
+    }
 }

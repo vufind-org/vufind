@@ -82,6 +82,22 @@ trait ILSFinna
     }
 
     /**
+     * Check if ILS supports self-registration
+     *
+     * @param string $target Login target (MultiILS)
+     *
+     * @return string
+     */
+    public function ilsSupportsSelfRegistration($target)
+    {
+        $catalog = $this->getCatalog();
+        $config = $catalog->checkFunction(
+            'registerPatron', ['cat_username' => "$target.123"]
+        );
+        return !empty($config);
+    }
+
+    /**
      * Make sure passwords match and fulfill ILS policy
      *
      * @param array $params request parameters

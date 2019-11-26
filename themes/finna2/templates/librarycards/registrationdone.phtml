@@ -1,0 +1,22 @@
+<!-- START of: finna - librarycards/registrationform.phtml -->
+<?php
+    // Set up page title:
+    $pageTitle = $this->translate('new_ils_account') . ' (' . $this->translate('source_' . $this->target, null, $this->target) . ')';
+    $this->headTitle($pageTitle);
+    $this->layout()->finnaMainHeader = '';
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('recovery_title') . '</li>';
+?>
+<h2><?=$this->escapeHtml($pageTitle) ?></h2>
+
+<?=$this->flashmessages()?>
+<h3><?=$this->transEsc('new_ils_account_title_confirmation')?></h3>
+
+<p><?=$this->translate('new_ils_account_confirmation_description_html') ?></p>
+
+<?php if ($this->organisationInfoId): ?>
+  <p><?=$this->translate('new_ils_account_organisation_link_html', ['%%url%%' => $this->escapeHtmlAttr($this->url('organisationinfo-home', [], ['query' => ['id' => $this->organisationInfoId]]))]) ?></p>
+<?php endif; ?>
+
+<!-- END of: finna - librarycards/registrationform.phtml -->

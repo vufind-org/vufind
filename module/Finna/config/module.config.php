@@ -759,7 +759,9 @@ $dynamicRoutes = [
 
 $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
-    'LibraryCards/Recover', 'LibraryCards/ResetPassword',
+    'LibraryCards/Recover', 'LibraryCards/Register',
+    'LibraryCards/RegistrationDone', 'LibraryCards/RegistrationForm',
+    'LibraryCards/ResetPassword',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
     'MyResearch/SaveCustomOrder', 'MyResearch/PurgeHistoricLoans',

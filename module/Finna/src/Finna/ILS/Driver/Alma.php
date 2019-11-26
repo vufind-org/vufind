@@ -522,6 +522,147 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Register a new user
+     *
+     * @param array $params The data from the "create new account" form
+     *
+     * @throws \VuFind\Exception\Auth
+     *
+     * @return bool
+     */
+    public function registerPatron($params)
+    {
+        $formParams = $params['userdata'];
+
+        // Get config for creating new Alma users from Alma.ini
+        $newUserConfig = $this->config['NewUser'] ?? [];
+
+        // Check if config params are all set
+        $configParams = [
+            'recordType', 'userGroup',
+            'accountType', 'status', 'emailType',
+        ];
+        foreach ($configParams as $configParam) {
+            if (empty(trim($newUserConfig[$configParam] ?? ''))) {
+                $errorMessage = 'Configuration "' . $configParam . '" is not set ' .
+                                'in Alma ini in the [NewUser] section!';
+                $this->logError($errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        }
+
+        // Calculate expiry date based on config in Alma.ini
+        $expiryDate = new \DateTime('now');
+        if (!empty(trim($newUserConfig['expiryDate'] ?? ''))) {
+            try {
+                $expiryDate->add(
+                    new \DateInterval($newUserConfig['expiryDate'])
+                );
+            } catch (\Exception $exception) {
+                $errorMessage = 'Configuration "expiryDate" in Alma.ini (see ' .
+                                '[NewUser] section) has the wrong format!';
+                error_log('[ALMA]: ' . $errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        } else {
+            $expiryDate->add(new \DateInterval('P1Y'));
+        }
+
+        // Calculate purge date based on config in Alma.ini
+        $purgeDate = null;
+        if (!empty(trim($newUserConfig['purgeDate'] ?? ''))) {
+            try {
+                $purgeDate = new \DateTime('now');
+                $purgeDate->add(
+                    new \DateInterval($newUserConfig['purgeDate'])
+                );
+            } catch (\Exception $exception) {
+                $errorMessage = 'Configuration "purgeDate" in Alma.ini (see ' .
+                                '[NewUser] section) has the wrong format!';
+                error_log('[ALMA]: ' . $errorMessage);
+                throw new \VuFind\Exception\Auth($errorMessage);
+            }
+        }
+
+        // Create user XML for Alma API
+        $xml = simplexml_load_string(
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . "\n\n<user/>"
+        );
+        $xml->addChild('record_type', $newUserConfig['recordType']);
+        $xml->addChild('first_name', $formParams['firstname']);
+        $xml->addChild('last_name', $formParams['lastname']);
+        $xml->addChild('user_group', $newUserConfig['userGroup']);
+        $xml->addChild(
+            'preferred_language', $formParams['language']
+        );
+        $xml->addChild('account_type', $newUserConfig['accountType']);
+        $xml->addChild('status', $newUserConfig['status']);
+        $xml->addChild('expiry_date', $expiryDate->format('Y-m-d') . 'Z');
+        if (null !== $purgeDate) {
+            $xml->addChild('purge_date', $purgeDate->format('Y-m-d') . 'Z');
+        }
+
+        $contactInfo = $xml->addChild('contact_info');
+        $emails = $contactInfo->addChild('emails');
+        $email = $emails->addChild('email');
+        $email->addAttribute('preferred', 'true');
+        $email->addChild('email_address', $formParams['email']);
+        $emailTypes = $email->addChild('email_types');
+        $emailTypes->addChild('email_type', $newUserConfig['emailType']);
+
+        $addresses = $contactInfo->addChild('addresses');
+        $address = $addresses->addChild('address');
+        $addressTypes = $address->addChild('address_types');
+        $addressTypes->addChild('address_type', 'home');
+        $address['preferred'] = 'true';
+        $address->addChild('line1', $formParams['address']);
+        $address->addChild('postal_code', $formParams['zip']);
+        $address->addChild('city', $formParams['city']);
+
+        $phones = $contactInfo->addChild('phones');
+        $phone = $phones->addChild('phone');
+        $phoneTypes = $phone->addChild('phone_types');
+        $phoneTypes->addChild('phone_type', 'mobile');
+        $phone['preferred'] = 'true';
+        $phone->addChild('phone_number', $formParams['phone']);
+
+        if (!empty($formParams['identitynumber'])) {
+            $identityField = $newUserConfig['identityField'] ?? 'primary_id';
+            if ('primary_id' === $identityField) {
+                $xml->addChild('primary_id', $formParams['identitynumber']);
+            } elseif ('inst_id' === $identityField) {
+                $userIdentifiers = $xml->addChild('user_identifiers');
+                $userIdentifier = $userIdentifiers->addChild('user_identifier');
+                $userIdentifier->addChild('id_type', 'INST_ID');
+                $userIdentifier->addChild('value', $formParams['identitynumber']);
+            } elseif ('note' === $identityField) {
+                $notes = $xml->addChild('user_notes');
+                $note = $notes->addChild('user_note');
+                $noteType = $note->addChild('note_type', 'OTHER');
+                $noteType['Description'] = 'Other';
+                $note->addChild('note_text', $formParams['identitynumber']);
+                $note->addChild('user_viewable', 'false');
+                $note->addChild('popup_note', 'false');
+            }
+        }
+
+        $userXml = $xml->asXML();
+
+        // Create user in Alma
+        $this->makeRequest(
+            '/users',
+            [],
+            [],
+            'POST',
+            $userXml,
+            ['Content-Type' => 'application/xml']
+        );
+
+        return true;
+    }
+
+    /**
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
@@ -543,6 +684,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
         }
         if ('updateAddress' === $function) {
             $function = 'updateProfile';
+        } elseif ('registerPatron' === $function) {
+            $function = 'NewUser';
         }
         $config = parent::getConfig($function, $params);
         if ('updateProfile' === $function && isset($config['fields'])) {
@@ -666,6 +809,36 @@ class Alma extends \VuFind\ILS\Driver\Alma
     public function getHoldingsDetails($id, $key, $patron = null)
     {
         return $this->getHoldingsData($id, $key);
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        if ('registerPatron' === $method) {
+            $config = $this->config['NewUser'] ?? [];
+            $required = [
+                'recordType', 'accountType', 'status', 'userGroup',
+                'emailType', 'termsUrl'
+            ];
+            foreach ($required as $key) {
+                if (empty($config[$key])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return parent::supportsMethod($method, $params);
     }
 
     /**

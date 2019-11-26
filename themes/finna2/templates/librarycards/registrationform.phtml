@@ -1,0 +1,60 @@
+<!-- START of: finna - librarycards/registrationform.phtml -->
+<?php
+    // Set up page title:
+    $pageTitle = $this->translate('new_ils_account') . ' (' . $this->translate('source_' . $this->target, null, $this->target) . ')';
+    $this->headTitle($pageTitle);
+    $this->layout()->finnaMainHeader = '';
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('recovery_title') . '</li>';
+?>
+<h2><?=$this->escapeHtml($pageTitle) ?></h2>
+<?php if ($this->registrationHelpText): ?>
+  <p><?=$this->escapeHtml($this->registrationHelpText) ?>
+<?php endif; ?>
+<?=$this->flashmessages()?>
+
+<h3><?=$this->transEsc('new_ils_account_title_registration')?></h3>
+<div class="login-col">
+  <form id="new-account-form" method="post" autocomplete="off" data-toggle="validator">
+    <?php if (!$this->translationEmpty('new_ils_account_help_html')): ?>
+      <p><?=$this->translate('new_ils_account_help_html') ?></p>
+    <?php endif; ?>
+    <?php foreach ($this->fields as $field => $data): ?>
+      <div class="form-group">
+        <?php if ('radio' === $data['type']): ?>
+          <fieldset id="<?=$this->escapeHtmlAttr($field)?>">
+            <legend><?=$this->transEsc($data['label']) ?>:</legend>
+            <?php foreach($data['options'] as $optionId => $option): ?>
+              <input type="radio" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>" class="form-control" value="<?=$this->escapeHtmlAttr($optionId)?>"<?=$optionId == $data['value'] ? ' checked' : ''?><?=$data['required'] ?? false ? ' required aria-required="true"': ''?><?=$data['readonly'] ?? false ? ' readonly': ''?>>
+              <label for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($option['name'] ?? $optionId) ?></label>
+              <br>
+            <?php endforeach; ?>
+          </fieldset>
+        <?php else: ?>
+          <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+          <br>
+          <input type="<?=$this->escapeHtmlAttr($data['type'])?>" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field)?>" class="form-control" value="<?=$this->escapeHtmlAttr($data['value'])?>"<?=$data['required'] ?? false ? ' required aria-required="true"': ''?><?=$data['readonly'] ?? false ? ' readonly': ''?>>
+        <?php endif; ?>
+        <div class="help-block with-errors"></div>
+      </div>
+    <?php endforeach; ?>
+    <div class="form-group">
+      <input id="acceptTerms" type="checkbox" name="acceptTerms" required>
+      <label for="acceptTerms" class="control-label"><?=$this->translate('new_ils_account_terms_accept_html', ['%%url%%' => $this->termsUrl])?></label>
+    </div>
+    <div class="form-group">
+      <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit') ?>"/>
+    </div>
+  </form>
+</div>
+<?php if (!$this->translationEmpty('new_ils_account_description_html')): ?>
+  <div class="login-col">
+    <div class="register-description">
+      <p class="register-info">
+        <?=$this->translate('new_ils_account_description_html', ['%%privacy_url%%' => $this->escapeHtmlAttr($this->url('content-page', ['page' => 'privacy']))])?>
+      </p>
+    </div>
+  </div>
+<?php endif;?>
+<!-- END of: finna - librarycards/registrationform.phtml -->

@@ -483,6 +483,18 @@ finna.layout = (function finnaLayout() {
     }).change();
   }
 
+  function initILSSelfRegistrationLink(links, idPrefix) {
+    var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+    $(searchPrefix + 'target').change(function onChangeLoginTargetLink() {
+      var target = $(searchPrefix + 'target').val();
+      if (links[target]) {
+        $('#login_library_card_register').attr('href', links[target]).show();
+      } else {
+        $('#login_library_card_register').hide();
+      }
+    }).change();
+  }
+
   function initSideFacets() {
     if (!document.addEventListener) {
       return;
@@ -826,6 +838,7 @@ finna.layout = (function finnaLayout() {
     initOrganisationPageLinks: initOrganisationPageLinks,
     initSecondaryLoginField: initSecondaryLoginField,
     initILSPasswordRecoveryLink: initILSPasswordRecoveryLink,
+    initILSSelfRegistrationLink: initILSSelfRegistrationLink,
     initLoginTabs: initLoginTabs,
     loadScripts: loadScripts,
     getMasonryState: getMasonryState,

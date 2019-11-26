@@ -34,6 +34,10 @@ extraHoldFields = comments:requiredByDate:pickUpLocation
 ; 3) a value within the Location IDs returned by getPickUpLocations()
 defaultPickUpLocation = ""
 
+; Optional help texts that can be displayed on the hold form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
 
 ; The "NewUser" section defines some default values that are used when creating an account
 ; in Alma via its API. This is only relevant if you use the authentication method "AlmaDatabase"
@@ -46,40 +50,50 @@ recordType = PUBLIC
 ; authentication method.
 accountType = INTERNAL
 
-; Mandatory. The status of the Alma user account. Usually "ACTIVE".
-status = ACTIVE
+; Mandatory. The status of the Alma user account. Usually "INACTIVE".
+status = INACTIVE
 
 ; Mandatory. The user group to which the new Alma account should belong. Use the code of one of
 ; the user groups that are defined in Alma (see "Alma Configuration -> User Management -> User Groups").
-userGroup =
-
-; Mandatory. The type of ID under which the username should be saved to Alma. Log in to the ExLibris developer
-; network and check the Alma API documentation for possible values on this site:
-; https://developers.exlibrisgroup.com/alma/apis/xsd/rest_user.xsd?tags=POST#user_identifier
-idType =
-
-; Mandatory. The preferred language of the new Alma account. This should normally be the Alma language
-; code of your local language (see "Alma Configuration -> General -> Institution Languages").
-preferredLanguage =
+userGroup = GUEST
 
 ; Mandatory. The type of eMail of the users eMail address. Log in to the ExLibris developer network and
 ; check the Alma API documentation for possible values on this site:
 ; https://developers.exlibrisgroup.com/alma/apis/xsd/rest_user.xsd?tags=POST#email_types
-emailType =
+emailType = personal
 
 ; Optional. Set the time period when the Alma account should expire. The given period will be added to the
 ; point in time of the Alma account creation. Use the DateInterval notation of PHP to express the period. See:
 ; https://secure.php.net/manual/en/dateinterval.construct.php#refsect1-dateinterval.construct-parameters
 ; If not set, 1 year (P1Y) will be used as default value.
-expiryDate =
+expiryDate = P10Y
 
 ; Optional. Set the time period that should be used for the Alma user account purge date. The given period
 ; will be added to the point in time of the Alma account creation. Use the DateInterval notation of PHP to
 ; express the period. See:
 ; https://secure.php.net/manual/en/dateinterval.construct.php#refsect1-dateinterval.construct-parameters
 ; If not set, the purge date of the Alma user account will be empty.
-purgeDate =
+purgeDate = P11Y
 
+; Field where the identity number is stored. Default is primary id. Supported values are:
+; "primary_id", "inst_id", "note"
+;identityField =
+
+; Optional introduction texts that can be displayed on the initial email form
+;introductionText = "Introduction text for all languages."
+;introductionText[en-gb] = "Introduction text for English language."
+
+; Optional registration help texts that can be displayed on the registration form
+;registrationHelpText = ""
+;registrationHelpText[fi] = "Tällä lomakkeella voit ilmoittautua kirjaston asiakkaaksi. Lomakkeen lähettämisen jälkeen sinun tulee vielä käydä henkilökohtaisesti kirjastossa todistamassa henkilöllisyytesi."
+;registrationHelpText[en-gb] = ""
+
+; URLs to the library's terms of use
+;termsUrl = "https://generic_terms_url"
+;termsUrl[en-gb] = "https://terms_in_english"
+
+; Organisation info ID (Kirjastohakemisto) for displaying contact information
+;organisationInfoId =
 
 [Webhook]
 ; The webhook secret. This must be the same value that was added to the Alma webhook configuration as a secret.

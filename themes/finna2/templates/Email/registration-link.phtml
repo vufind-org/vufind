@@ -1,0 +1,8 @@
+<?php // This is a text-only email template; do not include HTML! ?>
+<?=$this->translate('email_registration_requested', ['%%target%%' => $this->translate('source_' . $this->data['target'], [], $this->data['target'])])?>
+
+
+<?=$this->translate('email_registration_desc')?>
+
+
+<?=$this->translate('email_registration_link', ['%%url%%' => $this->url])?>
