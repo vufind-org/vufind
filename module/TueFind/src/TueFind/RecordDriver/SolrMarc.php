@@ -89,39 +89,6 @@ class SolrMarc extends SolrDefault
         }
     }
 
-    private function getFirstContainerSubfieldValue($subfield) {
-        $fields = $this->getMarcRecord()->getFields('936');
-        foreach ($fields as $field) {
-            if ($field->getIndicator('1') == 'u' && $field->getIndicator('2') == 'w') {
-                return $this->getSubfieldArray($field, [$subfield]);
-            }
-        }
-    }
-
-    public function getContainerEndPage() {
-        $pages = $this->getFirstContainerSubfieldValue('h');
-        $pages = $pages[0] ?? '';
-        if (preg_match('"^(\d+)(-(\d+))?$"', $pages, $hits))
-            return $hits[3] ?? $hits[1];
-    }
-
-    public function getContainerIssue() {
-        return $this->getFirstContainerSubfieldValue('e');
-    }
-
-    public function getContainerStartPage() {
-        $pages = $this->getFirstContainerSubfieldValue('h');
-        $pages = $pages[0] ?? '';
-        if (preg_match('"^(\d+)(-(\d+))?$"', $pages, $hits))
-            return $hits[1];
-
-        return $pages;
-    }
-
-    public function getContainerVolume() {
-        return $this->getFirstContainerSubfieldValue('d');
-    }
-
     /**
      * Wrapper for parent's getFieldArray, allowing multiple fields to be
      * processed at once
