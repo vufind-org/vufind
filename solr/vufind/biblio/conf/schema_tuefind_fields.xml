@@ -3,6 +3,7 @@
     <!-- COMMON fields -->
     <field name="author_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="container_ids_and_titles" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="end_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="has_unpaywall_entry" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="ids" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="is_open_access" type="string" indexed="true" stored="true" multiValued="false"/>
