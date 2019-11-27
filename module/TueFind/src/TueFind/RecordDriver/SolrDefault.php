@@ -77,6 +77,26 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $author_implode(array_map($author_implode, array_map("array_keys", $this->getDeduplicatedAuthors())));
     }
 
+    public function getContainerEndPage()
+    {
+        return $this->fields['end_page'] ?? '';
+    }
+
+    public function getContainerIssue()
+    {
+        return $this->fields['issue'] ?? '';
+    }
+
+    public function getContainerStartPage()
+    {
+        return $this->fields['start_page'] ?? '';
+    }
+
+    public function getContainerVolume()
+    {
+        return $this->fields['volume'] ?? '';
+    }
+
     /**
      * Return an associative array of all container IDs (parents) mapped to their titles containing the record.
      *

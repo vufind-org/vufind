@@ -89,7 +89,6 @@ class SolrMarc extends SolrDefault
         }
     }
 
-
     /**
      * Wrapper for parent's getFieldArray, allowing multiple fields to be
      * processed at once
