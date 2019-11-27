@@ -340,8 +340,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
                     'status' => $status,
-                    'location'
-                        => $this->getTranslatableString($item->item_data->location),
+                    'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
                     'callnumber' => $this->getTranslatableString(
                         $item->holding_data->call_number
@@ -1839,6 +1838,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         $subfield = $field->getSubfield($subfield);
         return false === $subfield ? '' : $subfield->getData();
+    }
+
+    /**
+     * Get location for an item
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return \VuFind\I18n\TranslatableString|string
+     */
+    protected function getItemLocation($item)
+    {
+        return $this->getTranslatableString($item->item_data->location);
     }
 
     // @codingStandardsIgnoreStart
