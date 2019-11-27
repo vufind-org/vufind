@@ -1000,6 +1000,60 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Get location for an item
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return \VuFind\I18n\TranslatableString|string
+     */
+    protected function getItemLocation($item)
+    {
+        $value = ($this->config['Catalog']['translationPrefix'] ?? '')
+            . (string)$item->item_data->location;
+        $desc = $this->getLocationExternalName(
+            (string)$item->item_data->library,
+            (string)$item->item_data->location
+        );
+        if (null === $desc) {
+            $desc
+                = (string)($item->item_data->location->attributes()->desc ?? $value);
+        }
+        return new \VuFind\I18n\TranslatableString($value, $desc);
+    }
+
+    /**
+     * Get the external name of a location
+     *
+     * @param string $library  Library
+     * @param string $location Location
+     *
+     * @return string
+     */
+    protected function getLocationExternalName($library, $location)
+    {
+        $cacheId = 'alma|locations|' . $library;
+        $saveLifetime = $this->cacheLifetime;
+        $this->cacheLifetime = 3600;
+        $locations = $this->getCachedData($cacheId);
+        $this->cacheLifetime = $saveLifetime;
+
+        if (null === $locations) {
+            $xml = $this->makeRequest(
+                '/conf/libraries/' . urlencode($library) . '/locations'
+            );
+            $locations = [];
+            foreach ($xml as $entry) {
+                $locations[(string)$entry->code] = [
+                    'name' => (string)$entry->name,
+                    'externalName' => (string)$entry->external_name
+                ];
+            }
+            $this->putCachedData($cacheId, $locations);
+        }
+        return $locations[$location]['externalName'] ?? null;
+    }
+
+    /**
      * Get code table options for table
      *
      * @param string $codeTable Code table to fetch
