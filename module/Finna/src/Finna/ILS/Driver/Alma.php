@@ -289,7 +289,15 @@ class Alma extends \VuFind\ILS\Driver\Alma
             }
         }
 
-        $profile['self_service_pin'] = '****';
+        // Display '****' as a hint that the field is available to update..
+        $fieldConfig = isset($this->config['updateProfile']['fields'])
+            ? $this->config['updateProfile']['fields'] : [];
+        foreach ($fieldConfig as $field) {
+            $parts = explode(':', $field);
+            if (($parts[1] ?? '') === 'self_service_pin') {
+                $profile['self_service_pin'] = '****';
+            }
+        }
 
         if ($xml->proxy_for_users) {
             foreach ($xml->proxy_for_users->proxy_for_user as $user) {
