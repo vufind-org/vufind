@@ -901,7 +901,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 if (null === $libraryFilter) {
                     $libraryFilter = [];
                 }
-                $libraryFilter = array_merge($libraryFilter ?? [], $rule['pickup']);
+                $libraryFilter = array_merge($libraryFilter, $rule['pickup'] ?? []);
 
                 if (!empty($rule['home']) && !empty($profile['homeAddress'])) {
                     $home = true;
