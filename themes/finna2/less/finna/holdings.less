@@ -151,7 +151,7 @@
     @media print {
         border-top: 1px solid @record-holdings-border-color;
     }
-    h5{
+    h5 {
         padding-left: 15px;
     }
     .holdings-container-heading {
@@ -170,6 +170,9 @@
                 text-transform: uppercase;
                 font-weight: bold;
                 font-size: .92em;
+            }
+            &.electronic {
+                padding: 10px 15px;
             }
 
             @media (max-width: @screen-xs-max) {
@@ -197,7 +200,7 @@
         .location {
             flex: 1 0 50%;
             border-top: 2px solid @record-holdings-border-color;
-            @media (max-width: @screen-xs-max) {   
+            @media (max-width: @screen-xs-max) {
                 width: 70%;
             }
         }
