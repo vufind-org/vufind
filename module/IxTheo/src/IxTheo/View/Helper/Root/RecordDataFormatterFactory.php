@@ -116,7 +116,8 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         // Clean ISBN (IxTheo-specific)
         $spec->setLine('ISBN', 'getCleanISBN');
         $spec->setLine('ISSN', 'getISSNs');
-        $spec->setLine('DOI', 'getCleanDOI');
+        // DOI with Hyperlink (TueFind-specific)
+        $this->addDOI($spec);
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
         $spec->setLine('Finding Aid', 'getFindingAids');
