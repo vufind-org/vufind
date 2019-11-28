@@ -38,6 +38,37 @@ defaultPickUpLocation = ""
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
 
+; Whether item level holds are enabled. Default is true.
+;enableItemHolds = true
+
+; Rules for filtering pickup locations. Each part of a rule set is separated by a
+; colon. A part contains a filter key, equals sign and values separated by commas.
+; A value can be enclosed in '' if it contains a colon or a comma. Values are
+; evaluated as regular expresssions.
+; Rules are processed in the order of occurrence until end or match=stop with a
+; matching rule is encountered.
+;
+; Supported filter keys are:
+; lib        - Item library (a single value)
+; loc        - Item location(s)
+; availlib   - Library with available items (a single value)
+; avail      - Location with available item(s)
+; unavaillib - Library with only unavailable items (a single value)
+; unavail    - Location with only unavailable item(s)
+; group      - Patron group
+; level      - Hold level: 'copy' (meaning item) or 'title'
+; match      - 'stop' to stop processing further rules on match. Otherwise all matching
+;           rules are combined.
+; The following keys define the outcome of a matching filter:
+; pickup     - Allowed pickup libraries
+; home       - true to indicate that home address is allowed as a pickup location
+; work       - true to indicate that work address is allowed as a pickup location
+;
+; Examples:
+;
+; pickupLocationRules[] = "loc=MAIN:group=PATRON:pickup=MAINLIB;match=stop"
+; pickupLocationRules[] = "loc=MAIN,SUB:group=STAFF:pickup=MAINLIB,RES_SHARE:work=true"
+;pickupLocationRules[] = ""
 
 ; The "NewUser" section defines some default values that are used when creating an account
 ; in Alma via its API. This is only relevant if you use the authentication method "AlmaDatabase"

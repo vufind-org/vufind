@@ -245,6 +245,25 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 } else {
                     $profile['country'] = null;
                 }
+
+                // Check if the user has a work and/or home address
+                foreach ($contact->addresses->address as $item) {
+                    foreach ($item->address_types->address_type ?? [] as $type) {
+                        $parts = [
+                            (string)$item->line1 ?? '',
+                            ((string)$item->zip ?? '') . ' '
+                            . ((string)$item->city ?? '')
+                        ];
+                        $parts = array_map('trim', $parts);
+                        $addressLine = implode(', ', array_filter($parts));
+                        if ('home' === (string)$type) {
+                            $profile['homeAddress'] = $addressLine;
+                        }
+                        if ('work' === (string)$type) {
+                            $profile['workAddress'] = $addressLine;
+                        }
+                    }
+                }
             }
             if ($contact->phones) {
                 $phone = null;
@@ -737,6 +756,194 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid library locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Hold details
+     *
+     * @return array An array of associative arrays with locationID and
+     * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickupLocations($patron, $holdDetails)
+    {
+        $libraries = parent::getPickupLocations($patron, $holdDetails);
+
+        if ($patron && $holdDetails
+            && !empty($this->config['Holds']['pickupLocationRules'])
+        ) {
+            $rules = $this->parsePickupLocationRules(
+                $this->config['Holds']['pickupLocationRules']
+            );
+            // Filter the pickup locations using the rules
+
+            $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
+                ? $holdDetails['level'] : 'copy';
+            $bibId = $holdDetails['id'];
+            $itemId = $holdDetails['item_id'] ?? false;
+
+            $itemLocations = [];
+            $availableLocations = [];
+            $unavailableLocations = [];
+            if ('copy' === $level && $itemId) {
+                $item = $this->makeRequest(
+                    '/bibs/' . urlencode($bibId) . '/holdings/ALL/items/'
+                    . urlencode($itemId)
+                );
+                if ($item) {
+                    $lib = (string)$item->item_data->library;
+                    $loc = (string)$item->item_data->location;
+                    $libLoc = [
+                        'lib' => $lib,
+                        'loc' => $loc
+                    ];
+                    $itemLocations[] = $libLoc;
+                    $status = (string)$item->item_data->base_status;
+                    if ('0' === $status) {
+                        $unavailableLocations[] = $libLoc;
+                    } else {
+                        $availableLocations[] = $libLoc;
+                    }
+                }
+            } else {
+                $params = [
+                    'mms_id' => $bibId,
+                    'expand' => 'p_avail'
+                ];
+                if ($bibs = $this->makeRequest('/bibs', $params)) {
+                    foreach ($bibs as $bib) {
+                        $marc = new \File_MARCXML(
+                            $bib->record->asXML(),
+                            \File_MARCXML::SOURCE_STRING
+                        );
+                        if ($record = $marc->next()) {
+                            // Physical
+                            $physicalItems = $record->getFields('AVA');
+                            foreach ($physicalItems as $field) {
+                                $lib = $this->getMarcSubfield($field, 'b');
+                                $loc = $this->getMarcSubfield($field, 'j');
+                                $libLoc = [
+                                    'lib' => $lib,
+                                    'loc' => $loc
+                                ];
+                                $itemLocations[] = $libLoc;
+                                $avail = $this->getMarcSubfield($field, 'e');
+                                if (strtolower($avail) === 'available') {
+                                    $availableLocations[] = $libLoc;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                foreach ($itemLocations as $itemLoc) {
+                    foreach ($availableLocations as $availLoc) {
+                        if ($itemLoc['lib'] === $availLoc['lib']
+                            && $itemLoc['loc'] === $availLoc['loc']
+                        ) {
+                            continue 2;
+                        }
+                    }
+                    $unavailableLocations[] = $itemLoc;
+                }
+            }
+            $profile = $this->getMyProfile($patron);
+            $patronGroup = $profile['group_code'] ?? '';
+            $libraryFilter = null;
+            $work = false;
+            $home = false;
+            foreach ($rules as $rule) {
+                if (!empty($rule['level'])
+                    && !$this->compareRuleWithArray($rule['level'], (array)$level)
+                ) {
+                    continue;
+                }
+                if ((!empty($rule['loc']) || !empty($rule['lib']))
+                    && !$this->compareLocationRule(
+                        $rule['lib'][0] ?? '', $rule['loc'] ?? [], $itemLocations
+                    )
+                ) {
+                    continue;
+                }
+                if ((!empty($rule['avail']) || !empty($rule['availlib']))
+                    && !$this->compareLocationRule(
+                        $rule['availlib'][0] ?? '',
+                        $rule['avail'] ?? [],
+                        $availableLocations
+                    )
+                ) {
+                    continue;
+                }
+                if ((!empty($rule['unavail']) || !empty($rule['unavaillib']))
+                    && !$this->compareLocationRule(
+                        $rule['unavaillib'][0] ?? '',
+                        $rule['unavail'] ?? [],
+                        $unavailableLocations
+                    )
+                ) {
+                    continue;
+                }
+                if (!empty($rule['group'])) {
+                    $match = $this->compareRuleWithArray(
+                        $rule['group'], (array)$patronGroup
+                    );
+                    if (!$match) {
+                        continue;
+                    }
+                }
+
+                // We have a matching rule
+                if (null === $libraryFilter) {
+                    $libraryFilter = [];
+                }
+                $libraryFilter = array_merge($libraryFilter ?? [], $rule['pickup']);
+
+                if (!empty($rule['home']) && !empty($profile['homeAddress'])) {
+                    $home = true;
+                }
+                if (!empty($rule['work']) && !empty($profile['workAddress'])) {
+                    $work = true;
+                }
+
+                if (in_array('stop', $rule['match'] ?? [])) {
+                    break;
+                }
+            }
+
+            if (null !== $libraryFilter) {
+                $libraries = array_filter(
+                    $libraries,
+                    function ($library) use ($libraryFilter) {
+                        return in_array($library['locationID'], $libraryFilter);
+                    }
+                );
+            }
+
+            if ($home) {
+                $libraries[] = [
+                    'locationID' => '$$HOME',
+                    'locationDisplay' => $profile['homeAddress']
+                ];
+            }
+            if ($work) {
+                if (!$home || $profile['homeAddress'] !== $profile['workAddress']) {
+                    $libraries[] = [
+                        'locationID' => '$$WORK',
+                        'locationDisplay' => $profile['workAddress']
+                    ];
+                }
+            }
+        }
+
+        return $libraries;
+    }
+
+    /**
      * Get Default Pick Up Location
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -751,6 +958,148 @@ class Alma extends \VuFind\ILS\Driver\Alma
     public function getDefaultPickUpLocation($patron = null, $holdDetails = null)
     {
         return false;
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        $level = $data['level'] ?? 'copy';
+        if ('copy' === $level) {
+            if (isset($this->config['Holds']['enableItemHolds'])
+                && !$this->config['Holds']['enableItemHolds']
+            ) {
+                return false;
+            }
+        }
+        return parent::checkRequestIsValid($id, $data, $patron);
+    }
+
+    /**
+     * Place a hold request via Alma API. This could be a title level request or
+     * an item level request.
+     *
+     * Finna: Handles the $$HOME and $$WORK pickup locations
+     *
+     * @param array $holdDetails An associative array w/ atleast patron and item_id
+     *
+     * @return array success: bool, sysMessage: string
+     *
+     * @link https://developers.exlibrisgroup.com/alma/apis/bibs
+     */
+    public function placeHold($holdDetails)
+    {
+        // Check for title or item level request
+        $level = $holdDetails['level'] ?? 'item';
+
+        // Get information that is valid for both, item level requests and title
+        // level requests.
+        $mmsId = $holdDetails['id'];
+        $holId = $holdDetails['holding_id'];
+        $itmId = $holdDetails['item_id'];
+        $patronId = $holdDetails['patron']['id'];
+        $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
+        $comment = $holdDetails['comment'] ?? null;
+        $requiredBy = (isset($holdDetails['requiredBy']))
+        ? $this->dateConverter->convertFromDisplayDate(
+            'Y-m-d',
+            $holdDetails['requiredBy']
+        ) . 'Z'
+        : null;
+
+        // Create body for API request
+        $body = [];
+        $body['request_type'] = 'HOLD';
+        if ('$$HOME' === $pickupLocation) {
+            $body['pickup_location_type'] = 'USER_HOME_ADDRESS';
+        } elseif ('$$WORK' === $pickupLocation) {
+            $body['pickup_location_type'] = 'USER_WORK_ADDRESS';
+        } else {
+            $body['pickup_location_type'] = 'LIBRARY';
+            $body['pickup_location_library'] = $pickupLocation;
+        }
+        $body['comment'] = $comment;
+        $body['last_interest_date'] = $requiredBy;
+
+        // Remove "null" values from body array
+        $body = array_filter($body);
+
+        // Check if we have a title level request or an item level request
+        if ($level === 'title') {
+            // Add description if we have one for title level requests as Alma
+            // needs it under certain circumstances. See: https://developers.
+            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+            $description = isset($holdDetails['description']) ?? null;
+            if ($description) {
+                $body['description'] = $description;
+            }
+
+            // Create HTTP client with Alma API URL for title level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/requests?apikey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronId)
+                . '&format=json'
+            );
+        } else {
+            // Create HTTP client with Alma API URL for item level requests
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                . '/holdings/' . urlencode($holId)
+                . '/items/' . urlencode($itmId)
+                . '/requests?apikey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronId)
+                . '&format=json'
+            );
+        }
+
+        // Set headers
+        $client->setHeaders(
+            [
+            'Content-type: application/json',
+            'Accept: application/json'
+            ]
+        );
+
+        // Set HTTP method
+        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+
+        // Set body
+        $client->setRawBody(json_encode($body));
+
+        // Send API call and get response
+        $response = $client->send();
+
+        // Check for success
+        if ($response->isSuccess()) {
+            return ['success' => true];
+        } else {
+            $this->logError(
+                'POST request for ' . $client->getUri()->toString() . ' failed: '
+                . $response->getBody()
+            );
+        }
+
+        // Get error message
+        $error = json_decode($response->getBody());
+        if (!$error) {
+            $error = simplexml_load_string($response->getBody());
+        }
+
+        return [
+            'success' => false,
+            'sysMessage' => $error->errorList->error[0]->errorMessage
+                ?? 'hold_error_fail'
+        ];
     }
 
     /**
@@ -800,6 +1149,16 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 $results['holdings'][] = $entry;
                 ++$results['total'];
             }
+        }
+
+        // Clear out hold check flag if item holds are disabled
+        if (isset($this->config['Holds']['enableItemHolds'])
+            && !$this->config['Holds']['enableItemHolds']
+        ) {
+            foreach ($results['holdings'] as &$holding) {
+                $holding['addLink'] = false;
+            }
+            unset($holding);
         }
 
         return $results;
@@ -1105,6 +1464,86 @@ class Alma extends \VuFind\ILS\Driver\Alma
         $this->putCachedData($cacheId, $result);
 
         return $result;
+    }
+
+    /**
+     * Parse pickup location rules from configuration
+     *
+     * @param array $config Rule configuration
+     *
+     * @return array
+     */
+    protected function parsePickupLocationRules($config)
+    {
+        $rules = [];
+        foreach ($config as $rule) {
+            $items = array_map('trim', str_getcsv($rule, ':'));
+            $ruleParts = [];
+            foreach ($items as $item) {
+                $parsed = parse_ini_string($item, false, INI_SCANNER_RAW);
+                foreach ($parsed as $key => $value) {
+                    $ruleParts[$key]
+                        = array_map('trim', str_getcsv($value, ',', "'"));
+                }
+            }
+            $rules[] = $ruleParts;
+        }
+        return $rules;
+    }
+
+    /**
+     * Compare a rule with an array of values
+     *
+     * @param string|array $rule   Rule values
+     * @param array        $values Values
+     *
+     * @return bool
+     */
+    protected function compareRuleWithArray($rule, $values)
+    {
+        foreach ((array)$rule as $ruleValue) {
+            $ruleValue = addcslashes($ruleValue, '\\');
+            foreach ($values as $value) {
+                if (preg_match("/^$ruleValue\$/i", $value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Compare a location rule
+     *
+     * @param string       $lib    Library
+     * @param string|array $loc    Locations
+     * @param array        $values Values
+     *
+     * @return bool
+     */
+    protected function compareLocationRule($lib, $loc, $values)
+    {
+        if (empty($loc)) {
+            foreach ($values as $value) {
+                if ($lib && $value['lib'] !== $lib) {
+                    continue;
+                }
+                return true;
+            }
+            return false;
+        }
+        foreach ((array)$loc as $ruleValue) {
+            $ruleValue = addcslashes($ruleValue, '\\');
+            foreach ($values as $value) {
+                if ($lib && $value['lib'] !== $lib) {
+                    continue;
+                }
+                if (preg_match("/^$ruleValue\$/i", $value['loc'])) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
