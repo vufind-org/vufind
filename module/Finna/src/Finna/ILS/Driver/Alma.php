@@ -1124,9 +1124,9 @@ class Alma extends \VuFind\ILS\Driver\Alma
 
         // Add holdings without items if we have a single page of holdings.
         // Otherwise we don't know all the items.
-        if (!isset($options['itemLimit'])
-            || $results['total'] <= $options['itemLimit']
-        ) {
+        $paged = isset($options['itemLimit'])
+            && $results['total'] > $options['itemLimit'];
+        if (!$paged) {
             $noItemsHoldings = [];
             $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
             foreach ($records->holding ?? [] as $record) {
@@ -1160,6 +1160,41 @@ class Alma extends \VuFind\ILS\Driver\Alma
             }
             unset($holding);
         }
+
+        // Add summary
+        $availableTotal = $itemsTotal = 0;
+        $locations = [];
+        if (!$paged) {
+            foreach ($results['holdings'] as $item) {
+                if (!empty($item['availability'])) {
+                    $availableTotal++;
+                }
+                if (strncmp($item['item_id'], 'HLD_', 4) !== 0) {
+                    $itemsTotal++;
+                }
+                $locations[(string)$item['location']] = true;
+            }
+        }
+
+        // Use a stupid location name to make sure this doesn't get mixed with
+        // real items that don't have a proper location.
+        $result = [
+           'available' => $paged ? null : $availableTotal,
+           'total' => $paged ? null : $itemsTotal,
+           'locations' => $paged ? null : count($locations),
+           'availability' => null,
+           'callnumber' => null,
+           'location' => '__HOLDINGSSUMMARYLOCATION__'
+        ];
+        if (!isset($this->config['Holdings']['displayTotalHoldCount'])
+            || $this->config['Holdings']['displayTotalHoldCount']
+        ) {
+            $bibs = $this->makeRequest(
+                '/bibs', ['mms_id' => $id, 'expand' => 'requests']
+            );
+            $result['reservations'] = $bibs->bib->requests ?? 0;
+        }
+        $results['holdings'][] = $result;
 
         return $results;
     }
