@@ -1122,6 +1122,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
     {
         $results = parent::getHolding($id, $patron, $options);
 
+        $itemsTotal = $results['total'];
+
         // Add holdings without items if we have a single page of holdings.
         // Otherwise we don't know all the items.
         $paged = isset($options['itemLimit'])
@@ -1162,15 +1164,12 @@ class Alma extends \VuFind\ILS\Driver\Alma
         }
 
         // Add summary
-        $availableTotal = $itemsTotal = 0;
+        $availableTotal = 0;
         $locations = [];
         if (!$paged) {
             foreach ($results['holdings'] as $item) {
                 if (!empty($item['availability'])) {
                     $availableTotal++;
-                }
-                if (strncmp($item['item_id'], 'HLD_', 4) !== 0) {
-                    $itemsTotal++;
                 }
                 $locations[(string)$item['location']] = true;
             }
@@ -1180,7 +1179,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
         // real items that don't have a proper location.
         $result = [
            'available' => $paged ? null : $availableTotal,
-           'total' => $paged ? null : $itemsTotal,
+           'total' => $itemsTotal,
            'locations' => $paged ? null : count($locations),
            'availability' => null,
            'callnumber' => null,
