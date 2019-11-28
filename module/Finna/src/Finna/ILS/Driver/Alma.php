@@ -859,7 +859,6 @@ class Alma extends \VuFind\ILS\Driver\Alma
      */
     protected function getHoldingsData($id, $holdingsId)
     {
-        // If the record is from the holdings list, it doesn't include MARC..
         $record = $this->makeRequest(
             '/bibs/' . urlencode($id) . '/holdings/'
             . urlencode($holdingsId)
