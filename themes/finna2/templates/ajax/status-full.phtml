@@ -8,14 +8,14 @@ $holdings = $this->statusItems;
 $summary = array_pop($holdings);
 $onlyUnknownStatuses = true;
 $holdingsConfig = $this->ils()->getConfig('Holdings', [$id]);
-if (isset($summary['total'])) {
+if (($summary['location'] ?? '') === '__HOLDINGSSUMMARYLOCATION__') {
   $itemsTotal = $summary['total'];
   $availableTotal = $summary['available'];
   $reservationsTotal
      = $summary['reservations'] ?? null;
   $orderedTotal
      = $summary['ordered'] ?? null;
-  $locations = $summary['locations'];
+  $locations = $summary['locations'] ?? null;
 } else {
   $holdings[] = $summary;
 }

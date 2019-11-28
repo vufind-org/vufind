@@ -45,7 +45,7 @@
       $last = array_pop($holdings['holdings']);
       if (isset($last['items']) && is_array($last['items'])) {
           $summary = $last['items'][0];
-          if (!isset($summary['total'])) {
+          if (($summary['location'] ?? '') !== '__HOLDINGSSUMMARYLOCATION__') {
              $summary = false;
           }
       }

@@ -333,7 +333,7 @@ class Gemini extends \VuFind\ILS\Driver\AbstractBase
                 'holdable' => $holdableTotal,
                 'availability' => null,
                 'callnumber' => null,
-                'location' => null
+                'location' => '__HOLDINGSSUMMARYLOCATION__'
             ];
             $holdings[] = $summary;
         }

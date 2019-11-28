@@ -140,7 +140,7 @@ trait VoyagerFinna
            'locations' => count($locations),
            'availability' => null,
            'callnumber' => null,
-           'location' => null
+           'location' => '__HOLDINGSSUMMARYLOCATION__'
         ];
     }
 

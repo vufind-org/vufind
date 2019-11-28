@@ -1691,7 +1691,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $results = [];
         $params = [
             'mms_id' => implode(',', $ids),
-            'expand' => implode(',', $types)
+            'expand' => implode(',', array_unique(array_merge($types, ['requests'])))
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
             foreach ($bibs as $bib) {
