@@ -1095,10 +1095,25 @@ class Alma extends \VuFind\ILS\Driver\Alma
             $error = simplexml_load_string($response->getBody());
         }
 
+        $errorCode = $error->errorList->error[0]->errorCode ?? null;
+        switch ($errorCode) {
+        case '401136':
+            $errorMsg = 'hold_error_already_held';
+            break;
+        case '401129':
+            $errorMsg = 'hold_error_cannot_fulfill';
+            break;
+        case '401652':
+            $errorMsg = 'hold_error_fail';
+            break;
+        default:
+            $errorMsg = $error->errorList->error[0]->errorMessage
+                ?? 'hold_error_fail';
+        }
+
         return [
             'success' => false,
-            'sysMessage' => $error->errorList->error[0]->errorMessage
-                ?? 'hold_error_fail'
+            'sysMessage' => $errorMsg
         ];
     }
 
