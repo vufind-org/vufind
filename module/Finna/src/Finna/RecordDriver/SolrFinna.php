@@ -746,9 +746,13 @@ trait SolrFinna
      */
     public function supportsOpenUrl()
     {
-        // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID.
+        // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID,
+        // or Alma MMS ID .
+        $formats = $this->getFormats();
+        $isDatabase = '0/Database/' === (string)($formats[0] ?? '');
         return $this->getCleanISSN() || $this->getCleanISBN()
-            || $this->getSfxObjectId() || $this->getAlmaMmsId();
+            || $this->getSfxObjectId()
+            || ($this->getAlmaMmsId() && !$isDatabase);
     }
 
     /**
