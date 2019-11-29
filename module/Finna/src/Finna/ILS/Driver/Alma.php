@@ -334,6 +334,52 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Check for account blocks in Alma and cache them.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     * @author Michael Birkner
+     */
+    public function getAccountBlocks($patron)
+    {
+        $patronId = $patron['id'];
+        $cacheId = 'alma|user|' . $patronId . '|blocks';
+        $cachedBlocks = $this->getCachedData($cacheId);
+        if ($cachedBlocks !== null) {
+            return $cachedBlocks;
+        }
+
+        $xml = $this->makeRequest('/users/' . $patronId);
+        if ($xml == null || empty($xml)) {
+            return false;
+        }
+
+        $userBlocks = $xml->user_blocks->user_block;
+        if ($userBlocks == null || empty($userBlocks)) {
+            return false;
+        }
+
+        $blocks = [];
+        foreach ($userBlocks as $block) {
+            $blockStatus = (string)$block->block_status;
+            if ($blockStatus === 'ACTIVE') {
+                $blocks[] = 'Borrowing Block Message';
+            }
+        }
+        $blocks = array_unique($blocks);
+
+        if (!empty($blocks)) {
+            $this->putCachedData($cacheId, $blocks);
+            return $blocks;
+        } else {
+            $this->putCachedData($cacheId, false);
+            return false;
+        }
+    }
+
+    /**
      * Update patron contact information
      *
      * @param array $patron  Patron array
