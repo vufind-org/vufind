@@ -136,12 +136,17 @@ a.authority {
   clear: left;
 }
 
-.record .record-title {
-  margin: 0;
-  margin-bottom: 3px;
-  font-size: @record-title-font-size;
-  @media (max-width: @screen-sm) {
-    margin-bottom: 20px;
+.record {
+  .record-title {
+    margin: 0;
+    margin-bottom: 3px;
+    font-size: @record-title-font-size;
+    @media (max-width: @screen-sm) {
+      margin-bottom: 20px;
+    }
+  }
+  .label {
+    display: inline-block;
   }
 }
 

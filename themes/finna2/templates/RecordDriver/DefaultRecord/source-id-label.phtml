@@ -1,0 +1,8 @@
+<?php // this is used so often that it would pollute the results: <!-- START of: finna - RecordDriver/DefaultRecord/source-id-label.phtml --> ?>
+<?php
+  $key = 'result_source_label_' . strtolower($this->driver->getSourceIdentifier());
+  if (!$this->translationEmpty($key)):
+?>
+<span class="label label-info label-source"><?=$this->transEsc($key) ?></span>
+<?php endif; ?>
+<?php // this is used so often that it would pollute the results: <!-- END of: finna - RecordDriver/DefaultRecord/source-id-label.phtml --> ?>

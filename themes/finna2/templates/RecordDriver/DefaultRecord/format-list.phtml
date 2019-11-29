@@ -15,6 +15,6 @@
   }
 ?>
 <?php foreach ($formatMap as $format): ?>
-  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
+  <span class="label label-info format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
 <?php endforeach; ?>
 <?php // <!-- END of: finna - RecordDriver/DefaultRecord/format-list.phtml --> ?>

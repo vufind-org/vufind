@@ -42,7 +42,7 @@ if ($img):
           </h2>
         </div>
         <div class="dateyeartype">
-          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
+          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <div class="truncate-field" data-rows="1">
               <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>

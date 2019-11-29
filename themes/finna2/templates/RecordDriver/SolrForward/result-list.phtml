@@ -52,6 +52,7 @@ if ($img):
             <?php else: ?>
               <?=$this->escapeHtml($type) ?><?=$this->escapeHtml($country) ?>
             <?php endif; ?>
+            <?=$this->record($this->driver)->getSourceIdElement() ?>
           </div>
 
           <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>

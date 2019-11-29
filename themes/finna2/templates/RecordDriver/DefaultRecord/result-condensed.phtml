@@ -29,7 +29,7 @@
         <?php endif; ?>
 
         <div class="resultOtherLinks">
-          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
+          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
           <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
             <?php $prevOtherLinkHeading = ''; ?>
             <?php foreach ($results as $result): ?>

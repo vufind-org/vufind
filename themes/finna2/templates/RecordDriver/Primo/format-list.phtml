@@ -1,5 +1,5 @@
 <?php // this is used so often that it would pollute the results: <!-- START of: finna - RecordDriver/Primo/format-list.phtml --> ?>
 <?php $formats = $this->driver->tryMethod('getFormats'); if ($formats): ?>
-  <span class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc('format_PCI_' . strtolower(end($formats)), null, end($formats))?></span>
+  <span class="label label-info format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc('format_PCI_' . strtolower(end($formats)), null, end($formats))?></span>
 <?php endif; ?>
 <?php // this is used so often that it would pollute the results: <!-- END of: finna - RecordDriver/Primo/format-list.phtml --> ?>

@@ -684,4 +684,20 @@ class Record extends \VuFind\View\Helper\Root\Record
     {
         return $this->renderedUrls;
     }
+
+    /**
+     * Render a source id element if necessary
+     *
+     * @return string
+     */
+    public function getSourceIdElement()
+    {
+        $view = $this->getView();
+        if (isset($view->results) && is_callable([$view->results, 'getBackendId'])) {
+            if ($view->results->getBackendId() === 'Blender') {
+                return $this->renderTemplate('source-id-label.phtml');
+            }
+        }
+        return '';
+    }
 }
