@@ -214,13 +214,13 @@ finna.dateRangeVis = (function finnaDateRangeVis() {
         if (field.substring(0, 1) === '?') {
           field = field.substring(1);
         }
-        var value = decodeURIComponent(param[1]);
-
+        // Replace '+' since decodeURIComponent doesn't handle it
+        var value = decodeURIComponent(param[1].replace(/\+/g, '%20'));
         if (field === 'filter[]') {
           var valueParts = value.split(':');
           if (valueParts[0] === facetField) {
             // Daterange filter active: widen selected date range by configured amount of years
-            var regex = new RegExp('\\[(\\d+|\\*)\\+TO\\+(\\d+|\\*)\\]');
+            var regex = new RegExp('\\[(\\d+|\\*)\\sTO\\s(\\d+|\\*)\\]');
             value = value.replace(
               regex,
               function urlReplace(match, $1, $2/*, offset, original*/) {
@@ -232,7 +232,7 @@ finna.dateRangeVis = (function finnaDateRangeVis() {
                 if (to !== '*') {
                   to = parseInt($2, 10) + plotExtra;
                 }
-                return '[' + from + "+TO+" + to + ']';
+                return '[' + from + " TO " + to + ']';
               }
             );
           }
