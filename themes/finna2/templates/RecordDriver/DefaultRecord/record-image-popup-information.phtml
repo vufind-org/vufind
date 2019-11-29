@@ -157,7 +157,7 @@
     <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i><span><?=$this->transEsc('To the record') ?></span></a></div>
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?><div class="save-record-link"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i><span><?=$this->transEsc('Add to favorites')?></span></a></div><?php endif; ?>
     <?php if ($this->record($this->driver)->allowRecordImageDownload() && isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
-      <div class="open-link"><a target="_blank" class="original-image-url" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>"><i class="fa fa-download"></i><span><?=$this->transEsc('Download the image') ?></span></a> <span class="image-dimensions"></span></div>
+      <div class="open-link"><a target="_blank" class="original-image-url" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download><i class="fa fa-download"></i><span><?=$this->transEsc('Download the image') ?></span></a> <span class="image-dimensions"></span></div>
     <?php else: ?>
       <a class="original-image-url hidden" href="<?=$originalImage ?>">Hidden</a>
     <?php endif ?>

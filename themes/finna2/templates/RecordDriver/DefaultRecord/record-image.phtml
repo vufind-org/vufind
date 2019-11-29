@@ -24,7 +24,7 @@
           <div class="image-link">
             <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
               <div class="open-link">
-                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download="<?=$this->escapeHtmlAttr($originalImage) ?>">
+                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download>
                   <i aria-hidden="true" class="fa fa-download"></i>
                   <span><?=$this->transEsc('Download the image') ?></span>
                 </a>
