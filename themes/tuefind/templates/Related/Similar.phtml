@@ -1,0 +1,41 @@
+<script>
+$(function () {
+    $('#mltmore').css('cursor', 'pointer');
+    $('#mltmore').click(function () {
+        $('#mlt li:hidden').slice(0, 5).show();
+        if ($('#mlt li').length == $('#mlt li:visible').length) {
+            $('#mltmore').hide();
+        }
+    });
+});
+</script>
+<style>
+ul li:nth-child(n+6) {
+    display:none;
+    list-style-type: none;
+}
+</style>
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<?php $similarRecords = $this->related->getResults(); ?>
+<?php if (!empty($similarRecords)): ?>
+  <ul id="mlt" class="list-group">
+    <?php foreach ($similarRecords as $data): ?>
+      <li class="list-group-item">
+        <?php $formats = $data->getFormats(); ?>
+        <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
+        <a href="<?=$this->recordLink()->getUrl($data)?>">
+          <?=$this->escapeHtml($data->getTitle())?>
+        </a>
+        <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+          <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+        <?php endif; ?>
+        <?php $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+          <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+        <?php endif; ?>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+      <span id="mltmore" class="text-primary"><?=$this->transEsc('more')?></span>
+<?php else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<?php endif; ?>
