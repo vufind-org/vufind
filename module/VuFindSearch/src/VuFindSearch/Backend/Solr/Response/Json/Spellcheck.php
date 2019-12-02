@@ -165,7 +165,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return bool
      */
-    protected function contains($term)
+    protected function contains(string $term)
     {
         if ($this->terms->offsetExists($term)) {
             return true;
@@ -173,10 +173,7 @@ class Spellcheck implements IteratorAggregate, Countable
 
         $qTerm = preg_quote($term, '/');
         $length = strlen($term);
-        foreach (array_keys((array)$this->terms) as $rawKey) {
-            // We need to be sure the key is a string; it's possible that
-            // ArrayObject::offsetSet() has converted it to an integer.
-            $key = (string)$rawKey;
+        foreach (array_keys((array)$this->terms) as $key) {
             if ($length > strlen($key)) {
                 return false;
             }
