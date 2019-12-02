@@ -1395,7 +1395,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
     protected function createHoldingEntry($id, $holding)
     {
         $location = $this->getTranslatableString($holding->library);
-        $callnumber = $this->getTranslatableString($holding->call_number);
+        $callnumber = $holding->call_number
+            ? $this->getTranslatableString($holding->call_number) : '';
 
         return [
             'id' => $id,
