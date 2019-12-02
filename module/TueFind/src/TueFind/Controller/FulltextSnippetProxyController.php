@@ -162,13 +162,24 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function previousSnippetHasSameEnd($previousSnippet, $parent_sibling_left) {
+        if (!$previousSnippet || !isset($previousSnippet))
+            return false;
+        $previousSnippetXPath = new \DOMXPath($previousSnippet);
+        $last_paragraph = $previousSnippetXPath->query('//p[last()]');
+        if (!$last_paragraph || $last_paragraph->item(0) == null)
+            return false;
+        return ($last_paragraph->item(0)->textContent == $parent_sibling_left->firstChild->textContent) ? true : false;
+    }
+
+
     protected function extractSnippetParagraph($snippet_page) {
         $dom = new \DOMDocument();
         $dom->loadHTML($snippet_page, LIBXML_NOERROR /*Needed since ES highlighting does not address nesting of tags properly*/);
         $dom->normalizeDocument(); //Hopefully get rid of strange empty textfields caused by whitespace nodes that prevent proper navigation
         $xpath = new \DOMXPath($dom);
         $highlight_nodes =  $xpath->query('//' . self::esHighlightTag);
-        $snippets = [];
+        $snippet_trees = [];
         foreach ($highlight_nodes as $highlight_node) {
             $parent_node = $highlight_node->parentNode;
             if (is_null($parent_node))
@@ -178,22 +189,30 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
             $parent_sibling_right = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
             $snippet_tree = new \DomDocument();
             if (!is_null($parent_sibling_left)) {
-                $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
-                $import_node_left->firstChild->textContent = '...' . $import_node_left->firstChild->textContent;
-                $snippet_tree->appendChild($import_node_left);
+                // Make sure we merge subsequent snippet_trees to avoid duplication
+                if ($this->previousSnippetHasSameEnd(end($snippet_trees), $parent_sibling_left)) {
+                    $snippet_tree = end($snippet_trees);
+                    array_pop($snippet_trees);
+                }
+                else {
+                    $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
+                    $snippet_tree->appendChild($import_node_left);
+                }
             }
             $import_node = $snippet_tree->importNode($parent_node, true /*deep*/);
             $snippet_tree->appendChild($import_node);
             if (!is_null($parent_sibling_right)) {
                 $import_node_right = $snippet_tree->importNode($parent_sibling_right, true /*deep*/);
-                $import_node_right->firstChild->textContent =  $import_node_right->firstChild->textContent . '...';
                 $snippet_tree->appendChild($import_node_right);
             }
-            $snippet = $snippet_tree->saveHTML();
-            array_push($snippets, $snippet);
+            array_push($snippet_trees, $snippet_tree);
         }
-        $snippets = array_unique($snippets); // Handle several highlights in the same paragraph
-        return implode("", $snippets);
+
+        array_walk($snippet_trees, function($snippet_tree) { $snippet_tree->insertBefore($snippet_tree->createTextNode('...'), $snippet_tree->firstChild);
+                                                             $snippet_tree->appendChild($snippet_tree->createTextNode('...'));
+                                                             return $snippet_tree; } );
+        $snippets_html = array_map(function($snippet_tree) { return $snippet_tree->saveHTML(); }, $snippet_trees );
+        return implode("", $snippets_html);
 
     }
 
