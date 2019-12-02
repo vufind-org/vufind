@@ -173,7 +173,10 @@ class Spellcheck implements IteratorAggregate, Countable
 
         $qTerm = preg_quote($term, '/');
         $length = strlen($term);
-        foreach (array_keys((array)$this->terms) as $key) {
+        foreach (array_keys((array)$this->terms) as $rawKey) {
+            // We need to be sure the key is a string; it's possible that
+            // ArrayObject::offsetSet() has converted it to an integer.
+            $key = (string)$rawKey;
             if ($length > strlen($key)) {
                 return false;
             }
