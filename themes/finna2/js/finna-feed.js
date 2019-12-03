@@ -112,9 +112,8 @@ finna.feed = (function finnaFeed() {
 
     var url = VuFind.path + '/AJAX/JSON?' + $.param(params);
 
-    // Append spinner
-    holder.append('<i class="fa fa-spin fa-spinner hide"></i>');
-    holder.find('.fa-spin').delay(1000).fadeIn();
+    // Display loading indicator
+    holder.find('.feed-load-indicator').removeClass('hidden');
 
     $.getJSON(url)
       .done(function loadFeedDone(response) {
@@ -278,8 +277,10 @@ finna.feed = (function finnaFeed() {
   }
 
   function initComponents() {
-    $('.feed-container[data-init!="0"]').each(function loadEachFeed() {
-      loadFeed($(this));
+    $('.feed-container[data-init!="0"]').each(function setupLoadFeed() {
+      $(this).one('inview', function loadEachFeed() {
+        loadFeed($(this));
+      });
     });
   }
 
