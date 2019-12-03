@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -118,11 +118,10 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         if (!empty($dcDate)) {
             $entry->setDCDate($dcDate);
         }
-        $urlHelper = $this->getView()->plugin('url');
         $recordHelper = $this->getView()->plugin('record');
         $recordImage = $this->getView()->plugin('recordImage');
         $imageUrl = $recordImage($recordHelper($record))->getLargeImage()
-            . '&imgext=.jpeg';
+            . '&w=1024&imgext=.jpeg';
         $entry->setEnclosure(
             [
                 'uri' => $serverUrl($imageUrl),
