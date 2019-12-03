@@ -1,7 +1,9 @@
 <!-- START of: finna - Helpers/feed.phtml -->
 <div class="feed-container" data-feed="<?= $this->id; ?>"<?= ($this->init ?? true) ? '' : ' data-init="0"'?>>
 <span class="feed-load-indicator hidden">
+  <p>
     <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
+  </p>
 </span>
 </div>
 <!-- END of: finna - Helpers/feed.phtml -->
