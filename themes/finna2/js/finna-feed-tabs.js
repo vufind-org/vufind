@@ -53,13 +53,6 @@ finna.feedTabs = (function finnaFeedTab() {
     return loadContent;
   }
 
-  function init(id) {
-    var container = $('.feed-tabs#' + id);
-    $(container).one('inview', function doInit() {
-      loadFeedTabs(container);
-    });
-  }
-
   function loadFeedTabs(container) {
     if (container.hasClass('inited')) {
       return;
@@ -105,6 +98,13 @@ finna.feedTabs = (function finnaFeedTab() {
     });
 
     container.find('.feed-accordions .accordion.active').click();
+  }
+
+  function init(id) {
+    var container = $('.feed-tabs#' + id);
+    $(container).one('inview', function doInit() {
+      loadFeedTabs(container);
+    });
   }
 
   var my = {
