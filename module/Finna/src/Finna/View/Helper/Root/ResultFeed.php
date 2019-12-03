@@ -121,7 +121,7 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $recordHelper = $this->getView()->plugin('record');
         $recordImage = $this->getView()->plugin('recordImage');
         $imageUrl = $recordImage($recordHelper($record))->getLargeImage()
-            . '&w=1024&imgext=.jpeg';
+            . '&w=1024&h=1024&imgext=.jpeg';
         $entry->setEnclosure(
             [
                 'uri' => $serverUrl($imageUrl),
