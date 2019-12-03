@@ -406,42 +406,34 @@ class Loader extends \VuFind\Cover\Loader
 
         list($width, $height, $type) = @getimagesize($tempFile);
 
-        $reqWidth = $this->width;
-        $reqHeight = $this->height;
+        $reqWidth = $this->width ?: $width;
+        $reqHeight = $this->height ?: $height;
 
-        if ($reqWidth && $reqHeight) {
-            $quality = 90;
-
-            if ($width > $reqWidth || $height > $reqHeight) {
-                $newHeight = min($height, $reqHeight);
-                $newWidth = round($newHeight * ($width / $height));
-                if ($newWidth > $reqWidth) {
-                    $newWidth = $reqWidth;
-                    $newHeight = round($newWidth * ($height / $width));
-                }
-
-                $imageGDResized = imagecreatetruecolor($newWidth, $newHeight);
-                imagecopyresampled(
-                    $imageGDResized, $imageGD, 0, 0, 0, 0,
-                    $newWidth, $newHeight, $width, $height
-                );
-                if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
-                    return false;
-                }
-            } else {
-                if (!@imagejpeg($imageGD, $finalFile, $quality)) {
-                    return false;
-                }
+        $quality = 90;
+        if ($width > $reqWidth || $height > $reqHeight) {
+            $newHeight = min($height, $reqHeight);
+            $newWidth = round($newHeight * ($width / $height));
+            if ($newWidth > $reqWidth) {
+                $newWidth = $reqWidth;
+                $newHeight = round($newWidth * ($height / $width));
             }
 
-            // We no longer need the temp file:
-            @unlink($tempFile);
+            $imageGDResized = imagecreatetruecolor($newWidth, $newHeight);
+            imagecopyresampled(
+                $imageGDResized, $imageGD, 0, 0, 0, 0,
+                $newWidth, $newHeight, $width, $height
+            );
+            if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
+                return false;
+            }
         } else {
-            // Move temporary file to final location:
-            if (!$this->validateAndMoveTempFile($image, $tempFile, $finalFile)) {
+            if (!@imagejpeg($imageGD, $finalFile, $quality)) {
                 return false;
             }
         }
+
+        // We no longer need the temp file:
+        @unlink($tempFile);
 
         // Display the image:
         $this->contentType = 'image/jpeg';
