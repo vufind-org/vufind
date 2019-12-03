@@ -112,8 +112,8 @@ finna.feed = (function finnaFeed() {
 
     var url = VuFind.path + '/AJAX/JSON?' + $.param(params);
 
-    // Display loading indicator
-    holder.find('.feed-load-indicator').removeClass('hidden');
+    // Prepend spinner
+    holder.prepend('<i class="fa fa-spin fa-spinner"></i>');
 
     $.getJSON(url)
       .done(function loadFeedDone(response) {

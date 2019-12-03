@@ -55,6 +55,12 @@ finna.feedTabs = (function finnaFeedTab() {
 
   function init(id) {
     var container = $('.feed-tabs#' + id);
+    $(container).one('inview', function doInit() {
+      loadFeedTabs(container);
+    });
+  }
+
+  function loadFeedTabs(container) {
     if (container.hasClass('inited')) {
       return;
     }
