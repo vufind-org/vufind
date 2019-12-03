@@ -224,6 +224,8 @@ class Loader extends \VuFind\Cover\Loader
 
         if (isset($this->url)) {
             $keys['url'] = md5($this->url);
+            $host = parse_url($this->url, PHP_URL_HOST);
+            $keys['host'] = substr($host, 0, 100);
         } else {
             if (isset($ids['isbn'])) {
                 $keys['isbn'] = $ids['isbn']->get13();
