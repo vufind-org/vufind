@@ -100,9 +100,9 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        if (!isset($this->config->Piwik->url)
-            || !isset($this->config->Piwik->site_id)
-            || !isset($this->config->Piwik->token_auth)
+        if (empty($this->config->Piwik->url)
+            || empty($this->config->Piwik->site_id)
+            || empty($this->config->Piwik->token_auth)
         ) {
             return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
