@@ -5,12 +5,7 @@
       <ul>
         <?php foreach ($this->electronic as $link): ?>
           <li>
-            <?php if (!empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-' . $link['access'] . '"':''?> target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
-            <?php else: ?>
-              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
-            <?php endif; ?>
-            <?=$this->context($this)->renderInContext('ajax/resolverLinksCoverage.phtml', ['link' => $link]); ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'electronic']); ?>
           </li>
         <?php endforeach; ?>
       </ul>
@@ -21,12 +16,7 @@
       <ul>
         <?php foreach ($this->print as $link): ?>
           <li>
-            <?php if (!empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-' . $link['access'] . '"':''?> target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
-            <?php else: ?>
-              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
-            <?php endif; ?>
-            <?=$this->context($this)->renderInContext('ajax/resolverLinksCoverage.phtml', ['link' => $link]); ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'electronic']); ?>
           </li>
         <?php endforeach; ?>
       </ul>
