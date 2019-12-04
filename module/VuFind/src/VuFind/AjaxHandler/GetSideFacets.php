@@ -132,7 +132,14 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
-        $recommend = $results->getRecommendations($configLocation)[0];
+        $recommend = $results->getRecommendations($configLocation);
+        if (empty($recommend)) {
+            return $this->formatResponse(
+                'Invalid config location',
+                self::STATUS_HTTP_BAD_REQUEST
+            );
+        }
+        $recommend = $recommend[0];
 
         $context = [
             'recommend' => $recommend,
