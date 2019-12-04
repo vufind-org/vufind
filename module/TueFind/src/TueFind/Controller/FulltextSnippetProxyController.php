@@ -190,10 +190,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
             $snippet_tree = new \DomDocument();
             if (!is_null($parent_sibling_left)) {
                 // Make sure we merge subsequent snippet_trees to avoid duplication
-                if ($this->previousSnippetHasSameEnd(end($snippet_trees), $parent_sibling_left)) {
-                    $snippet_tree = end($snippet_trees);
-                    array_pop($snippet_trees);
-                }
+                if ($this->previousSnippetHasSameEnd(end($snippet_trees), $parent_sibling_left))
+                    $snippet_tree = array_pop($snippet_trees);
                 else {
                     $import_node_left = $snippet_tree->importNode($parent_sibling_left, true);
                     $snippet_tree->appendChild($import_node_left);
