@@ -38,7 +38,10 @@ defaultPickUpLocation = ""
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
 
-; Whether item level holds are enabled. Default is true.
+; Whether item level holds are enabled. Possible values:
+;   true          - Always when Alma allows them
+;   false         - Never
+;   "description" - Only if the item has a description
 ;enableItemHolds = true
 
 ; Rules for filtering pickup locations. Each part of a rule set is separated by a
