@@ -1164,6 +1164,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
+     * Finna: Don't use a running number as item number.
+     *
      * @param string $id      The record id to retrieve the holdings for
      * @param array  $patron  Patron data
      * @param array  $options Additional options
@@ -1176,7 +1178,111 @@ class Alma extends \VuFind\ILS\Driver\Alma
      */
     public function getHolding($id, $patron = null, array $options = [])
     {
-        $results = parent::getHolding($id, $patron, $options);
+        // Prepare result array with default values. If no API result can be received
+        // these will be returned.
+        $results['total'] = 0;
+        $results['holdings'] = [];
+
+        // Correct copy count in case of paging
+        $copyCount = $options['offset'] ?? 0;
+
+        // Paging parameters for paginated API call. The "limit" tells the API how
+        // many items the call should return at once (e. g. 10). The "offset" defines
+        // the range (e. g. get items 30 to 40). With these parameters we are able to
+        // use a paginator for paging through many items.
+        $apiPagingParams = '';
+        if ($options['itemLimit'] ?? null) {
+            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
+                . '&offset=' . urlencode($options['offset'] ?? 0);
+        }
+
+        // The path for the API call. We call "ALL" available items, but not at once
+        // as a pagination mechanism is used. If paging params are not set for some
+        // reason, the first 10 items are called which is the default API behaviour.
+        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
+            . $apiPagingParams
+            . '&order_by=library,location,enum_a,enum_b&direction=desc'
+            . '&expand=due_date';
+
+        if ($items = $this->makeRequest($itemsPath)) {
+            // Get the total number of items returned from the API call and set it to
+            // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
+            // the items paginator.
+            $results['total'] = (int)$items->attributes()->total_record_count;
+
+            foreach ($items->item as $item) {
+                $holdingId = (string)$item->holding_data->holding_id;
+                $itemId = (string)$item->item_data->pid;
+                $barcode = (string)$item->item_data->barcode;
+                $status = (string)$item->item_data->base_status[0]
+                    ->attributes()['desc'];
+                $duedate = $item->item_data->due_date
+                    ? $this->parseDate((string)$item->item_data->due_date) : null;
+                if ($duedate && 'Item not in place' === $status) {
+                    $status = 'Checked Out';
+                }
+
+                $itemNotes = !empty($item->item_data->public_note)
+                    ? [(string)$item->item_data->public_note] : null;
+
+                $processType = (string)($item->item_data->process_type ?? '');
+                if ($processType && 'LOAN' !== $processType) {
+                    $status = $this->getTranslatableStatusString(
+                        $item->item_data->process_type
+                    );
+                }
+
+                $description = null;
+                $number = null;
+                if (!empty($item->item_data->description)) {
+                    $number = (string)$item->item_data->description;
+                    $description = (string)$item->item_data->description;
+                }
+
+                $results['holdings'][] = [
+                    'id' => $id,
+                    'source' => 'Solr',
+                    'availability' => $this->getAvailabilityFromItem($item),
+                    'status' => $status,
+                    'location' => $this->getItemLocation($item),
+                    'reserve' => 'N',   // TODO: support reserve status
+                    'callnumber' => $this->getTranslatableString(
+                        $item->holding_data->call_number
+                    ),
+                    'duedate' => $duedate,
+                    'returnDate' => false, // TODO: support recent returns
+                    'number' => $number,
+                    'barcode' => empty($barcode) ? 'n/a' : $barcode,
+                    'item_notes' => $itemNotes ?? null,
+                    'item_id' => $itemId,
+                    'holding_id' => $holdingId,
+                    'holdtype' => 'auto',
+                    'addLink' => $patron ? 'check' : false,
+                    // For Alma title-level hold requests
+                    'description' => $description ?? null
+                ];
+            }
+        }
+
+        // Fetch also digital and/or electronic inventory if configured
+        $types = $this->getInventoryTypes();
+        if (in_array('d_avail', $types) || in_array('e_avail', $types)) {
+            // No need for physical items
+            $key = array_search('p_avail', $types);
+            if (false !== $key) {
+                unset($types[$key]);
+            }
+            $statuses = $this->getStatusesForInventoryTypes((array)$id, $types);
+            $electronic = [];
+            foreach ($statuses as $record) {
+                foreach ($record as $status) {
+                    $electronic[] = $status;
+                }
+            }
+            $results['electronic_holdings'] = $electronic;
+        }
+
+        // The rest is completely Finna-specific:
 
         $itemsTotal = $results['total'];
 
