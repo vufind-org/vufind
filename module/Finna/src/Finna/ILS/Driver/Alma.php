@@ -833,71 +833,50 @@ class Alma extends \VuFind\ILS\Driver\Alma
             $bibId = $holdDetails['id'];
             $itemId = $holdDetails['item_id'] ?? false;
 
-            $itemLocations = [];
-            $availableLocations = [];
-            $unavailableLocations = [];
+            $allItems = [];
+            $availableItems = [];
+            $unavailableItems = [];
             if ('copy' === $level && $itemId) {
                 $item = $this->makeRequest(
                     '/bibs/' . urlencode($bibId) . '/holdings/ALL/items/'
                     . urlencode($itemId)
                 );
-                if ($item) {
-                    $lib = (string)$item->item_data->library;
-                    $loc = (string)$item->item_data->location;
-                    $libLoc = [
-                        'lib' => $lib,
-                        'loc' => $loc
-                    ];
-                    $itemLocations[] = $libLoc;
-                    $status = (string)$item->item_data->base_status;
-                    if ('0' === $status) {
-                        $unavailableLocations[] = $libLoc;
-                    } else {
-                        $availableLocations[] = $libLoc;
-                    }
-                }
+                $items = [$item];
             } else {
-                $params = [
-                    'mms_id' => $bibId,
-                    'expand' => 'p_avail'
+                $items = $this->makeRequest(
+                    '/bibs/' . urlencode($bibId) . '/holdings/ALL/items'
+                );
+                $items = $items->item;
+            }
+            foreach ($items as $item) {
+                $lib = (string)$item->item_data->library;
+                $loc = (string)$item->item_data->location;
+                $policy = !empty($item->item_data->policy) ?
+                    (string)$item->item_data->policy : '';
+                $entry = [
+                    'lib' => $lib,
+                    'loc' => $loc,
+                    'policy' => $policy
                 ];
-                if ($bibs = $this->makeRequest('/bibs', $params)) {
-                    foreach ($bibs as $bib) {
-                        $marc = new \File_MARCXML(
-                            $bib->record->asXML(),
-                            \File_MARCXML::SOURCE_STRING
-                        );
-                        if ($record = $marc->next()) {
-                            // Physical
-                            $physicalItems = $record->getFields('AVA');
-                            foreach ($physicalItems as $field) {
-                                $lib = $this->getMarcSubfield($field, 'b');
-                                $loc = $this->getMarcSubfield($field, 'j');
-                                $libLoc = [
-                                    'lib' => $lib,
-                                    'loc' => $loc
-                                ];
-                                $itemLocations[] = $libLoc;
-                                $avail = $this->getMarcSubfield($field, 'e');
-                                if (strtolower($avail) === 'available') {
-                                    $availableLocations[] = $libLoc;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                foreach ($itemLocations as $itemLoc) {
-                    foreach ($availableLocations as $availLoc) {
-                        if ($itemLoc['lib'] === $availLoc['lib']
-                            && $itemLoc['loc'] === $availLoc['loc']
-                        ) {
-                            continue 2;
-                        }
-                    }
-                    $unavailableLocations[] = $itemLoc;
+                $allItems[] = $entry;
+                $status = (string)$item->item_data->base_status;
+                if ('1' === $status) {
+                    $availableItems[] = $entry;
                 }
             }
+
+            foreach ($allItems as $item) {
+                foreach ($availableItems as $availItem) {
+                    if ($item['lib'] === $availItem['lib']
+                        && $item['loc'] === $availItem['loc']
+                        && $item['policy'] === $availItem['policy']
+                    ) {
+                        continue 2;
+                    }
+                }
+                $unavailableItems[] = $entry;
+            }
+
             $profile = $this->getMyProfile($patron);
             $patronGroup = $profile['group_code'] ?? '';
             $libraryFilter = null;
@@ -909,31 +888,41 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 ) {
                     continue;
                 }
-                if ((!empty($rule['loc']) || !empty($rule['lib']))
-                    && !$this->compareLocationRule(
-                        $rule['lib'][0] ?? '', $rule['loc'] ?? [], $itemLocations
+
+                if ((!empty($rule['loc']) || !empty($rule['lib'])
+                    || !empty($rule['policy']))
+                    && !$this->compareItemRule(
+                        $rule['lib'][0] ?? '',
+                        $rule['loc'] ?? [],
+                        $rule['policy'] ?? [],
+                        $allItems
                     )
                 ) {
                     continue;
                 }
-                if ((!empty($rule['avail']) || !empty($rule['availlib']))
-                    && !$this->compareLocationRule(
+                if ((!empty($rule['avail']) || !empty($rule['availlib'])
+                    || !empty($rule['availpolicy']))
+                    && !$this->compareItemRule(
                         $rule['availlib'][0] ?? '',
                         $rule['avail'] ?? [],
-                        $availableLocations
+                        $rule['availpolicy'] ?? [],
+                        $availableItems
                     )
                 ) {
                     continue;
                 }
-                if ((!empty($rule['unavail']) || !empty($rule['unavaillib']))
-                    && !$this->compareLocationRule(
+                if ((!empty($rule['unavail']) || !empty($rule['unavaillib'])
+                    || !empty($rule['unavailpolicy']))
+                    && !$this->compareItemRule(
                         $rule['unavaillib'][0] ?? '',
                         $rule['unavail'] ?? [],
-                        $unavailableLocations
+                        $rule['unavailpolicy'] ?? [],
+                        $unavailableItems
                     )
                 ) {
                     continue;
                 }
+
                 if (!empty($rule['group'])) {
                     $match = $this->compareRuleWithArray(
                         $rule['group'], (array)$patronGroup
@@ -949,11 +938,17 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 }
                 $libraryFilter = array_merge($libraryFilter, $rule['pickup'] ?? []);
 
-                if (!empty($rule['home']) && !empty($profile['homeAddress'])) {
-                    $home = true;
+                if (!empty($rule['home'])) {
+                    $home = !empty($profile['homeAddress'])
+                        && $this->compareRuleWithArray(
+                            $rule['home'], ['true']
+                        );
                 }
-                if (!empty($rule['work']) && !empty($profile['workAddress'])) {
-                    $work = true;
+                if (!empty($rule['work'])) {
+                    $work = !empty($profile['workAddress'])
+                        && $this->compareRuleWithArray(
+                            $rule['work'], ['true']
+                        );
                 }
 
                 if (in_array('stop', $rule['match'] ?? [])) {
@@ -1609,35 +1604,41 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
-     * Compare a location rule
+     * Compare an item rule
      *
      * @param string       $lib    Library
      * @param string|array $loc    Locations
-     * @param array        $values Values
+     * @param string|array $policy Item policies
+     * @param array        $items  Item information
      *
      * @return bool
      */
-    protected function compareLocationRule($lib, $loc, $values)
+    protected function compareItemRule($lib, $loc, $policy, $items)
     {
-        if (empty($loc)) {
-            foreach ($values as $value) {
-                if ($lib && $value['lib'] !== $lib) {
+        foreach ($items as $item) {
+            if ($lib && $item['lib'] !== $lib) {
+                continue;
+            }
+            if ($loc) {
+                $match = false;
+                foreach ((array)$loc as $ruleValue) {
+                    $ruleValue = addcslashes($ruleValue, '\\');
+                    if (preg_match("/^$ruleValue\$/i", $item['loc'])) {
+                        $match = true;
+                        break;
+                    }
+                }
+                if (!$match) {
                     continue;
                 }
-                return true;
             }
-            return false;
-        }
-        foreach ((array)$loc as $ruleValue) {
-            $ruleValue = addcslashes($ruleValue, '\\');
-            foreach ($values as $value) {
-                if ($lib && $value['lib'] !== $lib) {
-                    continue;
-                }
-                if (preg_match("/^$ruleValue\$/i", $value['loc'])) {
-                    return true;
-                }
+            if ($policy
+                && !$this->compareRuleWithArray($policy, (array)$item['policy'])
+            ) {
+                continue;
             }
+
+            return true;
         }
         return false;
     }
