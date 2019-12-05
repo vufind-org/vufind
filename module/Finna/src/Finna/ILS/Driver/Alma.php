@@ -1731,11 +1731,18 @@ class Alma extends \VuFind\ILS\Driver\Alma
     protected function compareRuleWithArray($rule, $values)
     {
         foreach ((array)$rule as $ruleValue) {
+            $negate = strncmp($ruleValue, '!', 1) === 0;
+            if ($negate) {
+                $ruleValue = substr($ruleValue, 1);
+            }
             $ruleValue = addcslashes($ruleValue, '\\');
             foreach ($values as $value) {
                 if (preg_match("/^$ruleValue\$/i", $value)) {
-                    return true;
+                    return !$negate;
                 }
+            }
+            if ($negate) {
+                return true;
             }
         }
         return false;
@@ -1757,18 +1764,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
             if ($lib && $item['lib'] !== $lib) {
                 continue;
             }
-            if ($loc) {
-                $match = false;
-                foreach ((array)$loc as $ruleValue) {
-                    $ruleValue = addcslashes($ruleValue, '\\');
-                    if (preg_match("/^$ruleValue\$/i", $item['loc'])) {
-                        $match = true;
-                        break;
-                    }
-                }
-                if (!$match) {
-                    continue;
-                }
+            if ($loc && !$this->compareRuleWithArray($loc, (array)$item['loc'])) {
+                continue;
             }
             if ($policy
                 && !$this->compareRuleWithArray($policy, (array)$item['policy'])

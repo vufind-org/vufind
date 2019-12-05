@@ -47,21 +47,25 @@ defaultPickUpLocation = ""
 ; Rules for filtering pickup locations. Each part of a rule set is separated by a
 ; colon. A part contains a filter key, equals sign and values separated by commas.
 ; A value can be enclosed in '' if it contains a colon or a comma. Values are
-; evaluated as regular expresssions.
+; evaluated as regular expressions. A rule value can be negated by prepending it with
+; an exclamation mark (!).
 ; Rules are processed in the order of occurrence until end or match=stop with a
 ; matching rule is encountered.
 ;
 ; Supported filter keys are:
-; lib        - Item library (a single value)
-; loc        - Item location(s)
+; lib        - Item library code (a single value)
+; loc        - Item location code(s)
+; policy     - Item policy code(s)
 ; availlib   - Library with available items (a single value)
 ; avail      - Location with available item(s)
+; availpolicy - Item policy code(s) for locations with available items
 ; unavaillib - Library with only unavailable items (a single value)
 ; unavail    - Location with only unavailable item(s)
+; unavailpolicy - Item policy code(s) for locations with only unavailable items
 ; group      - Patron group
 ; level      - Hold level: 'copy' (meaning item) or 'title'
 ; match      - 'stop' to stop processing further rules on match. Otherwise all matching
-;           rules are combined.
+;              rules are combined.
 ; The following keys define the outcome of a matching filter:
 ; pickup     - Allowed pickup libraries
 ; home       - true to indicate that home address is allowed as a pickup location
@@ -70,6 +74,7 @@ defaultPickUpLocation = ""
 ; Examples:
 ;
 ; pickupLocationRules[] = "loc=MAIN:group=PATRON:pickup=MAINLIB;match=stop"
+; pickupLocationRules[] = "loc=MAIN:group=!STAFF:pickup=MAINLIB"
 ; pickupLocationRules[] = "loc=MAIN,SUB:group=STAFF:pickup=MAINLIB,RES_SHARE:work=true"
 ;pickupLocationRules[] = ""
 
