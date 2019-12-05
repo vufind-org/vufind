@@ -1522,7 +1522,12 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             $organisationTotal[$unit['branch']] = [
                'reservations' => $item['ReservationQueueLength']
             ];
-
+            $duedate = isset($item['DueDate'])
+                ? $this->dateConverter->convertToDisplayDate(
+                    \DateTime::ATOM,
+                    $item['DueDate']
+                )
+                : '';
             $unit = $this->getLibraryUnit($unitId);
             $number = '';
             $shelf = $item['Shelf'];
@@ -1545,7 +1550,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'status' => $statusCode,
                 'reserve' => 'N',
                 'callnumber' => $shelf,
-                'duedate' => null,
+                'duedate' => $duedate,
                 'barcode' => $item['Barcode'],
                 'item_notes' => [isset($items['notes']) ? $item['notes'] : null],
                 'number' => $number,
