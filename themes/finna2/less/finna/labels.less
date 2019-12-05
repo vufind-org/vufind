@@ -1,14 +1,13 @@
-.label-info {
+.label-info.label-source {
   .label-variant(@body-bg);
   margin-top: 5px;
   margin-bottom: 3px;
+  font-size: 0.9em;
   font-weight: 500;
-
-  border: 1px solid @brand-primary;
-  color: @brand-primary;
-
-  &.label-source {
-    border: 1px solid @gray-light;
-    color: @gray-light;
-  }
+  border: 1px solid @gray-light;
+  color: @gray-light;
+}
+// Compensate for the smaller font size in the bordered label for source:
+.result .iconlabel {
+  font-size: 0.9em;
 }
