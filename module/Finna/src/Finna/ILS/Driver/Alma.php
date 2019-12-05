@@ -1711,8 +1711,13 @@ class Alma extends \VuFind\ILS\Driver\Alma
             foreach ($items as $item) {
                 $parsed = parse_ini_string($item, false, INI_SCANNER_RAW);
                 foreach ($parsed as $key => $value) {
-                    $ruleParts[$key]
-                        = array_map('trim', str_getcsv($value, ',', "'"));
+                    if (!isset($ruleParts[$key])) {
+                        $ruleParts[$key] = [];
+                    }
+                    $ruleParts[$key] = array_merge(
+                        $ruleParts[$key],
+                        array_map('trim', str_getcsv($value, ',', "'"))
+                    );
                 }
             }
             $rules[] = $ruleParts;
@@ -1730,22 +1735,40 @@ class Alma extends \VuFind\ILS\Driver\Alma
      */
     protected function compareRuleWithArray($rule, $values)
     {
+        $negated = false;
+        $result = false;
+        // First non-negated rules...
         foreach ((array)$rule as $ruleValue) {
-            $negate = strncmp($ruleValue, '!', 1) === 0;
-            if ($negate) {
-                $ruleValue = substr($ruleValue, 1);
+            if (strncmp($ruleValue, '!', 1) === 0) {
+                // We have negated rules, no point in continuing positive matches
+                $negated = true;
+                break;
             }
             $ruleValue = addcslashes($ruleValue, '\\');
             foreach ($values as $value) {
                 if (preg_match("/^$ruleValue\$/i", $value)) {
-                    return !$negate;
+                    $result = true;
                 }
             }
-            if ($negate) {
-                return true;
+        }
+        if (!$negated) {
+            return $result;
+        }
+
+        // ... then negated rules
+        foreach ((array)$rule as $ruleValue) {
+            if (strncmp($ruleValue, '!', 1) !== 0) {
+                continue;
+            }
+            $ruleValue = substr($ruleValue, 1);
+            $ruleValue = addcslashes($ruleValue, '\\');
+            foreach ($values as $value) {
+                if (preg_match("/^$ruleValue\$/i", $value)) {
+                    return false;
+                }
             }
         }
-        return false;
+        return true;
     }
 
     /**
