@@ -1,0 +1,84 @@
+<!-- START of: finna - content/help_favorites_en-gb.phtml -->
+<?php if ($this->resolver('content/help-tabs.phtml')): ?>
+    <?=$this->render('content/help-tabs.phtml', ['activeTab' => 'help-favorites'])?>
+<?php endif; ?>
+<div>
+  <div class="sidebar left">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="mainbody right">
+    <div id="favorites" class="content-section">
+      <h2>Favourites lists</h2>
+      <p>It is possible to save materials retrieved in Favourites lists and organise them in the way you prefer. These lists allow you to easily find the materials again when you need them.  You can also share your favourites lists with others as a URL address or RSS feed. In addition, materials in your favourites can also be sent by email, or you can export them to the Refworks reference management program.
+      </p>
+      <p>All Favourites lists can be found in your account. You may also save searches that you have found useful without making any changes (see <a href="#saving-searches">Saving searches</a>).
+      </p>
+      <h3>Creating a Favourites list</h3>
+      <p>First log in to Finna and search for your desired materials.
+      </p>
+      <p>Add materials into your Favourites list by clicking the pin icon. <span aria-hidden="true"><i class="fa fa-heart brand-primary"></i></span>
+      </p>
+      <p>You can find the pin icon on the right of the materials on the search result page.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-1_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>In the detailed materials display, the pin icon can be found on the top left corner. <span aria-hidden="true"><i class="fa fa-heart brand-primary" aria-hidden="true">&nbsp;<span class="hidden-xs"><?=$this->transEsc('Add to favorites')?></span></i></span>
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-2_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Select the list from the drop-down menu on which you will save the selected materials. All the lists you have created are displayed in the <strong><?=$this->transEsc('Choose a List')?></strong> menu. If you wish, you may also create a new Favourites list by clicking <strong><?=$this->transEsc('or create a new list')?></strong>. You can also add a note (which can be edited later). To conclude, click <strong><?=$this->transEsc('Save')?></strong>.      
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-3_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Editing a favourites list</h3>
+      <p>Your favourites list can be edited by selecting <strong><?=$this->transEsc('Favorites')?></strong> from the <strong><?=$this->transEsc('Your Account')?></strong> menu. You can choose <strong><?=$this->transEsc('All Favourites')?></strong> or a favourites list you have created earlier. You may edit the name or the description of any list you have created yourself and add descriptions of materials on it. You may remove materials from the favourites list by selecting an item and choosing <em><?=ucfirst($this->transEsc('with_selected'))?>:</em> <strong><?=$this->transEsc('Delete')?></strong>. Clicking <strong><?=$this->transEsc('select_page')?></strong> allows you to select all the materials on the favourites list.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-4_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>Clicking <strong><?=$this->transEsc('Sort manually')?></strong> opens a window where you can change the order of materials by dragging and dropping. To conclude, click <strong><?=$this->transEsc('Save Order')?></strong>. The order you edited can be found in the <strong><?=$this->transEsc('Sort')?></strong> drop-down menu under <strong><?=$this->transEsc('sort_custom_order')?></strong>.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-5_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <h3>Favourites list content view and sharing</h3>
+      <p>If you wish to view your favourites list in a content view, choose <strong><?=$this->transEsc('Public')?></strong> as your visibility setting. This will add a sharing icon <span aria-hidden="true"><i class="fa fa-public brand-primary"></i></span> after the name of the list. Clicking <strong><?=$this->transEsc('Public List URL')?></strong> will open your list in content view. If you do not share the content view with others, it will remain viewable only by you.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-6_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>You can select several different presentation methods in the content view. You may organise the list in various ways (e.g. according to year) and experiment with alternative ways of displaying the materials.
+      </p>
+      <p><em><?=$this->transEsc('show_as')?></em>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-list brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As List')?>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-grid brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As Grid')?>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-condensed brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As Condensed')?>
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-7_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+      <p>You can share the content view of your favourites list by sharing the URL address on the address bar with your desired recipient. The URL address changes according to the presentation method, so select the presentation method before sharing the URL address. This will ensure that your selected presentation method will show as default also for the recipient. The RSS feed can be found at the bottom of the content view.
+      </p>
+      <h3>Sharing favourites by email</h3>
+      <p>You can share links to the materials you have saved on your favourites lists directly by email.
+      </p>
+      <ol class="list-numbers">
+        <li>Select <strong><?=$this->transEsc('Your Account')?></strong> &rarr; <strong><?=$this->transEsc('Favorites')?></strong>.
+        </li>
+        <li>You can select either <strong><?=$this->transEsc('All Favourites')?></strong> or a single favourites list.
+        </li>
+        <li>You can choose all displayed materials to send by clicking <strong><?=$this->transEsc('select_page')?></strong> or click on individual materials that you wish to send.
+        </li>
+        <li>Click <em><?=ucfirst($this->transEsc('with_selected'))?>:</em> <strong><?=$this->transEsc('Email')?></strong>. Add the recipients' email addresses and write the message you want in the field that opens. To conclude, click <strong><?=$this->transEsc('Send')?></strong>.
+        </li>
+      </ol>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-8_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+    <div id="saving-searches" class="content-section">
+      <h2>Saving searches</h2>
+      <p>You may save searches you have found useful to easily find them again by selecting <strong><?=$this->transEsc('Your Account')?></strong> &rarr; <strong><?=$this->transEsc('history_saved_searches')?></strong>. The <strong>Save search</strong> button is at the bottom of the search results page. Once you have saved the search, you can also set an alert to notify you when new materials compatible with your search have been published.
+      </p>
+      <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-9_en-gb.png')?>" aria-hidden="true" alt=""/>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - content/help_favorites_en-gb.phtml -->

@@ -17,35 +17,40 @@
       <h3>Skapa favoritlista</h3>
       <p>Logga först in på Finna och sök det material som du är intresserad av.
       </p>
-      <p>Lägg till materialet i en favoritlista genom att klicka på knappnålsikonen. <span aria-hidden="true" style="color: #723981;"><i class="fa fa-heart brand-primary"></i></span>
+      <p>Lägg till materialet i en favoritlista genom att klicka på knappnålsikonen. <span aria-hidden="true"><i class="fa fa-heart brand-primary"></i></span>
       </p>
       <p>Du hittar knappnålsikonen till höger på sidan med sökresultaten.
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-1_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
-      <p>I vyn med materialets detaljerade uppgifter finns knappnålsikonen uppe till vänster. <span aria-hidden="true" style="color: #00a3b5;"><i class="fa fa-heart brand-primary" aria-hidden="true">&nbsp;<span class="hidden-xs"><?=$this->transEsc('Add to favorites')?></span></i></span>
+      <p>I vyn med materialets detaljerade uppgifter finns knappnålsikonen uppe till vänster. <span aria-hidden="true"><i class="fa fa-heart brand-primary" aria-hidden="true">&nbsp;<span class="hidden-xs"><?=$this->transEsc('Add to favorites')?></span></i></span>
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-2_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
-      <p>Välj i rullgardinsmenyn som öppnas den favoritlista du vill spara det valda materialet i. Alla listor som du har skapat tidigare syns i menyn <strong>Välj en lista</strong> Du kan även skapa en ny favoritlista. Välj då <strong>eller skapa en ny lista</strong>. Om du vill kan du lägga till en anmärkning (som du kan ändra på senare). Tryck sedan på <strong>Spara</strong>.      
+      <p>Välj i rullgardinsmenyn som öppnas den favoritlista du vill spara det valda materialet i. Alla listor som du har skapat tidigare syns i menyn <strong><?=$this->transEsc('Choose a List')?></strong> Du kan även skapa en ny favoritlista. Välj då <strong><?=$this->transEsc('or create a new list')?></strong>. Om du vill kan du lägga till en anmärkning (som du kan ändra på senare). Tryck sedan på <strong><?=$this->transEsc('Save')?></strong>.      
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-3_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
       <h3>Ändra favoritlista</h3>
-      <p>Du kan göra ändringar i dina favoritlistor genom att i menyn <strong>Mitt konto</strong> välja <strong>Favoriter</strong>. Du kan välja <strong>Alla favoriter</strong> eller en favoritlista som du själv skapat. Du kan ändra namnet på och anmärkningen av favoritlistorna och lägga till egna anmärkningar till materialet. För att ta bort material från en favoritlista markerar du det material du vill ta bort och väljer sedan <em>Med valda:</em> <strong>Radera</strong>. Genom att markera <strong>Välj sida</strong> kan du välja allt material i en favoritlista.
+      <p>Du kan göra ändringar i dina favoritlistor genom att i menyn <strong><?=$this->transEsc('Your Account')?></strong> välja <strong><?=$this->transEsc('Favorites')?></strong>. Du kan välja <strong><?=$this->transEsc('All Favourites')?></strong> eller en favoritlista som du själv skapat. Du kan ändra namnet på och anmärkningen av favoritlistorna och lägga till egna anmärkningar till materialet. För att ta bort material från en favoritlista markerar du det material du vill ta bort och väljer sedan <em><?=ucfirst($this->transEsc('with_selected'))?>:</em> <strong><?=$this->transEsc('Delete')?></strong>. Genom att markera <strong><?=$this->transEsc('select_page')?></strong> kan du välja allt material i en favoritlista.
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-4_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
-      <p>Genom att klicka på <strong>Ändra ordning</strong> öppnas ett fönster där du kan ändra materialets ordning genom att dra det till en annan plats. Tryck sedan på <strong>Spara följd</strong>. Materialets nya ordning hittar du i rullgardinsmenyn <strong>Sortera</strong> under rubriken <strong>Egen sortering</strong>.
+      <p>Genom att klicka på <strong><?=$this->transEsc('Sort manually')?></strong> öppnas ett fönster där du kan ändra materialets ordning genom att dra det till en annan plats. Tryck sedan på <strong><?=$this->transEsc('Save Order')?></strong>. Materialets nya ordning hittar du i rullgardinsmenyn <strong><?=$this->transEsc('Sort')?></strong> under rubriken <strong><?=$this->transEsc('sort_custom_order')?></strong>.
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-5_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
       <h3>Favoritlistans visningsvy och delning</h3>
-      <p>Om du vill granska din favoritlista i visningsvy, välj <strong>Offentlig</strong> synlighet. Då visas ikonen för delning <span aria-hidden="true"><i class="fa fa-public brand-primary"></i></span> efter namnet på listan. Genom att klicka på <strong>Offentlig länk till lista</strong> visas favoritlistan i visningsvy. Om du inte delar länken i visningsvyn har ingen annan än du tillgång till favoritlistan.
+      <p>Om du vill granska din favoritlista i visningsvy, välj <strong><?=$this->transEsc('Public')?></strong> synlighet. Då visas ikonen för delning <span aria-hidden="true"><i class="fa fa-public brand-primary"></i></span> efter namnet på listan. Genom att klicka på <strong><?=$this->transEsc('Public List URL')?></strong> visas favoritlistan i visningsvy. Om du inte delar länken i visningsvyn har ingen annan än du tillgång till favoritlistan.
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-6_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
       <p>I visningsvyn kan olika visningssätt väljas. Listan kan sorteras på olika sätt, till exempel efter årtal. Prova även olika alternativ för att visa materialet.
+      </p>
+      <p><em><?=$this->transEsc('show_as')?></em>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-list brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As List')?>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-grid brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As Grid')?>
+        <br>&nbsp;<span aria-hidden="true"><i class="fa fa-condensed brand-primary"></i></span>&nbsp;<?=$this->transEsc('Show As Condensed')?>
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-7_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
@@ -55,13 +60,13 @@
       <p>Du kan dela länkar till material som du har sparat i favoritlistor direkt per e-post.
       </p>
       <ol class="list-numbers">
-        <li>Välj <strong>Mitt konto</strong> &rarr; <strong>Favoriter</strong>.
+        <li>Välj <strong><?=$this->transEsc('Your Account')?></strong> &rarr; <strong><?=$this->transEsc('Favorites')?></strong>.
         </li>
-        <li>Du kan välja <strong>Alla favoriter</strong> eller en specifik favoritlista.
+        <li>Du kan välja <strong><?=$this->transEsc('All Favourites')?></strong> eller en specifik favoritlista.
         </li>
-        <li>Du kan välja att skicka allt material som visas genom att markera <strong>Välj sida</strong> eller markera ett specifikt material som du vill skicka.
+        <li>Du kan välja att skicka allt material som visas genom att markera <strong><?=$this->transEsc('select_page')?></strong> eller markera ett specifikt material som du vill skicka.
         </li>
-        <li>Klicka på <strong>Med valda</strong> &rarr; <strong>E-post</strong>. Lägg till mottagarens e-postadress och skriv ett meddelande i fältet som öppnas. Tryck sedan på <strong>Skicka</strong>.
+        <li>Klicka på <em><?=ucfirst($this->transEsc('with_selected'))?>:</em> <strong><?=$this->transEsc('Email')?></strong>. Lägg till mottagarens e-postadress och skriv ett meddelande i fältet som öppnas. Tryck sedan på <strong><?=$this->transEsc('Send')?></strong>.
         </li>
       </ol>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-8_sv.png')?>" aria-hidden="true" alt=""/>
@@ -69,7 +74,7 @@
     </div>
     <div id="saving-searches" class="content-section">
       <h2>Spara sökningen</h2>
-      <p>Sökningar som du valt att spara hittar du genom att välja <strong>Egna uppgifter</strong> &rarr; <strong>Sparade sökningar</strong>. Knappen <strong>Spara sökningen</strong> hittar du nere på sidan med sökresultat. När du har sparat sökningen kan du även välja att bevaka dina sökkriterier genom att välja sökbevakning. Då får du information om nytt material som motsvarar dina sökkriterier.
+      <p>Sökningar som du valt att spara hittar du genom att välja <strong><?=$this->transEsc('Your Account')?></strong> &rarr; <strong><?=$this->transEsc('history_saved_searches')?></strong>. Knappen <strong><?=$this->transEsc('save_search')?></strong> hittar du nere på sidan med sökresultat. När du har sparat sökningen kan du även välja att bevaka dina sökkriterier genom att välja sökbevakning. Då får du information om nytt material som motsvarar dina sökkriterier.
       </p>
       <p class="hidden-xs"><img src="<?=$this->imageLink('help-favorites-9_sv.png')?>" aria-hidden="true" alt=""/>
       </p>
