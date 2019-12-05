@@ -176,7 +176,9 @@ class Alma extends AbstractBase
         $map = [
             'getFullTxt' => 'getFullTxt',
             'getHolding' => 'getHolding',
-            'GeneralElectronicService' => 'getWebService'
+            'GeneralElectronicService' => 'getWebService',
+            'DB' => 'getFullTxt',
+            'Package' => 'getFullTxt',
         ];
         return $map[$serviceType] ?? '';
     }
