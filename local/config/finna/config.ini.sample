@@ -676,6 +676,9 @@ lastname = SHIB_sn
 ;coverimages     = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID,NatLibFi,BookyFi,BTJ:customerId
 coverimages     = NatLibFi,OpenLibrary
 
+; List of blacklisted formats to prevent from showing in LIDO records image section
+; lidoFileFormatBlackList = 'tif,tiff,3d-pdf,3d model,glb,obj,gltf'
+
 ; This setting controls the image to display when no book cover is available.
 ; The path is relative to the base of your theme directory.
 noCoverAvailableImage = images/noCover2.gif

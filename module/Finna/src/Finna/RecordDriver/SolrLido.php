@@ -59,6 +59,13 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $dateConverter;
 
     /**
+     * Blacklist for undisplayable file formats
+     *
+     * @var array
+     */
+    protected $fileFormatBlackList = [];
+
+    /**
      * Attach date converter
      *
      * @param \VuFind\Date\Converter $dateConverter Date Converter
@@ -68,6 +75,25 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     public function attachDateConverter($dateConverter)
     {
         $this->dateConverter = $dateConverter;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
+     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     */
+    public function __construct($mainConfig = null, $recordConfig = null,
+        $searchSettings = null
+    ) {
+        if (isset($mainConfig['Content']['lidoFileFormatBlackList'])) {
+            $blackList = $mainConfig['Content']['lidoFileFormatBlackList'];
+            $this->fileFormatBlackList = explode(',', $blackList);
+        }
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 
     /**
@@ -204,6 +230,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
 
             $urls = [];
             foreach ($resourceSet->resourceRepresentation as $representation) {
+                $linkResource = $representation->linkResource;
+
+                if (!empty($this->fileFormatBlackList)
+                    && isset($linkResource->attributes()->formatResource)
+                ) {
+                    $format = trim(
+                        (string)$linkResource->attributes()->formatResource
+                    );
+                    $formatDisallowed
+                        = in_array(strtolower($format), $this->fileFormatBlackList);
+                    if ($formatDisallowed) {
+                        continue;
+                    }
+                }
                 $attributes = $representation->attributes();
                 $size = '';
                 switch ($attributes->type) {
@@ -224,7 +264,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     break;
                 }
 
-                $url = (string)$representation->linkResource;
+                $url = (string)$linkResource;
                 if (!$size) {
                     if ($urls) {
                         // We already have URL's, store them in the results first.
@@ -241,7 +281,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     $urls[$size] = $url;
                 }
             }
-
+            // If current set has no images to show, continue to next one
+            if (empty($urls)) {
+                continue;
+            }
             if (!isset($urls['small'])) {
                 $urls['small'] = $urls['medium']
                     ?? $urls['large'];
