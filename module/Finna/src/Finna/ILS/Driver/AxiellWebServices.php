@@ -1583,7 +1583,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $formatted = [];
         $transList = [];
         $transactions = $this->objectToArray(
-            $result->loanHistoryResponse->loanHistoryItems->loanHistoryItem
+            $result->loanHistoryResponse->loanHistoryItems->loanHistoryItem ?? []
         );
         foreach ($transactions as $transaction => $record) {
             $obj = $record->catalogueRecord;
