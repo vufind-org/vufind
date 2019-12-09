@@ -119,6 +119,9 @@ finna.record = (function finnaRecord() {
       })
         .done(function onGetDetailsDone(response) {
           $(element).html(response.data.html);
+        })
+        .fail(function onGetDetailsFail() {
+          $(element).text(VuFind.translate('error_occurred'));
         });
     });
   }
