@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2017.
+ * Copyright (C) The National Library of Finland 2017-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -104,6 +104,11 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
                 // nevermind
             }
 
+            $loginMethod = $config['loginMethod'] ?? 'password';
+            if (in_array($loginMethod, ['vufind', 'email'])) {
+                continue;
+            }
+
             $backend = [
                 'id' => $target,
                 'name' => $this->translate("source_$target", null, $target)
@@ -166,6 +171,21 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
                 );
             }
             $username = "$target.$username";
+        }
+
+        $config = [];
+        try {
+            $config = $catalog->getConfig(
+                'patronLogin', ['cat_username' => $username]
+            );
+        } catch (\Exception $e) {
+            // nevermind
+        }
+        $loginMethod = $config['loginMethod'] ?? 'password';
+        if (in_array($loginMethod, ['vufind', 'email'])) {
+            return $this->output(
+                [], self::STATUS_ERROR, 400, 'Invalid login target'
+            );
         }
 
         try {
