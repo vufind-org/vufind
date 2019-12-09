@@ -146,7 +146,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Whether to sort items by enumchron. Default is true.
      *
-     * @var array
+     * @var bool
      */
     protected $sortItemsByEnumChron;
 
