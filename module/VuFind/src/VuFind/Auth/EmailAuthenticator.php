@@ -218,7 +218,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             throw new AuthException('authentication_error_denied');
         }
 
-        if ($linkData['ip'] !== $this->remoteAddress->getIpAddress()) {
+        // Require same session id or IP address:
+        $sessionId = $this->sessionManager->getId();
+        if ($row['session_id'] !== $sessionId
+            && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
+        ) {
             throw new AuthException('authentication_error_denied');
         }
 
