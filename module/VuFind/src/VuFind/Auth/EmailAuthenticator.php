@@ -29,6 +29,7 @@ namespace VuFind\Auth;
 
 use VuFind\DB\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
+use Zend\Http\PhpEnvironment\RemoteAddress;
 
 /**
  * Class for managing email-based authentication.
@@ -75,11 +76,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     protected $viewRenderer = null;
 
     /**
-     * Request
+     * Remote address
      *
-     * @var \Zend\Stdlib\RequestInterface
+     * @var RemoteAddress
      */
-    protected $request;
+    protected $remoteAddress;
 
     /**
      * Configuration
@@ -109,21 +110,21 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param \VuFind\Validator\Csrf                $csrf         CSRF Validator
      * @param \VuFind\Mailer\Mailer                 $mailer       Mailer
      * @param \Zend\View\Renderer\RendererInterface $viewRenderer View Renderer
-     * @param \Zend\Stdlib\RequestInterface         $request      Request
+     * @param RemoteAddress                         $remoteAddr   Remote address
      * @param \Zend\Config\Config                   $config       Configuration
      * @param AuthHashTable                         $authHash     AuthHash Table
      */
     public function __construct(\Zend\Session\SessionManager $session,
         \VuFind\Validator\Csrf $csrf, \VuFind\Mailer\Mailer $mailer,
         \Zend\View\Renderer\RendererInterface $viewRenderer,
-        \Zend\Stdlib\RequestInterface $request,
+        RemoteAddress $remoteAddr,
         \Zend\Config\Config $config, AuthHashTable $authHash
     ) {
         $this->sessionManager = $session;
         $this->csrf = $csrf;
         $this->mailer = $mailer;
         $this->viewRenderer = $viewRenderer;
-        $this->request = $request;
+        $this->remoteAddress = $remoteAddr;
         $this->config = $config;
         $this->authHashTable = $authHash;
     }
@@ -164,7 +165,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $linkData = [
             'timestamp' => time(),
             'data' => $data,
-            'email' => $email
+            'email' => $email,
+            'ip' => $this->remoteAddress->getIpAddress()
         ];
         $hash = $this->csrf->getHash(true);
 
@@ -213,6 +215,10 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $row->delete();
 
         if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
+            throw new AuthException('authentication_error_denied');
+        }
+
+        if ($linkData['ip'] !== $this->remoteAddress->getIpAddress()) {
             throw new AuthException('authentication_error_denied');
         }
 

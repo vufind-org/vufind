@@ -428,6 +428,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Zend\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
+            'Zend\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
             'Zend\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
