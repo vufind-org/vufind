@@ -28,6 +28,7 @@
 namespace Finna\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Alma ILS Driver
@@ -38,14 +39,59 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Alma extends \VuFind\ILS\Driver\Alma
+class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Simple cache to avoid repeated requests
      *
      * @var array
      */
     protected $cachedRequest = [];
+
+    /**
+     * Priority settings for the order of locations
+     *
+     * @var array
+     */
+    protected $holdingsLocationOrder = [];
+
+    /**
+     * Whether to sort items by enumchron. Default is true.
+     *
+     * @var bool
+     */
+    protected $sortItemsByEnumChron = true;
+
+    /**
+     * Initialize the driver.
+     *
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (isset($this->config['Holdings']['holdingsLocationOrder'])) {
+            $values = explode(
+                ':',
+                $this->config['Holdings']['holdingsLocationOrder']
+            );
+            foreach ($values as $i => $value) {
+                $parts = explode('=', $value, 2);
+                $idx = $parts[1] ?? $i;
+                $this->holdingsLocationOrder[$parts[0]] = $idx;
+            }
+        }
+
+        $this->sortItemsByEnumChron
+            = $this->config['Holdings']['sortByEnumChron'] ?? true;
+    }
 
     /**
      * Get Patron Fines
@@ -1246,6 +1292,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
             . '&order_by=library,location,enum_a,enum_b&direction=desc'
             . '&expand=due_date';
 
+        $sort = 0;
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the total number of items returned from the API call and set it to
             // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
@@ -1316,7 +1363,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
                     'holdtype' => 'auto',
                     'addLink' => $addLink,
                     // For Alma title-level hold requests
-                    'description' => $description ?? null
+                    'description' => $description ?? null,
+                    'sort' => $sort++
                 ];
             }
         }
@@ -1369,6 +1417,7 @@ class Alma extends \VuFind\ILS\Driver\Alma
             foreach ($noItemsHoldings as $record) {
                 $entry = $this->createHoldingEntry($id, $record);
                 $entry['details_ajax'] = $entry['holding_id'];
+                $entry['sort'] = $sort++;
                 $results['holdings'][] = $entry;
                 ++$results['total'];
             }
@@ -1385,6 +1434,8 @@ class Alma extends \VuFind\ILS\Driver\Alma
                 $locations[(string)$item['location']] = true;
             }
         }
+
+        usort($results['holdings'], [$this, 'statusSortFunction']);
 
         // Use a stupid location name to make sure this doesn't get mixed with
         // real items that don't have a proper location.
@@ -1666,6 +1717,132 @@ class Alma extends \VuFind\ILS\Driver\Alma
     }
 
     /**
+     * Get Statuses for inventory types
+     *
+     * This is responsible for retrieving the status information for a
+     * collection of records with specified inventory types.
+     *
+     * Finna:
+     *  - Get location codes too, and sort results
+     *
+     * @param array $ids   The array of record ids to retrieve the status for
+     * @param array $types Inventory types
+     *
+     * @return array An array of getStatus() return values on success.
+     */
+    protected function getStatusesForInventoryTypes($ids, $types)
+    {
+        $results = [];
+        $params = [
+            'mms_id' => implode(',', $ids),
+            'expand' => implode(',', array_unique(array_merge($types, ['requests'])))
+        ];
+        if ($bibs = $this->makeRequest('/bibs', $params)) {
+            foreach ($bibs as $bib) {
+                $marc = new \File_MARCXML(
+                    $bib->record->asXML(),
+                    \File_MARCXML::SOURCE_STRING
+                );
+                $status = [];
+                $tmpl = [
+                    'id' => (string)$bib->mms_id,
+                    'source' => 'Solr',
+                    'callnumber' => '',
+                    'reserve' => 'N',
+                ];
+                $sort = 0;
+                if ($record = $marc->next()) {
+                    // Physical
+                    $physicalItems = $record->getFields('AVA');
+                    foreach ($physicalItems as $field) {
+                        $avail = $this->getMarcSubfield($field, 'e');
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        $item['location'] = $this->getTranslatableStringForCode(
+                            $this->getMarcSubfield($field, 'j'),
+                            $this->getMarcSubfield($field, 'c')
+                        );
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
+                        $item['sort'] = $sort++;
+                        $status[] = $item;
+                    }
+                    // Electronic
+                    $electronicItems = $record->getFields('AVE');
+                    foreach ($electronicItems as $field) {
+                        $avail = $this->getMarcSubfield($field, 'e');
+                        $item = $tmpl;
+                        $item['availability'] = strtolower($avail) === 'available';
+                        // Use the following subfields for location:
+                        // m (Collection name)
+                        // i (Available for library)
+                        // d (Available for library)
+                        // b (Available for library)
+                        $location = [
+                            $this->getMarcSubfield($field, 'm') ?: 'Get full text'
+                        ];
+                        foreach (['i', 'd', 'b'] as $code) {
+                            if ($content = $this->getMarcSubfield($field, $code)) {
+                                $location[] = $content;
+                            }
+                        }
+                        $item['location'] = implode(' - ', $location);
+                        $item['callnumber'] = $this->getMarcSubfield($field, 't');
+                        $url = $this->getMarcSubfield($field, 'u');
+                        if (preg_match('/^https?:\/\//', $url)) {
+                            $item['locationhref'] = $url;
+                        }
+                        $item['status'] = $this->getMarcSubfield($field, 's')
+                            ?: null;
+                        if ($note = $this->getMarcSubfield($field, 'n')) {
+                            $item['item_notes'] = [$note];
+                        }
+                        $item['sort'] = $sort++;
+                        $status[] = $item;
+                    }
+                    // Digital
+                    $deliveryUrl
+                        = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
+                    $digitalItems = $record->getFields('AVD');
+                    if ($digitalItems && !$deliveryUrl) {
+                        $this->logWarning(
+                            'Digital items exist for ' . (string)$bib->mms_id
+                            . ', but digitalDeliveryUrl not set -- unable to'
+                            . ' generate links'
+                        );
+                    }
+                    foreach ($digitalItems as $field) {
+                        $item = $tmpl;
+                        unset($item['callnumber']);
+                        $item['availability'] = true;
+                        $item['location'] = $this->getMarcSubfield($field, 'e');
+                        // Using subfield 'd' ('Repository Name') as callnumber
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
+                        if ($deliveryUrl) {
+                            $item['locationhref'] = str_replace(
+                                '%%id%%',
+                                $this->getMarcSubfield($field, 'b'),
+                                $deliveryUrl
+                            );
+                        }
+                        $item['sort'] = $sort++;
+                        $status[] = $item;
+                    }
+                }
+                usort($status, [$this, 'statusSortFunction']);
+
+                // Return locations to strings
+                foreach ($status as &$item) {
+                    $item['location'] = $this->translate($item['location']);
+                }
+                unset($item);
+
+                $results[(string)$bib->mms_id] = $status;
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get code table options for table
      *
      * @param string $codeTable Code table to fetch
@@ -1872,5 +2049,55 @@ class Alma extends \VuFind\ILS\Driver\Alma
             ];
         }
         return $result;
+    }
+
+    /**
+     * Status item sort function
+     *
+     * @param array $a First status record to compare
+     * @param array $b Second status record to compare
+     *
+     * @return int
+     */
+    protected function statusSortFunction($a, $b)
+    {
+        $orderA = $this->holdingsLocationOrder[(string)$a['location']] ?? 999;
+        $orderB = $this->holdingsLocationOrder[(string)$b['location']] ?? 999;
+        $result = $orderA - $orderB;
+
+        if (0 === $result) {
+            $result = strcmp(
+                ($a['location'] instanceof \VuFind\I18n\TranslatableString)
+                    ? $a['location']->getDisplayString() : $a['location'],
+                ($b['location'] instanceof \VuFind\I18n\TranslatableString)
+                    ? $b['location']->getDisplayString() : $b['location']
+            );
+        }
+
+        if (0 === $result && $this->sortItemsByEnumChron) {
+            // Reverse chronological order
+            $result = strnatcmp($b['number'] ?? '', $a['number'] ?? '');
+        }
+
+        if (0 === $result) {
+            $result = $a['sort'] - $b['sort'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Gets a translatable string for description and code
+     *
+     * @param string $code        Code
+     * @param string $description Description
+     *
+     * @return \VuFind\I18n\TranslatableString
+     */
+    protected function getTranslatableStringForCode($code, $description)
+    {
+        $value = ($this->config['Catalog']['translationPrefix'] ?? '')
+            . (string)$code;
+        return new \VuFind\I18n\TranslatableString($value, $description);
     }
 }

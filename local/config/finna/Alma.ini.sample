@@ -156,6 +156,21 @@ summary = "863abiz:866az"
 supplements = "867az"
 ; Fields to include in indexes. Default is none.
 indexes = "868az"
+; By default the holdings list is sorted alphabetically. This setting can be used
+; to manually set the order of locations by entering location codes as a
+; colon-separated list. By default the first entry has the highest priority (0), but
+; each entry can be given a custom priority after an equals sign (higher number means
+; lower priority). Unlisted locations will get a default priority of 999.
+;
+; Examples:
+; "MAIN:BRANCH:SUB"
+; "MAIN:PERSONNEL=9999"
+;
+;holdingsLocationOrder = "MAIN:BRANCH:SUB"
+
+; Whether to sort items by enumchron. Default is true.
+;sort_by_enum_chron = false
+
 
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.
