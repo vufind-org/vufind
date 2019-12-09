@@ -169,7 +169,7 @@ indexes = "868az"
 ;holdingsLocationOrder = "MAIN:BRANCH:SUB"
 
 ; Whether to sort items by enumchron. Default is true.
-;sort_by_enum_chron = false
+;sortByEnumChron = false
 
 
 [OnlinePayment]
