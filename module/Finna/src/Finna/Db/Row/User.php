@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,8 @@
  */
 namespace Finna\Db\Row;
 
+use Zend\Db\Sql\Expression;
+
 /**
  * Row Definition for user
  *
@@ -42,6 +44,25 @@ namespace Finna\Db\Row;
 class User extends \VuFind\Db\Row\User
 {
     use FinnaUserTrait;
+
+    /**
+     * ILS Connection
+     *
+     * @var \VuFind\ILS\Connection
+     */
+    protected $ils = null;
+
+    /**
+     * Set ILS Connection
+     *
+     * @param \VuFind\ILS\Connection $ils ILS Connection
+     *
+     * @return void
+     */
+    public function setILS(\VuFind\ILS\Connection $ils)
+    {
+        $this->ils = $ils;
+    }
 
     /**
      * Get all of the lists associated with this user.
@@ -133,5 +154,46 @@ class User extends \VuFind\Db\Row\User
                 $resource->addTag($tag, $this, $list->id);
             }
         }
+    }
+
+    /**
+     * Get all library cards associated with the user.
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @throws \VuFind\Exception\LibraryCard
+     */
+    public function getLibraryCards()
+    {
+        if (!$this->libraryCardsEnabled()) {
+            return new \Zend\Db\ResultSet\ResultSet();
+        }
+
+        $userId = $this->id;
+        $loginTargets = null;
+        if ($this->ils && $this->ils->checkCapability('getLoginDrivers')) {
+            $loginTargets = $this->ils->getLoginDrivers();
+            $loginTargets = array_map(
+                function ($a) {
+                    return "$a.";
+                },
+                $loginTargets
+            );
+        }
+        $callback = function ($select) use ($userId, $loginTargets) {
+            $select->where->equalTo('user_id', $userId);
+            if ($loginTargets !== null) {
+                $select->where->in(
+                    new Expression(
+                        "substring(cat_username, 1, locate('.', cat_username))",
+                        null,
+                        [Expression::TYPE_LITERAL]
+                    ),
+                    $loginTargets
+                );
+            }
+        };
+
+        $userCard = $this->getDbTable('UserCard');
+        return $userCard->select($callback);
     }
 }
