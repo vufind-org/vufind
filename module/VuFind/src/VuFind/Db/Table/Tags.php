@@ -307,11 +307,7 @@ class Tags extends Gateway
             $select->group(['tag'])->order([new Expression('lower(tag)')]);
 
             $select->where->equalTo('ur.user_id', $userId)
-                ->equalTo('rt.user_id', $userId)
-                ->equalTo(
-                    'ur.list_id', 'rt.list_id',
-                    Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
-                );
+                ->equalTo('rt.user_id', $userId);
 
             if (null !== $source) {
                 $select->where->equalTo('r.source', $source);
