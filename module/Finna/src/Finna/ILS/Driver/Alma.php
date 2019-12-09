@@ -1198,7 +1198,10 @@ class Alma extends \VuFind\ILS\Driver\Alma
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * Finna: Don't use a running number as item number.
+     * Finna:
+     *  - Don't use a running number as item number.
+     *  - Handle suppressed holdings.
+     *  - Add holdings for locations with no items.
      *
      * @param string $id      The record id to retrieve the holdings for
      * @param array  $patron  Patron data
@@ -1218,6 +1221,12 @@ class Alma extends \VuFind\ILS\Driver\Alma
         $results['holdings'] = [];
 
         $itemHolds = $this->config['Holds']['enableItemHolds'] ?? null;
+
+        $holdings = [];
+        $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
+        foreach ($records->holding ?? [] as $record) {
+            $holdings[(string)$record->holding_id] = $record;
+        }
 
         // Paging parameters for paginated API call. The "limit" tells the API how
         // many items the call should return at once (e. g. 10). The "offset" defines
@@ -1245,6 +1254,12 @@ class Alma extends \VuFind\ILS\Driver\Alma
 
             foreach ($items->item as $item) {
                 $holdingId = (string)$item->holding_data->holding_id;
+                if ($holding = $holdings[$holdingId] ?? null) {
+                    if ('true' === (string)$holding->suppress_from_publishing) {
+                        continue;
+                    }
+                }
+
                 $itemId = (string)$item->item_data->pid;
                 $barcode = (string)$item->item_data->barcode;
                 $status = (string)$item->item_data->base_status[0]
@@ -1334,8 +1349,10 @@ class Alma extends \VuFind\ILS\Driver\Alma
             && $results['total'] > $options['itemLimit'];
         if (!$paged) {
             $noItemsHoldings = [];
-            $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
-            foreach ($records->holding ?? [] as $record) {
+            foreach ($holdings as $record) {
+                if ('true' === (string)$record->suppress_from_publishing) {
+                    continue;
+                }
                 $itemsFound = false;
                 foreach ($results['holdings'] as &$holding) {
                     if ($holding['holding_id'] === (string)$record->holding_id) {
