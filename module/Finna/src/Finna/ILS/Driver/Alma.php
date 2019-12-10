@@ -1005,7 +1005,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 }
             }
 
-            if (null !== $libraryFilter) {
+            if (null === $libraryFilter) {
+                $libraries = [];
+            } else {
                 $libraries = array_filter(
                     $libraries,
                     function ($library) use ($libraryFilter) {
