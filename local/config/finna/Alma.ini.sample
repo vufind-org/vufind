@@ -44,6 +44,9 @@ defaultPickUpLocation = ""
 ;   "description" - Only if the item has a description
 ;enableItemHolds = true
 
+; List of bibliographic levels for which title hold is allowed
+titleHoldBibLevels = "monograph:monographpart:serial:serialpart:collectionpart:integratingresource"
+
 ; Rules for filtering pickup locations. Each part of a rule set is separated by a
 ; colon. A part contains a filter key, equals sign and values separated by commas.
 ; A value can be enclosed in '' if it contains a colon or a comma. Values are

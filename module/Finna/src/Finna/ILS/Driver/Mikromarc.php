@@ -152,12 +152,17 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'everything desc',
             ];
         }
-        if ('getTitleHoldBibLevels' === $function) {
-            return $this->getTitleHoldBibLevels();
-        }
         $functionConfig = $this->config[$function] ?? false;
         if ($functionConfig && 'onlinePayment' === $function) {
             $functionConfig['exactBalanceRequired'] = true;
+        }
+        if ($functionConfig && 'Holds' === $function) {
+            if (isset($functionConfig['titleHoldBibLevels'])
+                && !is_array($functionConfig['titleHoldBibLevels'])
+            ) {
+                $functionConfig['titleHoldBibLevels']
+                    = explode(':', $functionConfig['titleHoldBibLevels']);
+            }
         }
         return $functionConfig;
     }
@@ -1462,20 +1467,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get bibliograpcic levels for which title hold is allowed from ini file
-     *
-     * @return array|boolean array of bibliographic levels or false if not configured
-     */
-    public function getTitleHoldBibLevels()
-    {
-        if (isset($this->config['Holds']['titleHoldBibLevels'])) {
-            $bibLevels = explode(':', $this->config['Holds']['titleHoldBibLevels']);
-            return $bibLevels;
-        }
-        return false;
-    }
-
-    /**
      * Get Item Statuses
      *
      * This is responsible for retrieving the status information of a certain
@@ -1489,8 +1480,6 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItemStatusesForBiblio($id, $patron = null)
     {
-        $units = $this->getLibraryUnits();
-
         $result = $this->makeRequest(
             ['odata', 'CatalogueItems'],
             ['$filter' => "MarcRecordId eq $id"]

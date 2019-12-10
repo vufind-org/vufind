@@ -1052,20 +1052,20 @@ trait SolrFinna
     {
         $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
         if ($this->hasILS()) {
-            $bibLevels = $this->ils->getConfig(
-                'getTitleHoldBibLevels',
+            if ($this->ils->getTitleHoldsMode() === 'disabled') {
+                return false;
+            }
+            $holdConfig = $this->ils->getConfig(
+                'Holds',
                 ['id' => $this->getUniqueID()]
             );
-            if (false === $bibLevels) {
-                $bibLevels = [
+            $bibLevels = $holdConfig['titleHoldBibLevels']
+                ?? [
                     'monograph', 'monographpart',
                     'serialpart', 'collectionpart'
                 ];
-            }
             if (in_array($biblioLevel, $bibLevels)) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
-                }
+                return $this->titleHoldLogic->getHold($this->getUniqueID());
             }
         }
         return false;

@@ -34,7 +34,11 @@ notAllowedForHold = ClaimedReturnedOrNeverBorrowed:Lost:SuppliedReturnNotRequire
 ShowLinkOnCopy = false
 
 ; List of bibliographic levels for which title hold is allowed
-titleHoldBibLevels = monograph:monographpart:serial:serialpart:collectionpart
+titleHoldBibLevels[] = monograph
+titleHoldBibLevels[] = monographpart
+titleHoldBibLevels[] = serial
+titleHoldBibLevels[] = serialpart
+titleHoldBibLevels[] = collectionpart
 
 [Holdings]
 ; By default the holdings location list is sorted alphabetically. This setting can be
