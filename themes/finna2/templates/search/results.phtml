@@ -64,7 +64,7 @@
   }
 
   $filterCount = 0;
-  if (!$browse && !empty($params->getFilterList(false))){
+  if (!empty($params->getFilterList(false))){
       // Clone the params object to prevent its manipulation from affecting main facet functionality
       $params = clone $this->params;
       $filterList = $params->getFilterList(true);
