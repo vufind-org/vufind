@@ -602,6 +602,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             }
         }
 
+        // Remove user roles as they are the exception that Alma handles differently.
+        unset($userData->user_roles);
+
         // Update user in Alma
         $queryParams = '';
         if ($overrideFields) {
