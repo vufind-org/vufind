@@ -110,7 +110,7 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                 }
             }
             if (isset($holding[$fieldName])) {
-                $holding['textfields'][$fieldName][] = $holding[$fieldName];
+                $holding['textfields'][$fieldName] = (array)$holding[$fieldName];
             }
         }
 

@@ -1531,7 +1531,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $marcDetails = [];
 
         // Get Notes
-        $data = $this->getMFHDData(
+        $data = $this->getHoldingsMarc(
             $marc,
             isset($this->config['Holdings']['notes'])
             ? $this->config['Holdings']['notes']
@@ -1542,7 +1542,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         }
 
         // Get Summary (may be multiple lines)
-        $data = $this->getMFHDData(
+        $data = $this->getHoldingsMarc(
             $marc,
             isset($this->config['Holdings']['summary'])
             ? $this->config['Holdings']['summary']
@@ -1554,7 +1554,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Get Supplements
         if (isset($this->config['Holdings']['supplements'])) {
-            $data = $this->getMFHDData(
+            $data = $this->getHoldingsMarc(
                 $marc,
                 $this->config['Holdings']['supplements']
             );
@@ -1565,7 +1565,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Get Indexes
         if (isset($this->config['Holdings']['indexes'])) {
-            $data = $this->getMFHDData(
+            $data = $this->getHoldingsMarc(
                 $marc,
                 $this->config['Holdings']['indexes']
             );
@@ -1576,7 +1576,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Get links
         if (isset($this->config['Holdings']['links'])) {
-            $data = $this->getMFHDData(
+            $data = $this->getHoldingsMarc(
                 $marc,
                 $this->config['Holdings']['links']
             );
@@ -1623,21 +1623,21 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     }
 
     /**
-     * Get specified fields from an MFHD MARC Record
+     * Get specified fields from a Holdings MARC Record
      *
      * @param object       $record     SimpleXMLElement
      * @param array|string $fieldSpecs Array or colon-separated list of
      * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
      *
-     * @return string|string[] Results as a string if single, array if multiple
+     * @return array
      */
-    protected function getMFHDData($record, $fieldSpecs)
+    protected function getHoldingsMarc($record, $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
         }
-        $results = '';
+        $results = [];
         foreach ($fieldSpecs as $fieldSpec) {
             $fieldCode = substr($fieldSpec, 0, 3);
             $subfieldCodes = substr($fieldSpec, 3);
@@ -1655,14 +1655,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $line .= (string)$subfield;
                     }
                     if ($line) {
-                        if (!$results) {
-                            $results = $line;
-                        } else {
-                            if (!is_array($results)) {
-                                $results = [$results];
-                            }
-                            $results[] = $line;
-                        }
+                        $results[] = $line;
                     }
                 }
             }
