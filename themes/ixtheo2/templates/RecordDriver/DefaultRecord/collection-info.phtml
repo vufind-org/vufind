@@ -40,7 +40,7 @@
     </div>
 
     <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
-    <?/* Display Main Details */?>
+    <?php /* Display Main Details */?>
     <table id="collectionInfo" class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <?php $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <?php if (isset($authors['main']) && !empty($authors['main'])): ?>
@@ -113,13 +113,13 @@
       </tr>
       <?php endif; ?>
 
-      <?/* Display series section if at least one series exists. */?>
+      <?php /* Display series section if at least one series exists. */?>
       <?php $series = $this->driver->getSeries(); if (!empty($series)): ?>
       <tr>
         <th><?=$this->transEsc('Series')?>: </th>
         <td>
           <?php foreach ($series as $field): ?>
-            <?/* Depending on the record driver, $field may either be an array with
+            <?php /* Depending on the record driver, $field may either be an array with
                "name" and "number" keys or a flat string containing only the series
                name.  We should account for both cases to maximize compatibility. */?>
             <?php if (is_array($field)): ?>
@@ -156,7 +156,7 @@
       </tr>
       <?php endif; ?>
 
-      <?
+      <?php
         $openUrl = $this->openUrl($this->driver, 'record');
         $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
@@ -220,6 +220,6 @@
         </tr>
       <?php endif; ?>
     </table>
-    <?/* End Main Details */?>
+    <?php /* End Main Details */?>
   </div>
 </div>

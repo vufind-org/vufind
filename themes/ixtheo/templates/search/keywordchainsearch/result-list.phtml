@@ -22,7 +22,7 @@
                         <span class="badge"><?=$this->escapeHtml($current['count'])?></span>
                     </td>
                     <td>
-                        <?
+                        <?php
                         // Sort KWC alphabetically
                         $kwc = preg_split("~(?<!\\\)/~", $current['value']);
                         usort($kwc, 'strcoll');
