@@ -957,6 +957,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Unsupported by default!
+        return false;
+    }
+
+    /**
      * Configure autocomplete preferences from an .ini file.
      *
      * @param Config $searchSettings Object representation of .ini file

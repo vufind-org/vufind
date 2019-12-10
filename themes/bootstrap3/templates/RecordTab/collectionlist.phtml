@@ -6,6 +6,9 @@
   $results = $this->tab->getResults();
   $params = $this->tab->getParams();
   $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1];
+
+  $filterList = $params->getFilterList(true);
+  $checkboxFilters = $params->getCheckboxFacets();
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?php if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
@@ -19,7 +22,7 @@
       <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
         <div class="input-group">
           <input id="keywordFilter_lookfor" type="text" name="lookfor" placeholder="<?=$this->transEsc('Search within collection')?>" value="<?=$params->getDisplayQuery()?>" class="form-control">
-          <?php foreach ($params->getFilterList(true) as $field => $filters): ?>
+          <?php foreach ($filterList as $field => $filters): ?>
             <?php foreach ($filters as $filter): ?>
               <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
             <?php endforeach; ?>
@@ -42,11 +45,15 @@
     </div>
   </div>
 
-  <?php if (!empty($params->getFilterList(false))): ?>
+
+  <?php if ($filterList || $checkboxFilters): ?>
     <?=$this->render('search/filters.phtml',
       [
-        'params' => $params,
         'urlQuery' => $results->getUrlQuery(),
+        'filterList' => $filterList,
+        'checkboxFilters' => $checkboxFilters,
+        'searchClassId' => $this->searchClassId,
+        'searchType' => 'basic',
       ]
     ); ?>
   <?php endif; ?>

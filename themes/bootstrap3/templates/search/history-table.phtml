@@ -1,10 +1,14 @@
-<?php $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
-<table class="table table-striped">
+<?php
+  $scheduleSupported = !empty($this->schedule);
+  $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+?>
+<table class="search-history-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
   <tr>
     <th width="20%"><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
     <th><?=$this->transEsc("history_limits")?></th>
     <th><?=$this->transEsc("history_results")?></th>
+    <?php if ($scheduleSupported): ?><th class="search-schedule-header"><?=$this->transEsc('history_schedule')?></th><?php endif; ?>
     <?php if ($saveSupported): ?><th><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th><?php endif; ?>
   </tr>
   <?php foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
@@ -31,10 +35,27 @@
         <?php endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
+      <?php if ($scheduleSupported): ?>
+        <td>
+        <?php if (isset($this->schedule[$info->getSearchId()])): ?>
+          <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
+            <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+              <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEsc("history_schedule")?>">
+                <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
+                  <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($schedule == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
+                <?php endforeach; ?>
+              </select>
+              <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
+            </form>
+          <?php else: ?>
+            <span class="disable"><?=$this->transEsc("cannot set")?></span>
+          <?php endif; ?>
+        </td>
+      <?php endif; ?>
       <?php if ($saveSupported): ?>
         <td>
           <?php if ($this->showSaved): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
           <?php else: ?>
             <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc("history_save_link")?></a>
           <?php endif; ?>
