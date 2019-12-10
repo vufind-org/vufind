@@ -35,7 +35,7 @@
     }
 </style>
 
-<?
+<?php
 $panelId = 0;
 $panelClass = "panel-default";
 $panelWidth = "col-md-6";
@@ -51,21 +51,21 @@ $panelWidth = "col-md-6";
             <div class="panel-body">
                 <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
                 <div class="read-more-wrap">
-                   <p>Die neue „Religionswissenschaftliche Bibliographie“ RelBib ist nun endlich online! Diese umfassende bibliografische 
-                      Datenbank enthält Aufsätze aus überwiegend religionswissenschaftlichen Zeitschriften. Darüber hinaus können auch 
+                   <p>Die neue „Religionswissenschaftliche Bibliographie“ RelBib ist nun endlich online! Diese umfassende bibliografische
+                      Datenbank enthält Aufsätze aus überwiegend religionswissenschaftlichen Zeitschriften. Darüber hinaus können auch
                       religionswissenschaftlich relevante Monografien, Datenbanken und andere Medienarten in RelBib recherchiert werden.</p>
-                   <p>Sukzessive werden weitere Zeitschriften in die Aufsatzerschließung übernommen. In der alphabetischen 
-                      <a href="<?='https://'.$_SERVER['SERVER_NAME'] . '/relbib_docs/relbib_journals.pdf'?>" target="_blank"><b>Übersicht der Zeitschriften</b></a> 
+                   <p>Sukzessive werden weitere Zeitschriften in die Aufsatzerschließung übernommen. In der alphabetischen
+                      <a href="<?='https://'.$_SERVER['SERVER_NAME'] . '/relbib_docs/relbib_journals.pdf'?>" target="_blank"><b>Übersicht der Zeitschriften</b></a>
                       können Sie sich über den aktuellen Stand der Auswertung informieren.</p>
                    <div class="read-more-target">
-                   <p>Ein besonderes Feature von RelBib stellt die Verfügbarkeitsanzeige dar: Damit lässt sich schnell prüfen, ob und an welchem 
-                      Standort eine Zeitschrift, ein Aufsatz oder ein Buch vorhanden ist. Wenn es lizenzrechtlich möglich ist, kann direkt auf 
+                   <p>Ein besonderes Feature von RelBib stellt die Verfügbarkeitsanzeige dar: Damit lässt sich schnell prüfen, ob und an welchem
+                      Standort eine Zeitschrift, ein Aufsatz oder ein Buch vorhanden ist. Wenn es lizenzrechtlich möglich ist, kann direkt auf
                       elektronisch vorliegende Volltexte zugegriffen werden.</p>
-                   <p>RelBib wird als kostenloses Open-Access-Angebot an die weltweite Fachcommunity der Religionswissenschaft von der 
-                      <a href="http://www.uni-tuebingen.de/nc/einrichtungen/universitaetsbibliothek/home.html" target="_blank">Universitätsbibliothek Tübingen</a> 
+                   <p>RelBib wird als kostenloses Open-Access-Angebot an die weltweite Fachcommunity der Religionswissenschaft von der
+                      <a href="http://www.uni-tuebingen.de/nc/einrichtungen/universitaetsbibliothek/home.html" target="_blank">Universitätsbibliothek Tübingen</a>
                       herausgegeben und entsteht in Zusammenarbeit mit <a href="https://ixtheo.de" target="_blank">IxTheo</a>. Die Betreuung der Datenbank erfolgt
                       im Rahmen des Fachinformationsdienstes (FID) „Religionswissenschaft“.</p>
-                   <p>Wir bitten um Verständnis, dass in einer Alpha-Version noch nicht alles fehlerfrei funktioniert. Und jetzt wünschen wir Ihnen viel Freude 
+                   <p>Wir bitten um Verständnis, dass in einer Alpha-Version noch nicht alles fehlerfrei funktioniert. Und jetzt wünschen wir Ihnen viel Freude
                       beim Entdecken von RelBib und sind dankbar für Ihr Feedback!</p>
                    </div>
                 </div>
@@ -89,7 +89,7 @@ $panelWidth = "col-md-6";
                 <div class="read-more-wrap">
                     <p>In RelBib können Sie für Ihre Suchanfrage zwischen zwei verschiedenen Modi wählen: „Einfache Suche“ und „Erweiterte Suche“.</p>
                     <div class="read-more-target">
-    
+
                         <h3>Einfache Suche</h3>
                         <p>
                            Geben Sie einen Begriff in den Suchschlitz ein und belassen den Suchaspekt auf „Alle Felder“, dann wird der Begriff in allen Suchfeldern gesucht. Über das Auswahlmenü können Sie eine Suche des eingegebenen Begriffs auch in einzelnen Feldern (Titel, Verfasser, DDC, Schlagwort oder ISBN bzw. ISSN) auslösen.</p>
@@ -105,12 +105,12 @@ $panelWidth = "col-md-6";
                         </p>
                         <p>Bei einigen Filtern ist eine Mehrfachauswahl eingerichtet.</p>
                         <h3>Erweiterte Suche</h3>
-                        <p>Zur erweiterten Suche gelangen Sie über den Link unterhalb des großen Suchschlitzes. Im Unterschied zur einfachen Suche können Sie in 
-                           diesem Modus Begriffe gleichzeitig in verschiedenen Feldern suchen und ihre Suche dadurch gezielt eingrenzen. Die Suchfelder lassen sich 
-                           durch Auswahl einer Suchbedingung in verschiedene Relationen zueinander bringen. Für komplexere Anfragen können Sie auch eine Suche 
+                        <p>Zur erweiterten Suche gelangen Sie über den Link unterhalb des großen Suchschlitzes. Im Unterschied zur einfachen Suche können Sie in
+                           diesem Modus Begriffe gleichzeitig in verschiedenen Feldern suchen und ihre Suche dadurch gezielt eingrenzen. Die Suchfelder lassen sich
+                           durch Auswahl einer Suchbedingung in verschiedene Relationen zueinander bringen. Für komplexere Anfragen können Sie auch eine Suche
                            über Suchgruppen durchführen.</p>
-                        <p>Außerdem lässt sich in der erweiterten Suche von vornherein eine Eingrenzung mit Hilfe folgender Facetten vornehmen: RelBib Notation; 
-                           Medienart; Sprache. Darüber hinaus können auch der Erscheinungszeitraum der gesuchten Literatur sowie die angezeigte Trefferanzahl 
+                        <p>Außerdem lässt sich in der erweiterten Suche von vornherein eine Eingrenzung mit Hilfe folgender Facetten vornehmen: RelBib Notation;
+                           Medienart; Sprache. Darüber hinaus können auch der Erscheinungszeitraum der gesuchten Literatur sowie die angezeigte Trefferanzahl
                            pro Seite vorab festgelegt werden.</p>
                      </div>
                 </div>
@@ -139,36 +139,36 @@ $panelWidth = "col-md-6";
                     <p>Benötigte Bücher werden bei Bedarf von der UB Tübingen gekauft.</p>
                     <p>Sie können den Kauf von Einzelmonographien, die weder an Ihrem Standort vorhanden noch über Fernleihe beschaffbar sind, direkt in RelBib veranlassen.</p>
                     <h3>Verfügbarkeitsanzeige</h3>
-                    <p>Ein besonderes Highlight für die Nutzer_innen von RelBib stellt die Verfügbarkeitsanzeige dar. Hier ist zu unterscheiden zwischen HBZ Gateway und 
+                    <p>Ein besonderes Highlight für die Nutzer_innen von RelBib stellt die Verfügbarkeitsanzeige dar. Hier ist zu unterscheiden zwischen HBZ Gateway und
                        Journals Online & Print (JOP).</p>
 
                     <p>Über den Link „HBZ Gateway“ in der Volltitelanzeige können Sie hauptsächlich die Verfügbarkeit von Monografien in teilnehmenden Bibliotheken prüfen.</p>
-                    <p>JOP bietet einen entsprechenden Service für Zeitschriften und Aufsätze: Hier geben zusätzlich Icons in der Volltitelanzeige mit Hilfe der Ampelfarben 
+                    <p>JOP bietet einen entsprechenden Service für Zeitschriften und Aufsätze: Hier geben zusätzlich Icons in der Volltitelanzeige mit Hilfe der Ampelfarben
                        auf einen Blick Auskunft über die Verfügbarkeit eines Aufsatzes / einer Zeitschrift im Print- und Online-Bestand der lokalen Bibliothek.</p>
-                    <p>In beiden Fällen wird automatisch die Verfügbarkeit des gesuchten Titels an Ihrem jeweiligen Bibliotheksstandort angezeigt. Über HBZ Gateway besteht 
+                    <p>In beiden Fällen wird automatisch die Verfügbarkeit des gesuchten Titels an Ihrem jeweiligen Bibliotheksstandort angezeigt. Über HBZ Gateway besteht
                        zudem die Möglichkeit, manuell andere Standorte einzustellen.</p>
                     <h3>Subito</h3>
-                    <p>Ist ein Titel nicht vor Ort verfügbar oder online kostenfrei zugänglich, können Sie eine kostenpflichtige Bestellung bei Subito veranlassen. 
+                    <p>Ist ein Titel nicht vor Ort verfügbar oder online kostenfrei zugänglich, können Sie eine kostenpflichtige Bestellung bei Subito veranlassen.
                        Über den entsprechenden Link in der Volltitelanzeige gelangen Sie auf die Website des Bestelldienstes.</p>
                     <h3>RSS-Feed abonnieren</h3>
-                    <p>Sie haben die Möglichkeit, eine Suchanfrage als RSS-Feed zu abonnieren. Dadurch können Sie sich schnell über neu in RelBib aufgenommene 
-                      Titel mit den von Ihnen eingegebenen Suchkriterien informieren. Klicken Sie in der Leiste „Suchwerkzeuge“ unterhalb der Trefferliste auf den 
+                    <p>Sie haben die Möglichkeit, eine Suchanfrage als RSS-Feed zu abonnieren. Dadurch können Sie sich schnell über neu in RelBib aufgenommene
+                      Titel mit den von Ihnen eingegebenen Suchkriterien informieren. Klicken Sie in der Leiste „Suchwerkzeuge“ unterhalb der Trefferliste auf den
                       entsprechenden Link, um das Abonnement einzurichten.</p>
                     <h3>Zitieren</h3>
-                    <p>In der Volltitelanzeige können Sie sich über den Link „Zitieren“ den gewählten Titel derzeit in drei verschiedenen Zitierstilen 
+                    <p>In der Volltitelanzeige können Sie sich über den Link „Zitieren“ den gewählten Titel derzeit in drei verschiedenen Zitierstilen
                        anzeigen lassen: APA, Chicago und MLA. Mit „copy & paste“ gelangt das passende Zitat direkt in ihre wissenschaftliche Arbeit.</p>
                     <p>Wir arbeiten momentan noch an der Verbesserung und Erweiterung der Zitierfunktion.</p>
                     <h3>Exportieren</h3>
-                    <p>Einzelne Treffer und Trefferlisten können Sie für die Verwendung in Literaturverwaltungsprogrammen exportieren: Von RelBib unterstützt werden 
+                    <p>Einzelne Treffer und Trefferlisten können Sie für die Verwendung in Literaturverwaltungsprogrammen exportieren: Von RelBib unterstützt werden
                        derzeit die Formate EndNote, BibTex und RIS.</p>
                     <h3>Drucken</h3>
                     <p>Ihre Trefferliste können Sie direkt aus RelBib heraus ausdrucken: Nach Auswahl der zu druckenden Titel klicken Sie auf „Drucken“ in der Leiste
-                       oberhalb der Trefferliste und es öffnet sich das Drucker-Dialogfenster. Auch hier lohnt es sich gegebenenfalls, die angezeigte 
+                       oberhalb der Trefferliste und es öffnet sich das Drucker-Dialogfenster. Auch hier lohnt es sich gegebenenfalls, die angezeigte
                        Trefferzahl pro Seite im Auswahlmenü zu erhöhen.</p>
                     <h3>Feedback</h3>
-                    <p>Zu guter Letzt wollen wir Ihnen noch eine sehr wichtige Funktion von RelBib vorstellen: den Feedback-Button am rechten unteren Rand. 
-                       Sie haben die Möglichkeit, von jedem Punkt Ihrer Recheche aus uns eine Feedback-E-Mail zu schicken, die die URL der aktuellen Seite enthält. 
-                       Im Kommentarfeld können Sie zusätzlich kurz das aufgetretene Problem schildern. Dies erleichtert uns die Fehleranalyse, da wir die 
+                    <p>Zu guter Letzt wollen wir Ihnen noch eine sehr wichtige Funktion von RelBib vorstellen: den Feedback-Button am rechten unteren Rand.
+                       Sie haben die Möglichkeit, von jedem Punkt Ihrer Recheche aus uns eine Feedback-E-Mail zu schicken, die die URL der aktuellen Seite enthält.
+                       Im Kommentarfeld können Sie zusätzlich kurz das aufgetretene Problem schildern. Dies erleichtert uns die Fehleranalyse, da wir die
                        betreffende Suchanfrage sofort rekapitulieren können.</p>
                     </div>
                 </div>
@@ -188,32 +188,32 @@ $panelWidth = "col-md-6";
             <div class="panel-body">
                 <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
                 <div class="read-more-wrap">
-                    <p>Neben einfacher und erweiterter Suche stellt RelBib drei verschiedene Arten des Browsens zur Verfügung: Damit können Sie die Bibliographie nach 
+                    <p>Neben einfacher und erweiterter Suche stellt RelBib drei verschiedene Arten des Browsens zur Verfügung: Damit können Sie die Bibliographie nach
                        RelBib-spezifischen Schlagwortfolgen („Thema Browsen“), bestimmten Kategorien („Browsen / nach Kategorien“) oder alphabetisch („Alphabetisch Browsen“)
-                       durchblättern. 
+                       durchblättern.
                     <div class="read-more-target">
                        Den Browsing-Modus wählen Sie unterhalb des Suchschlitzes über den Link „Browsen“ aus.</p>
                         <!-- Needed since otherwise the More-Button gets confused immediately before a heading -->
                         <div style="height: 0px;">&emsp;</div>
                         <h3>Thema Browsen</h3>
                         <p>Beim <a href="<?=$this->url('keywordchainsearch-home')?>" target="_blank"><?=$this->transEsc('Browse Keywordchains')?></a>
-                           können Sie sich durch Eingabe eines oder mehrerer Suchbegriffe Schlagwörter und normierte Schlagwortfolgen anzeigen 
-                           lassen, die gegebenen Suchbegriffen „ähnlich“ sind. Dies eignet sich insbesondere, um Hinweise auf thematisch verwandte Schlagwortketten 
-                           und dazugehörige Titel zu bekommen. Aus der Volltitelanzeige gelangen Sie über den Button 
-                           <span class="iconlabel label label-info">B</span> ebenfalls in den Modus „Thema Browsen“: Auf diese Weise werden Sie zu weiteren Titeln mit 
+                           können Sie sich durch Eingabe eines oder mehrerer Suchbegriffe Schlagwörter und normierte Schlagwortfolgen anzeigen
+                           lassen, die gegebenen Suchbegriffen „ähnlich“ sind. Dies eignet sich insbesondere, um Hinweise auf thematisch verwandte Schlagwortketten
+                           und dazugehörige Titel zu bekommen. Aus der Volltitelanzeige gelangen Sie über den Button
+                           <span class="iconlabel label label-info">B</span> ebenfalls in den Modus „Thema Browsen“: Auf diese Weise werden Sie zu weiteren Titeln mit
                            derselben oder einer ähnlichen Schlagwortfolge in der Datenbank geführt.</p>
                         <h3>Browsen / nach Kategorien</h3>
-                        <p>Das <a href="<?=$this->url('browse-home')?>" target="_blank"><?=$this->transEsc('Browse by Category')?></a> bietet Ihnen die Möglichkeit, 
+                        <p>Das <a href="<?=$this->url('browse-home')?>" target="_blank"><?=$this->transEsc('Browse by Category')?></a> bietet Ihnen die Möglichkeit,
                            ausgehend von Oberkategorien nach bestimmten Aspekten zu einer Ergebnismenge zu kommen,
                            ohne dass im Vorfeld Suchbegriffe bekannt sein müssen. Sie wählen Ihren Einstieg aus einem der folgenden Felder aus: DDC,
-                           RelBib-Klassifikation, Thema (Schlagwort), Verfasser oder Verlag. Über eine Baumstruktur mit vier Ebenen haben Sie die Möglichkeit, 
+                           RelBib-Klassifikation, Thema (Schlagwort), Verfasser oder Verlag. Über eine Baumstruktur mit vier Ebenen haben Sie die Möglichkeit,
                            Ihr Suchergebnis durch Auswahl weiterer Unterfelder einzuschränken.</p>
                         <h3>Alphabetisch Browsen</h3>
                         <p>Im Modus <a href="<?=$this->url('alphabrowse-home')?>" target="_blank"><?=$this->transEsc('Browse Alphabetically')?></a> steht eine umfassende,
                            alphabetisch sortierte Liste der Inhalte der jeweiligen Kategorien zur Verfügung. Dies
-                           ist zu z.B. für eine Überblicksrecherche von Vorteil. So wählen Sie einen der Aspekte Thema, Verfasser, Titel oder DDC aus und können 
-                           nach Eingabe eines Wortes oder Wortanfangs bestimmen, an welcher Stelle des Alphabets Sie in das Browsen einsteigen wollen. 
-                           Das alphabetische Browsen kann auch dann hilfreich sein, wenn Sie sich bei der Schreibweise eines Autorennamen oder Begriffs nicht 
+                           ist zu z.B. für eine Überblicksrecherche von Vorteil. So wählen Sie einen der Aspekte Thema, Verfasser, Titel oder DDC aus und können
+                           nach Eingabe eines Wortes oder Wortanfangs bestimmen, an welcher Stelle des Alphabets Sie in das Browsen einsteigen wollen.
+                           Das alphabetische Browsen kann auch dann hilfreich sein, wenn Sie sich bei der Schreibweise eines Autorennamen oder Begriffs nicht
                            sicher sind: Hier reicht die Eingabe eines Wortanfangs aus.</p>
                     </div>
                 </div>
@@ -240,28 +240,28 @@ anlegen.
                         Ihren personalisierten Bereich und können folgende Funktionen zusätzlich nutzen:</p>
 
                         <h3>Neuerscheinungen abonnieren (Alerting-Funktion)</h3>
-                        <p>Mit dieser Funktion können Sie sich über neu erschienene Aufsätze aus Zeitschriften und neu erschienene Bände in Reihen per 
+                        <p>Mit dieser Funktion können Sie sich über neu erschienene Aufsätze aus Zeitschriften und neu erschienene Bände in Reihen per
                            E-Mail benachrichtigen lassen.</p>
-                        <p>Um die Alerting-Funktion auszulösen, müssen Sie zunächst den Titel der Zeitschrift oder Reihe aufrufen. Klicken Sie dann auf das 
+                        <p>Um die Alerting-Funktion auszulösen, müssen Sie zunächst den Titel der Zeitschrift oder Reihe aufrufen. Klicken Sie dann auf das
                            Symbol „Glocke“ (<i class="fa fa-fw fa-bell"></i>) in der oberen Zeile der Titelanzeige. In Ihrem Konto können Sie die Abonnements verwalten.</p>
                         <h3>Suchanfragen speichern oder als E-Mail versenden</h3>
-                        <p>Ihre aktuellen Suchanfragen werden in der Suchhistorie temporär gespeichert. Wenn Sie Ihre Suchanfragen dauerhaft verwenden wollen, können Sie 
-                           sie in Ihrem Konto abspeichern. Diese haben Sie dann unter „Gespeicherte Suche“ in Ihrem Konto jederzeit zur Hand und können sie durch Anklicken 
-                           erneut ausführen. Das lohnt sich für komplexe Abfragen oder für Themen, an denen Sie kontinuierlich interessiert sind. Auf diese Weise entdecken 
+                        <p>Ihre aktuellen Suchanfragen werden in der Suchhistorie temporär gespeichert. Wenn Sie Ihre Suchanfragen dauerhaft verwenden wollen, können Sie
+                           sie in Ihrem Konto abspeichern. Diese haben Sie dann unter „Gespeicherte Suche“ in Ihrem Konto jederzeit zur Hand und können sie durch Anklicken
+                           erneut ausführen. Das lohnt sich für komplexe Abfragen oder für Themen, an denen Sie kontinuierlich interessiert sind. Auf diese Weise entdecken
                            Sie leicht die neu erschienene Literatur zu einem bestimmten Thema oder Themengebiet. Ebenso lässt sich eine Suchanfrage von Ihrem Konto aus
                             an eine andere Person per E-Mail verschicken.</p>
                         <p>Die entsprechenden Funktionen bzw. Suchwerkzeuge wählen Sie unterhalb der Trefferliste aus.</p>
                         <h3>Trefferliste als E-Mail versenden</h3>
                         <p>Auch Trefferlisten oder einzelne Treffer können per E-Mail an eine andere Person verschickt werden. In der Trefferliste wählen Sie dafür zunächst
-                           die gewünschten Treffer einzeln aus oder klicken oberhalb der Liste „Alles auswählen“. Danach können Sie Ihre Auswahl über den Button „E-Mail“ 
+                           die gewünschten Treffer einzeln aus oder klicken oberhalb der Liste „Alles auswählen“. Danach können Sie Ihre Auswahl über den Button „E-Mail“
                            unter Eingabe der Zieladresse versenden.</p>
-                        <p>Bitte beachten: Sie können nur die auf einer Seite angezeigten Treffer gleichzeitig versenden. Standardmäßig ist die angezeigte Trefferzahl pro 
+                        <p>Bitte beachten: Sie können nur die auf einer Seite angezeigten Treffer gleichzeitig versenden. Standardmäßig ist die angezeigte Trefferzahl pro
                            Seite auf 20 eingestellt. Diese lässt sich im Auswahlmenü oberhalb der Liste auf bis zu 100 angezeigte Treffer pro Seite erhöhen.</p>
                         <h3>Favoriten speichern</h3>
-                        <p>Speichern Sie interessante Titel direkt in Ihrem Konto ab. Klicken Sie dafür auf das Symbol „Stern“ (<i class="fa fa-fw fa-star"></i>) in der 
-                           Trefferliste oder Volltitelanzeige. Damit stehen diese Ihnen dauerhaft zur Verfügung und Sie müssen nicht viel Zeit mit dem Wiederfinden 
-                           verwenden. Ihre Favoriten können Sie in verschiedenen Listen speichern, die Sie selbst definieren. Auf diese Weise lassen sich interessante 
-                           Titel beispielsweise bestimmten Forschungsprojekten oder Themen zuordnen. Diese Listen können Sie aus Ihrem Konto heraus auch exportieren, 
+                        <p>Speichern Sie interessante Titel direkt in Ihrem Konto ab. Klicken Sie dafür auf das Symbol „Stern“ (<i class="fa fa-fw fa-star"></i>) in der
+                           Trefferliste oder Volltitelanzeige. Damit stehen diese Ihnen dauerhaft zur Verfügung und Sie müssen nicht viel Zeit mit dem Wiederfinden
+                           verwenden. Ihre Favoriten können Sie in verschiedenen Listen speichern, die Sie selbst definieren. Auf diese Weise lassen sich interessante
+                           Titel beispielsweise bestimmten Forschungsprojekten oder Themen zuordnen. Diese Listen können Sie aus Ihrem Konto heraus auch exportieren,
                            per Mail verschicken oder ausdrucken.</p>
                     </div>
                 </div>
