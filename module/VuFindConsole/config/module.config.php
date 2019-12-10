@@ -79,7 +79,7 @@ $routes = [
     'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/lint_marc' => 'util lint_marc [<filename>]',
     'util/optimize' => 'util optimize [<core>]',
-    'util/sitemap' => 'util sitemap [--verbose]',
+    'util/sitemap' => 'util sitemap [--help|-h] [--verbose] [--baseurl=s] [--basesitemapurl=s]',
     'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
     'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
 ];

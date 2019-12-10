@@ -204,6 +204,14 @@ class Server
     protected $recordFormatFilters = [];
 
     /**
+     * Limit on display of deleted records (in days); older deleted records will not
+     * be returned by the server. Set to null for no limit.
+     *
+     * @var int
+     */
+    protected $deleteLifetime = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -677,6 +685,11 @@ class Server
             $this->recordFormatFilters
                 = $config->OAI->record_format_filters->toArray();
         }
+
+        // Initialize delete lifetime, if set:
+        if (isset($config->OAI->delete_lifetime)) {
+            $this->deleteLifetime = intval($config->OAI->delete_lifetime);
+        }
     }
 
     /**
@@ -763,10 +776,16 @@ class Server
         // The verb determines whether we're returning headers only or full records:
         $headersOnly = ($verb != 'ListRecords');
 
+        // Apply the delete lifetime limit to the from date if necessary:
+        $deleteCutoff = $this->deleteLifetime
+            ? strtotime('-' . $this->deleteLifetime . ' days') : 0;
+        $deleteFrom = ($deleteCutoff < $from) ? $from : $deleteCutoff;
+
         // Get deleted records in the requested range (if applicable):
-        $deletedCount = $this->listRecordsGetDeletedCount($from, $until);
+        $deletedCount = $this->listRecordsGetDeletedCount($deleteFrom, $until);
         if ($deletedCount > 0 && $currentCursor < $deletedCount) {
-            $deleted = $this->listRecordsGetDeleted($from, $until, $currentCursor);
+            $deleted = $this
+                ->listRecordsGetDeleted($deleteFrom, $until, $currentCursor);
             foreach ($deleted as $current) {
                 $this->attachDeleted($xml, $current, $headersOnly);
                 $currentCursor++;

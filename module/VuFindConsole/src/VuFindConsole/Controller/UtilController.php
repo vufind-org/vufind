@@ -277,6 +277,29 @@ class UtilController extends AbstractBase
      */
     public function sitemapAction()
     {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            Console::writeLine('Generate sitemap files.');
+            Console::writeLine('');
+            Console::writeLine(
+                'Optional parameters: [--verbose] [--baseurl=url]'
+                . ' [--basesitemapurl=url]'
+            );
+            Console::writeLine('');
+            Console::writeLine('  verbose: turn on detailed feedback');
+            Console::writeLine(
+                '  baseurl: define the base url (overrides the url setting in'
+                . ' Site section of config.ini)'
+            );
+            Console::writeLine(
+                '  basesitemapurl: define the base sitemap url (overrides the url'
+                . ' setting in Site section of config.ini, or baseSitemapUrl in'
+                . ' sitemap.ini)'
+            );
+            Console::writeLine('');
+            return $this->getFailureResponse();
+        }
+
         // Build sitemap and display appropriate warnings if needed:
         $configLoader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
@@ -284,8 +307,13 @@ class UtilController extends AbstractBase
             $this->serviceLocator->get(\VuFind\Search\BackendManager::class),
             $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
         );
-        $request = $this->getRequest();
         $generator->setVerbose($request->getParam('verbose', false));
+        if ($url = $request->getParam('baseurl', false)) {
+            $generator->setBaseUrl($url);
+        }
+        if ($sitemapUrl = $request->getParam('basesitemapurl', false)) {
+            $generator->setBaseSitemapUrl($sitemapUrl);
+        }
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
             Console::writeLine("$warning");
