@@ -602,14 +602,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             }
         }
 
-        // Remove list-style data that we don't ever update and is handled by Alma
-        // as complete entities
-        unset($userData->user_identifiers);
-        unset($userData->user_roles);
-        unset($userData->user_blocks);
-        unset($userData->user_statistics);
-        unset($userData->proxy_for_users);
-
         // Update user in Alma
         $queryParams = '';
         if ($overrideFields) {
