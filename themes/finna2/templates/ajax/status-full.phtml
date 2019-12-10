@@ -285,7 +285,7 @@ if (!$disableTitleHold
       $logged = $account->isLoggedIn();
       $link = null;
       if (!$logged) {
-        $link = $holdingsLink . '?login=true&amp;catalogLogin=true';
+        $link = $holdingsLink . '?login=true&catalogLogin=true';
       } elseif ($journal) {
         $link = $holdingsLink;
       } else {
@@ -297,11 +297,11 @@ if (!$disableTitleHold
       if ($link) {
         if ($logged) {
 ?>
-      <a href="<?=$link?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" data-lightbox><?=$this->transEsc('title_hold_place')?></a>
+      <a href="<?=$this->escapeHtmlAttr($link)?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" data-lightbox><?=$this->transEsc('title_hold_place')?></a>
 <?php
         } else {
 ?>
-      <a href="<?=$link?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?></a>
+      <a href="<?=$this->escapeHtmlAttr($link)?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?></a>
 <?php
         }
       }
@@ -313,7 +313,7 @@ if (!$disableTitleHold
 ?>
 <?php if ($this->holdingsSettings()->showLinkToRecordPage()): ?>
   <div class="all-holdings">
-    <a href="<?=$holdingsLink;?>"><?=$this->transEsc('See all holdings')?></a>
+    <a href="<?=$this->escapeHtmlAttr($holdingsLink)?>"><?=$this->transEsc('See all holdings')?></a>
   </div>
 <?php endif; ?>
 </div>

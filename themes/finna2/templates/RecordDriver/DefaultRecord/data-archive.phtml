@@ -15,7 +15,7 @@
           $parentUrl = '';
         }
       ?>
-      <?=($index > 0 ? ', ' : '')?><a href="<?=$parentUrl?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+      <?=($index > 0 ? ', ' : '')?><a href="<?=$this->escapeHtmlAttr($parentUrl)?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
     <?php endforeach; ?>
   <?php endif; ?>
 <?php endif; ?>

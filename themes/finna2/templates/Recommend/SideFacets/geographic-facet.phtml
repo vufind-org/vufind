@@ -28,7 +28,7 @@
   <?php endif; ?>
   <div class="map-controls text-center">
     <a class="btn user-location-filter" href="<?=$removeFacetUrl?>"><?=$this->translate("use_my_location");?></a>
-    <a tabindex="-1" class="btn map-control" href="<?=$mapPopupUrl ?>" data-lightbox><?=$this->translate("select_from_map");?></a>
+    <a tabindex="-1" class="btn map-control" href="<?=$this->escapeHtmlAttr($mapPopupUrl) ?>" data-lightbox><?=$this->translate("select_from_map");?></a>
   </div>
   <div class="clearfix"></div>
 </div>

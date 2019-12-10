@@ -48,7 +48,7 @@
     <p class="image-description">
     </p>
   </div>
-  <div class="recordcovers <?=$type?>">
+  <div class="recordcovers <?=$this->escapeHtmlAttr($type)?>">
     <button class="left-button" type="button" title="<?= $this->transEsc("previous_images") ?>"><i class="fa fa-handle-left"></i></button>
     <div class="track-holder paginator-mask">
       <div class="finna-element-track"></div>

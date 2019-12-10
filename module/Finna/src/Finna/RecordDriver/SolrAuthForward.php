@@ -183,12 +183,11 @@ class SolrAuthForward extends SolrAuthDefault
         $doc = $this->getMainElement();
         if (isset($doc->BiographicalNote)) {
             foreach ($doc->BiographicalNote as $bio) {
-                $txt = (string)$bio;
                 $attr = $bio->attributes();
                 if (isset($attr->{$type})
                     && (string)$attr->{$type} === $typeVal
                 ) {
-                    return $this->sanitizeHTML((string)$bio);
+                    return (string)$bio;
                 }
             }
         }

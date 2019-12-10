@@ -15,7 +15,7 @@ $coreFields = $formatter->getDefaults('authority');
     <?php if (!$role['enabled']): ?>
       <a href="<?=$results->getUrlQuery()->setAuthorIdWithRole($role['value'])?>">
     <?php endif; ?>
-    <?=$role['role']?> (<?=$role['count']?>)
+    <?=$this->escapeHtml($role['role'])?> (<?=$this->escapeHtml($role['count'])?>)
     <?php if (!$role['enabled']): ?>
       </a>
     <?php endif; ?>
@@ -27,7 +27,7 @@ $coreFields = $formatter->getDefaults('authority');
   <div class="wide recordSummary<?=!($this->collapsed ?? false) ? ' truncate-field' : ''?>" data-rows="5">
     <p class="summary">
       <?php // NOTE: the driver is responsible for returning only safe tags ?>
-      <?=implode('<br>', $summ)?>
+      <?=$this->cleanHtml(implode('<br>', $summ))?>
     </p>
   </div>
 <?php endif; ?>

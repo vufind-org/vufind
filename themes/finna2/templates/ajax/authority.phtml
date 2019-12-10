@@ -6,7 +6,7 @@
 
 <?php $description = $driver->tryMethod('getDescription'); ?>
 <?php if (!empty($description)): ?>
-<div class="description"><?=$description?></div>
+<div class="description"><?=$this->cleanHtml($description)?></div>
 <?php endif; ?>
 
 <?php if (!empty($coreFields)): ?>

@@ -36,8 +36,8 @@ $that = $this;
                 <a><i class="fa fa-authority-<?=$this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0]))?>"></i> <?=$this->escapeHtml($record->getTitle())?></a>
             </li>
           <?php endforeach; ?>
-          <li class="spinner hide" aria-label="hidden"><i class="fa fa-spin fa-spinner"></i></li>
-          <li class="toggle<?= $collapseAuthorityInfo ? ' collapsed' : ''?>" aria-label="hidden"></li>
+          <li class="spinner hide" aria-hidden="true"><i class="fa fa-spin fa-spinner"></i></li>
+          <li class="toggle<?= $collapseAuthorityInfo ? ' collapsed' : ''?>" aria-hidden="true"></li>
         </ul>
       </div>
       <?php  $js = <<<JS
@@ -60,27 +60,25 @@ JS;
     <?php
     // Authority recommendations when no author-id filter is active.
     $displayQuery = $results->getParams()->getDisplayQuery();
-    if (!$displayQuery) {
-      return;
-    }
-    $that = $this;
-    $searchIndex = $this->contextParams['searchIndex'] ?? null;
-    $urlQuery = $results->getUrlQuery();
-    $callback = function ($record) use ($displayQuery, $that, $urlQuery) {
-        // Generate a new search URL that replaces the user's current term
-        // with the authority term:
-        $id = $record->getUniqueId();
-        $formats = $record->getFormats();
-        $authoritySearchUrl = $urlQuery->setAuthorId($id);
-        $html = '<span class="authority-page-link"><a class="authority-page" href="' . $authoritySearchUrl . '"><i class="fa' . (!empty($formats) ? ' fa-authority-' . $this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0])) : '') . '"></i> ' . $that->escapeHtml($record->getBreadCrumb()) . '</a></span>';
-        return $html;
-    };
-    $content = implode(', ', array_map($callback, $data));
-    if (!empty($content)) {
-      echo '<div class="authoritybox">';
-      echo '<div><strong>' . $this->transEsc($this->recommend->getHeader()) . ':</strong></div>';
-      echo "<div>$content</div>";
-      echo '</div>';
+    if ($displayQuery) {
+      $searchIndex = $this->contextParams['searchIndex'] ?? null;
+      $urlQuery = $results->getUrlQuery();
+      $callback = function ($record) use ($displayQuery, $that, $urlQuery) {
+          // Generate a new search URL that replaces the user's current term
+          // with the authority term:
+          $id = $record->getUniqueId();
+          $formats = $record->getFormats();
+          $authoritySearchUrl = $urlQuery->setAuthorId($id);
+          $html = '<span class="authority-page-link"><a class="authority-page" href="' . $authoritySearchUrl . '"><i class="fa' . (!empty($formats) ? ' fa-authority-' . $this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0])) : '') . '"></i> ' . $that->escapeHtml($record->getBreadCrumb()) . '</a></span>';
+          return $html;
+      };
+      $content = implode(', ', array_map($callback, $data));
+      if (!empty($content)) {
+        echo '<div class="authoritybox">';
+        echo '<div><strong>' . $this->transEsc($this->recommend->getHeader()) . ':</strong></div>';
+        echo "<div>$content</div>";
+        echo '</div>';
+      }
     }
     ?>
   <?php endif; ?>

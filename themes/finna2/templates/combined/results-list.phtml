@@ -33,7 +33,7 @@
 ?>
 <div class="combined-titles">
   <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
-    <a href="<?=$moreUrl?>">
+    <a href="<?=$this->escapeHtmlAttr($moreUrl)?>">
       <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
     </a>
   <?php else: ?>
@@ -56,7 +56,7 @@
     <?php endif; ?>
     </h4>
     <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-      <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+      <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
     <?php endif; ?>
   </div>
   <?php endif; ?>
@@ -121,7 +121,7 @@
         <?php endif; ?>
         </h4>
         <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-          <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+          <strong><a href="<?=$this->escapeHtmlAttr($moreUrl)?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
         <?php endif; ?>
       </div>
     <?php endif; ?>

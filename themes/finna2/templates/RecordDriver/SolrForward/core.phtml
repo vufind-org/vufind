@@ -98,26 +98,26 @@
         <div class="truncate-field">
           <?php if(!empty($otherUrls)): ?>
             <?php foreach ($otherUrls as $url): ?>
-                <div class="fulltextField">
-                  <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"
-                    <?php if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
-                  >
-                    <i class="fa <?=$icon?>"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
-                  </a>
-                </div>
+              <?php
+                $renderedURLs[] = $url['url'];
+                $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
+                if (!empty($url['desc'])) {
+                  $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
+                  if (isset($map[$url['desc']])) {
+                    $icon = $map[$url['desc']];
+                  }
+                }
+              ?>
+              <div class="fulltextField">
+                <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"
+                  <?php if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
+                >
+                  <i class="fa <?=$icon?>"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
+                </a>
+              </div>
             <?php endforeach; ?>
             <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
               <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-                <?php
-                  $renderedURLs[] = $url['url'];
-                  $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
-                  if (!empty($url['desc'])) {
-                  $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
-                  if (isset($map[$url['desc']])) {
-                  $icon = $map[$url['desc']];
-                  }
-                  }
-                ?>
                 <?php if (in_array($url['url'], $renderedURLs)) { continue; } ?>
                 <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>"<?=!empty($url['embed']) && $url['embed'] == 'iframe' ? ' data-embed-iframe' : '' ?> target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
                 <?php if ($url['source']): ?>
@@ -201,7 +201,7 @@
         <div class="description recordSummary">
           <div class="truncate-field">
             <?php foreach ($result as $item): ?>
-              <p><?=$item // intentionally left unescaped due to embedded HTML ?></p>
+              <p><?=$this->cleanHtml($item) ?></p>
             <?php endforeach; ?>
           </div>
         </div>

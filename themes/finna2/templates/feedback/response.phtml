@@ -3,8 +3,7 @@
   $form->prepare();
 
   $title = $form->getTitle();
-  $title = !empty($title)
-    ? $this->transEsc($title) : null;
+  $title = !empty($title) ? $this->translate($title) : null;
   $lightbox = $this->layout()->getTemplate() === 'layout/lightbox';
 ?>
 <?php if (!$lightbox): ?>
@@ -13,9 +12,9 @@
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
     <?php if (!$lightbox): ?>
-      <h1><?=$title?></h1>
+      <h1><?=$this->escapeHtml($title)?></h1>
     <?php else: ?>
-      <h2><?=$title?></h2>
+      <h2><?=$this->escapeHtml($title)?></h2>
     <?php endif; ?>
   <?php endif; ?>
   <p><?= $this->translate($form->getSubmitResponse()) ?></p>

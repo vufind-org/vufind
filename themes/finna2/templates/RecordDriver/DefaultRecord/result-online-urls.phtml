@@ -63,7 +63,7 @@
               $currentUrl['data-embed-iframe'] = '';
             }
           ?>
-          <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><i class="fa fa-external-link"aria-hidden="true"></i>
+          <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><i class="fa fa-external-link" aria-hidden="true"></i>
             <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?>
           </a>
           <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?></span><?php endif; ?>

@@ -16,7 +16,7 @@
     ?>
 
     <?php if ($appleTouchIcon = $this->imageSrc()->getSourceAddress('webapp-icon-180.png')): ?>
-      <link rel="apple-touch-icon" sizes="180x180" href="<?=$appleTouchIcon?>">
+      <link rel="apple-touch-icon" sizes="180x180" href="<?=$this->escapeHtmlAttr($appleTouchIcon)?>">
     <?php endif ?>
     <?php if ($webAppManifest = $this->imageSrc()->getSourceAddress('manifest.json')): ?>
       <link rel="manifest" href="<?=$webAppManifest?>">

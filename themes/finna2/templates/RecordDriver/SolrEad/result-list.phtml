@@ -84,7 +84,7 @@ if ($img):
                     $parentUrl = '';
                   }
                 ?>
-                <a href="<?=$parentUrl?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
+                <a href="<?=$this->escapeHtmlAttr($parentUrl)?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
               <?php endforeach; ?>
             <?php endif; ?>
           </div>

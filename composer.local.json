@@ -4,6 +4,7 @@
     ],
     "require": {
         "erusev/parsedown": "1.6.1",
+        "ezyang/htmlpurifier": "4.12.0",
         "picqer/php-barcode-generator": "0.2.1"
     },
     "scripts": {

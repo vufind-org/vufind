@@ -27,7 +27,7 @@
                   $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
                 ?>
                 <li>
-                  <a  role="menuitem" <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$url?>">
+                  <a  role="menuitem" <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$this->escapeHtmlAttr($url)?>">
                     <div><?= $this->transEsc($label) ?></div>
                     <?php if ($desc): ?>
                       <div class="description" role="note"><?= $this->transEsc($desc) ?></div>
@@ -135,7 +135,7 @@
                     <?=$this->transEsc('Fines')?>
                   </a>
                 </li>
-              <?php endif; ?>        
+              <?php endif; ?>
               <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true', 'label' => 'Library Cards','limit' => 0]);?>
               <li>
                 <a role="menuitem" href="<?=$this->url('myresearch-profile')?>">

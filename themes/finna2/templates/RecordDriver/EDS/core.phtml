@@ -53,7 +53,7 @@
         <div><?=$this->record($this->driver)->getFormatList()?></div>
       <?php endif; ?>
       <?php if ($authors = $this->driver->getCreators()): ?>
-        <?php foreach ($authors as $i => $field): ?><?=($i > 0) ? ' ; ' : ''?><?=$field?></a><?php endforeach; ?>
+        <?php foreach ($authors as $i => $field): ?><?=($i > 0) ? ' ; ' : ''?><?=$this->cleanHtml($field)?></a><?php endforeach; ?>
       <?php endif; ?>
       <?php
         $journalTitle = $this->driver->getContainerTitle();

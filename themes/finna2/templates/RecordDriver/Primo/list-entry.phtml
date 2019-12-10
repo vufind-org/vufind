@@ -19,7 +19,7 @@
       <?=$this->record($this->driver)->getCheckbox('', false, true) ?>
     </div>
   </div>
-  <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <div class="media">
     <div class="media-left text-center">
       <?php $img = $this->recordImage($this->record($this->driver))?>

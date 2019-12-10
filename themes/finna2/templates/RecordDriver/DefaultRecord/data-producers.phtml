@@ -7,7 +7,7 @@
     <?php $cost = $this->driver->getProductionCost(); if (!empty($cost)): ?><br/>
       <tr>
         <th><?=$this->transEsc('Production Costs') ?>:</th>
-        <td><?=$cost;?></td>
+        <td><?=$this->cleanHtml($cost);?></td>
       </tr>
     <?php endif; ?>
   </div>

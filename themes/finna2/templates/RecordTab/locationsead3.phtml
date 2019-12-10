@@ -23,7 +23,7 @@ $locations = $this->driver->getLocations();
   <?php foreach ($locations as $branch => $branchData): ?>
       <div class="holdings-container-heading">
           <div class="location">
-              <i class="fa fa-arrow-down" aria-hidden="true"></i> <?=$branch?></div>
+              <i class="fa fa-arrow-down" aria-hidden="true"></i> <?=$this->escapeHtml($branch)?></div>
               <div class="holdings-details">Aineistotunnus</div>
               <div class="location-link text-right">
                   <?php if (!empty($branchData['providesService'])): ?>

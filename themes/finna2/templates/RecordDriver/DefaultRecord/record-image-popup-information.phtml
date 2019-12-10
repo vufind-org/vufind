@@ -34,7 +34,7 @@
         <?php if ($dates = $this->driver->getResultDateRange()): ?>
           <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
         <?php endif; ?>
-        <?php if ($results = $this->driver->getSubjectDates() && !isset($dates[0])): ?>
+        <?php if (($results = $this->driver->getSubjectDates()) && !isset($dates[0])): ?>
           <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
         <?php endif; ?>
         </div>
@@ -159,7 +159,7 @@
     <?php if ($this->record($this->driver)->allowRecordImageDownload() && isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
       <div class="open-link"><a target="_blank" class="original-image-url" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download><i class="fa fa-download"></i><span><?=$this->transEsc('Download the image') ?></span></a> <span class="image-dimensions"></span></div>
     <?php else: ?>
-      <a class="original-image-url hidden" href="<?=$originalImage ?>">Hidden</a>
+      <a class="original-image-url hidden" href="<?=$this->escapeHtmlAttr($originalImage) ?>">Hidden</a>
     <?php endif ?>
   </div>
   <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>

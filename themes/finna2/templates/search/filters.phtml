@@ -35,11 +35,11 @@
         <?php
           $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : '';
           $desc = $this->translate($filter['desc']);
-          $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
+          $ariaLabel = $this->escapeHtmlAttr($this->translate('Remove filter') . ' ' . $desc);
         ?>
-        <?=$desc?>
+        <?=$desc // HTML ?>
         <?php if($removeLink): ?>
-          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$this->escapeHtmlAttr($removeLink)?>"><!--icon from css --></a>
         <?php endif; ?>
       </span>
     <?php endif ?>
@@ -55,7 +55,7 @@
             $ariaLabel = $this->translate('Remove filter') . ' ' . $desc;
           ?>
           <?=$this->transEsc($field)?>
-          <?php if($removeLink): ?><a aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
+          <?php if($removeLink): ?><a aria-label="<?=$ariaLabel?>" href="<?=$this->escapeHtmlAttr($removeLink)?>"><i class="fa fa-window-close" aria-hidden="true"></i></a><?php endif; ?>
         </span>
       <?php else: ?>
         <div class="filter-title-group">
@@ -103,7 +103,7 @@
                 <?php if ($isOnlineFacet): ?>
                   <?=$this->translate('online_boolean' === $value['field'] ? 'online_material_facet_html' : 'free_online_material_facet_html') ?>
                 <?php else: ?>
-                  <?=$desc?>
+                  <?=$desc // HTML ?>
                 <?php endif; ?>
               </span>
               <?php if (isset($this->urlQuery)): ?>

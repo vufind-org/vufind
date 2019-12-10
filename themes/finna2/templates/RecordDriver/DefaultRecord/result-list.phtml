@@ -88,13 +88,13 @@
                     <?=$i > 0 ? '<br/>' : ''?>
                     <?php if ($hostRecord['id'] || $hostRecord['title']): ?>
                       <?php $link = $hostRecord['id'] ? $this->recordLink()->getUrl($hostRecord['sourceId'] . '|' . $hostRecord['id']) : $this->record($this->driver)->getLink('title', $hostRecord['title']); ?>
-                      <a href="<?=$link?>"><?=$hostRecord['title']?></a>
+                      <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$hostRecord['title']?></a>
                     <?php endif; ?>
                     <?=$this->escapeHtml($hostRecord['reference']); ?>
                   <?php endforeach; ?>
                 <?php else: ?>
                   <?php $link = $containerID ? $this->recordLink()->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
-                  <a href="<?=$link?>"><?=$this->escapeHtml($containerTitle)?></a>
+                  <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->escapeHtml($containerTitle)?></a>
                   <?php $ref = $this->driver->getContainerReference(); ?>
                   <?php if (!empty($ref)): ?>
                     <?=$this->escapeHtml($ref); ?>
