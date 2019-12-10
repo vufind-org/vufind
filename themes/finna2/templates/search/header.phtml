@@ -97,7 +97,7 @@
 <?php endif; ?>
 
 <?php if ($this->fromStreetSearch): ?>
-    <?php $filters = isset($this->params) ? $this->params->getFilters() : ''; ?>
+    <?php $filters = isset($this->params) ? $this->params->getRawFilters() : ''; ?>
   <div>
     <div id="searchForm" class="hidden-print">
       <?=$this->render('search/street-search-header.phtml', ['urlParams' => $this->results->getUrlQuery()->getParams(false)]);?>

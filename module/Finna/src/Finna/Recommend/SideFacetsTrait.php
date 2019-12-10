@@ -62,7 +62,7 @@ trait SideFacetsTrait
             return [];
         }
 
-        $filters = $this->results->getParams()->getFilters();
+        $filters = $this->results->getParams()->getRawFilters();
         $result = [];
         foreach ($this->newItemsFacets as $current) {
             $from = '';

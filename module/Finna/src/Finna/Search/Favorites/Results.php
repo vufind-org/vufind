@@ -118,7 +118,7 @@ class Results extends \VuFind\Search\Favorites\Results
      */
     protected function getTagFilters()
     {
-        $filters = $this->getParams()->getFilters();
+        $filters = $this->getParams()->getRawFilters();
         return $filters['tags'] ?? [];
     }
 
@@ -130,7 +130,7 @@ class Results extends \VuFind\Search\Favorites\Results
      */
     public function getListObject()
     {
-        $filters = $this->getParams()->getFilters();
+        $filters = $this->getParams()->getRawFilters();
         $listId = $filters['lists'][0] ?? null;
 
         // Load a list when

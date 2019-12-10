@@ -19,7 +19,7 @@
       'searchId' => $this->results->getSearchId(),
       'searchClassId' => $this->params->getSearchClassId(),
       'checkboxFilters' => $this->params->getCheckboxFacets(),
-      'filterList' => $this->params->getFilters(),
+      'filterList' => $this->params->getFilterList(true),
       'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
       'selectedShards' => $this->params->getSelectedShards(),
       'savedSearches' => $this->layout()->savedTabs
