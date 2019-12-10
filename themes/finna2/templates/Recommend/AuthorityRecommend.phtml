@@ -1,20 +1,20 @@
 <?php
-$data = $this->recommend->getRecommendations();
+if (!($data = $this->recommend->getRecommendations())) {
+  return;
+}
 $activeRecord = $activeInd = null;
-if ($data) {
-  if ($activeId = $this->recommend->getActiveRecommendation()) {
-    foreach ($data as $ind => $rec) {
-        if ($activeId === $rec->getUniqueID()) {
-            $activeInd = $ind;
-            $activeRecord = $rec;
-            break;
-        }
+if ($activeId = $this->recommend->getActiveRecommendation()) {
+  foreach ($data as $ind => $rec) {
+    if ($activeId === $rec->getUniqueID()) {
+      $activeInd = $ind;
+      $activeRecord = $rec;
+      break;
     }
   }
-  if (!$activeRecord) {
-    $activeInd = count($data) ? count($data) - 1 : 0;
-    $activeRecord = $data[$activeInd];
-  }
+}
+if (!$activeRecord) {
+  $activeInd = count($data) ? count($data) - 1 : 0;
+  $activeRecord = $data[$activeInd];
 }
 $results = $this->recommend->getResults();
 $that = $this;

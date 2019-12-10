@@ -685,9 +685,15 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function hasAuthorIdFilter()
     {
-        foreach ($this->getFilterList() as $key => $val) {
-            if (in_array($key, ['authority_id_label', 'Author'])) {
-                return true;
+        foreach ($this->getFilterList() as $field => $facets) {
+            foreach ($facets as $facet) {
+                if (in_array(
+                    $facet['field'],
+                    $this->authorityHelper->getAuthorIdFacets()
+                )
+                ) {
+                    return true;
+                }
             }
         }
         return false;
