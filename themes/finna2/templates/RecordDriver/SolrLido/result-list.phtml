@@ -71,7 +71,7 @@ if ($img):
           <?php endif; ?>
         <?php endif; ?>
 
-        <?php $tabs = $this->record($this->driver)->getTabs(); if (isset($tabs['Versions'])): ?>
+        <?php if ($this->driver->tryMethod('getWorkKeys') && $this->record($this->driver)->hasTab('Versions')): ?>
           <div class="record-versions ajax"></div>
         <?php endif; ?>
 
