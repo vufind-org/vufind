@@ -95,6 +95,22 @@ class HistoryTest extends TestCase
     }
 
     /**
+     * Test that purging history proxies to the right place.
+     *
+     * @return void
+     */
+    public function testPurgeHistory()
+    {
+        $table = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
+            ->disableOriginalConstructor()->setMethods(['destroySession'])
+            ->getMock();
+        $table->expects($this->once())->method('destroySession')
+            ->with($this->equalTo('foosession'), $this->equalTo(1234));
+        $history = $this->getHistory($table);
+        $history->purgeSearchHistory(1234);
+    }
+
+    /**
      * Get object for testing.
      *
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
