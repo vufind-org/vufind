@@ -9,18 +9,17 @@
   $onlineURLs = $this->driver->getOnlineURLs();
   $mergedData = $this->driver->tryMethod('getMergedRecordData');
   $renderedURLs = [];
-  if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])){
-    if (!empty($urls)){
-      $videoUrls = [];
-      $otherUrls = [];
-      foreach ($urls as $url) {
-        if(!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
-          array_push($videoUrls, $url);
-          $renderedURLs[] = $url['url'];
-        }
-        else {
-          array_push($otherUrls, $url);
-        }
+
+  if (!empty($urls)){
+    $videoUrls = [];
+    $otherUrls = [];
+    foreach ($urls as $url) {
+      if(!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
+        array_push($videoUrls, $url);
+        $renderedURLs[] = $url['url'];
+      }
+      else {
+        array_push($otherUrls, $url);
       }
     }
   }
