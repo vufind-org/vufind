@@ -1,5 +1,6 @@
 <?php
     $this->layout()->breadcrumbs = false;
+    $this->backgroundTabs = $this->BackgroundTabs ?? [];
 ?>
 <div vocab="http://schema.org/">
   <h1><?=$this->authority()->getName($this->driver)?></h1>
@@ -51,45 +52,11 @@
       <script>TueFind.GetImagesFromWikidata();</script>
     </div>
   </div>
-  <br>
-  <?php
-    // TueFind: the tab logic is taken from non-authority core record driver
-    // (authority records normally don't have tabs)
-  ?>
-  <?php if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
-      <div class="record-tabs">
-        <ul class="nav nav-tabs">
-          <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php // add current tab to breadcrumbs if applicable:
-              $desc = $obj->getDescription();
-              $tabName = preg_replace("/\W/", "-", strtolower($tab));
-              $tabClasses = [ 'record-tab', $tabName ];
-              if (0 === strcasecmp($this->activeTab, $tab)) {
-                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                  $tabClasses[] = 'active';
-                }
-                $tabClasses[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-                $activeTabObj = $obj;
-              }
-              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
-            ?>
-            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>">
-              <?php //TueFind: use url params instead of route due to routing problems ?>
-              <a href="<?=$this->recordLink()->getUrl($this->driver)?>?tab=<?=urlencode($tab)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-
-        <div class="tab-content">
-          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
-              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-            </div>
-          <?php endif; ?>
-        </div>
-      </div>
-    <?php endif; ?>
 </div>
+
+<?php
+  // Pick a tab to display -- Details if available, otherwise first option (if any):
+  $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
+?>
+<h1><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h1>
+<p><?=empty($tab) ? $this->transEsc('no_description') :  $this->record($this->driver)->getTab($tab)?></p>
