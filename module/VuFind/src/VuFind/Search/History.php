@@ -133,7 +133,7 @@ class History
      */
     public function getScheduleOptions()
     {
-        if (!$this->config->Account->schedule_searches ?? false) {
+        if (!($this->config->Account->schedule_searches ?? false)) {
             return [];
         }
         return $this->config->Account->scheduled_search_frequencies
