@@ -92,6 +92,8 @@
               <?php endif; ?>
             </div>
           <?php endif; ?>
+
+          <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
         </div>
 
         <?php if ($summary): ?>

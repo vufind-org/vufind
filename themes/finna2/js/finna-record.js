@@ -334,6 +334,42 @@ finna.record = (function finnaRecord() {
       });
   }
 
+  function initRecordVersions(_holder) {
+    var holder = typeof _holder === 'undefined' ? $(document) : _holder;
+
+    holder.find('.record-versions.ajax').each(function checkVersions() {
+      $(this).one('inview', function onInView() {
+        var $elem = $(this);
+        if ($elem.hasClass('loaded')) {
+          return;
+        }
+        $elem.addClass('loaded');
+        $elem.removeClass('hidden');
+        $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
+        var $item = $(this).parents('.record-container');
+        var id = $item.find('.hiddenId')[0].value;
+        $.getJSON(
+          VuFind.path + '/AJAX/JSON',
+          {
+            method: 'getRecordVersions',
+            id: id
+          }
+        )
+          .done(function onGetVersionsDone(response) {
+            if (response.data.length > 0) {
+              $elem.html(response.data);
+            } else {
+              $elem.text('');
+            }
+          })
+          .fail(function onGetSimilarRecordsFail() {
+            $elem.text(VuFind.translate('error_occurred'));
+          });
+      });
+
+    });
+  }
+
   function init() {
     initHideDetails();
     initDescription();
@@ -343,13 +379,15 @@ finna.record = (function finnaRecord() {
     applyRecordAccordionHash(initialToggle);
     $(window).on('hashchange', applyRecordAccordionHash);
     loadSimilarRecords();
+    initRecordVersions();
   }
 
   var my = {
     checkRequestsAreValid: checkRequestsAreValid,
     init: init,
     setupHoldingsTab: setupHoldingsTab,
-    setupLocationsEad3Tab: setupLocationsEad3Tab
+    setupLocationsEad3Tab: setupLocationsEad3Tab,
+    initRecordVersions: initRecordVersions
   };
 
   return my;

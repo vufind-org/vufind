@@ -97,6 +97,23 @@
       content: "";
     }
   }
+
+  .record-title {
+    margin: 0;
+    margin-bottom: 3px;
+    font-size: @record-title-font-size;
+    @media (max-width: @screen-sm) {
+      margin-bottom: 20px;
+    }
+  }
+  .label {
+    display: inline-block;
+  }
+  .record-versions {
+    font-size: 0.9em;
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
 }
 
 .next-image {
@@ -134,20 +151,6 @@
 a.authority {
   float: left;
   clear: left;
-}
-
-.record {
-  .record-title {
-    margin: 0;
-    margin-bottom: 3px;
-    font-size: @record-title-font-size;
-    @media (max-width: @screen-sm) {
-      margin-bottom: 20px;
-    }
-  }
-  .label {
-    display: inline-block;
-  }
 }
 
 .record-image-container {

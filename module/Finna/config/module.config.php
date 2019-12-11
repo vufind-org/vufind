@@ -280,6 +280,7 @@ $config = [
             'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\OrganisationInfo\OrganisationInfoFactory',
             'Finna\Record\Loader' => 'Finna\Record\LoaderFactory',
             'Finna\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'Finna\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\AuthorityHelper' => 'Finna\Search\Solr\AuthorityHelperFactory',
@@ -307,6 +308,7 @@ $config = [
             'VuFind\OAI\Server' => 'Finna\OAI\Server',
             'VuFind\Record\Loader' => 'Finna\Record\Loader',
             'VuFind\RecordTab\PluginManager' => 'Finna\RecordTab\PluginManager',
+            'VuFind\RecordTab\TabManager' => 'Finna\RecordTab\TabManager',
             'VuFind\Role\PermissionManager' => 'Finna\Role\PermissionManager',
             'VuFind\Search\Memory' => 'Finna\Search\Memory',
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
@@ -362,6 +364,8 @@ $config = [
                         'Finna\AjaxHandler\GetOrganisationPageFeedFactory',
                     'Finna\AjaxHandler\GetPiwikPopularSearches' =>
                         'Finna\AjaxHandler\GetPiwikPopularSearchesFactory',
+                    'Finna\AjaxHandler\GetRecordVersions' =>
+                        'Finna\AjaxHandler\GetRecordVersionsFactory',
                     'Finna\AjaxHandler\GetSearchTabsRecommendations' =>
                         'Finna\AjaxHandler\GetSearchTabsRecommendationsFactory',
                     'Finna\AjaxHandler\GetSideFacets' =>
@@ -377,7 +381,7 @@ $config = [
                     'Finna\AjaxHandler\RegisterOnlinePayment' =>
                         'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
                     'Finna\AjaxHandler\SystemStatus' =>
-                        'VuFind\AjaxHandler\SystemStatusFactory'
+                        'VuFind\AjaxHandler\SystemStatusFactory',
                 ],
                 'aliases' => [
                     'addToList' => 'Finna\AjaxHandler\AddToList',
@@ -398,6 +402,7 @@ $config = [
                     'getMyLists' => 'Finna\AjaxHandler\GetUserLists',
                     'getOrganisationInfo' => 'Finna\AjaxHandler\GetOrganisationInfo',
                     'getPiwikPopularSearches' => 'Finna\AjaxHandler\GetPiwikPopularSearches',
+                    'getRecordVersions' => 'Finna\AjaxHandler\GetRecordVersions',
                     'getSearchTabsRecommendations' => 'Finna\AjaxHandler\GetSearchTabsRecommendations',
                     'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
                     'importFavorites' => 'Finna\AjaxHandler\ImportFavorites',
@@ -693,6 +698,7 @@ $config = [
                     'Finna\RecordTab\Music' => 'Finna\RecordTab\Factory::getMusic',
                     'Finna\RecordTab\PressReviews' => 'Finna\RecordTab\Factory::getPressReviews',
                     'Finna\RecordTab\UserComments' => 'Finna\RecordTab\Factory::getUserComments',
+                    'Finna\RecordTab\Versions' => 'Zend\ServiceManager\Factory\InvokableFactory',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
@@ -706,6 +712,7 @@ $config = [
                     'LocationsEad3' => 'Finna\RecordTab\LocationsEad3',
                     'music' => 'Finna\RecordTab\Music',
                     'pressreview' => 'Finna\RecordTab\PressReviews',
+                    'versions' => 'Finna\RecordTab\Versions',
 
                     // Overrides:
                     'VuFind\RecordTab\Map' => 'Finna\RecordTab\Map',

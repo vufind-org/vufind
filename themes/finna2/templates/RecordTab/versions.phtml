@@ -1,0 +1,47 @@
+<!-- START of: finna - RecordTab/versions.phtml -->
+<?php
+  $results = $this->driver->tryMethod('getVersions', [false, 20]);
+  $view = 'list';
+?>
+<div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">
+  <div class="search-controls">
+    <div class="control-container text-right hidden-print">
+      <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLink()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
+        <i class="fa fa-arrow-right" aria-hidden="true"></i><?=$this->transEsc('other_versions_search_link')?>
+      </a>
+    </div>
+    <div class="pagination-container">
+      <?=$this->translate(
+        'showing_results_of_html', [
+          '%%start%%' => 1,
+          '%%end%%' => count($results),
+          '%%total%%' => $this->localizedNumber($results->getTotal())
+        ]
+      );
+      ?>
+    </div>
+  </div>
+  <?php $recordNumber = $results->getOffset(); ?>
+  <?php foreach ($results as $current): ?>
+    <div id="result<?=++$recordNumber ?>" class="result clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
+      <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
+      <?=$this->record($current)->getSearchResult($view)?>
+    </div>
+  <?php endforeach; ?>
+</div>
+
+<?php
+$translations = json_encode(
+  [
+    'qrcode_hide' => $this->translate('qrcode_hide'),
+    'qrcode_show' => $this->translate('qrcode_show'),
+  ]
+);
+$script = <<<JS
+VuFind.addTranslations($translations);
+finna.common.initQrCodeLink($('.results'));
+finna.combinedResults.init($('.results'));
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<!-- END of: finna - RecordTab/versions.phtml -->

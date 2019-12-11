@@ -70,8 +70,14 @@ if ($img):
             <?php endif; ?>
           <?php endif; ?>
         <?php endif; ?>
-        <?=$this->record($this->driver)->getOnlineUrls('results')?>
-        <?=$this->record($this->driver)->getPreviews()?>
+
+        <?php $tabs = $this->record($this->driver)->getTabs(); if (isset($tabs['Versions'])): ?>
+          <div class="record-versions ajax"></div>
+        <?php endif; ?>
+
+        <?php $recordHelper = $this->record($this->driver); ?>
+        <?=$recordHelper->getOnlineUrls('results');?>
+        <?=$recordHelper->getPreviews();?>
         <?=$this->render('list/list-notes.phtml')?>
 
         <?php /* Saved lists */ ?>

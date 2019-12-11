@@ -121,4 +121,31 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
         }
         return '';
     }
+
+    /**
+     * Return search URL for all versions
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return string
+     */
+    public function getVersionsSearchUrl($driver)
+    {
+        $mapFunc = function ($val) {
+            return addcslashes($val, '"');
+        };
+        $keys = $driver->tryMethod('getWorkKeys', [], []);
+        $imploded = implode('" OR "', array_map($mapFunc, $keys));
+        $urlParams = [
+            'join' => 'AND',
+            'lookfor0[]' => "\"$imploded\"",
+            'type0[]' => 'WorkKeys',
+            'bool0[]' => 'AND',
+            'sort' => 'main_date_str desc'
+        ];
+
+        $urlHelper = $this->getView()->plugin('url');
+        $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
+        return $urlHelper($route, [], ['query' => $urlParams]);
+    }
 }

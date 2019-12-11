@@ -1,0 +1,13 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/versions-link.phtml -->
+<?php
+  $versions = isset($this->tabs['Versions']) ? $this->driver->tryMethod('getOtherVersionCount') : 0;
+
+  if ($versions):
+?>
+  <div class="record-versions">
+    <a href="<?=!empty($this->full) ? $this->escapeHtmlAttr($this->recordLink()->getTabUrl($this->driver, 'Versions')) : '#versions'?>">
+      <i class="fa fa-arrow-right" aria-hidden="true"></i><?=$this->transEsc('other_versions_link', ['%%count%%' => $versions])?>
+    </a>
+  </div>
+<?php endif; ?>
+<!-- END of: finna - RecordDriver/DefaultRecord/versions-link.phtml -->

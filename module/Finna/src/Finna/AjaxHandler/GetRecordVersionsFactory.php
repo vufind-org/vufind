@@ -1,10 +1,10 @@
 <?php
 /**
- * Record helper factory.
+ * Factory for GetRecordVersions AJAX handler.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018-2019.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace Finna\View\Helper\Root;
+namespace Finna\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Record helper factory.
+ * Factory for GetRecordVersions AJAX handler.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordFactory implements FactoryInterface
+class GetRecordVersionsFactory
+    implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -54,27 +54,21 @@ class RecordFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $helper = new Record(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('datasources'),
+        $result = new $requestedName(
+            $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Record\Loader::class),
-            $container->get('ViewHelperManager')->get('recordImage'),
-            $container->get(\Finna\Search\Solr\AuthorityHelper::class),
-            $container->get('ViewHelperManager')->get('url'),
+            $container->get('ViewRenderer')->plugin('record'),
             $container->get(\VuFind\RecordTab\TabManager::class)
         );
-        if ('cli' !== php_sapi_name()) {
-            $helper->setCoverRouter(
-                $container->get(\VuFind\Cover\Router::class)
-            );
-        }
-        return $helper;
+        return $result;
     }
 }

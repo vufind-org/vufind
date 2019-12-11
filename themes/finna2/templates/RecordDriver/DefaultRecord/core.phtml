@@ -83,7 +83,14 @@
     <?php if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
       <div class="record-uniform-titles">
         <?php foreach ($uniformTitles as $uniformTitle): ?>
-          <?=$this->escapeHtml($uniformTitle) ?><br/>
+          <?php if (isset($this->tabs['Versions'])): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLink()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
+              <?=$this->escapeHtml($uniformTitle) ?>
+            </a>
+            <br>
+          <?php else: ?>
+            <?=$this->escapeHtml($uniformTitle) ?><br>
+          <?php endif; ?>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
@@ -217,6 +224,7 @@
         </span>
       <?php endif; ?>
 
+      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
     </div> <?php // record-core-metadata ?>
 
     <div class="description recordSummary">

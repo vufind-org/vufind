@@ -34,7 +34,7 @@ use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
 
 /**
- * AJAX handler for checking that requests are valid.
+ * AJAX handler for fetching holdings details
  *
  * @category VuFind
  * @package  AJAX

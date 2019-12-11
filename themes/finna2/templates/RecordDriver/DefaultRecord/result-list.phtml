@@ -149,6 +149,10 @@
           <?php endif; ?>
         <?php endif; ?>
 
+        <?php if ($this->driver->tryMethod('getWorkKeys') && $this->record($this->driver)->hasTab('Versions')): ?>
+          <div class="record-versions ajax"></div>
+        <?php endif; ?>
+
         <?php $recordHelper = $this->record($this->driver); ?>
         <?=$recordHelper->renderTemplate('holdings.phtml');?>
         <?=$recordHelper->getOnlineUrls('results');?>
@@ -202,7 +206,7 @@
               </div>
             <?php endif; ?>
 
-            <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+            <?php if ($this->cart()->isActiveInSearch() && isset($this->params) && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
             <?php endif; ?>
 
