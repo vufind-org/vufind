@@ -41,7 +41,7 @@ class SimpleRecord implements RecordInterface
     /**
      * Source backend identifier
      */
-    protected $sourceId = 'Solr';
+    protected $sourceId = DEFAULT_SEARCH_BACKEND;
 
     /**
      * Field data
