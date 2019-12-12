@@ -226,7 +226,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
             $returnValue = $xml;
         } else {
-            $almaErrorMsg = $xml->errorList->error[0]->errorMessage;
+            $almaErrorMsg = $xml->errorList->error[0]->errorMessage
+                ?? '[could not parse error message]';
             error_log(
                 '[ALMA] ' . $almaErrorMsg . ' | Call to: ' . $client->getUri() .
                 '. GET params: ' . var_export($paramsGet, true) . '. POST params: ' .
