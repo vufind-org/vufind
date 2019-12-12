@@ -1,7 +1,7 @@
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/RecordTabs.ini
-merge_array_settings = false
+merge_array_settings = true
 
 ; This file controls the display of tabs on the Record page for various types of
 ; records. Each section name matches a record driver class name, and those settings
@@ -21,60 +21,20 @@ merge_array_settings = false
 ;                that should be asynchronously loaded in the background to improve
 ;                performance. Use the "X" value from the tabs setting as the id.
 
-; The settings below add the Versions tab:
+; These settings below add the Versions tab (note that merge_array_settings
+; above needs to be true, otherwise all tabs must be listed):
 
 [VuFind\RecordDriver\DefaultRecord]
-tabs[Holdings] = HoldingsILS
-tabs[ComponentParts] = ComponentParts
-tabs[TOC] = TOC
-tabs[UserComments] = UserComments
-tabs[Reviews] = Reviews
-tabs[Excerpt] = Excerpt
-tabs[Preview] = preview
-tabs[HierarchyTree] = HierarchyTree
-tabs[Map] = Map
 tabs[Versions] = Versions
-tabs[Details] = StaffViewArray
 
 [VuFind\RecordDriver\SolrMarc]
-tabs[Holdings] = HoldingsILS
-tabs[ComponentParts] = ComponentParts
-tabs[TOC] = TOC
-tabs[UserComments] = UserComments
-tabs[Reviews] = Reviews
-tabs[Excerpt] = Excerpt
-tabs[Preview] = preview
-tabs[HierarchyTree] = HierarchyTree
-tabs[Map] = Map
 tabs[Versions] = Versions
-tabs[Details] = StaffViewMARC
 
 [Finna\RecordDriver\SolrForward]
-tabs[UserComments] = UserComments
-tabs[Reviews] = Reviews
-tabs[Map] = Map
-tabs[PressReview] = PressReview
-tabs[Music] = Music
-tabs[Distribution] = Distribution
-tabs[InspectionDetails] = InspectionDetails
-tabs[DescriptionFWD] = DescriptionFWD
-tabs[ItemDescription] = ItemDescription
 tabs[Versions] = Versions
-tabs[Details] = StaffViewArray
-defaultTab = null
 
 [Finna\RecordDriver\SolrLido]
-tabs[UserComments] = UserComments
-tabs[Reviews] = Reviews
-tabs[Map] = Map
 tabs[Versions] = Versions
-tabs[Details] = StaffViewArray
-defaultTab = null
 
 [Finna\RecordDriver\SolrQdc]
-tabs[UserComments] = UserComments
-tabs[Reviews] = Reviews
-tabs[Map] = Map
 tabs[Versions] = Versions
-tabs[Details] = StaffViewArray
-defaultTab = null

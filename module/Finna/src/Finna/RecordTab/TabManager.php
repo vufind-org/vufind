@@ -52,4 +52,24 @@ class TabManager extends \VuFind\RecordTab\TabManager
     {
         return $this->getTabServiceNames($driver);
     }
+
+    /**
+     * Get an array of service names by looking up the provided record driver in
+     * the provided tab configuration array.
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     *
+     * @return array
+     */
+    protected function getTabServiceNames(AbstractRecordDriver $driver)
+    {
+        $result = parent::getTabServiceNames($driver);
+        // Make sure Details is always the last tab
+        if (isset($result['Details'])) {
+            $details = $result['Details'];
+            unset($result['Details']);
+            $result['Details'] = $details;
+        }
+        return $result;
+    }
 }
