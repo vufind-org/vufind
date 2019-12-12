@@ -13,21 +13,8 @@
           <option class="<?= $isParent ? 'option-parent' : ''; ?> <?= $isChild ? 'option-child child-width-' . $value['level'] : ''?>" value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $this->field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
         <?php endforeach; ?>
       <?php else: ?>
-        <?php
-          // Sort the current facet list alphabetically; we'll use this data
-          // along with the foreach below to display facet options in the
-          // correct order.
-          $sorted = [];
-          foreach ($this->list['list'] as $i => $value) {
-            if (!empty($value['displayText'])) {
-              $sorted[$i] = $value['displayText'];
-            }
-          }
-          natcasesort($sorted);
-        ?>
-        <?php foreach ($sorted as $i => $display): ?>
-          <?php $value = $this->list['list'][$i]; ?>
-          <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $this->field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+        <?php foreach ($this->list['list'] as $value): ?>
+          <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $this->field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($value['displayText'])?></option>
         <?php endforeach; ?>
       <?php endif; ?>
     </select>

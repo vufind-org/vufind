@@ -225,6 +225,8 @@ translated_facets[] = format_ext_str_mv
 ; translated content
 facet_translation_prefix = "facet_"
 
+hierarchicalFacetSortOptions[format] = 'count'
+
 ; These facets will be displayed on the Home Page.  If this section is omitted,
 ; the [Advanced] section will be used instead.
 [HomePage]
