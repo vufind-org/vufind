@@ -73,7 +73,9 @@ class SolrAuthForward extends SolrAuthDefault
     {
         return explode(
             PHP_EOL,
-            $this->getBiographicalNote('henkilo-biografia-tyyppi', 'biografia')
+            $this->isPerson()
+              ? $this->getBiographicalNote('henkilo-biografia-tyyppi', 'biografia')
+              : $this->getBiographicalNote()
         );
     }
 
@@ -178,13 +180,13 @@ class SolrAuthForward extends SolrAuthDefault
      *
      * @return string
      */
-    protected function getBiographicalNote($type, $typeVal)
+    protected function getBiographicalNote($type = null, $typeVal = null)
     {
         $doc = $this->getMainElement();
         if (isset($doc->BiographicalNote)) {
             foreach ($doc->BiographicalNote as $bio) {
                 $attr = $bio->attributes();
-                if (isset($attr->{$type})
+                if (!$type || isset($attr->{$type})
                     && (string)$attr->{$type} === $typeVal
                 ) {
                     return (string)$bio;
