@@ -41,7 +41,7 @@ namespace Finna\RecordDriver;
  */
 class Primo extends \VuFind\RecordDriver\Primo
 {
-    use FinnaRecord;
+    use FinnaRecordTrait;
 
     /**
      * Record metadata

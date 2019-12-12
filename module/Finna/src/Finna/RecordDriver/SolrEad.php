@@ -47,7 +47,7 @@ namespace Finna\RecordDriver;
  */
 class SolrEad extends \VuFind\RecordDriver\SolrDefault
 {
-    use SolrFinna;
+    use SolrFinnaTrait;
     use XmlReaderTrait;
 
     /**

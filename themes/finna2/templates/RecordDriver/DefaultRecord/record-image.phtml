@@ -6,7 +6,12 @@
 ?>
 <div class="record-image-container <?= empty($images[0]['urls']['large']) && empty($images[0]['urls']['medium']) ? 'hide-image' : ''?>">
   <div class="recordcover-holder paginate" aria-hidden="true" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>">
-    <?= $this->record($this->driver)->renderTemplate('record-image-paginator.phtml', ['images' => $images, 'type' => $type, 'largeImageLayout' => $largeImageLayout, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom]); ?>
+  <?= $this->record($this->driver)->renderTemplate(
+    'record-image-paginator.phtml',
+    ['images' => $images, 'type' => $type, 'largeImageLayout' => $largeImageLayout, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom,
+     'numOfImages' => $numOfImages ?? null
+    ]
+  ); ?>
   </div>
   <?php if ($type != 'list' && $type != 'list grid'): ?>
     <?php $ind = -1; ?>
@@ -36,7 +41,7 @@
             <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
           <?php endif; ?>
         <?php endif; ?>
-      <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['rights' => $rights]); ?>
+      <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights]); ?>
       </div>
     <?php endforeach; ?>
   <?php endif; ?>

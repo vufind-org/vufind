@@ -40,7 +40,9 @@ namespace Finna\RecordDriver;
  */
 class SolrForward extends \VuFind\RecordDriver\SolrDefault
 {
-    use SolrFinna;
+    use SolrFinnaTrait, SolrForwardTrait {
+        SolrForwardTrait::getAllImages insteadof SolrFinnaTrait;
+    }
 
     /**
      * Non-presenter author relator codes.
@@ -227,60 +229,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             }
         }
         return $results;
-    }
-
-    /**
-     * Return an array of image URLs associated with this record with keys:
-     * - url         Image URL
-     * - description Description text
-     * - rights      Rights
-     *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
-     *   - description Human readable description (array)
-     *   - link        Link to copyright info
-     *
-     * @param string $language Language for copyright information
-     *
-     * @return array
-     */
-    public function getAllImages($language = 'fi')
-    {
-        $images = [];
-
-        foreach ($this->getAllRecordsXML() as $xml) {
-            foreach ($xml->ProductionEvent as $event) {
-                $attributes = $event->ProductionEventType->attributes();
-                if (empty($attributes{'elokuva-elonet-materiaali-kuva-url'})) {
-                    continue;
-                }
-                $url = (string)$attributes{'elokuva-elonet-materiaali-kuva-url'};
-                if (!empty($xml->Title->PartDesignation->Value)) {
-                    $partAttrs = $xml->Title->PartDesignation->Value->attributes();
-                    $desc = (string)$partAttrs{'kuva-kuvateksti'};
-                } else {
-                    $desc = '';
-                }
-                $rights = [];
-                if (!empty($attributes{'finna-kayttooikeus'})) {
-                    $rights['copyright'] = (string)$attributes{'finna-kayttooikeus'};
-                    $link = $this->getRightsLink(
-                        strtoupper($rights['copyright']), $language
-                    );
-                    if ($link) {
-                        $rights['link'] = $link;
-                    }
-                }
-                $images[] = [
-                    'urls' => [
-                        'small' => $url,
-                        'medium' => $url,
-                        'large' => $url
-                    ],
-                    'description' => $desc,
-                    'rights' => $rights
-                ];
-            }
-        }
-        return $images;
     }
 
     /**

@@ -3,7 +3,7 @@
   <?php if (isset($rights) && !empty($rights)): ?>
     <div class="image-rights">
       <?php $hasLink = isset($rights['link']) && !empty($rights['link']); ?>
-      <strong><?=$this->transEsc('Image Rights') ?></strong><br>
+      <strong><?=$this->transEsc($imageRightsLabel ?? 'Image Rights') ?></strong><br>
       <span class="cc-rights">
         <?php if (!empty($rights['copyright'])): ?>
           <?php $copyright = $this->transEsc($rights['copyright']) ?>

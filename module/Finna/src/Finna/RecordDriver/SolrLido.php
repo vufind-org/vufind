@@ -42,7 +42,7 @@ namespace Finna\RecordDriver;
  */
 class SolrLido extends \VuFind\RecordDriver\SolrDefault
 {
-    use SolrFinna;
+    use SolrFinnaTrait;
 
     /**
      * Record metadata

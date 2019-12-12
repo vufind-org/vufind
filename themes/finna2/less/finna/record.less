@@ -1,3 +1,4 @@
+.authoritybox,
 .record {
   // .media and .media-body code added to fix IE11 display: table-cell issues
   .media {
@@ -24,6 +25,11 @@
       position: relative;
       margin-bottom: 10px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      resize: vertical;
+      overflow: auto;
     }
   }
   @media(min-width: @screen-xs){
@@ -118,12 +124,12 @@
 
 .next-image {
   position: absolute;
-  top: calc(50% - 20px);
   z-index: 500;
   appearance: none;
   -webkit-appearance: none;
   border: none;
   background-color: rgba(138, 138, 138, 0.5);
+  align-self: center;
   .paginator-canvas & {
     background-color: rgba(138, 138, 138, 0.9);
   }
@@ -157,6 +163,7 @@ a.authority {
   margin-bottom: 20px;
 }
 
+.authoritybox,
 .large-image-layout.record {
   .media-left,
   .media-right {

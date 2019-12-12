@@ -863,7 +863,7 @@ finna.imagePaginator = (function imagePaginator() {
     _.setCurrentVisuals();
     var modal = $('#imagepopup-modal').find('.imagepopup-holder').clone();
 
-    _.trigger.magnificPopup({
+    _.trigger.not('[data-disable-modal="1"]').magnificPopup({
       items: {
         src: modal,
         type: 'inline',

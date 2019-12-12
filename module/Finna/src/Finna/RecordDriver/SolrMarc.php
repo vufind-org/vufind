@@ -40,7 +40,7 @@ namespace Finna\RecordDriver;
  */
 class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 {
-    use SolrFinna;
+    use SolrFinnaTrait;
 
     /**
      * Fields that may contain subject headings, and their descriptions

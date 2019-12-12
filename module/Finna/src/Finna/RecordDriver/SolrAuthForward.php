@@ -38,6 +38,7 @@ namespace Finna\RecordDriver;
  */
 class SolrAuthForward extends SolrAuthDefault
 {
+    use SolrForwardTrait;
     use XmlReaderTrait;
 
     /**
@@ -173,6 +174,16 @@ class SolrAuthForward extends SolrAuthDefault
     }
 
     /**
+     * Allow record image to be downloaded?
+     *
+     * @return boolean
+     */
+    public function allowRecordImageDownload()
+    {
+        return false;
+    }
+
+    /**
      * Return biographical note.
      *
      * @param string $type    Note type
@@ -234,5 +245,15 @@ class SolrAuthForward extends SolrAuthDefault
         }
 
         return null;
+    }
+
+    /**
+     * Get all original records as a SimpleXML object
+     *
+     * @return SimpleXMLElement The record as SimpleXML
+     */
+    protected function getAllRecordsXML()
+    {
+        return $this->getXmlRecord()->children();
     }
 }

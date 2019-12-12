@@ -27,9 +27,9 @@ a.authority-link {
    .authority-info {
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
-     margin: 10px 0;
+    margin: 10px 0;
     padding: 10px 0 10px 0px;
-     table {
+    table {
       margin-bottom: 0;
       margin-top: 1em;  
     }
@@ -60,7 +60,40 @@ a.authority-link {
    background-color: @gray-ultralight;
    margin-bottom: 20px;
    padding: 10px;
+   overflow: hidden;
+   display: flex;
+   flex-wrap: wrap;
+   flex-direction: row;
 
+   @media (min-width: @screen-md) {
+     .media-left {
+       width: initial;
+     }
+   }
+   .media-left {
+     flex-direction: column;
+     width: initial;
+     flex: 1 1 100%;
+   }
+   .media-right {
+     flex-direction: column;
+     flex: 1 1 100%;
+     font-size: 12px;
+     .access-rights {
+       .cc-rights {
+         padding: 0;
+         margin: 0;
+       }
+     }
+   }
+   @media (min-width: @screen-sm) {
+     .media-left {
+       flex-basis: 60%;
+     }
+     .media-right {
+       flex-basis: 40%;
+     }
+   }
    &.filtered {
      border-top: none;
    }
@@ -131,7 +164,7 @@ a.authority-link {
           margin-left: 0;
           position: absolute;
           right: 40px;
-          bottom: 20px;
+          bottom: 12px;
         }
         &.toggle {
           font-family: icomoon;
@@ -139,7 +172,7 @@ a.authority-link {
           float: right;
           position: absolute;
           right: 8px;
-          bottom: 12px;
+          bottom: 5px;
           color: #007c90;
           &:before {
             content: "\e916";

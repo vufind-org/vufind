@@ -40,9 +40,9 @@ namespace Finna\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-trait SolrFinna
+trait SolrFinnaTrait
 {
-    use FinnaRecord;
+    use SolrCommonFinnaTrait;
 
     /**
      * Search settings
@@ -50,29 +50,6 @@ trait SolrFinna
      * @var array
      */
     protected $searchSettings = [];
-
-    /**
-     * Return an array of image URLs associated with this record with keys:
-     * - urls        Image URLs
-     *   - small     Small image (mandatory)
-     *   - medium    Medium image (mandatory)
-     *   - large     Large image (optional)
-     * - description Description text
-     * - rights      Rights
-     *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
-     *   - description Human readable description (array)
-     *   - link        Link to copyright info
-     *
-     * @param string $language   Language for copyright information
-     * @param bool   $includePdf Whether to include first PDF file when no image
-     * links are found
-     *
-     * @return array
-     */
-    public function getAllImages($language = 'fi', $includePdf = true)
-    {
-        return [];
-    }
 
     /**
      * Return access restriction notes for the record.
@@ -521,40 +498,6 @@ trait SolrFinna
     }
 
     /**
-     * Returns an array of parameter to send to Finna's cover generator.
-     * Falls back to VuFind's getThumbnail if no record image with the
-     * given index was found.
-     *
-     * @param string $size  Size of thumbnail
-     * @param int    $index Image index
-     *
-     * @return array|bool
-     */
-    public function getRecordImage($size = 'small', $index = 0)
-    {
-        if ($images = $this->getAllImages()) {
-            if (isset($images[$index]['urls'][$size])) {
-                $params = $images[$index]['urls'][$size];
-                if (!is_array($params)) {
-                    $params = [
-                        'url' => $params
-                    ];
-                }
-                if ($size == 'large') {
-                    $params['fullres'] = 1;
-                }
-                $params['id'] = $this->getUniqueId();
-                return $params;
-            }
-        }
-        $params = parent::getThumbnail($size);
-        if ($params && !is_array($params)) {
-            $params = ['url' => $params];
-        }
-        return $params;
-    }
-
-    /**
      * Return record format.
      *
      * @return string
@@ -562,22 +505,6 @@ trait SolrFinna
     public function getRecordType()
     {
         return $this->fields['recordtype'] ?? '';
-    }
-
-    /**
-     * Return URL to copyright information.
-     *
-     * @param string $copyright Copyright
-     * @param string $language  Language
-     *
-     * @return mixed URL or false if no URL for the given copyright
-     */
-    public function getRightsLink($copyright, $language)
-    {
-        if (isset($this->mainConfig['ImageRights'][$language][$copyright])) {
-            return $this->mainConfig['ImageRights'][$language][$copyright];
-        }
-        return false;
     }
 
     /**

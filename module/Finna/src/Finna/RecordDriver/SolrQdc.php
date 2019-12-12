@@ -42,7 +42,7 @@ namespace Finna\RecordDriver;
  */
 class SolrQdc extends \VuFind\RecordDriver\SolrDefault
 {
-    use SolrFinna;
+    use SolrFinnaTrait;
 
     /**
      * Constructor
