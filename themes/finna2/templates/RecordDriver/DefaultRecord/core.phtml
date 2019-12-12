@@ -45,7 +45,7 @@
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
-  <div class="media-<?=$thumbnailAlignment ?>">
+  <div class="media-<?=$thumbnailAlignment ?><?=!empty($audioUrls) ? ' audio' : ''?>">
 
     <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img]);?>
 

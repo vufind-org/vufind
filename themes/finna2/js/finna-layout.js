@@ -1,4 +1,4 @@
-/*global VuFind, checkSaveStatuses, action, finna, initFacetTree, priorityNav */
+/*global VuFind, videojs, checkSaveStatuses, action, finna, initFacetTree, priorityNav */
 finna.layout = (function finnaLayout() {
   var _fixFooterTimeout = null;
   var masonryInitialized = false;
@@ -664,6 +664,32 @@ finna.layout = (function finnaLayout() {
     });
   }
 
+  function initAudioButtons() {
+    $('.audio-accordion .audio-item-wrapper').each(function initAudioPlayer() {
+      var self = $(this);
+      var play = self.find('.play');
+      var source = self.find('source');
+      play.click(function onPlay() {
+        self.find('.audio-player-wrapper').removeClass('hide');
+        var audio = self.find('audio');
+        audio.removeClass('hide');
+        audio.addClass('video-js');
+        source.attr('src', source.data('src'));
+        finna.layout.loadScripts(
+          $(this).data('scripts'),
+          function onVideoJsLoaded() {
+            videojs(
+              audio.attr('id'),
+              { controlBar: { volumePanel: false, muteToggle: false } },
+              function onVideoJsInited() {}
+            );
+          }
+        );
+        play.remove();
+      });
+    });
+  }
+
   function initVideoButtons() {
     finna.videoPopup.initVideoPopup($('body'));
     finna.videoPopup.initIframeEmbed($('body'));
@@ -868,6 +894,7 @@ finna.layout = (function finnaLayout() {
       initLoadMasonry();
       initOrganisationInfoWidgets();
       initOrganisationPageLinks();
+      initAudioButtons();
       initVideoButtons();
       initKeyboardNavigation();
       initPriorityNav();

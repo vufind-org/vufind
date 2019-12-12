@@ -1,6 +1,13 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-audio-player.phtml -->
+<?php
+$videoScripts = $this->partial('Helpers/videojs-urls.phtml');
+$audioElementBase = [
+  'data-scripts' => $videoScripts
+];
+$this->htmlElement()->addAttributeTemplate('audio-base', $audioElementBase);
+?>
 <div class="audio-accordion">
-<?php foreach ($audioUrls as $url): ?>
+<?php foreach ($audioUrls as $ind => $url): ?>
   <div class="audio-item-wrapper">
     <div class="audio-title-wrapper">
       <div class="audio-title">
@@ -12,9 +19,12 @@
       </div>
     </div>
     <div class="audio-accordion-item">
-      <div class="audio-player-wrapper">
-        <audio class="video-js vjs-default-skin" controls preload="auto" data-setup='{}'>
-          <source src="<?= $url['url'] ?>" type="audio/<?= $url['codec'] ?>"/>
+      <a class="play" <?=$this->htmlElement()->getAttributes($audioElementBase, 'audio-base');?>>
+        <i class="fa fa-play-circle"></i>
+      </a>
+      <div class="audio-player-wrapper hide">
+        <audio id="audio-<?=$ind?>" class="vjs-default-skin hide" autoplay controls preload="auto">
+          <source data-src="<?=$url['url']?>" type="audio/<?= $url['codec'] ?>"/>
         </audio>
       </div>
       <div class="open-link"><a target="_blank" href="<?=$url['url'] ?>"><i class="fa fa-download"></i> <?=$this->transEsc('Download recording') ?></a></div>

@@ -556,7 +556,8 @@ finna.imagePaginator = (function imagePaginator() {
           $(image).parents('.grid').addClass('no-image');
         }
         if (!_.isList && _.images.length <= 1) {
-          _.root.closest('.media-left').addClass('hidden-xs').find('.organisation-menu').hide();
+          _.root.closest('.media-left').not('.audio').addClass('hidden-xs');
+          _.root.closest('.media-left').find('.organisation-menu').hide();
           _.root.css('display', 'none');
           _.root.siblings('.image-details-container:not(:has(.image-rights))').hide();
           $('.record.large-image-layout').addClass('no-image-layout').removeClass('large-image-layout');

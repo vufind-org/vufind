@@ -48,6 +48,10 @@
   border-right: @sidebar-border;
   border-bottom: @sidebar-border;
   border-radius: 0 0 5px 5px;
+  text-align: center;
+  .play {
+    font-size: 35px;
+  }
 }
 
 .audio-accordion-item {
@@ -89,6 +93,11 @@
     display: none;
   }
 
+  .vjs-button > .vjs-icon-placeholder::before {
+    font-size: 2.5em;
+    line-height: 30px;
+  }
+
   .vjs-control-bar {
     display: block;
     top: 0%;
@@ -107,7 +116,7 @@
     left: 40%;
     width: 20%;
 
-    &:before {
+    .vjs-icon-placeholder:before {
       width: 30px;
       height: 30px;
       border-radius: 15px;
@@ -117,48 +126,8 @@
     }
   }
 
-  .vjs-volume-menu-button {
-    bottom: 0px;
-    right: 0px;
-    width: 30%;
-
-    &:hover, &:focus {
-      width: 30%;
-    }
-
-    &::before {
-      width: 35%;
-    }
-
-    .vjs-menu {
-      width: 65%;
-      right: 0;
-      left: initial;
-      opacity: 1;
-    }
-
-    .vjs-menu-content {
-      box-sizing: border-box;
-      padding: 0 4px;
-    }
-
-    .vjs-volume-bar {
-      width: 100%;
-      margin-left: 0;
-      margin-right: 0;
-    }
-
-    .vjs-volume-level {
-      background-color: @brand-primary;
-    }
-  }
-
-  .vjs-volume-menu-button-horizontal:hover .vjs-menu-content {
-    width: 100%;
-  }
-
   .vjs-menu-button-inline.vjs-slider-active {
-    width: 30%;
+    width: 20%;
   }
 
   .vjs-current-time,
@@ -197,4 +166,3 @@
     margin: 0;
   }
 }
-
