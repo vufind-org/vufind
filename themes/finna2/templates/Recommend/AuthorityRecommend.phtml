@@ -62,7 +62,7 @@ JS;
     $displayQuery = $results->getParams()->getDisplayQuery();
     if ($displayQuery) {
       $searchIndex = $this->contextParams['searchIndex'] ?? null;
-      $urlQuery = $results->getUrlQuery();
+      $urlQuery = $results->getUrlQuery()->setSearchTerms('');
       $callback = function ($record) use ($displayQuery, $that, $urlQuery) {
           // Generate a new search URL that replaces the user's current term
           // with the authority term:
