@@ -11,7 +11,7 @@ if ($img):
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif;?>
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <div class="media-<?=$thumbnailAlignment ?> resultThumb <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
@@ -144,7 +144,7 @@ if ($img):
               </div>
             <?php endif; ?>
 
-            <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+            <?php if (isset($this->params) && $this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
                 <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
             <?php endif; ?>
 

@@ -347,6 +347,9 @@ finna.record = (function finnaRecord() {
         $elem.removeClass('hidden');
         $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
         var $item = $(this).parents('.record-container');
+        if ($item.length === 0) {
+          return;
+        }
         var id = $item.find('.hiddenId')[0].value;
         $.getJSON(
           VuFind.path + '/AJAX/JSON',
