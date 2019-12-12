@@ -138,6 +138,7 @@ method = driver
 ; Uncomment the following lines to enable update messaging settings
 ; Choose a method on how to update the phone number (email, url or driver)
 [updateMessagingSettings]
+; Accepted methods are; email, driver.
 ;method = email
 ; emailAddress is required for the email method
 ;emailAddress =
