@@ -154,17 +154,19 @@ class ListController extends \Finna\Controller\MyResearchController
             return $this->forceLogin();
         }
 
-        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
-        $records = $runner->run(
-            ['id' => $listId],
-            'Favorites',
-            $runner
-        )->getResults();
-
         $this->setFollowupUrlToReferer();
 
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {
+            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+            $callback = function ($callback, $params, $runningSearchId) {
+                $params->setLimit(100000);
+            };
+            $records = $runner->run(
+                ['id' => $listId],
+                'Favorites',
+                $callback
+            )->getResults();
             $this->processSave($user, $records);
             if ($this->params()->fromQuery('layout', 'false') == 'lightbox') {
                 return $this->getResponse()->setStatusCode(204);
@@ -180,8 +182,7 @@ class ListController extends \Finna\Controller\MyResearchController
         $view = $this->createViewModel(
             [
                 'listId' => $listId,
-                'lists' => $user->getLists(),
-                'records' => $records,
+                'lists' => $user->getLists()
             ]
         );
         $view->setTemplate('list/save');
