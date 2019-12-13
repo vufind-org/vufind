@@ -118,7 +118,9 @@
   .record-versions {
     font-size: 0.9em;
     margin-top: 6px;
-    text-transform: uppercase;
+    &:not(.loading) {
+      text-transform: uppercase;
+    }
   }
 }
 
