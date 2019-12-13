@@ -867,7 +867,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                             ? 'issue' : $config['extraHoldFields'] . ':issue';
                 }
 
-
                 // Add a flag so that checkRequestIsValid knows to check valid pickup
                 // locations
                 $config['HMACKeys']
