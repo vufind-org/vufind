@@ -344,6 +344,7 @@ finna.record = (function finnaRecord() {
           return;
         }
         $elem.addClass('loaded');
+        $elem.addClass('loading');
         $elem.removeClass('hidden');
         $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
         var $item = $(this).parents('.record-container');
@@ -364,9 +365,11 @@ finna.record = (function finnaRecord() {
             } else {
               $elem.text('');
             }
+            $elem.removeClass('loading');
           })
           .fail(function onGetSimilarRecordsFail() {
             $elem.text(VuFind.translate('error_occurred'));
+            $elem.removeClass('loading');
           });
       });
 
