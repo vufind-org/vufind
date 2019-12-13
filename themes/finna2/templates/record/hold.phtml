@@ -15,6 +15,13 @@
 <div class="hold-form">
   <form method="post" name="placeHold" data-clear-account-cache="holds">
     <?=$this->flashmessages()?>
+    <?php if (in_array("issue", $this->extraHoldFields)): ?>
+      <div class="form-group hold-comment">
+        <label class="control-label"><?=$this->transEsc("hold_issue")?>:</label>
+        <input type="text" name="gatheredDetails[issue]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['issue'] ?? '')?>" class="form-control">
+      </div>
+    <?php endif; ?>
+
     <?php if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group hold-comment">
         <label class="control-label"><?=$this->transEsc("Comments")?>:</label>

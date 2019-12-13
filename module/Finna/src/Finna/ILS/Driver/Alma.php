@@ -846,6 +846,35 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 $config['titleHoldBibLevels']
                     = explode(':', $config['titleHoldBibLevels']);
             }
+            if (!empty($params['id']) && !empty($params['patron']['id'])) {
+                // Check if we require the issue (description) field
+                $requestOptionsPath = '/bibs/' . urlencode($params['id'])
+                    . '/request-options?user_id='
+                    . urlencode($params['patron']['id']);
+                // Make the API request
+                $requestOptions = $this->makeRequest($requestOptionsPath);
+                // Check possible request types from the API answer
+                $requestTypes = $requestOptions->xpath(
+                    '/request_options/request_option//type'
+                );
+                $types = [];
+                foreach ($requestTypes as $requestType) {
+                    $types[] = (string)$requestType;
+                }
+                if ($types === ['PURCHASE']) {
+                    $config['extraHoldFields']
+                        = empty($config['extraHoldFields'])
+                            ? 'issue' : $config['extraHoldFields'] . ':issue';
+                }
+
+
+                // Add a flag so that checkRequestIsValid knows to check valid pickup
+                // locations
+                $config['HMACKeys']
+                    = empty($config['HMACKeys'])
+                        ? '__check_pickup'
+                        : $config['HMACKeys'] . ':__check_pickup';
+            }
         }
         return $config;
     }
@@ -1084,7 +1113,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $requestOptions = $this->makeRequest($requestOptionsPath);
         } elseif ('title' === $level) {
             $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
-            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
+            if (!in_array('level', $hmac)) {
                 return false;
             }
             // Call the request-options API for the logged-in user
@@ -1097,17 +1126,27 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             return false;
         }
 
+        $result = false;
+
         // Check possible request types from the API answer
         $requestTypes = $requestOptions->xpath(
             '/request_options/request_option//type'
         );
         foreach ($requestTypes as $requestType) {
             if (in_array((string)$requestType, ['HOLD', 'PURCHASE'])) {
-                return true;
+                $result = true;
+                break;
             }
         }
 
-        return false;
+        if ($result && array_key_exists('__check_pickup', $data)) {
+            // Check valid pickup locations
+            if (empty($this->getPickupLocations($patron, $data))) {
+                $result = false;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -1161,10 +1200,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Check if we have a title level request or an item level request
         if ($level === 'title') {
-            // Add description if we have one for title level requests as Alma
-            // needs it under certain circumstances. See: https://developers.
-            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
-            $description = isset($holdDetails['description']) ?? null;
+            $description = $holdDetails['issue'] ?? null;
             if ($description) {
                 $body['description'] = $description;
             }
@@ -1235,6 +1271,11 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         default:
             $errorMsg = $error->errorList->error[0]->errorMessage
                 ?? 'hold_error_fail';
+        }
+
+        if ('Missing mandatory field: Description.' === $errorMsg) {
+            $errorMsg = $this->translate('This field is required') . ': '
+                . $this->translate('hold_issue');
         }
 
         return [

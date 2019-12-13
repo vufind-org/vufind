@@ -14,8 +14,8 @@ loginMethod = email
 [Holds]
 ; HMACKeys - A list of hold form element names that will be analyzed for consistency
 ; during hold form processing. Most users should not need to change this setting.
-; For activating title level hold request, add "description" and "level".
-HMACKeys = id:item_id:holding_id:level:description
+; For activating title level hold request, add "level".
+HMACKeys = id:item_id:holding_id:level
 
 ; defaultRequiredDate - A colon-separated list used to set the default "not required
 ; after" date for holds in the format days:months:years
@@ -24,7 +24,8 @@ defaultRequiredDate = 0:1:0
 
 ; extraHoldFields - A colon-separated list used to display extra visible fields in the
 ; place holds form. Supported values are "comments", "requiredByDate",
-; "pickUpLocation" and "requestGroup"
+; "pickUpLocation" and "requestGroup". "issue" is added automatically if needed by
+; the request type.
 extraHoldFields = comments:requiredByDate:pickUpLocation
 
 ; A Pick Up Location Code used to pre-select the pick up location drop down list and
