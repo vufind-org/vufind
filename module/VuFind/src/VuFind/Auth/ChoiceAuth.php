@@ -338,6 +338,20 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Is the configured strategy on the list of legal options?
+     *
+     * @return bool
+     */
+    protected function hasLegalStrategy()
+    {
+        // Do a case-insensitive search of the strategy list:
+        return in_array(
+            strtolower($this->strategy),
+            array_map('strtolower', $this->strategies)
+        );
+    }
+
+    /**
      * Proxy auth method; a helper function to be called like:
      *   return $this->proxyAuthMethod(METHOD, func_get_args());
      *
@@ -354,7 +368,7 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
 
-        if (!in_array($this->strategy, $this->strategies)) {
+        if (!$this->hasLegalStrategy()) {
             throw new InvalidArgumentException("Illegal setting: {$this->strategy}");
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
