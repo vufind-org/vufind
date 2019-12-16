@@ -931,7 +931,7 @@ trait MarcAdvancedTrait
      */
     public function getCleanNBN()
     {
-        $field = $this->getMarcRecord()->getField('650');
+        $field = $this->getMarcRecord()->getField('015');
         $nbn = false;
         if ($field) {
             $subfields = $this->getSubfieldArray($field, ['a', '7'], false);

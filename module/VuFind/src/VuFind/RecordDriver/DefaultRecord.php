@@ -1251,7 +1251,7 @@ class DefaultRecord extends AbstractBase
             $arr['upc'] = $upc;
         }
         if ($nbn = $this->getCleanNBN()) {
-            $arr['nbn'] = $nbn;
+            $arr['nbn'] = $nbn['nbn'];
         }
         if ($ismn = $this->getCleanISMN()) {
             $arr['ismn'] = $ismn;
