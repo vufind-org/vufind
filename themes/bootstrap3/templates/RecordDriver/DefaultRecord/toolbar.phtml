@@ -16,7 +16,7 @@
 
     <li><a class="mail-record toolbar-btn btn-type-email" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" rel="nofollow"><?=$this->transEsc('Email this')?></a></li>
 
-    <li><a class="print-record toolbar-btn btn-type-print" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow"><?=$this->transEsc('Print this')?></a></li>
+    <li><a class="print-record toolbar-btn btn-type-print" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow"><?=$this->transEsc('Print')?></a></li>
 
     <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
     <?php if(count($exportFormats) > 0): ?>
