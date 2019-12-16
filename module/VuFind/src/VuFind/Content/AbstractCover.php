@@ -111,9 +111,9 @@ abstract class AbstractCover
             || ($this->supportsIssn && isset($ids['issn']))
             || ($this->supportsIsmn && isset($ids['ismn']))
             || ($this->supportsOclc && isset($ids['oclc']))
-            || ($this->supportsUpc && isset($ids['upc']));
+            || ($this->supportsUpc && isset($ids['upc']))
             || ($this->supportsNbn && isset($ids['nbn']));
-     }
+    }
 
     /**
      * Get image URL for a particular API key and set of IDs (or false if invalid).
