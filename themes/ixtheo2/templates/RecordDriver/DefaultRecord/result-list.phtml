@@ -37,7 +37,7 @@
           <?php if (!empty($primaryAuthor) || !empty($otherAuthors)): ?>
             <?=$this->transEsc('by')?>
             <?php if (!empty($primaryAuthor)): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $primaryAuthor)?>"><?
+	    <a href="<?=$this->record($this->driver)->getLink('author', $primaryAuthor)?>"><?php
                 /* TODO: Highlight primary author. */
                 echo $this->escapeHtml($primaryAuthor);
               ?></a>
