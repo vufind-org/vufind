@@ -1,6 +1,7 @@
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/Blender.ini
+override_full_sections = "Results,ResultsTop,SpecialFacets,CheckboxFacets,Results_Settings,Views"
 
 ; Add any overrides below
 ;[Records]
