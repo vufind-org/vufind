@@ -557,6 +557,26 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Command-line tool to clear unwanted entries
+     * from auth_hash database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireauthhashesAction()
+    {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('authentication hashes');
+        }
+
+        return $this->expire(
+            \VuFind\Db\Table\AuthHash::class,
+            '%%count%% expired authentication hashes deleted.',
+            'No expired authentication hashes to delete.'
+        );
+    }
+
+    /**
      * Command-line tool to delete suppressed records from the index.
      *
      * @return \Zend\Console\Response
