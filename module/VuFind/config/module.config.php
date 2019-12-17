@@ -411,6 +411,7 @@ $config = [
             'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
             'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
