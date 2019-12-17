@@ -448,4 +448,21 @@ class ChoiceAuth extends AbstractBase
         }
         return isset($user) && $user instanceof User;
     }
+
+    /**
+     * Whether this authentication method needs CSRF checking for the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function needsCsrfCheck($request)
+    {
+        if (!$this->strategy) {
+            return true;
+        }
+        return $this->proxyAuthMethod('needsCsrfCheck', func_get_args());
+    }
 }
