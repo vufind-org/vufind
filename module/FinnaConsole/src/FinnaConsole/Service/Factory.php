@@ -193,15 +193,13 @@ class Factory
      */
     public static function getVerifyRecordLinks(ServiceManager $sm)
     {
-        $commentsTable = $sm->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('Comments');
-        $commentsRecordTable = $sm->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('CommentsRecord');
-
-        $searchRunner = $sm->get(\VuFind\Search\SearchRunner::class);
-
+        $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
+        $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         return new VerifyRecordLinks(
-            $commentsTable, $commentsRecordTable, $searchRunner
+            $tableManager->get('Comments'),
+            $tableManager->get('CommentsRecord'),
+            $tableManager->get('Resource'),
+            $backendManager->get('Solr')
         );
     }
 
