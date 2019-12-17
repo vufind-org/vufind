@@ -181,7 +181,7 @@ class User extends \VuFind\Db\Row\User
         }
         $callback = function ($select) use ($userId, $loginTargets) {
             $select->where->equalTo('user_id', $userId);
-            if ($loginTargets !== null) {
+            if (!empty($loginTargets)) {
                 $select->where->in(
                     new Expression(
                         "substring(cat_username, 1, locate('.', cat_username))",
