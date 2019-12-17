@@ -14,6 +14,18 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
+  <?php if (!empty($this->alertemail)): ?>
+    <div class="alert alert-info alert-email-notification">
+      <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail ?>
+      <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
+        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+      <?php endif; ?>
+    </div>
+  <?php elseif (!empty($this->schedule) && $this->auth()->isLoggedIn()): ?>
+    <div class="alert alert-danger alert-email-notification">
+      <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+    </div>
+  <?php endif; ?>
   <?=$this->flashmessages()?>
   <?php if ($saveSupported && !empty($this->saved)): ?>
     <h2><?=$this->transEsc("history_saved_searches")?></h2>
@@ -39,3 +51,16 @@
      ?>
   </div>
 <?php endif; ?>
+
+<?php
+    $explanation = $this->transEsc('schedule_explanation');
+    $script = <<<JS
+$(".search-schedule-header").popover({
+    content: "$explanation",
+    placement: "top",
+    trigger: "hover",
+    container: "body",
+})
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

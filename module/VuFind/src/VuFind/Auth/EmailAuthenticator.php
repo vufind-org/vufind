@@ -128,11 +128,15 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * user details)
      * @param array  $urlParams Default parameters for the generated URL
      * @param string $linkRoute The route to use as the base url for the login link
+     * @param string $subject   Email subject
+     * @param string $template  Email message template
      *
      * @return void
      */
     public function sendAuthenticationLink($email, $data,
-        $urlParams, $linkRoute = 'myresearch-home'
+        $urlParams, $linkRoute = 'myresearch-home',
+        $subject = 'email_login_subject',
+        $template = 'Email/login-link.phtml'
     ) {
         $sessionContainer = $this->getSessionContainer();
 
@@ -168,14 +172,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         );
         $viewParams['title'] = $this->config->Site->title;
 
-        $message = $this->viewRenderer->render(
-            'Email/login-link.phtml',
-            $viewParams
-        );
+        $message = $this->viewRenderer->render($template, $viewParams);
         $from = !empty($this->config->Mail->user_email_in_from)
             ? $email
             : ($this->config->Mail->default_from ?? $this->config->Site->email);
-        $subject = $this->translator->translate('email_login_subject');
+        $subject = $this->translator->translate($subject);
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);
 
         $this->mailer->send($email, $from, $subject, $message);
