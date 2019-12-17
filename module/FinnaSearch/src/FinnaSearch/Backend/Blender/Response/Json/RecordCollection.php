@@ -181,6 +181,18 @@ class RecordCollection
     }
 
     /**
+     * Set the source backend identifier.
+     *
+     * @param string $identifier Backend identifier
+     *
+     * @return void
+     */
+    public function setSourceIdentifier($identifier)
+    {
+        $this->source = $identifier;
+    }
+
+    /**
      * Merge facets
      *
      * @param RecordCollectionInterface $primaryCollection   Primary record

@@ -323,7 +323,6 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             }
         }
 
-        $results->setSourceIdentifier($this->identifier);
         return $results;
     }
 
