@@ -1267,6 +1267,19 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     }
 
     /**
+     * Get details of a single hold request.
+     *
+     * @param array $holdDetails One of the item arrays returned by the
+     *                           getMyHolds method
+     *
+     * @return string            The Alma request ID
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        return empty($holdDetails['available']) ? $holdDetails['id'] : '';
+    }
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
