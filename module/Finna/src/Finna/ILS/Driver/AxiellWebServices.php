@@ -1662,6 +1662,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function getMessageServices($patron)
     {
+        if (empty($this->patronaurora_wsdl)) {
+            return [];
+        }
+
         $function = 'getMessageServices';
         $functionResult = 'messageServicesResponse';
 
