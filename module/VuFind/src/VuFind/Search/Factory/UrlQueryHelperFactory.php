@@ -42,6 +42,13 @@ use VuFind\Search\UrlQueryHelper;
 class UrlQueryHelperFactory
 {
     /**
+     * Name of class built by factory.
+     *
+     * @var string
+     */
+    protected $helperClass = UrlQueryHelper::class;
+
+    /**
      * Extract default settings from the search parameters.
      *
      * @param Params $params VuFind search parameters
@@ -158,7 +165,7 @@ class UrlQueryHelperFactory
     public function fromParams(Params $params, array $config = [])
     {
         $finalConfig = $this->addDefaultsToConfig($params, $config);
-        return new UrlQueryHelper(
+        return new $this->helperClass(
             $this->getUrlParams($params, $finalConfig),
             $params->getQuery(),
             $finalConfig
