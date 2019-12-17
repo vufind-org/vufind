@@ -847,26 +847,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     = explode(':', $config['titleHoldBibLevels']);
             }
             if (!empty($params['id']) && !empty($params['patron']['id'])) {
-                // Check if we require the issue (description) field
-                $requestOptionsPath = '/bibs/' . urlencode($params['id'])
-                    . '/request-options?user_id='
-                    . urlencode($params['patron']['id']);
-                // Make the API request
-                $requestOptions = $this->makeRequest($requestOptionsPath);
-                // Check possible request types from the API answer
-                $requestTypes = $requestOptions->xpath(
-                    '/request_options/request_option//type'
-                );
-                $types = [];
-                foreach ($requestTypes as $requestType) {
-                    $types[] = (string)$requestType;
-                }
-                if ($types === ['PURCHASE']) {
-                    $config['extraHoldFields']
-                        = empty($config['extraHoldFields'])
-                            ? 'issue' : $config['extraHoldFields'] . ':issue';
-                }
-
                 // Add a flag so that checkRequestIsValid knows to check valid pickup
                 // locations
                 $config['HMACKeys']
@@ -1112,7 +1092,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $requestOptions = $this->makeRequest($requestOptionsPath);
         } elseif ('title' === $level) {
             $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
-            if (!in_array('level', $hmac)) {
+            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
                 return false;
             }
             // Call the request-options API for the logged-in user
@@ -1199,7 +1179,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Check if we have a title level request or an item level request
         if ($level === 'title') {
-            $description = $holdDetails['issue'] ?? null;
+            // Add description if we have one for title level requests as Alma
+            // needs it under certain circumstances. See: https://developers.
+            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
+            $description = isset($holdDetails['description']) ?? null;
             if ($description) {
                 $body['description'] = $description;
             }
