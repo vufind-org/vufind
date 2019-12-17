@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Unit;
 
+use VuFind\Search\Factory\UrlQueryHelperFactory;
+
 /**
  * Abstract base class for PHPUnit test cases.
  *
@@ -213,6 +215,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager->setService(
                 'Zend\Mvc\I18n\Translator',
                 $factory->createService($this->serviceManager)
+            );
+            $this->serviceManager->setService(
+                UrlQueryHelperFactory::class, new UrlQueryHelperFactory()
             );
         }
         return $this->serviceManager;
