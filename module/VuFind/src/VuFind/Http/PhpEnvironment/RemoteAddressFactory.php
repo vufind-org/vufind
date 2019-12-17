@@ -1,10 +1,11 @@
 <?php
 /**
- * Factory for email authenticator module.
+ * RemoteAddress utility factory. This uses the core Zend RemoteAddress but
+ * configures it according to VuFind settings.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +21,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Auth;
+namespace VuFind\Http\PhpEnvironment;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for email authenticator module.
+ * RemoteAddress utility factory.
  *
  * @category VuFind
- * @package  Authentication
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EmailAuthenticatorFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+class RemoteAddressFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,15 +62,11 @@ class EmailAuthenticatorFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\Zend\Session\SessionManager::class),
-            $container->get(\VuFind\Validator\Csrf::class),
-            $container->get(\VuFind\Mailer\Mailer::class),
-            $container->get('ViewRenderer'),
-            $container->get(\Zend\Http\PhpEnvironment\RemoteAddress::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
-                ->get(\VuFind\Db\Table\AuthHash::class)
-        );
+        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $object = new $requestedName();
+        if ($cfg->Site->reverse_proxy ?? false) {
+            $object->setUseProxy(true);
+        }
+        return $object;
     }
 }

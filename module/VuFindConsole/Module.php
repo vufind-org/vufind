@@ -122,6 +122,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',
             'util deletes' => 'Tool for deleting Solr records',
+            'util expire_auth_hashes' => 'Database auth_hash table cleanup',
             'util expire_external_sessions'
                 => 'Database external_session table cleanup',
             'util expire_searches' => 'Database search table cleanup',

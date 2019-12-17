@@ -86,8 +86,11 @@ class Email extends AbstractBase
                 $loginData = [
                     'vufind_id' => $user['id']
                 ];
-                $this->emailAuthenticator
-                    ->sendAuthenticationLink($user['email'], $loginData);
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $user['email'],
+                    $loginData,
+                    ['auth_method' => 'email']
+                );
             }
             // Don't reveal the result
             throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');

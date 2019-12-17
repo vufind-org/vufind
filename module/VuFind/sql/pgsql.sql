@@ -301,6 +301,24 @@ CONSTRAINT user_card_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELE
 CREATE INDEX user_card_cat_username_idx ON user_card (cat_username);
 CREATE INDEX user_card_user_id_idx ON user_card (user_id);
 
+--
+-- Table structure for table auth_hash
+--
+
+DROP TABLE IF EXISTS "auth_hash";
+
+CREATE TABLE auth_hash (
+id BIGSERIAL,
+session_id varchar(128),
+hash varchar(255),
+type varchar(50),
+data text,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (hash, type)
+);
+CREATE INDEX auth_hash_created_idx on auth_hash(created);
+
 -- --------------------------------------------------------
 
 --

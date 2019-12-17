@@ -73,6 +73,7 @@ $routes = [
     'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [<backend>] [--help|-h]',
     'util/cssBuilder' => 'util cssBuilder [...themes]',
     'util/deletes' => 'util deletes [--verbose] [<filename>] [<format>] [<index>]',
+    'util/expire_auth_hashes' => 'util expire_auth_hashes [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_external_sessions' => 'util expire_external_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',

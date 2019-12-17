@@ -317,3 +317,24 @@ CREATE TABLE `record` (
   UNIQUE KEY `record_id_source` (`record_id`, `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `auth_hash`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_hash` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) DEFAULT NULL,
+  `hash` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(50) DEFAULT NULL,
+  `data` mediumtext,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  UNIQUE KEY `hash_type` (`hash`, `type`),
+  KEY `created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
