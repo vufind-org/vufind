@@ -26,7 +26,8 @@
             $this->searchClassId = 'SolrAuth';
             break;
         default:
-            $this->searchClassId = 'Solr';
+            $config = $this->config()->get('config');
+            $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
         }
     }
 
