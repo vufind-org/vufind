@@ -77,21 +77,61 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $author_implode(array_map($author_implode, array_map("array_keys", $this->getDeduplicatedAuthors())));
     }
 
+    /**
+     * Compatibility function for VuFind's RecordDriver, e.g. for MetadataVocabularies
+     * (renamed solr field)
+     *
+     * @return string
+     */
     public function getContainerEndPage()
     {
         return $this->fields['end_page'] ?? '';
     }
 
+    /**
+     * Compatibility function for VuFind's RecordDriver, e.g. for MetadataVocabularies
+     * (renamed solr field)
+     *
+     * @return string
+     */
     public function getContainerIssue()
     {
         return $this->fields['issue'] ?? '';
     }
 
+    /**
+     * Compatibility function for VuFind's RecordDriver, e.g. for MetadataVocabularies
+     * (renamed solr field)
+     *
+     * @return string
+     */
     public function getContainerStartPage()
     {
         return $this->fields['start_page'] ?? '';
     }
 
+    /**
+     * Compatibility function for VuFind's RecordDriver, e.g. for MetadataVocabularies
+     * (different solr field, return only title of first container)
+     *
+     * @return string
+     */
+    public function getContainerTitle()
+    {
+        $containerIdsAndTitles = $this->getContainerIDsAndTitles();
+        foreach($containerIdsAndTitles as $ppn => $containerTitleAndVolume) {
+            if (!empty($containerTitleAndVolume[0]))
+                return $containerTitleAndVolume[0];
+        }
+        return '';
+    }
+
+    /**
+     * Compatibility function for VuFind's RecordDriver, e.g. for MetadataVocabularies
+     * (renamed solr field)
+     *
+     * @return string
+     */
     public function getContainerVolume()
     {
         return $this->fields['volume'] ?? '';
@@ -100,16 +140,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     /**
      * Return an associative array of all container IDs (parents) mapped to their titles containing the record.
      *
-     * @return array
+     * @return array ($ppn => [0 => $title, 1 => $volume])
      */
     public function getContainerIDsAndTitles()
     {
-        $retval = array();
+        $retval = [];
         if (isset($this->fields['container_ids_and_titles']) && !empty($this->fields['container_ids_and_titles'])) {
             foreach ($this->fields['container_ids_and_titles'] as $id_and_title) {
                 $a = explode(chr(0x1F), str_replace("#31;", chr(0x1F), $id_and_title), 3);
                 if (count($a) == 3) {
-                    $retval[$a[0]] = array($a[1], $a[2]);
+                    $retval[$a[0]] = [$a[1], $a[2]];
                 }
             }
         }
