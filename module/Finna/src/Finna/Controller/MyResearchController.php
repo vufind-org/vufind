@@ -639,7 +639,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                             . $this->translate($fieldConfig['label'])
                         );
                         return $view;
-
                     }
                 }
 
