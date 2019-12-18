@@ -1,7 +1,7 @@
 <div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0;">
     <div class="container">
-        <div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>
-        <div class="navbar-collapse collapse">
+        <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
+        <div class="navbar-collapse collapse" style="padding-left: 0px;">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
                     <a class="dropdown-toggle"><?=$this->transEsc('Browse')?>&nbsp;<span class="caret"></span></a>
@@ -105,60 +105,66 @@
             <h2 class="cw-h2 cw-mb-5">IxTheo entdecken</h2>
         </div>
         <div class="row">
-            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
-                <div class="cw-px-0 cw-px-lg-3">
-                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                        <use xlink:href="#destination-map-1">
-                        <symbol viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" id="destination-map-1">
-                            <title>Destination Map</title>
-                            <desc>A line styled icon from Orion Icon Library.</desc>
-                            <path d="M43.1 17l9.9 9.9M43 27l9.9-9.9m-19.5 7.6a10 10 0 0 1 6.8-2.7M29.7 35.2a10 10 0 0 0 .5-2.9V32a10 10 0 0 1 .9-4.3M21.2 42a10 10 0 0 0 6.6-3.5M9.8 42h7.6M2 42h4" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer2" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                            <path d="M62 10v50l-22-6-16 6-22-6V4l22 6 16-6 22 6z" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer1" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                        </symbol>
-                        </use>
-                        </svg>
+            <a href="<?=$this->url('content-page', ['page' => 'fulltext']) ?>">
+                <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                    <div class="cw-px-0 cw-px-lg-3">
+                        <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                            <use xlink:href="#destination-map-1">
+                            <symbol viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" id="destination-map-1">
+                                <title>Destination Map</title>
+                                <desc>A line styled icon from Orion Icon Library.</desc>
+                                <path d="M43.1 17l9.9 9.9M43 27l9.9-9.9m-19.5 7.6a10 10 0 0 1 6.8-2.7M29.7 35.2a10 10 0 0 0 .5-2.9V32a10 10 0 0 1 .9-4.3M21.2 42a10 10 0 0 0 6.6-3.5M9.8 42h7.6M2 42h4" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer2" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                                <path d="M62 10v50l-22-6-16 6-22-6V4l22 6 16-6 22 6z" stroke-miterlimit="10" stroke="#101010" fill="none" data-name="layer1" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                            </symbol>
+                            </use>
+                            </svg>
+                        </div>
+                        <h3 class="cw-h5">Volltextsuche</h3>
+                        <p class="text-muted">One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in</p>
                     </div>
-                    <h3 class="cw-h5">Volltextsuche</h3>
-                    <p class="text-muted">One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed in</p>
                 </div>
-            </div>
-            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
-                <div class="cw-px-0 cw-px-lg-3">
-                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                        <use xlink:href="#pay-by-cw-card-1">
-                        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="pay-by-cw-card-1">
-                            <title>Pay by Card</title>
-                            <desc>A line styled icon from Orion Icon Library.</desc>
-                            <path data-name="layer1" d="M40 20l8.8 8.7C51.2 31.1 52 34.2 52 40c0 8.6-.1 22-.1 22M22 44a20 20 0 0 0 3.3 11.5C28.1 60 28 61.3 28 62" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                            <path data-name="layer2" d="M29.8 44H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v31M30 2v23" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                            <path data-name="layer1" d="M44.1 39.1L28.4 23.5a5 5 0 0 0-7 0 5 5 0 0 0 0 7l8.6 8.6s-2.6 8 6 14.9" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
-                        </symbol>
-                        </use>
-                        </svg>
+            </a>
+            <a href="<?=$this->url('content-page', ['page' => 'open_access']) ?>">
+                <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                    <div class="cw-px-0 cw-px-lg-3">
+                        <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                            <use xlink:href="#pay-by-cw-card-1">
+                            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="pay-by-cw-card-1">
+                                <title>Pay by Card</title>
+                                <desc>A line styled icon from Orion Icon Library.</desc>
+                                <path data-name="layer1" d="M40 20l8.8 8.7C51.2 31.1 52 34.2 52 40c0 8.6-.1 22-.1 22M22 44a20 20 0 0 0 3.3 11.5C28.1 60 28 61.3 28 62" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                                <path data-name="layer2" d="M29.8 44H14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v31M30 2v23" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                                <path data-name="layer1" d="M44.1 39.1L28.4 23.5a5 5 0 0 0-7 0 5 5 0 0 0 0 7l8.6 8.6s-2.6 8 6 14.9" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer2, #101010)"></path>
+                            </symbol>
+                            </use>
+                            </svg>
+                        </div>
+                        <h3 class="cw-h5">Open Access</h3>
+                        <p class="text-muted">The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pit</p>
                     </div>
-                    <h3 class="cw-h5">Open Access</h3>
-                    <p class="text-muted">The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pit</p>
                 </div>
-            </div>
-            <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
-                <div class="cw-px-0 cw-px-lg-3">
-                    <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
-                        <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
-                        <use xlink:href="#heart-1">
-                        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="heart-1">
-                            <title>Heart</title>
-                            <desc>A line styled icon from Orion Icon Library.</desc>
-                            <path data-name="layer1" d="M47 5c-6.5 0-12.9 4.2-15 10-2.1-5.8-8.5-10-15-10A15 15 0 0 0 2 20c0 13 11 26 30 39 19-13 30-26 30-39A15 15 0 0 0 47 5z" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
-                        </symbol>
-                        </use>
-                        </svg>
+            </a>
+            <a href="<?=$this->url('content-page', ['page' => 'digitalization']) ?>">
+                <div class="col-lg-4 cw-mb-3 cw-mb-lg-0 text-center">
+                    <div class="cw-px-0 cw-px-lg-3">
+                        <div class="cw-icon-rounded cw-bg-primary-light cw-mb-3">
+                            <svg class="cw-svg-icon cw-text-primary cw-w-2rem cw-h-2rem">
+                            <use xlink:href="#heart-1">
+                            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="heart-1">
+                                <title>Heart</title>
+                                <desc>A line styled icon from Orion Icon Library.</desc>
+                                <path data-name="layer1" d="M47 5c-6.5 0-12.9 4.2-15 10-2.1-5.8-8.5-10-15-10A15 15 0 0 0 2 20c0 13 11 26 30 39 19-13 30-26 30-39A15 15 0 0 0 47 5z" fill="none" stroke="#101010" stroke-miterlimit="10" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--layer1, #101010)"></path>
+                            </symbol>
+                            </use>
+                            </svg>
+                        </div>
+                        <h3 class="cw-h5">Digitalisierung</h3>
+                        <p class="text-muted">His room, a proper human room although a little too small, lay peacefully between its four familiar </p>
                     </div>
-                    <h3 class="cw-h5">Digitalisierung</h3>
-                    <p class="text-muted">His room, a proper human room although a little too small, lay peacefully between its four familiar </p>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </section>
