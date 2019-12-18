@@ -185,7 +185,7 @@ class TurkuPaytrailE2 extends PaytrailE2
      */
     public function sendRequest($url)
     {
-        $this->setTimeStamp(gmdate("Y-m-d\Th:i:s\Z"));
+        $this->setTimeStamp(gmdate("Y-m-d\TH:i:s\Z"));
         $this->requestBody = json_encode($this->generateBody());
         $headers = $this->generateHeaders();
         $response = $this->postRequest($url, $this->requestBody, [], $headers);
