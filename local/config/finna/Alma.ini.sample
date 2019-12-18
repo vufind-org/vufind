@@ -209,7 +209,7 @@ fields[] = City:city
 fields[] = Country:country
 fields[] = Email:email
 fields[] = Phone:phone
-fields[] = self_service_pin:self_service_pin:password
+fields[] = self_service_pin:self_service_pin:pin4
 ; url is required for the url method. url can be a single address or an array of
 ; language-specific addresses. First example is a single one:
 ;url = http://address.of.change.form
