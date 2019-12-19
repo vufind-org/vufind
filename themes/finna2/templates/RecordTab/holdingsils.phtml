@@ -342,7 +342,7 @@
             $parts[] = '<span class="department">' . $this->escapeHtml($row['department']) . '</span>';
           }
           if (!empty($row['callnumber']) && count($callnumbers) > 1) {
-            $parts[] = '<span class="callnumber">' . $this->escapeHtml($row['callnumber']) . '</span>';
+            $parts[] = '<span class="callnumber">' . $this->transEsc($row['callnumber']) . '</span>';
           }
         ?>
         <div class="copy-title">
