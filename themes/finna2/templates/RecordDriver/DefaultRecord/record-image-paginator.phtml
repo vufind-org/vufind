@@ -35,17 +35,15 @@
         <?php else: ?>
           <span class="image-popup-trigger" data-disable-modal="1">
         <?php endif; ?>
-          <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-          <div class="paginator-info"><span class="image-index"></span></div>
+        <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+        <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <div class="paginator-info"><span class="image-index"></span></div>
         <?php if (!$this->disableModal): ?>
           </a>
         <?php else: ?>
           </span>
         <?php endif; ?>
-        <a class="hidden-trigger" href="#" style="display: none;">
-          <?= $this->transEsc('hidden_description') ?>
-        </a>
+        <span class="hidden-trigger" hidden></span>
         <button class="next-image right" type="button"><i class="fa fa-chevron-right"></i></button>
       </div>
     <?php endif; ?>
