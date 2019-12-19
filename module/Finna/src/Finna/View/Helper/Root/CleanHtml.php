@@ -59,6 +59,16 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
         }
         if (null === $this->purifier) {
             $config = \HTMLPurifier_Config::createDefault();
+            // Details & summary elements not supported by default, add them:
+            $def = $config->getHTMLDefinition(true);
+            $def->addElement(
+                'details',
+                'Block',
+                'Flow',
+                'Common',
+                ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
+            );
+            $def->addElement('summary', 'Inline', 'Inline', 'Common');
             $this->purifier = new \HTMLPurifier($config);
         }
         return $this->purifier->purify($html);
