@@ -1339,7 +1339,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             ];
             if ($service === 'dueDateAlert') {
                 $options = [];
-                for ($i = 0; $i <= 4; $i++) {
+                for ($i = 0; $i <= 5; $i++) {
                     $options[$i] = [
                         'name' => $this->translate(
                             1 === $i ? 'messaging_settings_num_of_days'
