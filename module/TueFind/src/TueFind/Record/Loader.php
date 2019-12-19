@@ -53,4 +53,36 @@ class Loader extends \VuFind\Record\Loader {
             'Record ' . $source . ':' . $id . ' does not exist.'
         );
     }
+
+    public function loadAuthorityRecordByGNDNumber($gndNumber) {
+        $source = 'SolrAuth';
+
+        if (null !== $gndNumber && '' !== $gndNumber) {
+            $results = [];
+
+            // no primary cache
+
+            // use search instead of lookup logic
+            if (empty($results)) {
+                $query = new \VuFindSearch\Query\Query('gnd:' . $gndNumber);
+                $results = $this->searchService->search($source, $query);
+                if ($results->first() !== null)
+                    return $results->first();
+                $results = [];
+            }
+
+            // no fallback cache
+
+            if (!empty($results)) {
+                return $results[0];
+            }
+
+            // no fallback loader
+        }
+        // no "tolerate missing" logic
+
+        throw new RecordMissingException(
+            'Record ' . $source . ':' . $gndNumber . ' does not exist.'
+        );
+    }
 }

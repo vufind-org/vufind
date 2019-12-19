@@ -1,43 +1,8 @@
-<!-- Content -->
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-file"> </i>
-        <?=$this->transEsc('Content');?> <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="">Monografien</a></li>
-        <li><a class="dropdown-item" href="">Zeitschriften/Rezensionen</a></li>
-        <li><a class="dropdown-item" href="">Reihen</a></li>
-        <li><a class="dropdown-item" href="">Datenbanken</a></li>
-        <li><a class="dropdown-item" href="">PDA</a></li>
-        <li><a class="dropdown-item" href="">Wunschbuch</a></li>
-    </ul>
-</li>
-
-<!-- Networking -->
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-phone"> </i>
-        <?=$this->transEsc('Networking');?> <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="">Beirat</a></li>
-        <li><a class="dropdown-item" href="">FachreferentIn</a></li>
-        <li><a class="dropdown-item" href="">Info FID</a></li>
-        <li><a class="dropdown-item" href="">Kooperationen</a></li>
-        <li><a class="dropdown-item" href="">Beitragen, aktiv werden</a></li>
-    </ul>
-</li>
-
 <!-- About -->
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-info-circle"> </i>
-        <?=$this->transEsc('About');?> <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" target="_blank" href="//uni-tuebingen.de/einrichtungen/universitaetsbibliothek/ueber-uns/bibliotheksbestand/fachinformationsdienste/theologie/#c588430">Info zu FID Theologie</a></li>
-        <li><a class="dropdown-item" href="<?=$this->url('help-home')?>?topic=search" data-lightbox><?= $this->transEsc('Search Tips') ?></a></li>
-        <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'A-Z']) ?>">IxTheo A-Z</a></li>
-    </ul>
+<li class="nav-item">
+    <a class="nav-link" href="<?=$this->url('content-page', ['page' => 'about_us']) ?>"><i class="fa fa-info-circle"></i> <?=$this->transEsc('About us');?></a>
+</li>
+<!-- A-Z -->
+<li class="nav-item">
+    <a class="nav-link" href="<?=$this->url('content-page', ['page' => 'A-Z']) ?>"><i class="fa fa-question-circle"></i> <?=$this->transEsc('IxTheo A-Z');?></a>
 </li>
