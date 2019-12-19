@@ -16,8 +16,8 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec = new SpecBuilder();
 
         $this->addPublishedIn($spec);
-        $this->addNewerTitles($spec);
-        $this->addPreviousTitles($spec);
+        $this->addFollowingTitle($spec); // TueFind specific
+        $this->addPreviousTitle($spec);  // TueFind specific
         $this->addDeduplicatedAuthors($spec);
         $this->addFormats($spec);
         $this->addLanguages($spec);
