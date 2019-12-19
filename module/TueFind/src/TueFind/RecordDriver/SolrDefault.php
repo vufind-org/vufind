@@ -156,6 +156,11 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    public function getFollowingTitlePPN()
+    {
+        return $this->fields['following_title_ppn'] ?? '';
+    }
+    
     /**
      * Get the issue of the current record.
      *
@@ -202,6 +207,11 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     {
         return isset($this->fields['pages']) ?
             $this->fields['pages'] : '';
+    }
+
+    public function getPreceedingTitlePPN()
+    {
+        return $this->fields['preceeding_title_ppn'] ?? '';
     }
 
     public function getRecordDriverByPPN($ppn) {

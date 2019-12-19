@@ -64,9 +64,9 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         $spec->setLine('Language', 'getLanguages', null, ['translate' => true]);
     }
 
-    protected function addNewerTitles(&$spec) {
-        $spec->setLine(
-            'New Title', 'getNewerTitles', null, ['recordLink' => 'title']
+    protected function addFollowingTitle(&$spec) {
+        $spec->setTemplateLine(
+            'Following Title', 'getFollowingTitlePPN', 'data-following_title.phtml'
         );
     }
 
@@ -75,9 +75,9 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
     }
 
-    protected function addPreviousTitles(&$spec) {
-        $spec->setLine(
-            'Previous Title', 'getPreviousTitles', null, ['recordLink' => 'title']
+    protected function addPreviousTitle(&$spec) {
+        $spec->setTemplateLine(
+            'Previous Title', 'getPreviousTitlePPN', 'data-previous_title .phtml'
         );
     }
 
