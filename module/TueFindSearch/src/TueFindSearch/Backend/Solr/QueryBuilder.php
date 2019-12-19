@@ -52,6 +52,15 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
+    protected function getHandler($query) {
+        if ($query instanceof \VuFindSearch\Query\Query)
+            return $query->getHandler();
+        if ($query instanceof \VuFindSearch\Query\QueryGroup)
+            return $query->getReducedHandler();
+        return "";
+    }
+
+
     public function build(AbstractQuery $query)
     {
         $params = parent::build($query);
@@ -62,7 +71,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                                                  $query_terms : '(' . $query_terms . ')';
                 $params->set('explainOther', 'fulltext:' . $query_terms_normalized .
                                              ' OR fulltext_unstemmed:' . $query_terms_normalized .
-                                             $this->getSynonymsPartialExpressionOrEmpty($query->getHandler(), $query_terms_normalized));
+                                             $this->getSynonymsPartialExpressionOrEmpty($this->getHandler($query), $query_terms_normalized));
             }
         }
         return $params;
