@@ -1027,14 +1027,20 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             if ($home) {
                 $libraries[] = [
                     'locationID' => '$$HOME',
-                    'locationDisplay' => $profile['homeAddress']
+                    'locationDisplay' => $this->getTranslatableStringForCode(
+                        'pickup_location_home_address',
+                        'pickup_location_home_address'
+                    )
                 ];
             }
             if ($work) {
                 if (!$home || $profile['homeAddress'] !== $profile['workAddress']) {
                     $libraries[] = [
                         'locationID' => '$$WORK',
-                        'locationDisplay' => $profile['workAddress']
+                        'locationDisplay' => $this->getTranslatableStringForCode(
+                            'pickup_location_work_address',
+                            'pickup_location_work_address'
+                        )
                     ];
                 }
             }
