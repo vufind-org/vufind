@@ -22,7 +22,7 @@
     <div class="profile-text-value"><?=$this->escapeHtml($this->address['address1']) ?></div>
   <?php endif; ?>
 <?php endif; ?>
-<?php if (!empty($this->address['address2']) && !$this->updateAddress): ?>
+<?php if (!empty($this->address['address2'])): ?>
   <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 2:</div>
   <div class="profile-text-value"><?=$this->escapeHtml($this->address['address2']) ?></div>
   <div class="clearfix"></div>
