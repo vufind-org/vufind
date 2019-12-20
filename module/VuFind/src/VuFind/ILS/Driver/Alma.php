@@ -1821,7 +1821,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
-        $desc = (string)($element->attributes()->desc ?? $value);
+        $desc = (string)($element->attributes()->desc ?? $element);
         return new \VuFind\I18n\TranslatableString($value, $desc);
     }
 
@@ -1838,7 +1838,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return null;
         }
         $value = 'status_' . strtolower((string)$element);
-        $desc = (string)($element->attributes()->desc ?? $value);
+        $desc = (string)($element->attributes()->desc ?? $element);
         return new \VuFind\I18n\TranslatableString($value, $desc);
     }
 
