@@ -61,6 +61,10 @@ class FeedbackController extends AbstractBase
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
+        if (!$user && $form->showOnlyForLoggedUsers()) {
+            return $this->forceLogin();
+        }
+
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
         $view->useRecaptcha
             = $this->recaptcha()->active('feedback') && $form->useCaptcha();
