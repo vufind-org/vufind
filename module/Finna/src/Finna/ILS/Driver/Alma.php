@@ -931,7 +931,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         continue 2;
                     }
                 }
-                $unavailableItems[] = $entry;
+                $unavailableItems[] = $item;
             }
 
             $profile = $this->getMyProfile($patron);
