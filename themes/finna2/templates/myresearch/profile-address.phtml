@@ -5,16 +5,16 @@
     <?=implode(', ', array_map(function ($type) { return $this->transEscWithPrefix('address_type_', $type); }, $this->address['types'])) ?>
   </div>
 <?php endif; ?>
-<?php if (!empty($this->address['address1']) || $updateAddress): ?>
-  <?php if ($updateAddress): ?>
+<?php if (!empty($this->address['address1']) || $this->updateAddress): ?>
+  <?php if ($this->updateAddress): ?>
     <div class="my-profile-col profile-title profile-long"><?=$this->transEsc('Address') ?> 1:</div>
     <div class="my-profile-col profile-text-value profile-long"><?=empty($this->address['address1']) ? '' : $this->escapeHtml($this->address['address1']) ?></div>
     <div class="my-profile-col profile-long">
-      <?php if ($needsApproval): ?>
-        <i class="fa fa-info-big"></i> <?=$this->transEsc(($updatePhone || $updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
+      <?php if ($this->needsApproval): ?>
+        <i class="fa fa-info-big"></i> <?=$this->transEsc(($this->updatePhone || $this->updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
         <br/>
       <?php endif; ?>
-      <?=$updateAddressLink ?>
+      <?=$this->updateAddressLink ?>
     </div>
     <div class="clearfix"></div>
   <?php else: ?>
@@ -22,7 +22,7 @@
     <div class="profile-text-value"><?=$this->escapeHtml($this->address['address1']) ?></div>
   <?php endif; ?>
 <?php endif; ?>
-<?php if (!empty($this->address['address2']) && !$updateAddress): ?>
+<?php if (!empty($this->address['address2']) && !$this->updateAddress): ?>
   <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 2:</div>
   <div class="profile-text-value"><?=$this->escapeHtml($this->address['address2']) ?></div>
   <div class="clearfix"></div>
