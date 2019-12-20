@@ -2,7 +2,7 @@
 <?php
 $id = $this->statusItems[0]['id'];
 $driver = $this->record($id)->getDriver();
-$source = $driver->tryMethod('getDataSource');
+$source = $driver ? $driver->tryMethod('getDataSource') : '';
 $locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
@@ -289,7 +289,7 @@ if (!$disableTitleHold
       } elseif ($journal) {
         $link = $this->escapeHtmlAttr($holdingsLink);
       } else {
-        $holdingTitleHold = $driver->tryMethod('getRealTimeTitleHold');
+        $holdingTitleHold = $driver ? $driver->tryMethod('getRealTimeTitleHold') : false;
         if (!empty($holdingTitleHold)) {
           $link = $this->recordLink()->getRequestUrl($holdingTitleHold);
         }
