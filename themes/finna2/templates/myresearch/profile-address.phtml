@@ -1,0 +1,42 @@
+<!-- START of: finna - myresearch/profile-address.phtml -->
+<?php if (!empty($this->address['types'])): ?>
+  <div class="my-profile-col profile-title"><?=$this->transEsc('address_type') ?>:</div>
+  <div class="profile-text-value">
+    <?=implode(', ', array_map(function ($type) { return $this->transEscWithPrefix('address_type_', $type); }, $this->address['types'])) ?>
+  </div>
+<?php endif; ?>
+<?php if (!empty($this->address['address1']) || $updateAddress): ?>
+  <?php if ($updateAddress): ?>
+    <div class="my-profile-col profile-title profile-long"><?=$this->transEsc('Address') ?> 1:</div>
+    <div class="my-profile-col profile-text-value profile-long"><?=empty($this->address['address1']) ? '' : $this->escapeHtml($this->address['address1']) ?></div>
+    <div class="my-profile-col profile-long">
+      <?php if ($needsApproval): ?>
+        <i class="fa fa-info-big"></i> <?=$this->transEsc(($updatePhone || $updateEmail) ? 'request_address_change_title' : 'request_contact_information_change_title') ?>
+        <br/>
+      <?php endif; ?>
+      <?=$updateAddressLink ?>
+    </div>
+    <div class="clearfix"></div>
+  <?php else: ?>
+    <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 1:</div>
+    <div class="profile-text-value"><?=$this->escapeHtml($this->address['address1']) ?></div>
+  <?php endif; ?>
+<?php endif; ?>
+<?php if (!empty($this->address['address2']) && !$updateAddress): ?>
+  <div class="my-profile-col profile-title"><?=$this->transEsc('Address') ?> 2:</div>
+  <div class="profile-text-value"><?=$this->escapeHtml($this->address['address2']) ?></div>
+  <div class="clearfix"></div>
+<?php endif; ?>
+<?php if (!empty($this->address['zip'])): ?>
+  <div class="my-profile-col profile-title"><?=$this->transEsc('Zip') ?>:</div>
+  <div class="profile-text-value"><?=$this->escapeHtml($this->address['zip']) ?></div>
+<?php endif; ?>
+<?php if (!empty($this->address['city'])): ?>
+  <div class="my-profile-col profile-title"><?=$this->transEsc('City') ?>:</div>
+  <div class="profile-text-value"><?=$this->escapeHtml($this->address['city']) ?></div>
+<?php endif; ?>
+<?php if (!empty($this->address['country'])): ?>
+  <div class="my-profile-col profile-title"><?=$this->transEsc('Country') ?>:</div>
+  <div class="profile-text-value"><?=$this->transEsc($this->address['country']) ?></div>
+<?php endif; ?>
+<!-- END of: finna - myresearch/profile-address.phtml -->
