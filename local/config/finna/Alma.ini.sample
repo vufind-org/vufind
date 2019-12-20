@@ -211,14 +211,23 @@ method = driver
 ; Default is address, zip, city, country and pin. Email and phone are included unless
 ; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
 ; fields can be defined.
-fields[] = Address:address1
-fields[] = Address2:address2
-fields[] = Zip:zip
-fields[] = City:city
-fields[] = Country:country
-fields[] = Email:email
-fields[] = Phone:phone
-fields[] = self_service_pin:self_service_pin:pin4
+fields[] = "address_type:addresses[0][types]:multiselect"
+fields[] = "address_preferred:addresses[0][preferred]:boolean"
+fields[] = "Address:addresses[0][address1]"
+fields[] = "Address2:addresses[0][address2]"
+fields[] = "Zip:addresses[0][zip]"
+fields[] = "City:addresses[0][city]"
+fields[] = "Country:addresses[0][country]"
+fields[] = "address_type:addresses[1][types]:multiselect"
+fields[] = "address_preferred:addresses[1][preferred]:boolean"
+fields[] = "Address:addresses[1][address1]"
+fields[] = "Address2:addresses[1][address2]"
+fields[] = "Zip:addresses[1][zip]"
+fields[] = "City:addresses[1][city]"
+fields[] = "Country:addresses[1][country]"
+fields[] = "Email:email"
+fields[] = "Phone:phone"
+fields[] = "self_service_pin:self_service_pin:pin4"
 ; url is required for the url method. url can be a single address or an array of
 ; language-specific addresses. First example is a single one:
 ;url = http://address.of.change.form

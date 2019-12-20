@@ -258,41 +258,42 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $contact = $xml->contact_info;
         if ($contact) {
             if ($contact->addresses) {
-                $address = null;
+                $profile['addresses'] = [];
                 foreach ($contact->addresses->address as $item) {
-                    if ('true' === (string)$item['preferred']) {
-                        $address = $item;
+                    $address = [
+                        'preferred' => 'true' === (string)$item['preferred'],
+                        'types' => [],
+                        'address1' => (string)($item->line1 ?? ''),
+                        'address2' => (string)($item->line2 ?? ''),
+                        'address3' => (string)($item->line3 ?? ''),
+                        'zip' => (string)($item->postal_code ?? ''),
+                        'city' => (string)($item->city ?? ''),
+                    ];
+                    foreach ($item->address_types->address_type as $type) {
+                        $address['types'][] = (string)$type;
+                    }
+                    if (!empty($item->country)) {
+                        $address['country'] = new \VuFind\I18n\TranslatableString(
+                            (string)$item->country,
+                            (string)$item->country->attributes()->desc
+                        );
+                    } else {
+                        $address['country'] = '';
+                    }
+                    $profile['addresses'][] = $address;
+                }
+
+                // Copy preferred address to the basic fields
+                foreach ($profile['addresses'] as $address) {
+                    if (!empty($address['preferred'])) {
+                        foreach ($address as $key => $value) {
+                            $profile[$key] = $value;
+                        }
                         break;
                     }
                 }
-                if (null === $address) {
-                    $address = $contact->addresses[0]->address[0];
-                }
-                $profile['address1'] =  isset($address->line1)
-                                            ? (string)$address->line1
-                                            : null;
-                $profile['address2'] =  isset($address->line2)
-                                            ? (string)$address->line2
-                                            : null;
-                $profile['address3'] =  isset($address->line3)
-                                            ? (string)$address->line3
-                                            : null;
-                $profile['zip']      =  isset($address->postal_code)
-                                            ? (string)$address->postal_code
-                                            : null;
-                $profile['city']     =  isset($address->city)
-                                            ? (string)$address->city
-                                            : null;
-                if (!empty($address->country)) {
-                    $profile['country'] = new \VuFind\I18n\TranslatableString(
-                        (string)$address->country,
-                        (string)$address->country->attributes()->desc
-                    );
-                } else {
-                    $profile['country'] = null;
-                }
 
-                // Check if the user has a work and/or home address
+                // Check if the user has a work and/or home address for hold pickup
                 foreach ($contact->addresses->address as $item) {
                     foreach ($item->address_types->address_type ?? [] as $type) {
                         $parts = [
@@ -515,8 +516,58 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $address['preferred'] = 'true';
             foreach ($details as $key => $value) {
                 if (isset($addressMapping[$key])) {
-                    $address->addChild($addressMapping[$key], $value);
+                    $address->addChild($addressMapping[$key], trim($value));
                 }
+            }
+        } else {
+            // Multiple address support
+            $addresses = array_reverse(array_values($details['addresses'] ?? []));
+            // Make sure we only have a single preferred address
+            $hasPreferred = false;
+            foreach ($addresses as &$address) {
+                if (!empty($address['preferred'])) {
+                    if ($hasPreferred) {
+                        $address['preferred'] = false;
+                    } else {
+                        $hasPreferred = true;
+                    }
+                }
+            }
+            unset($address);
+
+            $index = count($addresses);
+            foreach ($addresses as $newAddress) {
+                --$index;
+                if (!($address = $contact->addresses->address[$index] ?? null)) {
+                    $address = $contact->addresses->addChild('address');
+                }
+                $hasData = false;
+                foreach ($newAddress as $key => $value) {
+                    if (isset($addressMapping[$key])) {
+                        $address->addChild($addressMapping[$key], trim($value));
+                        if (!empty(trim($value))) {
+                            $hasData = true;
+                        }
+                    }
+                }
+                if (!$hasData) {
+                    // Empty fields, remove address
+                    unset($address[0]);
+                    continue;
+                }
+                $addressTypes = $address->address_types ??
+                    $address->addChild('address_types');
+
+                foreach ($newAddress['types'] ?? ['home'] as $type) {
+                    foreach ($addressTypes->address_type as $existing) {
+                        if ((string)$existing === $type) {
+                            continue 2;
+                        }
+                    }
+                    $addressTypes->addChild('address_type', (string)$type);
+                }
+                $address['preferred'] = !empty($newAddress['preferred'])
+                    ? 'true' : 'false';
             }
         }
 
@@ -584,7 +635,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         $overrideFields = [];
         foreach ($details as $key => $value) {
-            $value = trim($value);
+            if (!is_array($value)) {
+                $value = trim($value);
+            }
             if (isset($otherMapping[$key])) {
                 $fieldName = $otherMapping[$key];
                 if ('pin_number' === $fieldName) {
@@ -820,19 +873,44 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     $config['fields'] = $fields;
                 }
             }
-            // Add code tables
+            // Add code tables and choices
             if (!empty($config['fields'])) {
                 foreach ($config['fields'] as &$field) {
                     $parts = explode(':', $field);
                     $fieldId = $parts[1] ?? '';
-                    if ('country' === $fieldId) {
+                    if ('country' === $fieldId
+                        || preg_match('/^addresses\[[0-9]\]\[country\]$/', $fieldId)
+                    ) {
                         $field = [
-                            'field' => 'country',
+                            'field' => $fieldId,
                             'label' => $parts[0],
                             'type' => 'select',
                             'options' => $this->getCodeTableOptions(
                                 'CountryCodes', 'description'
                             ),
+                            'required' => ($parts[3] ?? '') === 'required',
+                        ];
+                    } elseif (preg_match('/^addresses\[[0-9]\]\[types\]$/', $fieldId)
+                    ) {
+                        // Add address types
+                        $field = [
+                            'field' => $fieldId,
+                            'label' => $parts[0],
+                            'type' => 'multiselect',
+                            'options' => [
+                                'home' => [
+                                    'name' => 'address_type_home',
+                                ],
+                                'work' => [
+                                    'name' => 'address_type_work',
+                                ],
+                                'school' => [
+                                    'name' => 'address_type_school',
+                                ],
+                                'alternative' => [
+                                    'name' => 'address_type_alternative',
+                                ],
+                            ],
                             'required' => ($parts[3] ?? '') === 'required',
                         ];
                     }
