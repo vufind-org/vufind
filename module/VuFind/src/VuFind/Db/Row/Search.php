@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Row;
 
+use VuFind\Crypt\HMAC;
+
 /**
  * Row Definition for search
  *
@@ -91,5 +93,54 @@ class Search extends RowGateway
         // string first:
         $this->normalizeSearchObject();
         return parent::save();
+    }
+
+    /**
+     * Set last executed time for scheduled alert.
+     *
+     * @param string $time Time.
+     *
+     * @return mixed
+     */
+    public function setLastExecuted($time)
+    {
+        $this->last_notification_sent = $time;
+        return $this->save();
+    }
+
+    /**
+     * Set schedule for scheduled alert.
+     *
+     * @param int    $schedule Schedule.
+     * @param string $url      Site base URL
+     *
+     * @return mixed
+     */
+    public function setSchedule($schedule, $url = null)
+    {
+        $this->notification_frequency = $schedule;
+        if ($url) {
+            $this->notification_base_url = $url;
+        }
+        return $this->save();
+    }
+
+    /**
+     * Utility function for generating a token for unsubscribing a
+     * saved search.
+     *
+     * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
+     * @param object            $user User object
+     *
+     * @return string token
+     */
+    public function getUnsubscribeSecret(HMAC $hmac, $user)
+    {
+        $data = [
+            'id' => $this->id,
+            'user_id' => $user->id,
+            'created' => $user->created
+        ];
+        return $hmac->generate(array_keys($data), $data);
     }
 }

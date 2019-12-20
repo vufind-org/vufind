@@ -78,11 +78,16 @@ title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
 checksum int DEFAULT NULL,
+notification_frequency int NOT NULL DEFAULT '0',
+last_notification_sent timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+notification_base_url varchar(255) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
 CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
+CREATE INDEX notification_frequency_idx ON search (notification_frequency);
+CREATE INDEX notification_base_url_idx ON search (notification_base_url);
 
 -- --------------------------------------------------------
 
@@ -300,6 +305,24 @@ CONSTRAINT user_card_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELE
 );
 CREATE INDEX user_card_cat_username_idx ON user_card (cat_username);
 CREATE INDEX user_card_user_id_idx ON user_card (user_id);
+
+--
+-- Table structure for table auth_hash
+--
+
+DROP TABLE IF EXISTS "auth_hash";
+
+CREATE TABLE auth_hash (
+id BIGSERIAL,
+session_id varchar(128),
+hash varchar(255),
+type varchar(50),
+data text,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (hash, type)
+);
+CREATE INDEX auth_hash_created_idx on auth_hash(created);
 
 -- --------------------------------------------------------
 

@@ -293,7 +293,7 @@ class PAIA extends DAIA
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
                 $item_id = $element['item'];
-                if ($element['error']) {
+                if ($element['error'] ?? false) {
                     $details[$item_id] = [
                         'success' => false,
                         'status' => $element['error'],
