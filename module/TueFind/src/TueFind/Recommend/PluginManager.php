@@ -1,15 +1,15 @@
 <?php
 
-namespace IxTheo\Recommend;
+namespace TueFind\Recommend;
 
 use Zend\ServiceManager\Factory\InvokableFactory;
 
-class PluginManager extends \TueFind\Recommend\PluginManager {
+class PluginManager extends \VuFind\Recommend\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['bibleranges'] = BibleRanges::class;
-        $this->factories[BibleRanges::class] = InvokableFactory::class;
+        $this->aliases['ids'] = Ids::class;
+        $this->factories[Ids::class] = InvokableFactory::class;
         parent::__construct($configOrContainerInstance, $v3config);
     }
 }
