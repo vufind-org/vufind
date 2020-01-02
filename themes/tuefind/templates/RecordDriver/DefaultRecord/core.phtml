@@ -37,7 +37,8 @@
   -->
   <div class="media-body">
 
-    <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+    <!-- TueFind: Get title from custom RecordDriver function -->
+    <h3 property="name"><?=$this->escapeHtml($this->driver->getTitle())?></h3>
 
     <?php if(!empty($this->extraControls)): ?>
       <?=$this->extraControls['actionControls'] ?? ''?>
