@@ -1,5 +1,5 @@
 <?php $config = $this->config()->get('fulltextsnippet')?>
-<?php if (isset($config->Elasticsearch->base_url) && $this->driver->hasFulltextMatch()): ?>
+<?php if (isset($config->Elasticsearch->base_url) && $this->driver->tryMethod('hasFulltextMatch')): ?>
 <span id="fulltext_snippets">
       <div style="color:grey" id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"><?=$this->transEsc("Loading")?>...</div>
   <script>
