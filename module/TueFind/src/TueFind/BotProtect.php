@@ -37,8 +37,7 @@ class BotProtect {
      */
     static public function ProcessResponse(MvcEvent $event) {
         $response = $event->getResponse();
-        $content = $response->getContent();
-        $content = preg_replace('"</form>"i', '<input name="'.self::BOT_PROTECT_FIELD.'" class="'.self::BOT_PROTECT_FIELD.'" type="text"></input></form>', $content);
+        $content = preg_replace('"</form>"i', '<input name="'.self::BOT_PROTECT_FIELD.'" class="'.self::BOT_PROTECT_FIELD.'" type="text"></input></form>', $response->getContent());
         $response->setContent($content);
     }
 }
