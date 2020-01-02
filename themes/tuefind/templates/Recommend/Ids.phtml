@@ -1,0 +1,6 @@
+<?php if ($this->recommend->searchQueryContainsDistinctId()): ?>
+  <?php $id = $this->recommend->getSearchedId(); ?>
+  <div class="alert alert-info">
+    <?=$this->translate('recommend_ids')?> <a href="<?=$this->recommend->getResults()->getUrlQuery()->setSearchTerms('ids:' . $id)?>">ids:<?=$id?></a>
+  </div>
+<?php endif; ?>
