@@ -39,7 +39,8 @@ namespace VuFind\MetadataVocabulary;
  * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractBase implements MetadataVocabularyInterface
-{   
+{
+
     /**
      * This varriable can be overwritten by child classes
      * to define which custom field is filled by which generic fields.
@@ -57,9 +58,13 @@ abstract class AbstractBase implements MetadataVocabularyInterface
      */
     protected function getGenericData(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        return ['author' => array_unique(array_merge($driver->tryMethod('getPrimaryAuthors'),
-                                                     $driver->tryMethod('getSecondaryAuthors'),
-                                                     $driver->tryMethod('getCorporateAuthors'))),
+        return ['author' => array_unique(
+                    array_merge(
+                        $driver->tryMethod('getPrimaryAuthors'),
+                        $driver->tryMethod('getSecondaryAuthors'),
+                        $driver->tryMethod('getCorporateAuthors')
+                    )
+                ),
                 'container_title' => $driver->tryMethod('getContainerTitle'),
                 'date' => $driver->tryMethod('getPublicationDates'),
                 'doi' => $driver->tryMethod('getCleanDOI'),
@@ -88,16 +93,19 @@ abstract class AbstractBase implements MetadataVocabularyInterface
         $mappedData = [];
         
         foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genericFields) {
-            if (!is_array($genericFields))
+            if (!is_array($genericFields)) {
                 $genericFields = [$genericFields];
+            }
             foreach ($genericFields as $genericField) {
                 $genericValues = $genericData[$genericField] ?? [];
                 if ($genericValues) {
-                    if (!is_array($genericValues))
+                    if (!is_array($genericValues)) {
                         $genericValues = [$genericValues];
+                    }
                     foreach ($genericValues as $genericValue) {
-                        if (!isset($mappedData[$vocabField]))
+                        if (!isset($mappedData[$vocabField])) {
                             $mappedData[$vocabField] = [];
+                        }
                         $mappedData[$vocabField][] = $genericValue;
                     }
                 }

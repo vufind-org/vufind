@@ -44,9 +44,9 @@ class MetadataFactory implements FactoryInterface
     /**
      * Create an object
      * 
-     * @param ContainerInterface $container         Service Manager
-     * @param type $requestedName                   Service being created
-     * @param null|array $options                   Extra options (optional)
+     * @param ContainerInterface $container     Service Manager
+     * @param type               $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      * 
      * @return object
      * 

@@ -59,7 +59,8 @@ class Eprints extends AbstractBase
      * 
      * @return array
      */
-    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver) {
+    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
+    {
         $mappedData = parent::getMappedData($driver);
 
         // special handling for pagerange
@@ -68,8 +69,9 @@ class Eprints extends AbstractBase
         if ($startpage) {
             $pagerange = $startpage;
             $endpage = $driver->tryMethod('getContainerEndPage');
-            if ($endpage != '' && $endpage != $startpage)
+            if ($endpage != '' && $endpage != $startpage) {
                 $pagerange = $startpage . '-' . $endpage;
+            }
             $mappedData['eprints.pagerange'] = [$pagerange];
         }
         

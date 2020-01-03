@@ -479,7 +479,6 @@ $config = [
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Logger' => 'VuFind\Log\Logger',
             'VuFind\Mailer' => 'VuFind\Mailer\Mailer',
-            'VuFind\MetadataVocabularyPluginManager' => 'VuFind\MetadataVocabulary\PluginManager',
             'VuFind\ProxyConfig' => 'ProxyManager\Configuration',
             'VuFind\Recaptcha' => 'VuFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Recommend\PluginManager',

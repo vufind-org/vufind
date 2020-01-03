@@ -47,11 +47,4 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     {
         $this->defaultNamespace = 'VuFind\MetadataVocabulary';
     }
-    
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        $class = $this->getClassName($requestedName);
-        return new $class();
-    }
 }
