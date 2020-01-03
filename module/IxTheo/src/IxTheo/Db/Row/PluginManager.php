@@ -2,6 +2,8 @@
 
 namespace IxTheo\Db\Row;
 
+use VuFind\Db\Row\RowGatewayFactory;
+
 class PluginManager extends \VuFind\Db\Row\PluginManager {
     /**
      * Constructor
@@ -15,13 +17,13 @@ class PluginManager extends \VuFind\Db\Row\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['IxTheoUser']                        = 'IxTheo\Db\Row\IxTheoUser';
-        $this->aliases['pdasubscription']                   = 'IxTheo\Db\Row\PDASubscription';
-        $this->aliases['subscription']                      = 'IxTheo\Db\Row\Subscription';
+        $this->aliases['IxTheoUser']                        = IxTheoUser::class;
+        $this->aliases['pdasubscription']                   = PDASubscription::class;
+        $this->aliases['subscription']                      = Subscription::class;
 
-        $this->factories['IxTheo\Db\Row\IxTheoUser']        = 'VuFind\Db\Row\RowGatewayFactory';
-        $this->factories['IxTheo\Db\Row\PDASubscription']   = 'VuFind\Db\Row\RowGatewayFactory';
-        $this->factories['IxTheo\Db\Row\Subscription']      = 'VuFind\Db\Row\RowGatewayFactory';
+        $this->factories[IxTheoUser::class]                 = RowGatewayFactory::class;
+        $this->factories[PDASubscription::class]            = RowGatewayFactory::class;
+        $this->factories[Subscription::class]               = RowGatewayFactory::class;
         parent::__construct($configOrContainerInstance, $v3config);
     }
 }

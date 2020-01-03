@@ -2,6 +2,9 @@
 
 namespace TueFind\RecordDriver;
 
+use VuFind\RecordDriver\IlsAwareDelegatorFactory;
+use VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory;
+
 class PluginManager extends \VuFind\RecordDriver\PluginManager {
 
     use \TueFind\PluginManagerExtensionTrait;
@@ -18,19 +21,19 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addOverride('aliases', 'solrauth', 'TueFind\RecordDriver\SolrAuthMarc');
-        $this->addOverride('aliases', 'solrauthdefault', 'TueFind\RecordDriver\SolrAuthMarc');
-        $this->addOverride('aliases', 'solrauthmarc', 'TueFind\RecordDriver\SolrAuthMarc');
-        $this->addOverride('aliases', 'solrdefault', 'TueFind\RecordDriver\SolrDefault');
-        $this->addOverride('aliases', 'solrmarc', 'TueFind\RecordDriver\SolrMarc');
+        $this->addOverride('aliases', 'solrauth', SolrAuthMarc::class);
+        $this->addOverride('aliases', 'solrauthdefault', SolrAuthMarc::class);
+        $this->addOverride('aliases', 'solrauthmarc', SolrAuthMarc::class);
+        $this->addOverride('aliases', 'solrdefault', SolrDefault::class);
+        $this->addOverride('aliases', 'solrmarc', SolrMarc::class);
 
-        $this->addOverride('delegators', 'TueFind\RecordDriver\SolrMarc', 'VuFind\RecordDriver\IlsAwareDelegatorFactory');
+        $this->addOverride('delegators', SolrMarc::class, IlsAwareDelegatorFactory::class);
 
-        $this->addOverride('factories', 'TueFind\RecordDriver\SolrAuth', 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory');
-        $this->addOverride('factories', 'TueFind\RecordDriver\SolrAuthDefault', 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory');
-        $this->addOverride('factories', 'TueFind\RecordDriver\SolrAuthMarc', 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory');
-        $this->addOverride('factories', 'TueFind\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
-        $this->addOverride('factories', 'TueFind\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
+        $this->addOverride('factories', SolrAuth::class, SolrDefaultWithoutSearchServiceFactory::class);
+        $this->addOverride('factories', SolrAuthDefault::class, SolrDefaultWithoutSearchServiceFactory::class);
+        $this->addOverride('factories', SolrAuthMarc::class, SolrDefaultWithoutSearchServiceFactory::class);
+        $this->addOverride('factories', SolrDefault::class, SolrDefaultFactory::class);
+        $this->addOverride('factories', SolrMarc::class, SolrMarcFactory::class);
 
         $this->applyOverrides();
 

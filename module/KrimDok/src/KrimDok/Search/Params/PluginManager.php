@@ -6,8 +6,8 @@ class PluginManager extends \VuFind\Search\Params\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['solr'] = 'KrimDok\Search\Solr\Params';
-        $this->factories['KrimDok\Search\Solr\Params'] = 'VuFind\Search\Solr\ParamsFactory';
+        $this->aliases['solr'] = \KrimDok\Search\Solr\Params::class;
+        $this->factories[\KrimDok\Search\Solr\Params::class] = \VuFind\Search\Solr\ParamsFactory::class;
         parent::__construct($configOrContainerInstance, $v3config);
     }
 }
