@@ -15,11 +15,11 @@ class PluginManager extends \TueFind\RecordDriver\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addOverride('aliases', 'solrdefault', 'IxTheo\RecordDriver\SolrDefault');
-        $this->addOverride('aliases', 'solrmarc', 'IxTheo\RecordDriver\SolrMarc');
+        $this->addOverride('aliases', 'solrdefault', SolrDefault::class);
+        $this->addOverride('aliases', 'solrmarc', SolrMarc::class);
 
-        $this->addOverride('factories', 'IxTheo\RecordDriver\SolrDefault', 'TueFind\RecordDriver\SolrDefaultFactory');
-        $this->addOverride('factories', 'IxTheo\RecordDriver\SolrMarc', 'TueFind\RecordDriver\SolrMarcFactory');
+        $this->addOverride('factories', SolrDefault::class, \TueFind\RecordDriver\SolrDefaultFactory::class);
+        $this->addOverride('factories', SolrMarc::class, \TueFind\RecordDriver\SolrMarcFactory::class);
 
         parent::__construct($configOrContainerInstance, $v3config);
     }
