@@ -52,19 +52,19 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     /**
      * Generate standardized data from available RecordDriver methods
      * 
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
      * @return array
      */
     protected function getGenericData(\VuFind\RecordDriver\AbstractBase $driver)
     {
         return ['author' => array_unique(
-                    array_merge(
-                        $driver->tryMethod('getPrimaryAuthors'),
-                        $driver->tryMethod('getSecondaryAuthors'),
-                        $driver->tryMethod('getCorporateAuthors')
-                    )
-                ),
+            array_merge(
+                $driver->tryMethod('getPrimaryAuthors'),
+                $driver->tryMethod('getSecondaryAuthors'),
+                $driver->tryMethod('getCorporateAuthors')
+            )
+        ),
                 'container_title' => $driver->tryMethod('getContainerTitle'),
                 'date' => $driver->tryMethod('getPublicationDates'),
                 'doi' => $driver->tryMethod('getCleanDOI'),
@@ -83,7 +83,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     /**
      * Perform mapping from generic data to vocabulary data
      * 
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      * 
      * @return array
      */

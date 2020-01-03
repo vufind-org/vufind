@@ -55,7 +55,7 @@ class Eprints extends AbstractBase
     /**
      * Special implementation to combine start / end page in eprints.pagerange
      * 
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      * 
      * @return array
      */

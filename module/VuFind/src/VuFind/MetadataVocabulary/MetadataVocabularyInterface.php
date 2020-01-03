@@ -45,7 +45,7 @@ interface MetadataVocabularyInterface
      * for higher flexibility. That's why all implementations must use
      * "tryMethod" instead of calling the methods directly.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      * 
      * @return array
      */

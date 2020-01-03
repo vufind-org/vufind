@@ -62,9 +62,9 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      * 
-     * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager
-     * @param \Zend\Config\Config                      $config
-     * @param \Zend\View\Helper\HeadMeta               $metaHelper
+     * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
+     * @param \Zend\Config\Config                      $config        Configuration
+     * @param \Zend\View\Helper\HeadMeta               $metaHelper    Head meta helper
      */
     public function __construct(\VuFind\MetadataVocabulary\PluginManager $pluginManager,
         \Zend\Config\Config $config,
@@ -82,7 +82,7 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
      * dependant on configuration. (only by class name,
      * namespace will not be considered)
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      */
     public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver)
     {

@@ -62,7 +62,7 @@ class HighwirePress extends AbstractBase
     /**
      * Special implementation for date formats
      * 
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      * 
      * @return array
      */
