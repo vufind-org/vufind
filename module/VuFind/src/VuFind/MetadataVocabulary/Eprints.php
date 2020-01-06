@@ -43,14 +43,15 @@ class Eprints extends AbstractBase
      *
      * @var array
      */
-    protected $vocabFieldToGenericFieldsMap = ['eprints.creators_name' => 'author',
-                                               'eprints.date' => 'date',
-                                               'eprints.issn' => 'issn',
-                                               'eprints.number' => 'volume',
-                                               'eprints.publication' => 'container_title',
-                                               'eprints.publisher' => 'publisher',
-                                               'eprints.title' => 'title',
-                                            ];
+    protected $vocabFieldToGenericFieldsMap = [
+        'eprints.creators_name' => 'author',
+        'eprints.date' => 'date',
+        'eprints.issn' => 'issn',
+        'eprints.number' => 'volume',
+        'eprints.publication' => 'container_title',
+        'eprints.publisher' => 'publisher',
+        'eprints.title' => 'title',
+    ];
 
     /**
      * Special implementation to combine start / end page in eprints.pagerange

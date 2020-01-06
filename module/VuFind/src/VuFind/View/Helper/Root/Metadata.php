@@ -62,15 +62,15 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
-     * @param \Zend\Config\Config                      $config        Configuration
-     * @param \Zend\View\Helper\HeadMeta               $metaHelper    Head meta helper
+     * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
+     * @param \Zend\Config\Config                      $config     Configuration
+     * @param \Zend\View\Helper\HeadMeta               $metaHelper Head meta helper
      */
-    public function __construct(\VuFind\MetadataVocabulary\PluginManager $pluginManager,
+    public function __construct(\VuFind\MetadataVocabulary\PluginManager $pm,
         \Zend\Config\Config $config,
         \Zend\View\Helper\HeadMeta $metaHelper
     ) {
-        $this->pluginManager = $pluginManager;
+        $this->pluginManager = $pm;
         $this->config = $config;
         $this->metaHelper = $metaHelper;
     }
@@ -83,11 +83,13 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
      * namespace will not be considered)
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return void
      */
     public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        $recordDriverConfigurations = $this->config->Vocabularies ?? [];
-        foreach ($recordDriverConfigurations as $recordDriverClassName => $metatagTypes) {
+        $recordDriverConfigs = $this->config->Vocabularies ?? [];
+        foreach ($recordDriverConfigs as $recordDriverClassName => $metatagTypes) {
             if ($driver instanceof $recordDriverClassName) {
                 foreach ($metatagTypes as $metatagType) {
                     $vocabulary = $this->pluginManager->get($metatagType);

@@ -57,25 +57,26 @@ abstract class AbstractBase implements MetadataVocabularyInterface
      */
     protected function getGenericData(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        return ['author' => array_unique(
-            array_merge(
-                $driver->tryMethod('getPrimaryAuthors'),
-                $driver->tryMethod('getSecondaryAuthors'),
-                $driver->tryMethod('getCorporateAuthors')
-            )
-        ),
-                'container_title' => $driver->tryMethod('getContainerTitle'),
-                'date' => $driver->tryMethod('getPublicationDates'),
-                'doi' => $driver->tryMethod('getCleanDOI'),
-                'endpage' => $driver->tryMethod('getContainerEndPage'),
-                'isbn' => $driver->tryMethod('getCleanISBN'),
-                'issn' => $driver->tryMethod('getCleanISSN'),
-                'issue' => $driver->tryMethod('getContainerIssue'),
-                'language' => $driver->tryMethod('getLanguages'),
-                'publisher' => $driver->tryMethod('getPublishers'),
-                'startpage' => $driver->tryMethod('getContainerStartPage'),
-                'title' => $driver->tryMethod('getTitle'),
-                'volume' => $driver->tryMethod('getContainerVolume'),
+        return [
+            'author' => array_unique(
+                array_merge(
+                    $driver->tryMethod('getPrimaryAuthors'),
+                    $driver->tryMethod('getSecondaryAuthors'),
+                    $driver->tryMethod('getCorporateAuthors')
+                )
+            ),
+            'container_title' => $driver->tryMethod('getContainerTitle'),
+            'date' => $driver->tryMethod('getPublicationDates'),
+            'doi' => $driver->tryMethod('getCleanDOI'),
+            'endpage' => $driver->tryMethod('getContainerEndPage'),
+            'isbn' => $driver->tryMethod('getCleanISBN'),
+            'issn' => $driver->tryMethod('getCleanISSN'),
+            'issue' => $driver->tryMethod('getContainerIssue'),
+            'language' => $driver->tryMethod('getLanguages'),
+            'publisher' => $driver->tryMethod('getPublishers'),
+            'startpage' => $driver->tryMethod('getContainerStartPage'),
+            'title' => $driver->tryMethod('getTitle'),
+            'volume' => $driver->tryMethod('getContainerVolume'),
         ];
     }
 
@@ -91,11 +92,8 @@ abstract class AbstractBase implements MetadataVocabularyInterface
         $genericData = $this->getGenericData($driver);
         $mappedData = [];
 
-        foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genericFields) {
-            if (!is_array($genericFields)) {
-                $genericFields = [$genericFields];
-            }
-            foreach ($genericFields as $genericField) {
+        foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genFields) {
+            foreach ((array)$genFields as $genericField) {
                 $genericValues = $genericData[$genericField] ?? [];
                 if ($genericValues) {
                     if (!is_array($genericValues)) {
