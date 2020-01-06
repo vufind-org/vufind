@@ -41,7 +41,7 @@ class HighwirePress extends AbstractBase
     /**
      * Mapping from Highwire Press to VuFind fields
      * see https://jira.duraspace.org/secure/attachment/13020/Invisible_institutional.pdf
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = ['citation_author' => 'author',
@@ -58,12 +58,12 @@ class HighwirePress extends AbstractBase
                                                'citation_title' => 'title',
                                                'citation_volume' => 'volume',
                                             ];
-    
+
     /**
      * Special implementation for date formats
-     * 
+     *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * 
+     *
      * @return array
      */
     public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
@@ -80,7 +80,7 @@ class HighwirePress extends AbstractBase
                 }
             }
         }
-        
+
         return $mappedData;
     }
 }

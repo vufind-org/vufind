@@ -40,18 +40,17 @@ namespace VuFind\MetadataVocabulary;
  */
 abstract class AbstractBase implements MetadataVocabularyInterface
 {
-
     /**
      * This varriable can be overwritten by child classes
      * to define which custom field is filled by which generic fields.
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = [];
-    
+
     /**
      * Generate standardized data from available RecordDriver methods
-     * 
+     *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
      * @return array
@@ -79,19 +78,19 @@ abstract class AbstractBase implements MetadataVocabularyInterface
                 'volume' => $driver->tryMethod('getContainerVolume'),
         ];
     }
-    
+
     /**
      * Perform mapping from generic data to vocabulary data
-     * 
+     *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * 
+     *
      * @return array
      */
     public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $genericData = $this->getGenericData($driver);
         $mappedData = [];
-        
+
         foreach ($this->vocabFieldToGenericFieldsMap as $vocabField => $genericFields) {
             if (!is_array($genericFields)) {
                 $genericFields = [$genericFields];
@@ -111,7 +110,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
                 }
             }
         }
-        
+
         return $mappedData;
     }
 }

@@ -46,7 +46,7 @@ interface MetadataVocabularyInterface
      * "tryMethod" instead of calling the methods directly.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * 
+     *
      * @return array
      */
     public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver);

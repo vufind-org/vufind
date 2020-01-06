@@ -41,7 +41,7 @@ class BEPress extends AbstractBase
     /**
      * Mapping from BEPress to VuFind fields
      * see http://div.div1.com.au/div-thoughts/div-commentaries/66-div-commentary-metadata
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = ['bepress_citation_author' => 'author',

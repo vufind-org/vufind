@@ -40,28 +40,28 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Metadata configuration entries
-     * 
+     *
      * @var \Zend\Config\Config
      */
     protected $config;
-    
+
     /**
      * Zend meta helper, used to embed html tags in the generated page
-     * 
+     *
      * @var \Zend\View\Helper\HeadMeta
      */
     protected $metaHelper;
-    
+
     /**
      * Plugin Manager for vocabularies
-     * 
+     *
      * @var \VuFind\MetadataVocabulary\PluginManager
      */
     protected $pluginManager;
 
     /**
      * Constructor
-     * 
+     *
      * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
      * @param \Zend\Config\Config                      $config        Configuration
      * @param \Zend\View\Helper\HeadMeta               $metaHelper    Head meta helper
@@ -77,7 +77,7 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Generate all metatags for RecordDriver and add to page
-     * 
+     *
      * Decide which Plugins to load for the given RecordDriver
      * dependant on configuration. (only by class name,
      * namespace will not be considered)

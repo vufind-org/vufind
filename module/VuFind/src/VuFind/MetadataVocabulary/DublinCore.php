@@ -40,7 +40,7 @@ class DublinCore extends AbstractBase
 {
     /**
      * Mapping from Dublin Core to VuFind fields
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = ['DC.citation.epage' => 'endpage',

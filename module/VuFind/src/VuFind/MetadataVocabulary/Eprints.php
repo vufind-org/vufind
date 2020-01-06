@@ -40,7 +40,7 @@ class Eprints extends AbstractBase
 {
     /**
      * Mapping from Eprints to VuFind fields
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = ['eprints.creators_name' => 'author',
@@ -54,9 +54,9 @@ class Eprints extends AbstractBase
 
     /**
      * Special implementation to combine start / end page in eprints.pagerange
-     * 
+     *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * 
+     *
      * @return array
      */
     public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
@@ -74,7 +74,7 @@ class Eprints extends AbstractBase
             }
             $mappedData['eprints.pagerange'] = [$pagerange];
         }
-        
+
         return $mappedData;
     }
 }
