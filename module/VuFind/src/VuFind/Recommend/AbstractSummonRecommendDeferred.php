@@ -118,7 +118,7 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
 
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
-        $this->lookfor =  $request->get($lookforParam, '');
+        $this->lookfor = $request->get($lookforParam, '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

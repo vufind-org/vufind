@@ -775,46 +775,46 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return [];
         }
         $profile = [
-            'firstname'  => (isset($xml->first_name))
-                                ? (string)$xml->first_name
-                                : null,
-            'lastname'   => (isset($xml->last_name))
-                                ? (string)$xml->last_name
-                                : null,
-            'group'      => isset($xml->user_group)
-                                ? $this->getTranslatableString($xml->user_group)
-                                : null,
+            'firstname' => (isset($xml->first_name))
+                ? (string)$xml->first_name
+                : null,
+            'lastname' => (isset($xml->last_name))
+                ? (string)$xml->last_name
+                : null,
+            'group' => isset($xml->user_group)
+                ? $this->getTranslatableString($xml->user_group)
+                : null,
             'group_code' => (isset($xml->user_group))
-                                ? (string)$xml->user_group
-                                : null
+                ? (string)$xml->user_group
+                : null
         ];
         $contact = $xml->contact_info;
         if ($contact) {
             if ($contact->addresses) {
                 $address = $contact->addresses[0]->address;
-                $profile['address1'] =  (isset($address->line1))
-                                            ? (string)$address->line1
-                                            : null;
-                $profile['address2'] =  (isset($address->line2))
-                                            ? (string)$address->line2
-                                            : null;
-                $profile['address3'] =  (isset($address->line3))
-                                            ? (string)$address->line3
-                                            : null;
-                $profile['zip']      =  (isset($address->postal_code))
-                                            ? (string)$address->postal_code
-                                            : null;
-                $profile['city']     =  (isset($address->city))
-                                            ? (string)$address->city
-                                            : null;
-                $profile['country']  =  (isset($address->country))
-                                            ? (string)$address->country
-                                            : null;
+                $profile['address1'] = (isset($address->line1))
+                    ? (string)$address->line1
+                    : null;
+                $profile['address2'] = (isset($address->line2))
+                    ? (string)$address->line2
+                    : null;
+                $profile['address3'] = (isset($address->line3))
+                    ? (string)$address->line3
+                    : null;
+                $profile['zip'] = (isset($address->postal_code))
+                    ? (string)$address->postal_code
+                    : null;
+                $profile['city'] = (isset($address->city))
+                    ? (string)$address->city
+                    : null;
+                $profile['country'] = (isset($address->country))
+                    ? (string)$address->country
+                    : null;
             }
             if ($contact->phones) {
                 $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                                   ? (string)$contact->phones[0]->phone->phone_number
-                                   : null;
+                    ? (string)$contact->phones[0]->phone->phone_number
+                    : null;
             }
             $profile['email'] = $this->getPreferredEmail($xml);
         }

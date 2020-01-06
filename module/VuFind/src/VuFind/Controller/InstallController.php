@@ -475,9 +475,9 @@ class InstallController extends AbstractBase
     {
         // Special case: PostgreSQL:
         if ($view->driver == 'pgsql') {
-            $grantTables =  "GRANT ALL PRIVILEGES ON ALL TABLES IN "
+            $grantTables = "GRANT ALL PRIVILEGES ON ALL TABLES IN "
                 . "SCHEMA public TO {$view->dbuser} ";
-            $grantSequences =  "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
+            $grantSequences = "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
                 . " IN SCHEMA public TO {$view->dbuser} ";
             return [$grantTables, $grantSequences];
         }
