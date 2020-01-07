@@ -41,7 +41,7 @@ class PRISM extends AbstractBase
     /**
      * Mapping from Highwire Press to VuFind fields
      * see https://www.idealliance.org/prism-metadata
-     * 
+     *
      * @var array
      */
     protected $vocabFieldToGenericFieldsMap = ['prism.doi' => 'doi',

@@ -27,8 +27,6 @@
  */
 namespace VuFind\MetadataVocabulary;
 
-use Interop\Container\ContainerInterface;
-
 /**
  * Metadata vocabulary plugin factory
  *

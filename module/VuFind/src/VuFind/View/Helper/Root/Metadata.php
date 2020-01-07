@@ -40,54 +40,56 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Metadata configuration entries
-     * 
+     *
      * @var \Zend\Config\Config
      */
     protected $config;
-    
+
     /**
      * Zend meta helper, used to embed html tags in the generated page
-     * 
+     *
      * @var \Zend\View\Helper\HeadMeta
      */
     protected $metaHelper;
-    
+
     /**
      * Plugin Manager for vocabularies
-     * 
+     *
      * @var \VuFind\MetadataVocabulary\PluginManager
      */
     protected $pluginManager;
 
     /**
      * Constructor
-     * 
-     * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
-     * @param \Zend\Config\Config                      $config        Configuration
-     * @param \Zend\View\Helper\HeadMeta               $metaHelper    Head meta helper
+     *
+     * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
+     * @param \Zend\Config\Config                      $config     Configuration
+     * @param \Zend\View\Helper\HeadMeta               $metaHelper Head meta helper
      */
-    public function __construct(\VuFind\MetadataVocabulary\PluginManager $pluginManager,
+    public function __construct(\VuFind\MetadataVocabulary\PluginManager $pm,
         \Zend\Config\Config $config,
         \Zend\View\Helper\HeadMeta $metaHelper
     ) {
-        $this->pluginManager = $pluginManager;
+        $this->pluginManager = $pm;
         $this->config = $config;
         $this->metaHelper = $metaHelper;
     }
 
     /**
      * Generate all metatags for RecordDriver and add to page
-     * 
+     *
      * Decide which Plugins to load for the given RecordDriver
      * dependant on configuration. (only by class name,
      * namespace will not be considered)
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return void
      */
     public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        $recordDriverConfigurations = $this->config->Vocabularies ?? [];
-        foreach ($recordDriverConfigurations as $recordDriverClassName => $metatagTypes) {
+        $recordDriverConfigs = $this->config->Vocabularies ?? [];
+        foreach ($recordDriverConfigs as $recordDriverClassName => $metatagTypes) {
             if ($driver instanceof $recordDriverClassName) {
                 foreach ($metatagTypes as $metatagType) {
                     $vocabulary = $this->pluginManager->get($metatagType);
