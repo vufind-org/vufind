@@ -1255,28 +1255,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
 
                 // Add information to the renewal array
-                $blocks = false;
-                $renewal[$loanId]['success'] = true;
-                $renewal[$loanId]['new_date'] = $this->parseDate(
-                    (string)$apiResult->due_date,
-                    true
-                );
-                //$renewal[$loanId]['new_time'] = ;
-                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
-                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->parseDate(
+                        (string)$apiResult->due_date,
+                        true
+                    ),
+                    'item_id' => (string)$apiResult->loan_id,
+                    'sysMessage' => 'renew_success'
+                ];
 
                 // Add the renewal to the return array
-                $returnArray['details'] = $renewal;
+                $returnArray['details'][$loanId] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
-                $returnArray['details'] = $renewal;
-
-                // Add a message that can be translated
-                $blocks[] = 'renew_fail';
+                $returnArray['details'][$loanId] = [
+                    'success' => false
+                ];
             }
         }
-
-        $returnArray['blocks'] = $blocks;
 
         return $returnArray;
     }
