@@ -15,7 +15,7 @@ class ReCaptcha extends \Zend\Captcha\Image
         $this->setLineNoiseLevel(3); // default: 5
 
         $id = $this->generate();
-        $imgUrl = 'cache/' . basename(getenv('VUFIND_LOCAL_DIR')) . '/' . $id . $this->getSuffix();
+        $imgUrl = '/cache/' . basename(getenv('VUFIND_LOCAL_DIR')) . '/' . $id . $this->getSuffix();
         $html = '<img src="'.$imgUrl.'">';
         $html .= '<br/><br/>';
         $html .= '<input name="captcha-input"required="required">';
