@@ -476,13 +476,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $sort = explode(
                 ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
             );
-            if ($sort[0] == 'checkout') {
-                $sortKey = 'issuedate';
-            } elseif ($sort[0] == 'title') {
-                $sortKey = 'title';
-            } else {
-                $sortKey = 'date_due';
-            }
+            $sortKey = $this->getSortParamValue($sort[0], 'date_due');
             $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
 
             $pageSize = $params['limit'] ?? 50;
@@ -648,13 +642,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $sort = explode(
             ' ', !empty($params['sort']) ? $params['sort'] : 'checkout desc', 2
         );
-        if ($sort[0] == 'checkout') {
-            $sortKey = 'issuedate';
-        } elseif ($sort[0] == 'return') {
-            $sortKey = 'returndate';
-        } else {
-            $sortKey = 'date_due';
-        }
+        $sortKey = $this->getSortParamValue($sort[0], 'date_due');
         $direction = (isset($sort[1]) && 'desc' === $sort[1]) ? 'desc' : 'asc';
 
         $pageSize = $params['limit'] ?? 50;
@@ -1484,6 +1472,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
                     'checkout asc' => 'sort_checkout_date_asc',
+                    'lastrenewed desc' => 'sort_lastrenewed_date_desc',
+                    'lastrenewed asc' => 'sort_lastrenewed_date_asc',
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
@@ -2366,5 +2356,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
         return [$biblionumber, $title, $volume];
+    }
+
+    /**
+     * Converts given key to corresponding parameter
+     *
+     * @param string $key     to convert
+     * @param string $default value to return
+     *
+     * @return string
+     */
+    public function getSortParamValue($key, $default = '')
+    {
+        $params = [
+            'checkout' => 'issuedate',
+            'return' => 'returndate',
+            'lastrenewed' => 'lastreneweddate',
+            'title' => 'title'
+        ];
+
+        return $params[$key] ?? $default;
     }
 }
