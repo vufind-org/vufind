@@ -356,8 +356,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         }
 
         // Display '****' as a hint that the field is available to update..
-        $fieldConfig = isset($this->config['updateProfile']['fields'])
-            ? $this->config['updateProfile']['fields'] : [];
+        $fieldConfig = $this->getUpdateProfileFields();
         foreach ($fieldConfig as $field) {
             $parts = explode(':', $field);
             if (($parts[1] ?? '') === 'self_service_pin') {
@@ -462,8 +461,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $hasAddress = false;
         $hasPhone = false;
         $hasEmail = false;
-        $fieldConfig = isset($this->config['updateProfile']['fields'])
-            ? $this->config['updateProfile']['fields'] : [];
+        $fieldConfig = $this->getUpdateProfileFields();
         foreach ($fieldConfig as $field) {
             $parts = explode(':', $field);
             if (isset($parts[1])) {
@@ -856,6 +854,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         }
         $config = parent::getConfig($function, $params);
         if ('updateProfile' === $function && isset($config['fields'])) {
+            $config['fields'] = $this->getUpdateProfileFields();
             // Allow only a limited set of fields for external users
             if (isset($params['patron'])) {
                 $profile = $this->getMyProfile($params['patron']);
@@ -2217,5 +2216,28 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$code;
         return new \VuFind\I18n\TranslatableString($value, $description);
+    }
+
+    /**
+     * Get fields available for profile update
+     *
+     * @return array
+     */
+    protected function getUpdateProfileFields()
+    {
+        $fieldConfig = isset($this->config['updateProfile']['fields'])
+            ? $this->config['updateProfile']['fields'] : [];
+        if ($disabled = ($this->config['updateProfile']['disabledFields'] ?? '')) {
+            $result = [];
+            $disabled = explode(':', $disabled);
+            foreach ($fieldConfig as $field) {
+                $parts = explode(':', $field);
+                if (!in_array($parts[1] ?? '', $disabled)) {
+                    $result[] = $field;
+                }
+            }
+            return $result;
+        }
+        return $fieldConfig;
     }
 }
