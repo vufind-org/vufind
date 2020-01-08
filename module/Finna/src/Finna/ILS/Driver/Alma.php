@@ -1195,7 +1195,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             '/request_options/request_option//type'
         );
         foreach ($requestTypes as $requestType) {
-            if (in_array((string)$requestType, ['HOLD', 'PURCHASE'])) {
+            if (in_array((string)$requestType, ['HOLD'])) {
                 $result = true;
                 break;
             }
