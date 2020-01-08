@@ -154,9 +154,10 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         // Connect to the ILS and check if it supports changing password
         $catalog = $this->getILS();
-        if (!$catalog->checkFunction('changePassword', ['card' => $card->toArray()])
-        ) {
-            throw new \Exception('Changing password not supported for this card');
+        if (!$catalog->checkFunction('changePassword', $card->toArray())) {
+            $this->flashMessenger()
+                ->addErrorMessage('Changing password not supported for this card');
+            return $this->createViewModel();
         }
         // It's not exactly correct to send a card to getPasswordPolicy, but it has
         // the required fields..
