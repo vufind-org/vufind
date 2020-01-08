@@ -112,17 +112,23 @@ class Bootstrapper
             }
             // Check if the action should be prevented
             $routeMatch = $event->getRouteMatch();
-            $controller = $routeMatch->getParam('controller');
-            $action = $routeMatch->getParam('action');
-            if (($controller == 'AJAX' && $action != 'SystemStatus')
-                || ($controller == 'Record' && $action == 'AjaxTab')
-                || ($controller == 'Record' && $action == 'Holdings')
-                || ($controller == 'Record' && $action == 'Details')
-                || ($controller == 'Record' && $action == 'Map')
-                || ($controller == 'Record' && $action == 'UserComments')
-                || ($controller == 'Record' && $action == 'Similar')
-                || ($controller == 'QRCode')
-                || ($controller == 'OAI')
+            $controller = strtolower($routeMatch->getParam('controller'));
+            $action = strtolower($routeMatch->getParam('action'));
+            if (($controller == 'ajax' && $action != 'systemstatus')
+                || ($controller == 'record' && $action == 'ajaxtab')
+                || ($controller == 'record' && $action == 'holdings')
+                || ($controller == 'record' && $action == 'details')
+                || ($controller == 'record' && $action == 'map')
+                || ($controller == 'record' && $action == 'usercomments')
+                || ($controller == 'record' && $action == 'similar')
+                || ($controller == 'qrcode')
+                || ($controller == 'oai')
+                || ($controller == 'pci' && $action == 'search')
+                || ($controller == 'primo' && $action == 'search')
+                || ($controller == 'primorecord')
+                || ($controller == 'eds' && $action == 'search')
+                || ($controller == 'edsrecord')
+                || ($controller == 'search' && $action == 'blended')
             ) {
                 $response = $event->getResponse();
                 $response->setStatusCode(403);
