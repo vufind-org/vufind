@@ -209,8 +209,8 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
                 );
             } catch (\Exception $e) {
                 $this->handleError(
-                    'getOrganisationInfo: '
-                    . "error reading organisation info (parent $parent)",
+                    'getOrganisationInfo: error reading organisation info (parent '
+                    . print_r($parent, true) . ')',
                     $e->getMessage()
                 );
                 continue;
