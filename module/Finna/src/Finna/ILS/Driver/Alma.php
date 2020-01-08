@@ -1338,11 +1338,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 ?? 'hold_error_fail';
         }
 
-        if ('Missing mandatory field: Description.' === $errorMsg) {
-            $errorMsg = $this->translate('This field is required') . ': '
-                . $this->translate('hold_issue');
-        }
-
         return [
             'success' => false,
             'sysMessage' => $errorMsg
