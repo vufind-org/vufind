@@ -54,11 +54,22 @@ class Form extends \Zend\Form\Form implements
     protected $inputFilter;
 
     /**
-     * Validation messages
+     * Default, untranslated validation messages
      *
      * @var array
      */
-    protected $messages;
+    protected $defaultMessages = [
+        'empty' => 'This field is required',
+        'invalid_email' => 'Email address is invalid',
+    ];
+
+    /**
+     * In-use, translated validation messages (override values in $defaultMessages,
+     * not here).
+     *
+     * @var array
+     */
+    protected $messages = [];
 
     /**
      * Default form config (from config.ini > Feedback)
@@ -117,13 +128,6 @@ class Form extends \Zend\Form\Form implements
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
-
-        $this->messages = [];
-        $this->messages['empty']
-            = $this->translate('This field is required');
-
-        $this->messages['invalid_email']
-            = $this->translate('Email address is invalid');
 
         $this->formElementConfig
             = $this->parseConfig($formId, $config);
@@ -637,6 +641,23 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
+     * Get validation message
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getValidationMessage($messageId)
+    {
+        if (!isset($this->messages[$messageId])) {
+            $this->messages[$messageId] = $this->translate(
+                $this->defaultMessages[$messageId] ?? $messageId
+            );
+        }
+        return $this->messages[$messageId];
+    }
+
+    /**
      * Retrieve input filter used by this form
      *
      * @return \Zend\InputFilter\InputFilterInterface
@@ -653,14 +674,14 @@ class Form extends \Zend\Form\Form implements
             'email' => [
                 'name' => EmailAddress::class,
                 'options' => [
-                    'message' => $this->messages['invalid_email']
+                    'message' => $this->getValidationMessage('invalid_email'),
                 ]
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
-                        NotEmpty::IS_EMPTY => $this->messages['empty']
+                        NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
                     ]
                 ]
             ]
