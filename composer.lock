@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "66e184990399684a54fb89dd3451f7b6",
+    "content-hash": "1476f9220255d95172186393c4c6c832",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1520,21 +1520,20 @@
         },
         {
             "name": "phing/phing",
-            "version": "2.16.1",
+            "version": "2.16.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phingofficial/phing.git",
-                "reference": "cbe0f969e434e269af91b4160b86fe899c6e07c7"
+                "reference": "d11c6328c450cb3cda4ffa6548aa9cd60f30dd17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phingofficial/phing/zipball/cbe0f969e434e269af91b4160b86fe899c6e07c7",
-                "reference": "cbe0f969e434e269af91b4160b86fe899c6e07c7",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/d11c6328c450cb3cda4ffa6548aa9cd60f30dd17",
+                "reference": "d11c6328c450cb3cda4ffa6548aa9cd60f30dd17",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2.0",
-                "symfony/yaml": "^3.1 || ^4.0"
+                "php": ">=5.2.0"
             },
             "require-dev": {
                 "ext-pdo_sqlite": "*",
@@ -1554,7 +1553,8 @@
                 "sebastian/phpcpd": "2.x",
                 "siad007/versioncontrol_hg": "^1.0",
                 "simpletest/simpletest": "^1.1",
-                "squizlabs/php_codesniffer": "~2.2"
+                "squizlabs/php_codesniffer": "~2.2",
+                "symfony/yaml": "^2.8 || ^3.1 || ^4.0"
             },
             "suggest": {
                 "pdepend/pdepend": "PHP version of JDepend",
@@ -1589,7 +1589,7 @@
                 "classes"
             ],
             "license": [
-                "LGPL-3.0"
+                "LGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -1609,7 +1609,7 @@
                 "task",
                 "tool"
             ],
-            "time": "2018-01-25T13:18:09+00:00"
+            "time": "2020-01-03T10:18:48+00:00"
         },
         {
             "name": "psr/cache",
@@ -5787,16 +5787,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v2.15.1",
+            "version": "v2.16.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "20064511ab796593a3990669eff5f5b535001f7c"
+                "reference": "c8afb599858876e95e8ebfcd97812d383fa23f02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/20064511ab796593a3990669eff5f5b535001f7c",
-                "reference": "20064511ab796593a3990669eff5f5b535001f7c",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/c8afb599858876e95e8ebfcd97812d383fa23f02",
+                "reference": "c8afb599858876e95e8ebfcd97812d383fa23f02",
                 "shasum": ""
             },
             "require": {
@@ -5807,15 +5807,15 @@
                 "ext-tokenizer": "*",
                 "php": "^5.6 || ^7.0",
                 "php-cs-fixer/diff": "^1.3",
-                "symfony/console": "^3.4.17 || ^4.1.6",
-                "symfony/event-dispatcher": "^3.0 || ^4.0",
-                "symfony/filesystem": "^3.0 || ^4.0",
-                "symfony/finder": "^3.0 || ^4.0",
-                "symfony/options-resolver": "^3.0 || ^4.0",
+                "symfony/console": "^3.4.17 || ^4.1.6 || ^5.0",
+                "symfony/event-dispatcher": "^3.0 || ^4.0 || ^5.0",
+                "symfony/filesystem": "^3.0 || ^4.0 || ^5.0",
+                "symfony/finder": "^3.0 || ^4.0 || ^5.0",
+                "symfony/options-resolver": "^3.0 || ^4.0 || ^5.0",
                 "symfony/polyfill-php70": "^1.0",
                 "symfony/polyfill-php72": "^1.4",
-                "symfony/process": "^3.0 || ^4.0",
-                "symfony/stopwatch": "^3.0 || ^4.0"
+                "symfony/process": "^3.0 || ^4.0 || ^5.0",
+                "symfony/stopwatch": "^3.0 || ^4.0 || ^5.0"
             },
             "require-dev": {
                 "johnkary/phpunit-speedtrap": "^1.1 || ^2.0 || ^3.0",
@@ -5826,9 +5826,10 @@
                 "php-cs-fixer/accessible-object": "^1.0",
                 "php-cs-fixer/phpunit-constraint-isidenticalstring": "^1.1",
                 "php-cs-fixer/phpunit-constraint-xmlmatchesxsd": "^1.1",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1",
+                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.1",
                 "phpunitgoodpractices/traits": "^1.8",
-                "symfony/phpunit-bridge": "^4.3"
+                "symfony/phpunit-bridge": "^4.3 || ^5.0",
+                "symfony/yaml": "^3.0 || ^4.0 || ^5.0"
             },
             "suggest": {
                 "ext-mbstring": "For handling non-UTF8 characters in cache signature.",
@@ -5862,16 +5863,16 @@
             ],
             "authors": [
                 {
-                    "name": "Dariusz Rumiński",
-                    "email": "dariusz.ruminski@gmail.com"
-                },
-                {
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Dariusz Rumiński",
+                    "email": "dariusz.ruminski@gmail.com"
                 }
             ],
             "description": "A tool to automatically fix PHP code style",
-            "time": "2019-06-01T10:32:12+00:00"
+            "time": "2019-11-25T22:10:32+00:00"
         },
         {
             "name": "instaclick/php-webdriver",
@@ -6763,16 +6764,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.13",
+            "version": "7.5.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "b9278591caa8630127f96c63b598712b699e671c"
+                "reference": "9467db479d1b0487c99733bb1e7944d32deded2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b9278591caa8630127f96c63b598712b699e671c",
-                "reference": "b9278591caa8630127f96c63b598712b699e671c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9467db479d1b0487c99733bb1e7944d32deded2c",
+                "reference": "9467db479d1b0487c99733bb1e7944d32deded2c",
                 "shasum": ""
             },
             "require": {
@@ -6843,7 +6844,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-06-19T12:01:51+00:00"
+            "time": "2020-01-08T08:45:45+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
