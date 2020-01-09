@@ -84,7 +84,7 @@
         "phpmd/phpmd": "2.8.1",
         "phpunit/phpunit": "7.5.20",
         "sebastian/phpcpd": "4.1.0",
-        "squizlabs/php_codesniffer": "3.4.2"
+        "squizlabs/php_codesniffer": "3.5.3"
     },
     "extra": {
         "merge-plugin": {
