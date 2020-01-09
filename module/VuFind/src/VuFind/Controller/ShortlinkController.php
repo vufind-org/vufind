@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Zend\Config\Config;
+use Zend\ServiceManager\ServiceLocatorInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
@@ -41,6 +43,30 @@ use VuFind\UrlShortener\UrlShortenerInterface;
 class ShortlinkController extends AbstractBase
 {
     /**
+     * Which redirect mechanism to use (html, http)
+     * 
+     * @var string
+     */
+    protected $redirectMethod = 'html';
+    
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm     Service manager
+     * @param Config                  $config VuFind configuration
+     */
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
+    {
+        // Call standard record controller initialization:
+        parent::__construct($sm);
+
+        // Set redirect method, if specified:
+        if (isset($config->Mail->url_shortener_redirect_method)) {
+            $this->redirectMethod = $config->Mail->url_shortener_redirect_method;
+        }
+    }
+    
+    /**
      * Resolve full version of shortlink & redirect to target.
      *
      * @return mixed
@@ -50,7 +76,19 @@ class ShortlinkController extends AbstractBase
         if ($id = $this->params('id')) {
             $resolver = $this->serviceLocator->get(UrlShortenerInterface::class);
             if ($url = $resolver->resolve($id)) {
-                return $this->redirect()->toUrl($url);
+                switch ($this->redirectMethod) {
+                case 'html':
+                    $view = $this->createViewModel();
+                    $view->redirectTarget = $url;
+                    $view->redirectDelay = 3;
+                    return $view;
+                case 'http':
+                    return $this->redirect()->toUrl($url);
+                default:
+                    throw new \VuFind\Exception\BadConfig(
+                        'Invalid redirect method: ' . $this->redirectMethod
+                    );
+                }
             }
         }
 
