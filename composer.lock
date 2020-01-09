@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "42c8f643d20f65584f4d7ed8f3e6e9ad",
+    "content-hash": "57651d93f4c5cb0016f85e457a0f0c7d",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -6345,31 +6345,35 @@
         },
         {
             "name": "phpmd/phpmd",
-            "version": "2.6.0",
+            "version": "2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpmd/phpmd.git",
-                "reference": "4e9924b2c157a3eb64395460fcf56b31badc8374"
+                "reference": "5664b95d484797582f5af9536238deb9ecde58a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/4e9924b2c157a3eb64395460fcf56b31badc8374",
-                "reference": "4e9924b2c157a3eb64395460fcf56b31badc8374",
+                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/5664b95d484797582f5af9536238deb9ecde58a1",
+                "reference": "5664b95d484797582f5af9536238deb9ecde58a1",
                 "shasum": ""
             },
             "require": {
+                "composer/xdebug-handler": "^1.0",
                 "ext-xml": "*",
-                "pdepend/pdepend": "^2.5",
+                "pdepend/pdepend": "^2.6",
                 "php": ">=5.3.9"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0",
+                "easy-doc/easy-doc": "0.0.0 || ^1.3.2",
+                "gregwar/rst": "^1.0",
+                "mikey179/vfsstream": "^1.6.4",
+                "phpunit/phpunit": "^4.8.36 || ^5.7.27",
                 "squizlabs/php_codesniffer": "^2.0"
             },
             "bin": [
                 "src/bin/phpmd"
             ],
-            "type": "project",
+            "type": "library",
             "autoload": {
                 "psr-0": {
                     "PHPMD\\": "src/main/php"
@@ -6387,19 +6391,19 @@
                     "role": "Project Founder"
                 },
                 {
-                    "name": "Other contributors",
-                    "homepage": "https://github.com/phpmd/phpmd/graphs/contributors",
-                    "role": "Contributors"
-                },
-                {
                     "name": "Marc Würth",
                     "email": "ravage@bluewin.ch",
                     "homepage": "https://github.com/ravage84",
                     "role": "Project Maintainer"
+                },
+                {
+                    "name": "Other contributors",
+                    "homepage": "https://github.com/phpmd/phpmd/graphs/contributors",
+                    "role": "Contributors"
                 }
             ],
             "description": "PHPMD is a spin-off project of PHP Depend and aims to be a PHP equivalent of the well known Java tool PMD.",
-            "homepage": "http://phpmd.org/",
+            "homepage": "https://phpmd.org/",
             "keywords": [
                 "mess detection",
                 "mess detector",
@@ -6407,7 +6411,7 @@
                 "phpmd",
                 "pmd"
             ],
-            "time": "2017-01-20T14:41:10+00:00"
+            "time": "2019-12-27T11:09:06+00:00"
         },
         {
             "name": "phpspec/prophecy",
