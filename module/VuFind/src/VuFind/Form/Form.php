@@ -58,18 +58,10 @@ class Form extends \Zend\Form\Form implements
      *
      * @var array
      */
-    protected $defaultMessages = [
+    protected $messages = [
         'empty' => 'This field is required',
         'invalid_email' => 'Email address is invalid',
     ];
-
-    /**
-     * In-use, translated validation messages (override values in $defaultMessages,
-     * not here).
-     *
-     * @var array
-     */
-    protected $messages = [];
 
     /**
      * Default form config (from config.ini > Feedback)
@@ -641,7 +633,7 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
-     * Get validation message
+     * Get translated validation message.
      *
      * @param string $messageId Message identifier
      *
@@ -649,12 +641,9 @@ class Form extends \Zend\Form\Form implements
      */
     protected function getValidationMessage($messageId)
     {
-        if (!isset($this->messages[$messageId])) {
-            $this->messages[$messageId] = $this->translate(
-                $this->defaultMessages[$messageId] ?? $messageId
-            );
-        }
-        return $this->messages[$messageId];
+        return $this->translate(
+            $this->messages[$messageId] ?? $messageId
+        );
     }
 
     /**
