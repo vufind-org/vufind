@@ -1,4 +1,7 @@
 module.exports = function(grunt) {
+  // Local custom tasks
+  require("./Gruntfile.local.js")(grunt);
+
   require('jit-grunt')(grunt); // Just in time library loading
 
   var fs = require('fs');
