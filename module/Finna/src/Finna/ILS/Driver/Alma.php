@@ -924,6 +924,27 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     = explode(':', $config['titleHoldBibLevels']);
             }
             if (!empty($params['id']) && !empty($params['patron']['id'])) {
+                // Check if we require the part_issue (description) field
+                $requestOptionsPath = '/bibs/' . urlencode($params['id'])
+                    . '/request-options?user_id='
+                    . urlencode($params['patron']['id']);
+                // Make the API request
+                $requestOptions = $this->makeRequest($requestOptionsPath);
+                // Check possible request types from the API answer
+                $requestTypes = $requestOptions->xpath(
+                    '/request_options/request_option//type'
+                );
+                $types = [];
+                foreach ($requestTypes as $requestType) {
+                    $types[] = (string)$requestType;
+                }
+                if ($types === ['PURCHASE']) {
+                    $config['extraHoldFields']
+                        = empty($config['extraHoldFields'])
+                            ? 'part_issue'
+                            : $config['extraHoldFields'] . ':part_issue';
+                }
+
                 // Add a flag so that checkRequestIsValid knows to check valid pickup
                 // locations
                 $config['HMACKeys']
@@ -1175,7 +1196,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $requestOptions = $this->makeRequest($requestOptionsPath);
         } elseif ('title' === $level) {
             $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
-            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
+            if (!in_array('level', $hmac)) {
                 return false;
             }
             // Call the request-options API for the logged-in user
@@ -1195,7 +1216,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             '/request_options/request_option//type'
         );
         foreach ($requestTypes as $requestType) {
-            if (in_array((string)$requestType, ['HOLD'])) {
+            if (in_array((string)$requestType, ['HOLD', 'PURCHASE'])) {
                 $result = true;
                 break;
             }
@@ -1262,12 +1283,23 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         // Check if we have a title level request or an item level request
         if ($level === 'title') {
-            // Add description if we have one for title level requests as Alma
-            // needs it under certain circumstances. See: https://developers.
-            // exlibrisgroup.com/alma/apis/xsd/rest_user_request.xsd?tags=POST
-            $description = isset($holdDetails['description']) ?? null;
-            if ($description) {
-                $body['description'] = $description;
+            $partIssue = $holdDetails['part_issue'] ?? null;
+            if ($partIssue) {
+                // Alma doesn't have a way of placing an "other item" request via the
+                // API (it would need to fill the manual_description field). And this
+                // one will require a description. Take one, whichever, and add the
+                // part or issue description in the comment field.
+                $items = $this->makeRequest(
+                    '/bibs/' . urlencode($mmsId) . '/holdings/ALL/items?limit=1'
+                );
+                $item = $items->item;
+                if ($item->item_data->description) {
+                    $body['description'] = (string)$item->item_data->description;
+                }
+                $body['comment'] = "Part or issue: $partIssue";
+                if ($comment) {
+                    $body['comment'] .= " -- Comment: $comment";
+                }
             }
 
             // Create HTTP client with Alma API URL for title level requests
