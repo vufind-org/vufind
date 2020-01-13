@@ -64,7 +64,7 @@ class RecommendLinksTest extends \VuFindTest\Unit\TestCase
         $rec->setConfig($config);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
-            new \Zend\StdLib\Parameters()
+            new \Laminas\Stdlib\Parameters()
         );
         $rec->process(
             $this->createMock(\VuFind\Search\Solr\Results::class)

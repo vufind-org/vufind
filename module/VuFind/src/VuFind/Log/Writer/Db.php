@@ -28,7 +28,7 @@
 namespace VuFind\Log\Writer;
 
 /**
- * This class extends the Zend Logging towards DB
+ * This class extends the Laminas Logging towards DB
  *
  * @category VuFind
  * @package  Error_Logging

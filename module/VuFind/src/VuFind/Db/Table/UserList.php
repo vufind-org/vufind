@@ -57,7 +57,7 @@ class UserList extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param Container     $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).

@@ -1,6 +1,6 @@
 <?php
 /**
- * Url view helper (extending core Zend helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality)
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Http\PhpEnvironment\Request;
 
 /**
- * Url view helper (extending core Zend helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality)
  *
  * @category VuFind
  * @package  View_Helpers

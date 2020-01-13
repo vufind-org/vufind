@@ -34,7 +34,7 @@ use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
 
 /**
- * Zend action helper base class to perform request-related actions
+ * Action helper base class to perform request-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

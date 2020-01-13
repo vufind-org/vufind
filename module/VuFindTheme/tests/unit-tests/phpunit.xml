@@ -6,7 +6,4 @@
       <directory>src</directory>
     </testsuite>
   </testsuites>
-  <php>
-    <includePath>../../../../vendor/zendframework/zendframework/library</includePath>
-  </php>
 </phpunit>

@@ -158,7 +158,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new Params(new Options($configManager), $configManager);
-        $requestParams = new \Zend\StdLib\Parameters($request);
+        $requestParams = new \Laminas\Stdlib\Parameters($request);
         $params->initFromRequest($requestParams);
         $factory = new \VuFind\Search\Factory\UrlQueryHelperFactory();
         $urlQuery = $factory->fromParams($params);

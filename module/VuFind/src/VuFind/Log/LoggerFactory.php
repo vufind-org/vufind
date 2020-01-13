@@ -279,7 +279,7 @@ class LoggerFactory implements FactoryInterface
             $verbosity = $parts[1] ?? false;
 
             // VuFind's configuration provides four priority options, each
-            // combining two of the standard Zend levels.
+            // combining two of the standard Laminas levels.
             switch (trim($priority)) {
             case 'debug':
                 // Set static flag indicating that debug is turned on:

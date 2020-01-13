@@ -323,8 +323,8 @@ class UpgradeController extends AbstractBase
     /**
      * Attempt to perform a MySQL upgrade; return either a string containing SQL
      * (if we are in "log SQL" mode), an empty string (if we are successful but
-     * not logging SQL) or a Zend Framework object representing forward/redirect
-     * (if we need to obtain user input).
+     * not logging SQL) or a Laminas object representing forward/redirect (if we
+     * need to obtain user input).
      *
      * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      *

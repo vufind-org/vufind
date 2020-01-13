@@ -232,7 +232,7 @@ class Shibboleth extends AbstractBase
         if (isset($config->Shibboleth->username)
             && isset($config->Shibboleth->logout)
         ) {
-            // It would be more proper to call getServer on a Zend request
+            // It would be more proper to call getServer on a Laminas request
             // object... except that the request object doesn't exist yet when
             // this routine gets called.
             $username = isset($_SERVER[$config->Shibboleth->username])

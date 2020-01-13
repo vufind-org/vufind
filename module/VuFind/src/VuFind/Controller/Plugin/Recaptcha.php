@@ -30,7 +30,7 @@ namespace VuFind\Controller\Plugin;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Zend action helper to manage Recaptcha fields
+ * Action helper to manage Recaptcha fields
  *
  * @category VuFind
  * @package  Controller_Plugins

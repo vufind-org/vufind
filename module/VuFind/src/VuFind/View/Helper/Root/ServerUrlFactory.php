@@ -1,6 +1,6 @@
 <?php
 /**
- * ServerUrl helper factory. This uses the core Zend helper but configures it
+ * ServerUrl helper factory. This uses the core Laminas helper but configures it
  * according to VuFind settings.
  *
  * PHP version 7

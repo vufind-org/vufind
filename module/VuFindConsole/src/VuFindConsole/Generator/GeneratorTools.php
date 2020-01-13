@@ -46,7 +46,7 @@ use Laminas\Console\Console;
 class GeneratorTools
 {
     /**
-     * Zend Framework configuration
+     * Laminas configuration
      *
      * @var array
      */
@@ -55,7 +55,7 @@ class GeneratorTools
     /**
      * Constructor.
      *
-     * @param array $config Zend Framework configuration
+     * @param array $config Laminas configuration
      */
     public function __construct(array $config)
     {

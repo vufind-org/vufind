@@ -30,7 +30,7 @@ namespace VuFind\Controller\Plugin;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Zend action helper to perform renewal-related actions
+ * Action helper to perform renewal-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

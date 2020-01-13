@@ -34,7 +34,7 @@ use VuFind\Record\Loader;
 use VuFind\Tags;
 
 /**
- * Zend action helper to perform favorites-related actions
+ * Action helper to perform favorites-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

@@ -1,6 +1,6 @@
 <?php
 /**
- * RemoteAddress utility factory. This uses the core Zend RemoteAddress but
+ * RemoteAddress utility factory. This uses the core Laminas RemoteAddress but
  * configures it according to VuFind settings.
  *
  * PHP version 7

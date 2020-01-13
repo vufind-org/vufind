@@ -61,7 +61,7 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
      * @param \VuFind\Search\Solr\Results  $results      populated results object
      * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
      * @param string                       $settings     settings
-     * @param \Zend\StdLib\Parameters      $request      request
+     * @param \Laminas\Stdlib\Parameters      $request      request
      *
      * @return FacetCloud
      */
@@ -77,7 +77,7 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
             $emptyResults = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
+            $request = new \Laminas\Stdlib\Parameters([]);
         }
         $fc = new FacetCloud($configLoader, $emptyResults);
         $fc->setConfig($settings);

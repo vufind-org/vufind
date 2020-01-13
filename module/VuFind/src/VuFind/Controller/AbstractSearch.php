@@ -107,7 +107,7 @@ class AbstractSearch extends AbstractBase
                 ->get(\VuFind\Search\Results\PluginManager::class)
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
-                new \Zend\StdLib\Parameters([])
+                new \Laminas\Stdlib\Parameters([])
             );
         }
 

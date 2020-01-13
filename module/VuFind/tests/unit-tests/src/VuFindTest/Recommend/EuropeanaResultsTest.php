@@ -59,7 +59,7 @@ class EuropeanaResultsTest extends TestCase
         $europeana->setHttpService($this->getHttpService());
         $europeana->setConfig(''); // use defaults
         $results = $this->getMockResults();
-        $query = new \Zend\StdLib\Parameters(['lookfor' => 'test']);
+        $query = new \Laminas\Stdlib\Parameters(['lookfor' => 'test']);
         $europeana->init($results->getParams(), $query);
         $europeana->process($results);
         $this->assertEquals(

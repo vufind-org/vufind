@@ -31,7 +31,7 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use Zend\StdLib\Parameters;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Legacy adapter: search query parameters to AbstractQuery object

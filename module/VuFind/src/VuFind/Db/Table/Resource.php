@@ -63,7 +63,7 @@ class Resource extends Gateway
      *
      * @param Adapter       $adapter   Database adapter
      * @param PluginManager $tm        Table manager
-     * @param array         $cfg       Zend Framework configuration
+     * @param array         $cfg       Laminas configuration
      * @param RowGateway    $rowObj    Row prototype object (null for default)
      * @param DateConverter $converter Date converter
      * @param Loader        $loader    Record loader

@@ -521,7 +521,7 @@ $config = [
         ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
-    // unrelated to specific Zend Framework 2 components).
+    // unrelated to specific Laminas components).
     'vufind' => [
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],

@@ -71,8 +71,8 @@ class Recaptcha extends AbstractHelper
     /**
      * Constructor
      *
-     * @param \ZendService\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
-     * @param \VuFind\Config                   $config Config object
+     * @param \Laminas\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
+     * @param \VuFind\Config               $config Config object
      */
     public function __construct($rc, $config)
     {

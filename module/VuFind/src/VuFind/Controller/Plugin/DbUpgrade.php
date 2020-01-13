@@ -33,7 +33,7 @@ use Laminas\Db\Metadata\Metadata as DbMetadata;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Zend action helper to perform database upgrades
+ * Action helper to perform database upgrades
  *
  * @category VuFind
  * @package  Controller_Plugins

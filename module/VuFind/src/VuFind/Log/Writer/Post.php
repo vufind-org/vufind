@@ -30,7 +30,7 @@ namespace VuFind\Log\Writer;
 use Laminas\Http\Client;
 
 /**
- * This class extends the Zend Logging to sent POST messages over HTTP
+ * This class extends the Laminas Logging to sent POST messages over HTTP
  *
  * @category VuFind
  * @package  Error_Logging

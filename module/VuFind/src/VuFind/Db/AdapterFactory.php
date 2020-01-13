@@ -1,7 +1,7 @@
 <?php
 /**
  * Database utility class. May be used as a service or as a standard
- * Zend Framework factory.
+ * Laminas factory.
  *
  * PHP version 7
  *
@@ -34,7 +34,7 @@ use Laminas\Db\Adapter\Adapter;
 
 /**
  * Database utility class. May be used as a service or as a standard
- * Zend Framework factory.
+ * Laminas factory.
  *
  * @category VuFind
  * @package  Db
@@ -88,7 +88,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
-     * Obtain a Zend\DB connection using standard VuFind configuration.
+     * Obtain a Laminas\DB connection using standard VuFind configuration.
      *
      * @param string $overrideUser Username override (leave null to use username
      * from config.ini)
@@ -129,7 +129,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
-     * Obtain a Zend\DB connection using an option array.
+     * Obtain a Laminas\DB connection using an option array.
      *
      * @param array $options Options for building adapter
      *
@@ -163,7 +163,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
-     * Obtain a Zend\DB connection using a connection string.
+     * Obtain a Laminas\DB connection using a connection string.
      *
      * @param string $connectionString Connection string of the form
      * [db_type]://[username]:[password]@[host]/[db_name]

@@ -52,7 +52,7 @@ class Initializer
     protected $config;
 
     /**
-     * Zend MVC Event
+     * Laminas MVC Event
      *
      * @var MvcEvent
      */
@@ -111,7 +111,7 @@ class Initializer
      *   <li>generator - a Generator value to display in the HTML header
      * (optional)</li>
      * </ul>
-     * @param MvcEvent $event  Zend MVC Event object
+     * @param MvcEvent $event  Laminas MVC Event object
      */
     public function __construct(Config $config, MvcEvent $event)
     {

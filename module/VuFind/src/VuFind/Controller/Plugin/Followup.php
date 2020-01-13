@@ -31,7 +31,7 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 
 /**
- * Zend action helper to deal with login followup; responsible for remembering URLs
+ * Action helper to deal with login followup; responsible for remembering URLs
  * before login and then redirecting the user to the appropriate place afterwards.
  *
  * @category VuFind

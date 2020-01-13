@@ -132,7 +132,7 @@ class RandomRecommendTest extends TestCase
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Zend\StdLib\Parameters::class);
+        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
         $service->expects($this->once())->method('random')
             ->with(
@@ -170,7 +170,7 @@ class RandomRecommendTest extends TestCase
             ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Zend\StdLib\Parameters::class);
+        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
         $service->expects($this->once())->method('random')
             ->with($this->equalTo("Solr"))
@@ -198,7 +198,7 @@ class RandomRecommendTest extends TestCase
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Zend\StdLib\Parameters::class);
+        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
         $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')
@@ -236,7 +236,7 @@ class RandomRecommendTest extends TestCase
         $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $request = $this->createMock(\Zend\StdLib\Parameters::class);
+        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
         $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')

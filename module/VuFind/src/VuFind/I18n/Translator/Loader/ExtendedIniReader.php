@@ -70,8 +70,8 @@ class ExtendedIniReader
 
                         // Store the key/value pair (allow empty values -- sometimes
                         // we want to replace a language token with a blank string,
-                        // but Zend translator doesn't support them so replace with
-                        // a zero-width non-joiner):
+                        // but Laminas translator doesn't support them so replace
+                        // with a zero-width non-joiner):
                         if ($convertBlanks && $value === '') {
                             $value = html_entity_decode(
                                 '&#x200C;', ENT_NOQUOTES, 'UTF-8'

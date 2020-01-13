@@ -32,7 +32,7 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
 /**
- * Zend action helper to perform new items-related actions
+ * Action helper to perform new items-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

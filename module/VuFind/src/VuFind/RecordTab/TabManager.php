@@ -97,7 +97,7 @@ class TabManager
      *
      * @param PluginManager $pm         RecordTab plugin manager
      * @param ConfigManager $cm         Configuration plugin manager
-     * @param array         $zendConfig Zend Framework configuration
+     * @param array         $zendConfig Laminas configuration
      */
     public function __construct(PluginManager $pm, ConfigManager $cm,
         $zendConfig = []

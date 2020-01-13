@@ -54,7 +54,7 @@ class ResourceTags extends Gateway
      *
      * @param Adapter       $adapter       Database adapter
      * @param PluginManager $tm            Table manager
-     * @param array         $cfg           Zend Framework configuration
+     * @param array         $cfg           Laminas configuration
      * @param RowGateway    $rowObj        Row prototype object (null for default)
      * @param bool          $caseSensitive Are tags case sensitive?
      * @param string        $table         Name of database table to interface with

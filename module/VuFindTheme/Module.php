@@ -27,7 +27,7 @@
  */
 namespace VuFindTheme;
 
-use Laminas\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
+use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
@@ -66,7 +66,7 @@ class Module
     {
         return [
             'aliases' => [
-                ZendInjectTemplateListener::class => InjectTemplateListener::class,
+                ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
                 InjectTemplateListener::class => InvokableFactory::class,

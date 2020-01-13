@@ -135,9 +135,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => 'Zend framework in action / Allen, Rob (2009)',
+                'title' => 'Test framework in action / Allen, Rob (2009)',
                 'feeid' => null,
-                'about' => 'Zend framework in action / Allen, Rob (2009)',
+                'about' => 'Test framework in action / Allen, Rob (2009)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471'
             ],
         2 =>

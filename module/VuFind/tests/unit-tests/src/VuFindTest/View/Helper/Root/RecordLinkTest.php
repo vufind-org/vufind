@@ -95,7 +95,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->setMethods(['getQuery'])->getMock();
         $request->expects($this->any())->method('getQuery')
-            ->will($this->returnValue(new \Zend\StdLib\Parameters()));
+            ->will($this->returnValue(new \Laminas\Stdlib\Parameters()));
 
         $url = new \VuFind\View\Helper\Root\Url($request);
 
