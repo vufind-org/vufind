@@ -110,7 +110,8 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string                $method      Request method GET/POST/PUT/DELETE/etc
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
      * @param string                $path        Request URL
      * @param array                 $params      Request parameters
      * @param \Laminas\Http\Headers $req_headers Headers object

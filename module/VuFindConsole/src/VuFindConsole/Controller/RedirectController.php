@@ -63,9 +63,9 @@ class RedirectController extends AbstractBase
      */
     public function consoledefaultAction()
     {
-        // We need to modify the $_SERVER superglobals so that \Laminas\Console\GetOpt
-        // will behave correctly after we've manipulated the CLI parameters. Let's
-        // use references for convenience.
+        // We need to modify the $_SERVER superglobals so that
+        // \Laminas\Console\GetOpt will behave correctly after we've manipulated the
+        // CLI parameters. Let's use references for convenience.
         $argv = & $_SERVER['argv'];
         $argc = & $_SERVER['argc'];
 

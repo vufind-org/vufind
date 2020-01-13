@@ -28,6 +28,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\DB\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
 
@@ -232,11 +233,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Check if the given request is a valid login request
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return bool
      */
-    public function isValidLoginRequest(\Laminas\Http\PhpEnvironment\Request $request)
+    public function isValidLoginRequest(Request $request)
     {
         $hash = $request->getPost()->get(
             'hash',

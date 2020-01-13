@@ -130,7 +130,7 @@ class ChoiceAuth extends AbstractBase
      * essentially an event hook which most auth modules can ignore. See
      * ChoiceAuth for a use case example.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @throws AuthException
      * @return void
@@ -326,13 +326,13 @@ class ChoiceAuth extends AbstractBase
     /**
      * Returns any authentication method this request should be delegated to.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return string|bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDelegateAuthMethod(\Laminas\Http\PhpEnvironment\Request $request)
+    public function getDelegateAuthMethod(Request $request)
     {
         return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
     }
@@ -430,8 +430,7 @@ class ChoiceAuth extends AbstractBase
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return bool
@@ -452,7 +451,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Whether this authentication method needs CSRF checking for the request.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return bool
      *

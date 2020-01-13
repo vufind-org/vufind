@@ -31,6 +31,7 @@ use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
 use Laminas\Mail\Message;
+use Laminas\Mail\Transport\TransportInterface;
 use VuFind\Exception\Mail as MailException;
 
 /**
@@ -49,7 +50,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Mail transport
      *
-     * @var \Laminas\Mail\Transport\TransportInterface
+     * @var TransportInterface
      */
     protected $transport;
 
@@ -70,9 +71,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Mail\Transport\TransportInterface $transport Mail transport
+     * @param TransportInterface $transport Mail transport
      */
-    public function __construct(\Laminas\Mail\Transport\TransportInterface $transport)
+    public function __construct(TransportInterface $transport)
     {
         $this->setTransport($transport);
     }
@@ -80,7 +81,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Get the mail transport object.
      *
-     * @return \Laminas\Mail\Transport\TransportInterface
+     * @return TransportInterface
      */
     public function getTransport()
     {
@@ -122,8 +123,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Set the mail transport object.
      *
-     * @param \Laminas\Mail\Transport\TransportInterface $transport Mail transport
-     * object
+     * @param TransportInterface $transport Mail transport object
      *
      * @return void
      */
@@ -241,16 +241,19 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a link.
      *
      * @param string                             $to      Recipient email address
-     * @param string|\Laminas\Mail\Address       $from    Sender name and email address
+     * @param string|\Laminas\Mail\Address       $from    Sender name and email
+     * address
      * @param string                             $msg     User notes to include in
      * message
      * @param string                             $url     URL to share
      * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
-     * @param string                             $subject Subject for email (optional)
-     * @param string                             $cc      CC recipient (null for none)
-     * @param string|Address|AddressList         $replyTo Reply-To address (or delimited
-     * list, null for none)
+     * @param string                             $subject Subject for email
+     * (optional)
+     * @param string                             $cc      CC recipient (null for
+     * none)
+     * @param string|Address|AddressList         $replyTo Reply-To address (or
+     * delimited list, null for none)
      *
      * @throws MailException
      * @return void
@@ -291,8 +294,10 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param \VuFind\RecordDriver\AbstractBase  $record  Record being emailed
      * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
-     * @param string                             $subject Subject for email (optional)
-     * @param string                             $cc      CC recipient (null for none)
+     * @param string                             $subject Subject for email
+     * (optional)
+     * @param string                             $cc      CC recipient (null for
+     * none)
      * @param string|Address|AddressList         $replyTo Reply-To address (or
      * delimited list, null for none)
      *
