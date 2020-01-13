@@ -44,7 +44,7 @@ abstract class RecommendDeferredTestCase extends TestCase
      *
      * @param string                      $class    class to construct
      * @param string                      $settings settings
-     * @param \Laminas\Stdlib\Parameters     $request  request
+     * @param \Laminas\Stdlib\Parameters  $request  request
      * @param \VuFind\Search\Solr\Results $results  results object
      *
      * @return SideFacets
