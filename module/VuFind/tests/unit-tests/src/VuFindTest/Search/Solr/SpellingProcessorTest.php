@@ -30,7 +30,7 @@ namespace VuFindTest\Search\Solr;
 
 use VuFind\Search\Solr\SpellingProcessor;
 use VuFindTest\Unit\TestCase;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Unit tests for spelling processor.

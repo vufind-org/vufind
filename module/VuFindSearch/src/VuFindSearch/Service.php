@@ -34,8 +34,8 @@ use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 
 /**
  * Search service.

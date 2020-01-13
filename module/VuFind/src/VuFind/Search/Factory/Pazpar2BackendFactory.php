@@ -37,7 +37,7 @@ use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
 use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Pazpar2 backends.
@@ -53,7 +53,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -67,7 +67,7 @@ class Pazpar2BackendFactory implements FactoryInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 

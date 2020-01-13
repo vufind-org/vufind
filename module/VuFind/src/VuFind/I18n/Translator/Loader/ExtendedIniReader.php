@@ -27,7 +27,7 @@
  */
 namespace VuFind\I18n\Translator\Loader;
 
-use Zend\I18n\Translator\TextDomain;
+use Laminas\I18n\Translator\TextDomain;
 
 /**
  * Helper class to load .ini files from disk.

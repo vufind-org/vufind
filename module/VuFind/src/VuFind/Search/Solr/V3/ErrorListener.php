@@ -32,7 +32,7 @@ use VuFind\Search\Solr\AbstractErrorListener;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
-use Zend\EventManager\EventInterface;
+use Laminas\EventManager\EventInterface;
 
 /**
  * SOLR 3.x error listener.

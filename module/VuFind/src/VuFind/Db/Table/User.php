@@ -28,9 +28,9 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Config\Config;
-use Zend\Db\Adapter\Adapter;
-use Zend\Session\Container;
+use Laminas\Config\Config;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Session\Container;
 
 /**
  * Table Definition for user
@@ -90,7 +90,7 @@ class User extends Gateway
         $row = $this->createRow();
         $row->username = $username;
         $row->created = date('Y-m-d H:i:s');
-        // Failing to initialize this here can cause Zend\Db errors in
+        // Failing to initialize this here can cause Laminas\Db errors in
         // the VuFind\Auth\Shibboleth and VuFind\Auth\ILS integration tests.
         $row->user_provided_email = 0;
         return $row;

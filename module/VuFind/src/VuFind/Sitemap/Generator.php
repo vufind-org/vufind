@@ -30,8 +30,8 @@ namespace VuFind\Sitemap;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
-use Zend\Config\Config;
-use Zend\Console\Console;
+use Laminas\Config\Config;
+use Laminas\Console\Console;
 
 /**
  * Class for generating sitemaps

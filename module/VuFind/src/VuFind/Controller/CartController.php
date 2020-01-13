@@ -29,8 +29,8 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -46,7 +46,7 @@ class CartController extends AbstractBase
     /**
      * Session container
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 

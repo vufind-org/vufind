@@ -33,9 +33,9 @@ namespace VuFindTest\Resolver\Driver;
 use InvalidArgumentException;
 
 use VuFind\Resolver\Driver\Alma;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Response as HttpResponse;
+use Laminas\Http\Response as HttpResponse;
 
 /**
  * Alma resolver driver test
@@ -187,7 +187,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
         }
         $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
 
-        $client = new \Zend\Http\Client();
+        $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
         $conn = new Alma($this->openUrlConfig['OpenURL']['url'], $client);

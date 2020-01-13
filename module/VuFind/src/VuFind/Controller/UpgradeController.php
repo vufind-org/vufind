@@ -34,9 +34,9 @@ use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 
 /**
  * Class controls VuFind upgrading.
@@ -229,7 +229,7 @@ class UpgradeController extends AbstractBase
     /**
      * Get a database adapter for root access using credentials in session.
      *
-     * @return \Zend\Db\Adapter\Adapter
+     * @return \Laminas\Db\Adapter\Adapter
      */
     protected function getRootDbAdapter()
     {
@@ -326,7 +326,7 @@ class UpgradeController extends AbstractBase
      * not logging SQL) or a Zend Framework object representing forward/redirect
      * (if we need to obtain user input).
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      *
      * @return mixed
      */
@@ -499,7 +499,7 @@ class UpgradeController extends AbstractBase
                 // if VuFind is using a different database, we have to prompt the
                 // user to check the migrations directory and upgrade manually.
                 $adapter = $this->serviceLocator
-                    ->get(\Zend\Db\Adapter\Adapter::class);
+                    ->get(\Laminas\Db\Adapter\Adapter::class);
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);

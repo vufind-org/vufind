@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use NumberFormatter;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Safe money format view helper

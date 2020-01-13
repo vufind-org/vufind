@@ -31,7 +31,7 @@ namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 /**
  * Table Definition for session

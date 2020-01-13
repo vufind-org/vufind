@@ -28,7 +28,7 @@
 namespace VuFindApi\Formatter;
 
 use VuFind\I18n\TranslatableString;
-use Zend\View\HelperPluginManager;
+use Laminas\View\HelperPluginManager;
 
 /**
  * Record formatter for API responses

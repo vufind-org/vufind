@@ -35,7 +35,7 @@ use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
 use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for WorldCat backends.
@@ -51,7 +51,7 @@ class WorldCatBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -65,14 +65,14 @@ class WorldCatBackendFactory implements FactoryInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * WorldCat configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $wcConfig;
 

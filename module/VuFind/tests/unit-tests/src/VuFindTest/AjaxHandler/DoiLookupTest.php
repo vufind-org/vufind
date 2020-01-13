@@ -32,7 +32,7 @@ use VuFind\AjaxHandler\DoiLookupFactory;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * DoiLookup test class.

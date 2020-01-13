@@ -34,9 +34,9 @@ use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
-use Zend\Console\Console;
-use Zend\Crypt\BlockCipher as BlockCipher;
-use Zend\Crypt\Symmetric\Openssl;
+use Laminas\Console\Console;
+use Laminas\Crypt\BlockCipher as BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 
 /**
  * This controller handles various command-line tools
@@ -54,7 +54,7 @@ class UtilController extends AbstractBase
      *
      * @param string $msg Extra message to display
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     protected function indexReservesHelp($msg = '')
     {
@@ -104,7 +104,7 @@ class UtilController extends AbstractBase
     /**
      * Build the Reserves index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function indexreservesAction()
     {
@@ -229,7 +229,7 @@ class UtilController extends AbstractBase
     /**
      * Commit the Solr index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function commitAction()
     {
@@ -239,7 +239,7 @@ class UtilController extends AbstractBase
     /**
      * Optimize the Solr index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function optimizeAction()
     {
@@ -251,7 +251,7 @@ class UtilController extends AbstractBase
      *
      * @param bool $optimize Should we optimize?
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     protected function performCommit($optimize = false)
     {
@@ -273,7 +273,7 @@ class UtilController extends AbstractBase
     /**
      * Generate a Sitemap
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function sitemapAction()
     {
@@ -324,7 +324,7 @@ class UtilController extends AbstractBase
     /**
      * Command-line tool to batch-delete records from the Solr index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function deletesAction()
     {
@@ -443,7 +443,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from record cache table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function cleanuprecordcacheAction()
     {
@@ -468,7 +468,7 @@ class UtilController extends AbstractBase
      *
      * @param string $rows Plural name of records to delete
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     protected function expirationHelp($rows)
     {
@@ -500,7 +500,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from search history database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expiresearchesAction()
     {
@@ -520,7 +520,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from session database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expiresessionsAction()
     {
@@ -540,7 +540,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from external_session database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expireExternalSessionsAction()
     {
@@ -560,7 +560,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from auth_hash database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expireauthhashesAction()
     {
@@ -579,7 +579,7 @@ class UtilController extends AbstractBase
     /**
      * Command-line tool to delete suppressed records from the index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function suppressedAction()
     {
@@ -640,7 +640,7 @@ class UtilController extends AbstractBase
     /**
      * Tool to auto-fill hierarchy cache.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function createhierarchytreesAction()
     {
@@ -723,7 +723,7 @@ class UtilController extends AbstractBase
     /**
      * Compile CSS files from LESS.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function cssbuilderAction()
     {
@@ -818,7 +818,7 @@ class UtilController extends AbstractBase
      * Convert hash algorithms
      * Expected parameters: oldmethod:oldkey (or none) newmethod:newkey
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function switchdbhashAction()
     {
@@ -920,7 +920,7 @@ class UtilController extends AbstractBase
     /**
      * Lint a file of MARC records.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function lintmarcAction()
     {

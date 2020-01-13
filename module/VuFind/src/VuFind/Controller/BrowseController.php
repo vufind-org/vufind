@@ -28,8 +28,8 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException;
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * BrowseController Class
@@ -47,7 +47,7 @@ class BrowseController extends AbstractBase
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -111,7 +111,7 @@ class BrowseController extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -212,7 +212,7 @@ class BrowseController extends AbstractBase
     /**
      * Gathers data for the view of the AlphaBrowser and does some initialization
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -223,9 +223,9 @@ class BrowseController extends AbstractBase
     /**
      * Perform the search
      *
-     * @param \Zend\View\Model\ViewModel $view View model to modify
+     * @param \Laminas\View\Model\ViewModel $view View model to modify
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function performSearch($view)
     {
@@ -284,7 +284,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse tags
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function tagAction()
     {
@@ -354,7 +354,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse LCC
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function lccAction()
     {
@@ -372,7 +372,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Dewey
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function deweyAction()
     {
@@ -420,7 +420,7 @@ class BrowseController extends AbstractBase
      * @param string $facetPrefix   if this is true and we're looking
      * alphabetically, add a facet_prefix to the URL
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function performBrowse($currentAction, $categoryList, $facetPrefix)
     {
@@ -445,7 +445,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Author
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function authorAction()
     {
@@ -464,7 +464,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Topic
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function topicAction()
     {
@@ -481,7 +481,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Genre
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function genreAction()
     {
@@ -498,7 +498,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Region
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function regionAction()
     {
@@ -515,7 +515,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Era
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function eraAction()
     {

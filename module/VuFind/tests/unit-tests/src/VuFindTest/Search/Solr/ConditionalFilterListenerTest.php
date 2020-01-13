@@ -35,7 +35,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 
 use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
+use Laminas\EventManager\Event;
 
 /**
  * Unit tests for Conditional Filter listener.
@@ -92,7 +92,7 @@ class ConditionalFilterListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
+        $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),

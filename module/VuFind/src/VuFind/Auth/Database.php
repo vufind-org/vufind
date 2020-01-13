@@ -33,8 +33,8 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
-use Zend\Crypt\Password\Bcrypt;
-use Zend\Http\PhpEnvironment\Request;
+use Laminas\Crypt\Password\Bcrypt;
+use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication class
@@ -361,7 +361,7 @@ class Database extends AbstractBase
     protected function validateParams($params, $table)
     {
         // Invalid Email Check
-        $validator = new \Zend\Validator\EmailAddress();
+        $validator = new \Laminas\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }

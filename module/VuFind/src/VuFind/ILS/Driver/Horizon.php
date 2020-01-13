@@ -31,7 +31,7 @@ namespace VuFind\ILS\Driver;
 use PDO;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
-use Zend\Log\LoggerAwareInterface;
+use Laminas\Log\LoggerAwareInterface;
 
 /**
  * Horizon ILS Driver

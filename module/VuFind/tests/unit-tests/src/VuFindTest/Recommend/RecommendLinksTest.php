@@ -101,7 +101,7 @@ class RecommendLinksTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConfigManager($section, $ini)
     {
-        $config = new \Zend\Config\Config([$section => $this->sampleLinks]);
+        $config = new \Laminas\Config\Config([$section => $this->sampleLinks]);
         $mock = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()
             ->setMethods(['get'])

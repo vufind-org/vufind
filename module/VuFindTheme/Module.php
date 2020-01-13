@@ -27,8 +27,8 @@
  */
 namespace VuFindTheme;
 
-use Zend\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Module definition for the VuFind theme system.
@@ -49,7 +49,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],
@@ -102,9 +102,9 @@ class Module
             'aliases' => [
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
-                \Zend\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
-                \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
-                \Zend\View\Helper\InlineScript::class =>
+                \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
+                \Laminas\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
+                \Laminas\View\Helper\InlineScript::class =>
                     View\Helper\InlineScript::class,
             ],
         ];

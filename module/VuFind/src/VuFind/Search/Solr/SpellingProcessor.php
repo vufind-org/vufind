@@ -29,7 +29,7 @@ namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Solr spelling processor.

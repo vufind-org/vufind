@@ -29,8 +29,8 @@ namespace VuFind\AjaxHandler;
 
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Tags;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * AJAX handler to get all tags for a record as HTML.

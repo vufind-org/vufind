@@ -28,8 +28,8 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for change_tracker
@@ -120,7 +120,7 @@ class ChangeTracker extends Gateway
      * @param string $from  The beginning date of the range to search.
      * @param string $until The end date of the range to search.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function retrieveDeletedCount($core, $from, $until)
     {
@@ -143,7 +143,7 @@ class ChangeTracker extends Gateway
      * @param int    $offset Record number to retrieve first.
      * @param int    $limit  Retrieval limit (null for no limit)
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function retrieveDeleted($core, $from, $until, $offset = 0,
         $limit = null

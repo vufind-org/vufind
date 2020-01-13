@@ -43,11 +43,11 @@ trait ViewOptionsTrait
     /**
      * Set up the view options.
      *
-     * @param \Zend\Config\Config $searchSettings Search settings.
+     * @param \Laminas\Config\Config $searchSettings Search settings.
      *
      * @return void
      */
-    public function initViewOptions(\Zend\Config\Config $searchSettings)
+    public function initViewOptions(\Laminas\Config\Config $searchSettings)
     {
         if (isset($searchSettings->General->default_view)) {
             $this->defaultView = $searchSettings->General->default_view;

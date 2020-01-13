@@ -27,11 +27,11 @@
  */
 namespace VuFindTheme;
 
-use Zend\Config\Config;
-use Zend\Console\Console;
-use Zend\Mvc\MvcEvent;
-use Zend\Stdlib\RequestInterface as Request;
-use Zend\View\Resolver\TemplatePathStack;
+use Laminas\Config\Config;
+use Laminas\Console\Console;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Stdlib\RequestInterface as Request;
+use Laminas\View\Resolver\TemplatePathStack;
 
 /**
  * VuFind Theme Initializer
@@ -61,7 +61,7 @@ class Initializer
     /**
      * Top-level service manager
      *
-     * @var \Zend\ServiceManager\ServiceManager
+     * @var \Laminas\ServiceManager\ServiceManager
      */
     protected $serviceManager;
 
@@ -290,7 +290,7 @@ class Initializer
         $loader = $this->serviceManager->get('ViewHelperManager');
 
         // Register all the helpers:
-        $config = new \Zend\ServiceManager\Config($helpers);
+        $config = new \Laminas\ServiceManager\Config($helpers);
         $config->configureServiceManager($loader);
     }
 
@@ -382,10 +382,10 @@ class Initializer
         if (!empty($pathStack)) {
             try {
                 $translator = $this->serviceManager
-                    ->get(\Zend\Mvc\I18n\Translator::class);
+                    ->get(\Laminas\Mvc\I18n\Translator::class);
                 $pm = $translator->getPluginManager();
                 $pm->get('ExtendedIni')->addToPathStack($pathStack);
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
+            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
                 return;

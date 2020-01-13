@@ -29,7 +29,7 @@ namespace VuFindApi\Controller;
 
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search API Controller
@@ -135,12 +135,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         // Add CORS headers and handle OPTIONS requests. This is a simplistic
         // approach since we allow any origin. For more complete CORS handling
@@ -168,7 +168,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Record action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function recordAction()
     {
@@ -216,7 +216,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Search action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function searchAction()
     {

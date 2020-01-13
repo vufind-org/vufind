@@ -33,7 +33,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
-use Zend\Mvc\Controller\Plugin\Url;
+use Laminas\Mvc\Controller\Plugin\Url;
 
 /**
  * Alphabrowse channel provider.

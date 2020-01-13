@@ -252,7 +252,7 @@ class Options extends \VuFind\Search\Base\Options
      * at the time this method is called, so we just need to check if the
      * user-supplied values are valid, and if so, filter/reorder accordingly.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param \Laminas\Config\Config $searchSettings Configuration
      * @param string              $section        Configuration section to read
      * @param string              $property       Property of this object to read
      * and/or modify.
@@ -283,7 +283,7 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Apply user-requested "common" settings.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param \Laminas\Config\Config $searchSettings Configuration
      * @param string              $setting        Name of common setting
      * @param string              $list           Name of property containing valid
      * values
@@ -316,7 +316,7 @@ class Options extends \VuFind\Search\Base\Options
      * from the values in the Info method. (If the values set in the config files in
      * not a 'valid' EDS API value, it will be ignored.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param \Laminas\Config\Config $searchSettings Configuration
      *
      * @return void
      */

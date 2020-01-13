@@ -31,7 +31,7 @@ use VuFind\Controller\Plugin\Recaptcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to comment on a record.

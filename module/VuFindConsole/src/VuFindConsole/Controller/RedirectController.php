@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console;
-use Zend\Mvc\Application;
+use Laminas\Console\Console;
+use Laminas\Mvc\Application;
 
 /**
  * This controller handles various command-line tools
@@ -63,7 +63,7 @@ class RedirectController extends AbstractBase
      */
     public function consoledefaultAction()
     {
-        // We need to modify the $_SERVER superglobals so that \Zend\Console\GetOpt
+        // We need to modify the $_SERVER superglobals so that \Laminas\Console\GetOpt
         // will behave correctly after we've manipulated the CLI parameters. Let's
         // use references for convenience.
         $argv = & $_SERVER['argv'];

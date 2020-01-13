@@ -28,8 +28,8 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for comments
@@ -63,7 +63,7 @@ class Comments extends Gateway
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
-     * @return array|\Zend\Db\ResultSet\AbstractResultSet
+     * @return array|\Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {

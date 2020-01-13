@@ -35,7 +35,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
-use Zend\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * Recommend test class.

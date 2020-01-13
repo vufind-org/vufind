@@ -46,7 +46,7 @@ class JSTree extends AbstractBase
     /**
      * Router plugin
      *
-     * @var \Zend\Mvc\Controller\Plugin\Url
+     * @var \Laminas\Mvc\Controller\Plugin\Url
      */
     protected $router = null;
 
@@ -60,12 +60,12 @@ class JSTree extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Mvc\Controller\Plugin\Url $router             Router plugin for
+     * @param \Laminas\Mvc\Controller\Plugin\Url $router             Router plugin for
      * urls
      * @param bool                            $collectionsEnabled Whether the
      * collections functionality is enabled
      */
-    public function __construct(\Zend\Mvc\Controller\Plugin\Url $router,
+    public function __construct(\Laminas\Mvc\Controller\Plugin\Url $router,
         $collectionsEnabled
     ) {
         $this->router = $router;
@@ -179,7 +179,7 @@ class JSTree extends AbstractBase
      */
     protected function buildNodeArray($node, $context, $hierarchyID)
     {
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
         $ret = [
             'id' => preg_replace('/\W/', '-', $node->id),
             'text' => $escaper->escapeHtml($node->title),
@@ -285,7 +285,7 @@ class JSTree extends AbstractBase
      */
     protected function jsonToHTML($node, $context, $hierarchyID, $recordID = false)
     {
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
 
         $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'

@@ -31,9 +31,9 @@ namespace VuFindTest\ILS\Driver;
 use InvalidArgumentException;
 
 use VuFind\ILS\Driver\PAIA;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Response as HttpResponse;
+use Laminas\Http\Response as HttpResponse;
 
 /**
  * ILS driver test
@@ -592,7 +592,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $service = $this->getHttpService($fixture);
         $conn = new PAIA(
             new \VuFind\Date\Converter(),
-            new \Zend\Session\SessionManager()
+            new \Laminas\Session\SessionManager()
         );
         $conn->setHttpService($service);
         return $conn;
@@ -611,7 +611,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $service = $this->getHttpService($fixture);
         $dateConverter = new \VuFind\Date\Converter();
-        $sessionManager = new \Zend\Session\SessionManager();
+        $sessionManager = new \Laminas\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([$dateConverter, $sessionManager])
             ->setMethods(['getScope'])

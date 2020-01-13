@@ -52,7 +52,7 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      * Render an expand link.
      *
      * @param string                          $url  Link href
-     * @param \Zend\View\Renderer\PhpRenderer $view View renderer object
+     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
      *
      * @return string
      */

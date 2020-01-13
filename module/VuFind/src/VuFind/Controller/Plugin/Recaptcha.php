@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Zend action helper to manage Recaptcha fields
@@ -41,7 +41,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 class Recaptcha extends AbstractPlugin
 {
     /**
-     * \ZendService\ReCaptcha\ReCaptcha
+     * \Laminas\ReCaptcha\ReCaptcha
      */
     protected $recaptcha;
 
@@ -63,7 +63,7 @@ class Recaptcha extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param \ZendService\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
+     * @param \Laminas\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
      * @param \VuFind\Config                   $config Config file
      *
      * @return void
@@ -122,7 +122,7 @@ class Recaptcha extends AbstractPlugin
             ->fromPost('g-recaptcha-response');
         try {
             $response = $this->recaptcha->verify($responseField);
-        } catch (\ZendService\ReCaptcha\Exception $e) {
+        } catch (\Laminas\ReCaptcha\Exception $e) {
             $response = false;
         }
         $captchaPassed = $response && $response->isValid();

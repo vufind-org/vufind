@@ -36,9 +36,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use Zend\Config\Config;
-use Zend\Session\Container as SessionContainer;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Config\Config;
+use Laminas\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend

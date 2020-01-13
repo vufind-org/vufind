@@ -35,8 +35,8 @@ use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 
 /**
  * Unit tests for LibGuides backend.
@@ -243,7 +243,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\LibGuides\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['fakeid', $client])

@@ -183,7 +183,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
     {
         $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new Params(new Options($configManager), $configManager);
-        $params->initFromRequest(new \Zend\Stdlib\Parameters($request));
+        $params->initFromRequest(new \Laminas\Stdlib\Parameters($request));
         $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
         $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)

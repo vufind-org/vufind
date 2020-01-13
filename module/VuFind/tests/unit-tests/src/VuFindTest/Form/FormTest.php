@@ -64,7 +64,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
     }
 
@@ -171,7 +171,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems

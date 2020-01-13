@@ -235,7 +235,7 @@ class TabManager
      * single pass. Returns an associative array with 'tabs' and 'default' keys.
      *
      * @param AbstractRecordDriver $driver   Record driver
-     * @param \Zend\Http\Request   $request  User request (optional)
+     * @param \Laminas\Http\Request   $request  User request (optional)
      * @param string               $fallback Fallback default tab to use if no
      * tab specified or matched.
      *
@@ -253,7 +253,7 @@ class TabManager
      * Get an array of valid tabs for the provided record driver.
      *
      * @param AbstractRecordDriver $driver  Record driver
-     * @param \Zend\Http\Request   $request User request (optional)
+     * @param \Laminas\Http\Request   $request User request (optional)
      *
      * @return array               service name => tab object
      */
@@ -269,7 +269,7 @@ class TabManager
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
-            if ($request instanceof \Zend\Http\Request
+            if ($request instanceof \Laminas\Http\Request
                 && method_exists($newTab, 'setRequest')
             ) {
                 $newTab->setRequest($request);

@@ -30,7 +30,7 @@ namespace VuFindTest\Controller\Plugin;
 
 use VuFind\Controller\Plugin\ResultScroller;
 use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  * ResultScroller controller plugin tests.
@@ -350,7 +350,7 @@ class ResultScrollerTest extends TestCase
         $firstLast = true, $sort = null
     ) {
         $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
-        $config = new \Zend\Config\Config(
+        $config = new \Laminas\Config\Config(
             $firstLast ? $this->getFirstLastConfig() : []
         );
         $pm->expects($this->any())->method('get')->will($this->returnValue($config));

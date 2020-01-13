@@ -32,7 +32,7 @@ use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Channel loader

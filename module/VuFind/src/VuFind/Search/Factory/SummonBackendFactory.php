@@ -36,7 +36,7 @@ use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Summon backends.
@@ -52,7 +52,7 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -66,14 +66,14 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Summon configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $summonConfig;
 

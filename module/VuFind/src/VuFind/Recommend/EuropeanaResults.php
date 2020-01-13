@@ -28,7 +28,7 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\Feed\Reader\Reader as FeedReader;
+use Laminas\Feed\Reader\Reader as FeedReader;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -43,7 +43,7 @@ use Zend\Feed\Reader\Reader as FeedReader;
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class EuropeanaResults implements RecommendInterface,
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;

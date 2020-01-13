@@ -28,8 +28,8 @@
 namespace VuFind\Controller;
 
 use VuFindSearch\Query\Query;
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Collections Controller
@@ -45,7 +45,7 @@ class CollectionsController extends AbstractBase
     /**
      * VuFind configuration
      *
-     * @param \Zend\Config\Config
+     * @param \Laminas\Config\Config
      */
     protected $config;
 

@@ -30,7 +30,7 @@ namespace VuFind\AjaxHandler;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Comments;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to delete a comment on a record.

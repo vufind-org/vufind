@@ -29,9 +29,9 @@ namespace VuFind\AjaxHandler;
 
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
-use Zend\Http\PhpEnvironment\Request;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * "Get Record Details" AJAX handler

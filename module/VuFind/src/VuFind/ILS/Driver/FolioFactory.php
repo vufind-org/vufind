@@ -61,8 +61,8 @@ class FolioFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Zend\Session\SessionManager::class);
-            return new \Zend\Session\Container("Folio_$namespace", $manager);
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }

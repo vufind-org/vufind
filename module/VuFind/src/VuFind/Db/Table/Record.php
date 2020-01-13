@@ -31,9 +31,9 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Predicate\Expression;
-use Zend\Db\Sql\Where;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Where;
 
 /**
  * Table Definition for record

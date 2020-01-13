@@ -31,7 +31,7 @@ namespace VuFindTest\Record;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Record router tests.

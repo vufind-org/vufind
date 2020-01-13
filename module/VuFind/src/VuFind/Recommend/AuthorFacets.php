@@ -29,7 +29,7 @@
 namespace VuFind\Recommend;
 
 use VuFindSearch\Query\Query;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 use Zend\StdLib\Parameters;
 
 /**

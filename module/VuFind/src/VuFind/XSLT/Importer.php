@@ -31,8 +31,8 @@ use DOMDocument;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
-use Zend\Console\Console;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Console\Console;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind XSLT importer

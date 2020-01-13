@@ -29,7 +29,7 @@
 namespace VuFindTest\Controller;
 
 use VuFindDevTools\LanguageHelper;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Unit tests for language helper.

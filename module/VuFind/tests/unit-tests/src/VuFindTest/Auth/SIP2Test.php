@@ -28,7 +28,7 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\SIP2;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * SIP2 authentication test class.
@@ -80,15 +80,15 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 

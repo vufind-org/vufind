@@ -31,7 +31,7 @@ use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Tags;
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to tag/untag a record.

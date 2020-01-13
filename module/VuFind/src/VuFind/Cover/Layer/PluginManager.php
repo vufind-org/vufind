@@ -27,7 +27,7 @@
  */
 namespace VuFind\Cover\Layer;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Cover layer plugin manager

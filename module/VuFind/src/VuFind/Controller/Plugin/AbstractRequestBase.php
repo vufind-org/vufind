@@ -29,9 +29,9 @@ namespace VuFind\Controller\Plugin;
 
 use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Session\Container;
-use Zend\Session\SessionManager;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 
 /**
  * Zend action helper base class to perform request-related actions

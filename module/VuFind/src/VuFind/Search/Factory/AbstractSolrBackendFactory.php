@@ -49,9 +49,9 @@ use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -67,7 +67,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 

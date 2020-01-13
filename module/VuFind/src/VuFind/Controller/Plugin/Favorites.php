@@ -42,7 +42,7 @@ use VuFind\Tags;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Favorites extends \Zend\Mvc\Controller\Plugin\AbstractPlugin
+class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
     /**
      * Record cache

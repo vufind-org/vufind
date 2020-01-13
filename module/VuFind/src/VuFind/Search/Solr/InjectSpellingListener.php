@@ -34,8 +34,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 
 /**
  * Solr spelling listener.

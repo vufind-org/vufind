@@ -31,8 +31,8 @@
 namespace VuFind\Role\PermissionProvider;
 
 use VuFind\Net\IpAddressUtils;
-use Zend\Console\Console;
-use Zend\Stdlib\RequestInterface;
+use Laminas\Console\Console;
+use Laminas\Stdlib\RequestInterface;
 
 /**
  * IpRange permission provider for VuFind.

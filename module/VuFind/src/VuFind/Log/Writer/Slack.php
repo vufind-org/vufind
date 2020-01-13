@@ -27,7 +27,7 @@
  */
 namespace VuFind\Log\Writer;
 
-use Zend\Http\Client;
+use Laminas\Http\Client;
 
 /**
  * This class extends the Zend Logging to send errors to Slack

@@ -29,7 +29,7 @@ namespace VuFindConsole\Controller;
 
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
-use Zend\Console\Console;
+use Laminas\Console\Console;
 
 /**
  * This controller handles various command-line tools for dealing with language files
@@ -45,7 +45,7 @@ class LanguageController extends AbstractBase
     /**
      * Copy one language string to another
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function copystringAction()
     {
@@ -113,7 +113,7 @@ class LanguageController extends AbstractBase
      * Assemble a new language string by combining existing ones using a
      * template.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function addusingtemplateAction()
     {
@@ -209,7 +209,7 @@ class LanguageController extends AbstractBase
     /**
      * Delete a language string to another
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function deleteAction()
     {
@@ -260,7 +260,7 @@ class LanguageController extends AbstractBase
     /**
      * Normalizer
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function normalizeAction()
     {

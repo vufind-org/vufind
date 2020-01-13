@@ -34,8 +34,8 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 
 /**
  * Unit tests for SOLR connector.

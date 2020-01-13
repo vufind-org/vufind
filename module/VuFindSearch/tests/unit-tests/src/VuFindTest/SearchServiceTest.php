@@ -651,9 +651,9 @@ class SearchServiceTest extends TestCase
      */
     public function testFailedResolve()
     {
-        $mockResponse = $this->createMock(\Zend\EventManager\ResponseCollection::class);
+        $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
-        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
             ->with(
@@ -686,7 +686,7 @@ class SearchServiceTest extends TestCase
      */
     protected function getService()
     {
-        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new SearchServiceMock($this->getBackend());
         $service->setEventManager($em);
         return $service;

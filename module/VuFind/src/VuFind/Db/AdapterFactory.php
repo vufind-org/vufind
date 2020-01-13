@@ -29,8 +29,8 @@
 namespace VuFind\Db;
 
 use Interop\Container\ContainerInterface;
-use Zend\Config\Config;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Config\Config;
+use Laminas\Db\Adapter\Adapter;
 
 /**
  * Database utility class. May be used as a service or as a standard
@@ -42,7 +42,7 @@ use Zend\Db\Adapter\Adapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AdapterFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * VuFind configuration

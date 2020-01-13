@@ -35,7 +35,7 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\EDS\Zend2 as Connector;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for EDS backends.
@@ -51,7 +51,7 @@ class EdsBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger = null;
 
@@ -65,7 +65,7 @@ class EdsBackendFactory implements FactoryInterface
     /**
      * EDS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $edsConfig;
 
@@ -112,8 +112,8 @@ class EdsBackendFactory implements FactoryInterface
         $auth = $this->serviceLocator
             ->get(\ZfcRbac\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
-        $session = new \Zend\Session\Container(
-            'EBSCO', $this->serviceLocator->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'EBSCO', $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(),

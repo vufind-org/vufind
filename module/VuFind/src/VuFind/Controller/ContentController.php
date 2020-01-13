@@ -45,13 +45,13 @@ class ContentController extends AbstractBase
     /**
      * Default action if none provided
      *
-     * @return Zend\View\Model\ViewModel
+     * @return Laminas\View\Model\ViewModel
      */
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
         $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
-        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
+        $language = $this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class)
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 
@@ -88,7 +88,7 @@ class ContentController extends AbstractBase
     {
         $response   = $this->response;
 
-        if ($response instanceof \Zend\Http\Response) {
+        if ($response instanceof \Laminas\Http\Response) {
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);

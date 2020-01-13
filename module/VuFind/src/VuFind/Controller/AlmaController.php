@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Alma controller, mainly for webhooks.
@@ -50,28 +50,28 @@ class AlmaController extends AbstractBase
     /**
      * Http response
      *
-     * @var \Zend\Http\PhpEnvironment\Response
+     * @var \Laminas\Http\PhpEnvironment\Response
      */
     protected $httpResponse;
 
     /**
      * Http headers
      *
-     * @var \Zend\Http\Headers
+     * @var \Laminas\Http\Headers
      */
     protected $httpHeaders;
 
     /**
      * Configuration from config.ini
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Alma.ini config
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $configAlma;
 
@@ -100,7 +100,7 @@ class AlmaController extends AbstractBase
     /**
      * Action that is executed when the webhook page is called.
      *
-     * @return \Zend\Http\Response|NULL
+     * @return \Laminas\Http\Response|NULL
      */
     public function webhookAction()
     {
@@ -175,7 +175,7 @@ class AlmaController extends AbstractBase
      *
      * @param mixed $requestBodyJson A JSON string decode with json_decode()
      *
-     * @return NULL|\Zend\Http\Response
+     * @return NULL|\Laminas\Http\Response
      */
     protected function webhookUser($requestBodyJson)
     {
@@ -302,7 +302,7 @@ class AlmaController extends AbstractBase
      * The webhook challenge. This is used to activate the webhook in Alma. Without
      * activating it, Alma will not send its webhook messages to VuFind.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function webhookChallenge()
     {
@@ -339,7 +339,7 @@ class AlmaController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   A user row object from the VuFind
      *                                    user table.
-     * @param \Zend\Config\Config $config A config object of config.ini
+     * @param \Laminas\Config\Config $config A config object of config.ini
      *
      * @return void
      */
@@ -398,7 +398,7 @@ class AlmaController extends AbstractBase
      * @param int    $httpStatusCode The HTTP status code that should be sent back
      *                               to Alma
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function createJsonResponse($text, $httpStatusCode)
     {
@@ -417,7 +417,7 @@ class AlmaController extends AbstractBase
      *
      * @param string $webhookType The type of the webhook
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function webhookNotImplemented($webhookType)
     {
@@ -449,7 +449,7 @@ class AlmaController extends AbstractBase
      * the 'X-Exl-Signature' in the request header. This is a security measure to
      * be sure that the request comes from Alma.
      *
-     * @param \Zend\Stdlib\RequestInterface $request The request from Alma.
+     * @param \Laminas\Stdlib\RequestInterface $request The request from Alma.
      *
      * @throws \VuFind\Exception\Forbidden                Throws forbidden exception
      *                                                     if hash values are not the
@@ -457,7 +457,7 @@ class AlmaController extends AbstractBase
      *
      * @return void
      */
-    protected function checkMessageSignature(\Zend\Stdlib\RequestInterface $request)
+    protected function checkMessageSignature(\Laminas\Stdlib\RequestInterface $request)
     {
         // Get request content
         $requestBodyString = $request->getContent();

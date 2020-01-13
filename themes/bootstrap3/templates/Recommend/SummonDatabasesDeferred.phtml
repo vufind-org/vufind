@@ -5,5 +5,5 @@
 ?>
 <div id="SummonDeferredDatabases">
   <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner" aria-hidden="true"></i></p>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

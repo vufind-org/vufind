@@ -29,8 +29,8 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\Linkify;
 use VuFind\View\Helper\Root\ProxyUrl;
-use Zend\View\Helper\EscapeHtml;
-use Zend\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\EscapeHtmlAttr;
 
 /**
  * Linkify Test Class

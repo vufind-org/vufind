@@ -149,10 +149,10 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:
-        $match = new \Zend\Router\RouteMatch([]);
+        $match = new \Laminas\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
-            ->setRouter($this->createMock(\Zend\Router\RouteStackInterface::class))
+            ->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
         // Inject the view object into all of the helpers:

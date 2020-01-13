@@ -31,7 +31,7 @@ namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 
 /**
  * Secure session delegator factory

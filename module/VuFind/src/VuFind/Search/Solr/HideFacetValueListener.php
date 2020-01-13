@@ -28,8 +28,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 
 /**
  * Hide single facet values from displaying.

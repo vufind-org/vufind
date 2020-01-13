@@ -28,7 +28,7 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\LDAP;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -171,15 +171,15 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 

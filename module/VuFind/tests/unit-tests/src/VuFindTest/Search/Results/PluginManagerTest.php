@@ -58,7 +58,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
+     * @expectedException        Laminas\ServiceManager\Exception\InvalidServiceException
      * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Search\Base\Results
      */
     public function testExpectedInterface()

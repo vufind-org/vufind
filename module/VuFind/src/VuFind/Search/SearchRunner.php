@@ -28,9 +28,9 @@
 namespace VuFind\Search;
 
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
-use Zend\Stdlib\Parameters;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\Stdlib\Parameters;
 
 /**
  * VuFind Search Runner

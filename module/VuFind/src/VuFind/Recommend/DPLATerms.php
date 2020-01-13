@@ -27,8 +27,8 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\Http\Client\Adapter\Exception\TimeoutException;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client\Adapter\Exception\TimeoutException;
+use Laminas\Http\Client as HttpClient;
 
 /**
  * DPLATerms Recommendations Module

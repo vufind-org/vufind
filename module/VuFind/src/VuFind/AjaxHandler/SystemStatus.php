@@ -29,9 +29,9 @@ namespace VuFind\AjaxHandler;
 
 use VuFind\Db\Table\Session;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Session\SessionManager;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Session\SessionManager;
 
 /**
  * "Keep Alive" AJAX handler

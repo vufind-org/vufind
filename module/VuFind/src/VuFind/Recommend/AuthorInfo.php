@@ -30,7 +30,7 @@ namespace VuFind\Recommend;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
-use Zend\I18n\Translator\TranslatorInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -54,7 +54,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     /**
      * HTTP client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $client;
 
@@ -98,12 +98,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
-     * @param \Zend\Http\Client                    $client  HTTP client
+     * @param \Laminas\Http\Client                    $client  HTTP client
      * @param string                               $sources Source identifiers
      * (currently, only 'wikipedia' is supported)
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \Zend\Http\Client $client, $sources = 'wikipedia'
+        \Laminas\Http\Client $client, $sources = 'wikipedia'
     ) {
         $this->resultsManager = $results;
         $this->client = $client;

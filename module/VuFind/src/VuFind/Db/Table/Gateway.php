@@ -28,9 +28,9 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\TableGateway\AbstractTableGateway;
-use Zend\Db\TableGateway\Feature;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\TableGateway\AbstractTableGateway;
+use Laminas\Db\TableGateway\Feature;
 
 /**
  * Generic VuFind table gateway.
@@ -117,7 +117,7 @@ class Gateway extends AbstractTableGateway
         ) {
             // Do we have a sequence feature?
             $feature = $this->featureSet->getFeatureByClassName(
-                'Zend\Db\TableGateway\Feature\SequenceFeature'
+                'Laminas\Db\TableGateway\Feature\SequenceFeature'
             );
             if ($feature) {
                 $key = $obj->getPrimaryKeyColumn();

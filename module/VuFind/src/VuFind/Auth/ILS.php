@@ -107,7 +107,7 @@ class ILS extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -159,7 +159,7 @@ class ILS extends AbstractBase
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * new account details.
      *
      * @throws AuthException
@@ -218,11 +218,11 @@ class ILS extends AbstractBase
     /**
      * Returns any authentication method this request should be delegated to.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
      *
      * @return string|bool
      */
-    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    public function getDelegateAuthMethod(\Laminas\Http\PhpEnvironment\Request $request)
     {
         return (null !== $this->emailAuthenticator
             && $this->emailAuthenticator->isValidLoginRequest($request))

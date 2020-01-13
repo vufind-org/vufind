@@ -42,7 +42,7 @@ use VuFind\Exception\Auth as AuthException;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFind\I18n\Translator\TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -58,7 +58,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Configuration settings
      *
-     * @param \Zend\Config\Config
+     * @param \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -67,7 +67,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function getConfig()
     {
@@ -85,7 +85,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * essentially an event hook which most auth modules can ignore. See
      * ChoiceAuth for a use case example.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
      *
      * @throws AuthException
      * @return void
@@ -111,7 +111,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Set configuration.
      *
-     * @param \Zend\Config\Config $config Configuration to set
+     * @param \Laminas\Config\Config $config Configuration to set
      *
      * @return void
      */
@@ -124,7 +124,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Whether this authentication method needs CSRF checking for the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
      *
      * @return bool
      *
@@ -139,13 +139,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Returns any authentication method this request should be delegated to.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
      *
      * @return string|bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    public function getDelegateAuthMethod(\Laminas\Http\PhpEnvironment\Request $request)
     {
         // No delegate by default
         return false;
@@ -167,7 +167,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -180,7 +180,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -210,7 +210,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * new account details.
      *
      * @throws AuthException
@@ -228,7 +228,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * new account details.
      *
      * @throws AuthException

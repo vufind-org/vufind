@@ -30,8 +30,8 @@
 namespace VuFind\Session;
 
 use VuFind\Cookie\CookieManager;
-use Zend\Crypt\BlockCipher;
-use Zend\Math\Rand;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Math\Rand;
 
 /**
  * Secure session delegator

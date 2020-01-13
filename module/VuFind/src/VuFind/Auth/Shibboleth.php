@@ -54,16 +54,16 @@ class Shibboleth extends AbstractBase
     /**
      * Session manager
      *
-     * @var \Zend\Session\ManagerInterface
+     * @var \Laminas\Session\ManagerInterface
      */
     protected $sessionManager;
 
     /**
      * Constructor
      *
-     * @param \Zend\Session\ManagerInterface $sessionManager Session manager
+     * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
      */
-    public function __construct(\Zend\Session\ManagerInterface $sessionManager)
+    public function __construct(\Laminas\Session\ManagerInterface $sessionManager)
     {
         $this->sessionManager = $sessionManager;
     }
@@ -97,7 +97,7 @@ class Shibboleth extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException

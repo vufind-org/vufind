@@ -130,7 +130,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @param string $name Configuration to load
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     protected function getConfig($name)
     {
@@ -252,7 +252,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Zend\Config\Exception\RuntimeException
+     * @expectedException Laminas\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {

@@ -31,9 +31,9 @@ namespace VuFindTest\ILS\Driver;
 use InvalidArgumentException;
 
 use VuFind\ILS\Driver\DAIA;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Response as HttpResponse;
+use Laminas\Http\Response as HttpResponse;
 
 /**
  * ILS driver test

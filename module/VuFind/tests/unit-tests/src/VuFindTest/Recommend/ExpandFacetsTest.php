@@ -119,7 +119,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
         $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Zend\Config\Config($config)));
+            ->will($this->returnValue(new \Laminas\Config\Config($config)));
         return $loader;
     }
 

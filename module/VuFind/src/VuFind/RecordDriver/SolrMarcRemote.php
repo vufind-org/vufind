@@ -31,7 +31,7 @@
 namespace VuFind\RecordDriver;
 
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
@@ -62,11 +62,11 @@ class SolrMarcRemote extends SolrMarc implements
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit for
      * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @param \Laminas\Config\Config $searchSettings Search-specific configuration file
      *
      * @throws \Exception
      */

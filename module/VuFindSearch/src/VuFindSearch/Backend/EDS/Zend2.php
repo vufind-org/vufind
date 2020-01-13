@@ -28,9 +28,9 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
-use Zend\Http\Client\Adapter\Curl as CurlAdapter;
-use Zend\Http\Client as Zend2HttpClient;
-use Zend\Log\LoggerAwareInterface;
+use Laminas\Http\Client\Adapter\Curl as CurlAdapter;
+use Laminas\Http\Client as Zend2HttpClient;
+use Laminas\Log\LoggerAwareInterface;
 
 /**
  * EBSCO EDS API Zend2 Framework implementation

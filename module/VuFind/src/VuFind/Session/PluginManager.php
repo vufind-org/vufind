@@ -29,7 +29,7 @@
  */
 namespace VuFind\Session;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Session handler plugin manager
@@ -74,7 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
         Database::class => [SecureDelegatorFactory::class],

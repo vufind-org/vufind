@@ -28,10 +28,10 @@
 namespace VuFind\Mailer;
 
 use VuFind\Exception\Mail as MailException;
-use Zend\Mail\Address;
-use Zend\Mail\AddressList;
-use Zend\Mail\Header\ContentType;
-use Zend\Mail\Message;
+use Laminas\Mail\Address;
+use Laminas\Mail\AddressList;
+use Laminas\Mail\Header\ContentType;
+use Laminas\Mail\Message;
 
 /**
  * VuFind Mailer Class
@@ -49,7 +49,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Mail transport
      *
-     * @var \Zend\Mail\Transport\TransportInterface
+     * @var \Laminas\Mail\Transport\TransportInterface
      */
     protected $transport;
 
@@ -70,9 +70,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
+     * @param \Laminas\Mail\Transport\TransportInterface $transport Mail transport
      */
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
+    public function __construct(\Laminas\Mail\Transport\TransportInterface $transport)
     {
         $this->setTransport($transport);
     }
@@ -80,7 +80,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Get the mail transport object.
      *
-     * @return \Zend\Mail\Transport\TransportInterface
+     * @return \Laminas\Mail\Transport\TransportInterface
      */
     public function getTransport()
     {
@@ -122,7 +122,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Set the mail transport object.
      *
-     * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
+     * @param \Laminas\Mail\Transport\TransportInterface $transport Mail transport
      * object
      *
      * @return void
@@ -178,7 +178,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 throw new MailException('Too Many Email Recipients');
             }
         }
-        $validator = new \Zend\Validator\EmailAddress();
+        $validator = new \Laminas\Validator\EmailAddress();
         if (count($recipients) == 0) {
             throw new MailException('Invalid Recipient Email Address');
         }
@@ -241,11 +241,11 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a link.
      *
      * @param string                          $to      Recipient email address
-     * @param string|\Zend\Mail\Address       $from    Sender name and email address
+     * @param string|\Laminas\Mail\Address       $from    Sender name and email address
      * @param string                          $msg     User notes to include in
      * message
      * @param string                          $url     URL to share
-     * @param \Zend\View\Renderer\PhpRenderer $view    View object (used to render
+     * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
      * @param string                          $subject Subject for email (optional)
      * @param string                          $cc      CC recipient (null for none)
@@ -284,12 +284,12 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a record.
      *
      * @param string                            $to      Recipient email address
-     * @param string|\Zend\Mail\Address         $from    Sender name and email
+     * @param string|\Laminas\Mail\Address         $from    Sender name and email
      * address
      * @param string                            $msg     User notes to include in
      * message
      * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed
-     * @param \Zend\View\Renderer\PhpRenderer   $view    View object (used to render
+     * @param \Laminas\View\Renderer\PhpRenderer   $view    View object (used to render
      * email templates)
      * @param string                            $subject Subject for email (optional)
      * @param string                            $cc      CC recipient (null for none)

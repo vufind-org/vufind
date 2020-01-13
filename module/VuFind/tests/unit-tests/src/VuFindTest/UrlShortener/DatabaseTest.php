@@ -91,7 +91,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testResolution()
     {
         $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
+        $mockResults = $this->getMockBuilder(\Laminas\Db\ResultSet::class)
             ->setMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -117,7 +117,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testResolutionOfBadInput()
     {
         $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
+        $mockResults = $this->getMockBuilder(\Laminas\Db\ResultSet::class)
             ->setMethods(['count'])
             ->disableOriginalConstructor()
             ->getMock();

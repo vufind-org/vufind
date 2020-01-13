@@ -31,7 +31,7 @@ use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Content block plugin manager

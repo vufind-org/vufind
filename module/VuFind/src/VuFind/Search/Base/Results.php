@@ -30,7 +30,7 @@ namespace VuFind\Search\Base;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
-use Zend\Paginator\Paginator;
+use Laminas\Paginator\Paginator;
 
 /**
  * Abstract results search model.
@@ -513,7 +513,7 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
+        $nullAdapter = "Laminas\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())

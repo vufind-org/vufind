@@ -82,7 +82,7 @@ class Suggester
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.
      *
-     * @param \Zend\Stdlib\Parameters $request    The user request
+     * @param \Laminas\Stdlib\Parameters $request    The user request
      * @param string                  $typeParam  Request parameter containing search
      * type
      * @param string                  $queryParam Request parameter containing query

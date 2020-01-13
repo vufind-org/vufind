@@ -31,7 +31,7 @@ namespace VuFindTest\Search;
 use VuFind\Search\BackendManager;
 use VuFindTest\Unit\TestCase as TestCase;
 
-use Zend\EventManager\SharedEventManager;
+use Laminas\EventManager\SharedEventManager;
 
 /**
  * BackendManager unit tests.
@@ -54,7 +54,7 @@ class BackendManagerTest extends TestCase
      */
     public function testGetThrowsOnNonObject()
     {
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass('Laminas\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())
             ->method('get')
             ->will($this->returnValue('not-an-object'));
@@ -72,7 +72,7 @@ class BackendManagerTest extends TestCase
      */
     public function testGetThrowsOnNonBackend()
     {
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass('Laminas\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())
             ->method('get')
             ->will($this->returnValue($this));
@@ -87,7 +87,7 @@ class BackendManagerTest extends TestCase
      */
     public function testAttachDetachShared()
     {
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass('Laminas\ServiceManager\ServiceLocatorInterface');
         $events   = new SharedEventManager();
         $manager  = new BackendManager($registry);
         $manager->attachShared($events);

@@ -28,8 +28,8 @@
 namespace VuFindTest\DoiLinker;
 
 use VuFind\DoiLinker\Unpaywall;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Response as HttpResponse;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
 /**
  * Unpaywall Test Class
@@ -52,7 +52,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
      */
     public function testConfigValidation()
     {
-        new Unpaywall(new \Zend\Config\Config([]));
+        new Unpaywall(new \Laminas\Config\Config([]));
     }
 
     /**
@@ -74,7 +74,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $config = [
             'unpaywall_email' => 'foo@myuniversity.edu',
         ];
-        $unpaywall = new Unpaywall(new \Zend\Config\Config($config));
+        $unpaywall = new Unpaywall(new \Laminas\Config\Config($config));
         $unpaywall->setHttpService($service);
         $this->assertEquals(
             ['10.7553/66-4-1434' => [

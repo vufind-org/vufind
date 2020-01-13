@@ -28,7 +28,7 @@
 namespace VuFindTest;
 
 use VuFind\Export;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Export Support Test Class

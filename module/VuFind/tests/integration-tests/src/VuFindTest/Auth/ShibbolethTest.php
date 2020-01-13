@@ -28,7 +28,7 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\Shibboleth;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -78,7 +78,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new Shibboleth($this->createMock(\Zend\Session\ManagerInterface::class));
+        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class));
         $initializer = new \VuFind\ServiceManager\ServiceInitializer();
         $initializer($this->getServiceManager(), $obj);
         $obj->setConfig($config);
@@ -120,7 +120,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
@@ -128,8 +128,8 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass'
         ];
-        $request = new \Zend\Http\PhpEnvironment\Request();
-        $request->setServer(new \Zend\Stdlib\Parameters($server));
+        $request = new \Laminas\Http\PhpEnvironment\Request();
+        $request->setServer(new \Laminas\Stdlib\Parameters($server));
         return $request;
     }
 

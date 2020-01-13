@@ -34,7 +34,7 @@ use SoapHeader;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
-use Zend\Log\LoggerAwareInterface;
+use Laminas\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver

@@ -30,7 +30,7 @@
 namespace VuFind\Search;
 
 use VuFind\Search\Results\PluginManager;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * "Search tabs" helper
@@ -42,7 +42,7 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
+class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Search manager

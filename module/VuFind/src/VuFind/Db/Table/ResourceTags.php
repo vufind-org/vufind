@@ -28,8 +28,8 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for resource_tags
@@ -156,7 +156,7 @@ class ResourceTags extends Gateway
      * @param string $userId ID of user owning favorite list
      * @param string $listId ID of list to retrieve (null for all favorites)
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getResourcesForTag($tag, $userId, $listId = null)
     {
@@ -320,7 +320,7 @@ class ResourceTags extends Gateway
      * @param string $resourceId ID of the resource
      * @param string $tagId      ID of the tag
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getUniqueResources(
         $userId = null, $resourceId = null, $tagId = null
@@ -377,7 +377,7 @@ class ResourceTags extends Gateway
      * @param string $resourceId ID of the resource
      * @param string $tagId      ID of the tag
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getUniqueTags($userId = null, $resourceId = null, $tagId = null)
     {
@@ -436,7 +436,7 @@ class ResourceTags extends Gateway
      * @param string $resourceId ID of the resource
      * @param string $tagId      ID of the tag
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getUniqueUsers($userId = null, $resourceId = null, $tagId = null)
     {
@@ -516,7 +516,7 @@ class ResourceTags extends Gateway
      * @param string $page       The page number to select
      * @param string $limit      The number of items to fetch
      *
-     * @return \Zend\Paginator\Paginator
+     * @return \Laminas\Paginator\Paginator
      */
     public function getResourceTags(
         $userId = null, $resourceId = null, $tagId = null,
@@ -562,8 +562,8 @@ class ResourceTags extends Gateway
             $select->offset($limit * ($page - 1));
         }
 
-        $adapter = new \Zend\Paginator\Adapter\DbSelect($select, $sql);
-        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $adapter = new \Laminas\Paginator\Adapter\DbSelect($select, $sql);
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
         if (null !== $page) {
             $paginator->setCurrentPageNumber($page);

@@ -28,10 +28,10 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -275,7 +275,7 @@ class Tags extends Gateway
      * @param string $source     Filter for tags tied to a specific record source
      * (null for no filter).
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getForUser($userId, $resourceId = null, $listId = null,
         $source = null

@@ -29,7 +29,7 @@
 namespace VuFind\Http\PhpEnvironment;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * RemoteAddress utility factory.

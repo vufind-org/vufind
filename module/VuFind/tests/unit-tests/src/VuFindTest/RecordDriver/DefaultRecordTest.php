@@ -30,7 +30,7 @@ namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * DefaultRecord Record Driver Test Class

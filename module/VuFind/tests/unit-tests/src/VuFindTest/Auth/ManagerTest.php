@@ -31,8 +31,8 @@ use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
-use Zend\Config\Config;
-use Zend\Session\SessionManager;
+use Laminas\Config\Config;
+use Laminas\Session\SessionManager;
 
 /**
  * Authentication manager test class.
@@ -501,7 +501,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $manager = $this->getManager([], $table);
 
         // Fake the session inside the manager:
-        $mockSession = $this->getMockBuilder(\Zend\Session\Container::class)
+        $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->setMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
@@ -536,7 +536,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $cookies = new \VuFind\Cookie\CookieManager([]);
         $csrf = new \VuFind\Validator\Csrf(
             [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'session' => new \Laminas\Session\Container('csrf', $sessionManager),
                 'salt' => 'csrftest'
             ]
         );
@@ -564,7 +564,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockSessionManager()
     {
-        return $this->getMockBuilder(\Zend\Session\SessionManager::class)
+        return $this->getMockBuilder(\Laminas\Session\SessionManager::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -614,17 +614,17 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock request object
      *
-     * @return \Zend\Http\PhpEnvironment\Request
+     * @return \Laminas\Http\PhpEnvironment\Request
      */
     protected function getMockRequest()
     {
-        $mock = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+        $mock = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $post = new \Zend\Stdlib\Parameters();
+        $post = new \Laminas\Stdlib\Parameters();
         $mock->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
-        $get = new \Zend\Stdlib\Parameters();
+        $get = new \Laminas\Stdlib\Parameters();
         $mock->expects($this->any())->method('getQuery')
             ->will($this->returnValue($get));
         return $mock;

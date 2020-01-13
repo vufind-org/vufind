@@ -28,9 +28,9 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Db\Adapter\Adapter as DbAdapter;
-use Zend\Db\Metadata\Metadata as DbMetadata;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Db\Adapter\Adapter as DbAdapter;
+use Laminas\Db\Metadata\Metadata as DbMetadata;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Zend action helper to perform database upgrades
@@ -799,7 +799,7 @@ class DbUpgrade extends AbstractPlugin
      * specified $type parameter.  Return false if there is a mismatch that will
      * require table structure updates.
      *
-     * @param \Zend\Db\Metadata\Object\ColumnObject $column       Object to check
+     * @param \Laminas\Db\Metadata\Object\ColumnObject $column       Object to check
      * @param string                                $expectedType Type to compare
      *
      * @return bool

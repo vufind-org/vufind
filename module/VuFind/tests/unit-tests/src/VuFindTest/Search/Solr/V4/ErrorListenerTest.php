@@ -35,9 +35,9 @@ use RuntimeException;
 use VuFind\Search\Solr\V4\ErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
-use Zend\EventManager\Event;
+use Laminas\EventManager\Event;
 
-use Zend\Http\Response;
+use Laminas\Http\Response;
 
 /**
  * Unit tests for SOLR 3.x error listener.

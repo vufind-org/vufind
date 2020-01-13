@@ -31,9 +31,9 @@ namespace VuFind\Db\Table;
 
 use minSO;
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Adapter\ParameterContainer;
-use Zend\Db\TableGateway\Feature;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\ParameterContainer;
+use Laminas\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search

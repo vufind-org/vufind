@@ -30,9 +30,9 @@ namespace VuFind\Db\Table;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
-use Zend\Session\Container;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
+use Laminas\Session\Container;
 
 /**
  * Table Definition for user_list

@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Collection Controller
@@ -87,7 +87,7 @@ class CollectionController extends AbstractRecord
         }
 
         $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Zend\View\Model\ViewModel) {
+        if (!$ajax && $result instanceof \Laminas\View\Model\ViewModel) {
             $result->setTemplate('collection/view');
         }
         return $result;

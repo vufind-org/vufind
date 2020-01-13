@@ -33,8 +33,8 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Connector;
 
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 
 /**
  * Unit tests for Primo connector.

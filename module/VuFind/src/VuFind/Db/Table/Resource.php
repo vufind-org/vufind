@@ -30,8 +30,8 @@ namespace VuFind\Db\Table;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for resource
@@ -128,7 +128,7 @@ class Resource extends Gateway
      * @param array  $ids    Array of IDs
      * @param string $source Source of records to look up
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -150,7 +150,7 @@ class Resource extends Gateway
      * @param int    $offset Offset for results
      * @param int    $limit  Limit for results (null for none)
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getFavorites($user, $list = null, $tags = [],
         $sort = null, $offset = 0, $limit = null
@@ -210,7 +210,7 @@ class Resource extends Gateway
      * Get a set of records that do not have metadata stored in the resource
      * table.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function findMissingMetadata()
     {
@@ -273,7 +273,7 @@ class Resource extends Gateway
     /**
      * Apply a sort parameter to a query on the resource table.
      *
-     * @param \Zend\Db\Sql\Select $query Query to modify
+     * @param \Laminas\Db\Sql\Select $query Query to modify
      * @param string              $sort  Field to use for sorting (may include 'desc'
      * qualifier)
      * @param string              $alias Alias to the resource table (defaults to

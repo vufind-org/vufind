@@ -2,11 +2,11 @@
 
 // Set up modules:
 $modules = [
-    'Zend\Form', 'Zend\Router', 'ZfcRbac',
+    'Laminas\Form', 'Laminas\Router', 'ZfcRbac',
     'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
-    $modules[] = 'Zend\Mvc\Console';
+    $modules[] = 'Laminas\Mvc\Console';
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {

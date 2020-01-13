@@ -27,8 +27,8 @@
  */
 namespace VuFind\Search\Primo;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 

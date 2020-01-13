@@ -29,7 +29,7 @@ namespace VuFind\ContentBlock;
 
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * FacetList content block.

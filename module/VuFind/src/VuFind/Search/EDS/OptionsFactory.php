@@ -60,8 +60,8 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'EBSCO', $container->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'EBSCO', $container->get(\Laminas\Session\SessionManager::class)
         );
         // No API info in session? Re-establish connection:
         if (!isset($session->info)) {

@@ -30,7 +30,7 @@ namespace VuFindTest\Search;
 
 use VuFind\Search\Memory;
 use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  * Memory unit tests.

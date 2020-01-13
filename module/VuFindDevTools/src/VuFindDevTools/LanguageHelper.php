@@ -28,8 +28,8 @@
 namespace VuFindDevTools;
 
 use VuFind\I18n\Translator\Loader\ExtendedIni;
-use Zend\Config\Config;
-use Zend\I18n\Translator\TextDomain;
+use Laminas\Config\Config;
+use Laminas\I18n\Translator\TextDomain;
 
 /**
  * Language Helper for Development Tools Controller

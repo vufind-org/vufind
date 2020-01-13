@@ -27,7 +27,7 @@
  */
 namespace VuFind\Log;
 
-use Zend\Log\Logger as BaseLogger;
+use Laminas\Log\Logger as BaseLogger;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -117,7 +117,7 @@ class Logger extends BaseLogger
      * Log an exception triggered by ZF2 for administrative purposes.
      *
      * @param \Exception              $error  Exception to log
-     * @param \Zend\Stdlib\Parameters $server Server metadata
+     * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void
      */

@@ -28,8 +28,8 @@
 namespace VuFind\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for user_resource
@@ -67,7 +67,7 @@ class UserResource extends Gateway
      * @param int    $userId     Optional user ID (to limit results to a particular
      * user).
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getSavedData($resourceId, $source = DEFAULT_SEARCH_BACKEND,
         $listId = null, $userId = null
