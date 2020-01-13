@@ -84,8 +84,7 @@ class Resource extends Gateway
      * @param string                            $id     Record ID to look up
      * @param string                            $source Source of record to look up
      * @param bool                              $create If true, create the row if it
-     * does not
-     * yet exist.
+     * does not yet exist.
      * @param \VuFind\RecordDriver\AbstractBase $driver A record driver for the
      * resource being created (optional -- improves efficiency if provided, but will
      * be auto-loaded as needed if left null).
@@ -274,9 +273,9 @@ class Resource extends Gateway
      * Apply a sort parameter to a query on the resource table.
      *
      * @param \Laminas\Db\Sql\Select $query Query to modify
-     * @param string              $sort  Field to use for sorting (may include 'desc'
+     * @param string                 $sort  Field to use for sorting (may include 'desc'
      * qualifier)
-     * @param string              $alias Alias to the resource table (defaults to
+     * @param string                 $alias Alias to the resource table (defaults to
      * 'resource')
      *
      * @return void

@@ -64,7 +64,7 @@ class Recaptcha extends AbstractPlugin
      * Constructor
      *
      * @param \Laminas\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
-     * @param \VuFind\Config                   $config Config file
+     * @param \VuFind\Config               $config Config file
      *
      * @return void
      */

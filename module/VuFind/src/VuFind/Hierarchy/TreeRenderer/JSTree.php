@@ -62,7 +62,7 @@ class JSTree extends AbstractBase
      *
      * @param \Laminas\Mvc\Controller\Plugin\Url $router             Router plugin for
      * urls
-     * @param bool                            $collectionsEnabled Whether the
+     * @param bool                               $collectionsEnabled Whether the
      * collections functionality is enabled
      */
     public function __construct(\Laminas\Mvc\Controller\Plugin\Url $router,

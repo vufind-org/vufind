@@ -107,12 +107,12 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * Constructor
      *
      * @param \Laminas\Session\SessionManager          $session      Session Manager
-     * @param \VuFind\Validator\Csrf                $csrf         CSRF Validator
-     * @param \VuFind\Mailer\Mailer                 $mailer       Mailer
+     * @param \VuFind\Validator\Csrf                   $csrf         CSRF Validator
+     * @param \VuFind\Mailer\Mailer                    $mailer       Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer View Renderer
-     * @param RemoteAddress                         $remoteAddr   Remote address
+     * @param RemoteAddress                            $remoteAddr   Remote address
      * @param \Laminas\Config\Config                   $config       Configuration
-     * @param AuthHashTable                         $authHash     AuthHash Table
+     * @param AuthHashTable                            $authHash     AuthHash Table
      */
     public function __construct(\Laminas\Session\SessionManager $session,
         \VuFind\Validator\Csrf $csrf, \VuFind\Mailer\Mailer $mailer,

@@ -127,7 +127,7 @@ class PAIA extends DAIA
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter       $converter      Date converter
+     * @param \VuFind\Date\Converter          $converter      Date converter
      * @param \Laminas\Session\SessionManager $sessionManager Session Manager
      */
     public function __construct(\VuFind\Date\Converter $converter,

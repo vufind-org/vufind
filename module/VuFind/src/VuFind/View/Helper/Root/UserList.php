@@ -59,7 +59,7 @@ class UserList extends AbstractHelper
      *
      * @param \Laminas\Session\Container $session Session container (must use same
      * namespace as container provided to \VuFind\Db\Table\UserList)
-     * @param string                  $mode    List mode (enabled or disabled)
+     * @param string                     $mode    List mode (enabled or disabled)
      */
     public function __construct(\Laminas\Session\Container $session, $mode = 'enabled')
     {

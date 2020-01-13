@@ -78,7 +78,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * Sets up the SOAP Client
      *
-     * @param string            $host   The URL of the SRU Server
+     * @param string               $host   The URL of the SRU Server
      * @param \Laminas\Http\Client $client An HTTP client object
      */
     public function __construct($host, \Laminas\Http\Client $client)

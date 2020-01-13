@@ -231,8 +231,8 @@ class Server
      * Initialize settings
      *
      * @param \Laminas\Config\Config $config  VuFind configuration
-     * @param string              $baseURL The base URL for the OAI server
-     * @param array               $params  The incoming OAI-PMH parameters (i.e.
+     * @param string                 $baseURL The base URL for the OAI server
+     * @param array                  $params  The incoming OAI-PMH parameters (i.e.
      * $_GET)
      *
      * @return void

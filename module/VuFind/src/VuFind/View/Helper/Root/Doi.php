@@ -69,7 +69,7 @@ class Doi extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context             $context Context helper
+     * @param Context                $context Context helper
      * @param \Laminas\Config\Config $config  VuFind OpenURL config
      */
     public function __construct(Context $context, $config = null)

@@ -81,7 +81,7 @@ class SimilarBuilder implements SimilarBuilderInterface
      * Constructor.
      *
      * @param \Laminas\Config\Config $searchConfig Search config
-     * @param string              $uniqueKey    Solr field used to store unique
+     * @param string                 $uniqueKey    Solr field used to store unique
      * identifier
      *
      * @return void

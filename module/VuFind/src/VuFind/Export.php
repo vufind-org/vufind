@@ -79,8 +79,8 @@ class Export
      *
      * @param \Laminas\View\Renderer\RendererInterface $view   View object (needed for
      * URL generation)
-     * @param string                                $format Export format being used
-     * @param array                                 $ids    Array of IDs to export
+     * @param string                                   $format Export format being used
+     * @param array                                    $ids    Array of IDs to export
      * (in source|id format)
      *
      * @return string

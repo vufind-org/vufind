@@ -69,9 +69,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string            $base     Base URL for Pazpar2
+     * @param string               $base     Base URL for Pazpar2
      * @param \Laminas\Http\Client $client   An HTTP client object
-     * @param bool              $autoInit Should we auto-initialize the Pazpar2
+     * @param bool                 $autoInit Should we auto-initialize the Pazpar2
      * connection?
      */
     public function __construct($base, \Laminas\Http\Client $client, $autoInit = false)

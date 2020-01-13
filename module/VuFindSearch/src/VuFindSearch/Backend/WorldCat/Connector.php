@@ -58,9 +58,9 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     /**
      * Constructor
      *
-     * @param string            $wsKey   Web services key
+     * @param string               $wsKey   Web services key
      * @param \Laminas\Http\Client $client  An HTTP client object
-     * @param array             $options Additional config settings
+     * @param array                $options Additional config settings
      */
     public function __construct($wsKey, \Laminas\Http\Client $client,
         array $options = []

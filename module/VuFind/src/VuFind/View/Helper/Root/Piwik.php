@@ -112,11 +112,11 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param string|bool                      $url        Piwik address
+     * @param string|bool                         $url        Piwik address
      * (false if disabled)
-     * @param int|array                        $options    Options array (or,
+     * @param int|array                           $options    Options array (or,
      * if a single value, the Piwik site ID -- for backward compatibility)
-     * @param bool                             $customVars Whether to track
+     * @param bool                                $customVars Whether to track
      * additional information in custom variables
      * @param Laminas\Router\Http\RouteMatch      $router     Request
      * @param Laminas\Http\PhpEnvironment\Request $request    Request

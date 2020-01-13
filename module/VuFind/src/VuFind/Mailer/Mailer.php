@@ -240,16 +240,16 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message representing a link.
      *
-     * @param string                          $to      Recipient email address
+     * @param string                             $to      Recipient email address
      * @param string|\Laminas\Mail\Address       $from    Sender name and email address
-     * @param string                          $msg     User notes to include in
+     * @param string                             $msg     User notes to include in
      * message
-     * @param string                          $url     URL to share
+     * @param string                             $url     URL to share
      * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
-     * @param string                          $subject Subject for email (optional)
-     * @param string                          $cc      CC recipient (null for none)
-     * @param string|Address|AddressList      $replyTo Reply-To address (or delimited
+     * @param string                             $subject Subject for email (optional)
+     * @param string                             $cc      CC recipient (null for none)
+     * @param string|Address|AddressList         $replyTo Reply-To address (or delimited
      * list, null for none)
      *
      * @throws MailException
@@ -283,17 +283,17 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message representing a record.
      *
-     * @param string                            $to      Recipient email address
-     * @param string|\Laminas\Mail\Address         $from    Sender name and email
+     * @param string                             $to      Recipient email address
+     * @param string|\Laminas\Mail\Address       $from    Sender name and email
      * address
-     * @param string                            $msg     User notes to include in
+     * @param string                             $msg     User notes to include in
      * message
-     * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed
-     * @param \Laminas\View\Renderer\PhpRenderer   $view    View object (used to render
+     * @param \VuFind\RecordDriver\AbstractBase  $record  Record being emailed
+     * @param \Laminas\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
-     * @param string                            $subject Subject for email (optional)
-     * @param string                            $cc      CC recipient (null for none)
-     * @param string|Address|AddressList        $replyTo Reply-To address (or
+     * @param string                             $subject Subject for email (optional)
+     * @param string                             $cc      CC recipient (null for none)
+     * @param string|Address|AddressList         $replyTo Reply-To address (or
      * delimited list, null for none)
      *
      * @throws MailException

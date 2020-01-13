@@ -48,8 +48,8 @@ class ConfigurationBasedFactory
      * This constructs a hierarchy driver using VuFind's service setup.
      *
      * @param \Laminas\ServiceManager\ServiceManager $sm            Top-level service m.
-     * @param string                              $requestedName Service being built
-     * @param array|null                          $options       Name of driver class
+     * @param string                                 $requestedName Service being built
+     * @param array|null                             $options       Name of driver class
      *
      * @return object
      *

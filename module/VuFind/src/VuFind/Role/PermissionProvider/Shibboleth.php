@@ -62,7 +62,7 @@ class Shibboleth extends ServerParam
     /**
      * Constructor
      *
-     * @param Request             $request Request object
+     * @param Request                $request Request object
      * @param \Laminas\Config\Config $config  VuFind configuration
      */
     public function __construct(Request $request, $config)

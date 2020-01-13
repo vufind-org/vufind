@@ -49,7 +49,7 @@ abstract class AbstractBase implements SMSInterface
      * Constructor
      *
      * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array               $options Additional options
+     * @param array                  $options Additional options
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

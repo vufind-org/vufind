@@ -94,7 +94,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      * @param RecommendPluginManager  $rpm      Recommend plugin manager
      * @param SearchRunner            $sr       Search runner
      * @param HierarchicalFacetHelper $fh       Facet helper
-     * @param \Laminas\Config\Config     $fc       Facet config
+     * @param \Laminas\Config\Config  $fc       Facet config
      * @param RendererInterface       $renderer View renderer
      */
     public function __construct(SessionSettings $ss,

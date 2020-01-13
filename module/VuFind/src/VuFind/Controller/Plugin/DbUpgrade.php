@@ -800,7 +800,7 @@ class DbUpgrade extends AbstractPlugin
      * require table structure updates.
      *
      * @param \Laminas\Db\Metadata\Object\ColumnObject $column       Object to check
-     * @param string                                $expectedType Type to compare
+     * @param string                                   $expectedType Type to compare
      *
      * @return bool
      */

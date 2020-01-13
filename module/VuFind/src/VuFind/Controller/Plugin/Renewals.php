@@ -73,8 +73,8 @@ class Renewals extends AbstractPlugin
      * Process renewal requests.
      *
      * @param \Laminas\Stdlib\Parameters $request Request object
-     * @param \VuFind\ILS\Connection  $catalog ILS connection object
-     * @param array                   $patron  Current logged in patron
+     * @param \VuFind\ILS\Connection     $catalog ILS connection object
+     * @param array                      $patron  Current logged in patron
      *
      * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)

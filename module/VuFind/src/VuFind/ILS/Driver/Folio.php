@@ -110,9 +110,9 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
+     * @param string                $method      Request method GET/POST/PUT/DELETE/etc
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
      * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
@@ -148,7 +148,7 @@ class Folio extends AbstractAPI implements
      * Add X-Okapi headers and Content-Type to every request
      *
      * @param \Laminas\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param object                $params  the parameters object
      *
      * @return array
      */

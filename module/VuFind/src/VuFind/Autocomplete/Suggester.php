@@ -83,9 +83,9 @@ class Suggester
      * by multiple AJAX handlers.
      *
      * @param \Laminas\Stdlib\Parameters $request    The user request
-     * @param string                  $typeParam  Request parameter containing search
+     * @param string                     $typeParam  Request parameter containing search
      * type
-     * @param string                  $queryParam Request parameter containing query
+     * @param string                     $queryParam Request parameter containing query
      * string
      *
      * @return array

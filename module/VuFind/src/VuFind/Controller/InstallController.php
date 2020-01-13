@@ -435,7 +435,7 @@ class InstallController extends AbstractBase
      * loading the main SQL file of table definitions.
      *
      * @param \Laminas\View\Model $view        View object containing DB settings.
-     * @param string           $escapedPass Password to set for new DB (escaped
+     * @param string              $escapedPass Password to set for new DB (escaped
      * appropriately for target database).
      *
      * @return array
@@ -691,7 +691,7 @@ class InstallController extends AbstractBase
      * was modified, false otherwise.
      *
      * @param \Laminas\Config\Config $config Existing VuFind configuration
-     * @param ConfigWriter        $writer Config writer
+     * @param ConfigWriter           $writer Config writer
      *
      * @return bool
      */

@@ -84,11 +84,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string            $base   Base URL
+     * @param string               $base   Base URL
      * @param \Laminas\Http\Client $client HTTP client
-     * @param string            $prof   Profile
-     * @param string            $pwd    Password
-     * @param string            $dbs    Database list (comma-separated abbrevs.)
+     * @param string               $prof   Profile
+     * @param string               $pwd    Password
+     * @param string               $dbs    Database list (comma-separated abbrevs.)
      */
     public function __construct($base, \Laminas\Http\Client $client, $prof, $pwd, $dbs)
     {

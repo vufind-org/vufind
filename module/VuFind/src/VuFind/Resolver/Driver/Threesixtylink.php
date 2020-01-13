@@ -53,7 +53,7 @@ class Threesixtylink extends AbstractBase
     /**
      * Constructor
      *
-     * @param string            $baseUrl    Base URL for link resolver
+     * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
     public function __construct($baseUrl, \Laminas\Http\Client $httpClient)

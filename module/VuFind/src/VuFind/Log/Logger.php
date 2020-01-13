@@ -116,7 +116,7 @@ class Logger extends BaseLogger
     /**
      * Log an exception triggered by ZF2 for administrative purposes.
      *
-     * @param \Exception              $error  Exception to log
+     * @param \Exception                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void

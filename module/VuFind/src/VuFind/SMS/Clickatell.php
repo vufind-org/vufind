@@ -51,7 +51,7 @@ class Clickatell extends AbstractBase
      * Constructor
      *
      * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array               $options Additional options (client may be an HTTP
+     * @param array                  $options Additional options (client may be an HTTP
      * client object)
      */
     public function __construct(\Laminas\Config\Config $config, $options = [])

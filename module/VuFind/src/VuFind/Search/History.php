@@ -74,7 +74,7 @@ class History
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param \Laminas\Config\Config                  $config         Configuration
+     * @param \Laminas\Config\Config               $config         Configuration
      */
     public function __construct($searchTable, $sessionId, $resultsManager,
         \Laminas\Config\Config $config = null
