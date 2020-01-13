@@ -285,8 +285,8 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @param \Laminas\Config\Config $searchSettings Configuration
      * @param string                 $setting        Name of common setting
-     * @param string                 $list           Name of property containing valid
-     * values
+     * @param string                 $list           Name of property containing
+     * valid values
      * @param string                 $target         Name of property to populate
      *
      * @return void

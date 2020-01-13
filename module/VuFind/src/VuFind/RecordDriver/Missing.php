@@ -43,8 +43,8 @@ class Missing extends DefaultRecord
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit for
-     * built-in defaults)
+     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * for built-in defaults)
      * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */

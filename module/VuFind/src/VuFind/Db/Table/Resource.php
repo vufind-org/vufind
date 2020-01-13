@@ -273,8 +273,8 @@ class Resource extends Gateway
      * Apply a sort parameter to a query on the resource table.
      *
      * @param \Laminas\Db\Sql\Select $query Query to modify
-     * @param string                 $sort  Field to use for sorting (may include 'desc'
-     * qualifier)
+     * @param string                 $sort  Field to use for sorting (may include
+     * 'desc' qualifier)
      * @param string                 $alias Alias to the resource table (defaults to
      * 'resource')
      *

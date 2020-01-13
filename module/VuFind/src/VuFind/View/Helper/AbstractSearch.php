@@ -60,8 +60,8 @@ abstract class AbstractSearch extends AbstractHelper
     /**
      * Support function to display spelling suggestions.
      *
-     * @param string                             $msg     HTML to display at the top of
-     * the spelling section.
+     * @param string                             $msg     HTML to display at the top
+     * of the spelling section.
      * @param \VuFind\Search\Base\Results        $results Results object
      * @param \Laminas\View\Renderer\PhpRenderer $view    View renderer object
      *

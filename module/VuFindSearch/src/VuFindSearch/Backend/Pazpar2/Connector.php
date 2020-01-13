@@ -27,6 +27,7 @@
  */
 namespace VuFindSearch\Backend\Pazpar2;
 
+use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
@@ -55,7 +56,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * The HTTP_Request object used for REST transactions
      *
-     * @var \Laminas\Http\Client
+     * @var Client
      */
     protected $client;
 
@@ -69,12 +70,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string               $base     Base URL for Pazpar2
-     * @param \Laminas\Http\Client $client   An HTTP client object
-     * @param bool                 $autoInit Should we auto-initialize the Pazpar2
-     * connection?
+     * @param string $base     Base URL for Pazpar2
+     * @param Client $client   An HTTP client object
+     * @param bool   $autoInit Should we auto-initialize the Pazpar2 connection?
      */
-    public function __construct($base, \Laminas\Http\Client $client, $autoInit = false)
+    public function __construct($base, Client $client, $autoInit = false)
     {
         $this->base = $base;
         if (empty($this->base)) {
@@ -147,7 +147,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Send a request and return the response.
      *
-     * @param \Laminas\Http\Client $client Prepare HTTP client
+     * @param Client $client Prepare HTTP client
      *
      * @return string Response body
      *
@@ -156,7 +156,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @throws \VuFindSearch\Backend\Exception\RequestErrorException Server
      * signaled a client error (HTTP 4xx)
      */
-    protected function send(\Laminas\Http\Client $client)
+    protected function send(Client $client)
     {
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())

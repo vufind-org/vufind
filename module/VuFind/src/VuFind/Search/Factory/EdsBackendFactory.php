@@ -113,7 +113,8 @@ class EdsBackendFactory implements FactoryInterface
             ->get(\ZfcRbac\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
-            'EBSCO', $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            'EBSCO',
+            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(),

@@ -27,6 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Session\Container;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
@@ -50,18 +51,18 @@ class UserList extends AbstractHelper
     /**
      * Session container for last list information.
      *
-     * @var \Laminas\Session\Container
+     * @var Container
      */
     protected $session;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Session\Container $session Session container (must use same
-     * namespace as container provided to \VuFind\Db\Table\UserList)
-     * @param string                     $mode    List mode (enabled or disabled)
+     * @param Container $session Session container (must use same namespace as
+     * container provided to \VuFind\Db\Table\UserList)
+     * @param string    $mode    List mode (enabled or disabled)
      */
-    public function __construct(\Laminas\Session\Container $session, $mode = 'enabled')
+    public function __construct(Container $session, $mode = 'enabled')
     {
         $this->mode = $mode;
         $this->session = $session;

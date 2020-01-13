@@ -74,8 +74,8 @@ class Mailer extends AbstractBase
      * Constructor
      *
      * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options: defaultFrom (optional)
-     * and mailer (must be a \VuFind\Mailer\Mailer object)
+     * @param array                  $options Additional options: defaultFrom
+     * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
      */
     public function __construct(\Laminas\Config\Config $config, $options = [])
     {

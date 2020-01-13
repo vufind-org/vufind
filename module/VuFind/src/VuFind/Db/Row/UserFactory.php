@@ -75,7 +75,8 @@ class UserFactory extends RowGatewayFactory
         $prototype = parent::__invoke($container, $rowClass, $options);
         $prototype->setConfig($config);
         if ($privacy) {
-            $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+            $sessionManager = $container
+                ->get(\Laminas\Session\SessionManager::class);
             $session = new \Laminas\Session\Container('Account', $sessionManager);
             $prototype->setSession($session);
         }

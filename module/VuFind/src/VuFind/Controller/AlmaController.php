@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Stdlib\RequestInterface;
 
 /**
  * Alma controller, mainly for webhooks.
@@ -449,15 +450,14 @@ class AlmaController extends AbstractBase
      * the 'X-Exl-Signature' in the request header. This is a security measure to
      * be sure that the request comes from Alma.
      *
-     * @param \Laminas\Stdlib\RequestInterface $request The request from Alma.
+     * @param RequestInterface $request The request from Alma.
      *
-     * @throws \VuFind\Exception\Forbidden                Throws forbidden exception
-     *                                                     if hash values are not the
-     *                                                     same.
+     * @throws \VuFind\Exception\Forbidden Throws forbidden exception if hash values
+     * are not the same.
      *
      * @return void
      */
-    protected function checkMessageSignature(\Laminas\Stdlib\RequestInterface $request)
+    protected function checkMessageSignature(RequestInterface $request)
     {
         // Get request content
         $requestBodyString = $request->getContent();

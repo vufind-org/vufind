@@ -52,7 +52,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
     /**
      * Add an API controller to the list of available controllers
      *
-     * @param Laminas\Mvc\Controller\AbstractActionController $controller API Controller
+     * @param Laminas\Mvc\Controller\AbstractActionController $controller API
+     * Controller
      *
      * @return void
      */

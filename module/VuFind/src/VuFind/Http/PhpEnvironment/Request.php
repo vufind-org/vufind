@@ -96,7 +96,9 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      */
     protected function cleanup($param)
     {
-        if (is_array($param) || $param instanceof \Laminas\Stdlib\ParametersInterface) {
+        if (is_array($param)
+            || $param instanceof \Laminas\Stdlib\ParametersInterface
+        ) {
             foreach ($param as $key => &$value) {
                 if (is_array($value)) {
                     $value = $this->cleanup($value);

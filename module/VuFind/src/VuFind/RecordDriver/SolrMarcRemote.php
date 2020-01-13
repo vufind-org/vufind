@@ -62,11 +62,12 @@ class SolrMarcRemote extends SolrMarc implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * file (omit to use $mainConfig as $recordConfig)
+     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * file
      *
      * @throws \Exception
      */

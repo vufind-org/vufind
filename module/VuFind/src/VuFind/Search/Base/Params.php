@@ -1286,12 +1286,12 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request         Parameter object representing
-     * user request.
-     * @param string                     $requestParam    Name of parameter containing
-     * names of range filter fields.
-     * @param Callable                   $valueFilter     Optional callback to process
-     * values in the range.
+     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * representing user request.
+     * @param string                     $requestParam    Name of parameter
+     * containing names of range filter fields.
+     * @param Callable                   $valueFilter     Optional callback to
+     * process values in the range.
      * @param Callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *

@@ -75,15 +75,15 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config|string        $config WorldCat configuration (either a full Config
-     * object, or a string containing the id setting).
+     * @param Config|string        $config WorldCat configuration (either a full
+     * Config object, or a string containing the id setting).
      * @param \Laminas\Http\Client $client HTTP client
      * @param bool                 $silent Should we silently ignore HTTP failures?
      * @param string               $ip     Current server IP address (optional, but
      * needed for xID token hashing
      */
-    public function __construct($config, \Laminas\Http\Client $client, $silent = true,
-        $ip = null
+    public function __construct($config, \Laminas\Http\Client $client,
+        $silent = true, $ip = null
     ) {
         // Legacy compatibility -- prior to VuFind 2.4, this parameter was a string.
         if (!($config instanceof Config)) {

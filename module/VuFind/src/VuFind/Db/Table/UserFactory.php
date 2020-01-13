@@ -63,7 +63,8 @@ class UserFactory extends GatewayFactory
         if (isset($config->Authentication->privacy)
             && $config->Authentication->privacy
         ) {
-            $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+            $sessionManager = $container
+                ->get(\Laminas\Session\SessionManager::class);
             $session = new \Laminas\Session\Container('Account', $sessionManager);
         }
         return parent::__invoke($container, $requestedName, [$config, $session]);

@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
+
 /**
  * Hierarchy Tree Renderer
  *
@@ -46,7 +48,7 @@ class JSTree extends AbstractBase
     /**
      * Router plugin
      *
-     * @var \Laminas\Mvc\Controller\Plugin\Url
+     * @var UrlPlugin
      */
     protected $router = null;
 
@@ -60,14 +62,13 @@ class JSTree extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Mvc\Controller\Plugin\Url $router             Router plugin for
+     * @param UrlPlugin $router             Router plugin for
      * urls
-     * @param bool                               $collectionsEnabled Whether the
-     * collections functionality is enabled
+     * @param bool      $collectionsEnabled Whether the collections functionality is
+     * enabled
      */
-    public function __construct(\Laminas\Mvc\Controller\Plugin\Url $router,
-        $collectionsEnabled
-    ) {
+    public function __construct(UrlPlugin $router, $collectionsEnabled)
+    {
         $this->router = $router;
         $this->collectionsEnabled = $collectionsEnabled;
     }
