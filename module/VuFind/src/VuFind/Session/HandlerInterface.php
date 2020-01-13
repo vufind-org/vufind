@@ -29,9 +29,9 @@
  */
 namespace VuFind\Session;
 
-use VuFind\Db\Table\DbTableAwareInterface;
 use Laminas\Config\Config;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
+use VuFind\Db\Table\DbTableAwareInterface;
 
 /**
  * Session handler interface

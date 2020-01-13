@@ -27,8 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Cache\KeyGeneratorTrait;
 use Laminas\Cache\Storage\StorageInterface;
+use VuFind\Cache\KeyGeneratorTrait;
 
 /**
  * Default ILS driver base class.

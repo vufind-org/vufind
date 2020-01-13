@@ -27,9 +27,9 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\RemoteAddress;
 use VuFind\DB\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
-use Laminas\Http\PhpEnvironment\RemoteAddress;
 
 /**
  * Class for managing email-based authentication.

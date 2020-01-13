@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Record\Loader;
-use VuFind\RecordTab\TabManager;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Record\Loader;
+use VuFind\RecordTab\TabManager;
 
 /**
  * "Get Record Details" AJAX handler

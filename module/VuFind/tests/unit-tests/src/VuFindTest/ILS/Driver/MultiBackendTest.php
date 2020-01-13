@@ -29,8 +29,8 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use VuFind\ILS\Driver\MultiBackend;
 use Laminas\Log\Writer\Mock;
+use VuFind\ILS\Driver\MultiBackend;
 
 /**
  * ILS driver test

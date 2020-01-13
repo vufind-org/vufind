@@ -30,10 +30,10 @@ namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\Resolver\Driver\Ezb;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
-
 use Laminas\Http\Response as HttpResponse;
+
+use VuFind\Resolver\Driver\Ezb;
 
 /**
  * Ezb resolver driver test

@@ -28,10 +28,10 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
-use VuFindSearch\Backend\Exception\HttpErrorException;
-use VuFindSearch\ParamBag;
-
 use Laminas\Http\Request;
+use VuFindSearch\Backend\Exception\HttpErrorException;
+
+use VuFindSearch\ParamBag;
 
 /**
  * Central class for connecting to EIT resources used by VuFind.

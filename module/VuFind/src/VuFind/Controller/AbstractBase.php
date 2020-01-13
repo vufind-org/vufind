@@ -28,13 +28,13 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Auth as AuthException;
-use VuFind\Exception\ILS as ILSException;
-use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 
 /**

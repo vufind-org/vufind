@@ -29,9 +29,9 @@
  */
 namespace VuFind\Record;
 
+use Laminas\Config\Config as Config;
 use VuFind\Db\Table\Record as Record;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
-use Laminas\Config\Config as Config;
 
 /**
  * Record Cache

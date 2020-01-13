@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Controller\Plugin;
 
+use Laminas\Session\Container;
 use VuFind\Controller\Plugin\Followup;
 use VuFindTest\Unit\TestCase as TestCase;
-use Laminas\Session\Container;
 
 /**
  * Followup controller plugin tests.

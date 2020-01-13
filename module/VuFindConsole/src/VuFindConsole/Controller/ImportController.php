@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
-use VuFind\XSLT\Importer;
 use Laminas\Console\Console;
+use VuFind\XSLT\Importer;
 
 /**
  * This controller handles various command-line tools

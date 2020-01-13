@@ -29,14 +29,14 @@ namespace VuFindConsole\Controller;
 
 use File_MARC;
 use File_MARCXML;
+use Laminas\Console\Console;
+use Laminas\Crypt\BlockCipher as BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
-use Laminas\Console\Console;
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
 
 /**
  * This controller handles various command-line tools

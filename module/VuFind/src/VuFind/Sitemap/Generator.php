@@ -27,11 +27,11 @@
  */
 namespace VuFind\Sitemap;
 
+use Laminas\Config\Config;
+use Laminas\Console\Console;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
-use Laminas\Config\Config;
-use Laminas\Console\Console;
 
 /**
  * Class for generating sitemaps

@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mvc\Controller\AbstractActionController;
 use VuFind\AjaxHandler\PluginManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  * This controller handles global AJAX functionality

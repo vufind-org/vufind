@@ -28,11 +28,11 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Search\Solr\FilterFieldConversionListener;
+use Laminas\EventManager\Event;
 
+use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
-use Laminas\EventManager\Event;
 
 /**
  * Unit tests for FilterFieldConversionListener.

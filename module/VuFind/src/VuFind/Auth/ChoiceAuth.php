@@ -27,9 +27,9 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
-use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth Authentication plugin

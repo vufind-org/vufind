@@ -28,10 +28,10 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\ILS\Connection;
-use VuFind\Session\Settings as SessionSettings;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\ILS\Connection;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get ILS Status" AJAX handler

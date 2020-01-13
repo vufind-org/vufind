@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use VuFindSearch\Service;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFindSearch\Service;
 
 /**
  * Zend action helper to perform reserves-related actions

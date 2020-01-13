@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Solr\Utils as SolrUtils;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * EDS Controller

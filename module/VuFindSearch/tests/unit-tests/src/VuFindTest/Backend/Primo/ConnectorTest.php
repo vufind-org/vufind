@@ -30,11 +30,11 @@ namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
 
-use PHPUnit\Framework\TestCase;
-use VuFindSearch\Backend\Primo\Connector;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
+
+use PHPUnit\Framework\TestCase;
+use VuFindSearch\Backend\Primo\Connector;
 
 /**
  * Unit tests for Primo connector.

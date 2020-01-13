@@ -27,10 +27,10 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\View\Helper\Root\Linkify;
-use VuFind\View\Helper\Root\ProxyUrl;
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use VuFind\View\Helper\Root\Linkify;
+use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
  * Linkify Test Class

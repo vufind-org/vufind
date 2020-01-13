@@ -27,11 +27,11 @@
  */
 namespace VuFind\Mailer;
 
-use VuFind\Exception\Mail as MailException;
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
 use Laminas\Mail\Message;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * VuFind Mailer Class

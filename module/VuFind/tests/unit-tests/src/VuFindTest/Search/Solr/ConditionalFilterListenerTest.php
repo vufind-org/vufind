@@ -28,14 +28,14 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\HandlerMap;
 
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
-use Laminas\EventManager\Event;
 
 /**
  * Unit tests for Conditional Filter listener.

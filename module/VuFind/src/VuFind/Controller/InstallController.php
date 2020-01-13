@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Locator as ConfigLocator;
-use VuFind\Config\Writer as ConfigWriter;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 
 /**
  * Class controls VuFind auto-configuration.

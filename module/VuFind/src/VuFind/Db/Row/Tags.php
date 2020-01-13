@@ -27,8 +27,8 @@
  */
 namespace VuFind\Db\Row;
 
-use VuFind\Db\Table\Resource as ResourceTable;
 use Laminas\Db\Sql\Expression;
+use VuFind\Db\Table\Resource as ResourceTable;
 
 /**
  * Row Definition for tags

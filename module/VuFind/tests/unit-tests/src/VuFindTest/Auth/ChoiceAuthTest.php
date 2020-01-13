@@ -27,11 +27,11 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\ChoiceAuth;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
-use Laminas\Config\Config;
-use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth test class.

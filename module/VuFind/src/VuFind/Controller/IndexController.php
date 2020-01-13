@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Auth\Manager as AuthManager;
 use Laminas\Config\Config;
+use VuFind\Auth\Manager as AuthManager;
 
 /**
  * Redirects the user to the appropriate default VuFind action.

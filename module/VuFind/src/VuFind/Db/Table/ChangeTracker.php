@@ -27,9 +27,9 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Table Definition for change_tracker

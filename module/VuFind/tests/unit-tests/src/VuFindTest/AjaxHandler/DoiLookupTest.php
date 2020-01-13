@@ -27,12 +27,12 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\Config\Config;
 use VuFind\AjaxHandler\DoiLookup;
 use VuFind\AjaxHandler\DoiLookupFactory;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
-use Laminas\Config\Config;
 
 /**
  * DoiLookup test class.

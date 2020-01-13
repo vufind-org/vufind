@@ -28,16 +28,16 @@
  */
 namespace VuFindTest\Search\Solr\V4;
 
-use PHPUnit\Framework\TestCase;
-
-use RuntimeException;
-
-use VuFind\Search\Solr\V4\ErrorListener;
-use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use Laminas\EventManager\Event;
 
 use Laminas\Http\Response;
+
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
+
+use VuFind\Search\Solr\V4\ErrorListener;
+
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
  * Unit tests for SOLR 3.x error listener.

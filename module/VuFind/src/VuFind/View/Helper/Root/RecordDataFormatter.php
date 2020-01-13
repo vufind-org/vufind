@@ -28,8 +28,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * Record driver data formatting view helper

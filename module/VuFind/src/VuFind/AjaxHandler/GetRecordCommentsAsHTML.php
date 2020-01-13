@@ -27,9 +27,9 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Record\Loader;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Record\Loader;
 
 /**
  * AJAX handler to get list of comments for a record as HTML.

@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Recommend;
 
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use VuFind\Recommend\EuropeanaResults;
 use VuFindHttp\HttpService;
 use VuFindTest\Unit\TestCase as TestCase;
-use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
 /**
  * EuropeanaResults tests.

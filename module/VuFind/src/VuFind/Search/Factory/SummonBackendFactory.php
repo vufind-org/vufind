@@ -30,13 +30,13 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\QueryBuilder;
-use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 
 /**
  * Factory for Summon backends.

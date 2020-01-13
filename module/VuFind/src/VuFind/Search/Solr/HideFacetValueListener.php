@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 /**
  * Hide single facet values from displaying.

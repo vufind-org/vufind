@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
  * BrowseController Class

@@ -28,9 +28,9 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Recommend\PluginManager;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use VuFind\Recommend\PluginManager;
 
 /**
  * Recommend listener.

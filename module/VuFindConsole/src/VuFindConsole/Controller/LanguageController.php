@@ -27,9 +27,9 @@
  */
 namespace VuFindConsole\Controller;
 
+use Laminas\Console\Console;
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
-use Laminas\Console\Console;
 
 /**
  * This controller handles various command-line tools for dealing with language files

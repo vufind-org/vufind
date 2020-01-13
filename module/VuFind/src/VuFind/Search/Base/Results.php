@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\Base;
 
+use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
-use Laminas\Paginator\Paginator;
 
 /**
  * Abstract results search model.

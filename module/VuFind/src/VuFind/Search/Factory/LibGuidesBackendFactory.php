@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
 /**
  * Factory for LibGuides backends.

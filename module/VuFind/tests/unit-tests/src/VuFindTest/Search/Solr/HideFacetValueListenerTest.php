@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\EventManager\Event;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFindTest\Unit\TestCase;
-use Laminas\EventManager\Event;
 
 /**
  * Unit tests for Hide Facet Value Listener.

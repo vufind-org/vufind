@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\Exception\Mail as MailException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
+use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Book Bag / Bulk Action Controller

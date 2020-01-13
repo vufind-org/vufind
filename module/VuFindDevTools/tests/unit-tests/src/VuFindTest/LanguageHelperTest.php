@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Controller;
 
-use VuFindDevTools\LanguageHelper;
 use Laminas\Config\Config;
+use VuFindDevTools\LanguageHelper;
 
 /**
  * Unit tests for language helper.

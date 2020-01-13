@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search;
 
+use Laminas\Session\Container;
 use VuFind\Search\Memory;
 use VuFindTest\Unit\TestCase as TestCase;
-use Laminas\Session\Container;
 
 /**
  * Memory unit tests.

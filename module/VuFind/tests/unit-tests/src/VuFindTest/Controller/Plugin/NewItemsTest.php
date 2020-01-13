@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Controller\Plugin;
 
+use Laminas\Config\Config;
 use VuFind\Controller\Plugin\NewItems;
 use VuFindTest\Unit\TestCase as TestCase;
-use Laminas\Config\Config;
 
 /**
  * New items controller plugin tests.

@@ -32,10 +32,10 @@ namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\Resolver\Driver\Alma;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
-
 use Laminas\Http\Response as HttpResponse;
+
+use VuFind\Resolver\Driver\Alma;
 
 /**
  * Alma resolver driver test

@@ -27,8 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\DoiLinker\PluginManager;
 use Laminas\Mvc\Controller\Plugin\Params;
+use VuFind\DoiLinker\PluginManager;
 
 /**
  * AJAX handler to look up DOI data.

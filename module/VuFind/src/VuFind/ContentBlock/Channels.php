@@ -27,8 +27,8 @@
  */
 namespace VuFind\ContentBlock;
 
-use VuFind\ChannelProvider\ChannelLoader;
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\ChannelProvider\ChannelLoader;
 
 /**
  * Channels content block.

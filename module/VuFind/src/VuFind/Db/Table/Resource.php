@@ -27,11 +27,11 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for resource

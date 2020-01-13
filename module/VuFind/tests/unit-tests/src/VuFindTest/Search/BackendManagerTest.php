@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Search;
 
-use VuFind\Search\BackendManager;
-use VuFindTest\Unit\TestCase as TestCase;
-
 use Laminas\EventManager\SharedEventManager;
+use VuFind\Search\BackendManager;
+
+use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * BackendManager unit tests.

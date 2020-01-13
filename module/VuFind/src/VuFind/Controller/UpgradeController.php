@@ -30,13 +30,13 @@
 namespace VuFind\Controller;
 
 use ArrayObject;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Laminas\Mvc\MvcEvent;
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use Laminas\Session\Container;
 
 /**
  * Class controls VuFind upgrading.

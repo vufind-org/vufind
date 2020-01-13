@@ -27,10 +27,10 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Autocomplete\Suggester;
-use VuFind\Session\Settings as SessionSettings;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use VuFind\Autocomplete\Suggester;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get Autocomplete Suggestions" AJAX handler

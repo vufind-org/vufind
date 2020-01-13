@@ -29,9 +29,9 @@
  */
 namespace VuFind\Session;
 
-use VuFind\Cookie\CookieManager;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Math\Rand;
+use VuFind\Cookie\CookieManager;
 
 /**
  * Secure session delegator

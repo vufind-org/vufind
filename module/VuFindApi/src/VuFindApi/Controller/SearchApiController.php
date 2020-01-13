@@ -27,9 +27,9 @@
  */
 namespace VuFindApi\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search API Controller

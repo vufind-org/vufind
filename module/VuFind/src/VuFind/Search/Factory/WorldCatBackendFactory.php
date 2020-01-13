@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
 /**
  * Factory for WorldCat backends.

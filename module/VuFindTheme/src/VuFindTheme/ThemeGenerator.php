@@ -28,10 +28,10 @@
  */
 namespace VuFindTheme;
 
-use VuFind\Config\Locator as ConfigLocator;
-use VuFind\Config\Writer as ConfigWriter;
 use Laminas\Config\Config;
 use Laminas\Console\Console;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.

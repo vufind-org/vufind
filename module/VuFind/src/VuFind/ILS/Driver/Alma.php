@@ -27,9 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
-use Laminas\Http\Headers;
 
 /**
  * Alma ILS Driver

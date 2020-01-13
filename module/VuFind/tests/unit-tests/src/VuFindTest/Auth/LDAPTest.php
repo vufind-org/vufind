@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\LDAP;
 use Laminas\Config\Config;
+use VuFind\Auth\LDAP;
 
 /**
  * LDAP authentication test class.

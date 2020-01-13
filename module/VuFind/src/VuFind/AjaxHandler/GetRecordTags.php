@@ -27,10 +27,10 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\Tags;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Db\Row\User;
+use VuFind\Db\Table\Tags;
 
 /**
  * AJAX handler to get all tags for a record as HTML.

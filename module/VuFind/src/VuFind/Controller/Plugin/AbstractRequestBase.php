@@ -27,11 +27,11 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use VuFind\Crypt\HMAC;
-use VuFind\ILS\Connection;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
+use VuFind\Crypt\HMAC;
+use VuFind\ILS\Connection;
 
 /**
  * Zend action helper base class to perform request-related actions

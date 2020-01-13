@@ -27,11 +27,11 @@
  */
 namespace VuFind\ChannelProvider;
 
+use Laminas\Mvc\Controller\Plugin\Url;
+use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
-use Laminas\Mvc\Controller\Plugin\Url;
-use Laminas\Stdlib\Parameters;
 
 /**
  * "List items" channel provider.

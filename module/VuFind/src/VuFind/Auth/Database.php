@@ -29,12 +29,12 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Crypt\Password\Bcrypt;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
-use Laminas\Crypt\Password\Bcrypt;
-use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * Database authentication class

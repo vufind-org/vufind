@@ -27,8 +27,8 @@
  */
 namespace VuFind\Search\Base;
 
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Laminas\Config\Config;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Abstract options search model.

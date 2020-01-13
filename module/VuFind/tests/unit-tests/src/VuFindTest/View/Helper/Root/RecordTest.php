@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\View\Helper\Root\Record;
 use Laminas\View\Exception\RuntimeException;
+use VuFind\View\Helper\Root\Record;
 
 /**
  * Record view helper Test Class

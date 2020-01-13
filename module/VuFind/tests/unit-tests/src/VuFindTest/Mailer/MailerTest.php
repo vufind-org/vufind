@@ -27,11 +27,11 @@
  */
 namespace VuFindTest\Mailer;
 
+use Laminas\Mail\Address;
+use Laminas\Mail\AddressList;
 use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
-use Laminas\Mail\Address;
-use Laminas\Mail\AddressList;
 
 /**
  * Mailer Test Class

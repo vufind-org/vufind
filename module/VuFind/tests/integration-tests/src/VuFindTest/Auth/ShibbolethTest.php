@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\Shibboleth;
 use Laminas\Config\Config;
+use VuFind\Auth\Shibboleth;
 
 /**
  * Shibboleth authentication test class.

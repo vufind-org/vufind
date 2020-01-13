@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\View\Helper\Root\OpenUrl;
 use Laminas\Config\Config;
+use VuFind\View\Helper\Root\OpenUrl;
 
 /**
  * OpenUrl Test Class

@@ -30,10 +30,10 @@ namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\ILS\Driver\PAIA;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
-
 use Laminas\Http\Response as HttpResponse;
+
+use VuFind\ILS\Driver\PAIA;
 
 /**
  * ILS driver test

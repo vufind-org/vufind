@@ -31,13 +31,13 @@
 namespace VuFind\ILS\Driver;
 
 use File_MARC;
+use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Yajra\Pdo\Oci8;
-use Laminas\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver

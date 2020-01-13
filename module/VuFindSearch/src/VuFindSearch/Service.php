@@ -28,14 +28,14 @@
  */
 namespace VuFindSearch;
 
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RandomInterface;
+
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-
-use Laminas\EventManager\EventManager;
-use Laminas\EventManager\EventManagerInterface;
 
 /**
  * Search service.

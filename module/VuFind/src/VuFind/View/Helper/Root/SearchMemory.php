@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Search\Memory;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\Search\Memory;
 
 /**
  * View helper for remembering recent user searches/parameters.

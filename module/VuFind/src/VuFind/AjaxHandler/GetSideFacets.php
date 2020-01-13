@@ -27,6 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
 use VuFind\Search\Base\Results;
@@ -35,8 +37,6 @@ use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
 
 /**
  * "Get Side Facets" AJAX handler

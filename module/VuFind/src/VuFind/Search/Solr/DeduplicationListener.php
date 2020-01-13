@@ -30,11 +30,11 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
-
 use Laminas\EventManager\EventInterface;
+
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 /**
  * Solr merged record handling listener.

@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\QueryBuilder;
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**
  * Factory for EIT backends.

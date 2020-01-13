@@ -30,10 +30,10 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Where;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Table Definition for record

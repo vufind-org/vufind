@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Auth\ILS;
 use VuFind\Db\Table\User;
-use Laminas\Stdlib\Parameters;
 
 /**
  * ILS authentication test class.

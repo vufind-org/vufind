@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
  * EDS Record Controller

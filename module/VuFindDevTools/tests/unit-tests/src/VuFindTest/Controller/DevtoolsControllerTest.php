@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\Controller;
 
-use VuFindDevTools\Controller\DevtoolsController as Controller;
 use Laminas\Config\Config;
+use VuFindDevTools\Controller\DevtoolsController as Controller;
 
 /**
  * Unit tests for DevTools controller.

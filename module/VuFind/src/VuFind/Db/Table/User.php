@@ -27,10 +27,10 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Table Definition for user

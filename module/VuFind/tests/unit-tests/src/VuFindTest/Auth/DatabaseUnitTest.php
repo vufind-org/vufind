@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\Database;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Stdlib\Parameters;
+use VuFind\Auth\Database;
 
 /**
  * Database authentication test class.

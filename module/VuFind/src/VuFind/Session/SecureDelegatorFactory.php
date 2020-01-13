@@ -30,8 +30,8 @@
 namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 
 /**
  * Secure session delegator factory

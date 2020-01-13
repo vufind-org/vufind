@@ -29,9 +29,9 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
-use Laminas\Db\Adapter\Adapter;
 
 /**
  * Table Definition for session

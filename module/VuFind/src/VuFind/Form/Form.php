@@ -27,10 +27,10 @@
  */
 namespace VuFind\Form;
 
-use VuFind\Config\YamlReader;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\NotEmpty;
+use VuFind\Config\YamlReader;
 
 /**
  * Configurable form.

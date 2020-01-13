@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Search\SearchRunner;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Search\SearchRunner;
 
 /**
  * Redirects the user to the appropriate default VuFind action.

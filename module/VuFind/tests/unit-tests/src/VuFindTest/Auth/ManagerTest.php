@@ -27,12 +27,12 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Session\SessionManager;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
-use Laminas\Config\Config;
-use Laminas\Session\SessionManager;
 
 /**
  * Authentication manager test class.

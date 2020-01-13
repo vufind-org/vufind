@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
-use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
 /**
  * Factory for BrowZine backend.

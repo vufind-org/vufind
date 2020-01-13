@@ -27,9 +27,9 @@
  */
 namespace VuFind\Db\Row;
 
+use Laminas\Session\Container;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
-use Laminas\Session\Container;
 
 /**
  * Row Definition for user_list

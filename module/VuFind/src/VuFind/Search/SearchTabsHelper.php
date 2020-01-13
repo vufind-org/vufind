@@ -29,8 +29,8 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Search\Results\PluginManager;
 use Laminas\Http\Request;
+use VuFind\Search\Results\PluginManager;
 
 /**
  * "Search tabs" helper

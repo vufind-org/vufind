@@ -32,21 +32,21 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 
-use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Backend\Exception\HttpErrorException;
-use VuFindSearch\Backend\Exception\RemoteErrorException;
-use VuFindSearch\Backend\Exception\RequestErrorException;
-
-use VuFindSearch\Backend\Solr\Document\AbstractDocument;
-
-use VuFindSearch\ParamBag;
-
-use VuFindSearch\Query\Query;
 use Laminas\Http\Client\Adapter\AdapterInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
-
 use Laminas\Http\Request;
+
+use VuFindSearch\Backend\Exception\BackendException;
+
+use VuFindSearch\Backend\Exception\HttpErrorException;
+
+use VuFindSearch\Backend\Exception\RemoteErrorException;
+use VuFindSearch\Backend\Exception\RequestErrorException;
+use VuFindSearch\Backend\Solr\Document\AbstractDocument;
+use VuFindSearch\ParamBag;
+
+use VuFindSearch\Query\Query;
 
 /**
  * SOLR connector.

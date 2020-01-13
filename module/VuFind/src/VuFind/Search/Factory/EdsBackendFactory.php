@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\EDS\Zend2 as Connector;
 
 /**
  * Factory for EDS backends.

@@ -29,13 +29,13 @@
 namespace VuFindTest\Backend\BrowZine;
 
 use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 use VuFindSearch\Query\Query;
-use Laminas\Http\Client\Adapter\Test as TestAdapter;
-use Laminas\Http\Client as HttpClient;
 
 /**
  * Unit tests for BrowZine backend.

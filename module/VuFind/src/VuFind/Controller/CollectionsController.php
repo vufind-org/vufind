@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFindSearch\Query\Query;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Query\Query;
 
 /**
  * Collections Controller

@@ -29,13 +29,13 @@
 namespace VuFind\DigitalContent;
 
 use Exception;
-use VuFind\Auth\ILSAuthenticator;
-use VuFind\Cache\KeyGeneratorTrait;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Cache\KeyGeneratorTrait;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 

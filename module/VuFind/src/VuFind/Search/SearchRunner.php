@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Search\Results\PluginManager as ResultsManager;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
  * VuFind Search Runner

@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\RecordLink;
-use Laminas\Config\Config;
 
 /**
  * RecordLink view helper Test Class

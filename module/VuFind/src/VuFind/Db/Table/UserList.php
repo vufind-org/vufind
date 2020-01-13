@@ -27,12 +27,12 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
-use VuFind\Exception\RecordMissing as RecordMissingException;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Session\Container;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
  * Table Definition for user_list

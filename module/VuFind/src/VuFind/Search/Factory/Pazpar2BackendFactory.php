@@ -30,14 +30,14 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
-use VuFindHttp\HttpService;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
+use VuFindHttp\HttpService;
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
-use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
 /**
  * Factory for Pazpar2 backends.

@@ -27,9 +27,9 @@
  */
 namespace VuFindDevTools;
 
-use VuFind\I18n\Translator\Loader\ExtendedIni;
 use Laminas\Config\Config;
 use Laminas\I18n\Translator\TextDomain;
+use VuFind\I18n\Translator\Loader\ExtendedIni;
 
 /**
  * Language Helper for Development Tools Controller

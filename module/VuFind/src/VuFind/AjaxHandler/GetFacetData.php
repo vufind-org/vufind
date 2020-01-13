@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Session\Settings as SessionSettings;
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\Stdlib\Parameters;
 
 /**
  * "Get Facet Data" AJAX handler

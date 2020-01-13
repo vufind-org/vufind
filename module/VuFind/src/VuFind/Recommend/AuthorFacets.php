@@ -28,8 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Query\Query;
 use Laminas\Http\Request;
+use VuFindSearch\Query\Query;
 use Zend\StdLib\Parameters;
 
 /**

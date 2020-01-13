@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
-use VuFindHarvest\OaiPmh\HarvesterConsoleRunner;
 use Laminas\Console\Console;
+use VuFindHarvest\OaiPmh\HarvesterConsoleRunner;
 
 /**
  * This controller handles various command-line tools

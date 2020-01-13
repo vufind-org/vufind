@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -36,8 +38,6 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
-use Laminas\Stdlib\Parameters;
-use Laminas\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.

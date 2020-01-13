@@ -29,11 +29,11 @@
  */
 namespace VuFind\Db\Table;
 
-use minSO;
-use VuFind\Db\Row\RowGateway;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
+use minSO;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Table Definition for search

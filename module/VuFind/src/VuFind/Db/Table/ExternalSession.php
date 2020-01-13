@@ -29,8 +29,8 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
 use Laminas\Db\Adapter\Adapter;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Table Definition for external_session

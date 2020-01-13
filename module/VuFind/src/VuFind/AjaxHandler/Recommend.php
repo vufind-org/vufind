@@ -27,12 +27,12 @@
  */
 namespace VuFind\AjaxHandler;
 
-use VuFind\Recommend\PluginManager as RecommendManager;
-use VuFind\Search\Solr\Results;
-use VuFind\Session\Settings as SessionSettings;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Search\Solr\Results;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Load a recommendation module via AJAX.

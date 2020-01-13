@@ -12,9 +12,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\DigitalContent\OverdriveConnector;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\DigitalContent\OverdriveConnector;
 
 /**
  * Overdrive Controller supports actions for Overdrive Integration

@@ -27,10 +27,10 @@
  */
 namespace VuFindSearch\Backend;
 
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
-use VuFindSearch\Response\RecordCollectionInterface;
-
 use Laminas\Log\LoggerAwareInterface;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Abstract backend.

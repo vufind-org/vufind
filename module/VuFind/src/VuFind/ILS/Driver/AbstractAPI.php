@@ -27,13 +27,13 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\BadRequest;
 use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
-use Laminas\Log\LoggerAwareInterface;
 
 /**
  * Abstract Driver for API-based ILS drivers

@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Validator;
 
-use VuFind\Validator\Csrf;
 use Laminas\Session\Container;
+use VuFind\Validator\Csrf;
 
 /**
  * CSRF Test Class

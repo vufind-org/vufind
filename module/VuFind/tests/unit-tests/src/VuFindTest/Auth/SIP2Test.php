@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\SIP2;
 use Laminas\Config\Config;
+use VuFind\Auth\SIP2;
 
 /**
  * SIP2 authentication test class.

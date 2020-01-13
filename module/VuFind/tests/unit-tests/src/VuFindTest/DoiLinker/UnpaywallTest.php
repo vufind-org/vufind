@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\DoiLinker;
 
-use VuFind\DoiLinker\Unpaywall;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
+use VuFind\DoiLinker\Unpaywall;
 
 /**
  * Unpaywall Test Class

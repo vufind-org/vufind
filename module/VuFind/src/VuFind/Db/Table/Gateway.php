@@ -27,10 +27,10 @@
  */
 namespace VuFind\Db\Table;
 
-use VuFind\Db\Row\RowGateway;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
+use VuFind\Db\Row\RowGateway;
 
 /**
  * Generic VuFind table gateway.

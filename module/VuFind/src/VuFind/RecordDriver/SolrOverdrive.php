@@ -30,9 +30,9 @@
  */
 namespace VuFind\RecordDriver;
 
-use VuFind\DigitalContent\OverdriveConnector;
 use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\DigitalContent\OverdriveConnector;
 
 /**
  * VuFind Record Driver for SolrOverdrive Records

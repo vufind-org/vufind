@@ -27,10 +27,10 @@
  */
 namespace VuFind\Recommend;
 
+use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
-use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * AuthorInfo Recommendations Module

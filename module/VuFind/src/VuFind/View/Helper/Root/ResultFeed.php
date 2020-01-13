@@ -28,11 +28,11 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * "Results as feed" view helper

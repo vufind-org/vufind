@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\Session\SessionManager;
 use VuFind\AjaxHandler\KeepAlive;
 use VuFind\AjaxHandler\KeepAliveFactory;
-use Laminas\Session\SessionManager;
 
 /**
  * KeepAlive test class.

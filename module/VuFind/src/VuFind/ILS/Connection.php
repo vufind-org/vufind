@@ -31,11 +31,11 @@
  */
 namespace VuFind\ILS;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
-use Laminas\Log\LoggerAwareInterface;
 
 /**
  * Catalog Connection Class
