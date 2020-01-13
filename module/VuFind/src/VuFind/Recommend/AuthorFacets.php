@@ -29,8 +29,8 @@
 namespace VuFind\Recommend;
 
 use Laminas\Http\Request;
-use VuFindSearch\Query\Query;
 use Laminas\Stdlib\Parameters;
+use VuFindSearch\Query\Query;
 
 /**
  * AuthorFacets Recommendations Module

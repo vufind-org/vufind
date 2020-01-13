@@ -28,8 +28,8 @@
  */
 namespace VuFind\Recommend;
 
-use VuFindSearch\Backend\Exception\RequestErrorException;
 use Laminas\Stdlib\Parameters;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 /**
  * AuthorityRecommend Module
