@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\UrlShortener\UrlShortenerInterface;
 use Zend\Config\Config;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
  * Short link controller
@@ -44,18 +44,18 @@ class ShortlinkController extends AbstractBase
 {
     /**
      * Amount of seconds after which HTML redirect is performed.
-     * 
+     *
      * @var int
      */
     protected $redirectDelayHtml = 3;
-    
+
     /**
      * Which redirect mechanism to use (html, http, threshold:<urlLength>)
-     * 
+     *
      * @var string
      */
     protected $redirectMethod = 'threshold:1000';
-    
+
     /**
      * Constructor
      *
@@ -74,10 +74,10 @@ class ShortlinkController extends AbstractBase
             );
         }
     }
-    
+
     /**
      * Redirect to given URL by using a HTML meta redirect mechanism.
-     * 
+     *
      * @param string $url Redirect target
      *
      * @return mixed
@@ -89,19 +89,19 @@ class ShortlinkController extends AbstractBase
         $view->redirectDelay = $this->redirectDelayHtml;
         return $view;
     }
-    
+
     /**
      * Redirect to given URL by using a HTTP header.
-     * 
+     *
      * @param string $url Redirect target
-     * 
+     *
      * @return mixed
      */
     protected function redirectViaHttp($url)
     {
         return $this->redirect()->toUrl($url);
     }
-    
+
     /**
      * Resolve full version of shortlink & redirect to target.
      *
