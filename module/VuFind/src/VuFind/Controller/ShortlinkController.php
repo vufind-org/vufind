@@ -78,7 +78,7 @@ class ShortlinkController extends AbstractBase
     /**
      * Redirect to given URL by using a HTML meta redirect mechanism.
      * 
-     * @param string $url
+     * @param string $url Redirect target
      *
      * @return mixed
      */
@@ -93,7 +93,7 @@ class ShortlinkController extends AbstractBase
     /**
      * Redirect to given URL by using a HTTP header.
      * 
-     * @param string $url
+     * @param string $url Redirect target
      * 
      * @return mixed
      */
@@ -116,9 +116,9 @@ class ShortlinkController extends AbstractBase
                     return $this->redirectViaHtml($url);
                 } elseif ($this->redirectMethod == 'http') {
                     return $this->redirectViaHttp($url);
-                } elseif (preg_match(
-                    '"^threshold:(\d+)$"i', $this->redirectMethod, $hits
-                )) {
+                } elseif (
+                    preg_match('"^threshold:(\d+)$"i', $this->redirectMethod, $hits)
+                ) {
                     $threshold = $hits[1];
                     if (strlen($url) > $threshold) {
                         return $this->redirectViaHtml($url);
