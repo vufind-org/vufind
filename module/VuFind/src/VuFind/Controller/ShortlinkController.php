@@ -69,7 +69,9 @@ class ShortlinkController extends AbstractBase
 
         // Set redirect method, if specified:
         if (isset($config->Mail->url_shortener_redirect_method)) {
-            $this->redirectMethod = $config->Mail->url_shortener_redirect_method;
+            $this->redirectMethod = strtolower(
+                trim($config->Mail->url_shortener_redirect_method)
+            );
         }
     }
     
