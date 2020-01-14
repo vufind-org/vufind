@@ -10,6 +10,15 @@
       <?php endif ?>
     </div>
   </div>
+  <?php if ($this->allowCopy): ?>
+    <div class="hidden-print controls">
+      <div>
+        <a class="btn btn-primary btn-sm btn-block" data-lightbox role="button" href="<?= $this->url('list-save', [ 'id' => $this->id ]) ?>">
+          <?=$this->transEsc('import_favorites_from_list')?>
+        </a>
+      </div>
+    </div>
+  <?php endif; ?>
   <div class="public-list-view results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
     <?= $this->partial('search/list-' . $this->view . '.phtml',
     [
