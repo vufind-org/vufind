@@ -43,11 +43,18 @@ use VuFind\UrlShortener\UrlShortenerInterface;
 class ShortlinkController extends AbstractBase
 {
     /**
-     * Which redirect mechanism to use (html, http)
+     * Amount of seconds after which HTML redirect is performed.
+     * 
+     * @var int
+     */
+    protected $redirectDelayHtml = 3;
+    
+    /**
+     * Which redirect mechanism to use (html, http, threshold:<urlLength>)
      * 
      * @var string
      */
-    protected $redirectMethod = 'html';
+    protected $redirectMethod = 'threshold:1000';
     
     /**
      * Constructor
@@ -66,6 +73,19 @@ class ShortlinkController extends AbstractBase
         }
     }
     
+    protected function redirectViaHtml($url)
+    {
+        $view = $this->createViewModel();
+        $view->redirectTarget = $url;
+        $view->redirectDelay = $this->redirectDelayHtml;
+        return $view;
+    }
+    
+    protected function redirectViaHttp($url)
+    {
+        return $this->redirect()->toUrl($url);
+    }
+    
     /**
      * Resolve full version of shortlink & redirect to target.
      *
@@ -76,19 +96,22 @@ class ShortlinkController extends AbstractBase
         if ($id = $this->params('id')) {
             $resolver = $this->serviceLocator->get(UrlShortenerInterface::class);
             if ($url = $resolver->resolve($id)) {
-                switch ($this->redirectMethod) {
-                case 'html':
-                    $view = $this->createViewModel();
-                    $view->redirectTarget = $url;
-                    $view->redirectDelay = 3;
-                    return $view;
-                case 'http':
-                    return $this->redirect()->toUrl($url);
-                default:
-                    throw new \VuFind\Exception\BadConfig(
-                        'Invalid redirect method: ' . $this->redirectMethod
-                    );
+                if ($this->redirectMethod == 'html') {
+                    return $this->redirectViaHtml($url);
+                } elseif ($this->redirectMethod == 'http') {
+                    return $this->redirectViaHttp($url);
+                } elseif (preg_match('"^threshold:(\d+)$"i', $this->redirectMethod, $hits)) {
+                    $threshold = $hits[1];
+                    if (strlen($url) > $threshold) {
+                        return $this->redirectViaHtml($url);
+                    } else {
+                        return $this->redirectViaHttp($url);
+                    }
                 }
+                    
+                throw new \VuFind\Exception\BadConfig(
+                    'Invalid redirect method: ' . $this->redirectMethod
+                );
             }
         }
 
