@@ -98,12 +98,21 @@ class Loader extends \VuFind\Record\Loader
         }
         if ($source == 'Solr'
             && ($missingException || $result instanceof \VuFind\RecordDriver\Missing)
-            && preg_match('/\.(FIN\d+)/', $id, $matches)
         ) {
-            // Probably an old MetaLib record ID. Try to find the record using its
-            // old MetaLib ID
-            if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
-                return $mlRecord;
+            if (preg_match('/\.(FIN\d+)/', $id, $matches)) {
+                // Probably an old MetaLib record ID. Try to find the record using
+                // its old MetaLib ID
+                if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
+                    return $mlRecord;
+                }
+            } elseif (preg_match('/^musketti\..+?:(.+)/', $id, $matches)) {
+                // Old musketti record. Try to find the new record using the
+                // inventory number.
+                $newRecord
+                    = $this->loadRecordWithIdentifier($matches[1], 'museovirasto');
+                if ($newRecord) {
+                    return $newRecord;
+                }
             }
         }
         if ($missingException) {
@@ -154,10 +163,20 @@ class Loader extends \VuFind\Record\Loader
         foreach ($records as &$record) {
             if ($record instanceof \VuFind\RecordDriver\Missing
                 && $record->getSourceIdentifier() == 'Solr'
-                && preg_match('/\.(FIN\d+)/', $record->getUniqueID(), $matches)
             ) {
-                if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
-                    $record = $mlRecord;
+                $id = $record->getUniqueID();
+                if (preg_match('/\.(FIN\d+)/', $id, $matches)) {
+                    if ($mlRecord = $this->loadMetaLibRecord($matches[1])) {
+                        $record = $mlRecord;
+                    }
+                } elseif (preg_match('/^musketti\..+?:(.+)/', $id, $matches)) {
+                    // Old musketti record. Try to find the new record using the
+                    // inventory number.
+                    $newRecord = $this
+                        ->loadRecordWithIdentifier($matches[1], 'museovirasto');
+                    if ($newRecord) {
+                        $record = $newRecord;
+                    }
                 }
             }
         }
@@ -178,6 +197,31 @@ class Loader extends \VuFind\Record\Loader
         $query = new \VuFindSearch\Query\Query(
             'original_id_str_mv:"' . $safeId . '"'
         );
+        $params = new \VuFindSearch\ParamBag(
+            ['hl' => 'false', 'spellcheck' => 'false']
+        );
+        $results = $this->searchService->search('Solr', $query, 0, 1, $params)
+            ->getRecords();
+        return !empty($results) ? $results[0] : false;
+    }
+
+    /**
+     * Try to load a record using its identifier field
+     *
+     * @param string $identifier Identifier (e.g. SUK77:2)
+     * @param string $dataSource Optional data source filter
+     *
+     * @return \VuFind\RecordDriver\AbstractBase|bool Record or false if not found
+     */
+    protected function loadRecordWithIdentifier($identifier, $dataSource = null)
+    {
+        $safeIdentifier = addcslashes($identifier, '"');
+        $queryStr = 'identifier:"' . $safeIdentifier . '"';
+        if (null !== $dataSource) {
+            $queryStr .= ' AND datasource_str_mv:"' . addcslashes($dataSource, '"')
+                . '"';
+        }
+        $query = new \VuFindSearch\Query\Query($queryStr);
         $params = new \VuFindSearch\ParamBag(
             ['hl' => 'false', 'spellcheck' => 'false']
         );
