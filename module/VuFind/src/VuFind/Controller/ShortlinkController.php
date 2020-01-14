@@ -112,13 +112,12 @@ class ShortlinkController extends AbstractBase
         if ($id = $this->params('id')) {
             $resolver = $this->serviceLocator->get(UrlShortenerInterface::class);
             if ($url = $resolver->resolve($id)) {
+                $threshRegEx = '"^threshold:(\d+)$"i';
                 if ($this->redirectMethod == 'html') {
                     return $this->redirectViaHtml($url);
                 } elseif ($this->redirectMethod == 'http') {
                     return $this->redirectViaHttp($url);
-                } elseif (
-                    preg_match('"^threshold:(\d+)$"i', $this->redirectMethod, $hits)
-                ) {
+                } elseif (preg_match($threshRegEx, $this->redirectMethod, $hits)) {
                     $threshold = $hits[1];
                     if (strlen($url) > $threshold) {
                         return $this->redirectViaHtml($url);
