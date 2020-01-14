@@ -174,7 +174,7 @@ class CPU extends BaseHandler
                 $fineDesc = str_replace("'", ' ', $fineDesc);
                 // Make sure that description length does not exceed CPU
                 // max limit of 100 characters.
-                $fineDesc = substr($fineDesc, 0, 100);
+                $fineDesc = mb_substr($fineDesc, 0, 100, 'UTF-8');
             }
 
             $code = $productCodeMappings[$fineType] ?? $productCode;
