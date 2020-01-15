@@ -174,7 +174,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         }
         else
             $previous_sibling_right = $node;
-      return false;
+        return false;
     }
 
 
