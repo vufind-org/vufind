@@ -76,6 +76,26 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get all active vocabularies for the current record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return array
+     */
+    protected function getVocabularies(\VuFind\RecordDriver\AbstractBase $driver)
+    {
+        $recordDriverConfigs = isset($this->config->Vocabularies)
+            ? $this->config->Vocabularies->toArray() : [];
+        $retVal = [];
+        foreach ($recordDriverConfigs as $className => $vocabs) {
+            if ($driver instanceof $className) {
+                $retVal = array_merge($retVal, $vocabs);
+            }
+        }
+        return array_unique($retVal);
+    }
+
+    /**
      * Generate all metatags for RecordDriver and add to page
      *
      * Decide which Plugins to load for the given RecordDriver
@@ -88,19 +108,13 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
      */
     public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        $recordDriverConfigs = $this->config->Vocabularies ?? [];
-        foreach ($recordDriverConfigs as $recordDriverClassName => $metatagTypes) {
-            if ($driver instanceof $recordDriverClassName) {
-                foreach ($metatagTypes as $metatagType) {
-                    $vocabulary = $this->pluginManager->get($metatagType);
-                    $mappedFields = $vocabulary->getMappedData($driver);
-                    foreach ($mappedFields as $field => $values) {
-                        foreach ($values as $value) {
-                            $this->metaHelper->appendName($field, $value);
-                        }
-                    }
+        foreach ($this->getVocabularies($driver) as $metatagType) {
+            $vocabulary = $this->pluginManager->get($metatagType);
+            $mappedFields = $vocabulary->getMappedData($driver);
+            foreach ($mappedFields as $field => $values) {
+                foreach ($values as $value) {
+                    $this->metaHelper->appendName($field, $value);
                 }
-                break;
             }
         }
     }
