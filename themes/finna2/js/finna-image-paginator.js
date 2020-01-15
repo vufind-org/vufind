@@ -16,7 +16,10 @@ finna.imagePaginator = (function imagePaginator() {
     imagesOnNormal: 8,
     imagesPerRow: 8,
     enableImageZoom: false,
-    recordType: 'default-type'
+    recordType: 'default-type',
+    leaflet: {
+      offsetPercentage: 4
+    }
   };
 
   var translations = {
@@ -368,17 +371,51 @@ finna.imagePaginator = (function imagePaginator() {
 
       var h = this.naturalHeight;
       var w = this.naturalWidth;
-      var zoomLevel = 10;
-
+      var leafletHolderWidth = $('#leaflet-map-image').width();
+      var leafletHolderHeight = $('#leaflet-map-image').height();
+      
+      var zoomLevel = 1;
       var alt = h === 10 && w === 10 ? translations.no_cover : image.data('alt');
-      var bounds = new L.LatLngBounds(_.leafletHolder.unproject([0, h], zoomLevel), _.leafletHolder.unproject([w, 0], zoomLevel));
 
-      _.leafletHolder.flyToBounds(bounds, {animate: false});
-      L.imageOverlay(img.src, bounds, {alt: alt}).addTo(_.leafletHolder);
+      var offsetPercentage = _.settings.leaflet.offsetPercentage;
+
+      function calculateBounds(boundWidth, imageWidth, boundHeight, imageHeight) {
+        var heightPercentage = 0;
+        var widthPercentage = 0;
+        var newHeight = imageHeight;
+        var newWidth = imageWidth;
+
+        if (imageHeight >= boundHeight) {
+          newHeight = boundHeight - (boundHeight / 100 * offsetPercentage);
+          heightPercentage = 100 - (newHeight / imageHeight * 100);
+        }
+        
+        if (imageWidth >= boundWidth) {
+          newWidth = boundWidth - (boundWidth / 100 * offsetPercentage);
+          widthPercentage = 100 - (newWidth / imageWidth * 100);
+        }
+
+        if (heightPercentage > widthPercentage) {
+          newWidth = imageWidth - (imageWidth / 100 * heightPercentage);
+        } else if (widthPercentage > heightPercentage) {
+          newHeight = imageHeight - (imageHeight / 100 * widthPercentage);
+        }
+
+        return {
+          height: newHeight,
+          width: newWidth
+        };
+      }
+
+      var bounds = calculateBounds(leafletHolderWidth, w, leafletHolderHeight, h);
+      var imageBounds = new L.LatLngBounds(_.leafletHolder.unproject([0, bounds.height], zoomLevel), _.leafletHolder.unproject([bounds.width, 0], zoomLevel));
+
+      L.imageOverlay(img.src, imageBounds, {alt: alt}).addTo(_.leafletHolder);
+      _.leafletHolder.flyToBounds(imageBounds, {animate: false});
       _.leafletHolder.invalidateSize(false);
       _.leafletLoader.removeClass('loading');
-      _.leafletHolder.setMaxBounds(bounds);
-      _.leafletStartBounds = bounds;
+      _.leafletHolder.setMaxBounds(imageBounds);
+      _.leafletStartBounds = imageBounds;
       _.leafletHolder.setMinZoom(_.leafletHolder.getZoom());
       _.setZoomButtons();
     };
