@@ -150,14 +150,14 @@ method = driver
 ;url[sv] = http://address.of.change.form/swedish
 ;url[en-gb] = http://address.of.change.form/english
 
-; Settings for messaging Settings
-[messagingSettings]
-; A colon-separated list used to display messaging settings
-; Valid options for pickUpNotice and overdueNotice are letter, email, sms and none
-; Valid options for dueDateAlert are none and email
-pickUpNotice = "letter:email:sms"
-overdueNotice = "letter:email:sms"
-dueDateAlert = "none:email"
+; Blacklist for removing certain methods from a service
+[messagingBlackLists]
+; A colon-separated list used to remove certain method types from a service
+; Meanings: snailMail = letter, ilsDefined = none
+; Allowed options:
+; pickUpNotice = "email:snailMail:sms" 
+; overDueNotice = "email:snailMail:sms"
+; dueDateAlert = "email:sms:ilsDefined"
 
 ; Due date reminder settings
 [dueDateReminder]

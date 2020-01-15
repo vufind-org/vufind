@@ -204,11 +204,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $singleReservationQueue = false;
 
     /**
-     * Messaging settings to be shown in the interface
+     * Messaging methods excluded from a service
      *
      * @var array
      */
-    protected $messagingSettings = [
+    protected $messagingBlackLists = [
         'pickUpNotice' => [],
         'overdueNotice' => [],
         'dueDateAlert' => []
@@ -416,19 +416,19 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             : [];
         $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
 
-        $this->messagingSettings['pickUpNotice']
-            = isset($this->config['messagingSettings']['pickUpNotice'])
-            ? explode(':', $this->config['messagingSettings']['pickUpNotice'])
+        $this->messagingBlackLists['pickUpNotice']
+            = isset($this->config['messagingBlackLists']['pickUpNotice'])
+            ? explode(':', $this->config['messagingBlackLists']['pickUpNotice'])
             : [];
 
-        $this->messagingSettings['overdueNotice']
-            = isset($this->config['messagingSettings']['overdueNotice'])
-            ? explode(':', $this->config['messagingSettings']['overdueNotice'])
+        $this->messagingBlackLists['overdueNotice']
+            = isset($this->config['messagingBlackLists']['overdueNotice'])
+            ? explode(':', $this->config['messagingBlackLists']['overdueNotice'])
             : [];
 
-        $this->messagingSettings['dueDateAlert']
-            = isset($this->config['messagingSettings']['dueDateAlert'])
-            ? explode(':', $this->config['messagingSettings']['dueDateAlert'])
+        $this->messagingBlackLists['dueDateAlert']
+            = isset($this->config['messagingBlackLists']['dueDateAlert'])
+            ? explode(':', $this->config['messagingBlackLists']['dueDateAlert'])
             : [];
     }
 
@@ -1701,10 +1701,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         foreach ($resultArray as $service => $sendMethods) {
             $current = [];
             $currentMethods = $sendMethods->sendMethods->sendMethod;
+            $serviceType = $sendMethods->serviceType;
             foreach ($currentMethods as $key => $value) {
+                $method = $value->value;
+                if (in_array($method, $this->messagingBlackLists[$serviceType])) {
+                    continue;
+                }
                 $current[] = $value->value;
             }
-            $returnable[$sendMethods->serviceType] = $current;
+            $returnable[$serviceType] = $current;
         }
 
         return $returnable;
