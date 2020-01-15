@@ -194,7 +194,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     protected function containsHighlightedPart($xpath, $node) {
-        return is_null($node) ? false : $xpath->query('./' . self::esHighlightTag, $node)->count();
+        return is_null($node) || $node == false ? false : $xpath->query('./' . self::esHighlightTag, $node)->count();
     }
 
 
@@ -205,12 +205,17 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $xpath = new \DOMXPath($dom);
         $highlight_nodes =  $xpath->query('//' . self::esHighlightTag);
         $snippet_trees = [];
+        $previous_highlight_parent_node;
         $previous_sibling_right; // This variable is passed as reference to hasIntersectionWithPreviousEnd and thus transfers status during the iterations
         foreach ($highlight_nodes as $highlight_node) {
             $parent_node = $highlight_node->parentNode;
             if (is_null($parent_node))
                 continue;
             $parent_node_path = $parent_node->getNodePath();
+            // Make sure we do not get different snippets if we have several highlights in the same paragraph
+            if (isset($previous_highlight_parent_node) && $parent_node->isSameNode($previous_highlight_parent_node))
+                continue;
+            $previous_highlight_parent_node = $parent_node;
             // Make sure we do not get different snippets if the previous right sibling is identical to the current highlight node
             if ($this->containsHighlightedPart($xpath, $previous_sibling_right ?? null) &&
                 $this->hasIntersectionWithPreviousEnd($xpath, $previous_sibling_right, $parent_node, $parent_node_path, $parent_node_path))
@@ -233,10 +238,10 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
             array_push($snippet_trees, $snippet_tree);
         }
 
-        array_walk($snippet_trees, function($snippet_tree) { $snippet_tree->insertBefore($snippet_tree->createTextNode('...'), $snippet_tree->firstChild);
-                                                             $snippet_tree->appendChild($snippet_tree->createTextNode('...'));
+        array_walk($snippet_trees, function($snippet_tree) { $snippet_tree->appendChild($snippet_tree->createTextNode('...'));
                                                              return $snippet_tree; } );
         $snippets_html = array_map(function($snippet_tree) { return $snippet_tree->saveHTML(); }, $snippet_trees );
+
         return implode("", $snippets_html);
 
     }
