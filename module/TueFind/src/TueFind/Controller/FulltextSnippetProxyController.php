@@ -162,18 +162,18 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
-    protected function hasIntersectionWithPreviousEnd($xpath, &$previous_right_sibling, $node, $left_sibling_path, $right_sibling_path) {
+    protected function hasIntersectionWithPreviousEnd($xpath, &$previous_sibling_right, $node, $left_sibling_path, $right_sibling_path) {
         $left_siblings = $xpath->query($left_sibling_path);
         if ($left_siblings->count()) {
             $left_sibling = $left_siblings->item(0);
-            if (isset($previous_right_sibling) && $previous_right_sibling && $left_sibling->isSameNode($previous_right_sibling)) {
-                $previous_right_sibling = $xpath->query($right_sibling_path)->item(0) ?? false;
+            if (isset($previous_sibling_right) && $previous_sibling_right && $left_sibling->isSameNode($previous_sibling_right)) {
+                $previous_sibling_right = $xpath->query($right_sibling_path)->item(0) ?? false;
                 return true;
             }
-            $previous_right_sibling = $xpath->query($right_sibling_path)->item(0) ?? false;
+            $previous_sibling_right = $xpath->query($right_sibling_path)->item(0) ?? false;
         }
         else
-            $previous_right_sibling = $node;
+            $previous_sibling_right = $node;
       return false;
     }
 
@@ -222,8 +222,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 continue;
             $left_sibling_path = $parent_node_path . '/preceding-sibling::p[1]';
             $right_sibling_path = $parent_node_path . '/following-sibling::p[1]';
-            $left_sibling = $xpath->query($parent_node_path . '/preceding-sibling::p[1]')->item(0);
-            $right_sibling = $xpath->query($parent_node_path . '/following-sibling::p[1]')->item(0);
+            $left_sibling = $xpath->query($left_sibling_path)->item(0);
+            $right_sibling = $xpath->query($right_sibling_path)->item(0);
             $has_intersection = $this->hasIntersectionWithPreviousEnd($xpath,
                                                                       $previous_sibling_right,
                                                                       $parent_node,
