@@ -1455,7 +1455,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Check if nickname is avaliable
+     * Check if nickname is available
      *
      * @param string $nickname User nickname
      *

@@ -143,6 +143,28 @@ class UserResource extends \VuFind\Db\Table\UserResource
     }
 
     /**
+     * Get next available custom order index
+     *
+     * @param int $listId List id
+     *
+     * @return int Results next available index or zero if custom order is not
+     *             used or list is empty
+     */
+    public function getNextAvailableCustomOrderIndex($listId)
+    {
+        $callback = function ($select) use ($listId) {
+            $select->where->equalTo('list_id', $listId);
+            $select->where->isNotNull('finna_custom_order_index');
+            $select->order('finna_custom_order_index DESC');
+        };
+        $result = $this->select($callback);
+        if ($result->count() > 0) {
+            return $result->current()->finna_custom_order_index + 1;
+        }
+        return 0;
+    }
+
+    /**
      * Update the date of a list
      *
      * @param string $listId ID of list to unlink

@@ -59,7 +59,8 @@ class FavoritesServiceFactory extends \VuFind\Favorites\FavoritesServiceFactory
         return new FavoritesService(
             $tableManager->get('userlist'),
             $tableManager->get('resource'),
-            $sm->get(\VuFind\Record\Cache::class)
+            $sm->get(\VuFind\Record\Cache::class),
+            $tableManager->get(\VuFind\Db\Table\UserResource::class)
         );
     }
 }

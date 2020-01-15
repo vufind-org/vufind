@@ -124,6 +124,8 @@ class User extends \VuFind\Db\Row\User
      * @param string                  $notes           User notes about the resource.
      * @param bool                    $replaceExisting Whether to replace all
      * existing tags (true) or append to the existing list (false).
+     * @param int                     $index           First available custom order
+     *                                                 index if used.
      *
      * @return void
      */
@@ -132,7 +134,8 @@ class User extends \VuFind\Db\Row\User
         \VuFind\Db\Row\UserList $list,
         array $tagArray,
         string $notes,
-        bool $replaceExisting = true
+        bool $replaceExisting = true,
+        int $index = 0
     ) {
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
@@ -142,7 +145,8 @@ class User extends \VuFind\Db\Row\User
                 $resource->id,
                 $this->id,
                 $list->id,
-                $notes
+                $notes,
+                ($index ? $index++ : null)
             );
             // If we're replacing existing tags, delete the old ones before adding
             // the new ones:

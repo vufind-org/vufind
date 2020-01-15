@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Service for modifying User Lists
  *
@@ -29,6 +30,11 @@
  */
 namespace Finna\Favorites;
 
+use VuFind\Db\Table\Resource as ResourceTable;
+use VuFind\Db\Table\UserList as UserListTable;
+use VuFind\Db\Table\UserResource as UserResourceTable;
+use VuFind\Record\Cache as RecordCache;
+
 /**
  *  Favorites service
  *
@@ -40,6 +46,31 @@ namespace Finna\Favorites;
  */
 class FavoritesService extends \VuFind\Favorites\FavoritesService
 {
+    /**
+     * UserResource table
+     *
+     * @var UserResourceTable
+     */
+    protected $userResourceTable;
+
+    /**
+     * Constructor
+     *
+     * @param UserListTable     $userList          UserList table object
+     * @param ResourceTable     $resource          Resource table object
+     * @param RecordCache       $cache             Record cache
+     * @param UserResourceTable $userResourceTable User Resource join table
+     */
+    public function __construct(UserListTable $userList, ResourceTable $resource,
+        RecordCache $cache = null, UserResourceTable $userResourceTable
+    ) {
+        $this->recordCache = $cache;
+        $this->userListTable = $userList;
+        $this->resourceTable = $resource;
+        parent::__construct($userList, $resource, $cache);
+        $this->userResourceTable = $userResourceTable;
+    }
+
     /**
      * Save this record to the user's favorites.
      *
@@ -63,12 +94,20 @@ class FavoritesService extends \VuFind\Favorites\FavoritesService
         if (!$user) {
             throw new LoginRequiredException('You must be logged in first');
         }
-
+        $listId = $params['list'] ?? '';
         // Get or create a list object as needed:
         $list = $this->getListObject(
-            $params['list'] ?? '',
+            $listId,
             $user
         );
+
+        // check if list has custom order, if so add custom order keys for new items
+        $index = $this->userResourceTable->getNextAvailableCustomOrderIndex($listId);
+
+        // if target list is not in custom order then reverse
+        if (! $this->userResourceTable->isCustomOrderAvailable($listId)) {
+            $drivers = array_reverse($drivers);
+        }
 
         // Get or create a resource object as needed:
         $resources = array_map(
@@ -91,7 +130,9 @@ class FavoritesService extends \VuFind\Favorites\FavoritesService
             $resources,
             $list,
             $params['mytags'] ?? [],
-            $params['notes'] ?? ''
+            $params['notes'] ?? '',
+            true,
+            $index
         );
         return ['listId' => $list->id];
     }
