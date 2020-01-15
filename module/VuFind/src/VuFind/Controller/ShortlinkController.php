@@ -119,7 +119,7 @@ class ShortlinkController extends AbstractBase
                 } else {
                     $method = ucwords($this->redirectMethod);
                 }
-                if (!is_callable([$this], 'redirectVia' . $method)) {
+                if (!is_callable([$this, 'redirectVia' . $method])) {
                     throw new \VuFind\Exception\BadConfig(
                         'Invalid redirect method: ' . $method
                     );
