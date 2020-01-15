@@ -60,9 +60,9 @@ abstract class AbstractBase implements MetadataVocabularyInterface
         return [
             'author' => array_unique(
                 array_merge(
-                    $driver->tryMethod('getPrimaryAuthors'),
-                    $driver->tryMethod('getSecondaryAuthors'),
-                    $driver->tryMethod('getCorporateAuthors')
+                    $driver->tryMethod('getPrimaryAuthors') ?? [],
+                    $driver->tryMethod('getSecondaryAuthors') ?? [],
+                    $driver->tryMethod('getCorporateAuthors') ?? []
                 )
             ),
             'container_title' => $driver->tryMethod('getContainerTitle'),
