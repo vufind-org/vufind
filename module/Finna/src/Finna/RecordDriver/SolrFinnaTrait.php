@@ -712,7 +712,9 @@ trait SolrFinnaTrait
             || in_array('1/Journal/eArticle/', $formats)
         ) {
             return 'Article';
-        } elseif (in_array('0/Journal/', $formats)) {
+        } elseif (in_array('0/Journal/', $formats)
+            || in_array('1/Other/ContinuouslyUpdatedResource/', $formats)
+        ) {
             return 'Journal';
         } elseif (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
