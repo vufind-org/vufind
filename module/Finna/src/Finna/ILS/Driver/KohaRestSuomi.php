@@ -1,6 +1,6 @@
 <?php
 /**
- * KohaRest ILS Driver
+ * KohaRest ILS Driver for KohaSuomi
  *
  * PHP version 7
  *
@@ -31,9 +31,7 @@ namespace Finna\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * VuFind Driver for Koha, using REST API
- *
- * Minimum Koha Version: work in progress as of 23 Jan 2017
+ * KohaRest ILS Driver for KohaSuomi
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -42,7 +40,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaRest extends \VuFind\ILS\Driver\KohaRest
+class KohaRestSuomi extends KohaRestSuomiVuFind
 {
     /**
      * Mappings from Koha messaging preferences

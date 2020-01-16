@@ -564,6 +564,15 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             if (!empty($config)) {
                 return $config;
             }
+            // Fallback for KohaRestSuomi to also look for KohaRest_$source.ini
+            if ('KohaRestSuomi' === $this->drivers[$source]) {
+                $config = $this->configLoader->get(
+                    'KohaRest_' . $source
+                )->toArray();
+                if (!empty($config)) {
+                    return $config;
+                }
+            }
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Fall through
         }

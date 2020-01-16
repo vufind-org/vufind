@@ -1,6 +1,6 @@
 <?php
 /**
- * KohaRest ILS Driver
+ * KohaRest ILS Driver for KohaSuomi (the VuFind base implementation part)
  *
  * PHP version 5
  *
@@ -25,13 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace Finna\ILS\Driver;
 
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * VuFind Driver for Koha, using REST API
+ * KohaRest ILS Driver for KohaSuomi (the VuFind base implementation part)
  *
  * Minimum Koha Version: work in progress as of 23 Jan 2017
  *
@@ -41,7 +41,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
+class KohaRestSuomiVuFind extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
