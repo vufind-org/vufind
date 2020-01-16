@@ -197,6 +197,11 @@
                   <br />
                 <?php endif; ?>
 
+                <?php if (!empty($ilsDetails['checkoutDate'])): ?>
+                  <?=$this->transEsc('Checked Out')?>: <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><?php if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><?php endif; ?></span>
+                  <br/>
+                <?php endif; ?>
+
                 <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
                   <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
                   <br />
