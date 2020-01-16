@@ -166,7 +166,7 @@ function getUrlRoot(url) {
   if (VuFind.path === '' || VuFind.path === '/') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
-    urlroot = '/' + chunks[3] + '/' + chunks[4];
+    urlroot = '/' + chunks[1] + '/' + chunks[2];
   } else {
     // standard case -- VuFind has its own path under site:
     var slashSlash = urlWithoutFragment.indexOf('//');
