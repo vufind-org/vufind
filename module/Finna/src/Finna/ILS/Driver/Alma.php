@@ -1904,6 +1904,11 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     // Physical
                     $physicalItems = $record->getFields('AVA');
                     foreach ($physicalItems as $field) {
+                        // Filter out suggestions for other records
+                        $mmsId = $this->getMarcSubfield($field, '0');
+                        if ($mmsId !== (string)$bib->mms_id) {
+                            continue;
+                        }
                         $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
