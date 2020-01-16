@@ -1512,8 +1512,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                'reservations' => $item['ReservationQueueLength']
             ];
             $duedate = isset($item['DueDate'])
-                ? $this->dateConverter->convertToDisplayDate(
-                    \DateTime::ATOM,
+                ? $this->formatDate(
                     $item['DueDate']
                 )
                 : '';
@@ -2084,6 +2083,27 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             );
         }
         return $cacheDepartment[$locationId][0]['Name'];
+    }
+
+    /**
+     * Format date
+     *
+     * @param string $dateString Date as a string
+     *
+     * @return string Formatted date
+     */
+    protected function formatDate($dateString)
+    {
+        // Ignore timezone and time, otherwise CatalogueItems
+        // and BorrowerLoans api calls give different due dates for
+        // the same item
+        if (preg_match('/^(\d{4}-\d{2}-\d{2})/', $dateString, $matches)) {
+            return $this->dateConverter->convertToDisplayDate(
+                'Y-m-d', $matches[1]
+            );
+        }
+
+        return $this->dateConverter->convertToDisplayDate('Y-m-d', $dateString);
     }
 
     /**
