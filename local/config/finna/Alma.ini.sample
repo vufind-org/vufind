@@ -184,6 +184,12 @@ indexes = "868az"
 ; Whether to sort items by enumchron. Default is true.
 ;sortByEnumChron = false
 
+; Process types to hide from holdings screen. Array keyed by Alma physical material
+; type IDs with values as a colon-separated lists. By default all are displayed.
+;hiddenProcessTypes[ISSUE] = "ACQ"
+; * can be used to denote all physical material types:
+;hiddenProcessTypes[*] = "ACQ"
+
 
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.

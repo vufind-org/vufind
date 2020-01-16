@@ -65,6 +65,14 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     protected $sortItemsByEnumChron = true;
 
     /**
+     * Process types hidden from holdings. The array is keyed by physical material
+     * type, or '*' to match all types.
+     *
+     * @var array
+     */
+    protected $hiddenProcessTypes = [];
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -91,6 +99,14 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 
         $this->sortItemsByEnumChron
             = $this->config['Holdings']['sortByEnumChron'] ?? true;
+
+        if (!empty($this->config['Holdings']['hiddenProcessTypes'])) {
+            foreach ($this->config['Holdings']['hiddenProcessTypes']
+                as $key => $value
+            ) {
+                $this->hiddenProcessTypes[$key] = explode(':', $value);
+            }
+        }
     }
 
     /**
@@ -1456,6 +1472,13 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $results['total'] = (int)$items->attributes()->total_record_count;
 
             foreach ($items->item as $item) {
+                $processType = (string)($item->item_data->process_type ?? '');
+                $format = (string)($item->item_data->physical_material_type ?? '');
+                if (in_array($processType, $this->hiddenProcessTypes[$format] ?? [])
+                    || in_array($processType, $this->hiddenProcessTypes['*'] ?? [])
+                ) {
+                    continue;
+                }
                 $holdingId = (string)$item->holding_data->holding_id;
                 if ($holding = $holdings[$holdingId] ?? null) {
                     if ('true' === (string)$holding->suppress_from_publishing) {
@@ -1476,7 +1499,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
 
-                $processType = (string)($item->item_data->process_type ?? '');
                 if ($processType && 'LOAN' !== $processType) {
                     $status = $this->getTranslatableStatusString(
                         $item->item_data->process_type
