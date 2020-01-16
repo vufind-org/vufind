@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
@@ -88,7 +89,11 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        $patron = $this->ilsAuthenticator->storedCatalogLogin();
+        try {
+            $patron = $this->ilsAuthenticator->storedCatalogLogin();
+        } catch (ILSException $e) {
+            $patron = false;
+        }
 
         $holding = $this->ils->getHoldingsDetails($id, $key, $patron);
         $textFieldNames = $this->ils->getHoldingsTextFieldNames();
