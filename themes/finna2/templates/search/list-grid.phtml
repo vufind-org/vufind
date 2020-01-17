@@ -1,13 +1,12 @@
+
 <!-- START of: finna - search/list-grid.phtml -->
 <?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
 <div class="search-grid">
-  <div class="masonry-wrapper">
-      <?php $i = $this->indexStart; ?>
-      <?php foreach ($this->results->getResults() as $current): ?>
-        <div id="result<?=$i++ ?>" class="result grid">
-          <?=$this->record($current)->getSearchResult('grid')?>
-        </div>
-      <?php endforeach; ?>
-  </div>
+  <?php $i = $this->indexStart; ?>
+  <?php foreach ($this->results->getResults() as $current): ?>
+    <div id="result<?=$i++ ?>" class="result grid">
+      <?=$this->record($current)->getSearchResult('grid')?>
+    </div>
+  <?php endforeach; ?>
 </div>
 <!-- END of: finna - search/list-grid.phtml -->

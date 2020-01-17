@@ -612,22 +612,11 @@ finna.imagePaginator = (function imagePaginator() {
     }
     _.imageDetail.html(imagePopup.data('description'));
 
-    if (_.isList) {
-      img.unveil(200, function tryMasonry() {
-        $(this).load(function handleImage() {
-          setImageProperties(this);
-          if (finna.layout.getMasonryState()) {
-            $('.result-view-grid .masonry-wrapper').masonry('layout');
-          }
-        });
+    img.unveil(100, function handleLoading() {
+      $(this).load(function handleImage() {
+        setImageProperties(this);
       });
-    } else {
-      img.unveil(100, function handleLoading() {
-        $(this).load(function handleImage() {
-          setImageProperties(this);
-        });
-      });
-    }
+    });
   };
 
   /**

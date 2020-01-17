@@ -42,7 +42,6 @@
       $this->headScript()->appendFile('vendor/html5shiv.js', 'text/javascript', ['conditional' => 'lt IE 9']);
       $this->headScript()->appendFile('vendor/respond.js', 'text/javascript', ['conditional' => 'lt IE 9']);
       $this->headScript()->appendFile("vendor/jquery.waitforimages.min.js");
-      $this->headScript()->appendFile("vendor/masonry.pkgd.min.js");
       $finnaSurvey
         = in_array($this->layout()->templateDir, ['search', 'record'])
         && $this->finnaSurvey()->isEnabled();
