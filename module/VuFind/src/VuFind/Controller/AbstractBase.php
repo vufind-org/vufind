@@ -79,13 +79,6 @@ class AbstractBase extends AbstractActionController
     protected $serviceLocator;
 
     /**
-     * Nonce (number used once) for content security policy
-     *
-     * @var string
-     */
-    protected $nonce;
-
-    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service locator
@@ -93,8 +86,6 @@ class AbstractBase extends AbstractActionController
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->serviceLocator = $sm;
-        $nonceGenerator = $sm->get(\VuFind\Security\NonceGenerator::class);
-        $this->nonce = $nonceGenerator->getNonce();
     }
 
     /**
@@ -202,13 +193,10 @@ class AbstractBase extends AbstractActionController
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        $headers->addHeaderLine(
-            'Content-Security-Policy',
-            "default-src 'none'; script-src 'strict-dynamic' 'nonce-$this->nonce' "
-                . "'unsafe-inline' http: https:; connect-src 'self'; "
-                . "style-src 'self'; img-src 'self'; font-src 'self'; "
-                . "base-uri 'self';"
-        );
+        $cspHeaderGenerator = $this->serviceLocator
+            ->get(\VuFind\Security\CspHeaderGenerator::class);
+        $cspHeader = $cspHeaderGenerator->getHeader();
+        $headers->addHeader($cspHeader);
         return parent::onDispatch($e);
     }
 

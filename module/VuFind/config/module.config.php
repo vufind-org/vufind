@@ -419,6 +419,7 @@ $config = [
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
+            'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
             'VuFind\Security\NonceGenerator' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
