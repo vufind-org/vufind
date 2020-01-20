@@ -297,6 +297,7 @@ class SolrMarc extends SolrDefault
             $aSubfield = $field->getSubfield('a');
             $dSubfield = $field->getSubfield('d');
             $tSubfield = $field->getSubfield('t');
+            $gSubfield = $field->getSubfield('g');
 
             $title = '';
             if ($tSubfield != false )
@@ -307,6 +308,9 @@ class SolrMarc extends SolrDefault
             if ($dSubfield != false)
                 $title .= ' (' . $dSubfield->getData() . ')';
 
+            if ($gSubfield != false) // Year and Page information
+	        $title .= ' ' . $gSubfield->getData();
+		
             $referencedId = null;
             $ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
             if (!empty($ppn))
