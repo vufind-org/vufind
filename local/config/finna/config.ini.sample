@@ -1512,7 +1512,7 @@ count = 2
 
 ; Use Piwik for visitor tracking
 [Piwik]
-url = https://piwik.finna.fi/
+url = https://piwik.jotain.jossain/
 ;site_id = 1
 ;token_auth = ...
 custom_variables = 1
