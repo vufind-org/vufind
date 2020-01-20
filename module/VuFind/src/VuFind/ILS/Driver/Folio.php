@@ -78,6 +78,13 @@ class Folio extends AbstractAPI implements
      */
     protected $sessionCache;
 
+     /**
+     * config.ini values
+     *
+     * @var 
+     */
+    protected $allConfigs;
+
     /**
      * Constructor
      *
@@ -86,10 +93,11 @@ class Folio extends AbstractAPI implements
      * SessionContainer object
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,$allConfigs
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+        $this->allConfigs = $allConfigs;
     }
 
     /**
@@ -131,7 +139,7 @@ class Folio extends AbstractAPI implements
         // truncate headers for token obscuring
         $logHeaders = $req_headers->toArray();
         if (isset($logHeaders['X-Okapi-Token'])) {
-            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+            $logHeaders['X-Okapi-Token'] = substr($logHeaders['X-Okapi-Token'], 0, 30) . '...';
         }
 
         $this->debug(
@@ -228,6 +236,7 @@ class Folio extends AbstractAPI implements
         } else {
             $this->checkTenantToken();
         }
+       
     }
 
     /**
@@ -402,44 +411,51 @@ class Folio extends AbstractAPI implements
     public function patronLogin($username, $password)
     {
         // Get user id
-        $query = ['query' => 'username == ' . $username];
+        $query = ['query' => 'barcode == ' . $username];
         $response = $this->makeRequest('GET', '/users', $query);
         $json = json_decode($response->getBody());
         if (count($json->users) == 0) {
             throw new ILSException("User not found");
         }
         $profile = $json->users[0];
-        $credentials = [
-            'userId' => $profile->id,
-            'username' => $username,
-            'password' => $password,
-        ];
-        // Get token
-        try {
-            $response = $this->makeRequest(
-                'POST',
-                '/authn/login',
-                json_encode($credentials)
-            );
-            // Replace admin with user as tenant
-            $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                ->getFieldValue();
-            $this->debug(
-                'User logged in. User: ' . $username . '.' .
-                ' Token: ' . substr($this->token, 0, 30) . '...'
-            );
-            return [
-                'id' => $profile->id,
+        
+        //if authenication method is ILS, call FOLIO authn
+        if ($this->allConfigs['Authentication']['method'] == "ILS") {
+            $credentials = [
+                'userId' => $profile->id,
                 'username' => $username,
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'firstname' => $profile->personal->firstName ?? null,
-                'lastname' => $profile->personal->lastName ?? null,
-                'email' => $profile->personal->email ?? null,
+                'password' => $password,
             ];
-        } catch (Exception $e) {
-            return null;
+            // Get token
+            try {
+                $response = $this->makeRequest(
+                    'POST',
+                    '/authn/login',
+                    json_encode($credentials)
+                );
+                $token = $response->getHeaders()->get('X-Okapi-Token')
+                    ->getFieldValue();
+                $this->debug(
+                    'User logged in. User: ' . $username . '.' .
+                   ' Token: ' . substr($token, 0, 30) . '...'
+                );
+                
+            } catch (Exception $e) {
+                return null;
+            }
         }
+
+
+        return [
+            'id' => $profile->id,
+            'username' => $username,
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'firstname' => $profile->personal->firstName ?? null,
+            'lastname' => $profile->personal->lastName ?? null,
+            'email' => $profile->personal->email ?? null,
+        ];
+
     }
 
     /**
@@ -451,7 +467,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'barcode == "' . $patron['username'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
@@ -604,24 +620,23 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        // Get user id
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
+
         $query = [
-            'query' => 'requesterId == "' . $users->users[0]->id . '"' .
-                ' and requestType == "Hold"'
+            'query' => 'requesterId == "' . $patron['id'] . '"' 
         ];
-        // Request HOLDS
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
         $holds = [];
         foreach ($json->requests as $hold) {
+            $requestDate = date_create($hold->requestDate);
+            //set expire date if it was included in the response
+            $expireDate = (isset($hold->requestExpirationDate) ? date_create($hold->requestExpirationDate) : null);
             $holds[] = [
                 'type' => 'Hold',
-                'create' => $hold->requestDate,
-                'expire' => $hold->requestExpirationDate,
+                'create' => date_format($requestDate, "j M Y"),
+                'expire' => (isset($expireDate) ? date_format($expireDate, "j M Y") : ""),
                 'id' => $this->getBibId(null, null, $hold->itemId),
+                'title' => $hold->item->title
             ];
         }
         return $holds;
@@ -754,9 +769,29 @@ class Folio extends AbstractAPI implements
      * (optional - defaults to Solr). Introduced in VuFind 2.4.
      *
      */
-    public function getMyFines($patron)
+       public function getMyFines($patron)
     {
-        return [];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
+        $response = $this->makeRequest("GET", '/accounts', $query);
+        $json = json_decode($response->getBody());
+        if (count($json->accounts) == 0) {
+            return [];
+        }
+        $fines = [];
+        foreach ($json->accounts as $fine) {
+            $date = date_create($fine->metadata->createdDate);
+            $title = (isset($fine->title) ? $fine->title : null);
+            $fines[] = [
+                'id' => $fine->id,
+                'amount' => $fine->amount * 100,
+                'balance' => $fine->remaining * 100,
+                'status' => $fine->paymentStatus->name,
+                'type' => $fine->feeFineType,
+                'title' => $title,
+                'createdate' => date_format($date, "j M Y")
+            ];
+        }
+        return $fines;
     }
 
     /**
