@@ -305,11 +305,11 @@ class SolrMarc extends SolrDefault
             elseif ($aSubfield != false)
                 $title = $aSubfield->getData();
 
-            if ($dSubfield != false)
-                $title .= ' (' . $dSubfield->getData() . ')';
-
             if ($gSubfield != false) // Year and Page information
 	        $title .= ' ' . $gSubfield->getData();
+
+            if ($dSubfield != false)
+                $title .= ' (' . $dSubfield->getData() . ')';
 		
             $referencedId = null;
             $ppn = $this->getFirstK10PlusPPNFromSubfieldW($field);
