@@ -398,6 +398,9 @@ class MyResearchController extends AbstractBase
             throw new ForbiddenException('Access denied.');
         }
         $row->saved = $saved ? 1 : 0;
+        if (!$saved) {
+            $row->notification_frequency = 0;
+        }
         $row->user_id = $userId;
         $row->save();
     }
@@ -413,6 +416,43 @@ class MyResearchController extends AbstractBase
             'user_verification',
             $this->serviceLocator->get(\Zend\Session\SessionManager::class)
         );
+    }
+
+    /**
+     * Support method for savesearchAction() -- schedule a search.
+     *
+     * @param \VuFind\Db\Row\User $user     Logged-in user object
+     * @param int                 $schedule Requested schedule setting
+     * @param int                 $sid      Search ID to schedule
+     *
+     * @return mixed
+     */
+    protected function scheduleSearch($user, $schedule, $sid)
+    {
+        // Fail if scheduled searches are disabled.
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (!isset($scheduleOptions[$schedule])) {
+            throw new ForbiddenException('Illegal schedule option: ' . $schedule);
+        }
+        $search = $this->getTable('Search');
+        $baseurl = rtrim($this->getServerUrl('home'), '/');
+        $searchCriteria = ['id' => $sid, 'user_id' => $user->id, 'saved' => 1];
+        $savedRow = $search->select($searchCriteria)->current();
+        // If we didn't find an already-saved row, let's save and retry:
+        if (!$savedRow) {
+            $this->setSavedFlagSecurely($sid, true, $user->id);
+            $savedRow = $search->select($searchCriteria)->current();
+        }
+        if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
+            // By default, a first scheduled email will be sent because the database
+            // last notification date will be initialized to a past date. If we don't
+            // want that to happen, we need to set it to a more appropriate date:
+            $savedRow->last_notification_sent = date('Y-m-d H:i:s');
+        }
+        $savedRow->setSchedule($schedule, $baseurl);
+        return $this->redirect()->toRoute('search-history');
     }
 
     /**
@@ -432,6 +472,13 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
+        }
+
+        // Check for schedule-related parameters and process them first:
+        $schedule = $this->params()->fromQuery('schedule', false);
+        $sid = $this->params()->fromQuery('searchid', false);
+        if ($schedule !== false && $sid !== false) {
+            return $this->scheduleSearch($user, $schedule, $sid);
         }
 
         // Check for the save / delete parameters and process them appropriately:
@@ -2028,6 +2075,44 @@ class MyResearchController extends AbstractBase
             );
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute('myresearch-profile');
+        }
+        return $view;
+    }
+
+    /**
+     * Unsubscribe a scheduled alert for a saved search.
+     *
+     * @return mixed
+     */
+    public function unsubscribeAction()
+    {
+        $id = $this->params()->fromQuery('id', false);
+        $key = $this->params()->fromQuery('key', false);
+        $type = $this->params()->fromQuery('type', 'alert');
+        if ($id === false || $key === false) {
+            throw new \Exception('Missing parameters.');
+        }
+        $view = $this->createViewModel();
+        if ($this->params()->fromQuery('confirm', false) == 1) {
+            if ($type == 'alert') {
+                $search
+                    = $this->getTable('Search')->select(['id' => $id])->current();
+                if (!$search) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $user = $this->getTable('User')->getById($search->user_id);
+                $secret = $search->getUnsubscribeSecret(
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
+                );
+                if ($key !== $secret) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $search->setSchedule(0);
+                $view->success = true;
+            }
+        } else {
+            $view->unsubscribeUrl
+                = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
     }

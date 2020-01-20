@@ -474,7 +474,7 @@ class AbstractSearch extends AbstractBase
 
             // Check to see if there is an existing range in the search object:
             if ($savedSearch) {
-                $filters = $savedSearch->getParams()->getFilters();
+                $filters = $savedSearch->getParams()->getRawFilters();
                 if (isset($filters[$field])) {
                     foreach ($filters[$field] as $current) {
                         if ($range = SolrUtils::parseRange($current)) {

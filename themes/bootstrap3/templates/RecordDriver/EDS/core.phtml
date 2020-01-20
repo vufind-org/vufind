@@ -105,6 +105,10 @@
         </span>
       <?php endforeach; ?>
     <?php endif; ?>
+
+    <?php $doi = $this->doi($this->driver, 'record'); if ($doi->isActive()): ?>
+        <div><?=$doi->renderTemplate()?></div>
+    <?php endif; ?>
     </div>
   </div>
 </div>

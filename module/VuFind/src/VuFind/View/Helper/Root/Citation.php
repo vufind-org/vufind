@@ -273,7 +273,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
         } else {
             // Add other journal-specific details:
             $mla['pageRange'] = $this->getPageRange();
-            $mla['journal'] =  $this->capitalizeTitle($this->details['journal']);
+            $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
             $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
             return $partial('Citation/mla-article.phtml', $mla);
         }
