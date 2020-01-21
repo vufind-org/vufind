@@ -1329,6 +1329,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                             'Y-m-dT',
                             (string)$request->expiry_date
                         ) : null;
+                    $lastInterestDate = null;
                 }
                 $hold = [
                     'create' => $this->dateConverter->convertToDisplayDate(
