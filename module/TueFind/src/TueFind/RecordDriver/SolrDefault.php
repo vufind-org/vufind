@@ -211,7 +211,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getPreceedingTitlePPN()
     {
-        return $this->fields['preceeding_title_and_ppn'] ?? '';
+        return $this->fields['preceeding_ppn_and_title'] ?? '';
     }
 
     public function getRecordDriverByPPN($ppn) {
