@@ -1305,43 +1305,52 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     public function getMyHolds($patron)
     {
-        $xml = $this->makeRequest(
-            '/users/' . $patron['id'] . '/requests',
-            ['request_type' => 'HOLD', 'limit' => 100]
-        );
         $holdList = [];
-        foreach ($xml as $request) {
-            $lastInterestDate = $request->last_interest_date
-                ? $this->dateConverter->convertToDisplayDate(
-                    'Y-m-dT', (string)$request->last_interest_date
-                ) : null;
-            $available = (string)$request->request_status === 'On Hold Shelf';
-            $lastPickupDate = null;
-            if ($available) {
-                $lastPickupDate = $request->expiry_date
+        $offset = 0;
+        $totalCount = 1;
+        while ($offset < $totalCount) {
+            $xml = $this->makeRequest(
+                '/users/' . $patron['id'] . '/requests',
+                ['request_type' => 'HOLD', 'offset' => $offset, 'limit' => 100]
+            );
+            $offset += 100;
+            $totalCount = (int)$xml->attributes()->{'total_record_count'};
+            foreach ($xml as $request) {
+                $lastInterestDate = $request->last_interest_date
                     ? $this->dateConverter->convertToDisplayDate(
-                        'Y-m-dT', (string)$request->expiry_date
+                        'Y-m-dT',
+                        (string)$request->last_interest_date
                     ) : null;
-            }
-            $hold = [
-                'create' => $this->dateConverter->convertToDisplayDate(
-                    'Y-m-dT', (string)$request->request_date
-                ),
-                'expire' => $lastInterestDate,
-                'id' => (string)$request->request_id,
-                'available' => $available,
-                'last_pickup_date' => $lastPickupDate,
-                'item_id' => (string)$request->mms_id,
-                'location' => (string)$request->pickup_location,
-                'processed' => $request->item_policy === 'InterlibraryLoan'
-                    && (string)$request->request_status !== 'Not Started',
-                'title' => (string)$request->title,
-            ];
-            if (!$available) {
-                $hold['position'] = (int)($request->place_in_queue ?? 1);
-            }
+                $available = (string)$request->request_status === 'On Hold Shelf';
+                $lastPickupDate = null;
+                if ($available) {
+                    $lastPickupDate = $request->expiry_date
+                        ? $this->dateConverter->convertToDisplayDate(
+                            'Y-m-dT',
+                            (string)$request->expiry_date
+                        ) : null;
+                }
+                $hold = [
+                    'create' => $this->dateConverter->convertToDisplayDate(
+                        'Y-m-dT',
+                        (string)$request->request_date
+                    ),
+                    'expire' => $lastInterestDate,
+                    'id' => (string)$request->request_id,
+                    'available' => $available,
+                    'last_pickup_date' => $lastPickupDate,
+                    'item_id' => (string)$request->mms_id,
+                    'location' => (string)$request->pickup_location,
+                    'processed' => $request->item_policy === 'InterlibraryLoan'
+                        && (string)$request->request_status !== 'Not Started',
+                    'title' => (string)$request->title,
+                ];
+                if (!$available) {
+                    $hold['position'] = (int)($request->place_in_queue ?? 1);
+                }
 
-            $holdList[] = $hold;
+                $holdList[] = $hold;
+            }
         }
         return $holdList;
     }
