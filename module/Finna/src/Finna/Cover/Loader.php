@@ -397,6 +397,10 @@ class Loader extends \VuFind\Cover\Loader
         }
 
         $image = file_get_contents($tempFile);
+
+        // We no longer need the temp file:
+        @unlink($tempFile);
+
         if (strlen($image) === 0) {
             return false;
         }
@@ -406,7 +410,7 @@ class Loader extends \VuFind\Cover\Loader
             return false;
         }
 
-        list($width, $height, $type) = @getimagesize($tempFile);
+        list($width, $height, $type) = @getimagesizefromstring($image);
 
         $reqWidth = $this->width ?: $width;
         $reqHeight = $this->height ?: $height;
@@ -429,13 +433,14 @@ class Loader extends \VuFind\Cover\Loader
                 return false;
             }
         } else {
-            if (!@imagejpeg($imageGD, $finalFile, $quality)) {
-                return false;
+            if ($type !== IMG_JPG) {
+                if (!@imagejpeg($imageGD, $finalFile, $quality)) {
+                    return false;
+                }
+            } else {
+                file_put_contents($finalFile, $image);
             }
         }
-
-        // We no longer need the temp file:
-        @unlink($tempFile);
 
         // Display the image:
         $this->contentType = 'image/jpeg';
