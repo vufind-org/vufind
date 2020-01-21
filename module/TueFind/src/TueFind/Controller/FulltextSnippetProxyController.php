@@ -89,7 +89,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
             'body' => [
                 '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
                 'size' => '100',
-                'sort' => $paged_results && $verbose ? [ 'page' => 'asc' ] : [ '_score' ],
+                'sort' => $paged_results && $verbose ? [ 'text_type' => 'asc', 'page' => 'asc' ] : [ '_score' ],
                 'query' => [
                     'bool' => [
                         'must' => [
