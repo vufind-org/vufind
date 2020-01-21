@@ -11,6 +11,7 @@
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/?lng=de" />
         <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/?lng=en" />
+        <xhtml:link rel="alternate" hreflang="fr" href="https://relbib.de/?lng=fr" />
     </url>
 
     <!-- left panel -->
