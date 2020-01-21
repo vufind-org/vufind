@@ -158,7 +158,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getFollowingTitlePPN()
     {
-        return $this->fields['following_title_ppn'] ?? '';
+        return $this->fields['following_ppn_and_title'] ?? '';
     }
     
     /**
@@ -211,7 +211,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function getPreceedingTitlePPN()
     {
-        return $this->fields['preceeding_title_ppn'] ?? '';
+        return $this->fields['preceeding_title_and_ppn'] ?? '';
     }
 
     public function getRecordDriverByPPN($ppn) {
