@@ -75,9 +75,9 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         $spec->setTemplateLine('Online Access', true, 'data-onlineAccess.phtml');
     }
 
-    protected function addPreviousTitle(&$spec) {
+    protected function addPreceedingTitle(&$spec) {
         $spec->setTemplateLine(
-            'Previous Title', 'getPreviousTitlePPN', 'data-previous_title .phtml'
+            'Previous Title', 'getPreceedingTitlePPN', 'data-preceeding_title.phtml'
         );
     }
 
