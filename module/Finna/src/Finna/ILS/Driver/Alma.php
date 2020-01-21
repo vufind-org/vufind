@@ -1346,7 +1346,11 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'title' => (string)$request->title,
                 ];
                 if (!$available) {
-                    $hold['position'] = (int)($request->place_in_queue ?? 1);
+                    if ('In Process' === (string)$request->request_status) {
+                        $hold['position'] = $this->translate('status_In Process');
+                    } else {
+                        $hold['position'] = (int)($request->place_in_queue ?? 1);
+                    }
                 }
 
                 $holdList[] = $hold;
