@@ -11,6 +11,20 @@
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/?lng=de" />
         <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/?lng=en" />
+        <xhtml:link rel="alternate" hreflang="fr" href="https://relbib.de/?lng=fr" />
+    </url>
+
+    <!-- news & other pages -->
+    <url>
+        <loc>https://relbib.de/Content/news</loc>
+        <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/news?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/news?lng=en" />
+    </url>
+    <url>
+        <loc>https://relbib.de/Content/survey_results</loc>
+        <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/survey_results?lng=de" />
     </url>
 
     <!-- left panel -->
