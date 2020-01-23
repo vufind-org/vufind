@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -181,6 +181,10 @@ class UserResource extends \VuFind\Db\Table\UserResource
         }
         $listTable = $this->getDbTable('UserList');
         $list = $listTable->getExisting($listId);
+        if (empty($list->title)) {
+            // Save throws an exception unless the list has a title
+            $list->title = '-';
+        }
         $list->save($user);
     }
 }
