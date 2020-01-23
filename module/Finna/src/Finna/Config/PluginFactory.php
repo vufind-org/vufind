@@ -29,6 +29,7 @@
  */
 namespace Finna\Config;
 
+use Interop\Container\ContainerInterface;
 use VuFind\Config\Locator;
 
 /**
@@ -65,5 +66,26 @@ class PluginFactory extends \VuFind\Config\PluginFactory
         }
 
         return parent::loadConfigFile($filename, $path);
+    }
+
+    /**
+     * Create a service for the specified name.
+     *
+     * @param ContainerInterface $container     Service container
+     * @param string             $requestedName Name of service
+     * @param array              $options       Options
+     *
+     * @return object
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        if (!empty($options['configPath'])) {
+            return $this
+                ->loadConfigFile($requestedName, $options['configPath']);
+        }
+        return parent::__invoke($container, $requestedName, $options);
     }
 }

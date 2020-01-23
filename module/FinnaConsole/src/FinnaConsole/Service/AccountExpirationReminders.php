@@ -120,6 +120,13 @@ class AccountExpirationReminders extends AbstractService
     protected $currentSiteConfig = null;
 
     /**
+     * Current MultiBackend config
+     *
+     * @var object
+     */
+    protected $currentMultiBackendConfig = null;
+
+    /**
      * Datasource configuration
      *
      * @var \Zend\Config\Config
@@ -318,6 +325,10 @@ class AccountExpirationReminders extends AbstractService
                 && $searchTable->getSearches('', $user->id)->count() === 0
                 && $resourceTable->getFavorites($user->id)->count() === 0
             ) {
+                $this->msg(
+                    "User {$user->username} (id {$user->id}) has no saved content"
+                    . ', bypassing expiration'
+                );
                 continue;
             }
 
@@ -381,8 +392,98 @@ class AccountExpirationReminders extends AbstractService
             $stack = new TemplatePathStack(['script_paths' => $templateDirs]);
             $resolver->attach($stack);
 
-            $siteConfig = $viewPath . '/local/config/vufind/config.ini';
-            $this->currentSiteConfig = parse_ini_file($siteConfig, true);
+            $configLoader
+                = $this->serviceManager->get(\VuFind\Config\PluginManager::class);
+            // Build the config path as a relative path from LOCAL_OVERRIDE_DIR.
+            // This is a bit of a hack, but the configuration plugin manager doesn't
+            // currently support specifying an absolute path alone.
+            $parts = explode('/', LOCAL_OVERRIDE_DIR);
+            $configPath = str_repeat('../', count($parts))
+                . ".$viewPath/local/config/vufind";
+            $this->currentSiteConfig = $configLoader->get(
+                'config.ini',
+                compact('configPath')
+            );
+            $this->currentMultiBackendConfig = $configLoader->get(
+                'MultiBackend.ini',
+                compact('configPath')
+            );
+        }
+
+        if (isset($this->currentSiteConfig['System']['available'])
+            && !$this->currentSiteConfig['System']['available']
+        ) {
+            $this->msg(
+                "User {$user->username} (id {$user->id}) institution"
+                . " $userInstitution: site is marked unavailable,"
+                . ' bypassing expiration reminder'
+            );
+            return false;
+        }
+
+        if (!empty($this->currentSiteConfig['Authentication']['hideLogin'])) {
+            $this->msg(
+                "User {$user->username} (id {$user->id}) institution"
+                . " $userInstitution: site has login disabled,"
+                . ' bypassing expiration reminder'
+            );
+            return false;
+        }
+
+        $authMethod = $this->currentSiteConfig['Authentication']['method'] ?? '';
+        if ('ChoiceAuth' === $authMethod) {
+            $choiceAuthOptions = explode(
+                ',',
+                $this->currentSiteConfig['ChoiceAuth']['choice_order'] ?? ''
+            );
+            $match = false;
+            foreach ($choiceAuthOptions as $option) {
+                if (strcasecmp($user->auth_method, $option) === 0) {
+                    $match = true;
+                    break;
+                }
+            }
+            if (!$match) {
+                $this->msg(
+                    "User {$user->username} (id {$user->id}) institution"
+                    . " $userInstitution: user's authentication method "
+                    . " '{$user->auth_method}' is not in available authentication"
+                    . ' methods (' . implode(',', $choiceAuthOptions)
+                    . '), bypassing expiration reminder'
+                );
+                return false;
+            }
+        } elseif (strcasecmp($user->auth_method, $authMethod) !== 0) {
+            $this->msg(
+                "User {$user->username} (id {$user->id}) institution"
+                . " $userInstitution: user's authentication method ,"
+                . " '{$user->auth_method}' does not match the current method"
+                . " '$authMethod', bypassing expiration reminder"
+            );
+            return false;
+        }
+
+        if (strcasecmp($user->auth_method, 'multiils') === 0) {
+            list($target) = explode('.', $userName);
+            if (empty($this->currentMultiBackendConfig['Drivers'][$target])) {
+                $this->msg(
+                    "User {$user->username} (id {$user->id}) institution"
+                    . " $userInstitution: unknown MultiILS login target,"
+                    . ' bypassing expiration reminder'
+                );
+                return false;
+            }
+            $loginTargets = $this->currentMultiBackendConfig['Login']['drivers']
+                ? $this->currentMultiBackendConfig['Login']['drivers']->toArray()
+                : [];
+            if (!in_array($target, (array)$loginTargets)) {
+                $this->msg(
+                    "User {$user->username} (id {$user->id}) institution"
+                    . " $userInstitution: MultiILS target '$target' not available"
+                    . ' for login, bypassing expiration reminder'
+                );
+                return false;
+            }
         }
 
         $expirationDatetime = new DateTime($user->last_login);
