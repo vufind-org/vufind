@@ -128,7 +128,7 @@ $(function () {
             nextEl: '#homeNext',
             prevEl: '#homePrev',
         },
-    });    
+    });
 
     // =====================================================
     //      Items slider
@@ -139,7 +139,7 @@ $(function () {
         spaceBetween: 20,
         loop: true,
         roundLengths: true,
-        breakpoints: { 
+        breakpoints: {
             1200: {
                 slidesPerView: 3
             },
@@ -185,32 +185,6 @@ $(function () {
         },
 
         // If we need pagination
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-            dynamicBullets: true
-        },
-    });
-
-    var guidesSlider = new Swiper('.guides-slider', {
-        slidesPerView: 5,
-        spaceBetween: 15,
-        loop: true,
-        roundLengths: true,
-        breakpoints: {
-            1200: {
-                slidesPerView: 4
-            },
-            991: {
-                slidesPerView: 3
-            },
-            768: {
-                slidesPerView: 2
-            },
-            400: {
-                slidesPerView: 1
-            }
-        },
         pagination: {
             el: '.swiper-pagination',
             clickable: true,
@@ -416,7 +390,7 @@ $(function () {
 
     // ------------------------------------------------------- //
     //   Object Fit Images
-    // ------------------------------------------------------- //    
+    // ------------------------------------------------------- //
 
     objectFitImages();
 
