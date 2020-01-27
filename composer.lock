@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c0a8833a10033bfe5ddb4eb6312afbeb",
+    "content-hash": "a27114499a355529cc9570982dfb0ad5",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5135,32 +5135,32 @@
         },
         {
             "name": "vufind-org/vufindharvest",
-            "version": "v2.4.1",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindharvest.git",
-                "reference": "6f914f42428ebd20b9132d21ff16d3bb5e6c128a"
+                "reference": "f0cb7188be3f6edd68f89962d7d3d771b2108775"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/6f914f42428ebd20b9132d21ff16d3bb5e6c128a",
-                "reference": "6f914f42428ebd20b9132d21ff16d3bb5e6c128a",
+                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/f0cb7188be3f6edd68f89962d7d3d771b2108775",
+                "reference": "f0cb7188be3f6edd68f89962d7d3d771b2108775",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0.8",
-                "zendframework/zend-console": ">=2.2",
-                "zendframework/zend-http": ">=2.2"
+                "laminas/laminas-console": ">=2.2",
+                "laminas/laminas-http": ">=2.2",
+                "php": ">=7.0.8"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "2.11.1",
+                "friendsofphp/php-cs-fixer": "2.16.1",
                 "pear/http_request2": "2.3.0",
-                "phing/phing": "2.16.1",
+                "phing/phing": "2.16.2",
                 "phploc/phploc": "4.0.1",
-                "phpmd/phpmd": "2.6.0",
-                "phpunit/phpunit": "6.5.8",
+                "phpmd/phpmd": "2.8.1",
+                "phpunit/phpunit": "6.5.14",
                 "sebastian/phpcpd": "3.0.1",
-                "squizlabs/php_codesniffer": "3.2.3"
+                "squizlabs/php_codesniffer": "3.5.3"
             },
             "type": "library",
             "autoload": {
@@ -5181,7 +5181,7 @@
             ],
             "description": "VuFind Harvest Tools",
             "homepage": "https://vufind.org/",
-            "time": "2019-09-13T12:56:58+00:00"
+            "time": "2020-01-27T21:06:16+00:00"
         },
         {
             "name": "vufind-org/vufindhttp",
