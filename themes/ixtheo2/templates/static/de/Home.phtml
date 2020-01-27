@@ -11,7 +11,7 @@
                         <li><a class="dropdown-item" href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
                     </ul>
                 </li>
-                <li><a role="button" rel="nofollow">?Bibelstellensuche?</a></li>
+                <li><a href="<?=$this->url('search-results')?>?lookfor=4+esra+1-2&type=BibleRangeSearch" role="button" rel="nofollow">Bibelstellensuche</a></li>
                 <li><a href="<?=$this->url('search-newitem')?>" role="button" rel="nofollow"><?=$this->transEsc('New Items')?></a></li>
                 <li><a href="<?=$this->url('search-history')?>" role="button" rel="nofollow"><?=$this->transEsc('Search History')?></a></li>
             </ul>
@@ -260,26 +260,15 @@
     </div>
 </section>
 
-<section class="cw-py-7 cw-position-relative cw-dark-overlay"><img src="<?=$this->imageLink('cw/photo-1497436072909-60f360e1d4b1.jpg')?>" alt="" class="cw-bg-image">
-    <div class="container">
-        <div class="cw-overlay-content cw-text-white cw-py-lg-5">
-            <h3 class="cw-display-3 cw-font-weight-bold cw-text-serif cw-text-shadow cw-mb-5">Networking</h3><a href="https://demo.bootstrapious.com/directory/1-3/category-rooms.html" class="cw-btn cw-btn-light">Get started</a>
-        </div>
-    </div>
-</section>
-
-<section>
-    <div class="container-fluid cw-px-0">
-        <div class="swiper-container instagram-slider swiper-container-horizontal">
-            <div class="swiper-wrapper" style="transform: translate3d(0px, 0px, 0px);">
-                <div class="swiper-slide cw-overflow-hidden swiper-slide-active" style="width: 300px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-1.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale" width="300"></a></div>
-                <div class="swiper-slide cw-overflow-hidden swiper-slide-next" style="width: 300px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-2.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale" width="300"></a></div>
-                <div class="swiper-slide cw-overflow-hidden" style="width: 300px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-3.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale" width="300"></a></div>
-                <div class="swiper-slide cw-overflow-hidden" style="width: 300px;"><a href="#"><img src="<?=$this->imageLink('cw/instagram-4.jpg')?>" alt="" class="cw-img-fluid cw-hover-scale" width="300"></a></div>
+<section class="cw-py-7 cw-position-relative cw-dark-overlay">
+    <a href="<?=$this->url('content-page', ['page' => 'networking']) ?>">
+        <img src="<?=$this->imageLink('cw/photo-1497436072909-60f360e1d4b1.jpg')?>" alt="" class="cw-bg-image">
+        <div class="container">
+            <div class="cw-overlay-content cw-text-white cw-py-lg-5">
+                <h3 class="cw-display-3 cw-font-weight-bold cw-text-serif cw-text-shadow cw-mb-5">Networking</h3>
             </div>
-            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
         </div>
-    </div>
+    </a>
 </section>
 
 <div class="tf-background-body" style="display: none;">
