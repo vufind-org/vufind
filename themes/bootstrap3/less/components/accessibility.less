@@ -1,0 +1,24 @@
+@import "../vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "../vendor/a11y";
+
+/* ACCESSIBILITY IMPROVEMENTS */
+
+@badge-bg: #595959;
+
+@breadcrumb-color: #535353; // AAA compliant
+@breadcrumb-active-color: #444; // AAA compliant
+
+@state-danger-text: #8a211e;
+.alert-danger,
+.alert-danger a {
+  color: @state-danger-text;
+}
+
+a {
+  text-decoration: underline;
+}
+
+.sr-only {
+  background-color: #fff;
+  color: #000;
+}
