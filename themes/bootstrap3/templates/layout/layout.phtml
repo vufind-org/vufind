@@ -156,7 +156,7 @@ JS;
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs">
+    <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
       <div class="container">
         <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
