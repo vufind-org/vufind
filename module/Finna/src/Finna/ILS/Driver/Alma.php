@@ -1707,6 +1707,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'availability' => $this->getAvailabilityFromItem($item),
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
+                    'location_code' => (string)$item->item_data->location,
                     'reserve' => 'N',   // TODO: support reserve status
                     'callnumber' => $this->getTranslatableString(
                         $item->holding_data->call_number
@@ -1961,6 +1962,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             'id' => $id,
             'item_id' => 'HLD_' . (string)$holding->holding_id,
             'location' => $location,
+            'location_code' => (string)$holding->library,
             'requests_placed' => 0,
             'status' => '',
             'use_unknown_message' => true,
@@ -2114,8 +2116,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
+                        $item['location_code'] = $this->getMarcSubfield($field, 'j');
                         $item['location'] = $this->getTranslatableStringForCode(
-                            $this->getMarcSubfield($field, 'j'),
+                            $item['location_code'],
                             $this->getMarcSubfield($field, 'c')
                         );
                         $item['callnumber'] = $this->getMarcSubfield($field, 'd');
@@ -2417,9 +2420,15 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     protected function statusSortFunction($a, $b)
     {
-        $orderA = $this->holdingsLocationOrder[(string)$a['location']] ?? 999;
-        $orderB = $this->holdingsLocationOrder[(string)$b['location']] ?? 999;
+        $orderA = $this->holdingsLocationOrder[$a['location_code']] ?? 999;
+        $orderB = $this->holdingsLocationOrder[$b['location_code']] ?? 999;
         $result = $orderA - $orderB;
+
+        if (0 === $result) {
+            $orderA = $this->holdingsLocationOrder[(string)$a['location']] ?? 999;
+            $orderB = $this->holdingsLocationOrder[(string)$b['location']] ?? 999;
+            $result = $orderA - $orderB;
+        }
 
         if (0 === $result) {
             $result = strcmp(
