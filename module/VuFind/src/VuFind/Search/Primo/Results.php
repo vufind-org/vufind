@@ -56,6 +56,7 @@ class Results extends \VuFind\Search\Base\Results
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
+        $this->errors = $collection->getErrors();
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -100,7 +101,9 @@ class Results extends \VuFind\Search\Base\Results
                             'displayText' => $displayText,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
-                            'operator' => 'AND', 'count' => $count
+                            'operator' =>
+                                $this->getParams()->getFacetOperator($field),
+                            'count' => $count
                         ];
                     }
 

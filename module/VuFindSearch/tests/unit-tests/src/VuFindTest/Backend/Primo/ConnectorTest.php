@@ -81,7 +81,7 @@ class ConnectorTest extends TestCase
         $terms = [];
         $result = $conn->query('dummyinst', $terms);
         $this->assertEquals(0, $result['recordCount']);
-        $this->assertEquals('Primo does not accept an empty query', $result['error']);
+        $this->assertEquals('empty_search_disallowed', $result['error']);
     }
 
     /**

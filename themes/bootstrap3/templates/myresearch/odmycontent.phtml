@@ -32,7 +32,7 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
   ?>
-          <div id="record<?echo $rec_id; ?>" class="result">
+          <div id="record<?=$rec_id?>" class="result">
    <?php
          if ($cover):
             ob_start(); ?>
@@ -97,7 +97,7 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
   ?>
-    <div id="record<?echo $rec_id; ?>" class="result">
+    <div id="record<?=$rec_id?>" class="result">
         <?php
           if ($cover):
             ob_start(); ?>

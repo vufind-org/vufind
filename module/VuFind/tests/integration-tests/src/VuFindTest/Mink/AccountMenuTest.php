@@ -115,13 +115,29 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test changing a password.
+     * Establish the fines in the session that will be used by various tests below...
+     *
+     * @return object
+     */
+    protected function setUpFinesEnvironment()
+    {
+        // Seed some fines
+        $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
+        $session = $this->getMinkSession();
+        $session->reload();
+        $this->snooze();
+        return $session->getPage();
+    }
+
+    /**
+     * Test that the menu is absent when enableAjax is true and enableDropdown
+     * is false.
      *
      * @retryCallback tearDownAfterClass
      *
      * @return void
      */
-    public function testMenuOff()
+    public function testMenuOffAjaxNoDropdown()
     {
         // Create user
         $session = $this->getMinkSession();
@@ -136,18 +152,21 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Seed some fines
-        $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
-
-        // enableAjax => true, enableDropdown => false
-        $session->reload();
-        $this->snooze();
-        $session = $this->getMinkSession();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(0, count($stati));
+    }
 
+    /**
+     * Test that the menu is absent when enableAjax is false and enableDropdown
+     * is false.
+     *
+     * @return void
+     */
+    public function testMenuOffNoAjaxNoDropdown()
+    {
         // Nothing on
         $this->changeConfigs(
             [
@@ -159,15 +178,23 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
-        $page = $session->getPage();
+        $this->login();
         $this->snooze();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(0, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(1, count($stati));
+    }
 
-        // Menu off, dropdown on
+    /**
+     * Test that the menu is absent when enableAjax is false and enableDropdown
+     * is true.
+     *
+     * @return void
+     */
+    public function testMenuOffNoAjaxDropdown()
+    {
         $this->changeConfigs(
             [
                 'config' => [
@@ -178,15 +205,23 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
+        $this->login();
         $this->snooze();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
         $this->assertEquals(2, count($stati)); // one in menu, one in dropdown
+    }
 
-        // Reset all on
+    /**
+     * Test that the menu is absent when enableAjax is true and enableDropdown
+     * is true.
+     *
+     * @return void
+     */
+    public function testMenuOffAjaxDropdown()
+    {
         $this->changeConfigs(
             [
                 'config' => [
@@ -197,9 +232,9 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $session->reload();
+        $this->login();
         $this->snooze();
-        $page = $session->getPage();
+        $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
         $this->assertEquals(1, count($menu));
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');

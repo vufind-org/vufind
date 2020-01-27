@@ -239,10 +239,16 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    if (typeof $(this).data('lightboxIgnore') != 'undefined'
-      || typeof this.attributes.href === 'undefined'
-      || this.attributes.href.value.charAt(0) === '#'
-      || this.href.match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+    var $link = $(this);
+    if (typeof $link.data("lightboxIgnore") != "undefined"
+      || typeof $link.attr("href") === "undefined"
+      || $link.attr("href").charAt(0) === "#"
+      || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+      || (typeof $link.attr("target") !== "undefined"
+        && (
+          $link.attr("target").toLowerCase() === "_new"
+          || $link.attr("target").toLowerCase() === "new"
+        ))
     ) {
       return true;
     }

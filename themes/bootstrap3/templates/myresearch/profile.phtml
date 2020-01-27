@@ -39,13 +39,13 @@
             <form id="profile_form" class="form-inline" method="post">
               <select id="home_library" name="home_library" class="form-control">
                 <?php foreach ($this->pickup as $lib): ?>
-                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
               <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
             </form>
           <?php else: // case 2: set home library disallowed, but default provided by ILS ?>
-            <?=$this->transEsc('location_' . $this->preferredLibraryDisplay, null, $this->preferredLibraryDisplay)?>
+            <?=$this->transEscWithPrefix('location_', $this->preferredLibraryDisplay)?>
           <?php endif; ?>
         </td>
       </tr>

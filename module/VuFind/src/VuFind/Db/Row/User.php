@@ -681,6 +681,19 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Updated saved language
+     *
+     * @param string $language New language
+     *
+     * @return void
+     */
+    public function updateLastLanguage($language)
+    {
+        $this->last_language = $language;
+        $this->save();
+    }
+
+    /**
      * Update the user's email address, if appropriate. Note that this does NOT
      * automatically save the row; it assumes a subsequent call will be made to
      * the save() method.

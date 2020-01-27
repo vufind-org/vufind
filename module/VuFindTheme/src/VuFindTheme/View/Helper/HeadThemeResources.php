@@ -170,7 +170,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headScript');
         foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts =  $this->parseSetting($current);
+            $parts = $this->parseSetting($current);
             $headScript()->forcePrependFile(
                 trim($parts[0]),
                 'text/javascript',

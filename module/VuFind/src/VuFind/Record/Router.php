@@ -97,7 +97,11 @@ class Router
             $routeConfig = isset($this->config->Collections->route)
                 ? $this->config->Collections->route->toArray() : [];
             $collectionRoutes
-                = array_merge(['record' => 'collection'], $routeConfig);
+                = array_merge(
+                    ['record' => 'collection',
+                     'search2record' => 'search2collection'],
+                    $routeConfig
+                );
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
