@@ -1,4 +1,4 @@
-<div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0;">
+<div class="navbar navbar-default" style="background-color: #3586b2; border-radius: 0px; border: 0; margin-bottom: 0px;">
     <div class="container">
         <!--<div class="navbar-header"><a class="navbar-brand">Weitere Funktionen</a></div>-->
         <div class="navbar-collapse collapse" style="padding-left: 0px;">
@@ -28,10 +28,10 @@
 <?php $this->headScript()->appendFile('vendor/cw/smooth-scroll.js');?>
 <?php $this->headScript()->appendFile('vendor/cw/swiper.js');?>
 <?php $this->headScript()->appendFile('vendor/cw/theme.js');?>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <section class="cw-py-6">
+<section class="cw-py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
                 <div class="cw-text-center">
                     <p class="cw-subtitle cw-text-primary">Aktuelles</p>
                     <h2 class="cw-h2 cw-mb-5">Karussel mit Bild</h2>
@@ -67,23 +67,21 @@
                         <div class="ix-slick-slider-item-title">Workshop 2.-3.12.19</div>
                     </div>
                 </div>
-            </section>
 
-            <script>
-                $(document).ready(function(){
-                    $('.slick-slider-single-item').slick({
-                        dots: true,
-                        infinite: true,
-                        speed: 300,
-                        fade: true,
-                        cssEase: 'linear',
-                        arrows: true
+                <script>
+                    $(document).ready(function(){
+                        $('.slick-slider-single-item').slick({
+                            dots: true,
+                            infinite: true,
+                            speed: 300,
+                            fade: true,
+                            cssEase: 'linear',
+                            arrows: true
+                        });
                     });
-                });
-            </script>
-        </div>
-        <div class="col-md-6">
-            <section class="cw-py-6">
+                </script>
+            </div>
+            <div class="col-md-6">
                 <div class="cw-text-center">
                     <p class="cw-subtitle cw-text-primary">News</p>
                     <h2 class="cw-h2 cw-mb-5">Neue Dienste in Kürze</h2>
@@ -92,13 +90,14 @@
                         <li>Codexsuche</li>
                     </ul>
                 </div>
-            </section>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
 
 <!-- IxTheo entdecken -->
-<section class="cw-py-6 cw-bg-gray-100">
+<section class="cw-py-5 cw-bg-gray-100">
     <div class="container">
         <div class="text-center cw-pb-lg-4">
             <p class="cw-subtitle cw-text-secondary">Finden | Suchen | etc.</p>
@@ -169,7 +168,7 @@
     </div>
 </section>
 
-<section class="cw-py-6">
+<section class="cw-py-5">
     <div class="container">
         <div class="row cw-mb-5">
             <div class="col-md-12">
