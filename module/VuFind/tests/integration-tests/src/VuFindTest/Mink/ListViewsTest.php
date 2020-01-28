@@ -184,6 +184,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Reload the page to close all results
         $session->reload();
+        $this->snooze();
         // Did our saved one open automatically?
         $this->findCss($page, '.result.embedded');
 

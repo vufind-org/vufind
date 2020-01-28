@@ -330,7 +330,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     protected function getItemStatusGroup($record, $messages, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
-        $locations =  [];
+        $locations = [];
         $use_unknown_status = $available = false;
         foreach ($record as $info) {
             // Find an available copy

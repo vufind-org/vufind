@@ -293,7 +293,7 @@ class PAIA extends DAIA
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
                 $item_id = $element['item'];
-                if ($element['error']) {
+                if ($element['error'] ?? false) {
                     $details[$item_id] = [
                         'success' => false,
                         'status' => $element['error'],
@@ -1441,7 +1441,7 @@ class PAIA extends DAIA
         $result['location'] = ($doc['storage'] ?? null);
 
         // queue (0..1) number of waiting requests for the document or item
-        $result['position'] =  ($doc['queue'] ?? null);
+        $result['position'] = ($doc['queue'] ?? null);
 
         // only true if status == 4
         $result['available'] = false;
@@ -1479,7 +1479,7 @@ class PAIA extends DAIA
         // Optional VuFind fields
         /*
         $result['reqnum'] = null;
-        $result['volume'] =  null;
+        $result['volume'] = null;
         $result['publication_year'] = null;
         $result['isbn'] = null;
         $result['issn'] = null;

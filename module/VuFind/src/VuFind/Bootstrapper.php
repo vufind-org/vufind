@@ -155,10 +155,9 @@ class Bootstrapper
      */
     protected function initSystemStatus()
     {
-        // If the system is unavailable, forward to a different place:
-        if (isset($this->config->System->available)
-            && !$this->config->System->available
-        ) {
+        // If the system is unavailable and we're not in the console, forward to the
+        // unavailable page.
+        if (!Console::isConsole() && !($this->config->System->available ?? true)) {
             $callback = function ($e) {
                 $routeMatch = new RouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'], 1
