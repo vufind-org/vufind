@@ -188,12 +188,13 @@ class UtilController extends AbstractBase
     protected function buildReservesIndex($instructors, $courses, $departments,
         $reserves
     ) {
+        $requiredKeys = ['INSTRUCTOR_ID', 'COURSE_ID', 'DEPARTMENT_ID'];
         foreach ($reserves as $record) {
-            if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
-                || !isset($record['DEPARTMENT_ID'])
-            ) {
+            $requiredKeysFound
+                = count(array_intersect(array_keys($record), $requiredKeys));
+            if ($requiredKeysFound < count($requiredKeys)) {
                 throw new \Exception(
-                    'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
+                    implode(' and/or ', $requiredKeys) . ' fields ' .
                     'not present in reserve records. Please update ILS driver.'
                 );
             }
