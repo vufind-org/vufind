@@ -1,51 +1,15 @@
 <!-- these scripts may not be copied locally because they resolve external relative dependencies -->
 <script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
 <script type="text/javascript" src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
-
-<!-- tom.js -->
-<?php $this->headScript()->appendFile('vendor/OpenStreetMap/tom.js');?>
-<?php $this->headScript()->appendFile('vendor/OpenStreetMap/popup.js');?>
-
-<script type="text/javascript">
-    var map;
-    var layer_mapnik;
-    var layer_tah;
-    var layer_markers;
-
-    function drawMap() {
-        OpenLayers.Lang.setCode('de');
-        map = new OpenLayers.Map('map', {
-            projection: new OpenLayers.Projection("EPSG:900913"),
-            displayProjection: new OpenLayers.Projection("EPSG:4326"),
-            controls: [
-                new OpenLayers.Control.Navigation(),
-                new OpenLayers.Control.LayerSwitcher(),
-                new OpenLayers.Control.PanZoomBar()],
-            maxExtent:
-                new OpenLayers.Bounds(-20037508.34,-20037508.34,
-                                        20037508.34, 20037508.34),
-            numZoomLevels: 18,
-            maxResolution: 156543,
-            units: 'meters'
-        });
-
-        layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
-        layer_markers = new OpenLayers.Layer.Markers("Address", { projection: new OpenLayers.Projection("EPSG:4326"),
-                                                      visibility: true, displayInLayerSwitcher: false });
-
-        map.addLayers([layer_mapnik, layer_markers]);
-
-        // map position + markers
-        jumpTo(9.06178, 48.52515, 5 /* zoom */);
-        addMarker(layer_markers, 9.06178, 48.52515, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universit&auml;tsbibliothek T&uuml;bingen<br>Wilhelmstr. 32<br>D-72074 T&uuml;bingen<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
-        addMarker(layer_markers, 11.384495, 47.263359, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
-        addMarker(layer_markers, 7.62560, 51.96262, "<font color=\"black\"><b><a href=\"////www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut f&uuml;r Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
-    }
-</script>
+<?php $this->headScript()->appendFile('vendor/OpenStreetMap/wrapper.js');?>
 
 <script>
     $(function() {
-        drawMap();
+        OpenStreetMapWrapper.DrawMap();
+        OpenStreetMapWrapper.JumpTo(9.06178, 48.52515, /* zoom */ 5);
+        OpenStreetMapWrapper.AddMarker(9.06178, 48.52515, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universit&auml;tsbibliothek T&uuml;bingen<br>Wilhelmstr. 32<br>D-72074 T&uuml;bingen<br><br><img src=\"//uni-tuebingen.de/typo3conf/ext/project/Resources/Public/Images/Logo_Universitaet_Tuebingen.svg\" width=\"180\"></font>");
+        OpenStreetMapWrapper.AddMarker(11.384495, 47.263359, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"//www2.uibk.ac.at/stylesheets/15/images/350/logo-uibk.svg\" width=\"180\"></font>");
+        OpenStreetMapWrapper.AddMarker(7.62560, 51.96262, "<font color=\"black\"><b><a href=\"////www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut f&uuml;r Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"//www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg\" width=\"180\"></font>");
     });
 </script>
 
