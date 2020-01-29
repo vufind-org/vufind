@@ -15,7 +15,7 @@ function Lat2Merc(lat) {
     return 20037508.34 * lat / 180;
 }
 
-function addMarker(layer, lon, lat, popupContentHTML) {
+function addMarker(layer, lon, lat, popupContentHTML, showOnLoad=false) {
 
     var ll = new OpenLayers.LonLat(Lon2Merc(lon), Lat2Merc(lat));
     var feature = new OpenLayers.Feature(layer, ll);
@@ -40,24 +40,22 @@ function addMarker(layer, lon, lat, popupContentHTML) {
     marker.events.register("mousedown", feature, markerClick);
 
     layer.addMarker(marker);
-    map.addPopup(feature.createPopup(feature.closeBox));
+
+    if (showOnLoad)
+        map.addPopup(feature.createPopup(feature.closeBox));
 }
 
 function getCycleTileURL(bounds) {
-   var res = this.map.getResolution();
-   var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-   var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-   var z = this.map.getZoom();
-   var limit = Math.pow(2, z);
+    var res = this.map.getResolution();
+    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+    var z = this.map.getZoom();
+    var limit = Math.pow(2, z);
 
-   if (y < 0 || y >= limit)
-   {
-     return null;
-   }
-   else
-   {
-     x = ((x % limit) + limit) % limit;
-
-     return this.url + z + "/" + x + "/" + y + "." + this.type;
-   }
+    if (y < 0 || y >= limit) {
+        return null;
+    } else {
+        x = ((x % limit) + limit) % limit;
+        return this.url + z + "/" + x + "/" + y + "." + this.type;
+    }
 }

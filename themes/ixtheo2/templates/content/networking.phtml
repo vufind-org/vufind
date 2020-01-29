@@ -12,17 +12,8 @@
     var layer_tah;
     var layer_markers;
 
-    function drawmap() {
-        // Popup und Popuptext mit evtl. Grafik
-        var popuptext="<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>6020 Innsbruck<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>";
-
+    function drawMap() {
         OpenLayers.Lang.setCode('de');
-
-        // Position und Zoomstufe der Karte
-        var lon = 11.384495;
-        var lat = 47.263359;
-        var zoom = 7;
-
         map = new OpenLayers.Map('map', {
             projection: new OpenLayers.Projection("EPSG:900913"),
             displayProjection: new OpenLayers.Projection("EPSG:4326"),
@@ -43,17 +34,18 @@
                                                       visibility: true, displayInLayerSwitcher: false });
 
         map.addLayers([layer_mapnik, layer_markers]);
-        jumpTo(lon, lat, zoom);
 
-        // Position des Markers
-        addMarker(layer_markers, lon, lat, popuptext);
-
+        // map position + markers
+        jumpTo(9.06178, 48.52515, 5 /* zoom */);
+        addMarker(layer_markers, 9.06178, 48.52515, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universit&auml;tsbibliothek T&uuml;bingen<br>Wilhelmstr. 32<br>D-72074 T&uuml;bingen<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
+        addMarker(layer_markers, 11.384495, 47.263359, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
+        addMarker(layer_markers, 7.62560, 51.96262, "<font color=\"black\"><b><a href=\"////www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut f&uuml;r Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<p><!--<img src=\"test.jpg\" width=\"180\" height=\"113\">--></p></font>");
     }
 </script>
 
 <script>
     $(function() {
-        drawmap();
+        drawMap();
     });
 </script>
 
