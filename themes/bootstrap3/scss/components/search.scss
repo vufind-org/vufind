@@ -481,3 +481,31 @@ body.rtl {
     }
   }
 }
+
+.search-schedule-header {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+
+.search-history-table {
+  @extend .table all;
+  @extend .table-striped all;
+}
+table.search-history-table {
+  table-layout: auto;
+
+  tbody > tr > td { vertical-align: middle; }
+}
+
+/* Break early to prevent table overflow */
+@media (max-width: 991px) {
+  .template-dir-search.template-name-history {
+    .mainbody,
+    .sidebar {
+      float: none;
+      width: auto;
+      padding: 0;
+    }
+  }
+}

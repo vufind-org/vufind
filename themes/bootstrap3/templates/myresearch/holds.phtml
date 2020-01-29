@@ -131,7 +131,7 @@
             <?php endif; ?>
             <?php if (!empty($pickupDisplay)): ?>
               <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
-              <?=$pickupTranslate ? $this->transEsc('location_' . $pickupDisplay, null, $pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
+              <?=$pickupTranslate ? $this->transEscWithPrefix('location_', $pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
               <br />
             <?php endif; ?>
 

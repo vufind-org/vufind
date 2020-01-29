@@ -188,6 +188,7 @@ trait HierarchyAwareTrait
         case 'Top':
             return isset($this->fields['is_hierarchy_title'])
                 && isset($this->fields['is_hierarchy_id'])
+                && isset($this->fields['hierarchy_top_id'])
                 && in_array(
                     $this->fields['is_hierarchy_id'],
                     $this->fields['hierarchy_top_id']

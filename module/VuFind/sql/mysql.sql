@@ -112,7 +112,7 @@ CREATE TABLE `resource_tags` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `session_id` varchar(128) DEFAULT NULL,
   `folder_id` int(11) DEFAULT NULL,
@@ -121,10 +121,15 @@ CREATE TABLE `search` (
   `saved` int(1) NOT NULL DEFAULT '0',
   `search_object` blob,
   `checksum` int(11) DEFAULT NULL,
+  `notification_frequency` int(11) NOT NULL DEFAULT '0',
+  `last_notification_sent` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `notification_base_url` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
-  KEY `session_id` (`session_id`)
+  KEY `session_id` (`session_id`),
+  KEY `notification_frequency` (`notification_frequency`),
+  KEY `notification_base_url` (`notification_base_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,7 +140,7 @@ CREATE TABLE `search` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `session` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) DEFAULT NULL,
   `data` mediumtext,
   `last_used` int(12) NOT NULL DEFAULT '0',
@@ -153,7 +158,7 @@ CREATE TABLE `session` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `external_session` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `session_id` varchar(128) NOT NULL,
   `external_session_id` varchar(255) NOT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
@@ -205,6 +210,8 @@ CREATE TABLE `user` (
   `lastname` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
   `email_verified` datetime DEFAULT NULL,
+  `pending_email` varchar(255) NOT NULL DEFAULT '',
+  `user_provided_email` tinyint(1) NOT NULL DEFAULT '0',
   `cat_id` varchar(255) DEFAULT NULL,
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(70) DEFAULT NULL,
@@ -216,6 +223,7 @@ CREATE TABLE `user` (
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
   `last_login` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `auth_method` varchar(50) DEFAULT NULL,
+  `last_language` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cat_id` (`cat_id`)
@@ -314,3 +322,24 @@ CREATE TABLE `record` (
   UNIQUE KEY `record_id_source` (`record_id`, `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `auth_hash`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_hash` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) DEFAULT NULL,
+  `hash` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(50) DEFAULT NULL,
+  `data` mediumtext,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  UNIQUE KEY `hash_type` (`hash`, `type`),
+  KEY `created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+

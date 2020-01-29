@@ -681,6 +681,41 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Updated saved language
+     *
+     * @param string $language New language
+     *
+     * @return void
+     */
+    public function updateLastLanguage($language)
+    {
+        $this->last_language = $language;
+        $this->save();
+    }
+
+    /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * the save() method.
+     *
+     * @param string $email        New email address
+     * @param bool   $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateEmail($email, $userProvided = false)
+    {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$this->user_provided_email)) {
+            $this->email = $email;
+            $this->user_provided_email = $userProvided ? 1 : 0;
+        }
+    }
+
+    /**
      * Get the list of roles of this identity
      *
      * @return string[]|\Rbac\Role\RoleInterface[]

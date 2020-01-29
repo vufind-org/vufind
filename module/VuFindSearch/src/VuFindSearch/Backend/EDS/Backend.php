@@ -421,7 +421,7 @@ class Backend extends AbstractBackend
         }
         $authTokenData = $this->cache->getItem('edsAuthenticationToken');
         if (isset($authTokenData)) {
-            $currentToken =  $authTokenData['token'] ?? '';
+            $currentToken = $authTokenData['token'] ?? '';
             $expirationTime = $authTokenData['expiration'] ?? 0;
             $this->debugPrint(
                 'Cached Authentication data: '
@@ -473,7 +473,7 @@ class Backend extends AbstractBackend
         }
         $autocompleteData = $this->cache->getItem('edsAutocomplete');
         if (!empty($autocompleteData)) {
-            $currentToken =  $autocompleteData['token'] ?? '';
+            $currentToken = $autocompleteData['token'] ?? '';
             $expirationTime = $autocompleteData['expiration'] ?? 0;
 
             // Check to see if the token expiration time is greater than the current

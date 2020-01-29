@@ -75,6 +75,13 @@ abstract class Results
     protected $results = null;
 
     /**
+     * Any errors reported by the search backend
+     *
+     * @var array
+     */
+    protected $errors = null;
+
+    /**
      * An ID number for saving/retrieving search
      *
      * @var int
@@ -143,6 +150,13 @@ abstract class Results
      * @var Loader
      */
     protected $recordLoader;
+
+    /**
+     * URL query helper factory
+     *
+     * @var UrlQueryHelperFactory
+     */
+    protected $urlQueryHelperFactory = null;
 
     /**
      * Constructor
@@ -224,7 +238,7 @@ abstract class Results
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
-            $factory = new UrlQueryHelperFactory();
+            $factory = $this->getUrlQueryHelperFactory();
             $this->helpers['urlQuery'] = $factory->fromParams(
                 $this->getParams(), $this->getUrlQueryHelperOptions()
             );
@@ -257,6 +271,7 @@ abstract class Results
         $this->resultTotal = 0;
         $this->results = [];
         $this->suggestions = [];
+        $this->errors = [];
 
         // Run the search:
         $this->startQueryTimer();
@@ -373,6 +388,19 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->results;
+    }
+
+    /**
+     * Basic 'getter' for errors.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        if (null === $this->errors) {
+            $this->performAndProcessSearch();
+        }
+        return $this->errors;
     }
 
     /**
@@ -572,6 +600,31 @@ abstract class Results
         return call_user_func_array(
             [$this->getOptions(), 'translate'], func_get_args()
         );
+    }
+
+    /**
+     * Get URL query helper factory
+     *
+     * @return UrlQueryHelperFactory
+     */
+    protected function getUrlQueryHelperFactory()
+    {
+        if (null === $this->urlQueryHelperFactory) {
+            $this->urlQueryHelperFactory = new UrlQueryHelperFactory();
+        }
+        return $this->urlQueryHelperFactory;
+    }
+
+    /**
+     * Set URL query helper factory
+     *
+     * @param UrlQueryHelperFactory $factory UrlQueryHelperFactory object
+     *
+     * @return void
+     */
+    public function setUrlQueryHelperFactory(UrlQueryHelperFactory $factory)
+    {
+        $this->urlQueryHelperFactory = $factory;
     }
 
     /**

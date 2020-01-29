@@ -59,7 +59,11 @@ class UrlFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $helper = new $requestedName($container->get('Request'));
+        $request = $container->get('Request');
+        if (!($request instanceof \Zend\Http\PhpEnvironment\Request)) {
+            $request = null;
+        }
+        $helper = new $requestedName($request);
         $helper->setRouter($container->get('HttpRouter'));
 
         $match = $container->get('Application')
