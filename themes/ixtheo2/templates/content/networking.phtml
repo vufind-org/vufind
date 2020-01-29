@@ -1,26 +1,28 @@
-<!-- these scripts may not be copied locally because they resolve external relative dependencies -->
-<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-<script type="text/javascript" src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
-<?php $this->headScript()->appendFile('vendor/OpenStreetMap/wrapper.js');?>
-
-<script>
-    $(function() {
-        OpenStreetMapWrapper.DrawMap();
-        OpenStreetMapWrapper.JumpTo(9.06178, 48.52515, /* zoom */ 5);
-        OpenStreetMapWrapper.AddMarker(9.06178, 48.52515, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universit&auml;tsbibliothek T&uuml;bingen<br>Wilhelmstr. 32<br>D-72074 T&uuml;bingen<br><br><img src=\"//uni-tuebingen.de/typo3conf/ext/project/Resources/Public/Images/Logo_Universitaet_Tuebingen.svg\" width=\"180\"></font>");
-        OpenStreetMapWrapper.AddMarker(11.384495, 47.263359, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"//www2.uibk.ac.at/stylesheets/15/images/350/logo-uibk.svg\" width=\"180\"></font>");
-        OpenStreetMapWrapper.AddMarker(7.62560, 51.96262, "<font color=\"black\"><b><a href=\"////www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut f&uuml;r Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"//www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg\" width=\"180\"></font>");
-    });
-</script>
-
 <section>
-    <div id="header">
-        <div id="content">Karte (Testversion)</div>
-        <div id="osm">
-            © <a href="http://www.openstreetmap.org">OpenStreetMap</a> und <a href="http://www.openstreetmap.org/copyright">Mitwirkende</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/deed.de">CC-BY-SA</a>
-        </div>
+    <?php $this->headScript()->appendFile('vendor/ol/ol.js');?>
+    <?php $this->headScript()->appendFile('vendor/ol/wrapper.js');?>
+    <?php $this->headLink()->appendStylesheet('vendor/ol/ol.css');?>
+    <style>
+        .map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <div id="map" class="map"></div>
+    <div id="popup" class="ol-popup" style="background-color: white; padding: 10px;">
+        <a href="#" id="popup-closer" class="ol-popup-closer">x</a>
+        <div id="popup-content"></div>
     </div>
-    <div id="map" style="height: 500px;"></div>
+
+    <script type="text/javascript">
+        $(function() {
+            let icon = '<?=$this->imageLink('ol/marker.svg');?>';
+            OpenStreetMapWrapper.DrawMap(9.06178, 48.52515, /* zoom */5);
+            OpenStreetMapWrapper.AddLocation(9.06178, 48.52515, icon, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universit&auml;tsbibliothek T&uuml;bingen<br>Wilhelmstr. 32<br>D-72074 T&uuml;bingen<br><br><img src=\"//uni-tuebingen.de/typo3conf/ext/project/Resources/Public/Images/Logo_Universitaet_Tuebingen.svg\" width=\"180\"></font>");
+            OpenStreetMapWrapper.AddLocation(11.384495, 47.263359, icon, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universit&auml;t Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"//www2.uibk.ac.at/stylesheets/15/images/350/logo-uibk.svg\" width=\"180\"></font>");
+            OpenStreetMapWrapper.AddLocation(7.62560, 51.96262, icon, "<font color=\"black\"><b><a href=\"////www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut f&uuml;r Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"//www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg\" width=\"180\"></font>");
+        });
+    </script>
 </section>
 
 <section class="py-5 bg-gray-100 shadow">
