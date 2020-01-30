@@ -209,13 +209,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $row = $this->authHashTable
             ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL, false);
         if (!$row) {
-            throw new AuthException('authentication_error_denied');
+            // Assume the hash has already been used or has expired
+            throw new AuthException('authentication_error_expired');
         }
         $linkData = json_decode($row['data'], true);
         $row->delete();
 
         if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
-            throw new AuthException('authentication_error_denied');
+            throw new AuthException('authentication_error_expired');
         }
 
         // Require same session id or IP address:
@@ -223,7 +224,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         if ($row['session_id'] !== $sessionId
             && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
         ) {
-            throw new AuthException('authentication_error_denied');
+            throw new AuthException('authentication_error_session_ip_mismatch');
         }
 
         return $linkData['data'];

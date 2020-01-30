@@ -91,11 +91,8 @@ class ManagerFactory implements FactoryInterface
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
-        $sessionPluginManager = $container
-            ->get(\VuFind\Session\PluginManager::class);
-        $sessionHandler = $sessionPluginManager->get($config->Session->type);
-        $sessionHandler->setConfig($config->Session);
-        return $sessionHandler;
+        return $container->get(\VuFind\Session\PluginManager::class)
+            ->get($config->Session->type);
     }
 
     /**
