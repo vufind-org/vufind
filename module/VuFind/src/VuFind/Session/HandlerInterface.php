@@ -29,7 +29,6 @@
  */
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
 
@@ -58,14 +57,4 @@ interface HandlerInterface extends SaveHandlerInterface, DbTableAwareInterface
      * @return void
      */
     public function disableWrites();
-
-    /**
-     * Set configuration.
-     *
-     * @param Config $config Session configuration ([Session] section of
-     * config.ini)
-     *
-     * @return void
-     */
-    public function setConfig(Config $config);
 }
