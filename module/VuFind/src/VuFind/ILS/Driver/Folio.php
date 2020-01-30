@@ -260,7 +260,7 @@ class Folio extends AbstractAPI implements
             'GET', '/inventory/instances/' . $instanceId
         );
         $instance = json_decode($response->getBody());
-        return $instance->identifiers[0]->value;
+        return $instance->id;
     }
 
     /**
