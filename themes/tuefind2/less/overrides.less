@@ -723,8 +723,11 @@ input[type="checkbox"] {
 .tf-col-2 { width: 16.66666667%; &:extend(.tf-col);  }
 .tf-col-1 { width: 8.33333333%; &:extend(.tf-col);  }
 .tf-col-responsive { position: relative; min-height: 1px; padding-right: 15px; padding-left: 15px; }
-@media (min-width: 992px) {
+@media (min-width: @screen-md-min) {
     .tf-col-md-6 { float: left; width: 50%; };
+}
+@media (min-width: @screen-xs-min) {
+    .tf-col-xs-6 { float: left; width: 50%; };
 }
 
 /* .tf-panel-home-2 => 2 panels in a row */
