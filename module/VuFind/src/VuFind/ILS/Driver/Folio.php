@@ -233,11 +233,11 @@ class Folio extends AbstractAPI implements
     /**
      * Get local bib id from inventory by following parents up the tree
      *
-     * @param string $instanceId Instance-level id (lowest level)
-     * @param string $holdingId  Holding-level id (looked up from instance if null)
+     * @param string $instanceId Instance-level id (highest level; equivalent to bib)
+     * @param string $holdingId  Holding-level id (looked up from item if null)
      * @param string $itemId     Item-level id (looked up from holding if null)
      *
-     * @return string Local bib id retrieved from Folio identifiers
+     * @return string Appropriate bib id retrieved from FOLIO identifiers
      */
     protected function getBibId($instanceId, $holdingId = null, $itemId = null)
     {
