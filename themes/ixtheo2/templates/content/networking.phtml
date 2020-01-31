@@ -14,45 +14,87 @@
         <div id="popup-content"></div>
     </div>
 
+    <?php
+        $partners = [
+            [   'lon' => '11.384495',
+                'lat' => '47.263359',
+                'logo' => $this->imageLink('partners/logo-uibk.svg'),
+                'url' => '//www.uibk.ac.at/theol/theoldi/index.html.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universität Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"'.$this->imageLink('partners/logo-uibk.svg').'\" width=\"180\"></font>',
+            ],
+            [   'lon' => '7.62560',
+                'lat' => '51.96262',
+                'logo' => $this->imageLink('partners/wwu.svg'),
+                'url' => '//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut für Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"'.$this->imageLink('partners/wwu.svg').'.\" width=\"180\"></font>',
+            ],
+            [   'lon' => '9.93202',
+                'lat' => '49.79608',
+                'logo' => $this->imageLink('partners/ZAF_Logo_3.png'),
+                'logo_wrap' => ['start' => '<div style="background-color: red; text-align: center;">', 'end' => '</div>'],
+                'url' => '//www.augustinus.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.augustinus.de\" target=\"_blank\">Augustinus-Forschungsdatenbank</a></b><br>Zentrum für Augustinusforschung<br>Dominikanerplatz 4<br>D-97070 Würzburg<br><br><div style=\"background-color: red; text-align: center;\"><img src=\"'.$this->imageLink('partners/ZAF_Logo_3.png').'\" width=\"180\"></div></font>',
+            ],
+            [   'lon' => '6.95137',
+                'lat' => '50.94415',
+                'logo' => $this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg'),
+                'url' => '//dombibliothek-koeln.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//dombibliothek-koeln.de\" target=\"_blank\">Erzbischöfliche Diözesan- und Dombibliothek Köln</a></b><br> Kardinal-Frings-Straße 1-3<br>D-50668 Köln<br><br><img src=\"'.$this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg').'\" width=\"180\"></font>',
+            ],
+        ];
+    ?>
+
     <script type="text/javascript">
         $(function() {
             let icon = '<?=$this->imageLink('ol/marker.svg');?>';
             OpenStreetMapWrapper.DrawMap(9.06178, 48.52515, /* zoom */5);
             OpenStreetMapWrapper.AddLocation(9.06178, 48.52515, icon, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universitätsbibliothek Tübingen<br>Wilhelmstr. 32<br>D-72074 Tübingen<br><br><img src=\"<?=$this->imageLink('Logo_Universitaet_Tuebingen.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(11.384495, 47.263359, icon, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universität Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"<?=$this->imageLink('partners/logo-uibk.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(7.62560, 51.96262, icon, "<font color=\"black\"><b><a href=\"//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut für Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"<?=$this->imageLink('partners/wwu.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(9.93202, 49.79608, icon, "<font color=\"black\"><b><a href=\"//www.augustinus.de\" target=\"_blank\">Augustinus-Forschungsdatenbank</a></b><br>Zentrum für Augustinusforschung<br>Dominikanerplatz 4<br>D-97070 Würzburg<br><br><div style=\"background-color: red; text-align: center;\"><img src=\"<?=$this->imageLink('partners/ZAF_Logo_3.png')?>\" width=\"180\"></div></font>");
-            OpenStreetMapWrapper.AddLocation(6.95137, 50.94415, icon, "<font color=\"black\"><b><a href=\"//dombibliothek-koeln.de\" target=\"_blank\">Erzbischöfliche Diözesan- und Dombibliothek Köln</a></b><br> Kardinal-Frings-Straße 1-3<br>D-50668 Köln<br><br><img src=\"<?=$this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg')?>\" width=\"180\"></font>");
+
+            <?php foreach ($partners as $partner): ?>
+                OpenStreetMapWrapper.AddLocation(<?=$partner['lon']?>, <?=$partner['lat']?>, icon, "<?=$partner['popup']?>");
+            <?php endforeach; ?>
         });
     </script>
-</section>
-
-<section class="py-5 bg-gray-100 shadow">
-    <div class="cw-container">
-        <h1 class="cw-h1">Networking</h1>
-        <p class="cw-lead cw-mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.</p>
+    <div class="cw-py-2" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between;">
+        <?php foreach ($partners as $partner): ?>
+            <a href="<?=$partner['url']?>" target="_blank">
+                <div>
+                    <?=$partner['logo_wrap']['start'] ?? ''?><img src="<?=$partner['logo']?>" height="50"><?=$partner['logo_wrap']['end'] ?? ''?>
+                </div>
+            </a>
+        <?php endforeach; ?>
     </div>
 </section>
 
-<section class="py-5">
+<section class="cw-py-5 bg-gray-100 shadow">
+    <div class="cw-container">
+        <h1 class="cw-h1">Networking</h1>
+        <p class="cw-lead">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
+        </p>
+    </div>
+</section>
+
+<section class="cw-py-5">
     <div class="cw-container">
         <div class="cw-row">
             <!-- venue item-->
-            <div data-marker-id="59c0c8e33b1527bfe2abaf92" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
+            <div data-marker-id="59c0c8e33b1527bfe2abaf92" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1430931071372-38127bd472b8.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
+                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1430931071372-38127bd472b8.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'advisors'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Blue Hill</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-gray-300">                    </i>
-                            </p>
+                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Beirat</h4>
+                            <!--<p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-gray-300"></i></p>-->
                         </div>
+                        <!--
                         <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
                             <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Restaurants</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
                                 <svg class="cw-svg-icon cw-text-white">
                                 <use xlink:href="#heart-1"> </use>
                                 </svg></a>
                         </div>
+                        -->
                     </div>
                     <div class="cw-card-body">
                         <p class="text-sm text-muted mb-3"> Cupidatat excepteur non dolore laborum et quis nostrud veniam dolore deserunt. Pariatur dolore ut in elit id nulla. Irur...</p>
@@ -63,21 +105,22 @@
                 </div>
             </div>
             <!-- venue item-->
-            <div data-marker-id="59c0c8e322f3375db4d89128" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
+            <div data-marker-id="59c0c8e322f3375db4d89128" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1436018626274-89acd1d6ec9d.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
+                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1436018626274-89acd1d6ec9d.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'cooperations'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Plutorque</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i>
-                            </p>
+                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Kooperationen</h4>
+                            <!--<p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i></p>-->
                         </div>
+                        <!--
                         <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
                             <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Restaurant</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
                                 <svg class="cw-svg-icon cw-text-white">
                                 <use xlink:href="#heart-1"> </use>
                                 </svg></a>
                         </div>
+                        -->
                     </div>
                     <div class="cw-card-body">
                         <p class="text-sm text-muted mb-3"> Proident irure eiusmod velit veniam consectetur id minim irure et nostrud mollit magna velit. Commodo amet proident aliq...</p>
@@ -88,21 +131,22 @@
                 </div>
             </div>
             <!-- venue item-->
-            <div data-marker-id="59c0c8e3a31e62979bf147c9" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
+            <div data-marker-id="59c0c8e3a31e62979bf147c9" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1466978913421-dad2ebd01d17.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
+                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1466978913421-dad2ebd01d17.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'experts'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Junipoor</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i>
-                            </p>
+                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Fachreferenten</h4>
+                            <!--<p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i></p>-->
                         </div>
+                        <!--
                         <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
                             <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Music club</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
                                 <svg class="cw-svg-icon cw-text-white">
                                 <use xlink:href="#heart-1"> </use>
                                 </svg></a>
                         </div>
+                        -->
                     </div>
                     <div class="cw-card-body">
                         <p class="text-sm text-muted mb-3"> Lorem amet ex duis in et fugiat consectetur laborum eiusmod labore. Quis cupidatat et do dolor in in magna. Eu sit quis ...</p>
@@ -113,76 +157,27 @@
                 </div>
             </div>
             <!-- venue item-->
-            <div data-marker-id="59c0c8e3503eb77d487e8082" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
+            <div data-marker-id="59c0c8e3503eb77d487e8082" class="col-sm-6 col-lg-3 cw-mb-5 hover-animate">
                 <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1477763858572-cda7deaa9bc5.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
+                    <div style="background-image: url(/themes/ixtheo2/images/cw/restaurant-1477763858572-cda7deaa9bc5.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
+                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="<?=$this->url('content-page', ['page' => 'fids'])?>" class="cw-tile-link"></a>
                         <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Musix</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-gray-300">                    </i><i class="fa fa-star text-gray-300">                    </i>
-                            </p>
+                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Andere FIDs</h4>
+                            <!--<p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-gray-300"></i><i class="fa fa-star text-gray-300"></i></p>-->
                         </div>
+                        <!--
                         <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
                             <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Music club</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
                                 <svg class="cw-svg-icon cw-text-white">
                                 <use xlink:href="#heart-1"> </use>
                                 </svg></a>
                         </div>
+                        -->
                     </div>
                     <div class="cw-card-body">
                         <p class="text-sm text-muted mb-3"> Deserunt eiusmod Lorem proident consequat elit culpa laboris ea cupidatat. Consequat dolore proident ipsum qui sint enim...</p>
                         <p class="text-sm text-muted text-uppercase mb-1">By <a href="#" class="text-dark">Matt Damon</a></p>
                         <p class="text-sm mb-0"><a href="#" class="mr-1">Music,</a><a href="#" class="mr-1">Club,</a><a href="#" class="mr-1">Rock</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <!-- venue item-->
-            <div data-marker-id="59c0c8e39aa2eed0626e485d" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
-                <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1504087697492-238a6bf49ce8.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
-                        <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Prosure</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i>
-                            </p>
-                        </div>
-                        <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
-                            <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Restaurant</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
-                                <svg class="cw-svg-icon cw-text-white">
-                                <use xlink:href="#heart-1"> </use>
-                                </svg></a>
-                        </div>
-                    </div>
-                    <div class="cw-card-body">
-                        <p class="text-sm text-muted mb-3"> Cillum sunt reprehenderit ea non irure veniam dolore commodo labore fugiat est consequat velit. Cupidatat nisi qui ad si...</p>
-                        <p class="text-sm text-muted text-uppercase mb-1">By <a href="#" class="text-dark">Matt Damon</a></p>
-                        <p class="text-sm mb-0"><a href="#" class="mr-1">Nisi,</a><a href="#" class="mr-1">Ex,</a><a href="#" class="mr-1">Eiusmod</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <!-- venue item-->
-            <div data-marker-id="59c0c8e39aa2edasd626e485d" class="col-sm-6 col-lg-4 cw-mb-5 hover-animate">
-                <div class="cw-card h-100 border-0 shadow">
-                    <div style="background-image: url(https://d19m59y37dris4.cloudfront.net/directory/1-3/img/photo/restaurant-1505275350441-83dcda8eeef5.jpg); min-height: 200px;" class="cw-card-img-top cw-overflow-hidden cw-dark-overlay cw-bg-cover">
-                        <!--img.img-fluid(src="#{imgBasePath}#{val.image}" alt="#{val.name}")--><a href="detail.html" class="cw-tile-link"></a>
-                        <div class="cw-card-img-overlay-bottom cw-z-index-20">
-                            <h4 class="cw-h4 cw-text-white cw-text-shadow">Take That</h4>
-                            <p class="cw-mb-2 cw-text-xs"><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-warning"></i><i class="fa fa-star text-gray-300">                    </i>
-                            </p>
-                        </div>
-                        <div class="cw-card-img-overlay-top cw-d-flex cw-justify-content-between cw-align-items-center">
-                            <div class="cw-badge cw-badge-transparent cw-badge-pill cw-px-3 cw-py-2">Café</div><a href="javascript: void();" class="cw-card-fav-icon cw-position-relative cw-z-index-40">
-                                <svg class="cw-svg-icon cw-text-white">
-                                <use xlink:href="#heart-1"> </use>
-                                </svg></a>
-                        </div>
-                    </div>
-                    <div class="cw-card-body">
-                        <p class="text-sm text-muted mb-3"> Cillum sunt reprehenderit ea non irure veniam dolore commodo labore fugiat est consequat velit. Cupidatat nisi qui ad si...</p>
-                        <p class="text-sm text-muted text-uppercase mb-1">By <a href="#" class="text-dark">Matt Damon</a></p>
-                        <p class="text-sm mb-0"><a href="#" class="mr-1">Nisi,</a><a href="#" class="mr-1">Ex,</a><a href="#" class="mr-1">Eiusmod</a>
                         </p>
                     </div>
                 </div>

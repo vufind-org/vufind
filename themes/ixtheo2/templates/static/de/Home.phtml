@@ -89,18 +89,22 @@
                     <h2 class="cw-h2 cw-mb-5">Neue Dienste in Kürze</h2>
                     <div class="ix-news-right">
                         <div class="ix-news-right-row">
-                            <div class="ix-news-right-column" style="background-color: #EEEEEE">
-                                <div><b>Volltextsuche</b></div>
-                                <div><small>Weitere Informationen</small></div>
-                            </div>
-                            <div class="ix-news-right-column" style="background-image: url(<?=$this->imageLink('frontpage/news.jpg')?>); background-size: cover;"></div>
+                            <a href="<?=$this->url('content-page', ['page' => 'fulltexts'])?>">
+                                <div class="ix-news-right-column" style="background-color: #EEEEEE">
+                                    <div><b>Volltextsuche</b></div>
+                                    <div><small>Weitere Informationen</small></div>
+                                </div>
+                                <div class="ix-news-right-column" style="background-image: url(<?=$this->imageLink('frontpage/news.jpg')?>); background-size: cover;"></div>
+                            </a>
                         </div>
                         <div class="ix-news-right-row">
-                            <div class="ix-news-right-column" style="background-color: #CCCCCC">
-                                <div><b>Codexsuche</b></div>
-                                <div><small>Weitere Informationen</small></div>
-                            </div>
-                            <div class="ix-news-right-column" style="background-image: url(<?=$this->imageLink('frontpage/publishers.jpg')?>); background-size: cover;"></div>
+                            <a href="<?=$this->url('content-page', ['page' => 'codices'])?>">
+                                <div class="ix-news-right-column" style="background-color: #CCCCCC">
+                                    <div><b>Codexsuche</b></div>
+                                    <div><small>Weitere Informationen</small></div>
+                                </div>
+                                <div class="ix-news-right-column" style="background-image: url(<?=$this->imageLink('frontpage/publishers.jpg')?>); background-size: cover;"></div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -228,7 +232,7 @@
                 </div>
 
             </div>
-            <!--<div class="swiper-pagination"></div>-->
+            <div class="swiper-pagination"></div>
         </div>
     </div>
 
@@ -252,11 +256,11 @@
                 slidesPerView: 1
             }
         },
-        /*pagination: {
+        pagination: {
             el: '.swiper-pagination',
             clickable: true,
             dynamicBullets: true
-        },*/
+        },
     });
     </script>
 </section>

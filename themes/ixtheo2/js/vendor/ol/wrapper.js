@@ -1,3 +1,4 @@
+/* this file is TueFind-specific! */
 var OpenStreetMapWrapper = {
     map: null,
     locations: [],
@@ -17,19 +18,20 @@ var OpenStreetMapWrapper = {
         });
 
         // Prepare popups for markers
+        var container = document.getElementById('popup');
+        var content = document.getElementById('popup-content');
+        var closer = document.getElementById('popup-closer');
+        var overlay = new ol.Overlay({
+            element: container,
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+        closer.blur();
+
         var locations = this.locations;
         this.map.on('singleclick', function (event) {
-            console.log(event);
-            var container = document.getElementById('popup');
-            var content = document.getElementById('popup-content');
-            var closer = document.getElementById('popup-closer');
-            var overlay = new ol.Overlay({
-                element: container,
-                autoPan: true,
-                autoPanAnimation: {
-                    duration: 250
-                }
-            });
             closer.onclick = function() {
                 overlay.setPosition(undefined);
                 closer.blur();
