@@ -14,17 +14,56 @@
         <div id="popup-content"></div>
     </div>
 
+    <?php
+        $partners = [
+            [   'lon' => '11.384495',
+                'lat' => '47.263359',
+                'logo' => $this->imageLink('partners/logo-uibk.svg'),
+                'url' => '//www.uibk.ac.at/theol/theoldi/index.html.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universität Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"'.$this->imageLink('partners/logo-uibk.svg').'\" width=\"180\"></font>',
+            ],
+            [   'lon' => '7.62560',
+                'lat' => '51.96262',
+                'logo' => $this->imageLink('partners/wwu.svg'),
+                'url' => '//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut für Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"'.$this->imageLink('partners/wwu.svg').'.\" width=\"180\"></font>',
+            ],
+            [   'lon' => '9.93202',
+                'lat' => '49.79608',
+                'logo' => $this->imageLink('partners/ZAF_Logo_3.png'),
+                'logo_wrap' => ['start' => '<div style="background-color: red; text-align: center;">', 'end' => '</div>'],
+                'url' => '//www.augustinus.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//www.augustinus.de\" target=\"_blank\">Augustinus-Forschungsdatenbank</a></b><br>Zentrum für Augustinusforschung<br>Dominikanerplatz 4<br>D-97070 Würzburg<br><br><div style=\"background-color: red; text-align: center;\"><img src=\"'.$this->imageLink('partners/ZAF_Logo_3.png').'\" width=\"180\"></div></font>',
+            ],
+            [   'lon' => '6.95137',
+                'lat' => '50.94415',
+                'logo' => $this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg'),
+                'url' => '//dombibliothek-koeln.de',
+                'popup' => '<font color=\"black\"><b><a href=\"//dombibliothek-koeln.de\" target=\"_blank\">Erzbischöfliche Diözesan- und Dombibliothek Köln</a></b><br> Kardinal-Frings-Straße 1-3<br>D-50668 Köln<br><br><img src=\"'.$this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg').'\" width=\"180\"></font>',
+            ],
+        ];
+    ?>
+
     <script type="text/javascript">
         $(function() {
             let icon = '<?=$this->imageLink('ol/marker.svg');?>';
             OpenStreetMapWrapper.DrawMap(9.06178, 48.52515, /* zoom */5);
             OpenStreetMapWrapper.AddLocation(9.06178, 48.52515, icon, "<font color=\"black\"><b><a href=\"//ub.uni-tuebingen.de\" target=\"_blank\">Index Theologicus</a></b><br>Universitätsbibliothek Tübingen<br>Wilhelmstr. 32<br>D-72074 Tübingen<br><br><img src=\"<?=$this->imageLink('Logo_Universitaet_Tuebingen.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(11.384495, 47.263359, icon, "<font color=\"black\"><b><a href=\"//www.uibk.ac.at/theol/theoldi/index.html.de\" target=\"_blank\">Theoldi</a></b><br>Universität Innsbruck<br>Innrain 52<br>A-6020 Innsbruck<br><br><img src=\"<?=$this->imageLink('partners/logo-uibk.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(7.62560, 51.96262, icon, "<font color=\"black\"><b><a href=\"//www.uni-muenster.de/FB2/ikr/datenbank/index.shtml\" target=\"_blank\">DaKaR</a></b><br>Institut für Kanonisches Recht<br>Domplatz 23<br>D-48143 Münster<br><br><img src=\"<?=$this->imageLink('partners/wwu.svg')?>\" width=\"180\"></font>");
-            OpenStreetMapWrapper.AddLocation(9.93202, 49.79608, icon, "<font color=\"black\"><b><a href=\"//www.augustinus.de\" target=\"_blank\">Augustinus-Forschungsdatenbank</a></b><br>Zentrum für Augustinusforschung<br>Dominikanerplatz 4<br>D-97070 Würzburg<br><br><div style=\"background-color: red; text-align: center;\"><img src=\"<?=$this->imageLink('partners/ZAF_Logo_3.png')?>\" width=\"180\"></div></font>");
-            OpenStreetMapWrapper.AddLocation(6.95137, 50.94415, icon, "<font color=\"black\"><b><a href=\"//dombibliothek-koeln.de\" target=\"_blank\">Erzbischöfliche Diözesan- und Dombibliothek Köln</a></b><br> Kardinal-Frings-Straße 1-3<br>D-50668 Köln<br><br><img src=\"<?=$this->imageLink('partners/logo_bibliothek_2017_10_24_420x70.jpg')?>\" width=\"180\"></font>");
+
+            <?php foreach ($partners as $partner): ?>
+                OpenStreetMapWrapper.AddLocation(<?=$partner['lon']?>, <?=$partner['lat']?>, icon, "<?=$partner['popup']?>");
+            <?php endforeach; ?>
         });
     </script>
+    <div class="cw-py-2" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between;">
+        <?php foreach ($partners as $partner): ?>
+            <a href="<?=$partner['url']?>" target="_blank">
+                <div>
+                    <?=$partner['logo_wrap']['start'] ?? ''?><img src="<?=$partner['logo']?>" height="50"><?=$partner['logo_wrap']['end'] ?? ''?>
+                </div>
+            </a>
+        <?php endforeach; ?>
+    </div>
 </section>
 
 <section class="py-5 bg-gray-100 shadow">
