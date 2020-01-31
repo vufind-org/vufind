@@ -57,9 +57,11 @@
                 </style>
 
                 <div class="slick-slider-single-item" align="center">
-                    <div class="ix-slick-slider-item" style="background-image: url(<?=$this->imageLink('frontpage/authors.jpg')?>);">
-                        <div class="ix-slick-slider-item-title">Aktuelles</div>
-                    </div>
+                    <a href="<?=$this->url('content-page', ['page' => 'news']) ?>">
+                        <div class="ix-slick-slider-item" style="background-image: url(<?=$this->imageLink('frontpage/authors.jpg')?>);">
+                            <div class="ix-slick-slider-item-title">Aktuelles</div>
+                        </div>
+                    </a>
                     <div class="ix-slick-slider-item" style="background-image: url(<?=$this->imageLink('frontpage/discover.jpg')?>);">
                         <div class="ix-slick-slider-item-title">Blog-Aggregator</div>
                     </div>
