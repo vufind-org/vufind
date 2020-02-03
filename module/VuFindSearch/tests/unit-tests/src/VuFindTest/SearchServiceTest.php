@@ -31,10 +31,12 @@ namespace VuFindTest;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
@@ -144,6 +146,34 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->getIds('foo', new Query('test'));
+    }
+
+    /**
+     * Test that when a backend DOES implement the "get IDs" feature
+     * interface, the appropriate method gets called.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testGetIdsException()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->createMock(\VuFindTest\TestClassForGetIdsInterface::class);
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('getIds')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
         $em->expects($this->at(0))->method('trigger')
@@ -728,6 +758,14 @@ class SearchServiceTest extends TestCase
     {
         return $this->createMock(\VuFindSearch\Response\AbstractRecordCollection::class);
     }
+}
+
+/**
+ * Stub class to test multiple interfaces.
+ */
+abstract class TestClassForGetIdsInterface
+    implements BackendInterface, GetIdsInterface
+{
 }
 
 /**

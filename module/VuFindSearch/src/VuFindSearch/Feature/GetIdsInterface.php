@@ -51,7 +51,7 @@ interface GetIdsInterface
      * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
-     * @return RecordCollectionInterface
+     * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function getIds(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
