@@ -129,6 +129,31 @@ class SearchServiceTest extends TestCase
     }
 
     /**
+     * Test that when a backend doesn't implement the "get IDs" feature
+     * interface, the getIds method of the search service simply proxies search.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testGetIdsProxyingSearchException()
+    {
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->getIds('foo', new Query('test'));
+    }
+
+    /**
      * Test batch retrieve (with RetrieveBatchInterface).
      *
      * @return void
