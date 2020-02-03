@@ -185,16 +185,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException($e->getMessage());
         }
 
+        // Get the HTTP status code and response
+        $statusCode = $result->getStatusCode();
+        $answer = $statusCode !== 204 ? $result->getBody() : '';
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $code = $result->getStatusCode();
+        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $url?$urlParams results ($code):\n"
-            . $result->getBody()
+            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            . $answer
         );
-
-        // Get the HTTP status code
-        $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
@@ -204,8 +206,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
-        $answer = $result->getBody();
-        $answer = str_replace('xmlns=', 'ns=', $answer);
         try {
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
