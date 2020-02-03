@@ -2,7 +2,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -185,16 +185,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException($e->getMessage());
         }
 
+        // Get the HTTP status code and response
+        $statusCode = $result->getStatusCode();
+        $answer = $statusCode !== 204 ? $result->getBody() : '';
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $code = $result->getStatusCode();
+        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $url?$urlParams results ($code):\n"
-            . $result->getBody()
+            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            . $answer
         );
-
-        // Get the HTTP status code
-        $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
@@ -204,8 +206,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
-        $answer = $result->getBody();
-        $answer = str_replace('xmlns=', 'ns=', $answer);
         try {
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
@@ -1250,28 +1250,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
 
                 // Add information to the renewal array
-                $blocks = false;
-                $renewal[$loanId]['success'] = true;
-                $renewal[$loanId]['new_date'] = $this->parseDate(
-                    (string)$apiResult->due_date,
-                    true
-                );
-                //$renewal[$loanId]['new_time'] = ;
-                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
-                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->parseDate(
+                        (string)$apiResult->due_date,
+                        true
+                    ),
+                    'item_id' => (string)$apiResult->loan_id,
+                    'sysMessage' => 'renew_success'
+                ];
 
                 // Add the renewal to the return array
-                $returnArray['details'] = $renewal;
+                $returnArray['details'][$loanId] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
-                $returnArray['details'] = $renewal;
-
-                // Add a message that can be translated
-                $blocks[] = 'renew_fail';
+                $returnArray['details'][$loanId] = [
+                    'success' => false
+                ];
             }
         }
-
-        $returnArray['blocks'] = $blocks;
 
         return $returnArray;
     }
