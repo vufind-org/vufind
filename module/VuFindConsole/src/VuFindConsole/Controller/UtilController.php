@@ -188,12 +188,13 @@ class UtilController extends AbstractBase
     protected function buildReservesIndex($instructors, $courses, $departments,
         $reserves
     ) {
+        $requiredKeys = ['INSTRUCTOR_ID', 'COURSE_ID', 'DEPARTMENT_ID'];
         foreach ($reserves as $record) {
-            if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
-                || !isset($record['DEPARTMENT_ID'])
-            ) {
+            $requiredKeysFound
+                = count(array_intersect(array_keys($record), $requiredKeys));
+            if ($requiredKeysFound < count($requiredKeys)) {
                 throw new \Exception(
-                    'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
+                    implode(' and/or ', $requiredKeys) . ' fields ' .
                     'not present in reserve records. Please update ILS driver.'
                 );
             }
@@ -549,6 +550,26 @@ class UtilController extends AbstractBase
             'ExternalSession',
             '%%count%% expired external sessions deleted.',
             'No expired external sessions to delete.'
+        );
+    }
+
+    /**
+     * Command-line tool to clear unwanted entries
+     * from auth_hash database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireauthhashesAction()
+    {
+        $request = $this->getRequest();
+        if ($request->getParam('help') || $request->getParam('h')) {
+            return $this->expirationHelp('authentication hashes');
+        }
+
+        return $this->expire(
+            \VuFind\Db\Table\AuthHash::class,
+            '%%count%% expired authentication hashes deleted.',
+            'No expired authentication hashes to delete.'
         );
     }
 

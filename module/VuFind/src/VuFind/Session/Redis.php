@@ -31,6 +31,8 @@
  */
 namespace VuFind\Session;
 
+use Zend\Config\Config;
+
 /**
  * Redis session handler
  *
@@ -48,7 +50,7 @@ class Redis extends AbstractBase
      *
      * @var \Credis_Client
      */
-    protected $connection = false;
+    protected $connection;
 
     /**
      * Redis version
@@ -58,60 +60,45 @@ class Redis extends AbstractBase
     protected $redisVersion = 3;
 
     /**
-     * Get connection to Redis
+     * Constructor
      *
-     * @throws \Exception
-     * @return \Credis_Client
+     * @param \Credis_Client $connection Redis connection object
+     * @param Config         $config     Session configuration ([Session] section of
+     * config.ini)
      */
-    protected function getConnection()
+    public function __construct(\Credis_Client $connection, Config $config = null)
     {
-        if (!$this->connection) {
-            // Set defaults if nothing set in config file.
-            $host = $this->config->redis_host ?? 'localhost';
-            $port = $this->config->redis_port ?? 6379;
-            $timeout = $this->config->redis_connection_timeout ?? 0.5;
-            $auth = $this->config->redis_auth ?? false;
-            $redis_db = $this->config->redis_db ?? 0;
-            $this->redisVersion = (int)($this->config->redis_version ?? 3);
-            $standalone = (bool)($this->config->redis_standalone ?? true);
-
-            // Create Credis client, the connection is established lazily
-            $this->connection = new \Credis_Client(
-                $host, $port, $timeout, '', $redis_db, $auth
-            );
-            if ($standalone) {
-                $this->connection->forceStandalone();
-            }
-        }
-        return $this->connection;
+        parent::__construct($config);
+        $this->redisVersion = (int)($config->redis_version ?? 3);
+        $this->connection = $connection;
     }
 
     /**
      * Read function must return string value always to make save handler work as
      * expected. Return empty string if there is no data to read.
      *
-     * @param string $sess_id The session ID to read
+     * @param string $sessId The session ID to read
      *
      * @return string
      */
-    public function read($sess_id)
+    public function read($sessId)
     {
-        $session = $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        $session = $this->connection->get("vufind_sessions/{$sessId}");
         return $session !== false ? $session : '';
     }
 
     /**
      * Write function that is called when session data is to be saved.
      *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
+     * @param string $sessId The current session ID
+     * @param string $data   The session data to write
      *
      * @return bool
      */
-    protected function saveSession($sess_id, $data)
+    protected function saveSession($sessId, $data)
     {
-        return $this->getConnection()->setex(
-            "vufind_sessions/{$sess_id}", $this->lifetime, $data
+        return $this->connection->setex(
+            "vufind_sessions/{$sessId}", $this->lifetime, $data
         );
     }
 
@@ -119,21 +106,19 @@ class Redis extends AbstractBase
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
-     * @param string $sess_id The session ID to destroy
+     * @param string $sessId The session ID to destroy
      *
      * @return bool
      */
-    public function destroy($sess_id)
+    public function destroy($sessId)
     {
         // Perform standard actions required by all session methods:
-        parent::destroy($sess_id);
+        parent::destroy($sessId);
 
         // Perform Redis-specific cleanup
-        if ($this->redisVersion >= 4) {
-            $return = $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
-        } else {
-            $return = $this->getConnection()->del("vufind_sessions/{$sess_id}");
-        }
-        return ($return > 0) ? true : false;
+        $unlinkMethod = ($this->redisVersion >= 4) ? 'unlink' : 'del';
+        $return = $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
+
+        return $return > 0;
     }
 }

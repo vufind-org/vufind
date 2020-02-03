@@ -147,7 +147,7 @@ class OpenLibrarySubjects implements RecommendInterface,
     public function init($params, $request)
     {
         // Get and normalise $requestParam
-        $this->subject =  $request->get($this->requestParam);
+        $this->subject = $request->get($this->requestParam);
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {

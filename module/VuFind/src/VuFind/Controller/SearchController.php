@@ -74,7 +74,7 @@ class SearchController extends AbstractSolrSearch
         // Retrieve and manipulate the parameters:
         $searchHelper = $this->getViewRenderer()->plugin('searchMemory');
         $params = $searchHelper->getLastSearchParams($searchClassId);
-        $factory = new UrlQueryHelperFactory();
+        $factory = $this->serviceLocator->get(UrlQueryHelperFactory::class);
         $initialParams = $factory->fromParams($params);
 
         if ($removeAllFilters) {

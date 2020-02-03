@@ -27,7 +27,9 @@
  */
 namespace VuFind\Auth;
 
+use VuFind\DB\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
+use Zend\Http\PhpEnvironment\RemoteAddress;
 
 /**
  * Class for managing email-based authentication.
@@ -74,11 +76,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     protected $viewRenderer = null;
 
     /**
-     * Request
+     * Remote address
      *
-     * @var \Zend\Stdlib\RequestInterface
+     * @var RemoteAddress
      */
-    protected $request;
+    protected $remoteAddress;
 
     /**
      * Configuration
@@ -95,27 +97,36 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     protected $loginRequestValidTime = 600;
 
     /**
+     * Database table for authentication hashes
+     *
+     * @var AuthHashTable
+     */
+    protected $authHashTable;
+
+    /**
      * Constructor
      *
      * @param \Zend\Session\SessionManager          $session      Session Manager
      * @param \VuFind\Validator\Csrf                $csrf         CSRF Validator
      * @param \VuFind\Mailer\Mailer                 $mailer       Mailer
      * @param \Zend\View\Renderer\RendererInterface $viewRenderer View Renderer
-     * @param \Zend\Stdlib\RequestInterface         $request      Request
+     * @param RemoteAddress                         $remoteAddr   Remote address
      * @param \Zend\Config\Config                   $config       Configuration
+     * @param AuthHashTable                         $authHash     AuthHash Table
      */
     public function __construct(\Zend\Session\SessionManager $session,
         \VuFind\Validator\Csrf $csrf, \VuFind\Mailer\Mailer $mailer,
         \Zend\View\Renderer\RendererInterface $viewRenderer,
-        \Zend\Stdlib\RequestInterface $request,
-        \Zend\Config\Config $config
+        RemoteAddress $remoteAddr,
+        \Zend\Config\Config $config, AuthHashTable $authHash
     ) {
         $this->sessionManager = $session;
         $this->csrf = $csrf;
         $this->mailer = $mailer;
         $this->viewRenderer = $viewRenderer;
-        $this->request = $request;
+        $this->remoteAddress = $remoteAddr;
         $this->config = $config;
+        $this->authHashTable = $authHash;
     }
 
     /**
@@ -138,14 +149,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $subject = 'email_login_subject',
         $template = 'Email/login-link.phtml'
     ) {
-        $sessionContainer = $this->getSessionContainer();
-
         // Make sure we've waited long enough
         $recoveryInterval = isset($this->config->Authentication->recover_interval)
             ? $this->config->Authentication->recover_interval
             : 60;
-        if (null !== $sessionContainer->timestamp
-            && time() - $sessionContainer->timestamp < $recoveryInterval
+        $sessionId = $this->sessionManager->getId();
+
+        if (($row = $this->authHashTable->getLatestBySessionId($sessionId))
+            && time() - strtotime($row['created']) < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
         }
@@ -154,14 +165,17 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $linkData = [
             'timestamp' => time(),
             'data' => $data,
-            'email' => $email
+            'email' => $email,
+            'ip' => $this->remoteAddress->getIpAddress()
         ];
         $hash = $this->csrf->getHash(true);
 
-        if (!isset($sessionContainer->requests)) {
-            $sessionContainer->requests = [];
-        }
-        $sessionContainer->requests[$hash] = $linkData;
+        $row = $this->authHashTable
+            ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL);
+
+        $row['session_id'] = $sessionId;
+        $row['data'] = json_encode($linkData);
+        $row->save();
 
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
@@ -192,15 +206,25 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function authenticate($hash)
     {
-        $sessionContainer = $this->getSessionContainer();
-
-        if (!isset($sessionContainer->requests[$hash])) {
-            throw new AuthException('authentication_error_denied');
+        $row = $this->authHashTable
+            ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL, false);
+        if (!$row) {
+            // Assume the hash has already been used or has expired
+            throw new AuthException('authentication_error_expired');
         }
-        $linkData = $sessionContainer->requests[$hash];
-        unset($sessionContainer->requests[$hash]);
-        if (time() - $linkData['timestamp'] > $this->loginRequestValidTime) {
-            throw new AuthException('authentication_error_denied');
+        $linkData = json_decode($row['data'], true);
+        $row->delete();
+
+        if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
+            throw new AuthException('authentication_error_expired');
+        }
+
+        // Require same session id or IP address:
+        $sessionId = $this->sessionManager->getId();
+        if ($row['session_id'] !== $sessionId
+            && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
+        ) {
+            throw new AuthException('authentication_error_session_ip_mismatch');
         }
 
         return $linkData['data'];
@@ -220,19 +244,10 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             $request->getQuery()->get('hash', '')
         );
         if ($hash) {
-            $sessionContainer = $this->getSessionContainer();
-            return isset($sessionContainer->requests[$hash]);
+            $row = $this->authHashTable
+                ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL, false);
+            return !empty($row);
         }
         return false;
-    }
-
-    /**
-     * Get the session container
-     *
-     * @return \Zend\Session\Container
-     */
-    protected function getSessionContainer()
-    {
-        return new \Zend\Session\Container('EmailAuth', $this->sessionManager);
     }
 }
