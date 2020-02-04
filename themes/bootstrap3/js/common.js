@@ -434,7 +434,7 @@ $(document).ready(function commonDocReady() {
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
         window.print();
       } else {
-        console.log("Printing disabled due to test mode.");
+        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
       }
     });
     // Make an ajax call to ensure that ajaxStop is triggered

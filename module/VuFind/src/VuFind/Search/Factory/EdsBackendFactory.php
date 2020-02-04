@@ -32,6 +32,7 @@ use Interop\Container\ContainerInterface;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
