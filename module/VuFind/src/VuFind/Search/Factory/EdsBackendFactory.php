@@ -36,8 +36,6 @@ use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
-
 /**
  * Factory for EDS backends.
  *
