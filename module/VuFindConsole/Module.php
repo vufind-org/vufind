@@ -1,6 +1,6 @@
 <?php
 /**
- * ZF2 module definition for the VuFind console module
+ * Code module for VuFind's console functionality
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFindConsole;
 use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
- * ZF2 module definition for the VuFind console module
+ * Code module for VuFind's console functionality
  *
  * @category VuFind
  * @package  Module

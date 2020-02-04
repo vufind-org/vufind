@@ -114,7 +114,8 @@ abstract class AbstractRequestBase extends AbstractPlugin
     public function rememberValidId($id)
     {
         // The session container doesn't allow modification of entries (as of
-        // ZF2beta5 anyway), so we have to do this in a roundabout way.
+        // 2012, anyway), so we have to do this in a roundabout way.
+        // TODO: investigate whether this limitation has been lifted.
         $existingArray = $this->getSession()->validIds;
         $existingArray[] = $id;
         $this->getSession()->validIds = $existingArray;
