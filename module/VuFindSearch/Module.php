@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ZF2 module definition for the VF2 search service.
+ * Code module containing the VuFind search service.
  *
  * PHP version 7
  *
@@ -29,7 +29,7 @@
 namespace VuFindSearch;
 
 /**
- * ZF2 module definition for the VF2 search service.
+ * Code module containing the VuFind search service.
  *
  * PHP version 7
  *
