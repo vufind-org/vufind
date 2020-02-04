@@ -73,7 +73,7 @@ class Connector extends Base implements LoggerAwareInterface
      *
      * Sets up the EDS API Client
      *
-     * @param array           $settings Associative array of setting to use in
+     * @param array      $settings Associative array of setting to use in
      * conjunction with the EDS API
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
