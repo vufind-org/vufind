@@ -299,7 +299,7 @@ class Folio extends AbstractAPI implements
     {
         $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
         $query = [
-            'query' => '(id="' . $escaped . '" or identifiers="' . $escaped . '")'
+            'query' => '(id=="' . $escaped . '" or identifiers=="' . $escaped . '")'
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
@@ -366,7 +366,7 @@ class Folio extends AbstractAPI implements
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $instance = $this->getInstanceByBibId($bibId);
-        $query = ['query' => '(instanceId="' . $instance->id . '")'];
+        $query = ['query' => '(instanceId=="' . $instance->id . '")'];
         $holdingResponse = $this->makeRequest(
             'GET',
             '/holdings-storage/holdings',
@@ -386,7 +386,7 @@ class Folio extends AbstractAPI implements
                 $locationName = $location->name;
             }
 
-            $query = ['query' => '(holdingsRecordId="' . $holding->id . '")'];
+            $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             for ($j = 0; $j < count($itemBody->items); $j++) {
