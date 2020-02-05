@@ -108,6 +108,17 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the type of FOLIO ID used to match up with VuFind's bib IDs.
+     *
+     * @return string
+     */
+    protected function getBibIdType()
+    {
+        // Normalize string to tolerate minor variations in config file:
+        return trim(strtolower($this->config['IDs']['type'] ?? 'instance'));
+    }
+
+    /**
      * Function that obscures and logs debug data
      *
      * @param string             $method      Request method GET/POST/PUT/DELETE/etc
@@ -281,10 +292,26 @@ class Folio extends AbstractAPI implements
     protected function getBibId($instanceOrInstanceId = null, $holdingId = null,
         $itemId = null
     ) {
+        $idType = $this->getBibIdType();
+
+        // Special case: if we're using instance IDs and we already have one,
+        // short-circuit the lookup process:
+        if ($idType === 'instance' && is_string($instanceOrInstanceId)) {
+            return $instanceOrInstanceId;
+        }
+
         $instance = is_object($instanceOrInstanceId)
             ? $instanceOrInstanceId
             : $this->getInstanceById($instanceOrInstanceId, $holdingId, $itemId);
-        return $instance->id;
+
+        switch ($idType) {
+        case 'hrid':
+            return $instance->hrid;
+        case 'instance':
+            return $instance->id;
+        }
+
+        throw new \Exception('Unsupported ID type: ' . $idType);
     }
 
     /**
@@ -297,10 +324,14 @@ class Folio extends AbstractAPI implements
      */
     protected function getInstanceByBibId($bibId)
     {
+        // Figure out which ID type to use in the CQL query; if the user configured
+        // instance IDs, use the 'id' field, otherwise pass the setting through
+        // directly:
+        $idType = $this->getBibIdType();
+        $idField = $idType === 'instance' ? 'id' : $idType;
+
         $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = [
-            'query' => '(id=="' . $escaped . '" or identifiers=="' . $escaped . '")'
-        ];
+        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
