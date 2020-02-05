@@ -14,6 +14,16 @@
                 <li><a href="<?=$this->url('search-results')?>?lookfor=4+esra+1-2&type=BibleRangeSearch" role="button" rel="nofollow">Bibelstellensuche</a></li>
                 <li><a href="<?=$this->url('search-newitem')?>" role="button" rel="nofollow"><?=$this->transEsc('New Items')?></a></li>
                 <li><a href="<?=$this->url('search-history')?>" role="button" rel="nofollow"><?=$this->transEsc('Search History')?></a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle"><?=$this->transEsc('Virtual Keyboard')?>&nbsp;<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item virtual-keyboard-greek"><?=$this->transEsc('Greek')?></a></li>
+                        <li><a class="dropdown-item virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></a></li>
+                        <script>$(triggerVirtualKeyboard('<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
+                                                         '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'));
+                        </script>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
