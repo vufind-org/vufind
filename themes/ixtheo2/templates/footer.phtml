@@ -1,0 +1,21 @@
+<footer class="hidden-print ix-footer">
+  <section class="ix-footer-section" style="background-color: #e8e6e1;">
+    <div class="container">
+      <?=$this->HelpText()->render('supporters', null, 'static')?>
+    </div>
+  </section>
+  <section class="ix-footer-section" style="background-color: #9d9d9d;">
+    <div class="container">
+      <?=$this->HelpText()->render('footer', null, 'static')?>
+    </div>
+  </section>
+  <a href="<?=$this->url('feedback-home')?>" data-lightbox="">
+    <button id="tf-button-footer-feedback" class="btn float-left btn-outline-primary mx-1">
+      <?=$this->transEsc('Feedback')?>
+    </button>
+  </a>
+  <button id="tf-button-footer-back-to-top" class="btn float-right btn-outline-primary mx-5"
+          data-toggle="tooltip" data-placement="left" title="Go to top">
+    <i class="fa fa-chevron-up"> </i>
+  </button>
+</footer>
