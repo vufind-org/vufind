@@ -66,7 +66,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
 
     protected function addFollowingTitle(&$spec) {
         $spec->setTemplateLine(
-            'Following Title', 'getFollowingTitlePPN', 'data-following_title.phtml'
+            'Following Title', 'getFollowingPPNAndTitle', 'data-following_title.phtml'
         );
     }
 
@@ -77,7 +77,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
 
     protected function addPrecedingTitle(&$spec) {
         $spec->setTemplateLine(
-            'Previous Title', 'getPrecedingTitlePPN', 'data-preceeding_title.phtml'
+            'Previous Title', 'getPrecedingPPNAndTitle', 'data-preceding_title.phtml'
         );
     }
 
