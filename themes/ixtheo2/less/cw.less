@@ -1,4 +1,7 @@
-/* bootstrap 4? */
+/*
+* many classes taken + prefixes from bootstrap 4
+* so they do not collide with current vufind bootstrap3
+*/
 .cw-align-items-center {
     align-items: center !important;
 }
@@ -17,6 +20,17 @@
 
 .cw-border-0 {
     border: 0 !important;
+}
+
+.cw-d-flex {
+    display: -ms-flexbox !important;
+    display: flex !important;
+}
+
+.cw-bg-cover {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
 }
 
 .cw-row {
@@ -194,18 +208,24 @@
     padding-right: 1rem !important;
 }
 
+.cw-py-2 {
+    padding-bottom: .5rem !important;
+    padding-top: .5rem !important;
+}
+
 .cw-py-4 {
-    padding-bottom: 1.5rem;
-    padding-top: 1.5rem;
+    padding-bottom: 1.5rem !important;
+    padding-top: 1.5rem !important;
 }
 
 .cw-py-5 {
-
+    padding-bottom: 3rem !important;
+    padding-top: 3rem !important;
 }
 
 .cw-py-6 {
-    padding-bottom: 6rem;
-    padding-top: 6rem;
+    padding-bottom: 6rem !important;
+    padding-top: 6rem !important;
 }
 
 .cw-py-7 {
@@ -312,6 +332,10 @@
 
 .cw-text-sm {
     font-size: 0.875rem;
+}
+
+.cw-text-xs {
+    font-size: .7rem;
 }
 
 .cw-text-white {
@@ -619,6 +643,10 @@
     justify-content: center !important;
 }
 
+.cw-justify-content-between {
+    justify-content: space-between !important;
+}
+
 .cw-blockquote {
     border-left: 2px solid #4E66F8;
 }
@@ -687,8 +715,17 @@
     background-color: #f8f9fa;
 }
 
+.cw-badge-transparent {
+    color: #212529;
+    background: rgba(248,249,250,0.9);
+}
+
 .cw-map-wrapper-300 {
     height: 300px;
+}
+
+.cw-map-wrapper-450 {
+    height: 450px;
 }
 
 .cw-sticky-top {

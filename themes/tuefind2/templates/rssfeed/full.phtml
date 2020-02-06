@@ -11,9 +11,11 @@
                 <p>
                     <a href="<?=$rssItem['tuefind:rss_url']?>" target="_blank"><?=$rssItem['tuefind:rss_title']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pubDate']))?>
                 </p>
-                <p>
-                    <?=$rssItem['description']?>
-                </p>
+                <?php if (!empty($rssItem['description'])):?>
+                    <p>
+                        <?=$rssItem['description']?>
+                    </p>
+                <?php endif;?>
             </div>
         <?php endforeach;?>
     </div>

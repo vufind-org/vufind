@@ -37,7 +37,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec = new SpecBuilder();
         $this->addPublishedIn($spec);
         $this->addFollowingTitle($spec); // TueFind specific
-        $this->addPreceedingTitle($spec);  // TueFind specific
+        $this->addPrecedingTitle($spec);  // TueFind specific
         // Other Titles (IxTheo-specific)
         $spec->setLine(
             'Other Titles', 'getOtherTitles', null, ['recordLink' => 'title']

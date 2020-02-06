@@ -211,7 +211,7 @@ JS;
     <?=$this->piwik()?>
     <?php if ($this->recaptcha()->active()): ?>
       <?php // TueFind: disable external JS dependency for ReCaptcha ?>
-      <?/*print $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')*/?>
+      <?php /*print $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')*/?>
     <?php endif; ?>
   </body>
 </html>

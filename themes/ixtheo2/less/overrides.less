@@ -48,3 +48,41 @@
     color: @body-bg;
   }
 }
+
+/*.navbar-brand:hover {
+    color: @body-bg !important;
+}*/
+
+.navbar {
+  margin-bottom: initial;
+}
+
+.ix-news-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 400px;
+}
+
+.ix-news-right-row {
+    &:extend(.tf-row);
+    height: 49%;
+}
+
+.ix-news-right-column {
+    &:extend(.tf-col-xs-6);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ix-footer {
+    width: 100%;
+    padding: initial;
+}
+
+.ix-footer-section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
