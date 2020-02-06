@@ -23,18 +23,3 @@ merge_array_settings = true
 
 ; These settings below add the Versions tab (note that merge_array_settings
 ; above needs to be true, otherwise all tabs must be listed):
-
-[VuFind\RecordDriver\DefaultRecord]
-tabs[Versions] = Versions
-
-[VuFind\RecordDriver\SolrMarc]
-tabs[Versions] = Versions
-
-[Finna\RecordDriver\SolrForward]
-tabs[Versions] = Versions
-
-[Finna\RecordDriver\SolrLido]
-tabs[Versions] = Versions
-
-[Finna\RecordDriver\SolrQdc]
-tabs[Versions] = Versions

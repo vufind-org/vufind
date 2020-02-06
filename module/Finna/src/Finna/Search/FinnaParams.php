@@ -60,7 +60,7 @@ trait FinnaParams
 
         // Hack to display WorkKeys search nicer
         $str = preg_quote($showField('WorkKeys'));
-        $result = preg_replace("/$str:\"[^\"]+\"/", $str, $result);
+        $result = preg_replace("/$str:\"[^\)]+\"/", $str, $result);
 
         return $result;
     }

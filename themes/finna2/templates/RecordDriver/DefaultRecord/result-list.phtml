@@ -149,7 +149,7 @@
           <?php endif; ?>
         <?php endif; ?>
 
-        <?php if ($this->driver->tryMethod('getWorkKeys') && $this->record($this->driver)->hasTab('Versions')): ?>
+        <?php if ($this->driver->tryMethod('getWorkKeys') && !empty($this->config()->get('config')->Record->display_versions)): ?>
           <div class="record-versions ajax"></div>
         <?php endif; ?>
 

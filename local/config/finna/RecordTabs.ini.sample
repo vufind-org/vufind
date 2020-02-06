@@ -39,6 +39,7 @@ tabs[Excerpt] = Excerpt
 tabs[Preview] = preview
 tabs[HierarchyTree] = HierarchyTree
 tabs[Map] = Map
+tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null
 
@@ -52,6 +53,7 @@ tabs[Excerpt] = Excerpt
 tabs[Preview] = preview
 tabs[HierarchyTree] = HierarchyTree
 tabs[Map] = Map
+tabs[Versions] = Versions
 tabs[Details] = StaffViewMARC
 defaultTab = null
 
@@ -82,6 +84,7 @@ tabs[Distribution] = Distribution
 tabs[InspectionDetails] = InspectionDetails
 tabs[DescriptionFWD] = DescriptionFWD
 tabs[ItemDescription] = ItemDescription
+tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null
 
@@ -89,6 +92,7 @@ defaultTab = null
 tabs[UserComments] = UserComments
 tabs[Reviews] = Reviews
 tabs[Map] = Map
+tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null
 
@@ -96,5 +100,6 @@ defaultTab = null
 tabs[UserComments] = UserComments
 tabs[Reviews] = Reviews
 tabs[Map] = Map
+tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null

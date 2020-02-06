@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,14 +45,34 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     use TranslatorAwareTrait;
 
     /**
+     * Main configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config Configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Is this tab active?
      *
      * @return bool
      */
     public function isActive()
     {
-        return $this->getRecordDriver()
-            ->tryMethod('getOtherVersionCount', [], 0) > 0;
+        if (!empty($this->config->Record->display_versions)) {
+            return $this->getRecordDriver()
+                ->tryMethod('getOtherVersionCount', [], 0) > 0;
+        }
+        return false;
     }
 
     /**

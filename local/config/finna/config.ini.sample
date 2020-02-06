@@ -1320,6 +1320,9 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ; the actual filename.
 ;poster_sources[kavi] = "http://www.elonet.fi/tenho/media/{filename}"
 
+; Whether the "versions" link and record tab are enabled. Default is false.
+;display_versions = true
+
 ; The following two sections control the Alphabetic Browse module.
 [AlphaBrowse]
 ; This setting controls how many headings are displayed on each page of results:

@@ -699,7 +699,7 @@ $config = [
                     'Finna\RecordTab\Music' => 'Finna\RecordTab\Factory::getMusic',
                     'Finna\RecordTab\PressReviews' => 'Finna\RecordTab\Factory::getPressReviews',
                     'Finna\RecordTab\UserComments' => 'Finna\RecordTab\Factory::getUserComments',
-                    'Finna\RecordTab\Versions' => 'Zend\ServiceManager\Factory\InvokableFactory',
+                    'Finna\RecordTab\Versions' => 'Finna\RecordTab\VersionsFactory',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
