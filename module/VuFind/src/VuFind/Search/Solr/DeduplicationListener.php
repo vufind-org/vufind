@@ -134,10 +134,10 @@ class DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if (($context == 'search' || $context == 'similar') && $params) {
+            if ($params && in_array($context, ['search', 'similar', 'getids'])) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled) {
+                if ($this->enabled && 'getids' !== $context) {
                     $fq = '-merged_child_boolean:true';
                     if ($context == 'similar' && $id = $event->getParam('id')) {
                         $fq .= ' AND -local_ids_str_mv:"'
