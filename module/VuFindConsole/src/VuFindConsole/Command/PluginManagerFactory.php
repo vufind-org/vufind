@@ -1,10 +1,10 @@
 <?php
 /**
- * Console runner factory.
+ * VuFind Plugin Manager factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindConsole;
+namespace VuFindConsole\Command;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Console runner factory.
+ * VuFind Plugin Manager factory.
  *
  * @category VuFind
- * @package  Console
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ConsoleRunnerFactory implements FactoryInterface
+class PluginManagerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,9 +61,7 @@ class ConsoleRunnerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            array_keys($container->get('config')['console']['aliases']),
-            $container->get(\VuFindConsole\Command\PluginManager::class)
-        );
+        $config = $container->get('Config');
+        return new $requestedName($container, $config['console']);
     }
 }

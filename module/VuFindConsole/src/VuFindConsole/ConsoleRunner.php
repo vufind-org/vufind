@@ -42,29 +42,29 @@ use Symfony\Component\Console\Application;
 class ConsoleRunner
 {
     /**
-     * Top-level framework configuration.
+     * List of commands
      *
      * @var array
      */
-    protected $config;
+    protected $commands;
 
     /**
-     * Service manager
+     * Plugin manager (to retrieve commands)
      *
      * @var ServiceManager
      */
-    protected $serviceManager;
+    protected $pluginManager;
 
     /**
      * Constructor
      *
-     * @param array          $config Top-level framework configuration
-     * @param ServiceManager $sm     Service manager (container)
+     * @param array          $config List of commands
+     * @param ServiceManager $pm     Plugin manager (to retrieve commands)
      */
-    public function __construct(array $config, ServiceManager $sm)
+    public function __construct(array $commands, ServiceManager $pm)
     {
-        $this->config = $config;
-        $this->serviceManager = $sm;
+        $this->commands = $commands;
+        $this->pluginManager = $pm;
     }
 
     /**
@@ -75,6 +75,9 @@ class ConsoleRunner
     public function run()
     {
         $consoleApp = new Application();
+        foreach ($this->commands as $command) {
+            $consoleApp->add($this->pluginManager->get($command));
+        }
         return $consoleApp->run();
     }
 }
