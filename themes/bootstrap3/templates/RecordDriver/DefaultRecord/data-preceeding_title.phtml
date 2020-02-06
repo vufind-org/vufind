@@ -1,4 +1,4 @@
 <?php if (!empty($data)): ?>
-  list($ppn, $preceeding_title) = explode(':', $data, 2);
+  <?php list($ppn, $preceeding_title) = explode(':', $data, 2); ?>
   <a href="<?=$this->recordLink()->getUrl($ppn)?>"><?=htmlspecialchars($preceeding_title)?></a>
 <?php endif; ?>
