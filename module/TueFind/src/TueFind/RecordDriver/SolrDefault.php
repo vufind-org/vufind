@@ -216,7 +216,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     {
         $retval = [];
         if (!empty($this->fields['preceding_ppn_and_title']))
-	    $retval = explode(':', $this->fields['following_ppn_and_title'], 2);
+            $retval = explode(':', $this->fields['preceding_ppn_and_title'], 2);
         return $retval;
     }
 
