@@ -156,9 +156,12 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
-    public function getFollowingTitlePPN()
+    public function getFollowingPPNAndTitle()
     {
-        return $this->fields['following_title_and_ppn'] ?? '';
+        $retval = [];
+        if (!empty($this->fields['following_ppn_and_title']))
+	    $retval = explode(':', $data, 2);
+        return $retval;
     }
     
     /**
@@ -209,9 +212,12 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['pages'] : '';
     }
 
-    public function getPrecedingTitlePPN()
+    public function getPrecedingPPNAndTitle()
     {
-        return $this->fields['preceding_title_and_ppn'] ?? '';
+        $retval = [];
+        if (!empty($this->fields['preceding_ppn_and_title']))
+	    $retval = explode(':', $data, 2);
+        return $retval;
     }
 
     public function getRecordDriverByPPN($ppn) {
