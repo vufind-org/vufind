@@ -66,9 +66,6 @@ class Factory
      */
     public static function getMap(ServiceManager $sm)
     {
-        $config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
-        $enabled = isset($config->Content->recordMap);
-
         // get Map Tab config options
         $mapTabConfig = $sm->get(\VuFind\GeoFeatures\MapTabConfig::class);
         $mapTabOptions = $mapTabConfig->getMapTabOptions();
