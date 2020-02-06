@@ -43,6 +43,7 @@ $config = [
     'service_manager' => [
         'factories' => [
             'VuFind\Sitemap\Generator' => 'VuFind\Sitemap\GeneratorFactory',
+            'VuFindConsole\ConsoleRunner' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
         ],
     ],
