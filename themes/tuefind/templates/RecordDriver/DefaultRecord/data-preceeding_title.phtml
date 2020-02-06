@@ -1,0 +1,4 @@
+<?php if (!empty($data)): ?>
+  <?php list($ppn, $following_title) = explode(':', $data, 2); ?>
+  <a href="<?=$this->recordLink()->getUrl($ppn)?>"><?=htmlspecialchars($following_title)?></a>
+<?php endif; ?>
