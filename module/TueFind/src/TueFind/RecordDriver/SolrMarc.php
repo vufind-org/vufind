@@ -77,7 +77,7 @@ class SolrMarc extends SolrDefault
      * @return string
      */
     public function getCleanDOIs() {
-        $clean_dois = []   
+        $clean_dois = [];
         $_024_fields = $this->getMarcRecord()->getFields('024');
         if (!$_024_fields)
             return;
@@ -88,7 +88,7 @@ class SolrMarc extends SolrDefault
                     $clean_dois[] = $subfields[0];
             }
         }
-        return $clean_dois
+        return $clean_dois;
     }
 
     /**
