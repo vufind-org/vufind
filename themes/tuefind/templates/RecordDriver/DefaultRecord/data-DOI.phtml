@@ -1,1 +1,3 @@
-<a target="_blank" href="//doi.org/<?=$data?>"><i class="fa fa-external-link"/> <?=$data?></a>
+<?php foreach($data as $doi):?>
+    <a target="_blank" href="//doi.org/<?=$doi?>"><i class="fa fa-external-link"></i> <?=$doi?></a><br />
+<?php endforeach;?>

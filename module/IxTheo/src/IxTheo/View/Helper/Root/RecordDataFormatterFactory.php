@@ -117,7 +117,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec->setLine('ISBN', 'getCleanISBN');
         $spec->setLine('ISSN', 'getISSNs');
         // DOI with Hyperlink (TueFind-specific)
-        $this->addDOI($spec);
+        $this->addDOIs($spec);
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
         $spec->setLine('Finding Aid', 'getFindingAids');

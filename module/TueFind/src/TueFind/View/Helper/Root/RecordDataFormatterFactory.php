@@ -27,9 +27,9 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
         );
     }
 
-    protected function addDOI(&$spec) {
+    protected function addDOIs(&$spec) {
         $spec->setTemplateLine(
-            'DOI', 'getCleanDOI', 'data-DOI.phtml'
+            'DOI', 'getCleanDOIs', 'data-DOI.phtml'
         );
     }
 
