@@ -78,10 +78,10 @@ class Folio extends AbstractAPI implements
      */
     protected $sessionCache;
 
-     /**
+    /**
      * config.ini values
      *
-     * @var 
+     * @var
      */
     protected $allConfigs;
 
@@ -93,7 +93,7 @@ class Folio extends AbstractAPI implements
      * SessionContainer object
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory,$allConfigs
+        $sessionFactory, $allConfigs
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -247,7 +247,6 @@ class Folio extends AbstractAPI implements
         } else {
             $this->checkTenantToken();
         }
-       
     }
 
     /**
@@ -473,7 +472,7 @@ class Folio extends AbstractAPI implements
             throw new ILSException("User not found");
         }
         $profile = $json->users[0];
-        
+
         //if authenication method is ILS, call FOLIO authn
         if ($this->allConfigs['Authentication']['method'] == "ILS") {
             $credentials = [
@@ -494,12 +493,10 @@ class Folio extends AbstractAPI implements
                     'User logged in. User: ' . $username . '.' .
                    ' Token: ' . substr($token, 0, 30) . '...'
                 );
-                
             } catch (Exception $e) {
                 return null;
             }
         }
-
 
         return [
             'id' => $profile->id,
@@ -510,7 +507,6 @@ class Folio extends AbstractAPI implements
             'lastname' => $profile->personal->lastName ?? null,
             'email' => $profile->personal->email ?? null,
         ];
-
     }
 
     /**
@@ -675,9 +671,8 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-
         $query = [
-            'query' => 'requesterId == "' . $patron['id'] . '"' 
+            'query' => 'requesterId == "' . $patron['id'] . '"'
         ];
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
@@ -1000,7 +995,7 @@ class Folio extends AbstractAPI implements
      * (optional - defaults to Solr). Introduced in VuFind 2.4.
      *
      */
-       public function getMyFines($patron)
+    public function getMyFines($patron)
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
         $response = $this->makeRequest("GET", '/accounts', $query);
