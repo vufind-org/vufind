@@ -91,7 +91,8 @@ trait CacheTrait
         $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
             // Return value if still valid:
-            if (time() - $item['time'] < $this->cacheLifetime) {
+            $lifetime = $item['lifetime'] ?? $this->cacheLifetime;
+            if (time() - $item['time'] <= $lifetime) {
                 return $item['entry'];
             }
             // Clear expired item from cache:
@@ -105,12 +106,13 @@ trait CacheTrait
      * Data is cached for up to $this->cacheLifetime seconds so that it would be
      * faster to process e.g. requests where multiple calls to the backend are made.
      *
-     * @param string $key   Cache entry key
-     * @param mixed  $entry Entry to be cached
+     * @param string $key      Cache entry key
+     * @param mixed  $entry    Entry to be cached
+     * @param int    $lifetime Optional lifetime for the entry in seconds
      *
      * @return void
      */
-    protected function putCachedData($key, $entry)
+    protected function putCachedData($key, $entry, $lifetime = null)
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
@@ -118,7 +120,8 @@ trait CacheTrait
         }
         $item = [
             'time' => time(),
-            'entry' => $entry
+            'lifetime' => $lifetime,
+            'entry' => $entry,
         ];
         $this->cache->setItem($this->getCacheKey($key), $item);
     }
