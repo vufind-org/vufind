@@ -83,8 +83,7 @@ class ConsoleRunner
         $command = ($_SERVER['argv'][1] ?? '') . '/' . ($_SERVER['argv'][2] ?? '');
         if ($this->pluginManager->has($command)) {
             $_SERVER['argc']--;
-            $_SERVER['argv'][1] .= '/' . $_SERVER['argv'][2];
-            array_splice($_SERVER['argv'], 1, 1, []);
+            array_splice($_SERVER['argv'], 1, 2, [$command]);
             return [$command];
         }
 
