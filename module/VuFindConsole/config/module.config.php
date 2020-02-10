@@ -43,7 +43,4 @@ $config = [
     ],
 ];
 
-$routeGenerator = new \VuFindConsole\Route\RouteGenerator();
-$routeGenerator->addRoutes($config, $routes);
-
 return $config;
