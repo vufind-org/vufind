@@ -96,10 +96,10 @@ class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
                 continue;
             }
             $data = json_decode($json, true);
-            if (!empty($data['best_oa_location']['url_for_pdf'])) {
+            if (!empty($data['best_oa_location']['url'])) {
                 $response[$doi][] = [
-                    'link' => $data['best_oa_location']['url_for_pdf'],
-                    'label' => $this->translate('PDF Full Text'),
+                    'link' => $data['best_oa_location']['url'],
+                    'label' => $this->translate('Full Text'),
                 ];
             }
         }
