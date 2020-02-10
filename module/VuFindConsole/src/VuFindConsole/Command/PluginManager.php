@@ -90,7 +90,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Util\LintUserCommand::class => InvokableFactory::class,
+        Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 
     /**
