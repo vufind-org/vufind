@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MLT feature interface definition.
+ * Optional backend feature: Get identifiers of records.
  *
  * PHP version 7
  *
@@ -23,31 +23,37 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Feature;
 
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 
 /**
- * MLT feature interface definition.
+ * Optional backend feature: Get identifiers of records.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-interface SimilarInterface
+interface GetIdsInterface
 {
     /**
-     * Return similar records.
+     * Perform a search and return record collection of only record identifiers.
      *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
+     * @param AbstractQuery $query  Search query
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function similar($id, ParamBag $params = null);
+    public function getIds(AbstractQuery $query, $offset, $limit,
+        ParamBag $params = null
+    );
 }

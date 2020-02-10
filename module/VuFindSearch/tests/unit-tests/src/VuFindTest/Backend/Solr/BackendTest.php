@@ -33,6 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
@@ -237,6 +238,44 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $back->setIdentifier('foo');
         $this->assertEquals('foo', $back->getIdentifier());
+    }
+
+    /**
+     * Test getting multiple IDs.
+     *
+     * @return void
+     */
+    public function testGetIds()
+    {
+        $paramBagChecker = function (ParamBag $params) {
+            $expected = [
+                'wt' => ['json'],
+                'json.nl' => ['arrarr'],
+                'fl' => ['id'],
+                'rows' => [10],
+                'start' => [0],
+                'q' => ['foo'],
+            ];
+            $paramsArr = $params->getArrayCopy();
+            foreach ($expected as $key => $vals) {
+                if (count(array_diff($vals, $paramsArr[$key] ?? [])) !== 0) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        // TODO: currently this test is concerned with ensuring that the right
+        // parameters are sent to Solr; it may be worth adding a more realistic
+        // return value to better test processing of retrieved records.
+        $conn = $this->getConnectorMock(['search']);
+        $conn->expects($this->once())->method('search')
+            ->with($this->callback($paramBagChecker))
+            ->will($this->returnValue(json_encode([])));
+        $back = new Backend($conn);
+        $query = new Query('foo');
+        $result = $back->getIds($query, 0, 10);
+        $this->assertTrue($result instanceof RecordCollection);
+        $this->assertEquals(0, count($result));
     }
 
     /**

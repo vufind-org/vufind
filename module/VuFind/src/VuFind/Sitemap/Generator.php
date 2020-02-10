@@ -29,7 +29,10 @@ namespace VuFind\Sitemap;
 
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
 use Zend\Config\Config;
 use Zend\Console\Console;
 
@@ -50,6 +53,13 @@ class Generator
      * @var BackendManager
      */
     protected $backendManager;
+
+    /**
+     * Search service.
+     *
+     * @var SearchService
+     */
+    protected $searchService;
 
     /**
      * Base URL for site
@@ -131,14 +141,17 @@ class Generator
     /**
      * Constructor
      *
-     * @param BackendManager $bm      Search backend
+     * @param BackendManager $bm      Search backend manaver
+     * @param SearchService  $ss      Search manager
      * @param string         $baseUrl VuFind base URL
      * @param Config         $config  Sitemap configuration settings
      */
-    public function __construct(BackendManager $bm, $baseUrl, Config $config)
-    {
+    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
+        Config $config
+    ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
+        $this->searchService = $ss;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
@@ -255,7 +268,7 @@ class Generator
         // Display total elapsed time in verbose mode:
         if ($this->verbose) {
             Console::writeLine(
-                'Elapsed time (in seconds): ' . ($this->getTime() - $startTime)
+                'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
             );
         }
     }
@@ -284,6 +297,8 @@ class Generator
         // Starting offset varies depending on retrieval mode:
         $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
         $recordCount = 0;
+
+        $this->setupBackend($backend);
 
         while (true) {
             // Get IDs and break out of the loop if we've run out:
@@ -318,6 +333,49 @@ class Generator
             $currentPage++;
         }
         return $currentPage;
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackend(Backend $backend)
+    {
+        $method = $this->retrievalMode == 'terms'
+            ? 'setupBackendUsingTerms' : 'setupBackendUsingCursorMark';
+        return $this->$method($backend);
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingTerms(Backend $backend)
+    {
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingCursorMark(Backend $backend)
+    {
+        // Set up the record factory. We use a very simple factory since performance
+        // is important and we only need the identifier.
+        $recordFactory = function ($data) {
+            return new \VuFindSearch\Response\SimpleRecord($data);
+        };
+        $collectionFactory = new RecordCollectionFactory($recordFactory);
+        $backend->setRecordCollectionFactory($collectionFactory);
     }
 
     /**
@@ -375,7 +433,6 @@ class Generator
         $params = new ParamBag(
             [
                 'q' => '*:*',
-                'fl' => $key,
                 'rows' => $this->countPerPage,
                 'start' => 0, // Always 0 when using a cursorMark
                 'wt' => 'json',
@@ -386,13 +443,17 @@ class Generator
                 'cursorMark' => $cursorMark
             ]
         );
-        $raw = $connector->search($params);
-        $result = json_decode($raw);
-        $ids = [];
-        $nextOffset = $result->nextCursorMark;
-        foreach ($result->response->docs ?? [] as $doc) {
-            $ids[] = $doc->$key;
+        $results = $this->searchService->getIds(
+            $backend->getIdentifier(),
+            new Query('*:*'),
+            0,
+            $this->countPerPage,
+            $params
+        );
+        foreach ($results->getRecords() as $doc) {
+            $ids[] = $doc->get($key);
         }
+        $nextOffset = $results->getCursorMark();
         return compact('ids', 'nextOffset');
     }
 

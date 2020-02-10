@@ -163,13 +163,16 @@ function getUrlRoot(url) {
   var urlroot = null;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
-  if (VuFind.path === '') {
+  var slashSlash = urlWithoutFragment.indexOf('//');
+  if (VuFind.path === '' || VuFind.path === '/') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
-    urlroot = '/' + chunks[3] + '/' + chunks[4];
+    // We need to extract different offsets if this is a full vs. relative URL:
+    urlroot = slashSlash > -1
+      ? ('/' + chunks[3] + '/' + chunks[4])
+      : ('/' + chunks[1] + '/' + chunks[2]);
   } else {
     // standard case -- VuFind has its own path under site:
-    var slashSlash = urlWithoutFragment.indexOf('//');
     var pathInUrl = slashSlash > -1
       ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
       : urlWithoutFragment.indexOf(VuFind.path);
@@ -434,7 +437,7 @@ $(document).ready(function commonDocReady() {
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
         window.print();
       } else {
-        console.log("Printing disabled due to test mode.");
+        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
       }
     });
     // Make an ajax call to ensure that ajaxStop is triggered

@@ -30,6 +30,7 @@ namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -101,8 +102,8 @@ class Service
     public function search($backend, Query\AbstractQuery $query, $offset = 0,
         $limit = 20, ParamBag $params = null
     ) {
-        $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
+        $params  = $params ?: new ParamBag();
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
         $args['backend_instance'] = $backend;
@@ -110,6 +111,42 @@ class Service
         $this->triggerPre($backend, $args);
         try {
             $response = $backend->search($query, $offset, $limit, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
+     * Perform a search that returns record IDs and return a wrapped response.
+     *
+     * @param string              $backend Search backend identifier
+     * @param Query\AbstractQuery $query   Search query
+     * @param int                 $offset  Search offset
+     * @param int                 $limit   Search limit
+     * @param ParamBag            $params  Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function getIds($backend, Query\AbstractQuery $query, $offset = 0,
+        $limit = 20, ParamBag $params = null
+    ) {
+        $context = strtolower(__FUNCTION__);
+
+        $params  = $params ?: new ParamBag();
+        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
+        $backend  = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
+
+        $this->triggerPre($backend, $args);
+        try {
+            if ($backend instanceof GetIdsInterface) {
+                $response = $backend->getIds($query, $offset, $limit, $params);
+            } else {
+                $response = $backend->search($query, $offset, $limit, $params);
+            }
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;

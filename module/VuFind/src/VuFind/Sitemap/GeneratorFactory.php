@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Folio ILS driver.
+ * Sitemap Generator factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\ILS\Driver;
+namespace VuFind\Sitemap;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Folio ILS driver.
+ * Sitemap Generator factory.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FolioFactory extends DriverWithDateConverterFactory
+class GeneratorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -60,11 +61,13 @@ class FolioFactory extends DriverWithDateConverterFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Zend\Session\SessionManager::class);
-            return new \Zend\Session\Container("Folio_$namespace", $manager);
-        };
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        return parent::__invoke($container, $requestedName, [$sessionFactory,$config]);
+        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configLoader->get('config');
+        return new $requestedName(
+            $container->get(\VuFind\Search\BackendManager::class),
+            $container->get(\VuFindSearch\Service::class),
+            $config->Site->url,
+            $configLoader->get('sitemap')
+        );
     }
 }

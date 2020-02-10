@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Code module for the core of the VuFind application
+ * Unit tests for SimpleRecord class.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,67 +21,58 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Module
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFind;
+namespace VuFindTest\Response;
 
-use Zend\Mvc\MvcEvent;
+use PHPUnit\Framework\TestCase;
+use VuFindSearch\Response\SimpleRecord;
 
 /**
- * Code module for the core of the VuFind application
+ * Unit tests for SimpleRecord class.
  *
  * @category VuFind
- * @package  Module
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Module
+class SimpleRecordTest extends TestCase
 {
     /**
-     * Get module configuration
-     *
-     * @return array
-     */
-    public function getConfig()
-    {
-        return include __DIR__ . '/config/module.config.php';
-    }
-
-    /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Zend\Loader\ClassMapAutoloader' => [
-                'classes' => [
-                    'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php'
-                ]
-            ],
-            'Zend\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Bootstrap the module
-     *
-     * @param MvcEvent $e Event
+     * Test for expected default source ID.
      *
      * @return void
      */
-    public function onBootstrap(MvcEvent $e)
+    public function testDefaultSourceId()
     {
-        $bootstrapper = new Bootstrapper($e);
-        $bootstrapper->bootstrap();
+        $record = new SimpleRecord([]);
+        $this->assertEquals(DEFAULT_SEARCH_BACKEND, $record->getSourceIdentifier());
+    }
+
+    /**
+     * Test that we can change default source ID.
+     *
+     * @return void
+     */
+    public function testSetSourceId()
+    {
+        $record = new SimpleRecord([]);
+        $record->setSourceIdentifier('foo');
+        $this->assertEquals('foo', $record->getSourceIdentifier());
+    }
+
+    /**
+     * Test retrieving data fields.
+     *
+     * @return void
+     */
+    public function testGetFields()
+    {
+        $record = new SimpleRecord(['foo' => 'bar']);
+        $this->assertEquals('bar', $record->get('foo'));
     }
 }

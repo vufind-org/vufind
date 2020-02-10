@@ -31,9 +31,9 @@ namespace VuFind\Search\Factory;
 use Interop\Container\ContainerInterface;
 
 use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
 
 use Zend\ServiceManager\Factory\FactoryInterface;
 
