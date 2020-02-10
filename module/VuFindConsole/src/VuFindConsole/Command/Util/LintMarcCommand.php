@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class LintMarcCommand extends Command
 {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'util lintuser';
+    protected static $defaultName = 'util/lint_marc';
 
     protected function configure()
     {

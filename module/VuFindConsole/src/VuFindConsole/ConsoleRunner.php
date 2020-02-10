@@ -66,14 +66,46 @@ class ConsoleRunner
     }
 
     /**
+     * Get the command or list of commands to run.
+     *
+     * @return array
+     */
+    protected function getCommandList()
+    {
+        // Does the first argument match a command alias? If so, load only that:
+        if ($this->pluginManager->has($_SERVER['argv'][1])) {
+            return [$_SERVER['argv'][1]];
+        }
+
+        // Do the first two arguments match a command alias? If so, manipulate
+        // the arguments (converting legacy format to Symfony format) and return
+        // the resulting command:
+        $command = ($_SERVER['argv'][1] ?? '') . '/' . ($_SERVER['argv'][2] ?? '');
+        if ($this->pluginManager->has($command)) {
+            $_SERVER['argc']--;
+            $_SERVER['argv'][1] .= '/' . $_SERVER['argv'][2];
+            array_splice($_SERVER['argv'], 1, 1, []);
+            return [$command];
+        }
+
+        // Default behavior: return all values
+        return $this->pluginManager->getCommandList();
+    }
+
+    /**
      * Run the console action
      *
      * @return mixed
      */
     public function run()
     {
+        // Get command list before initializing Application, since we may need
+        // to manipulate $_SERVER for backward compatibility.
+        $commands = $this->getCommandList();
+
+        // Launch Symfony:
         $consoleApp = new Application();
-        foreach ($this->pluginManager->getCommandList() as $command) {
+        foreach ($commands as $command) {
             $consoleApp->add($this->pluginManager->get($command));
         }
         return $consoleApp->run();

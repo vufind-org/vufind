@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'compile/theme' => 'compile theme [--force] [<source>] [<target>]',
         'generate/dynamicroute' => 'generate dynamicroute [<name>] [<newController>] [<newAction>] [<module>]',
@@ -76,7 +77,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
         'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
         'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
-        'util/lint_marc' => 'util lint_marc [<filename>]',
         'util/optimize' => 'util optimize [<core>]',
         'util/sitemap' => 'util sitemap [--help|-h] [--verbose] [--baseurl=s] [--basesitemapurl=s]',
         'util/suppressed' => 'util suppressed [--help|-h] [--authorities] [--outfile=s]',
