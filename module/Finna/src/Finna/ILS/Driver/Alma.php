@@ -1719,6 +1719,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holding_id' => $holdingId,
+                    'details_ajax' => $holdingId,
                     'holdtype' => 'auto',
                     'addLink' => $addLink,
                     // For Alma title-level hold requests
@@ -1760,17 +1761,12 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 if ('true' === (string)$record->suppress_from_publishing) {
                     continue;
                 }
-                $itemsFound = false;
-                foreach ($results['holdings'] as &$holding) {
+                foreach ($results['holdings'] as $holding) {
                     if ($holding['holding_id'] === (string)$record->holding_id) {
-                        $holding['details_ajax'] = $holding['holding_id'];
-                        $itemsFound = true;
+                        continue 2;
                     }
                 }
-                unset($holding);
-                if (!$itemsFound) {
-                    $noItemsHoldings[] = $record;
-                }
+                $noItemsHoldings[] = $record;
             }
 
             foreach ($noItemsHoldings as $record) {
