@@ -74,12 +74,21 @@ class ArchivesSpace extends AbstractBase
      */
     public function isActive()
     {
-        return $this->connector->isActive($this->getRecordDriver()->tryMethod('getFindingAids'));
+        return $this->connector->isActive(
+            $this->getRecordDriver()->tryMethod('getFindingAidUrl')[0] ?? null
+        );
     }
 
+    /**
+     * Retrieve summary information from ArchivesSpace.
+     *
+     * @return object
+     */
     public function getSummaryInfo()
     {
-        return $this->connector->getSummaryInfo($this->getRecordDriver()->tryMethod('getFindingAidUrl')[0]);
+        return $this->connector->getSummaryInfo(
+            $this->getRecordDriver()->tryMethod('getFindingAidUrl')[0] ?? null
+        );
     }
 
     public function makeRequestFor($url)
