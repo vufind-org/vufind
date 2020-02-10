@@ -73,7 +73,7 @@ class ConsoleRunner
     protected function getCommandList()
     {
         // Does the first argument match a command alias? If so, load only that:
-        if ($this->pluginManager->has($_SERVER['argv'][1])) {
+        if ($this->pluginManager->has($_SERVER['argv'][1] ?? '')) {
             return [$_SERVER['argv'][1]];
         }
 
