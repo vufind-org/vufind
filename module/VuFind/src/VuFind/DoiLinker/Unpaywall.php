@@ -99,7 +99,7 @@ class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
             if (!empty($data['best_oa_location']['url'])) {
                 $response[$doi][] = [
                     'link' => $data['best_oa_location']['url'],
-                    'label' => $this->translate('Full Text'),
+                    'label' => $this->translate('online_resources'),
                 ];
             }
         }
