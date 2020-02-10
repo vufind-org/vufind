@@ -173,7 +173,7 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         ];
         foreach ($data as $input => $output) {
             $this->assertEquals(
-                $output, VuFind::extractYear($input);
+                $output, VuFind::extractYear($input)
             );
         }
     }
