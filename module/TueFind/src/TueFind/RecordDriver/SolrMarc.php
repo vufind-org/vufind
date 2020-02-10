@@ -76,17 +76,19 @@ class SolrMarc extends SolrDefault
      *
      * @return string
      */
-    public function getCleanDOI() {
-        $results = $this->getMarcRecord()->getFields('024');
-        if (!$results)
+    public function getCleanDOIs() {
+        $clean_dois = []   
+        $_024_fields = $this->getMarcRecord()->getFields('024');
+        if (!$_024_fields)
             return;
-        foreach ($results as $result) {
-            $subfields = $this->getSubfieldArray($result, ['a', '2'], false);
+        foreach ($_024_fields as $_024_field) {
+            $subfields = $this->getSubfieldArray($_024_field, ['a', '2'], false);
             if ($subfields && count($subfields) == 2) {
                 if (strtolower($subfields[1]) == 'doi')
-                    return $subfields[0];
+                    $clean_dois[] = $subfields[0];
             }
         }
+        return $clean_dois
     }
 
     /**
