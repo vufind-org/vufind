@@ -62,7 +62,6 @@ class ConsoleRunnerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            array_keys($container->get('config')['console']['aliases']),
             $container->get(\VuFindConsole\Command\PluginManager::class)
         );
     }

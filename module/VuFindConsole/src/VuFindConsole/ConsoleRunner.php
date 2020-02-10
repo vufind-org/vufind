@@ -58,12 +58,10 @@ class ConsoleRunner
     /**
      * Constructor
      *
-     * @param array          $config List of commands
-     * @param ServiceManager $pm     Plugin manager (to retrieve commands)
+     * @param ServiceManager $pm Plugin manager (to retrieve commands)
      */
-    public function __construct(array $commands, ServiceManager $pm)
+    public function __construct(ServiceManager $pm)
     {
-        $this->commands = $commands;
         $this->pluginManager = $pm;
     }
 
@@ -75,7 +73,7 @@ class ConsoleRunner
     public function run()
     {
         $consoleApp = new Application();
-        foreach ($this->commands as $command) {
+        foreach ($this->pluginManager->getCommandList() as $command) {
             $consoleApp->add($this->pluginManager->get($command));
         }
         return $consoleApp->run();
