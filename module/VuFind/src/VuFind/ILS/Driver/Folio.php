@@ -491,7 +491,7 @@ class Folio extends AbstractAPI implements
                     ->getFieldValue();
                 $this->debug(
                     'User logged in. User: ' . $username . '.' .
-                   ' Token: ' . substr($token, 0, 30) . '...'
+                    ' Token: ' . substr($token, 0, 30) . '...'
                 );
             } catch (Exception $e) {
                 return null;
