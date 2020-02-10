@@ -108,6 +108,17 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the type of FOLIO ID used to match up with VuFind's bib IDs.
+     *
+     * @return string
+     */
+    protected function getBibIdType()
+    {
+        // Normalize string to tolerate minor variations in config file:
+        return trim(strtolower($this->config['IDs']['type'] ?? 'instance'));
+    }
+
+    /**
      * Function that obscures and logs debug data
      *
      * @param string             $method      Request method GET/POST/PUT/DELETE/etc
@@ -231,18 +242,23 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get local bib id from inventory by following parents up the tree
+     * Given some kind of identifier (instance, holding or item), retrieve the
+     * associated instance object from FOLIO.
      *
-     * @param string $instanceId Instance-level id (lowest level)
-     * @param string $holdingId  Holding-level id (looked up from instance if null)
-     * @param string $itemId     Item-level id (looked up from holding if null)
+     * @param string $instanceId Instance ID, if available.
+     * @param string $holdingId  Holding ID, if available.
+     * @param string $itemId     Item ID, if available.
      *
-     * @return string Local bib id retrieved from Folio identifiers
+     * @return object
      */
-    protected function getBibId($instanceId, $holdingId = null, $itemId = null)
-    {
+    protected function getInstanceById($instanceId = null, $holdingId = null,
+        $itemId = null
+    ) {
         if ($instanceId == null) {
             if ($holdingId == null) {
+                if ($itemId == null) {
+                    throw new \Exception('No IDs provided to getInstanceObject.');
+                }
                 $response = $this->makeRequest(
                     'GET',
                     '/item-storage/items/' . $itemId
@@ -259,24 +275,63 @@ class Folio extends AbstractAPI implements
         $response = $this->makeRequest(
             'GET', '/inventory/instances/' . $instanceId
         );
-        $instance = json_decode($response->getBody());
-        return $instance->identifiers[0]->value;
+        return json_decode($response->getBody());
     }
 
     /**
-     * Get raw object of item from inventory/items/
+     * Given an instance object or identifer, or a holding or item identifier,
+     * determine an appropriate value to use as VuFind's bibliographic ID.
+     *
+     * @param string $instanceOrInstanceId Instance object or ID (will be looked up
+     * using holding or item ID if not provided)
+     * @param string $holdingId            Holding-level id (optional)
+     * @param string $itemId               Item-level id (optional)
+     *
+     * @return string Appropriate bib id retrieved from FOLIO identifiers
+     */
+    protected function getBibId($instanceOrInstanceId = null, $holdingId = null,
+        $itemId = null
+    ) {
+        $idType = $this->getBibIdType();
+
+        // Special case: if we're using instance IDs and we already have one,
+        // short-circuit the lookup process:
+        if ($idType === 'instance' && is_string($instanceOrInstanceId)) {
+            return $instanceOrInstanceId;
+        }
+
+        $instance = is_object($instanceOrInstanceId)
+            ? $instanceOrInstanceId
+            : $this->getInstanceById($instanceOrInstanceId, $holdingId, $itemId);
+
+        switch ($idType) {
+        case 'hrid':
+            return $instance->hrid;
+        case 'instance':
+            return $instance->id;
+        }
+
+        throw new \Exception('Unsupported ID type: ' . $idType);
+    }
+
+    /**
+     * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
      * @param string $bibId Bib-level id
      *
      * @throw
      * @return array
      */
-    protected function getInstance($bibId)
+    protected function getInstanceByBibId($bibId)
     {
+        // Figure out which ID type to use in the CQL query; if the user configured
+        // instance IDs, use the 'id' field, otherwise pass the setting through
+        // directly:
+        $idType = $this->getBibIdType();
+        $idField = $idType === 'instance' ? 'id' : $idType;
+
         $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = [
-            'query' => '(id="' . $escaped . '" or identifiers="' . $escaped . '")'
-        ];
+        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
@@ -341,8 +396,8 @@ class Folio extends AbstractAPI implements
      */
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
-        $instance = $this->getInstance($bibId);
-        $query = ['query' => '(instanceId="' . $instance->id . '")'];
+        $instance = $this->getInstanceByBibId($bibId);
+        $query = ['query' => '(instanceId=="' . $instance->id . '")'];
         $holdingResponse = $this->makeRequest(
             'GET',
             '/holdings-storage/holdings',
@@ -362,14 +417,14 @@ class Folio extends AbstractAPI implements
                 $locationName = $location->name;
             }
 
-            $query = ['query' => '(holdingsRecordId="' . $holding->id . '")'];
+            $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $bibId,
-                    'item_id' => $instance->id,
+                    'item_id' => $itemBody->items[$j]->id,
                     'holding_id' => $holding->id,
                     'number' => count($items),
                     'barcode' => $item->barcode ?? '',
@@ -528,7 +583,7 @@ class Folio extends AbstractAPI implements
                 'dueTime' => date_format($date, "g:i:s a"),
                 // TODO: Due Status
                 // 'dueStatus' => $trans['itemId'],
-                'id' => $trans->item->instanceId,
+                'id' => $this->getBibId($trans->item->instanceId),
                 'item_id' => $trans->item->id,
                 'barcode' => $trans->item->barcode,
                 'title' => $trans->item->title,
