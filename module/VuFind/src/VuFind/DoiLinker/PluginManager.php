@@ -45,6 +45,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'browzine' => BrowZine::class,
+        'unpaywall' => Unpaywall::class,
     ];
 
     /**
@@ -54,6 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         BrowZine::class => BrowZineFactory::class,
+        Unpaywall::class => UnpaywallFactory::class,
     ];
 
     /**

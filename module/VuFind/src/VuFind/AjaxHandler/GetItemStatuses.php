@@ -330,7 +330,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     protected function getItemStatusGroup($record, $messages, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
-        $locations =  [];
+        $locations = [];
         $use_unknown_status = $available = false;
         foreach ($record as $info) {
             // Find an available copy
@@ -493,8 +493,9 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                         $record, $messages, $locationSetting, $callnumberSetting
                     );
                 }
-                // If a full status display has been requested, append the HTML:
-                if ($showFullStatus) {
+                // If a full status display has been requested and no errors were
+                // encountered, append the HTML:
+                if ($showFullStatus && empty($record[0]['error'])) {
                     $current['full_status'] = $this->renderer->render(
                         'ajax/status-full.phtml', [
                             'statusItems' => $record,

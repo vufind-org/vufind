@@ -1,6 +1,6 @@
 <?php
 /**
- * EBSCO EDS API Zend2 Framework implementation
+ * EBSCO EDS API Connector
  *
  * PHP version 7
  *
@@ -29,11 +29,11 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Zend\Http\Client\Adapter\Curl as CurlAdapter;
-use Zend\Http\Client as Zend2HttpClient;
+use Zend\Http\Client as HttpClient;
 use Zend\Log\LoggerAwareInterface;
 
 /**
- * EBSCO EDS API Zend2 Framework implementation
+ * EBSCO EDS API Connector
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -41,14 +41,14 @@ use Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Zend2 extends Base implements LoggerAwareInterface
+class Connector extends Base implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * The HTTP Request object to execute EDS API transactions
      *
-     * @var Zend2HttpClient
+     * @var HttpClient
      */
     protected $client;
 
@@ -73,7 +73,7 @@ class Zend2 extends Base implements LoggerAwareInterface
      *
      * Sets up the EDS API Client
      *
-     * @param array           $settings Associative array of setting to use in
+     * @param array      $settings Associative array of setting to use in
      * conjunction with the EDS API
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
@@ -90,12 +90,12 @@ class Zend2 extends Base implements LoggerAwareInterface
      *      <li>isguest - is the user a guest. This needs to be present if there
      * is no session token present</li>
      *    </ul>
-     * @param Zend2HttpClient $client   Zend2 HTTP client object (optional)
+     * @param HttpClient $client   HTTP client object (optional)
      */
     public function __construct($settings = [], $client = null)
     {
         parent::__construct($settings);
-        $this->client = is_object($client) ? $client : new Zend2HttpClient();
+        $this->client = is_object($client) ? $client : new HttpClient();
         $this->client->setOptions(['timeout' => 120]);
         $adapter = new CurlAdapter();
         $adapter->setOptions(

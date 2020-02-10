@@ -194,7 +194,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             'numeric' => ['[1 TO 9]'],
         ];
         $results = $this->getMockResults();
-        $results->getParams()->expects($this->any())->method('getFilters')
+        $results->getParams()->expects($this->any())->method('getRawFilters')
             ->will($this->returnValue($filters));
         $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
         $expected = [

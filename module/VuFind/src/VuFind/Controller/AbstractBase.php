@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -128,6 +129,20 @@ class AbstractBase extends AbstractActionController
     public function setAccessPermission($ap)
     {
         $this->accessPermission = empty($ap) ? false : $ap;
+    }
+
+    /**
+     * Get request object
+     *
+     * @return HttpRequest
+     */
+    public function getRequest()
+    {
+        if (!$this->request) {
+            $this->request = new HttpRequest();
+        }
+
+        return $this->request;
     }
 
     /**

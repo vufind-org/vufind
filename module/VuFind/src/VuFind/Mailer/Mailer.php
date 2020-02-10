@@ -105,6 +105,21 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
+     * Reset the connection in the transport. Implements a fluent interface.
+     *
+     * @return Mailer
+     */
+    public function resetConnection()
+    {
+        // If the transport has a disconnect method, call it:
+        $transport = $this->getTransport();
+        if (is_callable([$transport, 'disconnect'])) {
+            $transport->disconnect();
+        }
+        return $this;
+    }
+
+    /**
      * Set the mail transport object.
      *
      * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport

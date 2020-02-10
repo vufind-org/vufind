@@ -66,8 +66,10 @@ class EmailAuthenticatorFactory
             $container->get(\VuFind\Validator\Csrf::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $container->get('Request'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\Zend\Http\PhpEnvironment\RemoteAddress::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)
+                ->get(\VuFind\Db\Table\AuthHash::class)
         );
     }
 }
