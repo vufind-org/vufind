@@ -158,4 +158,23 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
             $expected, simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
         );
     }
+
+    /**
+     * Test the extractYear helper.
+     *
+     * @return void
+     */
+    public function testExtractYear()
+    {
+        $data = [
+            'October 9, 1990 (approx)' => '1990',
+            'the year 0' => '0',
+            'there is no year to be found here' => '',
+        ];
+        foreach ($data as $input => $output) {
+            $this->assertEquals(
+                $output, VuFind::extractYear($input);
+            );
+        }
+    }
 }

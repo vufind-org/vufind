@@ -450,4 +450,28 @@ class VuFind
         }
         return $dom;
     }
+
+    /**
+     * Try to find a four-digit year in a string.
+     *
+     * @param string $input String to search.
+     *
+     * @return string
+     */
+    public static function extractYear($input)
+    {
+        // Best match -- a four-digit string starting with 1 or 2
+        preg_match('/[12]\d{3}/', $input, $matches);
+        if (isset($matches[0])) {
+            return $matches[0];
+        }
+        // Next best match -- any string of four or fewer digits.
+        for ($length = 4; $length > 0; $length--) {
+            preg_match('/\d{' . $length . '}/', $input, $matches);
+            if (isset($matches[0])) {
+                return $matches[0];
+            }
+        }
+        return '';
+    }
 }

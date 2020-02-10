@@ -48,7 +48,7 @@
                     <xsl:for-each select="//dc:language">
                         <xsl:if test="string-length() > 0">
                             <field name="language">
-                                <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
+                                <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
                             </field>
                         </xsl:if>
                     </xsl:for-each>
@@ -132,10 +132,10 @@
                 <!-- PUBLISHDATE -->
                 <xsl:if test="//dc:date">
                     <field name="publishDate">
-                        <xsl:value-of select="substring(//dc:date, 1, 4)"/>
+                        <xsl:value-of select="php:function('VuFind::extractYear', string(//dc:date))"/>
                     </field>
                     <field name="publishDateSort">
-                        <xsl:value-of select="substring(//dc:date, 1, 4)"/>
+                        <xsl:value-of select="php:function('VuFind::extractYear', string(//dc:date))"/>
                     </field>
                 </xsl:if>
 
