@@ -71,6 +71,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                                                  $query_terms : '(' . $query_terms . ')';
                 $params->set('explainOther', 'fulltext:' . $query_terms_normalized .
                                              ' OR fulltext_unstemmed:' . $query_terms_normalized .
+                                             ' OR fulltext_toc:' . $query_terms_normalized .
+                                             ' OR fulltext_abstract:' . $query_terms_normalized .
                                              $this->getSynonymsPartialExpressionOrEmpty($this->getHandler($query), $query_terms_normalized));
             }
         }

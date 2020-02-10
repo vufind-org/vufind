@@ -389,31 +389,47 @@ FulltextOnly:
   DismaxFields:
     - fulltext_unstemmed^750
     - fulltext^750
+    - fulltext_toc^750
+    - fulltext_abstract^750
   QueryFields:
     fulltext_unstemmed:
       - [onephrase, 500]
       - [and, 200]
       - [or, 100]
     fulltext:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_toc:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
 
+
 FulltextWithSynonyms:
   DismaxFields:
     - fulltext_unstemmed^750
-    - fulltext^750
     - fulltext_synonyms^750
+    - fulltext_toc_synonyms^750
+    - fulltext_abstract_synonyms^750
   QueryFields:
     fulltext_unstemmed:
       - [onephrase, 500]
       - [and, 200]
       - [or, 100]
-    fulltext:
+    fulltext_synonyms:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
-    fulltext_synonyms:
+    fulltext_toc_synonyms:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_synonyms:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
@@ -422,18 +438,21 @@ FulltextWithSynonyms:
 FulltextAllSynonyms:
   DismaxFields:
     - fulltext_unstemmed^750
-    - fulltext^750
     - fulltext_synonyms_all^750
   QueryFields:
     fulltext_unstemmed:
       - [onephrase, 500]
       - [and, 200]
       - [or, 100]
-    fulltext:
+    fulltext_synonyms_all:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
-    fulltext_synonyms_all:
+    fulltext_toc_synonyms_all:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+    fulltext_abstract_synonyms_all:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
