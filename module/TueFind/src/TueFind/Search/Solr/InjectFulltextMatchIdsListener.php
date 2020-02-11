@@ -55,6 +55,24 @@ class InjectFulltextMatchIdsListener
     }
 
 
+    protected function getFulltextFilterFromFulltextTypeFacet($backend, $params) {
+        $filter_queries = $params->get('fq');
+        if ($filter_queries == null)
+            return "";
+        $selected_fulltext_types = [];
+        foreach ($filter_queries as $filter_query) {
+            if (!preg_match('/{!tag=fulltext_types_filter}fulltext_types:\((.*)\)/', $filter_query))
+                continue;
+            $fulltext_type_facet_expression = $backend->getQueryBuilder()->getLuceneHelper()->extractSearchTerms($filter_query);
+            $fulltext_types_enabled = array_filter(explode(' ', preg_replace('/(AND|OR)/', '', $fulltext_type_facet_expression)));
+            $selected_fulltext_types = array_map(function ($term) { return preg_replace('/"/', '', $term);}, $fulltext_types_enabled);
+        }
+        return $selected_fulltext_types;
+   }
+
+
+
+
     /**
      * Set up highlighting parameters.
      *
@@ -82,6 +100,9 @@ class InjectFulltextMatchIdsListener
                     // The search for explainOther is unknown, so it will only be generated in the
                     // QueryBuilder
                     $this->backend->getQueryBuilder()->setCreateExplainQuery(true);
+                    // Pass filter from chosen fulltext_type facet
+                    $selected_fulltext_types = $this->getFulltextFilterFromFulltextTypeFacet($backend, $params);
+                    $this->backend->getQueryBuilder()->setSelectedFulltextTypes($selected_fulltext_types);
                 }
             }
         }
