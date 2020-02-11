@@ -97,12 +97,12 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
                 'response' => []
             ],
         ];
-    
+
         $config = [
             'unpaywall_email' => 'foo@myuniversity.edu',
         ];
         $unpaywall = new Unpaywall(new \Zend\Config\Config($config));
-                   
+
         foreach ($testData as $data) {
             $response = file_get_contents($data['filename']);
             $responseObj = HttpResponse::fromString($response);
@@ -113,7 +113,6 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(
                 $data['response'],
                 $unpaywall->getLinks(['10.7553/66-4-1434'])
-    
             );
         }
     }
