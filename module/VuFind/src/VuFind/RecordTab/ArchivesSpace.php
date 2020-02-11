@@ -75,7 +75,7 @@ class ArchivesSpace extends AbstractBase
     public function isActive()
     {
         return $this->connector->isActive(
-            $this->getRecordDriver()->tryMethod('getFindingAidUrl')[0] ?? null
+            $this->getRecordDriver()->tryMethod('getFindingAidUrl') ?? []
         );
     }
 
@@ -87,7 +87,7 @@ class ArchivesSpace extends AbstractBase
     public function getSummaryInfo()
     {
         return $this->connector->getSummaryInfo(
-            $this->getRecordDriver()->tryMethod('getFindingAidUrl')[0] ?? null
+            $this->getRecordDriver()->tryMethod('getFindingAidUrl') ?? []
         );
     }
 

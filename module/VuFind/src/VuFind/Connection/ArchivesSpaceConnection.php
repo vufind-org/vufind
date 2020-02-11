@@ -80,9 +80,11 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
     /**
      * Is this tab active?
      *
+     * @param array $findingAid Array of finding aid URLs
+     *
      * @return bool
      */
-    public function isActive($findingAid)
+    public function isActive(array $findingAid)
     {
         //is the ArchivesSpace Connector enabled in config file?
         if (!$this->config['enabled']) {
@@ -99,25 +101,33 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
     /**
      * API call requesting summary information about the finding aid
      *
+     * @param array $faUrls Array of finding aid URLs
+     *
      * @return httpResponse body
      */
-    public function getSummaryInfo($faUrl)
+    public function getSummaryInfo(array $faUrls)
     {
-        //THE URL IN THE RECORD (555 FIELD) IS THE PUBLIC
-        //URL FOR THIS FINDING AID.
-        //EG: http://mylibrary.edu/repositories/7/resources/215
-        //THIS CODE GRABS THE END OF IT (/repositories/7/resources/215)
-        //& COMBINES IT WITH
-        //THE BASE URL FOR THE API - TO DETERMINE THE INITIAL API
-        //CALL TO RETREIVE THE FINDING AID SUMMARY
-        //BETTER WAY TO DO THIS?
-        $host = $this->config['host'];
-        $arr = explode($host, $faUrl);
-        $resourceurl = $arr[1];
-        $baseurl = $this->config['baseapiurl'];
-        $url = $baseurl . $resourceurl;
-        $resource = $this->callAPI($url);
-        return $resource;
+        // Try the URLs in turn, and use the first one that matches:
+        foreach ($faUrls as $faUrl) {
+            //THE URL IN THE RECORD (555 FIELD) IS THE PUBLIC
+            //URL FOR THIS FINDING AID.
+            //EG: http://mylibrary.edu/repositories/7/resources/215
+            //THIS CODE GRABS THE END OF IT (/repositories/7/resources/215)
+            //& COMBINES IT WITH
+            //THE BASE URL FOR THE API - TO DETERMINE THE INITIAL API
+            //CALL TO RETREIVE THE FINDING AID SUMMARY
+            //BETTER WAY TO DO THIS?
+            $host = $this->config['host'];
+            $arr = explode($host, $faUrl);
+            if (isset($arr[1])) {
+                $resourceurl = $arr[1];
+                $baseurl = $this->config['baseapiurl'];
+                $url = $baseurl . $resourceurl;
+                $resource = $this->callAPI($url);
+                return $resource;
+            }
+        }
+        return null;
     }
 
     /**

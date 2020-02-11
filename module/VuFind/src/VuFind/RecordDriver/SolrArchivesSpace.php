@@ -46,6 +46,10 @@ class SolrArchivesSpace extends SolrDefault
      */
     public function getFindingAidUrl()
     {
-        return $this->getURLs();
+        $urls = $this->getURLs();
+        $filter = function ($url) {
+            return $url['url'];
+        };
+        return array_map($filter, $urls);
     }
 }
