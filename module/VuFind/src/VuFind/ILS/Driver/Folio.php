@@ -467,33 +467,33 @@ class Folio extends AbstractAPI implements
         }
         $profile = $json->users[0];
         $credentials = [
-                'userId' => $profile->id,
-                'username' => $username,
-                'password' => $password,
-            ];
+            'userId' => $profile->id,
+            'username' => $username,
+            'password' => $password,
+        ];
         // Get token
         try {
             $response = $this->makeRequest(
-                    'POST',
-                    '/authn/login',
-                    json_encode($credentials)
-                );
+                'POST',
+                '/authn/login',
+                json_encode($credentials)
+            );
             // Replace admin with user as tenant
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                    ->getFieldValue();
+                ->getFieldValue();
             $this->debug(
-                    'User logged in. User: ' . $username . '.' .
+                'User logged in. User: ' . $username . '.' .
                 ' Token: ' . substr($this->token, 0, 30) . '...'
-                );
+            );
             return [
-            'id' => $profile->id,
-            'username' => $username,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'firstname' => $profile->personal->firstName ?? null,
-            'lastname' => $profile->personal->lastName ?? null,
-            'email' => $profile->personal->email ?? null,
-        ];
+                'id' => $profile->id,
+                'username' => $username,
+                'cat_username' => $username,
+                'cat_password' => $password,
+                'firstname' => $profile->personal->firstName ?? null,
+                'lastname' => $profile->personal->lastName ?? null,
+                'email' => $profile->personal->email ?? null,
+            ];
         } catch (Exception $e) {
             return null;
         }
