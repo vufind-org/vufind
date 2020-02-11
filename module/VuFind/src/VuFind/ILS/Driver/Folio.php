@@ -143,7 +143,9 @@ class Folio extends AbstractAPI implements
         // truncate headers for token obscuring
         $logHeaders = $req_headers->toArray();
         if (isset($logHeaders['X-Okapi-Token'])) {
-            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+            $logHeaders['X-Okapi-Token'] = substr(
+                $logHeaders['X-Okapi-Token'], 0, 30
+            ) . '...';
         }
 
         $this->debug(
@@ -988,7 +990,27 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        return [];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
+        $response = $this->makeRequest("GET", '/accounts', $query);
+        $json = json_decode($response->getBody());
+        if (count($json->accounts) == 0) {
+            return [];
+        }
+        $fines = [];
+        foreach ($json->accounts as $fine) {
+            $date = date_create($fine->metadata->createdDate);
+            $title = (isset($fine->title) ? $fine->title : null);
+            $fines[] = [
+                'id' => $fine->id,
+                'amount' => $fine->amount * 100,
+                'balance' => $fine->remaining * 100,
+                'status' => $fine->paymentStatus->name,
+                'type' => $fine->feeFineType,
+                'title' => $title,
+                'createdate' => date_format($date, "j M Y")
+            ];
+        }
+        return $fines;
     }
 
     /**
