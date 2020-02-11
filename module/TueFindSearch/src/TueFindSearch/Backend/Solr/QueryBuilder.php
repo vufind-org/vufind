@@ -121,15 +121,15 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                                              $query_terms : '(' . $query_terms . ')';
               $explain_query = "";
               if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextType))
-                  $explain_query =  empty($explain_query) ? '' : ' OR' .
+                  $explain_query =  (empty($explain_query) ? '' : ' OR ') .
                                     'fulltext:' . $query_terms_normalized .
                                     ' OR fulltext_unstemmed:' . $query_terms_normalized;
               if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_TOC, $this->selectedFulltextType))
-                  $explain_query .= empty($explain_query) ? '' : ' OR' .
+                  $explain_query .= (empty($explain_query) ? '' : ' OR ') .
                                     'fulltext_toc:' . $query_terms_normalized .
                                     ' OR fulltext_toc_unstemmed:' . $query_terms_normalized;
               if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_ABSTRACT, $this->selectedFulltextType))
-                  $explain_query .= empty($explain_query) ? '' : ' OR' .
+                  $explain_query .= (empty($explain_query) ? '' : ' OR ') .
                                     'fulltext_abstract:' . $query_terms_normalized .
                                     ' OR fulltext_abstract_unstemmed:' . $query_terms_normalized;
               $explain_query .= $this->getSynonymsPartialExpressionOrEmpty($this->getHandler($query),
