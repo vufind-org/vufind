@@ -464,34 +464,34 @@ class Folio extends AbstractAPI implements
             throw new ILSException("User not found");
         }
         $profile = $json->users[0];
-        $credentials = [
-            'userId' => $profile->id,
-            'username' => $username,
-            'password' => $password,
-        ];
-        // Get token
-        try {
-            $response = $this->makeRequest(
-                'POST',
-                '/authn/login',
-                json_encode($credentials)
-            );
+            $credentials = [
+                'userId' => $profile->id,
+                'username' => $username,
+                'password' => $password,
+            ];
+            // Get token
+            try {
+                $response = $this->makeRequest(
+                    'POST',
+                    '/authn/login',
+                    json_encode($credentials)
+                );
             // Replace admin with user as tenant
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                ->getFieldValue();
-            $this->debug(
-                'User logged in. User: ' . $username . '.' .
+                    ->getFieldValue();
+                $this->debug(
+                    'User logged in. User: ' . $username . '.' .
                 ' Token: ' . substr($this->token, 0, 30) . '...'
-            );
-            return [
-                'id' => $profile->id,
-                'username' => $username,
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'firstname' => $profile->personal->firstName ?? null,
-                'lastname' => $profile->personal->lastName ?? null,
-                'email' => $profile->personal->email ?? null,
-            ];
+                );
+        return [
+            'id' => $profile->id,
+            'username' => $username,
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'firstname' => $profile->personal->firstName ?? null,
+            'lastname' => $profile->personal->lastName ?? null,
+            'email' => $profile->personal->email ?? null,
+        ];
         } catch (Exception $e) {
             return null;
         }
@@ -987,7 +987,27 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        return [];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
+        $response = $this->makeRequest("GET", '/accounts', $query);
+        $json = json_decode($response->getBody());
+        if (count($json->accounts) == 0) {
+            return [];
+        }
+        $fines = [];
+        foreach ($json->accounts as $fine) {
+            $date = date_create($fine->metadata->createdDate);
+            $title = (isset($fine->title) ? $fine->title : null);
+            $fines[] = [
+                'id' => $fine->id,
+                'amount' => $fine->amount * 100,
+                'balance' => $fine->remaining * 100,
+                'status' => $fine->paymentStatus->name,
+                'type' => $fine->feeFineType,
+                'title' => $title,
+                'createdate' => date_format($date, "j M Y")
+            ];
+        }
+        return $fines;
     }
 
     /**
