@@ -466,14 +466,14 @@ class Folio extends AbstractAPI implements
             throw new ILSException("User not found");
         }
         $profile = $json->users[0];
-            $credentials = [
+        $credentials = [
                 'userId' => $profile->id,
                 'username' => $username,
                 'password' => $password,
             ];
-            // Get token
-            try {
-                $response = $this->makeRequest(
+        // Get token
+        try {
+            $response = $this->makeRequest(
                     'POST',
                     '/authn/login',
                     json_encode($credentials)
@@ -481,11 +481,11 @@ class Folio extends AbstractAPI implements
             // Replace admin with user as tenant
             $this->token = $response->getHeaders()->get('X-Okapi-Token')
                     ->getFieldValue();
-                $this->debug(
+            $this->debug(
                     'User logged in. User: ' . $username . '.' .
                 ' Token: ' . substr($this->token, 0, 30) . '...'
                 );
-        return [
+            return [
             'id' => $profile->id,
             'username' => $username,
             'cat_username' => $username,
