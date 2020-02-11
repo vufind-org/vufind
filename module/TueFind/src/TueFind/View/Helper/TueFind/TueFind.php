@@ -226,7 +226,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         $instance = preg_replace('/\d+$/', "", $instance);
         switch ($instance) {
             case 'ixtheo':
-            case 'bibstudies';
+            case 'bibstudies':
+            case 'churchlaw':
                 return 'IxTheo';
             case 'relbib':
                 return 'RelBib';
@@ -246,6 +247,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         switch($instance) {
             case 'ixtheo':
             case 'bibstudies':
+            case 'churchlaw':
                 return 'FID Theologie';
             case 'relbib':
                 return 'FID Religionswissenschaften';
