@@ -142,7 +142,9 @@ class Folio extends AbstractAPI implements
         // truncate headers for token obscuring
         $logHeaders = $req_headers->toArray();
         if (isset($logHeaders['X-Okapi-Token'])) {
-            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+            $logHeaders['X-Okapi-Token'] = substr(
+                $logHeaders['X-Okapi-Token'], 0, 30
+            ) . '...';
         }
 
         $this->debug(
