@@ -134,11 +134,7 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
         $client = $this->client;
         $client->setUri($url);
         $client->setMethod('POST');
-        $client->setParameterPost(
-            [
-                'password' => $password
-                ]
-        );
+        $client->setParameterPost(compact('password'));
         $response = $client->send();
         if ($response->isSuccess()) {
             $phpNative = json_decode($response->getBody());
@@ -167,12 +163,13 @@ class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
             $this->initSession();
         }
         $client = $this->client;
+        $this->debug("Requesting URL: $url");
         $client->setUri($url);
         $client->setMethod('GET');
         $client->setHeaders(['X-ArchivesSpace-Session'=>$this->sessionkey]);
         $client->setOptions(['timeout' => 60]);
         $response = $this->client->send();
-        $responseBody =  json_decode($response->getBody());
+        $responseBody = json_decode($response->getBody());
         return $responseBody;
     }
 
