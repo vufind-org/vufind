@@ -62,32 +62,47 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
     protected $indexStart = 0;
 
     /**
+     * View model
+     *
+     * @var \Zend\View\Model\ViewModel
+     */
+    protected $viewModel;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Favorites\Results $results   Results
      * @param \VuFind\Db\Table\UserList        $listTable UserList table
+     * @param \Zend\View\Model\ViewModel       $viewModel View model
      */
     public function __construct(
         \VuFind\Search\Favorites\Results $results,
-        \VuFind\Db\Table\UserList $listTable
+        \VuFind\Db\Table\UserList $listTable,
+        \Zend\View\Model\ViewModel $viewModel
     ) {
         $this->results = $results;
         $this->listTable = $listTable;
+        $this->viewModel = $viewModel;
     }
 
     /**
      * Returns HTML for embedding a user list.
      *
-     * @param array $opt Options
+     * @param array $opt        Options
+     * @param int   $offset     Record offset
+     *                          (used when loading a more results via AJAX)
+     * @param int   $indexStart Result item offset in DOM
+     *                          (used when loading a more results via AJAX)
      *
      * @return string
      */
-    public function __invoke($opt)
+    public function __invoke($opt, $offset = null, $indexStart = null)
     {
         foreach (array_keys($opt) as $key) {
             if (!in_array(
                 $key, ['id', 'view', 'sort', 'limit', 'page',
-                       'title', 'description', 'date', 'headingLevel', 'allowCopy']
+                       'title', 'description', 'date', 'headingLevel',
+                       'allowCopy', 'showAllLink']
             )
             ) {
                 unset($opt[$key]);
@@ -108,24 +123,41 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
             return $this->error('Could not find list');
         }
 
+        $loadMore = $offset !== null;
+
         $opt['limit'] = $opt['limit'] ?? 100;
 
         $resultsCopy = clone $this->results;
         $params = $resultsCopy->getParams();
         $params->initFromRequest(new Parameters($opt));
+
+        $total = $resultsCopy->getResultTotal();
+        $view = $opt['view'] ?? 'list';
+        if (!$loadMore) {
+            $idStart = $this->indexStart;
+            $this->indexStart += $total;
+        } else {
+            // Load more results using given $indexStart and $offset
+            $idStart = $indexStart;
+            $resultsCopy->overrideStartRecord($offset);
+        }
+
         $resultsCopy->performAndProcessSearch();
         $list = $resultsCopy->getListObject();
-        $view = $opt['view'] ?? 'list';
-        $idStart = $this->indexStart;
-        $this->indexStart += $resultsCopy->getResultTotal();
-        return $this->getView()->render(
+
+        $html = $this->getView()->render(
             'Helpers/userlist.phtml',
             [
+                'id' => $id,
                 'results' => $resultsCopy,
                 'params' => $params,
                 'indexStart' => $idStart,
                 'view' => $view,
-                'id' => $id,
+                'total' => $total,
+                'showAllLink' =>
+                    ($opt['showAllLink'] ?? false)
+                    && $view === 'grid'
+                    && $opt['limit'] < $total,
                 'title' =>
                     (isset($opt['title']) && $opt['title'] === false)
                     ? null : $list->title,
@@ -138,6 +170,41 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
                 'headingLevel' => $opt['headingLevel'] ?? 2,
                 'allowCopy' => $opt['allowCopy'] ?? false
             ]
+        );
+
+        return $html;
+    }
+
+    /**
+     * Returns HTML for a set of user list result items.
+     *
+     * @param int $id         List id
+     * @param int $offset     Record offset
+     * @param int $startIndex Result item offset in DOM
+     *
+     * @return string
+     */
+    public function loadMore($id, $offset, $startIndex)
+    {
+        // These need to differ from Search/Results so that
+        // list notes are shown...
+        $this->viewModel->setVariable('templateDir', 'content');
+        $this->viewModel->setVariable('templateName', 'content');
+
+        $resultsCopy = clone $this->results;
+        $params = $resultsCopy->getParams();
+        $params->initFromRequest(new Parameters(['id' => $id]));
+
+        $resultsTotal = $resultsCopy->getResultTotal();
+        // Limit needs to be smaller than total amount
+        // so that record start index can be overridden
+        // in VuFind\Search\Results\Favorites
+        $limit = $resultsTotal - 1;
+
+        return $this->__invoke(
+            ['id' => $id, 'page' => 1, 'limit' => $limit, 'view' => 'grid'],
+            $offset,
+            $startIndex
         );
     }
 

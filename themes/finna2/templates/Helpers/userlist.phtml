@@ -1,4 +1,4 @@
-<div class="public-list-embed">
+<div class="public-list-embed<?= $this->showAllLink ? ' show-all' : ''?>">
   <div class="clearfix hidden-print">
     <div class="public-list-row">
       <?php if ($this->title): ?><h<?=$this->headingLevel?>><?= $this->title ?></h<?=$this->headingLevel?>><?php endif ?>
@@ -28,5 +28,29 @@
       'hideCartControls' => true
     ])
     ?>
+    <?php if ($this->showAllLink): ?>
+      <?php $limit = $this->params->getLimit(); ?>  
+      <div class="show-more">
+        <div><?= $this->translate(
+             'showing_results_of_html', [
+               '%%start%%' => 1,
+               '%%end%%' => $limit,
+               '%%total%%' => $this->localizedNumber($this->total)
+             ]
+        ); ?>
+        </div>
+        <button class="btn btn-outline-primary load-more" aria-label="<?= $this->transEsc('See all')?>" data-id="<?= $this->escapeHtmlAttr($this->id)?>" data-start-index="<?= $this->escapeHtmlAttr($this->indexStart + $limit)?>" data-offset="<?= $this->escapeHtmlAttr($limit + 1)?>"><?= $this->transEsc('See all'); ?></button>
+        <i class="fa fa-spinner fa-spin hide"></i>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
+<?php
+$this->headScript()->appendFile("finna-userlist-embed.js");
+$js = <<<JS
+$(document).ready(function(){
+  finna.userListEmbed.init();
+});
+JS;
+$this->headScript()->appendScript($js);
+?>

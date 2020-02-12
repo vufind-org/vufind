@@ -372,6 +372,8 @@ $config = [
                         'VuFind\AjaxHandler\GetSideFacetsFactory',
                     'Finna\AjaxHandler\GetSimilarRecords' =>
                         'Finna\AjaxHandler\GetSimilarRecordsFactory',
+                    'Finna\AjaxHandler\GetUserList' =>
+                        'Finna\AjaxHandler\GetUserListFactory',
                     'Finna\AjaxHandler\GetUserLists' =>
                         'Finna\AjaxHandler\GetUserListsFactory',
                     'Finna\AjaxHandler\ImportFavorites' =>
@@ -405,6 +407,7 @@ $config = [
                     'getRecordVersions' => 'Finna\AjaxHandler\GetRecordVersions',
                     'getSearchTabsRecommendations' => 'Finna\AjaxHandler\GetSearchTabsRecommendations',
                     'getSimilarRecords' => 'Finna\AjaxHandler\GetSimilarRecords',
+                    'getUserList' => 'Finna\AjaxHandler\GetUserList',
                     'importFavorites' => 'Finna\AjaxHandler\ImportFavorites',
                     'onlinePaymentNotify' => 'Finna\AjaxHandler\OnlinePaymentNotify',
                     'registerOnlinePayment' => 'Finna\AjaxHandler\RegisterOnlinePayment',
