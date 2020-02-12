@@ -74,7 +74,7 @@ class ThemeCompilerTest extends Unit\TestCase
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
         if (is_dir($this->targetPath)) {
-            return $this->markTestSkipped('compiled theme already exists.');
+            $this->markTestSkipped('compiled theme already exists.');
         }
     }
 

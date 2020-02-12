@@ -236,7 +236,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test that the plugin factory omits the Parent_Config section from the
      * merged configuration.
      *
-     * @void
+     * @return void
      */
     public function testParentConfigOmission()
     {
