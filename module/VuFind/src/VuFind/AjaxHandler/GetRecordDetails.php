@@ -47,7 +47,7 @@ use VuFind\RecordTab\TabManager;
 class GetRecordDetails extends AbstractBase
 {
     /**
-     * ZF configuration
+     * Framework configuration
      *
      * @var array
      */
@@ -84,7 +84,7 @@ class GetRecordDetails extends AbstractBase
     /**
      * Constructor
      *
-     * @param array             $config   ZF configuration
+     * @param array             $config   Framework configuration
      * @param Request           $request  HTTP request
      * @param Loader            $loader   Record loader
      * @param TabManager        $tm       Record Tab manager
