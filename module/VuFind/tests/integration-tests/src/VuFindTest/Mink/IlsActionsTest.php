@@ -566,7 +566,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2']);
     }

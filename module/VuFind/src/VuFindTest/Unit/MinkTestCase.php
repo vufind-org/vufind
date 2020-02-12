@@ -385,7 +385,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // No teardown actions at this time.
     }

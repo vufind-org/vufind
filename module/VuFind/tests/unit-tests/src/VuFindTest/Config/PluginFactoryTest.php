@@ -269,7 +269,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // Clean up test files:
         array_map('unlink', self::$filesToDelete);

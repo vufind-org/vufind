@@ -306,7 +306,7 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers('testuser');
     }

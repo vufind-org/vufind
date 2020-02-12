@@ -361,7 +361,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['1234', 'testuser']);
     }
