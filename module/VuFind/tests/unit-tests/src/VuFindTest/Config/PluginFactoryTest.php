@@ -120,7 +120,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->factory = new \VuFind\Config\PluginFactory();
     }

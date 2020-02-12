@@ -48,7 +48,7 @@ class RandomRecommendTest extends TestCase
      *
      * @return void
      */
-    public function setup()
+    public function setUp(): void
     {
         $this->recommend = new Random(
             $this->createMock(\VuFindSearch\Service::class),

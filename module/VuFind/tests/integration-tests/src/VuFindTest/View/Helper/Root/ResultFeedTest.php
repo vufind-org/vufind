@@ -45,7 +45,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {

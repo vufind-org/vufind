@@ -130,7 +130,7 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
     }
 

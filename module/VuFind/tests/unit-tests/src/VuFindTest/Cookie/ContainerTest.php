@@ -47,7 +47,7 @@ class ContainerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setup()
+    public function setUp(): void
     {
         $this->container = new Container('test');
     }

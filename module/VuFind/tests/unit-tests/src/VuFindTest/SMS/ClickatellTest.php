@@ -45,7 +45,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Without SOAP functionality, we can't proceed:
         if (!function_exists('iconv')) {

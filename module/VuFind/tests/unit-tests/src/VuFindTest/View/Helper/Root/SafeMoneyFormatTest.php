@@ -52,7 +52,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // store current default and set a value for consistency in testing
         $this->locale = setlocale(LC_MONETARY, 0);
