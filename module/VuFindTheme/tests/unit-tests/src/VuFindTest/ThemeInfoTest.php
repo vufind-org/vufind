@@ -50,7 +50,7 @@ class ThemeInfoTest extends Unit\TestCase
     /**
      * Constructor
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
     }
@@ -83,11 +83,12 @@ class ThemeInfoTest extends Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Cannot load theme: invalid
      */
     public function testInvalidTheme()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot load theme: invalid');
+
         $this->getThemeInfo()->setTheme('invalid');
     }
 

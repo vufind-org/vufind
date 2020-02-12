@@ -111,11 +111,12 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Shortlink could not be resolved: B
      */
     public function testResolutionOfBadInput()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Shortlink could not be resolved: B');
+
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(\Laminas\Db\ResultSet::class)
             ->setMethods(['count'])

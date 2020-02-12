@@ -158,11 +158,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Laminas\I18n\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Ini file 'en.ini' not found
      */
     public function testMissingPathStack()
     {
+        $this->expectException(\Laminas\I18n\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Ini file \'en.ini\' not found');
+
         $loader = new ExtendedIni();
         $loader->load('en', null);
     }

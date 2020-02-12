@@ -60,11 +60,12 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Unexpected value sent to translator!
      */
     public function testTranslateWithEmptyArray()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unexpected value sent to translator!');
+
         $translate = new Translate();
         $translate->__invoke([]);
     }
@@ -74,11 +75,12 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Unexpected value sent to translator!
      */
     public function testTranslateWithOverfilledArray()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unexpected value sent to translator!');
+
         $translate = new Translate();
         $translate->__invoke([1, 2, 3]);
     }

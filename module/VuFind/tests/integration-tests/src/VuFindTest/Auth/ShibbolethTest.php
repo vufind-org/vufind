@@ -46,11 +46,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -58,11 +58,12 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -138,10 +139,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -151,10 +153,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -164,10 +167,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingAttributeValue()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->userattribute_value_1);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
@@ -178,10 +182,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithoutUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->username);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
@@ -192,10 +197,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithoutLoginSetting()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->login);
         $this->getAuthObject($config)->getSessionInitiator('http://target');
@@ -231,7 +237,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers('testuser');
     }

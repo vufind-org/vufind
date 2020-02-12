@@ -54,7 +54,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         if (!class_exists('SerialsSolutions_Summon_Exception', true)) {
             $this->markTestIncomplete('Unable to autoload class: SerialsSolutions\Summon\Exception');
@@ -121,10 +121,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
@@ -173,10 +174,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())

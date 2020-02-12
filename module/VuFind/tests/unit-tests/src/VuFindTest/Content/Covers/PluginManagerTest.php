@@ -58,11 +58,12 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Laminas\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Content\AbstractCover
      */
     public function testExpectedInterface()
     {
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Content\\AbstractCover');
+
         $pm = new PluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );

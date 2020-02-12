@@ -130,7 +130,7 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
     }
 
@@ -140,11 +140,12 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      *
-     * @expectedException Exception
-     * @expectedExceptionMessage No institutionCode found.
      */
     public function testWithoutConfig()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('No institutionCode found.');
+
         new PrimoPermissionHandler(null);
     }
 

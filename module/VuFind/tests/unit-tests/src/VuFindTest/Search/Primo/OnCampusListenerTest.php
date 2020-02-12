@@ -59,7 +59,7 @@ class OnCampusListenerTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         $connector      = new Connector('http://example.org/', 'sample', 'none');
         $this->backend  = new Backend($connector);

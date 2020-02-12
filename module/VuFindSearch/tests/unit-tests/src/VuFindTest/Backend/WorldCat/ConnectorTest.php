@@ -73,10 +73,11 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\RequestErrorException
      */
     public function testGetHoldingsHttpFailure()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RequestErrorException::class);
+
         $client = $this->createMock(\Laminas\Http\Client::class);
         $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
