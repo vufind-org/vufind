@@ -195,6 +195,9 @@
   <div class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('mainbody')?>">
     <?=$this->flashmessages()?>
     <?php if ($recordTotal > 0): ?>
+      <?php if ($browse): ?>
+        <?=$this->render('search/browse-header.phtml', ['browse' => $browse])?>
+      <?php endif; ?>
       <div class="search-controls">
             <div class="control-container text-right hidden-print">
             <?php if (!$browse): ?>
@@ -204,7 +207,7 @@
             <?php endif; ?>
             </div>
               <?php $resultsStr = $this->translate(
-                  $browse ? 'browse_extended_' . ucfirst($browse) . '_html' : 'showing_results_of_html',
+                  'showing_results_of_html',
                   [
                       '%%start%%' => $this->results->getStartRecord(),
                       '%%end%%' => $this->results->getEndRecord(),

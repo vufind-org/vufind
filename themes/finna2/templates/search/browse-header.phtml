@@ -1,0 +1,9 @@
+<!-- START of: finna - search/browse-header.phtml -->
+<?php
+$title = $this->transEsc('browse_extended_' . ucfirst($this->browse));
+$descKey = 'browse_extended_description_' . ucfirst($this->browse) . '_html';
+$desc = $this->translationEmpty($descKey) ? '' : $this->translate($descKey);
+?>
+<h2 class="browse-title"><?= $title; ?></h2>
+<?php if ($desc): ?><div class="browse-desc"><?= $desc; ?></div><?php endif;?>
+<!-- END of: finna - search/browse-header.phtml -->
