@@ -100,9 +100,9 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->assertTrue(is_object($link));
         $href = $link->getAttribute('href');
-        $this->assertContains($type, $href);
+        $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertContains($link->getText(), $href);
+        $this->assertStringContainsString($link->getText(), $href);
     }
 
     protected function setupMultipleCallnumbers()
