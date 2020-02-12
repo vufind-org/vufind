@@ -50,7 +50,6 @@ abstract class ILSDriverTestCase extends TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
-     *
      */
     public function testMissingConfiguration()
     {
