@@ -677,7 +677,11 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 . '?finna_org_id=' . urlencode($params['id']);
         } else {
             $params['limit'] = 1000;
-            $url = $this->config->General->url . '/' . $action
+            $apiUrl = $this->config->General->url;
+            if (!strpos($apiUrl, 'v3')) {
+                $apiUrl .= 'v3';
+            }
+            $url = $apiUrl . '/' . $action
                 . '?' . http_build_query($params);
         }
         $cacheDir = $this->cacheManager->getCache('organisation-info')

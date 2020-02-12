@@ -2,7 +2,7 @@
 enabled = 0
 
 ; Kirjastohakemisto API URL
-url = "https://api.kirjastot.fi/v3"
+url = "https://api.kirjastot.fi/"
 
 ; Language settings.
 ; Language codes are given in Kirjastohakemisto format (fi, sv, en...)
