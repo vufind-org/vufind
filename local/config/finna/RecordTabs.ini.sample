@@ -78,13 +78,6 @@ defaultTab = null
 tabs[UserComments] = UserComments
 tabs[Reviews] = Reviews
 tabs[Map] = Map
-tabs[PressReview] = PressReview
-tabs[Music] = Music
-tabs[Distribution] = Distribution
-tabs[InspectionDetails] = InspectionDetails
-tabs[DescriptionFWD] = DescriptionFWD
-tabs[ItemDescription] = ItemDescription
-tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null
 

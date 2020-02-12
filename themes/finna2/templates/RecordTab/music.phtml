@@ -1,8 +1,0 @@
-<!-- START of: finna - RecordTab/music.phtml -->
-<?php
-$formatter = $this->recordDataFormatter();
-$fields = $formatter->getDefaults('core');
-$musicData = $formatter->getData($this->driver, [$fields['Music']]);
-?>
-<?= $musicData[0]['value'] ?>
-<!-- END of: finna - RecordTab/music.phtml -->

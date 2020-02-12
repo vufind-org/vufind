@@ -1,8 +1,0 @@
-<!-- START of: finna - RecordTab/inspectiondetails.phtml -->
-<?php
-$formatter = $this->recordDataFormatter();
-$fields = $formatter->getDefaults('core');
-$inspectionDetails = $formatter->getData($this->driver, [$fields['Inspection Details']]);
-?>
-<?= $inspectionDetails[0]['value'] ?>
-<!-- END of: finna - RecordTab/inspectiondetails.phtml -->

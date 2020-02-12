@@ -1,8 +1,0 @@
-<!-- START of: finna - RecordTab/itemdescription.phtml -->
-<?php
-$formatter = $this->recordDataFormatter();
-$fields = $formatter->getDefaults('core');
-$description = $formatter->getData($this->driver, [$fields['Item Description FWD']]);
-?>
-<?= $description[0]['value'] ?>
-<!-- END of: finna - RecordTab/itemdescription.phtml -->
