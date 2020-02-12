@@ -54,7 +54,7 @@ class LessCompilerTest extends Unit\TestCase
      */
     protected $compiler;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';

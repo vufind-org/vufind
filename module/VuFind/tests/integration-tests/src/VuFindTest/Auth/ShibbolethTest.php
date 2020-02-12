@@ -48,7 +48,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return mixed
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         return static::failIfUsersExist();
     }

@@ -50,7 +50,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         return static::failIfUsersExist();
     }

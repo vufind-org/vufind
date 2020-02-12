@@ -61,7 +61,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Create test files:
         $parentPath = Locator::getLocalConfigPath('top.yaml', null, true);

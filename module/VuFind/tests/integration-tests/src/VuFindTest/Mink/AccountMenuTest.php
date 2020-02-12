@@ -48,7 +48,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return mixed
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         return static::failIfUsersExist();
     }
