@@ -1,0 +1,415 @@
+.cc
+{
+ -moz-font-feature-settings: normal;
+ -moz-font-language-override: normal;
+ display: inline-block;
+ font-family: finnaicons;
+ font-size: inherit;
+ font-size-adjust: none;
+ font-stretch: normal;
+ font-style: normal;
+ font-variant: normal;
+ font-weight: normal;
+ line-height: 1;
+ text-rendering: auto;
+}
+
+/* makes the font 33% larger relative to the icon container */
+.cc-lg
+{
+ font-size: 2.33333333em;
+ line-height: 0.75em;
+ vertical-align: -15%;
+}
+.cc-2x
+{
+ font-size: 3em;
+}
+.cc-3x
+{
+ font-size: 4em;
+}
+.cc-4x
+{
+ font-size: 5em;
+}
+.cc-5x
+{
+ font-size: 6em;
+}
+.cc-fw
+{
+ width: 1.28571429em;
+ text-align: center;
+}
+.cc-ul
+{
+ padding-left: 0;
+ margin-left: 2.14285714em;
+ list-style-type: none;
+}
+.cc-ul > li
+{
+ position: relative;
+}
+.cc-li
+{
+ position: absolute;
+ left: -2.14285714em;
+ width: 2.14285714em;
+ top: 0.14285714em;
+ text-align: center;
+}
+.cc-li.cc-lg
+{
+ left: -1.85714286em;
+}
+.cc-border
+{
+ padding: .2em .25em .15em;
+ border: solid 0.08em #eeeeee;
+ border-radius: .1em;
+}
+.pull-right
+{
+ float: right;
+}
+.pull-left
+{
+ float: left;
+}
+.cc.pull-left
+{
+ margin-right: .3em;
+}
+.cc.pull-right
+{
+ margin-left: .3em;
+}
+.cc-spin
+{
+ -webkit-animation: cc-spin 2s infinite linear;
+ animation: cc-spin 2s infinite linear;
+}
+@-webkit-keyframes cc-spin
+{
+ 0%
+ {
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+ }
+ 100%
+ {
+  -webkit-transform: rotate(359deg);
+  transform: rotate(359deg);
+ }
+}
+@keyframes cc-spin
+{
+ 0%
+ {
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+ }
+ 100%
+ {
+  -webkit-transform: rotate(359deg);
+  transform: rotate(359deg);
+ }
+}
+.cc-rotate-90
+{
+ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+ -webkit-transform: rotate(90deg);
+ -ms-transform: rotate(90deg);
+ transform: rotate(90deg);
+}
+.cc-rotate-180
+{
+ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+ -webkit-transform: rotate(180deg);
+ -ms-transform: rotate(180deg);
+ transform: rotate(180deg);
+}
+.cc-rotate-270
+{
+ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+ -webkit-transform: rotate(270deg);
+ -ms-transform: rotate(270deg);
+ transform: rotate(270deg);
+}
+.cc-flip-horizontal
+{
+ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+ -webkit-transform: scale(-1, 1);
+ -ms-transform: scale(-1, 1);
+ transform: scale(-1, 1);
+}
+.cc-flip-vertical
+{
+ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+ -webkit-transform: scale(1, -1);
+ -ms-transform: scale(1, -1);
+ transform: scale(1, -1);
+}
+:root .cc-rotate-90,
+:root .cc-rotate-180,
+:root .cc-rotate-270,
+:root .cc-flip-horizontal,
+:root .cc-flip-vertical
+{
+ filter: none;
+}
+.cc-stack
+{
+ position: relative;
+ display: inline-block;
+ width: 2em;
+ height: 2em;
+ line-height: 2em;
+ vertical-align: middle;
+}
+.cc-stack-1x,
+.cc-stack-2x
+{
+ position: absolute;
+ left: 0;
+ width: 100%;
+ text-align: center;
+}
+.cc-stack-1x
+{
+ line-height: inherit;
+}
+.cc-stack-2x
+{
+ font-size: 2em;
+}
+.cc-inverse
+{
+ color: #ffffff;
+}
+
+/*===========================
+Round Icons
+===========================*/
+
+/*Share Alike*/
+.cc-sa:before 
+{
+ content: "\E800";
+}
+/*Attribution*/
+.cc-by:before 
+{
+ content: "\E862";
+}
+/* CC */
+.cc-cc:before 
+{
+ content: "\E905";
+}
+
+/* Non Derivative */
+.cc-nd:before 
+{
+ content: "\E864";
+}
+
+/* Non Commercial Euro */
+.cc-nc-eu:before 
+{
+ content: "\E865";
+}
+
+/* Non Commercial Japan Yen */
+.cc-nc-jp:before 
+{
+ content: "\E866";
+}
+
+/* Sampling */
+.cc-sampling:before
+{
+ content: "\E867";
+}
+
+/* Non Commercial */
+.cc-nc:before
+{
+ content: "\E868";
+}
+
+/* Zero */
+.cc-zero:before
+{
+ content: "\E869";
+}
+
+/* Public Domain */
+.cc-pd:before
+{
+ content: "\E86A";
+}
+
+/* Public Domain Alternative */
+.cc-pd-alt:before
+{
+ content: "\E86B";
+}
+
+.cc-remix:before
+{
+ content: "\E86C";
+}
+/* Share*/
+.cc-share:before
+{
+ content: "\E86D";
+}
+
+/*===========================
+Banners
+===========================*/
+
+/* Some Rights Reserved */
+.cc-srr:before
+{
+ content: "\E86E";
+}
+
+.cc-BY:before
+{
+ content: "\E86F";
+}
+
+/* Creative Commons Logo */
+.cc-logo:before
+{
+ content: "\E870";
+}
+
+.cc-by-nd:before
+{
+ content: "\E871";
+}
+
+.cc-by-nc-eu:before
+{
+ content: "\E872";
+}
+
+.cc-by-nc-nd-eu:before
+{
+ content: "\E873";
+}
+
+.cc-by-nc-sa-eu:before
+{
+ content: "\E874";
+}
+
+.cc-by-nc-jp:before
+{
+ content: "\E875";
+}
+
+.cc-by-nc-nd-jp:before
+{
+ content: "\E876";
+}
+
+.cc-by-nc-sa-jp:before
+{
+ content: "\E877";
+}
+
+.cc-by-nc-sa:before
+{
+ content: "\E878";
+}
+
+.cc-by-nc:before
+{
+ content: "\E879";
+}
+
+.cc-publicdomain:before
+{
+ content: "\E87A";
+}
+
+.cc-by-nc-nd:before
+{
+ content: "\E87B";
+}
+
+.cc-by-sa:before
+{
+ content: "\E87C";
+}
+
+/*===========================
+Small Banner
+===========================*/
+
+/* Zero with Public Domain */
+.cc-ZERO:before,
+.cc-zero-public:before
+{
+ content: "\E87D";
+}
+/* Some Rights Reserved */
+.cc-ONE:before,
+.cc-SRR:before
+{
+ content: "\E87E";
+}
+/* CC-BY */
+.cc-TWO:before,
+.cc-small-by:before
+{
+ content: "\E87F";
+}
+/* CC-BY-SA */
+.cc-THREE:before,
+.cc-BY-SA:before
+{
+ content: "\E880";
+}
+/* CC-BY-ND */
+.cc-FOUR:before,
+.cc-BY-SA-ND:before
+{
+ content: "\E881";
+}
+/* CC-BY-NC */
+.cc-FIVE:before,
+.cc-BY-NC:before
+{
+ content: "\E882";
+}
+/* CC-BY-NC-SA */
+.cc-SIX:before,
+.cc-BY-NC-SA:before
+{
+ content: "\E883";
+}
+/* CC-BY-NC-ND */
+.cc-SEVEN:before,
+.cc-BY-NC-ND:before
+{
+ content: "\E884";
+}
+/* CC-BLANK */
+.cc-EIGHT:before,
+.cc-blank:before
+{
+ content: "\E885";
+}
+/* Public Domain */
+.cc-NINE:before,
+.cc-public:before
+{
+ content: "\E886";
+}

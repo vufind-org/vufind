@@ -1,29 +1,45 @@
 /* This is the file for using Finna font icons, use font icons for all icons and update this file when new icons are available */
 
 @font-face {
-    font-family: 'icomoon';
-    src:url('../../../themes/finna2/css/fonts/icomoon.eot?adcatf');
-    src:url('../../../themes/finna2/css/fonts/icomoon.eot?#iefixadcatf') format('embedded-opentype'),
-    url('../../../themes/finna2/css/fonts/icomoon.woff?adcatf') format('woff'),
-    url('../../../themes/finna2/css/fonts/icomoon.ttf?adcatf') format('truetype'),
-    url('../../../themes/finna2/css/fonts/icomoon.svg?adcatf#icomoon') format('svg');
+    font-family: 'finnaicons';
+    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?76558954');
+    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?76558954#iefix') format('embedded-opentype'),
+    url('../../../themes/finna2/css/fonts/finnaicons.woff?76558954') format('woff'),
+    url('../../../themes/finna2/css/fonts/finnaicons.ttf?76558954') format('truetype'),
+    url('../../../themes/finna2/css/fonts/finnaicons.svg?76558954#finnaicons') format('svg');
     font-weight: normal;
     font-style: normal;
+
 }
 .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
-    font-family: icomoon;
+    font-family: finnaicons;
     font-size: inherit;
     font-weight: normal;
+    font-style: normal;
+
+    /* For safety - reset parent styles, that can break glyph codes*/
+    font-variant: normal;
+    text-transform: none;
+
     /* Better Font Rendering =========== */
     text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 [class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
     speak: none;
+    text-align: center;
+    display: inline-block;
+    text-decoration: inherit;
+
+    /* For safety - reset parent styles, that can break glyph codes*/
+    font-variant: normal;
     text-transform: none;
+
     /* Better Font Rendering =========== */
+    text-rendering: auto;
     -webkit-font-smoothing: antialiased;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+    -moz-osx-font-smoothing: grayscale;
 }
 a [class^="fa-"]:hover, a [class*=" fa-"]:hover {
     cursor: pointer;
@@ -217,394 +233,378 @@ table .iconlabel {
     content: "\F127";
 }
 .fa-handle-left:before, .slick-prev:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e60a";
 }
 .fa-handle-right:before, .slick-next:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e611";
 }
 .fa-handle-close:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e612";
 }
 .fa-handle-open:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e613";
 }
 .fa-handle-popup:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\ea7e";
 }
 .fa-datevis:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e614";
 }
 .fa-ratehalf:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e607";
 }
 .fa-lock:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e602";
 }
 .fa-info:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e601";
 }
 .fa-zoom-out:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e603";
 }
 .fa-zoom-in:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e606";
 }
 .fa-zoom-100:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e900";
 }
 .fa-info-database:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e608";
 }
 .fa-browse-database:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e609";
 }
 .fa-phone:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e618";
 }
 
 .fa-asterisk:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e619";
 }
 .fa-heart:before, .fa-plus:before, .fa-plus-square:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e60c";
 }
 .fa-ratenone:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e60f";
 }
 .fa-google-plus:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e50";
 }
 .fa-checked:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e49";
 }
 .fa-question:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e610";
 }
 .fa-new-window:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e046";
 }
 .fa-close-big:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e045";
 }
 .fa-close:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e044";
 }
 .fa-Holdings:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e043";
 }
 .fa-ok:before, .slick-dots li button:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e91b";
 }
 .fa-sign-in:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e047";
 }
 .fa-sign-out:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e042";
 }
 .fa-home:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e041";
 }
 .navbar .fa-home:before {
     color: @navbar-default-link-color;
 }
 .fa-public:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e040";
 }
 .fa-files:before, .fa-ComponentParts:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e03f";
 }
 .fa-Details:before {
     content: "\f121";
 }
 .fa-bookmark:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e03d";
 }
 .fa-qr-code:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e03c";
 }
-.fa-uniE03B:before {
-    font-family: icomoon;
-    content: "\e03b";
-}
 .fa-expand:before, .fa-magnify:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e03a";
 }
 .fa-condense:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e91c";
 }
 .fa-search-adv:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e600";
 }
 .fa-pinterest:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e038";
 }
 .fa-twitter:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e037";
 }
 .fa-facebook:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e036";
 }
 .fa-facebook-button:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e036";
 }
 .fa-bell:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e035";
 }
 .fa-list:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e034";
 }
 .fa-cart:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e033";
 }
 .fa-grid:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e032";
 }
 .fa-bars:before, .fa-condensed:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e031";
 }
 .fa-stop:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e030";
 }
 .fa-unhappy:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02f";
 }
 .fa-times {
-    font-family: icomoon;
+    font-family: finnaicons;
     margin-top:1px;
 }
 .fa-times:before, .fa-remove:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02e";
 }
 .fa-status-unknown:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e610";
     margin-left: 1px;
     visibility: hidden; // Don't actually display it
 }
 .fa-available:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02d";
 }
 .fa-sitemap:before, .fa-HierarchyTree:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02c";
 }
 .fa-ratefull:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02b";
 }
 .fa-CollectionList:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02a";
 }
 .fa-arrow-left:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e029";
 }
 .fa-arrow-alt-left:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e908";
 }
-.icon-uniE028:before {
-    font-family: icomoon;
-    content: "\e028";
-}
-.icon-uniE026:before {
-    font-family: icomoon;
-    content: "\e026";
-}
 .fa-arrow-right:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e025";
 }
 .fa-arrow-alt-right:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e909";
 }
-.icon-uniE024:before {
-    font-family: icomoon;
-    content: "\e024";
-}
 .fa-arrow-up:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e023";
 }
 .fa-arrow-down:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e027";
 }
 .fa-background-arrow-up:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e022";
 }
 .fa-list-alt:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e021";
 }
 .fa-send-feedback:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e020";
 }
 .fa-envelope:before, .iconlabel.format-1otherletter:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01f";
 }
 .fa-user-document:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01e";
 }
 .fa-UserComments:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01d";
 }
 .fa-Map:before {
-    font-family: icomoon;
+    font-family: finnaicons;
 	  content: "\e002";
 }
 .fa-map-marker:before {
     content: "\f041";
 }
 .fa-search-small:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01c";
 }
 .fa-checked-file:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01b";
 }
 .fa-reset:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e01a";
 }
 .fa-minus:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e019";
 }
 .fa-plus-big:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e018";
 }
 .fa-plus-small:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e013";
 }
 .fa-pen:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e016";
 }
 .icon-uniE014:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e014";
 }
 .icon-uniE013:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e013";
 }
 .fa-print:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e012";
 }
 .fa-search:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e011";
 }
 .fa-info2:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e601";
 }
 .fa-info3:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e00f";
 }
 .fa-info-big:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e903";
 }
 .fa-question-circle-big:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e917";
 }
 .fa-info-circle:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e919";
 }
 .fa-info-circle-hollow:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e918";
 }
 .fa-rss:before {
     content: "\f09e";
 }
 .fa-user:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e00e";
 }
 .fa-star:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e02b";
 }
 .fa-star-empty:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e60f";
 }
 .icon-adv-search:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e91e";
 }
 .icon-basic-search:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e91d";
 }
 .icon-info:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e00f";
 }
 .fa-qrcode:before {
@@ -648,7 +648,7 @@ table .iconlabel {
     content: "\e007";
 }
 .fa.fa-TOC:before, .iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentothercollection:before, .iconlabel.format-1documentcollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e006";
 }
 .iconlabel.format-0note:before, .iconlabel.format-0manuscript:before, .iconlabel.format-0musicalscore:before {
@@ -679,11 +679,11 @@ table .iconlabel {
     content: "\e913";
 }
 .fa-first-page:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e914";
 }
 .fa-last-page:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e915";
 }
 .iconlabel.other-records:before {
@@ -692,7 +692,7 @@ table .iconlabel {
 
 /** toolbar icons **/
 .nav-pills .fa {
-    font-family: icomoon;
+    font-family: finnaicons;
     font-size: 14px;
     padding: 0px;
     padding-right: 1px;
@@ -764,7 +764,7 @@ table .iconlabel {
 
 /* Image gallery popup icons */
 .fa-magnify {
-    font-family: icomoon;
+    font-family: finnaicons;
     position: absolute;
     font-size: .9em;
     opacity: 0;
@@ -824,14 +824,12 @@ table .iconlabel {
 }
 .searchbox .btn-link {
     & .fa-search-adv {
-        vertical-align: -2px;
         margin-right: 5px;
-        font-size: 1.3em;
+        font-size: 20px;
     }
     & .fa-search {
-        vertical-align: -2px;
         margin-right: 5px;
-        font-size: 1.1em;
+        font-size: 16px;
     }
 }
 .spelling-suggestions .fa-plus-small {
@@ -951,14 +949,26 @@ i.bigger {
 .fa-videoreel:before      {content:"\f03d"} // .fa-video-camera
 
 .fa-authority-personalname:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e922";
 }
 .fa-authority-corporatename:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e921";
 }
 .fa-authority-groupname:before {
-    font-family: icomoon;
+    font-family: finnaicons;
     content: "\e923";
+}
+.fa-fullscreen:before {
+    font-family: finnaicons;
+    content: "\e801";
+}
+.fa-fullscreen-exit:before {
+    font-family: finnaicons;
+    content: "\e8ac";
+}
+.fa-pagebreak:before {
+    font-family: finnaicons;
+    content: "\e8ab";
 }

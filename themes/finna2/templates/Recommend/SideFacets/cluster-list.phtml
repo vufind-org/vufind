@@ -15,7 +15,7 @@
       <?php break; ?>
     <?php endif; ?>
     <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
-      <span class="text"><i class="fa fa-handle-open" aria-hidden="true"></i> <?=$this->transEsc('more')?></span>
+      <span class="text"><i class="fa fa-arrow-down" aria-hidden="true"></i> <?=$this->transEsc('more')?></span>
     </a> 
   <?php endif; ?>
   <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
@@ -42,7 +42,7 @@
     </a>
   <?php endif; ?>
   <a class="facet narrow-toggle <?=$moreClass ?> less-narrow-toggle" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
-    <span class="text"><i class="fa fa-handle-close" aria-hidden="true"></i> <?=$this->transEsc('less')?></span>
+    <span class="text"><i class="fa fa-arrow-up" aria-hidden="true"></i> <?=$this->transEsc('less')?></span>
   </a>
 <?php endif; ?>
 <?php else: ?>

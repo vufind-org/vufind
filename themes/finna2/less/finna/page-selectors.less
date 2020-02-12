@@ -74,8 +74,11 @@
 
     > a,
     > span {
-      margin-left: 2px;
       border-radius: @border-radius-base;
+      @media(max-width:@screen-xs-max) { 
+        font-size: 1em;
+        padding: @padding-base-horizontal/1.5;
+      }
     }
 
     &:first-child {
