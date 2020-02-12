@@ -252,10 +252,11 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Zend\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {
+        $this->setExpectedException(\Zend\Config\Exception\RuntimeException::class);
+
         if (self::$writeFailed) {
             $this->markTestSkipped('Could not write test configurations.');
         }

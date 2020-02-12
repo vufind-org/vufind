@@ -58,11 +58,11 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Search\Base\Params
      */
     public function testExpectedInterface()
     {
+        $this->setExpectedException(\Zend\ServiceManager\Exception\InvalidServiceException::class, 'Plugin ArrayObject does not belong to VuFind\\Search\\Base\\Params');
+
         $pm = new PluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );

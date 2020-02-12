@@ -138,10 +138,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->setExpectedException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -151,10 +152,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->setExpectedException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -164,10 +166,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingAttributeValue()
     {
+        $this->setExpectedException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->userattribute_value_1);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
@@ -178,10 +181,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithoutUsername()
     {
+        $this->setExpectedException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->username);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
@@ -192,10 +196,11 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithoutLoginSetting()
     {
+        $this->setExpectedException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->login);
         $this->getAuthObject($config)->getSessionInitiator('http://target');

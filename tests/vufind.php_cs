@@ -59,6 +59,7 @@ $rules = [
     'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
+    'php_unit_no_expectation_annotation' => true,
     'single_blank_line_at_eof' => true,
     'single_class_element_per_statement' => true,
     'single_import_per_statement' => true,

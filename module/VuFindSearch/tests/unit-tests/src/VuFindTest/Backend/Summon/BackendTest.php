@@ -121,10 +121,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
@@ -173,10 +174,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())

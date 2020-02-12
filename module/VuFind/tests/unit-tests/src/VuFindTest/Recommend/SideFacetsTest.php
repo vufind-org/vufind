@@ -77,11 +77,11 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage VuFind\Recommend\SideFacets: hierarchical facet helper unavailable
      */
     public function testMissingHierarchicalFacetHelper()
     {
+        $this->setExpectedException(\Exception::class, 'VuFind\\Recommend\\SideFacets: hierarchical facet helper unavailable');
+
         $configLoader = $this->getMockConfigLoader(
             [
                 'Results' => [

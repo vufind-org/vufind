@@ -83,11 +83,11 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\ILS
-     * @expectedExceptionMessage kaboom
      */
     public function testNewCatalogFailureByException()
     {
+        $this->setExpectedException(\VuFind\Exception\ILS::class, 'kaboom');
+
         $manager = $this->getMockManager();
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
@@ -157,11 +157,11 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\ILS
-     * @expectedExceptionMessage kaboom
      */
     public function testExceptionDuringStoredLoginAttempt()
     {
+        $this->setExpectedException(\VuFind\Exception\ILS::class, 'kaboom');
+
         $user = $this->getMockUser(['__get', '__isset', 'clearCredentials', 'getCatPassword']);
         $user->expects($this->any())->method('__get')->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
         $user->expects($this->any())->method('__isset')->with($this->equalTo('cat_username'))->will($this->returnValue(true));

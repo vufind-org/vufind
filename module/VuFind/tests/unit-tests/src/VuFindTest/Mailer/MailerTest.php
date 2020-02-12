@@ -238,11 +238,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testBadTo()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Invalid Recipient Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
@@ -253,11 +253,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Reply-To Email Address
      */
     public function testBadReplyTo()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Invalid Reply-To Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
@@ -270,11 +270,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testEmptyTo()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Invalid Recipient Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('', 'from@example.com', 'subject', 'body');
@@ -285,11 +285,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Too Many Email Recipients
      */
     public function testTooManyRecipients()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Too Many Email Recipients');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
@@ -300,11 +300,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Sender Email Address
      */
     public function testBadFrom()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Invalid Sender Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
@@ -315,11 +315,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Sender Email Address
      */
     public function testBadFromInAddressObject()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Invalid Sender Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
@@ -330,11 +330,11 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Boom
      */
     public function testTransportException()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Boom');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);

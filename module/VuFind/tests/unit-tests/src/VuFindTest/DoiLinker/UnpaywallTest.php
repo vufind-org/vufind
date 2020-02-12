@@ -47,11 +47,11 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Missing configuration for Unpaywall DOI linker: unpaywall_email
      */
     public function testConfigValidation()
     {
+        $this->setExpectedException(\Exception::class, 'Missing configuration for Unpaywall DOI linker: unpaywall_email');
+
         new Unpaywall(new \Zend\Config\Config([]));
     }
 

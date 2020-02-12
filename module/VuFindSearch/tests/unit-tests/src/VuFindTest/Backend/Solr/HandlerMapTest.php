@@ -28,11 +28,8 @@
  */
 namespace VuFindTest\Backend\Solr;
 
-use InvalidArgumentException;
-
 use PHPUnit\Framework\TestCase;
 
-use RuntimeException;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
 /**
@@ -51,11 +48,11 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Duplicate fallback
      */
     public function testSetHandlerMapThrowsOnDuplicateFallback()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'Duplicate fallback');
+
         $map = [
             'h1' => ['fallback' => true],
             'h2' => ['fallback' => true],
@@ -68,11 +65,11 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Handler for function already defined
      */
     public function testSetHandlerMapThrowsOnDuplicateFunctionHandler()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'Handler for function already defined');
+
         $map = [
             'h1' => ['functions' => ['foo']],
             'h2' => ['functions' => ['foo']],
@@ -85,11 +82,11 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        RuntimeException
-     * @expectedExceptionMessage Undefined function handler
      */
     public function testGetHandlerThrowsOnUndefinedFunctionHandler()
     {
+        $this->setExpectedException(\RuntimeException::class, 'Undefined function handler');
+
         $map = new HandlerMap([]);
         $map->getHandler('search');
     }
@@ -99,11 +96,11 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Invalid parameter key: bad
      */
     public function testGetParametersThrowsOnUndefinedType()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'Invalid parameter key: bad');
+
         $map = new HandlerMap(['h1' => ['functions' => ['foo']]]);
         $map->getParameters('h1', 'bad');
     }
@@ -113,11 +110,11 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Invalid parameter key: bad
      */
     public function testSetParametersThrowsOnUndefinedType()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'Invalid parameter key: bad');
+
         $map = new HandlerMap(['h1' => ['functions' => ['foo']]]);
         $map->setParameters('h1', 'bad', []);
     }

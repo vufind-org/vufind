@@ -49,10 +49,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\ILS
      */
     public function testMissingConfiguration()
     {
+        $this->setExpectedException(\VuFind\Exception\ILS::class);
+
         $test = new MultiBackend(
             new \VuFind\Config\PluginManager($this->getServiceManager()),
             $this->getMockILSAuthenticator(),

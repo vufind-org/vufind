@@ -83,11 +83,11 @@ class ThemeInfoTest extends Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Cannot load theme: invalid
      */
     public function testInvalidTheme()
     {
+        $this->setExpectedException(\Exception::class, 'Cannot load theme: invalid');
+
         $this->getThemeInfo()->setTheme('invalid');
     }
 

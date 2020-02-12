@@ -86,11 +86,11 @@ class ConnectorTest extends TestCase
      *
      * @return void
      *
-     * @expectedException     VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionCode 500
      */
     public function testInternalServerError()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, null, 500);
+
         $conn = $this->createConnector('internal-server-error');
         $resp = $conn->retrieve('id');
     }
@@ -100,11 +100,11 @@ class ConnectorTest extends TestCase
      *
      * @return void
      *
-     * @expectedException     VuFindSearch\Backend\Exception\RequestErrorException
-     * @expectedExceptionCode 400
      */
     public function testBadRequestError()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\RequestErrorException::class, null, 400);
+
         $conn = $this->createConnector('bad-request');
         $resp = $conn->retrieve('id');
     }
@@ -114,11 +114,11 @@ class ConnectorTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage AdapterInterface
      */
     public function testSetAdapterThrowsInvalidObject()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'AdapterInterface');
+
         $conn = $this->createConnector('single-record');
         $conn->setAdapter($this);
     }
@@ -128,11 +128,11 @@ class ConnectorTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Unable to serialize
      */
     public function testSaveThrowsUnknownFormat()
     {
+        $this->setExpectedException(\InvalidArgumentException::class, 'Unable to serialize');
+
         $conn = $this->createConnector();
         $document = $this->createMock(\VuFindSearch\Backend\Solr\Document\UpdateDocument::class);
         $conn->write($document, 'unknown', 'update');

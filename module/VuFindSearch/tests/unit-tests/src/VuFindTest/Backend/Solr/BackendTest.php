@@ -172,11 +172,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage JSON decoding error: 4 -- bad {
      */
     public function testBadJson()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class, 'JSON decoding error: 4 -- bad {');
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -190,11 +190,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid response writer type: xml
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
+        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Invalid response writer type: xml');
+
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(['wt' => ['xml']]));
@@ -205,11 +205,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid named list implementation type: bad
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
     {
+        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Invalid named list implementation type: bad');
+
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(['json.nl' => ['bad']]));
@@ -283,11 +283,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseException()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'Alphabetic Browse index missing.');
+
         $this->runRefineExceptionCall('does not exist');
     }
 
@@ -296,11 +296,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'Alphabetic Browse index missing.');
+
         $this->runRefineExceptionCall('couldn\'t find a browse index');
     }
 
@@ -309,11 +309,11 @@ class BackendTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage not a browse error
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {
+        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'not a browse error');
+
         $this->runRefineExceptionCall('not a browse error');
     }
 

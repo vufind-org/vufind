@@ -93,11 +93,11 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage badbadbad
      */
     public function testUnexpectedResponse()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'badbadbad');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $response = new \Zend\Http\Response();
@@ -115,11 +115,11 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Problem sending text.
      */
     public function testFailureResponse()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Problem sending text.');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $response = new \Zend\Http\Response();
@@ -136,11 +136,11 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Foo
      */
     public function testClientException()
     {
+        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Foo');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));

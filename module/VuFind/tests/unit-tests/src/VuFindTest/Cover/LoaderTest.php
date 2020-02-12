@@ -54,11 +54,11 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
     {
+        $this->setExpectedException(\Exception::class, 'Could not load default fail image.');
+
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
