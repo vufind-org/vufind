@@ -64,7 +64,7 @@ class ConnectorTest extends TestCase
     {
         $conn = $this->createConnector('single-record');
         $resp = $conn->retrieve('id');
-        $this->assertInternalType('string', $resp);
+        $this->assertIsString($resp);
         json_decode($resp, true);
         $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
     }
@@ -78,7 +78,7 @@ class ConnectorTest extends TestCase
     {
         $conn = $this->createConnector('no-match');
         $resp = $conn->retrieve('id');
-        $this->assertInternalType('string', $resp);
+        $this->assertIsString($resp);
     }
 
     /**

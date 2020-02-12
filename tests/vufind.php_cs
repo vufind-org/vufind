@@ -59,6 +59,7 @@ $rules = [
     'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
+    'php_unit_dedicate_assert_internal_type' => true,
     'php_unit_expectation' => true,
     'php_unit_method_casing' => true,
     'php_unit_mock' => true,
