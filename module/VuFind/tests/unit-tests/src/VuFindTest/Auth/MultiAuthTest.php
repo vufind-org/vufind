@@ -82,7 +82,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingMethodOrder()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->MultiAuth->method_order);
@@ -115,7 +115,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBadService()
     {
-        $this->setExpectedException(\Zend\ServiceManager\Exception\ServiceNotFoundException::class);
+        $this->expectException(\Zend\ServiceManager\Exception\ServiceNotFoundException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
@@ -134,7 +134,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBadClass()
     {
-        $this->setExpectedException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
@@ -151,7 +151,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -165,7 +165,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);

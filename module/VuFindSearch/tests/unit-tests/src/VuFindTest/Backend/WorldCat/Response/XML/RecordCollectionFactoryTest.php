@@ -49,7 +49,8 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testBadCallback()
     {
-        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Record factory must be callable.');
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Record factory must be callable.');
 
         $x = new RecordCollectionFactory('bad');
     }
@@ -62,7 +63,8 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testBadFactoryInput()
     {
-        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Unexpected type of value: Expected array, got string');
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $x = new RecordCollectionFactory();
         $x->factory('bad');

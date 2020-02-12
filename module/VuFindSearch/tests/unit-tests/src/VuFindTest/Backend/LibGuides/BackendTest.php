@@ -57,7 +57,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testRetrieve()
     {
-        $this->setExpectedException(\Exception::class, 'retrieve() not supported by LibGuides.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by LibGuides.');
 
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());
@@ -147,7 +148,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testSearchWrapsLibGuidesException()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
 
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())

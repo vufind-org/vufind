@@ -469,7 +469,8 @@ class SpellingProcessorTest extends TestCase
      */
     public function testDetectionOfMissingExtendedResultsSetting()
     {
-        $this->setExpectedException(\Exception::class, 'Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
         $sp = new SpellingProcessor(new Config([]));
         $spelling = $this->getFixture('spell5');

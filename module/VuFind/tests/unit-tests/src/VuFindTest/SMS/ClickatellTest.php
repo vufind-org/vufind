@@ -96,7 +96,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     public function testUnexpectedResponse()
     {
-        $this->setExpectedException(\VuFind\Exception\Mail::class, 'badbadbad');
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('badbadbad');
 
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
@@ -118,7 +119,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     public function testFailureResponse()
     {
-        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Problem sending text.');
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Problem sending text.');
 
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
@@ -139,7 +141,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     public function testClientException()
     {
-        $this->setExpectedException(\VuFind\Exception\Mail::class, 'Foo');
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Foo');
 
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';

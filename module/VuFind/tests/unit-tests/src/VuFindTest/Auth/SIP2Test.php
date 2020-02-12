@@ -100,7 +100,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -114,7 +114,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);

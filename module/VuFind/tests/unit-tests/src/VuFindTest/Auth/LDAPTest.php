@@ -84,7 +84,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingHost()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->LDAP->host);
@@ -99,7 +99,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingPort()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->LDAP->port);
@@ -114,7 +114,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingBaseDN()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->LDAP->basedn);
@@ -129,7 +129,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingUid()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->LDAP->username);
@@ -195,7 +195,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -209,7 +209,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);

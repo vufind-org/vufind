@@ -103,7 +103,7 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testTemplateDisplay()
     {
-        $this->setExpectedException(\Zend\View\Exception\RuntimeException::class);
+        $this->expectException(\Zend\View\Exception\RuntimeException::class);
 
         // Template does not exist, expect an exception, though
         $mockPmd = $this->getMockPmd(

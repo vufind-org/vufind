@@ -136,7 +136,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testSearchWrapsPrimoException()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
 
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -154,7 +154,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testRetrieveWrapsPrimoException()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
 
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())

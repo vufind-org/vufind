@@ -52,7 +52,8 @@ class BackendManagerTest extends TestCase
      */
     public function testGetThrowsOnNonObject()
     {
-        $this->setExpectedException(\UnexpectedValueException::class, 'Expected backend registry to return object');
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Expected backend registry to return object');
 
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())
@@ -70,7 +71,8 @@ class BackendManagerTest extends TestCase
      */
     public function testGetThrowsOnNonBackend()
     {
-        $this->setExpectedException(\UnexpectedValueException::class, 'does not implement the expected interface');
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('does not implement the expected interface');
 
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())

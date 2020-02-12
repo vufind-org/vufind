@@ -56,7 +56,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testRetrieve()
     {
-        $this->setExpectedException(\Exception::class, 'retrieve() not supported by BrowZine.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by BrowZine.');
 
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());

@@ -140,7 +140,8 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testEmptyFile()
     {
-        $this->setExpectedException(\Exception::class, 'Could not find valid data. Details:');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Could not find valid data. Details:');
 
         $this->getReader('empty.csv')->getReserves();
     }

@@ -48,7 +48,8 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testMissingDependency()
     {
-        $this->setExpectedException(\Exception::class, 'DB table manager missing.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('DB table manager missing.');
 
         $tag = new Tag();
         $tag->getSuggestions('foo');

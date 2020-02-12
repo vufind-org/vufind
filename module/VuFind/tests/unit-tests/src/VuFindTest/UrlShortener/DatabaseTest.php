@@ -114,7 +114,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testResolutionOfBadInput()
     {
-        $this->setExpectedException(\Exception::class, 'Shortlink could not be resolved: B');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Shortlink could not be resolved: B');
 
         $table = $this->getMockTable(['select']);
         $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)

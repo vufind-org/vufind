@@ -52,7 +52,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadConfiguration()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'One or more ChoiceAuth parameters are missing.');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('One or more ChoiceAuth parameters are missing.');
 
         $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->setConfig(new Config([]));
@@ -66,7 +67,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingPluginManager()
     {
-        $this->setExpectedException(\Exception::class, 'Plugin manager missing.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Plugin manager missing.');
 
         $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->getPluginManager();
@@ -182,7 +184,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testIllegalMethod()
     {
-        $this->setExpectedException(\Exception::class, 'Illegal setting: foo');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Illegal setting: foo');
 
         $request = new Request();
         $request->getQuery()->set('auth_method', 'foo');

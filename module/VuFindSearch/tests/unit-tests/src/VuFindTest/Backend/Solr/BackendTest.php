@@ -175,7 +175,8 @@ class BackendTest extends TestCase
      */
     public function testBadJson()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\BackendException::class, 'JSON decoding error: 4 -- bad {');
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('JSON decoding error: 4 -- bad {');
 
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -193,7 +194,8 @@ class BackendTest extends TestCase
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
-        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Invalid response writer type: xml');
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response writer type: xml');
 
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
@@ -208,7 +210,8 @@ class BackendTest extends TestCase
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
     {
-        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Invalid named list implementation type: bad');
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid named list implementation type: bad');
 
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
@@ -286,7 +289,8 @@ class BackendTest extends TestCase
      */
     public function testRefineAlphaBrowseException()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'Alphabetic Browse index missing.');
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('Alphabetic Browse index missing.');
 
         $this->runRefineExceptionCall('does not exist');
     }
@@ -299,7 +303,8 @@ class BackendTest extends TestCase
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'Alphabetic Browse index missing.');
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('Alphabetic Browse index missing.');
 
         $this->runRefineExceptionCall('couldn\'t find a browse index');
     }
@@ -312,7 +317,8 @@ class BackendTest extends TestCase
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {
-        $this->setExpectedException(\VuFindSearch\Backend\Exception\RemoteErrorException::class, 'not a browse error');
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('not a browse error');
 
         $this->runRefineExceptionCall('not a browse error');
     }

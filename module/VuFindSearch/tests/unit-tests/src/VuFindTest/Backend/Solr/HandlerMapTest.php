@@ -51,7 +51,8 @@ class HandlerMapTest extends TestCase
      */
     public function testSetHandlerMapThrowsOnDuplicateFallback()
     {
-        $this->setExpectedException(\InvalidArgumentException::class, 'Duplicate fallback');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Duplicate fallback');
 
         $map = [
             'h1' => ['fallback' => true],
@@ -68,7 +69,8 @@ class HandlerMapTest extends TestCase
      */
     public function testSetHandlerMapThrowsOnDuplicateFunctionHandler()
     {
-        $this->setExpectedException(\InvalidArgumentException::class, 'Handler for function already defined');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Handler for function already defined');
 
         $map = [
             'h1' => ['functions' => ['foo']],
@@ -85,7 +87,8 @@ class HandlerMapTest extends TestCase
      */
     public function testGetHandlerThrowsOnUndefinedFunctionHandler()
     {
-        $this->setExpectedException(\RuntimeException::class, 'Undefined function handler');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Undefined function handler');
 
         $map = new HandlerMap([]);
         $map->getHandler('search');
@@ -99,7 +102,8 @@ class HandlerMapTest extends TestCase
      */
     public function testGetParametersThrowsOnUndefinedType()
     {
-        $this->setExpectedException(\InvalidArgumentException::class, 'Invalid parameter key: bad');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid parameter key: bad');
 
         $map = new HandlerMap(['h1' => ['functions' => ['foo']]]);
         $map->getParameters('h1', 'bad');
@@ -113,7 +117,8 @@ class HandlerMapTest extends TestCase
      */
     public function testSetParametersThrowsOnUndefinedType()
     {
-        $this->setExpectedException(\InvalidArgumentException::class, 'Invalid parameter key: bad');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid parameter key: bad');
 
         $map = new HandlerMap(['h1' => ['functions' => ['foo']]]);
         $map->setParameters('h1', 'bad', []);

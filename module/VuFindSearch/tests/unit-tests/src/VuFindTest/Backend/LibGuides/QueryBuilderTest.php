@@ -66,7 +66,8 @@ class QueryBuilderTest extends TestCase
      */
     public function testAdvanced()
     {
-        $this->setExpectedException(\Exception::class, 'Advanced search not supported.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Advanced search not supported.');
 
         $qb = new QueryBuilder();
         $qb->build(new QueryGroup('AND', []));

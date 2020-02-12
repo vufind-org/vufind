@@ -63,7 +63,8 @@ class RecordCollectionFactoryTest extends TestCase
      */
     public function testInvalidInput()
     {
-        $this->setExpectedException(\VuFindSearch\Exception\InvalidArgumentException::class, 'Unexpected type of value: Expected array, got string');
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory('garbage');

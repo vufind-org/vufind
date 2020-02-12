@@ -141,7 +141,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -155,7 +155,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
@@ -169,7 +169,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithMissingAttributeValue()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->userattribute_value_1);
@@ -184,7 +184,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithoutUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->username);
@@ -199,7 +199,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testWithoutLoginSetting()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
         unset($config->Shibboleth->login);

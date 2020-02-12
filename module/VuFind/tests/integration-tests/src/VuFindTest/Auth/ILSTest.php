@@ -155,7 +155,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuth()->authenticate($request);
@@ -169,7 +169,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBlankPassword()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuth()->authenticate($request);
@@ -183,7 +183,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testBadLoginResponse()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class);
+        $this->expectException(\VuFind\Exception\Auth::class);
 
         // VuFind requires the ILS driver to return a value in cat_username
         // by default -- if that is missing, we should fail.
@@ -223,7 +223,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithMissingCatId()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'authentication_error_technical');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
@@ -249,7 +250,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testUpdateUserPasswordWithEmptyValue()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Password cannot be blank');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Password cannot be blank');
 
         $patron = ['cat_username' => 'testuser'];
         $request = $this->getLoginRequest(
@@ -270,7 +272,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testUpdateUserPasswordWithoutLoggedInUser()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'authentication_error_technical');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $request = $this->getLoginRequest(
             [
@@ -290,7 +293,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testUpdateUserPasswordWithMismatch()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Passwords do not match');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Passwords do not match');
 
         $request = $this->getLoginRequest(
             [

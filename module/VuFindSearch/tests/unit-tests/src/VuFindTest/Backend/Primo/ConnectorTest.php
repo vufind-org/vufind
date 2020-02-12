@@ -128,7 +128,8 @@ class ConnectorTest extends TestCase
      */
     public function testErrorInSuccessfulResponse()
     {
-        $this->setExpectedException(\Exception::class, 'Unauthorized access');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unauthorized access');
 
         $conn = $this->createConnector('error-with-success-http');
         $terms = [

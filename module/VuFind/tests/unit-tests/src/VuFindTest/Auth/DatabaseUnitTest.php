@@ -50,7 +50,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testEmptyCreateRequest()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Username cannot be blank');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Username cannot be blank');
 
         $db = new Database();
         $db->create($this->getRequest());
@@ -64,7 +65,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testEmptyPasswordCreateRequest()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Password cannot be blank');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Password cannot be blank');
 
         $db = new Database();
         $arr = $this->getCreateParams();
@@ -80,7 +82,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testMismatchedPasswordCreateRequest()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Passwords do not match');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Passwords do not match');
 
         $db = new Database();
         $arr = $this->getCreateParams();
@@ -96,7 +99,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testCreateWithMissingTableManager()
     {
-        $this->setExpectedException(\Exception::class, 'DB table manager missing.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('DB table manager missing.');
 
         $db = new Database();
         $db->create($this->getRequest($this->getCreateParams()));
@@ -110,7 +114,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testCreateDuplicateEmail()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'That email address is already used');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('That email address is already used');
 
         // Fake services:
         $table = $this->getMockTable(['getByEmail', 'getByUsername']);
@@ -134,7 +139,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testCreateDuplicateUsername()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'That username is already taken');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('That username is already taken');
 
         // Fake services:
         $table = $this->getMockTable(['getByUsername']);

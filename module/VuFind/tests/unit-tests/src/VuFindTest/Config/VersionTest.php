@@ -63,7 +63,8 @@ class VersionTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFile()
     {
-        $this->setExpectedException(\Exception::class, 'Cannot load /will/never/exist/ever/ever/build.xml.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot load /will/never/exist/ever/ever/build.xml.');
 
         Version::getBuildVersion('/will/never/exist/ever/ever');
     }

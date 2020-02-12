@@ -203,7 +203,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSwitchingFailure()
     {
-        $this->setExpectedException(\Exception::class, 'Illegal authentication method: MultiILS');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Illegal authentication method: MultiILS');
 
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
@@ -361,7 +362,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingCsrf()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'authentication_error_technical');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $user = $this->getMockUser();
         $request = $this->getMockRequest();
@@ -377,7 +379,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testIncorrectCsrf()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'authentication_error_technical');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $user = $this->getMockUser();
         $request = $this->getMockRequest();
@@ -395,7 +398,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testPasswordSecurityException()
     {
-        $this->setExpectedException(\VuFind\Exception\PasswordSecurity::class, 'Boom');
+        $this->expectException(\VuFind\Exception\PasswordSecurity::class);
+        $this->expectExceptionMessage('Boom');
 
         $e = new \VuFind\Exception\PasswordSecurity('Boom');
         $request = $this->getMockRequest();
@@ -415,7 +419,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testAuthException()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'Blam');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Blam');
 
         $e = new \VuFind\Exception\Auth('Blam');
         $request = $this->getMockRequest();
@@ -435,7 +440,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testUnanticipatedException()
     {
-        $this->setExpectedException(\VuFind\Exception\Auth::class, 'authentication_error_technical');
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
 
         $e = new \Exception('It is normal to see this in the error log during testing...');
         $request = $this->getMockRequest();
