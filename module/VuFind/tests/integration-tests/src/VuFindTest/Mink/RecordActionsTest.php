@@ -49,7 +49,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -61,7 +61,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 

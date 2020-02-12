@@ -47,11 +47,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
     public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**

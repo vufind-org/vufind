@@ -52,11 +52,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
     public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -68,7 +68,8 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
         $this->auth = $this->getAuthManager()->get('Database');
     }
