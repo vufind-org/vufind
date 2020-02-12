@@ -68,13 +68,38 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
      */
     public function getEmbeddedVideo($url)
     {
-        if (preg_match(
-            '/^https?:\/\/(www\.)?(youtube\.com\/watch\?|youtu\.?be\/)\w+/', $url
-        ) || preg_match('/^https?:\/\/vimeo\.com\/\d+/', $url)
-        ) {
+        if ($this->getEmbeddedVideoUrl($url)) {
             return 'data-embed-iframe';
         }
         return '';
+    }
+
+    /**
+     * Returns url for video embedding if url is vimeo or youtube url
+     *
+     * @param string $url record url
+     *
+     * @return string
+     */
+    public function getEmbeddedVideoUrl($url)
+    {
+        $parts = parse_url($url);
+        $embedUrl = '';
+        switch ($parts['host']) {
+        case 'vimeo.com':
+            $embedUrl = "https://player.vimeo.com/video" . $parts['path'];
+            break;
+        case 'youtu.be':
+            $embedUrl = "https://www.youtube.com/embed" . $parts['path'];
+            break;
+        case 'youtube.com':
+            parse_str($parts['query'], $query);
+            $embedUrl = "https://www.youtube.com/embed/" . $query['v'];
+            break;
+        default:
+            $embedUrl = '';
+        }
+        return $embedUrl;
     }
 
     /**

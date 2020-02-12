@@ -12,6 +12,7 @@ return [
             'Finna\View\Helper\Root\Citation' => 'Finna\View\Helper\Root\CitationFactory',
             'Finna\View\Helper\Root\CleanHtml' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Combined' => 'Finna\View\Helper\Root\CombinedFactory',
+            'Finna\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'Finna\View\Helper\Root\Content' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Cookie' => 'Finna\View\Helper\Root\CookieFactory',
             'Finna\View\Helper\Root\EDS' => 'Finna\View\Helper\Root\EDSFactory',
@@ -109,6 +110,7 @@ return [
             // Overrides
             'VuFind\View\Helper\Root\Browse' => 'Finna\View\Helper\Root\Browse',
             'VuFind\View\Helper\Root\Citation' => 'Finna\View\Helper\Root\Citation',
+            'VuFind\View\Helper\Root\Config' => 'Finna\View\Helper\Root\Config',
             'VuFind\View\Helper\Root\OpenUrl' => 'Finna\View\Helper\Root\OpenUrl',
             'VuFind\View\Helper\Root\Piwik' => 'Finna\View\Helper\Root\Piwik',
             'VuFind\View\Helper\Root\Linkify' => 'Finna\View\Helper\Root\Linkify',

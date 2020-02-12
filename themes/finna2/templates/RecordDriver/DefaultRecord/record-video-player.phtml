@@ -1,51 +1,66 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-video-player.phtml -->
 <?php
   $videoElementBase = [
-    'class' => 'videourl fulltext btn btn-primary',
+    'class' => 'video-link-container active-video',
     'type' => 'button'
   ];
   $this->htmlElement()->addAttributeTemplate('video-base', $videoElementBase);
   $videoScripts = $this->partial('Helpers/videojs-urls.phtml');
+  $inlineVideo = $this->config()->inlineVideoEnabled();
 ?>
-<div class="video-accordion">
-  <?php foreach ($videoUrls as $url): ?>
-    <?php
-    $embeddedVideo = $this->recordLink()->getEmbeddedVideo($url['url']);
-    $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
+<?php if ($inlineVideo): ?>
+<div class="inline-video-container hidden">
+  <div class="inline-video"></div>
+<?php endif; ?>
+<div class="video-buttons">
+  <div class="video-accordion <?= $inlineVideo ? 'container' : ''?>">
+    <?php foreach ($videoUrls as $url): ?>
+      <?php
+      $embeddedVideo = $this->recordLink()->getEmbeddedVideo($url['url']);
+      $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
 
-    if (isset($type) && $type === 'SolrEad') {
-      $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $this->translate('link_' . $url['desc'], null, $url['desc']);
-    } elseif (isset($type) && $type === 'SolrForward') {
-      $desc = $this->translate('default::link_' . $desc, null, $desc);
-    } else {
-      $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $desc;
-    }
-    $description = $this->escapeHtml($desc);
+      if (isset($type) && $type === 'SolrEad') {
+        $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $this->translate('link_' . $url['desc'], null, $url['desc']);
+      } elseif (isset($type) && $type === 'SolrForward') {
+        $desc = $this->translate('default::link_' . $desc, null, $desc);
+      } else {
+        $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $desc;
+      }
+      $description = $this->escapeHtml($desc);
 
-    $currentVideo = [
-      'data-link' => $this->proxyUrl($url['url']),
-      'title' => $url['url'],
-    ];
+      $currentVideo = [
+        'data-link' => $this->proxyUrl($url['url']),
+        'title' => $url['url'],
+      ];
 
-    if (!empty($embeddedVideo)) {
-      $currentVideo[$embeddedVideo] = '';
-    }
+      if (!empty($embeddedVideo)) {
+        if ($inlineVideo) {
+          $currentVideo['data-inline-iframe'] = '';
+        }
+        $currentVideo['data-embed-url'] = $this->recordLink()->getEmbeddedVideoUrl($url['url']);
+        $currentVideo[$embeddedVideo] = '';
+      }
 
-    if (!empty($url['videoSources'])) {
-      $currentVideo['data-video-sources'] = json_encode($url['videoSources']);
-      $currentVideo['data-scripts'] = $videoScripts;
-    }
+      if (!empty($url['videoSources'])) {
+        $currentVideo['data-video-sources'] = json_encode($url['videoSources']);
+        $currentVideo['data-scripts'] = $videoScripts;
+      }
 
-    if (!empty($url['embed']) && $url['embed'] === 'video') {
-      $currentVideo['data-embed-video'] = '';
-    }
-    ?>
-    <div class="video-link-container">
-      <button <?=$this->htmlElement()->getAttributes($currentVideo, 'video-base');?>>
+      if (!empty($url['embed']) && $url['embed'] === 'video') {
+        if ($inlineVideo) {
+          $currentVideo['data-inline'] = '';
+        }
+        $currentVideo['data-embed-video'] = '';
+      }
+      ?>
+      <button <?=$this->htmlElement()->getAttributes($currentVideo, 'video-base');?>
+        aria-label="<?= $this->transEsc('Link to video') . ' ' . $description ?>" aria-haspopup="<?= $inlineVideo ? 'false' : 'true'?>"
+      >
         <i class="fa fa-play-circle"></i>
-        <?=$description?>
+        <span class="video-desc"><?=$this->truncate(ucfirst($description), 30)?></span>
       </button>
-    </div>
-  <?php endforeach; ?>
+    <?php endforeach; ?>
+  </div>
 </div>
+<?php if ($inlineVideo): ?></div><?php endif; ?>
 <!-- END of: finna - RecordDriver/DefaultRecord/record-video-player.phtml -->

@@ -137,18 +137,24 @@ finna.videoPopup = (function finnaVideoPopup() {
       });
   }
 
-  function initVideoPopup(_container) {
-    var container = typeof _container === 'undefined' ? $('body') : $(_container);
-
-    container.find('[data-embed-video]').click(function onClickVideoLink(e) {
-      var videoSources = $(this).data('videoSources');
-      var scripts = $(this).data('scripts');
-      var posterUrl = $(this).data('posterUrl');
-
+  function displayVideo(video) {
+    var videoSources = video.data('videoSources');
+    var scripts = video.data('scripts');
+    var posterUrl = video.data('posterUrl');
+    var videoPlayer = "<video id='video-player' class='video-js video-js-player vjs-big-play-centered' controls></video>";
+    if ($('[data-inline]').length > 0) {
+      $('.inline-video').html(videoPlayer);
+      $('[data-inline].active-video').removeClass('active-video');
+      video.addClass('active-video');
+      finna.layout.loadScripts(scripts, function onScriptsLoaded() {
+        initVideoJs('.inline-video', videoSources, posterUrl);
+      });
+      $('.vjs-big-play-button').focus();
+    } else {
       $.magnificPopup.open({
         type: 'inline',
         items: {
-          src: "<div class='video-popup'><video id='video-player' class='video-js vjs-big-play-centered' controls></video></div>"
+          src: "<div class='video-popup'>" + videoPlayer + "</div>"
         },
         callbacks: {
           open: function onOpen() {
@@ -165,29 +171,45 @@ finna.videoPopup = (function finnaVideoPopup() {
           }
         }
       });
-      e.preventDefault();
-    });
+    }
   }
 
-  function initIframeEmbed(_container) {
-    var container = typeof _container === 'undefined' ? $('body') : _container;
+  function initVideoPopup(_container) {
+    var container = typeof _container === 'undefined' ? $('body') : $(_container);
 
-    container.find('[data-embed-iframe]').click(function onClickEmbedLink(e) {
-      if (typeof $.magnificPopup.instance !== 'undefined' && $.magnificPopup.instance.isOpen) {
-        // Close existing popup (such as image-popup) first without delay so that its
-        // state doesn't get confused by the immediate reopening.
-        $.magnificPopup.instance.st.removalDelay = 0;
-        $.magnificPopup.close();
+    container.find('[data-embed-video]').click(function onClickVideoLink(e) {
+      displayVideo($(this));
+      e.preventDefault();
+    });
+
+    if (container.find('[data-inline]').length > 0) {
+      var defaultVideo = container.find('[data-inline]').first();
+      $('.inline-video-container').insertAfter($('.search-form-container'));
+      $('.inline-video-container').removeClass('hidden');
+      if (container.find('[data-inline]').length < 2 ) {
+        container.find('[data-inline]').addClass('hidden');
       }
+      displayVideo(defaultVideo);
+    }
+  }
 
-      // Fallback if core has older style of initializing a video button
-      var attr = $(this).is('a') ? $(this).attr('href') : $(this).data('link');
+  function displayIframe(video) {
+    var source = video.is('a') ? video.attr('href') : video.data('link');
+    if ($('[data-inline-iframe]').length) {
+      var embedUrl = video.data('embed-url');
+      var player = '<iframe class="embed-responsive-item" src="' + embedUrl + '" allowfullscreen>';
+      $('.inline-video').html(player);
 
+      // If using Chrome + VoiceOver, Chrome crashes if vimeo player video settings button has aria-haspopup=true
+      $('.vp-prefs .js-prefs').attr('aria-haspopup', false);
+      $('[data-inline-iframe].active-video').removeClass('active-video');
+      video.addClass('active-video');
+    } else {
       $.magnificPopup.open({
         type: 'iframe',
         tClose: VuFind.translate('close'),
         items: {
-          src: attr
+          src: source
         },
         iframe: {
           markup: '<div class="mfp-iframe-scaler">'
@@ -210,9 +232,31 @@ finna.videoPopup = (function finnaVideoPopup() {
           }
         }
       });
+    }
+  }
+  function initIframeEmbed(_container) {
+    var container = typeof _container === 'undefined' ? $('body') : _container;
+
+    container.find('[data-embed-iframe]').click(function onClickEmbedLink(e) {
+      if (typeof $.magnificPopup.instance !== 'undefined' && $.magnificPopup.instance.isOpen) {
+        // Close existing popup (such as image-popup) first without delay so that its
+        // state doesn't get confused by the immediate reopening.
+        $.magnificPopup.instance.st.removalDelay = 0;
+        $.magnificPopup.close();
+      }
+      displayIframe($(this));
       e.preventDefault();
       return false;
     });
+    if (container.find('[data-inline-iframe]').length > 0) {
+      var defaultVideo = container.find('[data-inline-iframe]').first();
+      $('.inline-video-container').insertAfter($('.search-form-container'));
+      $('.inline-video-container').removeClass('hidden');
+      if (container.find('[data-inline-iframe]').length < 2 ) { 
+        container.find('[data-inline-iframe]').addClass('hidden');
+      }
+      displayIframe(defaultVideo);
+    }
   }
 
   var my = {

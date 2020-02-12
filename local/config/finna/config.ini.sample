@@ -1320,6 +1320,9 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ; the actual filename.
 ;poster_sources[kavi] = "http://www.elonet.fi/tenho/media/{filename}"
 
+; Whether to embed video in the record page.
+;embedVideo = true
+
 ; Whether the "versions" link and record tab are enabled. Default is false.
 ;display_versions = true
 
