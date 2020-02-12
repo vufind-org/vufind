@@ -64,7 +64,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         rmdir($this->path);
     }

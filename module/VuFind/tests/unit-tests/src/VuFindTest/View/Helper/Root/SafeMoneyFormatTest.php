@@ -67,7 +67,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         // restore current default
         setlocale(LC_MONETARY, $this->locale);

@@ -374,7 +374,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->stopMinkSession();
         $this->restoreConfigs();

@@ -224,7 +224,7 @@ class ThemeCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getThemeCompiler()->removeTheme('compiled');
     }
