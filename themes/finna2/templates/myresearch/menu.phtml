@@ -5,229 +5,214 @@
     $patron = $user ? $this->auth()->getILSPatron() : false;
     $capabilityParams = $patron ? ['patron' => $patron] : [];
     $showLibraryTabs = $this->ils()->loginAvailable();
+    $ilsOffline = 'ils-none' === $this->ils()->getOfflineMode();
     $listOpen = $this->active == 'favorites' || substr($this->active, 0, 4) == 'list';
+    $activeToLower = strtolower($this->active ?? '');
     //Get the data for vertical menu to show lists on correct site
     if ($listOpen) {
       $list = $this->results->getListObject();
-      $activeId = $list['id'];
-      $activeUrl = $this->serverUrl() . $this->url('home') . 'List/' . $activeId;
-      $activePublic = $list['public'];
-      $isDefaultList = !isset($list);
-      $lists = $user ? $user->getLists() : null;
+      $listParams = [
+        'activeId' => $list['id'],
+        'activeUrl' => $this->serverUrl() . $this->url('home') . 'List/' . $list['id'],
+        'activePublic' => $list['public'],
+        'isDefaultList' => !isset($list),
+        'lists' => $user ? $user->getLists() : null,
+        'results' => $this->results,
+        'user' => $user
+      ];
     }
+
+    $menuListItems = [];
+    if ($showLibraryTabs && !$ilsOffline) {
+      $menuListItems = [
+        'checkedout' => [
+          'url' => 'myresearch-checkedout',
+          'translation' => 'Checked Out Items'
+        ],
+        'historicloans' => [
+          'url' => 'myresearch-historicloans',
+          'translation' => 'Loan History',
+          'show' => $this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)
+        ],
+        'holds' => [
+          'url' => 'myresearch-holds',
+          'translation' => 'Holds and Recalls'
+        ],
+        'storageretrievalrequests' => [
+          'url' => 'myresearch-storageretrievalrequests',
+          'translation' => 'Storage Retrieval Requests',
+          'show' => $this->ils()->checkFunction('storageRetrievalRequests', $capabilityParams)
+        ],
+        'illrequests' => [
+          'url' => 'myresearch-illrequests',
+          'translation' => 'Interlibrary Loan Requests',
+          'show' => $this->ils()->checkFunction('ILLRequests', $capabilityParams)
+        ],
+        'fines' => [
+          'url' => 'myresearch-fines',
+          'translation' => 'Fines'
+        ],
+        'librarycards' => [
+          'url' => 'librarycards-home',
+          'translation' => 'Library Cards',
+          'show' => $user && $user->libraryCardsEnabled()
+        ]
+      ];
+    }
+
+    $nonLibraryItems = [
+      'profile' => [
+        'url' => 'myresearch-profile',
+        'translation' => 'Profile',
+        'show' => !$ilsOffline && $this->ils()->checkCapability('getMyProfile')
+      ],
+      'history' => [
+        'url' => 'search-history',
+        'query' => '?require_login',
+        'translation' => 'history_saved_searches'
+      ],
+      'favorites' => [
+        'url' => 'myresearch-favorites',
+        'translation' => 'Favorites',
+        'show' => $this->userlist()->getMode() !== 'disabled'
+      ],
+      'logout' => [
+        'url' => 'myresearch-logout',
+        'translation' => 'Log Out',
+        'iconClass' => 'pull-right fa fa-sign-out fa-lg',
+        'desktopOnly' => true
+      ]
+    ];
+    $menuListItems = array_merge($menuListItems, $nonLibraryItems);
+
+    $desktopList = [
+      'open-loans' => [
+        'active' => in_array($activeToLower, ['checkedout', 'historicloans', 'holds', 'storageretrievalrequests', 'illrequests']),
+        'url' => 'myresearch-checkedout',
+        'translation' => 'checked_out_menu_heading',
+        'dropdown' => true,
+        'ulId' => 'myLoans',
+        'show' => !$ilsOffline && $showLibraryTabs,
+        'children' => [
+          'checkedout',
+          'historicloans',
+          'holds',
+          'storageretrievalrequests',
+          'illrequests'
+        ]
+      ],
+      'fines',
+      'librarycards',
+      'profile',
+      'history',
+      'open-list' => [
+        'active' => $listOpen,
+        'url' => 'myresearch-favorites',
+        'translation' => 'Favorites',
+        'show' => $this->userlist()->getMode() !== 'disabled',
+        'partial' => [
+          'url' => 'myresearch/mylist-navi.phtml',
+          'wrapperClass' => 'mylist-bar',
+          'params' => $listParams ?? []
+        ]
+      ],
+      'logout'
+    ];
+
+    $headerKey = substr($activeToLower, 0, 4) === 'list' ? 'favorites' : $activeToLower;
+    $activeMobileTab = $menuListItems[$headerKey]['translation'] ?? 'Your Account';
 ?>
-<?php ob_start(); ?>
-<?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-  <?php if ($showLibraryTabs): ?>
-    <li class="menu-loans <?=$this->active == 'checkedout' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item">
-        <?=$this->transEsc('Checked Out Items')?>
-      </a>
-    </li>
-    <?php if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
-      <li class="menu-historic-loans <?=$this->active == 'historicLoans' ? ' active' : ''?>">
-        <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item">
-          <?=$this->transEsc('Loan History')?>
-        </a>
-      </li>
-    <?php endif; ?>
-    <li class="menu-holds <?=$this->active == 'holds' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item">
-        <?=$this->transEsc('Holds and Recalls')?>
-      </a>
-    </li>
-    <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
-      <li class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
-        <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item">
-          <?=$this->transEsc('Storage Retrieval Requests')?>
-        </a>
-      </li>
-    <?php endif; ?>
-    <?php if ($this->ils()->checkFunction('ILLRequests', $capabilityParams)): ?>
-      <li class="menu-ill-requests <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
-        <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item">
-          <?=$this->transEsc('Interlibrary Loan Requests')?>
-        </a>
-      </li>
-    <?php endif; ?>
-    <li class="menu-fines <?=$this->active == 'fines' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item">
-        <?=$this->transEsc('Fines')?>
-      </a>
-    </li>
-    <?php if ($user && $user->libraryCardsEnabled()): ?>
-      <li class="menu-library-cards <?=$this->active == 'librarycards' ? ' active' : ''?>">
-        <a href="<?=$this->url('librarycards-home')?>" class="list-group-item">
-          <?=$this->transEsc('Library Cards')?>
-        </a>
-      </li>
-    <?php endif; ?>
-  <?php endif; ?>
-<?php endif; ?>
-<?php if ($this->ils()->checkCapability('getMyProfile')): ?>
-  <li class="menu-profile<?=$this->active == 'profile' ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item">
-      <?=$this->transEsc('Profile')?>
-    </a>
-  </li>
-<?php endif; ?>
-<li class="menu-history <?=$this->active == 'history' ? ' active' : ''?>">
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item">
-    <?=$this->transEsc('history_saved_searches')?>
-  </a>
-</li>
-<?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-  <li class="menu-favorites <?= $listOpen ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item">
-      <?=$this->transEsc('Favorites')?>
-    </a>
-  </li>
-<?php endif; ?>
-<?php $menuEntriesMobile = ob_get_clean(); ?>
-<?php ob_start(); ?>
-<?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-  <?php if ($showLibraryTabs): ?>
-    <li class="menu-header hidden-xs hidden-sm">
-      <h1>
-        <?= $this->transEsc('Your Account') ?>
-        <?php if (!$this->translationEmpty('tooltip_myaccount_html')): ?>
-          <span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?= $this->transEsc("tooltip_myaccount_html") ?>"><i class="fa fa-info-big"></i></span>
-        <?php endif; ?>
-      </h1>
-    </li>
-    <?php $loansActive = $this->active == 'checkedout' || $this->active == 'historicLoans' || $this->active == 'holds' || $this->active == 'storageRetrievalRequests' || $this->active == 'ILLRequests'; ?>
-    <li role="menuitem" class="dropdown hidden-xs hidden-sm <?= $loansActive ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-checkedout') ?>" id="open-loans" class=" list-group-item <?= !$loansActive ? 'collapsed' : '' ?>" >
-        <?=$this->transEsc('Checked Out Items')?> / <?=$this->transEsc('Holds and Recalls')?> <span class="caret"></span>
-      </a>
-      <ul id="myLoans" role="presentation" class="dropdown-menu subtabs collapse <?= $loansActive ? ' in' : ''?>">
-        <li role="menuitem" class="menu-loans <?=$this->active == 'checkedout' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item" aria-current="<?= $this->active == 'checkedout' ? 'page' : 'false' ?>">
-            <?=$this->transEsc('Checked Out Items')?>
-          </a>
-        </li>
-      <?php if ($this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams)): ?>
-        <li role="menuitem" class="menu-historic-loans <?=$this->active == 'historicLoans' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-historicloans')?>" class="list-group-item" aria-current="<?= $this->active == 'historicLoans' ? 'page' : 'false' ?>">
-            <?=$this->transEsc('Loan History')?>
-          </a>
-        </li>
-      <?php endif; ?>
-        <li role="menuitem" class="menu-holds <?=$this->active == 'holds' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item" aria-current="<?= $this->active == 'holds' ? 'page' : 'false' ?>">
-            <?=$this->transEsc('Holds and Recalls')?>
-          </a>
-        </li>
-      <?php if ($this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
-        <li role="menuitem" class="menu-storage-retrieval-requests <?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item" aria-current="<?= $this->active == 'storageRetrievalRequests' ? 'page' : 'false' ?>">
-            <?=$this->transEsc('Storage Retrieval Requests')?>
-          </a>
-        </li>
-      <?php endif; ?>
-      <?php if ($this->ils()->checkCapability('getMyILLRequests', $capabilityParams)): ?>
-        <li role="menuitem" class="menu-ill-requests <?=$this->active == 'ILLRequests' ? ' active' : ''?>">
-          <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item" aria-current="<?= $this->active == 'ILLRequests' ? 'page' : 'false' ?>">
-            <?=$this->transEsc('Interlibrary Loan Requests')?>
-          </a>
-        </li>
-      <?php endif; ?>
-      </ul>
-    </li>
-    <li class="menu-fines hidden-xs hidden-sm <?=$this->active == 'fines' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item" aria-current="<?= $this->active == 'fines' ? 'page' : 'false' ?>">
-        <?=$this->transEsc('Fines')?>
-      </a>
-    </li>
-    <?php if ($user && $user->libraryCardsEnabled()): ?>
-      <li class="menu-library-cards hidden-xs hidden-sm<?=$this->active == 'librarycards' ? ' active' : ''?>" >
-        <a href="<?=$this->url('librarycards-home')?>" class="list-group-item" aria-current="<?= $this->active == 'librarycards' ? 'page' : 'false' ?>">
-          <?=$this->transEsc('Library Cards')?>
-        </a>
-      </li>
-    <?php endif; ?>
-  <?php endif; ?>
-<?php endif; ?>
-<?php if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-  <?php if ($this->ils()->checkCapability('getMyProfile')): ?>
-    <li class="menu-profile hidden-xs hidden-sm<?=$this->active == 'profile' ? ' active' : ''?>">
-      <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item" aria-current="<?= $this->active == 'profile' ? 'page' : 'false' ?>">
-        <?=$this->transEsc('Profile')?>
-      </a>
-    </li>
-  <?php endif; ?>
-<?php endif; ?>
-<li class="menu-history hidden-xs hidden-sm <?=$this->active == 'history' ? ' active' : ''?>">
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item" aria-current="<?= $this->active == 'history' ? 'page' : 'false' ?>">
-    <?=$this->transEsc('history_saved_searches')?>
-  </a>
-</li>
 
-<?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-  <li class="menu-favorites mylist-menu-favorites <?= $listOpen ? ' active' : ''?>">
-    <a href="<?=$this->url('myresearch-favorites')?>" id="open-list" class="<?= !$listOpen ? 'collapsed ' : '' ?>list-group-item hidden-xs hidden-sm" aria-current="<?= $this->active == 'favorites' ? 'page' : 'false' ?>">
-      <?=$this->transEsc('Favorites')?>
-      <i class="hidden fa fa-spinner fa-spin"></i>
-      <span class="ajax-error hidden">
-        <small> <?=$this->translate('An error has occurred'); ?></small>
-      </span>
-      <span class="caret"></span>
-    </a>
-    <div class="mylist-bar">
-      <?php if($listOpen) : ?>
-        <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]);  ?>
-      <?php endif; ?>
-    </div>
-  </li>
-<?php endif; ?>
-<li class="menu-logout hidden-xs hidden-sm">
-  <a href="<?=$this->url('myresearch-logout')?>" class="list-group-item">
-    <?=$this->transEsc('Log Out')?>
-    <i class="pull-right fa fa-sign-out fa-lg" aria-hidden="true"></i>
-  </a>
-</li>
-<?php $menuEntries = ob_get_clean(); ?>
-
-  <div class="mobile-main-tabs visible-xs visible-sm">
-    <div class="dropdown useraccount-nav-mobile" role="menu">
-      <div class="dropdown-toggle" data-toggle="dropdown">
-        <div class="tab-title">
-          <?php
-            switch ($this->active) {
-            case 'profile': echo $this->transEsc('Profile'); break;
-            case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
-            case 'historicLoans': echo $this->transEsc('Loan History'); break;
-            case 'holds': echo $this->transEsc('Holds and Recalls'); break;
-            case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
-            case 'ILLRequests': echo $this->transEsc('Interlibrary Loan Requests'); break;
-            case 'fines': echo $this->transEsc('Fines'); break;
-            case 'librarycards': echo $this->transEsc('Library Cards'); break;
-            case 'favorites': echo $this->transEsc('Favorites'); break;
-            case 'history': echo $this->transEsc('history_saved_searches'); break;
-            default:
-                if (substr($this->active, 0, 4) == 'list') {
-                    echo $this->transEsc('Favorites');
-                    break;
-                }
-                echo $this->transEsc('Your Account');
-                break;
-            }
-          ?>
-        </div>
-        <div class="more"><?= $this->transEsc('Your Account') ?><b class="caret"></b></div>
+<div class="mobile-main-tabs visible-xs visible-sm">
+  <div class="dropdown useraccount-nav-mobile" role="menu">
+    <div class="dropdown-toggle" data-toggle="dropdown">
+      <div class="tab-title">
+        <?=$this->transEsc($activeMobileTab)?>
       </div>
-      <ul class="dropdown-menu">
-        <?=$menuEntriesMobile?>
-      </ul>
+      <div class="more"><?= $this->transEsc('Your Account') ?><b class="caret"></b></div>
     </div>
+    <ul class="dropdown-menu">
+      <?php foreach ($menuListItems as $id => $listItem) : ?>
+        <?php if (isset($listItem['desktopOnly']) && $listItem['desktopOnly']) { continue; } ?>
+        <?php if (!isset($listItem['show']) || $listItem['show'] !== false): ?>
+          <li role="menuitem" class="<?=$id?><?= $activeToLower === $id ? ' active' : ''?>">
+            <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $id ? 'aria-current="page"' : ''?>>
+            <?=$this->transEsc($listItem['translation'])?>
+            </a>
+          </li>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </ul>
   </div>
-  <ul class="<?=$this->layoutClass('sidebar-myresearch')?> <?= $listOpen ? '' : 'move-list' ?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
-    <?=$menuEntries?>
-  </ul>
+</div>
 
-  <script>
-     finna.menu.init();
-  </script>
+<ul class="<?=$this->layoutClass('sidebar-myresearch')?> <?= $listOpen ? '' : 'move-list' ?> nav-tabs-personal list-group useraccount-nav nav-tabs" role="menu">
+  <li class="menu-header hidden-xs hidden-sm">
+    <h1>
+      <?= $this->transEsc('Your Account') ?>
+      <?php if (!$this->translationEmpty('tooltip_myaccount_html')): ?>
+        <span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?= $this->transEsc("tooltip_myaccount_html") ?>"><i class="fa fa-info-big"></i></span>
+      <?php endif; ?>
+    </h1>
+  </li>
+  <?php foreach ($desktopList as $id => $value) : ?>
+  <?php
+    $isArray = is_array($value);
+    $listItem = $isArray ? $value : $menuListItems[$value] ?? ['show' => false];
+    if (isset($listItem['show']) && !$listItem['show']) {
+      continue;
+    }
+    $name = $isArray ? $id : $value;
+    $hasChildren = $listItem['children'] ?? false;
+    $hasPartial = $listItem['partial'] ?? false;
+    $showSpinner = $listItem['showSpinner'] ?? false;
+  ?>
+    <?php if ($hasChildren || $hasPartial): ?>
+      <li role="menuitem" class="dropdown <?= $listItem['active'] ? ' active' : ''?>">
+        <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" id="<?=$id?>" class="hidden-xs hidden-sm list-group-item <?= !$listItem['active'] ? 'collapsed' : '' ?>" >
+          <?=$this->transEsc($listItem['translation'])?>
+          <?php if ($showSpinner) : ?>
+            <i class="hidden fa fa-spinner fa-spin"></i><span class="ajax-error hidden"><small> <?=$this->translate('An error has occurred'); ?></small></span>
+          <?php endif; ?>
+          <span class="caret"></span>
+        </a>
+        <?php if ($hasPartial) : ?>
+          <div class="<?= $value['partial']['wrapperClass'] ?? 'ajax-wrapper'?>">
+            <?php if ($listItem['active']): ?>
+              <?= $this->partial($value['partial']['url'], $value['partial']['params']); ?>
+            <?php endif; ?>
+          </div>
+        <?php else: ?>
+          <ul id="<?=$listItem['ulId']?>" role="presentation" class="dropdown-menu subtabs collapse <?= $listItem['active'] ? ' in' : ''?>">
+            <?php foreach ($listItem['children'] as $childKey) : ?>
+              <?php
+                $childItem = $menuListItems[$childKey] ?? ['show' => false];
+                if (isset($childItem['show']) && !$childItem['show']) { continue; }
+              ?>
+                <li role="menuitem" class="<?="menu-$name"?>  <?=$activeToLower === $childKey ? ' active' : ''?>">
+                  <a href="<?=$this->escapeHtmlAttr($this->url($childItem['url']) . ($childItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $childKey ? 'aria-current="page"' : ''?>>
+                    <?=$this->transEsc($childItem['translation'])?>
+                  </a>
+                </li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
+      </li>
+    <?php else: ?>
+      <li role="menuitem" class="hidden-xs hidden-sm <?="menu-$name"?> <?=$activeToLower === $name ? ' active' : ''?>">
+        <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $name ? 'aria-current="page"' : ''?>>
+          <?=$this->transEsc($listItem['translation'])?>
+          <?php if (isset($listItem['iconClass'])): ?>
+            <i class="<?=$listItem['iconClass']?>" aria-hidden="true"></i>
+          <?php endif; ?>
+        </a>
+      </li>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</ul>
 
+<script>
+    finna.menu.init();
+</script>
 
 <!-- END of: finna - myresearch/menu.phtml -->
