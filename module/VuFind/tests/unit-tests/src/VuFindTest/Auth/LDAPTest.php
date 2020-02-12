@@ -81,10 +81,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingHost()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->LDAP->host);
         $this->getAuthObject($config)->getConfig();
@@ -95,10 +96,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingPort()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->LDAP->port);
         $this->getAuthObject($config)->getConfig();
@@ -109,10 +111,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingBaseDN()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->LDAP->basedn);
         $this->getAuthObject($config)->getConfig();
@@ -123,10 +126,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingUid()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->LDAP->username);
         $this->getAuthObject($config)->getConfig();
@@ -188,10 +192,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -201,10 +206,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
