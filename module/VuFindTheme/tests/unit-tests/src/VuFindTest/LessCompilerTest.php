@@ -93,7 +93,7 @@ class LessCompilerTest extends Unit\TestCase
         );
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $temp = sys_get_temp_dir();
         $perms = fileperms($temp);

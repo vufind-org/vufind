@@ -67,7 +67,7 @@ class ThemeCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
         $this->info = new ThemeInfo($this->fixturePath, 'parent');

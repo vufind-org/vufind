@@ -50,7 +50,7 @@ class ThemeInfoTest extends Unit\TestCase
     /**
      * Constructor
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
     }

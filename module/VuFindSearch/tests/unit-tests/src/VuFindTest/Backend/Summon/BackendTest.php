@@ -54,7 +54,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         if (!class_exists('SerialsSolutions_Summon_Exception', true)) {
             $this->markTestIncomplete('Unable to autoload class: SerialsSolutions\Summon\Exception');
