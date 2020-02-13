@@ -64,7 +64,6 @@ class FolioFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Zend\Session\SessionManager::class);
             return new \Zend\Session\Container("Folio_$namespace", $manager);
         };
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        return parent::__invoke($container, $requestedName, [$sessionFactory,$config]);
+        return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }
 }
