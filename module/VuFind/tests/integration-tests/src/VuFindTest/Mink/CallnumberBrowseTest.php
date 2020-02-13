@@ -53,11 +53,12 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -99,9 +100,9 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->assertTrue(is_object($link));
         $href = $link->getAttribute('href');
-        $this->assertContains($type, $href);
+        $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertContains($link->getText(), $href);
+        $this->assertStringContainsString($link->getText(), $href);
     }
 
     protected function setupMultipleCallnumbers()
