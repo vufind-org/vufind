@@ -71,18 +71,17 @@ class Database implements UrlShortenerInterface
         $this->table = $table;
     }
 
-
     /**
      * Generate & store shortened URL in Database.
      *
-     * @param  string $url URL
+     * @param string $url URL
      *
      * @return string
      */
     public function shorten($url)
     {
         $path = str_replace($this->baseUrl, '', $url);
-        $hash = hash(static::HASH_ALGO, $path.static::SALT);
+        $hash = hash(static::HASH_ALGO, $path . static::SALT);
         $shorthash = substr($hash, 0, 9);
         $results = $this->table->select(['hash' => $shorthash]);
 
@@ -98,7 +97,7 @@ class Database implements UrlShortenerInterface
     /**
      * Resolve URL from Database via id.
      *
-     * @param  string $input hash
+     * @param string $input hash
      *
      * @return string
      *
