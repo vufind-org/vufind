@@ -500,7 +500,7 @@ class Folio extends AbstractAPI implements
             $usernameField = $this->config['User']['username_field'] ?? 'username';
             $passwordField = $this->config['User']['password_field'] ?? 'password';
             $query = $usernameField . ' == ' . $this->escapeCql($username);
-            if (!empty($passwordField)) {
+            if (!empty($passwordField) && !empty($password)) {
                 $query .= " and {$passwordField} == " . $this->escapeCql($password);
             }
         }
