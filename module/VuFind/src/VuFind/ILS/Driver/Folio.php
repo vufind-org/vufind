@@ -696,7 +696,8 @@ class Folio extends AbstractAPI implements
             $holds[] = [
                 'type' => 'Hold',
                 'create' => date_format($requestDate, "j M Y"),
-                'expire' => (isset($expireDate) ? date_format($expireDate, "j M Y") : ""),
+                'expire' => isset($expireDate)
+                    ? date_format($expireDate, "j M Y") : "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
                 'title' => $hold->item->title
             ];
