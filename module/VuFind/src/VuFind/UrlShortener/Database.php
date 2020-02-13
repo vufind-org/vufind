@@ -27,6 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
+use Exception;
 use VuFind\Db\Table\Shortlinks as ShortlinksTable;
 
 /**
@@ -35,14 +36,14 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  * @category VuFind
  * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Database implements UrlShortenerInterface
 {
-    const BASE62_ALPHABET
-        = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const BASE62_BASE = 62;
+    const SALT = 'RAnD0mVuFindSa!t';
+    const HASH_ALGO = 'md5';
 
     /**
      * Base URL of current VuFind site
@@ -70,58 +71,6 @@ class Database implements UrlShortenerInterface
         $this->table = $table;
     }
 
-    /**
-     * Common base62 encoding function.
-     * Implemented here so we don't need additional PHP modules like bcmath.
-     *
-     * @param string $base10Number Number to encode
-     *
-     * @return string
-     *
-     * @throws \Exception
-     */
-    protected function base62Encode($base10Number)
-    {
-        $binaryNumber = intval($base10Number);
-        if ($binaryNumber === 0) {
-            throw new \Exception('not a base10 number: "' . $base10Number . '"');
-        }
-
-        $base62Number = '';
-        while ($binaryNumber != 0) {
-            $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE]
-                . $base62Number;
-            $binaryNumber = intdiv($binaryNumber, self::BASE62_BASE);
-        }
-
-        return ($base62Number == '') ? '0' : $base62Number;
-    }
-
-    /**
-     * Common base62 decoding function.
-     * Implemented here so we don't need additional PHP modules like bcmath.
-     *
-     * @param string $base62Number Number to decode
-     *
-     * @return int
-     *
-     * @throws \Exception
-     */
-    protected function base62Decode($base62Number)
-    {
-        $binaryNumber = 0;
-        for ($i = 0; $i < strlen($base62Number); ++$i) {
-            $digit = $base62Number[$i];
-            $strpos = strpos(self::BASE62_ALPHABET, $digit);
-            if ($strpos === false) {
-                throw new \Exception('not a base62 digit: "' . $digit . '"');
-            }
-
-            $binaryNumber *= self::BASE62_BASE;
-            $binaryNumber += $strpos;
-        }
-        return $binaryNumber;
-    }
 
     /**
      * Generate & store shortened URL in Database.
@@ -133,25 +82,32 @@ class Database implements UrlShortenerInterface
     public function shorten($url)
     {
         $path = str_replace($this->baseUrl, '', $url);
-        $this->table->insert(['path' => $path]);
-        $id = $this->table->getLastInsertValue();
+        $hash = hash(static::HASH_ALGO, $path.static::SALT);
+        $shorthash = substr($hash, 0, 9);
+        $results = $this->table->select(['hash' => $shorthash]);
 
-        $shortUrl = $this->baseUrl . '/short/' . $this->base62Encode($id);
+        // this should almost never happen - we then return the existing hash
+        if (is_null($results)) {
+            $this->table->insert(['path' => $path, 'hash' => $shorthash]);
+        }
+
+        $shortUrl = $this->baseUrl . '/short/' . $shorthash;
         return $shortUrl;
     }
 
     /**
      * Resolve URL from Database via id.
      *
-     * @param string $id ID to resolve
-     *
+     * @param $input
      * @return string
+     * @throws Exception
      */
-    public function resolve($id)
+    public function resolve($input)
     {
-        $results = $this->table->select(['id' => $this->base62Decode($id)]);
+        $shorthash = substr($input, 0, 9);
+        $results = $this->table->select(['hash' => $shorthash]);
         if ($results->count() !== 1) {
-            throw new \Exception('Shortlink could not be resolved: ' . $id);
+            throw new Exception('Shortlink could not be resolved: ' . $shorthash);
         }
 
         return $this->baseUrl . $results->current()['path'];
