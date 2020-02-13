@@ -317,6 +317,18 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Escape a string for use in a CQL query.
+     *
+     * @param string $in Input string
+     *
+     * @return string
+     */
+    protected function escapeCql($in)
+    {
+        return str_replace('"', '\"', str_replace('&', '%26', $in));
+    }
+
+    /**
      * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
      * @param string $bibId Bib-level id
@@ -332,8 +344,9 @@ class Folio extends AbstractAPI implements
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
 
-        $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
+        $query = [
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+        ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
@@ -459,44 +472,52 @@ class Folio extends AbstractAPI implements
     public function patronLogin($username, $password)
     {
         // Get user id using barcode, username, etc.
-        $query = ['query' => 'username == ' . $username];
-        $response = $this->makeRequest('GET', '/users', $query);
+        $usernameField = $this->config['User']['username_field'] ?? 'username';
+        $passwordField = $this->config['User']['password_field'] ?? 'password';
+        $query = $usernameField . ' == ' . $this->escapeCql($username);
+        if (!empty($passwordField)) {
+            $query .= " and {$passwordField} == " . $this->escapeCql($password);
+        }
+        $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
         if (count($json->users) == 0) {
             throw new ILSException("User not found");
         }
         $profile = $json->users[0];
-        $credentials = [
-            'userId' => $profile->id,
-            'username' => $username,
-            'password' => $password,
-        ];
-        // Get token
-        try {
-            $response = $this->makeRequest(
-                'POST',
-                '/authn/login',
-                json_encode($credentials)
-            );
-            // Replace admin with user as tenant
-            $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                ->getFieldValue();
-            $this->debug(
-                'User logged in. User: ' . $username . '.' .
-                ' Token: ' . substr($this->token, 0, 30) . '...'
-            );
-            return [
-                'id' => $profile->id,
+        if ($this->config['User']['okapi_login'] ?? false) {
+            $credentials = [
+                'userId' => $profile->id,
                 'username' => $username,
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'firstname' => $profile->personal->firstName ?? null,
-                'lastname' => $profile->personal->lastName ?? null,
-                'email' => $profile->personal->email ?? null,
+                'password' => $password,
             ];
-        } catch (Exception $e) {
-            return null;
+            // Get token
+            try {
+                $response = $this->makeRequest(
+                    'POST',
+                    '/authn/login',
+                    json_encode($credentials)
+                );
+                $debugMsg = 'User logged in. User: ' . $username . '.';
+                // Replace admin with user as tenant if configured to do so:
+                if ($this->config['User']['use_user_token'] ?? false) {
+                    $this->token = $response->getHeaders()->get('X-Okapi-Token')
+                        ->getFieldValue();
+                    $debugMsg .= ' Token: ' . substr($this->token, 0, 30) . '...';
+                }
+                $this->debug($debugMsg);
+            } catch (Exception $e) {
+                return null;
+            }
         }
+        return [
+            'id' => $profile->id,
+            'username' => $username,
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'firstname' => $profile->personal->firstName ?? null,
+            'lastname' => $profile->personal->lastName ?? null,
+            'email' => $profile->personal->email ?? null,
+        ];
     }
 
     /**
