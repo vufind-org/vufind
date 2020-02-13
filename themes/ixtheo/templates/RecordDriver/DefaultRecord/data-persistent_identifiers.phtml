@@ -1,6 +1,18 @@
 <?php foreach ($data as $type => $persistent_identifiers): ?>
   <?php foreach ($persistent_identifiers as $persistent_identifier): ?>
-    <?=$type . ' &quot;' . $persistent_identifier . '&quot;'?><br/>
+    <?php
+      switch($type) {
+      case "URN":
+        print 'URN: <a target="_blank" href="https://doi.org/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        break;
+      case "DOI":
+        print 'DOI: <a target="_blank" href="https://nbn-resolving.de/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        break;
+      case "HDL":
+        print 'HDL: <a target="_blank" href="https://hdl.handle.net/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        break;
+      }
+    ?>
   <?php endforeach; ?>
 <?php endforeach; ?>
 
