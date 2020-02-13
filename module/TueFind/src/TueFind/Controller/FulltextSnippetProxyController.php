@@ -146,7 +146,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 ]
             ]
         ];
-        return array_filter($params); // Needed to get rid of empty array entries;
+        return $params;
     }
 
 
