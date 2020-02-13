@@ -48,7 +48,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param object $table Database table object/mock
+     * @param  object $table Database table object/mock
      *
      * @return Database
      */
@@ -60,7 +60,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the mock table object.
      *
-     * @param array $methods Methods to mock.
+     * @param  array $methods Methods to mock.
      *
      * @return object
      */
@@ -76,6 +76,7 @@ class DatabaseTest extends TestCase
      * Test that the shortener works correctly under "happy path."
      *
      * @return void
+     *
      * @throws Exception
      */
     public function testShortener()
@@ -91,6 +92,7 @@ class DatabaseTest extends TestCase
      * Test that resolve is supported.
      *
      * @return void
+     *
      * @throws Exception
      */
     public function testResolution()

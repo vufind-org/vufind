@@ -75,7 +75,7 @@ class Database implements UrlShortenerInterface
     /**
      * Generate & store shortened URL in Database.
      *
-     * @param string $url URL
+     * @param  string $url URL
      *
      * @return string
      */
@@ -98,8 +98,10 @@ class Database implements UrlShortenerInterface
     /**
      * Resolve URL from Database via id.
      *
-     * @param $input
+     * @param  string $input hash
+     *
      * @return string
+     *
      * @throws Exception
      */
     public function resolve($input)
