@@ -471,22 +471,41 @@ class Folio extends AbstractAPI implements
      */
     public function patronLogin($username, $password)
     {
+
+
+        //NOTES FOR PR - REMOVE
+        //1) If authentication is configured to use LDAP, $username comes through
+        //based on the LDAP/cat_username setting - which for me is barcode
+        //If authentication is configured to use the ILS, $username comes through
+        //as the login/userid
+        //ALSO - I moved the authenication to the top...so the second
+        //step is to get the details about the patron
+        //no matter the authentication method
+
         // Get user id using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
         $passwordField = $this->config['User']['password_field'] ?? 'password';
-        $query = $usernameField . ' == ' . $this->escapeCql($username);
-        if (!empty($passwordField)) {
-            $query .= " and {$passwordField} == " . $this->escapeCql($password);
-        }
-        $response = $this->makeRequest('GET', '/users', compact('query'));
-        $json = json_decode($response->getBody());
-        if (count($json->users) == 0) {
-            throw new ILSException("User not found");
-        }
-        $profile = $json->users[0];
+
+
         if ($this->config['User']['okapi_login'] ?? false) {
+
+            //2) I WANT TO REMOVE THIS FROM THE OKAPI AUTHENTICATION
+            //BECAUSE THIS IS NON-CONFIGURABLE.
+            //TO AUTHENTICATE WITH OKAPI YOU MUST SEND IN 
+            //{"tenant":"lu",
+            //"username":"jdoe",
+            //"password":"jdoespassword"}
+            //$query = $usernameField . ' == ' . $this->escapeCql($username);
+            //if (!empty($passwordField)) {
+            //    $query .= " and {$passwordField} == " . $this->escapeCql($password);
+            //}
+
+
+            //3) tenant is required to authenticate
+            //I removed userId and added tenant
+            $tenant = $this->config['API']['tenant'];
             $credentials = [
-                'userId' => $profile->id,
+                'tenant' => $tenant,
                 'username' => $username,
                 'password' => $password,
             ];
@@ -498,6 +517,10 @@ class Folio extends AbstractAPI implements
                     json_encode($credentials)
                 );
                 $debugMsg = 'User logged in. User: ' . $username . '.';
+                //4) AT THIS POINT THE USER HAS BEEN AUTHENTICATED IN FOLIO
+                //WE ONLY HAVE THEIR USERNAME (THAT THEY USED TO AUTHENTICATE WITH IN FOLIO)
+                //SO THE NEXT QUERY HAS TO USE USERNAME - TO GET THE USERS DETAILS
+                $query = ['query' => 'username == ' . $username];
                 // Replace admin with user as tenant if configured to do so:
                 if ($this->config['User']['use_user_token'] ?? false) {
                     $this->token = $response->getHeaders()->get('X-Okapi-Token')
@@ -509,6 +532,28 @@ class Folio extends AbstractAPI implements
                 return null;
             }
         }
+        else {
+            //5) IF THIS USER WAS NOT AUTHENTICATED WITH FOLIO (I TESTED W/LDAP)
+            //THEN THE QUERY SHOULD USE THE 'usernameField' value from the configuration
+            //IN MY CASE THE VALUE PASSED IN IS barcode
+            $query = ['query' => $usernameField . ' == ' . $this->escapeCql($username)];
+        }
+
+        $response = $this->makeRequest('GET', '/users', $query);
+        $json = json_decode($response->getBody());
+        //6) JUST A THOUGHT
+        //MAKE THIS CHECK FOR '1' 
+        //DURING MY TESTING  BEFORE THE QUERIES WERE WORKING
+        //I WAS GETTING BACK MULTIPLE USERS -- AND THIS CODE TOOK THE 
+        //FIRST ONE...WHICH IN MY CASE WAS OUR ADMIN ACCOUNT...SO THEN IT
+        //TRIES TO GET ALL OF THE DATA FOR THE WRONG ACCOUNT
+        //ANY OBJECTIONS?
+        //MAYBE A 'SECOND' CHECK FOR 1?
+        if (count($json->users) == 0) {
+            throw new ILSException("User not found");
+        }
+        $profile = $json->users[0];
+
         return [
             'id' => $profile->id,
             'username' => $username,
