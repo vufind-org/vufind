@@ -104,14 +104,14 @@
                                 <div class="dropdown form-control type-dropdown">
                                     <input id="searchForm_type" class="searchForm_type" type="hidden" name="type" value="AllFields">
                                     <a class="dropdown-toggle" href="#" aria-haspopup="true" aria-expaned="false" aria-label="<?=$this->transEsc("Search type")?>" data-toggle="dropdown">
-                                        <span>All fields</span>
+                                        <span id="searchForm_typeCaption"><?=$this->transEsc('All fields')?></span>
                                         <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
                                         <?php foreach ($handlers as $handler): ?>
                                             <li role="menuitem">
                                                 <input type="hidden" value="<?=$handler['value']?>">
-                                                <a class="select-type" href="#"><?=$handler['value']?></a>
+                                                <a class="select-type" href="#" onclick="$('#searchForm_type').attr('value', '<?=$handler['value']?>');$('#searchForm_typeCaption').html('<?=$this->transEsc($handler['label'])?>');"><?=$this->transEsc($handler['label'])?></a>
                                             <li>
                                         <?php endforeach; ?>
                                     </ul>
