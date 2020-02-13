@@ -87,7 +87,7 @@ class Database implements UrlShortenerInterface
         $results = $this->table->select(['hash' => $shorthash]);
 
         // this should almost never happen - we then return the existing hash
-        if (is_null($results)) {
+        if ($results->count() == 0) {
             $this->table->insert(['path' => $path, 'hash' => $shorthash]);
         }
 
