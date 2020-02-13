@@ -23,6 +23,14 @@ class InjectFulltextMatchIdsListener
      */
     protected $active = false;
 
+
+    /**
+     * Active Fulltext Type Filters
+     *
+     */
+    protected $selected_fulltext_types;
+
+
     public function __construct(BackendInterface $backend)
     {
        $this->backend = $backend;
@@ -101,8 +109,8 @@ class InjectFulltextMatchIdsListener
                     // QueryBuilder
                     $this->backend->getQueryBuilder()->setCreateExplainQuery(true);
                     // Pass filter from chosen fulltext_type facet
-                    $selected_fulltext_types = $this->getFulltextFilterFromFulltextTypeFacet($backend, $params);
-                    $this->backend->getQueryBuilder()->setSelectedFulltextTypes($selected_fulltext_types);
+                    $this->selected_fulltext_types = $this->getFulltextFilterFromFulltextTypeFacet($backend, $params);
+                    $this->backend->getQueryBuilder()->setSelectedFulltextTypes($this->selected_fulltext_types);
                 }
             }
         }
@@ -133,6 +141,7 @@ class InjectFulltextMatchIdsListener
                 $id = $record->getUniqueId();
                 if (isset($explainOtherIDs[$id])) {
                     $record->setHasFulltextMatch();
+                    $record->setFulltextTypeFilters($this->selected_fulltext_types);
                 }
             }
         }
