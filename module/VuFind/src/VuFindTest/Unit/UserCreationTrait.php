@@ -47,9 +47,9 @@ trait UserCreationTrait
      * Static setup support function to fail if users already exist in the database.
      * We want to ensure a clean state for each test!
      *
-     * @return mixed
+     * @return void
      */
-    protected static function failIfUsersExist()
+    protected static function failIfUsersExist(): void
     {
         // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class
@@ -60,9 +60,10 @@ trait UserCreationTrait
         // on a real system -- it's only meant for the continuous integration server)
         $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
-            return self::fail(
+            self::fail(
                 'Test cannot run with pre-existing user data!'
             );
+            return;
         }
     }
 

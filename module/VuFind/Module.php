@@ -1,6 +1,6 @@
 <?php
 /**
- * ZF2 module definition for the VuFind application
+ * Code module for the core of the VuFind application
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind;
 use Zend\Mvc\MvcEvent;
 
 /**
- * ZF2 module definition for the VuFind application
+ * Code module for the core of the VuFind application
  *
  * @category VuFind
  * @package  Module
