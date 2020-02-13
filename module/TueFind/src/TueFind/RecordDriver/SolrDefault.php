@@ -26,6 +26,8 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     protected $container;
 
+    protected $selected_fulltext_type;
+
     public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
@@ -584,6 +586,16 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function hasFulltextMatch() {
         return $this->hasFulltextMatch ?? false;
+    }
+
+
+    public function setFulltextTypeFilters($selected_fulltext_types) {
+        $this->selected_fulltext_types = $selected_fulltext_types;
+    }
+
+
+    public function getFulltextTypeFilters() {
+        return $this->selected_fulltext_types;
     }
 
 

@@ -34,6 +34,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     protected $maxSnippets = 5;
     const FIELD = 'full_text';
     const DOCUMENT_ID = 'id';
+    const TEXT_TYPE = 'text_type';
     const highlightStartTag = '<span class="highlight">';
     const highlightEndTag = '</span>';
     const fulltextsnippetIni = 'fulltextsnippet';
@@ -45,6 +46,10 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const ORDER_DEFAULT = 'none';
     const ORDER_VERBOSE = 'score';
     const esHighlightTag = 'em';
+    // must match definitions in TuelibMixin.java
+    const description_to_text_type_map = [ 'Fulltext' => '1', 'Table of Contents' => '2',
+                                            'Abstract' => '4', 'Summary' => '8',
+                                            'Unknown' => '0' ];
 
 
 
@@ -78,18 +83,42 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
-    protected function getQueryParams($doc_id, $search_query, $verbose, $synonyms, $paged_results) {
+    protected function mapTextTypeDescriptionsToTypes(array $text_descriptions) : array {
+        return array_filter(array_map(
+                            function ($description) {
+                                return self::description_to_text_type_map[$description] ?? null;
+                            },
+                            $text_descriptions));
+    }
+
+
+    protected function getTextTypesFilter($types_filter) : array {
+        $text_types = $this->mapTextTypeDescriptionsToTypes(explode(',', $types_filter));
+        if (empty($text_types))
+            return [];
+        if (count($text_types) == 1)
+            return  [ 'match' => [ self::TEXT_TYPE => $text_types[0] ]];
+        return  [ 'bool' => [ 'should' =>
+                                  array_map(function ($text_type) { return [ 'match' => [ self::TEXT_TYPE => $text_type ]]; },
+                                             $text_types)
+
+                            ]
+                ];
+    }
+
+
+    protected function getQueryParams($doc_id, $search_query, $verbose, $synonyms, $paged_results, $types_filter) {
         $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
         $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
         $index = $paged_results ? $this->page_index : $this->index;
         $synonym_analyzer = $this->selectSynonymAnalyzer($synonyms);
-
+        $text_types_filter = !empty($types_filter) ? $this->getTextTypesFilter($types_filter) : [];
         $params = [
             'index' => $index,
             'body' => [
                 '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
                 'size' => '100',
-                'sort' => $paged_results && $verbose ? [ 'text_type' => 'asc', 'page' => 'asc' ] : [ '_score' ],
+                'sort' => $paged_results && $verbose ? [ self::TEXT_TYPE => 'asc', 'page' => 'asc' ] : [ '_score' ],
                 'query' => [
                     'bool' => [
                         'must' => [
@@ -98,8 +127,10 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                                                                                                 'analyzer' => $synonym_analyzer ]
                                                                              ],
                             ],
-                            [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                         ]
+                            !empty($text_types_filter) ?
+                                 [ 'bool' => [ 'must' => [  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ], $text_types_filter ] ] ] :
+                                 [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
+                        ]
                     ]
                 ],
                 'highlight' => [
@@ -108,21 +139,21 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                             'type' => 'unified',
                             'fragment_size' => $verbose ? self::FRAGMENT_SIZE_VERBOSE : self::FRAGMENT_SIZE_DEFAULT,
                             'phrase_limit' => self::PHRASE_LIMIT,
-                            'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For oriented approach get whole page */
+                            'number_of_fragments' => $paged_results ? 0 : $this->maxSnippets, /* For page oriented approach get whole page */
                             'order' => $verbose ? self::ORDER_VERBOSE : self::ORDER_DEFAULT,
                         ]
                     ]
                 ]
             ]
         ];
-        return $params;
+        return array_filter($params); // Needed to get rid of empty array entries;
     }
 
 
-    protected function getFulltext($doc_id, $search_query, $verbose, $synonyms) {
+    protected function getFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter) {
         // Is this an ordinary query or a phrase query (surrounded by quotes) ?
         $params = $this->getQueryParams($doc_id, $search_query, $verbose,
-                                        $synonyms , false /*return paged results*/);
+                                        $synonyms , false /*return paged results*/, $types_filter);
         $response = $this->es->search($params);
         $snippets = $this->extractSnippets($response);
         if ($snippets == false)
@@ -132,8 +163,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
-    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms) {
-        $params = $this->getQueryParams($doc_id, $search_query, $verbose, $synonyms, true);
+    protected function getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter) {
+        $params = $this->getQueryParams($doc_id, $search_query, $verbose, $synonyms, true, $types_filter);
         $response = $this->es->search($params);
         $snippets = $this->extractSnippets($response);
         if ($snippets == false)
@@ -321,10 +352,11 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
         $synonyms = isset($parameters['synonyms']) && preg_match('/lang|all/', $parameters['synonyms']) ? $parameters['synonyms'] : "";
-        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms);
+        $types_filter = isset($parameters['fulltext_types']) ? $parameters['fulltext_types'] : "";
+        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter);
         if (empty($snippets)) {
             // Use non-paged text as fallback
-            $snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms);
+            $snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter);
             if (empty($snippets)) {
                 return new JsonModel([
                      'status' => 'NO RESULTS'
