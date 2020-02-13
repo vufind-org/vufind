@@ -20,6 +20,7 @@
     border: none;
     box-shadow: none;
     -webkit-box-shadow: none;
+    height: 48px;
   }
 
   .form-control:focus {
@@ -28,8 +29,13 @@
   }
 
   .type-dropdown {
-    display: inline-block;
-    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+
+    min-width: 150px;
+    height: 48px;
     border: none;
     box-shadow: none;
     -webkit-box-shadow: none;
@@ -46,6 +52,13 @@
   .search-button:hover {
     background-color: @brand-primary;
     color: @body-bg;
+  }
+
+  .ix-searchbox-adv-search {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
   }
 }
 
@@ -85,4 +98,8 @@
 .ix-footer-section {
     padding-top: 2rem;
     padding-bottom: 2rem;
+
+    h5 {
+        color: #a39b94;
+    }
 }
