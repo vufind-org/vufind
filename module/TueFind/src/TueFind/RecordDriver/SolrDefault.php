@@ -26,7 +26,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     protected $container;
 
-    protected $selected_fulltext_type;
+    protected $selected_fulltext_types;
 
     public function setContainer(ContainerInterface $container)
     {
