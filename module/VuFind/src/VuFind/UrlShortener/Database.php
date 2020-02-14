@@ -68,11 +68,13 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param string          $baseUrl Base URL of current VuFind site
+     * @param string       $baseUrl Base URL of current VuFind site     *
      * @param ShortlinksTable $table   Shortlinks database table
      * @param string          $salt    HMacKey from config
      */
-    public function __construct(string $baseUrl, ShortlinksTable $table,
+    public function __construct(
+        string $baseUrl,
+        ShortlinksTable $table,
         string $salt
     ) {
         $this->baseUrl = $baseUrl;
@@ -99,8 +101,7 @@ class Database implements UrlShortenerInterface
             $this->table->insert(['path' => $path, 'hash' => $shorthash]);
         }
 
-        $shortUrl = $this->baseUrl . '/short/' . $shorthash;
-        return $shortUrl;
+        return $this->baseUrl . '/short/' . $shorthash;
     }
 
     /**
