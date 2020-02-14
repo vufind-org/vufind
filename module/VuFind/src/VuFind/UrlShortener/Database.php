@@ -66,9 +66,9 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param string $baseUrl Base URL of current VuFind site
-     * @param ShortlinksTable $table Shortlinks database table
-     * @param string $salt
+     * @param string          $baseUrl Base URL of current VuFind site
+     * @param ShortlinksTable $table   Shortlinks database table
+     * @param string          $salt
      */
     public function __construct(string $baseUrl, ShortlinksTable $table, string $salt)
     {
