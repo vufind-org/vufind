@@ -682,7 +682,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     continue;
                 }
                 if ($address->address_types) {
-                    unset ($address->address_types[0]);
+                    unset($address->address_types[0]);
                 }
                 $addressTypes = $address->addChild('address_types');
 
