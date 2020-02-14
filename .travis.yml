@@ -23,4 +23,4 @@ cache:
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint eslint-finna jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass
+  - vendor/bin/phing eslint eslint-finna jshint phpunitfast phpcs-console php-cs-fixer-dryrun
