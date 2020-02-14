@@ -61,7 +61,8 @@ class DatabaseFactory
             ->__invoke($router->assemble([], ['name' => 'home']));
         $table = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('shortlinks');
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $salt = $config->get('Security')->get('HMACkey');
         return new $requestedName(rtrim($baseUrl, '/'), $table, $salt);
     }

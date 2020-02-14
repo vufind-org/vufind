@@ -59,6 +59,8 @@ class Database implements UrlShortenerInterface
     protected $table;
 
     /**
+     * HMacKey from config
+     *
      * @var string
      */
     protected $salt;
@@ -68,10 +70,11 @@ class Database implements UrlShortenerInterface
      *
      * @param string          $baseUrl Base URL of current VuFind site
      * @param ShortlinksTable $table   Shortlinks database table
-     * @param string          $salt
+     * @param string          $salt    HMacKey from config
      */
-    public function __construct(string $baseUrl, ShortlinksTable $table, string $salt)
-    {
+    public function __construct(string $baseUrl, ShortlinksTable $table,
+        string $salt
+    ) {
         $this->baseUrl = $baseUrl;
         $this->table = $table;
         $this->salt = $salt;
