@@ -681,8 +681,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     unset($address[0]);
                     continue;
                 }
-                $addressTypes = $address->address_types ??
-                    $address->addChild('address_types');
+                if ($address->address_types) {
+                    unset ($address->address_types[0]);
+                }
+                $addressTypes = $address->addChild('address_types');
 
                 foreach ($newAddress['types'] ?? ['home'] as $type) {
                     foreach ($addressTypes->address_type as $existing) {
