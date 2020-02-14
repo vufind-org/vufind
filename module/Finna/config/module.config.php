@@ -545,6 +545,7 @@ $config = [
                     'Finna\ILS\Driver\Alma' => 'VuFind\ILS\Driver\AlmaFactory',
                     'Finna\ILS\Driver\AxiellWebServices' => 'Finna\ILS\Driver\AxiellWebServicesFactory',
                     'Finna\ILS\Driver\Demo' => 'VuFind\ILS\Driver\DemoFactory',
+                    'Finna\ILS\Driver\KohaRest' => 'VuFind\ILS\Driver\KohaRestFactory',
                     'Finna\ILS\Driver\KohaRestSuomi' => 'Finna\ILS\Driver\KohaRestSuomiFactory',
                     'Finna\ILS\Driver\Mikromarc' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
                     'Finna\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackendFactory',
@@ -555,8 +556,6 @@ $config = [
                 'aliases' => [
                     'axiellwebservices' => 'Finna\ILS\Driver\AxiellWebServices',
                     'mikromarc' => 'Finna\ILS\Driver\Mikromarc',
-                    // TODO: remove the following line when KohaRest driver is available upstream:
-                    'koharest' => 'Finna\ILS\Driver\KohaRestSuomi',
                     'koharestsuomi' => 'Finna\ILS\Driver\KohaRestSuomi',
 
                     'VuFind\ILS\Driver\Alma' => 'Finna\ILS\Driver\Alma',
