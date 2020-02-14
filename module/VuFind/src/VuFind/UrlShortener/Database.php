@@ -42,7 +42,6 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  */
 class Database implements UrlShortenerInterface
 {
-    const SALT = 'RAnD0mVuFindSa!t';
     const HASH_ALGO = 'md5';
 
     /**
@@ -60,15 +59,22 @@ class Database implements UrlShortenerInterface
     protected $table;
 
     /**
+     * @var string
+     */
+    protected $salt;
+
+    /**
      * Constructor
      *
-     * @param string          $baseUrl Base URL of current VuFind site
-     * @param ShortlinksTable $table   Shortlinks database table
+     * @param string $baseUrl Base URL of current VuFind site
+     * @param ShortlinksTable $table Shortlinks database table
+     * @param string $salt
      */
-    public function __construct(string $baseUrl, ShortlinksTable $table)
+    public function __construct(string $baseUrl, ShortlinksTable $table, string $salt)
     {
         $this->baseUrl = $baseUrl;
         $this->table = $table;
+        $this->salt = $salt;
     }
 
     /**
@@ -81,7 +87,7 @@ class Database implements UrlShortenerInterface
     public function shorten($url)
     {
         $path = str_replace($this->baseUrl, '', $url);
-        $hash = hash(static::HASH_ALGO, $path . static::SALT);
+        $hash = hash(static::HASH_ALGO, $path . $this->salt);
         $shorthash = substr($hash, 0, 9);
         $results = $this->table->select(['hash' => $shorthash]);
 

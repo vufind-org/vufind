@@ -27,6 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
+use Exception;
 use Interop\Container\ContainerInterface;
 
 /**
@@ -53,13 +54,15 @@ class DatabaseFactory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new Exception('Unexpected options passed to factory.');
         }
         $router = $container->get('HttpRouter');
         $baseUrl = $container->get('ViewRenderer')->plugin('serverurl')
             ->__invoke($router->assemble([], ['name' => 'home']));
         $table = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('shortlinks');
-        return new $requestedName(rtrim($baseUrl, '/'), $table);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $salt = $config->get('Security')->get('HMACkey');
+        return new $requestedName(rtrim($baseUrl, '/'), $table, $salt);
     }
 }

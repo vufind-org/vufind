@@ -54,7 +54,7 @@ class DatabaseTest extends TestCase
      */
     public function getShortener($table)
     {
-        return new Database('http://foo', $table);
+        return new Database('http://foo', $table, 'RAnD0mVuFindSa!t');
     }
 
     /**
