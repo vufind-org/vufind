@@ -496,82 +496,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyTransactions($patron, $params = [])
     {
-        $pageSize = $params['limit'] ?? 50;
-        $queryParams = [
-            '_order_by' => $params['sort'] ?? '+due_date',
-            '_page' => $params['page'] ?? 1,
-            '_per_page' => $pageSize
-        ];
-        $result = $this->makeRequest(
-            [
-                'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                'checkouts'
-            ],
-            $queryParams,
-            'GET'
-        );
-
-        if ($result['code'] != 200) {
-            throw new ILSException('Problem with Koha REST API.');
-        }
-
-        if (empty($result['data'])) {
-            return [
-                'count' => 0,
-                'records' => []
-            ];
-        }
-        $transactions = [];
-        foreach ($result['data'] as $entry) {
-            $dueStatus = false;
-            $now = time();
-            $dueTimeStamp = strtotime($entry['due_date']);
-            if (is_numeric($dueTimeStamp)) {
-                if ($now > $dueTimeStamp) {
-                    $dueStatus = 'overdue';
-                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
-                    $dueStatus = 'due';
-                }
-            }
-
-            $renewable = $entry['renewable'];
-            $renewals = $entry['renewals'];
-            $renewLimit = $entry['max_renewals'];
-            $message = '';
-            if (!$renewable) {
-                $message = $this->mapRenewalBlockReason(
-                    $entry['renewability_blocks']
-                );
-                $permanent = in_array(
-                    $entry['renewability_blocks'], $this->permanentRenewalBlocks
-                );
-                if ($permanent) {
-                    $renewals = null;
-                    $renewLimit = null;
-                }
-            }
-
-            $transaction = [
-                'id' => $entry['biblio_id'],
-                'checkout_id' => $entry['checkout_id'],
-                'item_id' => $entry['item_id'],
-                'title' => $this->getBiblioTitle($entry),
-                'volume' => $entry['serial_issue_number'] ?? '',
-                'duedate' => $this->convertDate($entry['due_date'], true),
-                'dueStatus' => $dueStatus,
-                'renew' => $renewals,
-                'renewLimit' => $renewLimit,
-                'renewable' => $renewable,
-                'message' => $message
-            ];
-
-            $transactions[] = $transaction;
-        }
-
-        return [
-            'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
-            'records' => $transactions
-        ];
+        return $this->getTransactions($patron, $params, false);
     }
 
     /**
@@ -642,56 +567,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyTransactionHistory($patron, $params)
     {
-        $pageSize = $params['limit'] ?? 50;
-        $queryParams = [
-            'patron_id' => $patron['id'],
-            'checked_in' => true,
-            '_order_by' => $params['sort'] ?? '-checkout_date',
-            '_page' => $params['page'] ?? 1,
-            '_per_page' => $pageSize
-        ];
-        // TODO: Make this use X-Koha-Embed when the endpoint allows
-        $result = $this->makeRequest(['v1', 'checkouts'], $queryParams);
-
-        if ($result['code'] != 200) {
-            throw new ILSException('Problem with Koha REST API.');
-        }
-
-        $transactions = [];
-        foreach ($result['data'] as $entry) {
-            if (isset($entry['item_id'])) {
-                try {
-                    $item = $this->getItem($entry['item_id']);
-                } catch (\Exception $e) {
-                    $item = [];
-                }
-                if (isset($item['biblio_id'])) {
-                    $biblio = $this->getBiblio($item['biblio_id']);
-                }
-            }
-
-            $transaction = [
-                'id' => $item['biblio_id'] ?? null,
-                'checkout_id' => $entry['checkout_id'],
-                'item_id' => $entry['item_id'],
-                'barcode' => $item['barcode'] ?? null,
-                'title' => $this->getBiblioTitle($biblio),
-                'volume' => $item['serial_enum_chron'] ?? '',
-                'checkoutDate' => $this->convertDate($entry['checkout_date']),
-                'dueDate' => $this->convertDate($entry['due_date']),
-                'returnDate' => $this->convertDate($entry['checkin_date']),
-                'publication_year' => $biblio['copyright_date']
-                    ?? $biblio['publication_year'] ?? '',
-                'borrowingLocation' => $this->getLibraryName($entry['library_id']),
-            ];
-
-            $transactions[] = $transaction;
-        }
-
-        return [
-            'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
-            'transactions' => $transactions
-        ];
+        return $this->getTransactions($patron, $params, true);
     }
 
     /**
@@ -1426,7 +1302,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '-checkin_date' => 'sort_return_date_desc',
                     '+checkin_date' => 'sort_return_date_asc',
                     '-due_date' => 'sort_due_date_desc',
-                    '+due_date' => 'sort_due_date_asc'
+                    '+due_date' => 'sort_due_date_asc',
+                    '+title' => 'sort_title'
                 ],
                 'default_sort' => '-checkout_date'
             ];
@@ -2319,5 +2196,117 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
         return $this->dateConverter->convertToDisplayDate($createFormat, $date);
+    }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked-out items
+     * or checked-in items) by a specific patron.
+     *
+     * @param array $patron    The patron array from patronLogin
+     * @param array $params    Parameters
+     * @param bool  $checkedIn Whether to list checked-in items
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's transactions on success.
+     */
+    protected function getTransactions($patron, $params, $checkedIn)
+    {
+        $pageSize = $params['limit'] ?? 50;
+        $sort = $params['sort'] ?? '+due_date';
+        if ('+title' === $sort) {
+            $sort = '+title|+subtitle';
+        } elseif ('-title' === $sort) {
+            $sort = '-title|-subtitle';
+        }
+        $queryParams = [
+            '_order_by' => $sort,
+            '_page' => $params['page'] ?? 1,
+            '_per_page' => $pageSize
+        ];
+        if ($checkedIn) {
+            $queryParams['checked_in'] = '1';
+            $arrayKey = 'transactions';
+        } else {
+            $arrayKey = 'records';
+        }
+        $result = $this->makeRequest(
+            [
+                'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                'checkouts'
+            ],
+            $queryParams,
+            'GET'
+        );
+
+        if ($result['code'] != 200) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
+        if (empty($result['data'])) {
+            return [
+                'count' => 0,
+                $arrayKey => []
+            ];
+        }
+        $transactions = [];
+        foreach ($result['data'] as $entry) {
+            $dueStatus = false;
+            $now = time();
+            $dueTimeStamp = strtotime($entry['due_date']);
+            if (is_numeric($dueTimeStamp)) {
+                if ($now > $dueTimeStamp) {
+                    $dueStatus = 'overdue';
+                } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
+                    $dueStatus = 'due';
+                }
+            }
+
+            $renewable = $entry['renewable'];
+            $renewals = $entry['renewals'];
+            $renewLimit = $entry['max_renewals'];
+            $message = '';
+            if (!$renewable && !$checkedIn) {
+                $message = $this->mapRenewalBlockReason(
+                    $entry['renewability_blocks']
+                );
+                $permanent = in_array(
+                    $entry['renewability_blocks'], $this->permanentRenewalBlocks
+                );
+                if ($permanent) {
+                    $renewals = null;
+                    $renewLimit = null;
+                }
+            }
+
+            $transaction = [
+                'id' => $entry['biblio_id'],
+                'checkout_id' => $entry['checkout_id'],
+                'item_id' => $entry['item_id'],
+                'barcode' => $entry['external_id'] ?? null,
+                'title' => $this->getBiblioTitle($entry),
+                'volume' => $entry['serial_issue_number'] ?? '',
+                'publication_year' => $entry['copyright_date']
+                    ?? $entry['publication_year'] ?? '',
+                'borrowingLocation' => $this->getLibraryName($entry['library_id']),
+                'checkoutDate' => $this->convertDate($entry['checkout_date']),
+                'duedate' => $this->convertDate($entry['due_date'], true),
+                'returnDate' => $this->convertDate($entry['checkin_date']),
+                'dueStatus' => $dueStatus,
+                'renew' => $renewals,
+                'renewLimit' => $renewLimit,
+                'renewable' => $renewable,
+                'message' => $message
+            ];
+
+            $transactions[] = $transaction;
+        }
+
+        return [
+            'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
+            $arrayKey => $transactions
+        ];
     }
 }
