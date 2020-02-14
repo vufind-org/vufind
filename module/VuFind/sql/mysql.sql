@@ -177,7 +177,7 @@ CREATE TABLE `external_session` (
 CREATE TABLE `shortlinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `path` mediumtext NOT NULL,
-  `hash` varchar(9) NOT NULL,
+  `hash` varchar(9),
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
