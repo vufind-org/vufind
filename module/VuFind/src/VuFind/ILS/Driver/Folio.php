@@ -471,25 +471,9 @@ class Folio extends AbstractAPI implements
      */
     public function patronLogin($username, $password)
     {
-        // Get user id using barcode, username, etc.
-        $usernameField = $this->config['User']['username_field'] ?? 'username';
-        $passwordField = $this->config['User']['password_field'] ?? 'password';
-        $query = $usernameField . ' == ' . $this->escapeCql($username);
-        if (!empty($passwordField)) {
-            $query .= " and {$passwordField} == " . $this->escapeCql($password);
-        }
-        $response = $this->makeRequest('GET', '/users', compact('query'));
-        $json = json_decode($response->getBody());
-        if (count($json->users) == 0) {
-            throw new ILSException("User not found");
-        }
-        $profile = $json->users[0];
         if ($this->config['User']['okapi_login'] ?? false) {
-            $credentials = [
-                'userId' => $profile->id,
-                'username' => $username,
-                'password' => $password,
-            ];
+            $tenant = $this->config['API']['tenant'];
+            $credentials = compact('tenant', 'username', 'password');
             // Get token
             try {
                 $response = $this->makeRequest(
@@ -498,6 +482,9 @@ class Folio extends AbstractAPI implements
                     json_encode($credentials)
                 );
                 $debugMsg = 'User logged in. User: ' . $username . '.';
+                // We've authenticated the user with Okapi, but we only have their
+                // username; set up a query to retrieve full info below.
+                $query = 'username == ' . $username;
                 // Replace admin with user as tenant if configured to do so:
                 if ($this->config['User']['use_user_token'] ?? false) {
                     $this->token = $response->getHeaders()->get('X-Okapi-Token')
@@ -508,7 +495,23 @@ class Folio extends AbstractAPI implements
             } catch (Exception $e) {
                 return null;
             }
+        } else {
+            // Construct user query using barcode, username, etc.
+            $usernameField = $this->config['User']['username_field'] ?? 'username';
+            $passwordField = $this->config['User']['password_field'] ?? 'password';
+            $query = $usernameField . ' == ' . $this->escapeCql($username);
+            if (!empty($passwordField) && !empty($password)) {
+                $query .= " and {$passwordField} == " . $this->escapeCql($password);
+            }
         }
+
+        $response = $this->makeRequest('GET', '/users', compact('query'));
+        $json = json_decode($response->getBody());
+        if (count($json->users) !== 1) {
+            throw new ILSException("Unexpected user count: " . count($json->users));
+        }
+        $profile = $json->users[0];
+
         return [
             'id' => $profile->id,
             'username' => $username,
