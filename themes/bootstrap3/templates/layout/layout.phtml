@@ -194,7 +194,9 @@ JS;
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+          <div class="modal-body">
+            <span id="modal-title"><?=$this->transEsc('Loading') ?>...</span>
+          </div>
         </div>
       </div>
     </div>
