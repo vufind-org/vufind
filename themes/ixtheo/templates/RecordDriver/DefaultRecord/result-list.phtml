@@ -62,7 +62,7 @@
             <?php // Handle corporation information... ?>
             <?php $corporation = !is_null($this->driver->tryMethod('getCorporation')) ? implode($this->driver->tryMethod('getCorporation'), " ") : ""?>
             <?php if (!empty($corporation)): ?>
-               <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?
+               <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?php
                 $summCorporation = "";
                 echo !empty($summCorporation)
                   ? $this->highlight($summCorporation)
