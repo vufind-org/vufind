@@ -182,7 +182,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Request new token
         $this->assertEquals('/authn/login', $this->testRequestLog[1]['path']);
         // Move to method call
-        $this->assertEquals('/locations', $this->testRequestLog[2]['path']);
+        $this->assertEquals('/service-points', $this->testRequestLog[2]['path']);
         // - Passed correct token
         $this->assertEquals(
             'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json
