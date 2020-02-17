@@ -317,6 +317,18 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Escape a string for use in a CQL query.
+     *
+     * @param string $in Input string
+     *
+     * @return string
+     */
+    protected function escapeCql($in)
+    {
+        return str_replace('"', '\"', str_replace('&', '%26', $in));
+    }
+
+    /**
      * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
      * @param string $bibId Bib-level id
@@ -332,8 +344,9 @@ class Folio extends AbstractAPI implements
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
 
-        $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
+        $query = [
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+        ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
