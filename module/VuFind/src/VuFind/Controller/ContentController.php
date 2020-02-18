@@ -45,7 +45,7 @@ class ContentController extends AbstractBase
     /**
      * Default action if none provided
      *
-     * @return Zend\View\Model\ViewModel
+     * @return \Zend\View\Model\ViewModel
      */
     public function contentAction()
     {
@@ -55,28 +55,45 @@ class ContentController extends AbstractBase
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 
+        $types = [
+            'phtml',
+            'md',
+        ];
+
         // Try to find a template using
         // 1.) Current language suffix
         // 2.) Default language suffix
         // 3.) No language suffix
-        $currentTpl = "templates/content/{$page}_$language.phtml";
-        $defaultTpl = "templates/content/{$page}_$defaultLanguage.phtml";
-        if (null !== $themeInfo->findContainingTheme($currentTpl)) {
-            $page = "{$page}_$language";
-        } elseif (null !== $themeInfo->findContainingTheme($defaultTpl)) {
-            $page = "{$page}_$defaultLanguage";
+        $templates = [
+            "{$page}_$language",
+            "{$page}_$defaultLanguage",
+            $page,
+        ];
+
+        $pathPrefix = "templates/content/";
+
+        foreach ($templates as $template) {
+            foreach ($types as $type) {
+                $filename = "$pathPrefix$template.$type";
+                $path = $themeInfo->findContainingTheme($filename, true);
+                if (null != $path) {
+                    $page = $template;
+                    $renderer = $type;
+                    break 2;
+                }
+            }
         }
 
-        if (empty($page) || 'content' === $page
-            || null === $themeInfo->findContainingTheme(
-                "templates/content/$page.phtml"
-            )
-        ) {
-            return $this->notFoundAction($this->getResponse());
+        if ($renderer === 'phtml') {
+            return $this->createViewModel(['page' => $page]);
+        } elseif ($renderer === 'md') {
+            $view = $this->createViewModel();
+            $view->setTemplate('content/markdown');
+            $view->setVariable('data', file_get_contents($path));
+            return $view;
         }
 
-        $view = $this->createViewModel(['page' => $page]);
-        return $view;
+        return $this->notFoundAction($this->getResponse());
     }
 
     /**
