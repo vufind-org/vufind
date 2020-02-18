@@ -45,6 +45,13 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilder
 {
     /**
+     * Default query (used when query string is empty).
+     *
+     * @var string
+     */
+    protected $defaultQuery = '(FT yes) OR (FT no)';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -82,6 +89,10 @@ class QueryBuilder
         $expression = SearchRequestModel::escapeSpecialCharacters($expression);
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
+        // Special case: default search
+        if (empty($fieldCode) && empty($expression)) {
+            return $this->defaultQuery;
+        }
         if (!empty($fieldCode)) {
             $expression = $fieldCode . ':' . $expression;
         }
