@@ -318,6 +318,18 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Escape a string for use in a CQL query.
+     *
+     * @param string $in Input string
+     *
+     * @return string
+     */
+    protected function escapeCql($in)
+    {
+        return str_replace('"', '\"', str_replace('&', '%26', $in));
+    }
+
+    /**
      * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
      * @param string $bibId Bib-level id
@@ -333,8 +345,9 @@ class Folio extends AbstractAPI implements
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
 
-        $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
+        $query = [
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+        ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
@@ -662,24 +675,24 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        // Get user id
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
         $query = [
-            'query' => 'requesterId == "' . $users->users[0]->id . '"' .
-                ' and requestType == "Hold"'
+            'query' => 'requesterId == "' . $patron['id'] . '"'
         ];
-        // Request HOLDS
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
         $holds = [];
         foreach ($json->requests as $hold) {
+            $requestDate = date_create($hold->requestDate);
+            // Set expire date if it was included in the response
+            $expireDate = isset($hold->requestExpirationDate)
+                ? date_create($hold->requestExpirationDate) : null;
             $holds[] = [
                 'type' => 'Hold',
-                'create' => $hold->requestDate,
-                'expire' => $hold->requestExpirationDate,
+                'create' => date_format($requestDate, "j M Y"),
+                'expire' => isset($expireDate)
+                    ? date_format($expireDate, "j M Y") : "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
+                'title' => $hold->item->title
             ];
         }
         return $holds;
