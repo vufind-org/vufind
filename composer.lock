@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c665d9e654561842d711925e59a53b1e",
+    "content-hash": "664388da6de485317f6a1c06ba79ef9c",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -875,16 +875,16 @@
         },
         {
             "name": "laminas/laminas-db",
-            "version": "2.11.0",
+            "version": "2.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-db.git",
-                "reference": "26422b5469ed894b916ea6b8377a7332206178cc"
+                "reference": "76f9527da996c2fef32ef1f3a939e18ca5e9d962"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-db/zipball/26422b5469ed894b916ea6b8377a7332206178cc",
-                "reference": "26422b5469ed894b916ea6b8377a7332206178cc",
+                "url": "https://api.github.com/repos/laminas/laminas-db/zipball/76f9527da996c2fef32ef1f3a939e18ca5e9d962",
+                "reference": "76f9527da996c2fef32ef1f3a939e18ca5e9d962",
                 "shasum": ""
             },
             "require": {
@@ -933,7 +933,7 @@
                 "db",
                 "laminas"
             ],
-            "time": "2019-12-31T19:56:10+00:00"
+            "time": "2020-01-14T13:07:26+00:00"
         },
         {
             "name": "laminas/laminas-dependency-plugin",
