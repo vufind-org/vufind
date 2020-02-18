@@ -68,7 +68,7 @@ class Database implements UrlShortenerInterface
     /**
      * Constructor
      *
-     * @param string       $baseUrl Base URL of current VuFind site     *
+     * @param string          $baseUrl Base URL of current VuFind site     *
      * @param ShortlinksTable $table   Shortlinks database table
      * @param string          $salt    HMacKey from config
      */
