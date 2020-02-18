@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,6 +33,7 @@ use Finna\Auth\Manager as AuthManager;
 use Finna\ILS\Connection as ILSConnection;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Authentication strategy permission provider for VuFind.
@@ -68,18 +69,27 @@ class AuthenticationStrategy implements PermissionProviderInterface
     protected $ils;
 
     /**
+     * Session storage
+     *
+     * @var SessionContainer
+     */
+    protected $sessionContainer;
+
+    /**
      * Constructor
      *
      * @param AuthManager      $am      Authentication manager
      * @param ILSConnection    $ils     ILS connection
      * @param ILSAuthenticator $ilsAuth ILS authenticator
+     * @param SessionContainer $session Session container
      */
     public function __construct(AuthManager $am, ILSConnection $ils,
-        ILSAuthenticator $ilsAuth
+        ILSAuthenticator $ilsAuth, SessionContainer $session
     ) {
         $this->authManager = $am;
         $this->ils = $ils;
         $this->ilsAuth = $ilsAuth;
+        $this->sessionContainer = $session;
     }
 
     /**
@@ -104,20 +114,8 @@ class AuthenticationStrategy implements PermissionProviderInterface
             && in_array('ILS-statCode', $options)
         ) {
             // Check ILS stat group
-            try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
-                if ($patron) {
-                    $functionConfig = $this->ils->checkFunction(
-                        'getPatronAuthorizationStatus',
-                        compact('patron')
-                    );
-                    if ($functionConfig
-                        && !$this->ils->getPatronAuthorizationStatus($patron)
-                    ) {
-                        return ['loggedin'];
-                    }
-                }
-            } catch (ILSException $e) {
+            if (false === $this->getPatronAuthorizationStatus(false)) {
+                return ['loggedin'];
             }
         }
 
@@ -125,23 +123,53 @@ class AuthenticationStrategy implements PermissionProviderInterface
             && in_array('ILS-staff', $options)
         ) {
             // Check ILS for staff user
-            try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
-                if ($patron) {
-                    $functionConfig = $this->ils->checkFunction(
-                        'getPatronStaffAuthorizationStatus',
-                        compact('patron')
-                    );
-                    if ($functionConfig
-                        && $this->ils->getPatronStaffAuthorizationStatus($patron)
-                    ) {
-                        return ['loggedin'];
-                    }
-                }
-            } catch (ILSException $e) {
+            if ($this->getPatronAuthorizationStatus(true)) {
+                return ['loggedin'];
             }
         }
 
         return [];
+    }
+
+    /**
+     * Get patron authorization status
+     *
+     * @param bool $staff Whether to check staff or normal user authorization
+     *
+     * @return mixed bool or null
+     */
+    protected function getPatronAuthorizationStatus($staff)
+    {
+        $func = $staff
+            ? 'getPatronStaffAuthorizationStatus' : 'getPatronAuthorizationStatus';
+        $code = $staff ? 'staff' : 'patron';
+
+        try {
+            if (($user = $this->authManager->isLoggedIn())
+                && !empty($user->cat_username)
+            ) {
+                $key = $user->cat_username;
+                if (!isset($this->sessionContainer->{$code})) {
+                    $this->sessionContainer->{$code} = [];
+                }
+                if (!isset($this->sessionContainer->{$code}[$key])) {
+                    $patron = $this->ilsAuth->storedCatalogLogin();
+                    if ($patron) {
+                        $functionConfig = $this->ils->checkFunction(
+                            $func,
+                            compact('patron')
+                        );
+                        $this->sessionContainer->{$code}[$key]
+                            = $functionConfig && $this->ils->$func($patron);
+                    } else {
+                        $this->sessionContainer->{$code}[$key] = null;
+                    }
+                }
+                return $this->sessionContainer->{$code}[$key];
+            }
+        } catch (ILSException $e) {
+            $this->sessionContainer->{$code}->{$key} = null;
+        }
+        return false;
     }
 }

@@ -69,7 +69,11 @@ class AuthenticationStrategyFactory
         return new $requestedName(
             $container->get(\Finna\Auth\Manager::class),
             $container->get(\Finna\ILS\Connection::class),
-            $container->get(\Finna\Auth\ILSAuthenticator::class)
+            $container->get(\Finna\Auth\ILSAuthenticator::class),
+            new \Zend\Session\Container(
+                'AuthenticationStrategy',
+                $container->get(\Zend\Session\SessionManager::class)
+            )
         );
     }
 }
