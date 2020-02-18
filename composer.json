@@ -45,7 +45,7 @@
         "zendframework/zend-config": "3.3.0",
         "zendframework/zend-console": "2.8.0",
         "zendframework/zend-crypt": "3.3.1",
-        "zendframework/zend-db": "2.11.0",
+        "zendframework/zend-db": "2.10.1",
         "zendframework/zend-dom": "2.7.2",
         "zendframework/zend-escaper": "2.6.1",
         "zendframework/zend-eventmanager": "3.2.1",
