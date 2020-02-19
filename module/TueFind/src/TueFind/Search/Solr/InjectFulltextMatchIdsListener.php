@@ -79,15 +79,13 @@ class InjectFulltextMatchIdsListener
    }
 
 
-
-
-    /**
-     * Set up highlighting parameters.
-     *
-     * @param EventInterface $event Event
-     *
-     * @return EventInterface
-     */
+   /**
+    * Set up highlighting parameters.
+    *
+    * @param EventInterface $event Event
+    *
+    * @return EventInterface
+    */
     public function onSearchPre(EventInterface $event) {
         if ($event->getParam('context') != 'search') {
             return $event;
@@ -129,7 +127,7 @@ class InjectFulltextMatchIdsListener
         $backend = $event->getParam('backend');
         if ($backend == $this->backend->getIdentifier()) {
             $result = $event->getTarget();
-            if ($backend == 'Search2') {
+            if ($backend == 'Search2' && !empty($event->getParams('params')['query']->getString())) {
                 foreach ($result->getRecords() as $record) {
                     $record->setHasFulltextMatch();
                     $record->setFulltextTypeFilters($this->selected_fulltext_types);
