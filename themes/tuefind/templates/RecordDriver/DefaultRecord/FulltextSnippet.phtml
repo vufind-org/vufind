@@ -2,23 +2,24 @@
 <?php if (isset($config->Elasticsearch->base_url) && $this->driver->tryMethod('hasFulltextMatch')): ?>
 <span id="fulltext_snippets">
       <div style="color:grey" id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"><?=$this->transEsc("Loading")?>...</div>
-  <script>
+<script>
 <?php       $query = $this->params->getQuery();
             $query_terms = $query->getAllTerms();
             $handler = $query instanceof \VuFindSearch\Query\Query ? $query->getHandler() :
                        ($query instanceof \VuFindSearch\Query\QueryGroup ? $query->getReducedHandler() : "");
-            $type = "";
-            //error_log("HANDLER", $handler);
+            $synonym_type = "";
             switch ($handler) {
               case "FulltextWithSynonyms":
-                $type = "lang";
+                $synonym_type = "lang";
                 break;
               case "FulltextAllSynonyms":
-                $type = "all";
+                $synonym_type = "all";
                 break;
-           }
+            }
+            $fulltext_type_filters = $this->driver->getFulltextTypeFilters();
       ?>
-      TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query_terms);?>", false, "<?=$type?>");
+      TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query_terms);?>",
+                                   false /* don't be verbose in this context */, "<?=$synonym_type?>", "<?=implode(',', $fulltext_type_filters)?>");
   </script>
 </span>
 <?php endif; ?>
