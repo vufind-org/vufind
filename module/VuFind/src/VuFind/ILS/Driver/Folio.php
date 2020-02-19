@@ -471,7 +471,7 @@ class Folio extends AbstractAPI implements
         $tenant = $this->config['API']['tenant'];
         $credentials = compact('tenant', 'username', 'password');
         // Get token
-            $response = $this->makeRequest(
+        $response = $this->makeRequest(
             'POST',
             '/authn/login',
             json_encode($credentials)
