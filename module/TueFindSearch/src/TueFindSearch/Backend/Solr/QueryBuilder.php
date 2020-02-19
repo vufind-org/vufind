@@ -151,9 +151,11 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             $fulltext_explain_other_query = $this->getFulltextExplainOtherQuery($query);
             if (!empty($fulltext_explain_other_query))
                 $params->set('explainOther', $fulltext_explain_other_query);
-            $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query), '[* TO *]');
-            if (!empty($fulltext_type_query_filter))
-                $params->set('fq', $fulltext_type_query_filter);
+            if (!empty($this->selectedFullTextTypes)) {
+                $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query), '[* TO *]');
+                if (!empty($fulltext_type_query_filter))
+                    $params->set('fq', $fulltext_type_query_filter);
+            }
         }
         return $params;
     }
