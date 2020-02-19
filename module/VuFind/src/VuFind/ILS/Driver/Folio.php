@@ -457,6 +457,72 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for patronLogin(): authenticate the patron with an Okapi
+     * login attempt. Returns a CQL query for retrieving more information about
+     * the authenticated user.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return string
+     */
+    protected function patronLoginWithOkapi($username, $password)
+    {
+        $tenant = $this->config['API']['tenant'];
+        $credentials = compact('tenant', 'username', 'password');
+        // Get token
+            $response = $this->makeRequest(
+            'POST',
+            '/authn/login',
+            json_encode($credentials)
+        );
+        $debugMsg = 'User logged in. User: ' . $username . '.';
+        // We've authenticated the user with Okapi, but we only have their
+        // username; set up a query to retrieve full info below.
+        $query = 'username == ' . $username;
+        // Replace admin with user as tenant if configured to do so:
+        if ($this->config['User']['use_user_token'] ?? false) {
+            $this->token = $response->getHeaders()->get('X-Okapi-Token')
+                ->getFieldValue();
+            $debugMsg .= ' Token: ' . substr($this->token, 0, 30) . '...';
+        }
+        $this->debug($debugMsg);
+        return $query;
+    }
+
+    /**
+     * Support method for patronLogin(): authenticate the patron with a CQL looup.
+     * Returns the CQL query for retrieving more information about the user.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return string
+     */
+    protected function patronLoginWithCql($username, $password)
+    {
+        // Construct user query using barcode, username, etc.
+        $usernameField = $this->config['User']['username_field'] ?? 'username';
+        $passwordField = $this->config['User']['password_field'] ?? false;
+        $cql = $this->config['User']['cql']
+            ?? '%%username_field%% == "%%username%%"'
+            . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        $placeholders = [
+            '%%username_field%%',
+            '%%password_field%%',
+            '%%username%%',
+            '%%password%%',
+        ];
+        $values = [
+            $usernameField,
+            $passwordField,
+            $this->escapeCql($username),
+            $this->escapeCql($password),
+        ];
+        return str_replace($placeholders, $values, $cql);
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -466,43 +532,21 @@ class Folio extends AbstractAPI implements
      *
      * @return mixed Associative array of patron info on successful login,
      *               null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {
+        // Depending on the configured login method, we either need to do an Okapi
+        // lookup now or else we need to build a CQL query specific enough to
+        // authenticate a user. Either way, we end up with a CQL query that will
+        // retrieve information about the logged-in user upon success.
         if ($this->config['User']['okapi_login'] ?? false) {
-            $tenant = $this->config['API']['tenant'];
-            $credentials = compact('tenant', 'username', 'password');
-            // Get token
             try {
-                $response = $this->makeRequest(
-                    'POST',
-                    '/authn/login',
-                    json_encode($credentials)
-                );
-                $debugMsg = 'User logged in. User: ' . $username . '.';
-                // We've authenticated the user with Okapi, but we only have their
-                // username; set up a query to retrieve full info below.
-                $query = 'username == ' . $username;
-                // Replace admin with user as tenant if configured to do so:
-                if ($this->config['User']['use_user_token'] ?? false) {
-                    $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                        ->getFieldValue();
-                    $debugMsg .= ' Token: ' . substr($this->token, 0, 30) . '...';
-                }
-                $this->debug($debugMsg);
+                $query = $this->patronLoginWithOkapi($username, $password);
             } catch (Exception $e) {
                 return null;
             }
         } else {
-            // Construct user query using barcode, username, etc.
-            $usernameField = $this->config['User']['username_field'] ?? 'username';
-            $passwordField = $this->config['User']['password_field'] ?? 'password';
-            $query = $usernameField . ' == ' . $this->escapeCql($username);
-            if (!empty($passwordField) && !empty($password)) {
-                $query .= " and {$passwordField} == " . $this->escapeCql($password);
-            }
+            $query = $this->patronLoginWithCql($username, $password);
         }
 
         $response = $this->makeRequest('GET', '/users', compact('query'));
