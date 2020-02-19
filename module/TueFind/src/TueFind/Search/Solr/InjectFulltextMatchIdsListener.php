@@ -96,18 +96,11 @@ class InjectFulltextMatchIdsListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             if ($params) {
-                $searchHandler = $this->getSearchHandlerName($event);
-                // Do not use explain on BibleRangeSearch for performance reasons
-                $explain = ($searchHandler == 'BibleRangeSearch'
-                           || $searchHandler == 'CanonesRangeSearch'
-                           || $searchHandler == 'TimeRangeSearch') ? false : true;
-                if ($explain == 'true') {
+                if ($backend->getIdentifier() == 'Search2') {
                     $this->active = true;
                     $params->set('debug', 'results');
                     $params->set('debug.explain.structured', 'true');
-                    // The search for explainOther is unknown, so it will only be generated in the
-                    // QueryBuilder
-                    $this->backend->getQueryBuilder()->setCreateExplainQuery(true);
+                    $this->backend->getQueryBuilder()->setIncludeFulltextSnippets(true);
                     // Pass filter from chosen fulltext_type facet
                     $this->selected_fulltext_types = $this->getFulltextFilterFromFulltextTypeFacet($backend, $params);
                     $this->backend->getQueryBuilder()->setSelectedFulltextTypes($this->selected_fulltext_types);
@@ -136,10 +129,8 @@ class InjectFulltextMatchIdsListener
         $backend = $event->getParam('backend');
         if ($backend == $this->backend->getIdentifier()) {
             $result = $event->getTarget();
-            $explainOtherIDs = $result->getExplainOther();
-            foreach ($result->getRecords() as $record) {
-                $id = $record->getUniqueId();
-                if (isset($explainOtherIDs[$id])) {
+            if ($backend == 'Search2') {
+                foreach ($result->getRecords() as $record) {
                     $record->setHasFulltextMatch();
                     $record->setFulltextTypeFilters($this->selected_fulltext_types);
                 }
