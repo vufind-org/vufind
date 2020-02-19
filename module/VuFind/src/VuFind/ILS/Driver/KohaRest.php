@@ -395,15 +395,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $result = $this->makeRequest(
-            ['v1', 'contrib', 'kohasuomi', 'patrons', 'validation'],
-            json_encode(['userid' => $username, 'password' => $password]),
-            'POST'
+            [
+                'path' => 'v1/contrib/kohasuomi/patrons/validation',
+                'json' => ['userid' => $username, 'password' => $password],
+                'method' => 'POST'
+            ]
         );
 
-        if ($result['code'] == 401 || $result['code'] == 403) {
+        if (401 === $result['code'] || 403 === $result['code']) {
             return null;
         }
-        if ($result['code'] != 200) {
+        if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
 
@@ -461,7 +463,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $result = $this->makeRequest(['v1', 'patrons', $patron['id']]);
 
-        if ($result['code'] != 200) {
+        if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
 
@@ -529,11 +531,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($renewDetails['details'] as $details) {
             list($checkoutId, $itemId) = explode('|', $details);
             $result = $this->makeRequest(
-                ['v1', 'checkouts', $checkoutId, 'renewal'],
-                false,
-                'POST'
+                [
+                    'path' => ['v1', 'checkouts', $checkoutId, 'renewal'],
+                    'method' => 'POST'
+                ]
             );
-            if ($result['code'] == 201) {
+            if (201 === $result['code']) {
                 $newDate
                     = $this->convertDate($result['data']['due_date'] ?? null, true);
                 $finalResult['details'][$itemId] = [
@@ -584,13 +587,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     public function getMyHolds($patron)
     {
         $result = $this->makeRequest(
-            ['v1', 'holds'],
-            ['patron_id' => $patron['id'], '_match' => 'exact', ]
+            [
+                'path' => 'v1/holds',
+                'query' => [
+                    'patron_id' => $patron['id'],
+                    '_match' => 'exact'
+                ]
+            ]
         );
-
-        if ($result['code'] != 200) {
-            throw new ILSException('Problem with Koha REST API.');
-        }
 
         $holds = [];
         foreach ($result['data'] as $entry) {
@@ -608,7 +612,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $holds[] = [
                 'id' => $entry['biblio_id'],
                 'item_id' => $entry['item_id'] ?? null,
-                'hold_id' => $entry['hold_id'],
+                'requestId' => $entry['hold_id'],
                 'location' => $this->getLibraryName(
                     $entry['pickup_library_id'] ?? null
                 ),
@@ -643,7 +647,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['hold_id'] . '|' . $holdDetails['item_id'];
+            : $holdDetails['requestId'] . '|' . $holdDetails['item_id'];
     }
 
     /**
@@ -666,12 +670,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($details as $detail) {
             list($holdId, $itemId) = explode('|', $detail, 2);
             $result = $this->makeRequest(
-                ['v1', 'holds', $holdId],
-                [],
-                'DELETE'
+                [
+                    'path' => ['v1', 'holds', $holdId],
+                    'method' => 'DELETE',
+                    'errors' => true
+                ]
             );
 
-            if ($result['code'] == 200) {
+            if (200 === $result['code']) {
                 $response[$itemId] = [
                     'success' => true,
                     'status' => 'hold_cancel_success'
@@ -726,15 +732,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if ('copy' === $level) {
                 $result = $this->makeRequest(
                     [
-                        'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                        $itemId, 'hold'
-                    ],
-                    [
-                        'patron_id' => (int)$patron['id'],
-                        'query_pickup_locations' => 1
-                    ],
-                    'GET',
-                    $patron
+                        'path' => [
+                            'v1', 'contrib', 'kohasuomi', 'availability', 'items',
+                            $itemId, 'hold'
+                        ],
+                        'query' => [
+                            'patron_id' => (int)$patron['id'],
+                            'query_pickup_locations' => 1
+                        ]
+                    ]
                 );
                 if (empty($result['data'])) {
                     return [];
@@ -744,15 +750,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             } else {
                 $result = $this->makeRequest(
                     [
-                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios',
-                        $bibId, 'hold'
-                    ],
-                    [
-                        'patron_id' => (int)$patron['id'],
-                        'query_pickup_locations' => 1
-                    ],
-                    'GET',
-                    $patron
+                        'path' => [
+                            'v1', 'contrib', 'kohasuomi', 'availability', 'biblios',
+                            $bibId, 'hold'
+                        ],
+                        'query' => [
+                            'patron_id' => (int)$patron['id'],
+                            'query_pickup_locations' => 1
+                        ]
+                    ]
                 );
                 if (empty($result['data'])) {
                     return [];
@@ -851,10 +857,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ('title' === $level) {
             $result = $this->makeRequest(
                 [
-                    'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                    'hold'
-                ],
-                ['patron_id' => $patron['id']]
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                        'hold'
+                    ],
+                    'query' => ['patron_id' => $patron['id']]
+                ]
             );
             if (!empty($result['data']['availability']['available'])) {
                 return [
@@ -870,10 +878,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $result = $this->makeRequest(
             [
-                'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                $data['item_id'], 'hold'
-            ],
-            ['patron_id' => $patron['id']]
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'availability', 'items',
+                    $data['item_id'], 'hold'
+                ],
+                'query' => ['patron_id' => $patron['id']]
+            ]
         );
         if (!empty($result['data']['availability']['available'])) {
             return [
@@ -958,11 +968,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $result = $this->makeRequest(
-            ['v1', 'holds'], json_encode($request), 'POST'
+            [
+                'path' => 'v1/holds',
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true
+            ]
         );
 
         if ($result['code'] >= 300) {
-            return $this->holdError($result['data']['error']);
+            return $this->holdError($result['data']['error'] ?? 'hold_error_fail');
         }
         return ['success' => true];
     }
@@ -1052,14 +1067,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($details as $id) {
             $result = $this->makeRequest(
                 [
-                    'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                    'articlerequests', $id
-                ],
-                [],
-                'DELETE'
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                        'articlerequests', $id
+                    ],
+                    'method' => 'DELETE',
+                    'errors' => true
+                ]
             );
 
-            if ($result['code'] != 200) {
+            if (200 !== $result['code']) {
                 $response[$id] = [
                     'success' => false,
                     'status' => 'storage_retrieval_request_cancel_fail',
@@ -1100,21 +1117,21 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ('title' === $level) {
             $result = $this->makeRequest(
                 [
-                    'v1', 'contrib', 'kohasuomi', 'biblio', $id, 'availability',
-                    'articlerequest'
-                ],
-                [
-                    'patron_id' => $patron['id']
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                        'articlerequest'
+                    ],
+                    'query' => ['patron_id' => $patron['id']]
                 ]
             );
         } else {
             $result = $this->makeRequest(
                 [
-                    'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                    $data['item_id'], 'articlerequest'
-                ],
-                [
-                    'patron_id' => $patron['id']
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'availability', 'items',
+                        $data['item_id'], 'articlerequest'
+                    ],
+                    'query' => ['patron_id' => $patron['id']]
                 ]
             );
         }
@@ -1169,11 +1186,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $result = $this->makeRequest(
             [
-                'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                'articlerequests'
-            ],
-            json_encode($request),
-            'POST'
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                    'articlerequests'
+                ],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true
+            ]
         );
 
         if ($result['code'] >= 300) {
@@ -1258,13 +1278,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         ];
 
         $result = $this->makeRequest(
-            ['v1', 'patrons', $patron['id'], 'password'],
-            json_encode($request),
-            'POST'
+            [
+                'path' => ['v1', 'patrons', $patron['id'], 'password'],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true
+            ]
         );
 
-        if ($result['code'] != 200) {
-            if ($result['code'] == 400) {
+        if (200 !== $result['code']) {
+            if (400 === $result['code']) {
                 $message = 'password_error_invalid';
             } else {
                 $message = 'An error has occurred';
@@ -1395,64 +1418,66 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * Makes a request to the Koha REST API
      *
-     * @param array             $hierarchy Array of values to embed in the URL path
-     * of the request
-     * @param array|bool|string $params    A keyed array of request data
-     * @param string            $method    The http request method to use (default is
-     * GET)
-     * @param array             $headers   Request headers, an array, where key is
-     * header name and value is header value
+     * @param array $request Either a path as string or non-keyed array of path
+     *                       elements, or a keyed array of request parameters:
+     *
+     * path     String or array of values to embed in the URL path. String is taken
+     *          as is, array elements are url-encoded.
+     * query    URL parameters (optional)
+     * method   HTTP method (default is GET)
+     * form     Form request params (optional)
+     * json     JSON request as a PHP array (optional, only when form is not
+     *          specified)
+     * headers  Headers
+     * errors   If true, return errors instead of raising an exception
      *
      * @return array
      * @throws ILSException
      */
-    protected function makeRequest($hierarchy, $params = false, $method = 'GET',
-        $headers = []
-    ) {
+    protected function makeRequest($request)
+    {
         // Set up the request
-        $apiUrl = $this->config['Catalog']['host'];
+        $apiUrl = $this->config['Catalog']['host'] . '/';
 
-        $hierarchy = array_map('urlencode', $hierarchy);
-        $apiUrl .= '/' . implode('/', $hierarchy);
+        // Handle the simple case of just a path in $request
+        if (is_string($request) || !isset($request['path'])) {
+            $request = [
+                'path' => $request
+            ];
+        }
+
+        if (is_array($request['path'])) {
+            $apiUrl .= implode('/', array_map('urlencode', $request['path']));
+        } else {
+            $apiUrl .= $request['path'];
+        }
 
         $client = $this->createHttpClient($apiUrl);
         $client->getRequest()->getHeaders()
             ->addHeaderLine('Authorization', $this->getOAuth2Token());
 
         // Add params
-        if (false !== $params) {
-            if ('GET' === $method || 'DELETE' === $method) {
-                $client->setParameterGet($params);
-            } else {
-                $body = '';
-                if (is_string($params)) {
-                    $body = $params;
-                } else {
-                    if (isset($params['__body__'])) {
-                        $body = $params['__body__'];
-                        unset($params['__body__']);
-                        $client->setParameterGet($params);
-                    } else {
-                        $client->setParameterPost($params);
-                    }
-                }
-                if ('' !== $body) {
-                    $client->getRequest()->setContent($body);
-                    $client->getRequest()->getHeaders()->addHeaderLine(
-                        'Content-Type', 'application/json'
-                    );
-                }
-            }
+        if (!empty($request['query'])) {
+            $client->setParameterGet($request['query']);
+        }
+        if (!empty($request['form'])) {
+            $client->setParameterPost($request['form']);
+        } elseif (!empty($request['json'])) {
+            $client->getRequest()->setContent(json_encode($request['json']));
+            $client->getRequest()->getHeaders()->addHeaderLine(
+                'Content-Type', 'application/json'
+            );
         }
 
-        if (!empty($headers)) {
+        if (!empty($request['headers'])) {
             $requestHeaders = $client->getRequest()->getHeaders();
-            foreach ($headers as $name => $value) {
+            foreach ($request['headers'] as $name => $value) {
                 $requestHeaders->addHeaderLine($name, [$value]);
             }
         }
 
         // Send request and retrieve response
+        $method = $request['method'] ?? 'GET';
         $startTime = microtime(true);
         $client->setMethod($method);
 
@@ -1495,7 +1520,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Handle errors as complete failures only if the API call didn't return
         // valid JSON that the caller can handle
         $decodedResult = json_decode($result, true);
-        if (!$response->isSuccess()
+        if (empty($request['errors']) && !$response->isSuccess()
             && (null === $decodedResult || !empty($decodedResult['error']))
         ) {
             $params = $method == 'GET'
@@ -1512,7 +1537,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         return [
             'data' => $decodedResult,
-            'code' => $response->getStatusCode(),
+            'code' => (int)$response->getStatusCode(),
             'headers' => $response->getHeaders()->toArray(),
         ];
     }
@@ -1601,7 +1626,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getItemStatusesForBiblio($id, $patron = null)
     {
         $result = $this->makeRequest(
-            ['v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id, 'search']
+            [
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
+                    'search'
+                ],
+                'errors' => true
+            ]
         );
         if (404 == $result['code']) {
             return [];
@@ -1874,9 +1905,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $cacheKey = 'libraries';
         $libraries = $this->getCachedData($cacheKey);
         if (null === $libraries) {
-            $result = $this->makeRequest(
-                ['v1', 'libraries'], false, 'GET'
-            );
+            $result = $this->makeRequest('v1/libraries');
             $libraries = [];
             foreach ($result['data'] as $library) {
                 $libraries[$library['library_id']] = $library;
@@ -1914,7 +1943,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $blockReason = $this->getCachedData($cacheId);
         if (null === $blockReason) {
             $result = $this->makeRequest(
-                ['v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'], 'status']
+                [
+                    'path' => [
+                        'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id']
+                    ],
+                    'query' => ['query_blocks' => 1]
+                ]
             );
             $blockReason = [];
             if (!empty($result['data']['blocks'])) {
@@ -2016,26 +2050,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Return a hold error message
      *
-     * @param int   $code   HTTP Result Code
-     * @param array $result API Response
+     * @param string $error Error message
      *
      * @return array
      */
-    protected function holdError($code, $result = null)
+    protected function holdError($error)
     {
-        $message = $result['error'] ?? 'hold_error_fail';
-        switch ($message) {
-        case 'Reserve cannot be placed. Reason: tooManyReserves':
-        case 'Reserve cannot be placed. Reason: tooManyHoldsForThisRecord':
-            $message = 'hold_error_too_many_holds';
+        switch ($error) {
+        case 'Hold cannot be placed. Reason: tooManyReserves':
+        case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
+            $error = 'hold_error_too_many_holds';
             break;
-        case 'Reserve cannot be placed. Reason: ageRestricted':
-            $message = 'hold_error_age_restricted';
+        case 'Hold cannot be placed. Reason: ageRestricted':
+            $error = 'hold_error_age_restricted';
             break;
         }
         return [
             'success' => false,
-            'sysMessage' => $message
+            'sysMessage' => $error
         ];
     }
 
@@ -2234,14 +2266,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $result = $this->makeRequest(
             [
-                'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                'checkouts'
-            ],
-            $queryParams,
-            'GET'
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                    'checkouts'
+                ],
+                'query' => $queryParams
+            ]
         );
 
-        if ($result['code'] != 200) {
+        if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
 
