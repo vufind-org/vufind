@@ -32,7 +32,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
 
     public function setSelectedFulltextTypes($selected_fulltext_types) {
-        $this->selectedFulltextType = $selected_fulltext_types;
+        $this->selectedFulltextTypes = $selected_fulltext_types;
     }
 
 
@@ -80,21 +80,21 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
 
     protected function getSynonymsPartialExpressionOrEmpty($search_handler, $query_terms, $previous_expression_empty) {
        $synonyms_expression = "";
-       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextType)) {
+       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
                                     ? ($previous_expression_empty ?  '' : ' OR ') .
                                       $this->getSynonymQueryField($search_handler, self::FULLTEXT_TYPE_FULLTEXT) . ':' . $query_terms
                                       : '';
            $previous_expression_empty = false;
        }
-       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_TOC, $this->selectedFulltextType)) {
+       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_TOC, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
                                     ? ($previous_expression_empty ? '' : ' OR ') .
                                       $this->getSynonymQueryField($search_handler, self::FULLTEXT_TYPE_TOC) . ':' . $query_terms
                                       : '';
            $previous_expression_empty = false;
        }
-       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_ABSTRACT, $this->selectedFulltextType)) {
+       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_ABSTRACT, $this->selectedFulltextTypes)) {
            $synonyms_expression .=  $this->useSynonyms($search_handler)
                                     ? ($previous_expression_empty ? '' : ' OR ') .
                                     $this->getSynonymQueryField($search_handler, self::FULLTEXT_TYPE_ABSTRACT) . ':' . $query_terms
@@ -114,27 +114,31 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
+    protected function assembleFulltextTypesQuery($handler, $query_terms) {
+         $query_string = "";
+         if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextTypes))
+             $query_string =  (empty($query_string) ? '' : ' OR ') .
+                               'fulltext:' . $query_terms .
+                               ' OR fulltext_unstemmed:' . $query_terms;
+         if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_TOC, $this->selectedFulltextTypes))
+             $query_string .= (empty($query_string) ? '' : ' OR ') .
+                               'fulltext_toc:' . $query_terms .
+                               ' OR fulltext_toc_unstemmed:' . $query_terms;
+         if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_ABSTRACT, $this->selectedFulltextTypes))
+             $query_string .= (empty($query_string) ? '' : ' OR ') .
+                               'fulltext_abstract:' . $query_terms .
+                               ' OR fulltext_abstract_unstemmed:' . $query_terms;
+         $query_string .= $this->getSynonymsPartialExpressionOrEmpty($handler, $query_terms, empty($query_string));
+         return $query_string;
+    }
+
+
     protected function getFulltextExplainOtherQuery($query) {
          $query_terms =  $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms());
          if (!empty($query_terms) && !($this->getLuceneHelper()->containsRanges($query->getAllTerms()))) {
-              $query_terms_normalized = \TueFind\Utility::isSurroundedByQuotes($query_terms) ?
-                                             $query_terms : '(' . $query_terms . ')';
-              $explain_query = "";
-              if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_FULLTEXT, $this->selectedFulltextType))
-                  $explain_query =  (empty($explain_query) ? '' : ' OR ') .
-                                    'fulltext:' . $query_terms_normalized .
-                                    ' OR fulltext_unstemmed:' . $query_terms_normalized;
-              if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_TOC, $this->selectedFulltextType))
-                  $explain_query .= (empty($explain_query) ? '' : ' OR ') .
-                                    'fulltext_toc:' . $query_terms_normalized .
-                                    ' OR fulltext_toc_unstemmed:' . $query_terms_normalized;
-              if (empty($this->selectedFulltextType) || in_array(self::FULLTEXT_TYPE_ABSTRACT, $this->selectedFulltextType))
-                  $explain_query .= (empty($explain_query) ? '' : ' OR ') .
-                                    'fulltext_abstract:' . $query_terms_normalized .
-                                    ' OR fulltext_abstract_unstemmed:' . $query_terms_normalized;
-              $explain_query .= $this->getSynonymsPartialExpressionOrEmpty($this->getHandler($query),
-                                                                           $query_terms_normalized, empty($explain_query));
-              return $explain_query;
+             $query_terms_normalized = \TueFind\Utility::isSurroundedByQuotes($query_terms) ?
+                                            $query_terms : '(' . $query_terms . ')';
+             return $this->assembleFulltextTypesQuery($this->getHandler($query), $query_terms_normalized);
          }
          return "";
     }
@@ -147,6 +151,9 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
             $fulltext_explain_other_query = $this->getFulltextExplainOtherQuery($query);
             if (!empty($fulltext_explain_other_query))
                 $params->set('explainOther', $fulltext_explain_other_query);
+            $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query), '[* TO *]');
+            if (!empty($fulltext_type_query_filter))
+                $params->set('fq', $fulltext_type_query_filter);
         }
         return $params;
     }
