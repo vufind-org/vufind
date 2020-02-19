@@ -21,13 +21,13 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TYPE_FULLTEXT = "Fulltext";
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";
     const FULLTEXT_TYPE_TOC = "Table of Contents";
-    protected $createExplainQuery = false;
+    protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
 
 
-    public function setCreateExplainQuery($enable)
+    public function setIncludeFulltextSnippets($enable)
     {
-        $this->createExplainQuery = $enable;
+        $this->includeFulltextSnippets = $enable;
     }
 
 
@@ -133,24 +133,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     }
 
 
-    protected function getFulltextExplainOtherQuery($query) {
-         $query_terms =  $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms());
-         if (!empty($query_terms) && !($this->getLuceneHelper()->containsRanges($query->getAllTerms()))) {
-             $query_terms_normalized = \TueFind\Utility::isSurroundedByQuotes($query_terms) ?
-                                            $query_terms : '(' . $query_terms . ')';
-             return $this->assembleFulltextTypesQuery($this->getHandler($query), $query_terms_normalized);
-         }
-         return "";
-    }
-
-
     public function build(AbstractQuery $query)
     {
         $params = parent::build($query);
-        if ($this->createExplainQuery) {
-            $fulltext_explain_other_query = $this->getFulltextExplainOtherQuery($query);
-            if (!empty($fulltext_explain_other_query))
-                $params->set('explainOther', $fulltext_explain_other_query);
+        if ($this->includeFulltextSnippets) {
             if (!empty($this->selectedFullTextTypes)) {
                 $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query), '[* TO *]');
                 if (!empty($fulltext_type_query_filter))
