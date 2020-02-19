@@ -1,6 +1,7 @@
 /* this file is TueFind-specific! */
 var OpenStreetMapWrapper = {
     map: null,
+    layer: null,
     locations: [],
     DrawMap: function(lon, lat, zoom) {
         // Initialize map
@@ -21,6 +22,7 @@ var OpenStreetMapWrapper = {
         var container = document.getElementById('popup');
         var content = document.getElementById('popup-content');
         var closer = document.getElementById('popup-closer');
+        closer.blur();
         var overlay = new ol.Overlay({
             element: container,
             autoPan: true,
@@ -28,7 +30,6 @@ var OpenStreetMapWrapper = {
                 duration: 250
             }
         });
-        closer.blur();
 
         var locations = this.locations;
         this.map.on('singleclick', function (event) {
@@ -52,28 +53,40 @@ var OpenStreetMapWrapper = {
     },
     AddLocation: function(lon, lat, iconUrl, popupContentHTML) {
         let tuefindId = lon + '#' + lat;
-        let feature = new ol.Feature({
+        this.locations.push({tuefindId: tuefindId, lon: lon, lat: lat, html: popupContentHTML, iconUrl: iconUrl});
+    },
+    BuildLocationLayer: function() {
+        var features = [];
+        this.locations.forEach(function(location) {;
+            let feature = new ol.Feature({
                         type: 'geoMarker',
-                        geometry: new ol.geom.Point(ol.proj.fromLonLat([lon, lat])),
-                        tuefindId: tuefindId,
+                        geometry: new ol.geom.Point(ol.proj.fromLonLat([location.lon, location.lat])),
+                        tuefindId: location.tuefindId,
                     });
-        let icon = new ol.style.Icon({
-            anchor: [0.5, 1],
-            anchorXUnits: 'fraction',
-            anchorYUnits: 'fraction',
-            scale: 0.5,
-            src: iconUrl,
+            let icon = new ol.style.Icon({
+                anchor: [0.5, 1],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                scale: 0.5,
+                src: location.iconUrl,
+            });
+            let style = new ol.style.Style({image: icon});
+            feature.setStyle(style);
+            features.push(feature);
         });
-        let style = new ol.style.Style({image: icon});
-        feature.setStyle(style);
-        let layer = new ol.layer.Vector({
+
+        this.layer = new ol.layer.Vector({
             source: new ol.source.Vector({
-                features: [
-                    feature
-                ]
+                features: features
             })
         });
-        this.map.addLayer(layer);
-        this.locations.push({tuefindId: tuefindId, lon: lon, lat: lat, html: popupContentHTML, layer: layer});
+        this.map.addLayer(this.layer);
+    },
+    ResetLocationLayer: function() {
+        this.locations = [];
+        if (this.layer != null) {
+            this.map.removeLayer(this.layer);
+            this.layer = null;
+        }
     }
 }
