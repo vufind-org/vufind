@@ -8,6 +8,7 @@
  */
 namespace TueFind\Controller;
 
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
@@ -19,18 +20,29 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  */
 class ProxyController extends \VuFind\Controller\AbstractBase
 {
-    const DNB_REGEX = '#http://services.dnb.de/fize-service/gvr/.*#';
-    const WHITE_LIST_REGEX = ProxyController::DNB_REGEX;
+    const DNB_REGEX = '#^http(s)?://services\.dnb\.de/fize-service/gvr/#';
+    const OPEN_STREETMAP_REGEX = '#^http(s)?://[a-z]+\.tile\.openstreetmap\.org#';
+    const WHITE_LIST_REGEXES = [self::DNB_REGEX, self::OPEN_STREETMAP_REGEX];
 
     public function loadAction()
     {
         $requestUri = $this->getRequest()->getUri()->getQuery();
         $url = urldecode(strstr($requestUri, 'http'));
-        if (preg_match(ProxyController::WHITE_LIST_REGEX, $url)) {
-            $client = $this->serviceLocator->get('VuFind\Http')->createClient();
-            return $client->setUri($url)->send();
-        } else {
-            throw new ForbiddenException('Access denied.');
+        if ($url == '')
+            throw new BadRequestException('No valid target URL specified.');
+
+        $matched = false;
+        foreach (self::WHITE_LIST_REGEXES as $regex) {
+            if (preg_match($regex, $url)) {
+                $matched = true;
+                break;
+            }
         }
+
+        if (!$matched)
+            throw new ForbiddenException('The specified target URL is not allowed: ' . $url);
+
+        $client = $this->serviceLocator->get('VuFind\Http')->createClient();
+        return $client->setUri($url)->send();
     }
 }
