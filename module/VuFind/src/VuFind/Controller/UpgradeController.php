@@ -939,7 +939,7 @@ class UpgradeController extends AbstractBase
         $base62 = new Base62();
 
         try {
-            $results = $shortlinksTable->select(['hash' => '']);
+            $results = $shortlinksTable->select(['hash' => null]);
 
             foreach ($results as $result) {
                 $id = $result['id'];
@@ -948,6 +948,10 @@ class UpgradeController extends AbstractBase
                     ['id' => $id]
                 );
             }
+
+            $this->session->warnings->append(
+                'Added hash value(s) to ' . count($results) . ' short links.'
+            );
         } catch (Exception $e) {
             $this->session->warnings->append(
                 'Could not fix hashes in table shortlinks - maybe column ' .
