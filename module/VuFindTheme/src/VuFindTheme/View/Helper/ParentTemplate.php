@@ -73,7 +73,7 @@ class ParentTemplate extends \Zend\View\Helper\AbstractHelper
         while (
             $paths->current() &&
             (!file_exists($paths->current() . $template) ||
-            (!empty($targetParent) && !strstr($paths->current(), $targetParent)))
+            (!empty($targetTheme) && !strstr($paths->current(), $targetTheme)))
         ) {
             $paths->next();
         }
