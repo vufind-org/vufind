@@ -50,6 +50,8 @@ class ParentTemplateTest extends \VuFindTest\Unit\TestCase
 
     /**
      * Constructor
+     *
+     * @return void
      */
     public function setUp()
     {
