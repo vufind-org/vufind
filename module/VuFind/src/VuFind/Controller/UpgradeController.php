@@ -938,13 +938,21 @@ class UpgradeController extends AbstractBase
         $shortlinksTable = $this->getTable('shortlinks');
         $base62 = new Base62();
 
-        $results = $shortlinksTable->select(['hash' => '']);
+        try {
+            $results = $shortlinksTable->select(['hash' => '']);
 
-        foreach ($results as $result) {
-            $id = $result['id'];
-            $shortlinksTable->update(
-                ['hash' => $base62->encode($id)],
-                ['id' => $id]
+            foreach ($results as $result) {
+                $id = $result['id'];
+                $shortlinksTable->update(
+                    ['hash' => $base62->encode($id)],
+                    ['id' => $id]
+                );
+            }
+        } catch (Exception $e) {
+            $this->session->warnings->append(
+                'Could not fix hashes in table shortlinks - maybe column ' .
+                'hash is missing? Exception thrown with ' .
+                'message: ' . $e->getMessage()
             );
         }
     }
