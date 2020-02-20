@@ -179,10 +179,10 @@ CREATE TABLE `shortlinks` (
   `path` mediumtext NOT NULL,
   `hash` varchar(9),
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `shortlinks_hash_IDX` USING HASH (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-CREATE UNIQUE INDEX shortlinks_hash_IDX USING HASH ON shortlinks (hash);
 
 --
 -- Table structure for table `tags`
