@@ -116,12 +116,12 @@ class ParentTemplateTest extends \VuFindTest\Unit\TestCase
      * Test thrown error
      *
      * @return void
-     *
-     * @expectedException Exception
-     * @expectedExceptionMessage not found in parent themes: missing.phtml
      */
     public function testException()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('not found in parent themes: missing.phtml');
+
         $helper = $this->getHelper(['parent', 'child']);
         $helper->__invoke('missing.phtml');
     }
