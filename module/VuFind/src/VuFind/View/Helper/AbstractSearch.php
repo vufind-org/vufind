@@ -89,7 +89,9 @@ abstract class AbstractSearch extends AbstractHelper
                         $data['new_term'],
                         true
                     )->getParams();
-                $html .= '<a href="' . $href . '">' . $view->escapeHtml($word)
+                $html .= '<a href="' . $href
+                    . '" title="' . $view->transEsc('search_replace_term') . '">'
+                    . $view->escapeHtml($word)
                     . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()
