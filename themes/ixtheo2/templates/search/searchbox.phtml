@@ -125,7 +125,7 @@
 
                             <!-- IxTheo 2: Advanced search -->
                             <div class="ix-searchbox-adv-search">
-                                <a href="<?=$this->advSearchUrl . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $this->hiddenFilterParams)?>"
+                                <a href="<?=$this->url($advSearch) .  ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $this->hiddenFilterParams)?>"
                                    class="btn btn-link" role="button"
                                    rel="nofollow"><?= $this->transEsc("Advanced Search") ?></a>
                             </div>
