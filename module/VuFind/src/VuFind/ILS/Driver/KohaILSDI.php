@@ -482,7 +482,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "Y-m-d", $display_date
         );
 
-        $checkTime =  $this->dateConverter->convertFromDisplayDate(
+        $checkTime = $this->dateConverter->convertFromDisplayDate(
             "U", $display_date
         );
         if (!is_numeric($checkTime)) {
@@ -1032,7 +1032,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] =  [
+            $items[] = [
                 'id' => $rowItem['id']
             ];
             $rescount++;

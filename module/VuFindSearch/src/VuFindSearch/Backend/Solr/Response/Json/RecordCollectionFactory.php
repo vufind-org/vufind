@@ -97,7 +97,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         $collection = new $this->collectionClass($response);
         if (isset($response['response']['docs'])) {
             foreach ($response['response']['docs'] as $doc) {
-                $collection->add(call_user_func($this->recordFactory, $doc));
+                $collection->add(call_user_func($this->recordFactory, $doc), false);
             }
         }
         return $collection;

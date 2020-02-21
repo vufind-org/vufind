@@ -56,6 +56,7 @@ class Results extends \VuFind\Search\Base\Results
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
+        $this->errors = $collection->getErrors();
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();

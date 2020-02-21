@@ -29,6 +29,7 @@ namespace VuFind\Log;
 
 use Interop\Container\ContainerInterface;
 use Zend\Config\Config;
+use Zend\Console\Console;
 use Zend\Log\Writer\WriterInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
@@ -176,6 +177,27 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
+     * Is dynamic debug mode enabled?
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return bool
+     */
+    protected function hasDynamicDebug(ContainerInterface $container): bool
+    {
+        // Query parameters do not apply in console mode; if we do have a debug
+        // query parameter, and the appropriate permission is set, activate dynamic
+        // debug:
+        if (!Console::isConsole()
+            && $container->get('Request')->getQuery()->get('debug')
+        ) {
+            return $container->get(\ZfcRbac\Service\AuthorizationService::class)
+                ->isGranted('access.DebugMode');
+        }
+        return false;
+    }
+
+    /**
      * Set configuration
      *
      * @param ContainerInterface $container Service manager
@@ -191,7 +213,7 @@ class LoggerFactory implements FactoryInterface
         $hasWriter = false;
 
         // DEBUGGER
-        if (!$config->System->debug == false) {
+        if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
             $hasWriter = true;
             $this->addDebugWriter($logger, $config->System->debug);
         }
@@ -352,8 +374,19 @@ class LoggerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $logger = new $requestedName();
-        $this->configureLogger($container, $logger);
-        return $logger;
+        // Construct the logger as a lazy loading value holder so that
+        // the object is not instantiated until it is called. This helps break
+        // potential circular dependencies with other services.
+        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+            // Indicate that initialization is complete to avoid reinitialization:
+            $proxy->setProxyInitializer(null);
+
+            // Now build the actual service:
+            $wrapped = new $requestedName();
+            $this->configureLogger($container, $wrapped);
+        };
+        $cfg = $container->get(\ProxyManager\Configuration::class);
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
+        return $factory->createProxy($requestedName, $callback);
     }
 }

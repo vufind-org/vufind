@@ -46,6 +46,13 @@ class Alma extends AbstractBase
     protected $httpClient;
 
     /**
+     * List of filter reasons that are ignored (displayed regardless of filtering)
+     *
+     * @var array
+     */
+    protected $ignoredFilterReasons = ['Date Filter'];
+
+    /**
      * Constructor
      *
      * @param string            $baseUrl    Base URL for link resolver
@@ -95,6 +102,13 @@ class Alma extends AbstractBase
         }
 
         foreach ($xml->context_services->children() as $service) {
+            $filtered = $this->getKeyWithId($service, 'Filtered');
+            if ('true' === $filtered) {
+                $reason = $this->getKeyWithId($service, 'Filter reason');
+                if (!in_array($reason, $this->ignoredFilterReasons)) {
+                    continue;
+                }
+            }
             $serviceType = $this->mapServiceType(
                 (string)$service->attributes()->service_type
             );
@@ -112,10 +126,19 @@ class Alma extends AbstractBase
                     ? 'open' : 'limited';
             }
             if ($coverage = $this->getKeyWithId($service, 'Availability')) {
-                $coverage = trim(str_replace('<br>', ' ', $coverage));
+                $coverage = $this->cleanupText($coverage);
+            }
+            if ($notes = $this->getKeyWithId($service, 'public_note')) {
+                $notes = $this->cleanupText($notes);
+            }
+            $authentication = $this->getKeyWithId($service, 'Authentication_note');
+            if ($authentication) {
+                $authentication = $this->cleanupText($authentication);
             }
 
-            $record = compact('title', 'coverage', 'access', 'href');
+            $record = compact(
+                'title', 'coverage', 'access', 'href', 'notes', 'authentication'
+            );
             $record['service_type'] = $serviceType;
             $records[] = $record;
         }
@@ -153,8 +176,24 @@ class Alma extends AbstractBase
         $map = [
             'getFullTxt' => 'getFullTxt',
             'getHolding' => 'getHolding',
-            'GeneralElectronicService' => 'getWebService'
+            'GeneralElectronicService' => 'getWebService',
+            'DB' => 'getFullTxt',
+            'Package' => 'getFullTxt',
         ];
         return $map[$serviceType] ?? '';
+    }
+
+    /**
+     * Clean up textual information
+     *
+     * @param string $str Text
+     *
+     * @return string
+     */
+    protected function cleanupText($str)
+    {
+        $str = trim(preg_replace('/<br\/?>/', ' ', $str));
+        $str = strip_tags($str);
+        return $str;
     }
 }

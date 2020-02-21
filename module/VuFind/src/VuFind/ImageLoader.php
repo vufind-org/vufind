@@ -145,7 +145,7 @@ class ImageLoader implements \Zend\Log\LoggerAwareInterface
         // Check all supported image formats:
         $filenames = [];
         foreach ($formats as $format) {
-            $filenames[] =  $path . $format;
+            $filenames[] = $path . $format;
         }
         if (null === $this->themeTools) {
             throw new \Exception('\VuFindTheme\ThemeInfo object missing');

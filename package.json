@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "6.0.1",
+  "version": "6.1.0",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -10,14 +10,14 @@
     "url": "https://vufind.org/jira"
   },
   "dependencies": {
-    "grunt": "^1.0.0",
-    "grunt-contrib-less": "1.3.0",
+    "grunt": "^1.0.4",
+    "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
-    "grunt-sass": "^1.0.0",
+    "grunt-sass": "^2.0.0",
     "jit-grunt": "^0.9.1",
     "node-sass": "^4.11.0"
   },
   "devDependencies": {
-    "grunt-contrib-watch": "~0.6.1"
+    "grunt-contrib-watch": "^1.1.0"
   }
 }

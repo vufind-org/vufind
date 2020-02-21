@@ -1689,7 +1689,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $fields = 'location,status,barcode,callNumber,fixedFields,varFields';
         $statuses = [];
         $sort = 0;
-        while (!isset($result) || $limit === $result['total']) {
+        $result = null;
+        while (null === $result || $limit === $result['total']) {
             $result = $this->makeRequest(
                 ['v3', 'items'],
                 [
@@ -1713,7 +1714,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 return $statuses;
             }
 
-            foreach ($result['entries'] as $i => $item) {
+            foreach ($result['entries'] as $item) {
                 $location = $this->translateLocation($item['location']);
                 list($status, $duedate, $notes) = $this->getItemStatus($item);
                 $available = $status == $this->mapStatusCode('-');

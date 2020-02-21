@@ -218,7 +218,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     public function process($results)
     {
         $reorder_coords = [];
-        $filters = $results->getParams()->getFilters();
+        $filters = $results->getParams()->getRawFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];

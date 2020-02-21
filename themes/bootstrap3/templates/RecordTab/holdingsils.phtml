@@ -71,7 +71,7 @@
 
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
-  <?php $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
+  <?php $locationText = $this->transEscWithPrefix('location_', $holding['location']); ?>
   <?php if ($holding['locationhref'] ?? false): ?>
     <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
   <?php else: ?>
@@ -133,7 +133,7 @@
   <?php endif; ?>
 </table>
 <?php endforeach; ?>
-<?php if ($paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+<?php if (!empty($holdings['total']) && $paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
   <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
